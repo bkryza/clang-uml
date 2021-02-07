@@ -1,0 +1,61 @@
+glob:
+  - src/*.cc
+compilation_database_dir: build
+diagrams:
+  communication:
+    type: class
+    glob:
+      - src/communication/*.cc
+      - src/communication/codec/*.cc
+      - src/communication/layers/*.cc
+    using_namespace: one::communication
+    namespaces:
+      - one::communication
+      - one::communication::layers
+      - one::communication::codec
+    classes:
+      - ConnectionPool
+      - Communicator
+      - layers::AsyncResponder
+      - layers::BinaryTranslator
+      - layers::Inbox
+      - layers::Replier
+      - layers::Retrier
+      - layers::Sequencer
+      - layers::Translator
+      - codec::PacketLogger
+      - codec::PacketEncoder
+      - codec::PacketDecoder
+    methods:
+      - public
+      - private
+    members:
+      - public
+    puml:
+      - 'note top of Communicator : Aggregate template'
+  http_helper:
+    type: class
+    glob:
+      - src/httpHelper.cc
+      - src/httpHelperParams.cc
+    classes:
+      - FsLogic
+    args:
+      - '-I./src'
+      - '-I./include'
+  storage_helper:
+    type: class
+    classes:
+      - FileHandle
+      - StorageHelper
+      - KeyValueAdapter
+      - KeyValueHelper
+  storage_detection:
+    type: sequence
+    begin:
+      class: aaa
+      method: bbb
+    end:
+      class: ccc
+      method: ddd
+
