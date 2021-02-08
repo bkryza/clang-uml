@@ -91,6 +91,8 @@ int main(int argc, const char *argv[])
                 &ctx);
 
             spdlog::debug("Processing result: {}", res);
+
+            clang_suspendTranslationUnit(tu);
         }
 
         std::filesystem::path path{"puml/" + d.name + ".puml"};
