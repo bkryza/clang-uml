@@ -1,4 +1,4 @@
-# clang-uml - Clang based UML generator ![build](https://github.com/bkryza/clang-uml/workflows/build/badge.svg)
+# clang-uml - Clang based UML generator
 
 
 ### Compiling, installing and running your code
