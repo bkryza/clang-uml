@@ -44,13 +44,13 @@ struct class_visitor_context : element_visitor_context<class_> {
 };
 
 struct tu_context {
-    tu_context(diagram &d)
-        : diagram(d)
+    tu_context(diagram &d_)
+        : d{d_}
     {
     }
 
     std::vector<std::string> namespace_;
-    diagram &diagram;
+    class_diagram::diagram &d;
 };
 
 enum CXChildVisitResult visit_if_cursor_valid(
@@ -310,7 +310,7 @@ static enum CXChildVisitResult translation_unit_visitor(
 
                     clang_visitChildren(cursor, class_visitor, &c);
 
-                    ctx->diagram.classes.emplace_back(std::move(c));
+                    ctx->d.classes.emplace_back(std::move(c));
                 });
 
             ret = CXChildVisit_Continue;
@@ -327,7 +327,7 @@ static enum CXChildVisitResult translation_unit_visitor(
 
                     clang_visitChildren(cursor, enum_visitor, &e);
 
-                    ctx->diagram.enums.emplace_back(std::move(e));
+                    ctx->d.enums.emplace_back(std::move(e));
                 });
             ret = CXChildVisit_Continue;
 

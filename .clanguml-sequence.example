@@ -1,0 +1,18 @@
+compilation_database_dir: build
+output_directory: puml
+diagrams:
+  main_sequence_diagram:
+    type: sequence
+    glob:
+      - src/main.cc
+    using_namespace: clanguml
+    start_from:
+        file: src/puml/class_diagram_generator.h
+        line: 108
+    classes:
+      - config
+      - diagram
+      - class_diagram
+    puml:
+      - 'note top of diagram: Aggregate template'
+

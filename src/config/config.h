@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace clanguml {
 namespace config {
@@ -45,12 +46,23 @@ struct class_diagram : public diagram {
     }
 };
 
+struct source_location {
+    std::string file;
+    unsigned int line;
+};
+
+struct sequence_diagram : public diagram {
+    virtual ~sequence_diagram() = default;
+
+    std::optional<source_location> start_from;
+};
+
 struct config {
     // the glob list is additive and relative to the current
     // directory
     std::vector<std::string> glob;
     std::string compilation_database_dir{"."};
-    std::map<std::string, std::unique_ptr<diagram>> diagrams;
+    std::map<std::string, std::shared_ptr<diagram>> diagrams;
 };
 
 config load(const std::string &config_file);
@@ -60,6 +72,9 @@ config load(const std::string &config_file);
 namespace YAML {
 using clanguml::config::class_diagram;
 using clanguml::config::config;
+using clanguml::config::sequence_diagram;
+using clanguml::config::source_location;
+
 //
 // class_diagram Yaml decoder
 //
@@ -74,13 +89,41 @@ template <> struct convert<class_diagram> {
     }
 };
 
+template <> struct convert<source_location> {
+    static bool decode(const Node &node, source_location &rhs)
+    {
+        rhs.file = node["file"].as<std::string>();
+        rhs.line = node["line"].as<unsigned int>();
+        return true;
+    }
+};
+
+
+//
+// sequence_diagram Yaml decoder
+//
+template <> struct convert<sequence_diagram> {
+    static bool decode(const Node &node, sequence_diagram &rhs)
+    {
+        rhs.using_namespace = node["using_namespace"].as<std::string>();
+        rhs.glob = node["glob"].as<std::vector<std::string>>();
+        rhs.puml = node["puml"].as<std::vector<std::string>>();
+
+        if(node["start_from"])
+            rhs.start_from = node["start_from"].as<source_location>();
+        return true;
+    }
+};
+
 //
 // config Yaml decoder
 //
 template <> struct convert<config> {
     static bool decode(const Node &node, config &rhs)
     {
-        rhs.glob = node["glob"].as<std::vector<std::string>>();
+        if (node["glob"])
+            rhs.glob = node["glob"].as<std::vector<std::string>>();
+
         if (node["compilation_database_dir"])
             rhs.compilation_database_dir =
                 node["compilation_database_dir"].as<std::string>();
@@ -93,8 +136,13 @@ template <> struct convert<config> {
             const auto diagram_type = d.second["type"].as<std::string>();
             if (diagram_type == "class") {
                 rhs.diagrams[d.first.as<std::string>()] =
-                    std::make_unique<class_diagram>(
+                    std::make_shared<class_diagram>(
                         d.second.as<class_diagram>());
+            }
+            if (diagram_type == "sequence") {
+                rhs.diagrams[d.first.as<std::string>()] =
+                    std::make_shared<sequence_diagram>(
+                        d.second.as<sequence_diagram>());
             }
             else {
                 spdlog::warn(

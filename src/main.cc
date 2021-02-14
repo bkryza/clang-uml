@@ -1,8 +1,10 @@
 #include "config/config.h"
 #include "puml/class_diagram_generator.h"
+#include "puml/sequence_diagram_generator.h"
 #include "uml/class_diagram_model.h"
 #include "uml/class_diagram_visitor.h"
 #include "uml/compilation_database.h"
+#include "uml/sequence_diagram_visitor.h"
 
 #include <cli11/CLI11.hpp>
 #include <glob/glob.hpp>
@@ -18,8 +20,9 @@
 #include <string.h>
 #include <unistd.h>
 
-using clanguml::config::config;
-using clanguml::cx::compilation_database;
+using namespace clanguml;
+using config::config;
+using cx::compilation_database;
 
 int main(int argc, const char *argv[])
 {
@@ -44,7 +47,7 @@ int main(int argc, const char *argv[])
 
     spdlog::info("Loading clang-uml config from {}", config_path);
 
-    auto config = clanguml::config::load(config_path);
+    auto config = config::load(config_path);
 
     spdlog::info("Loading compilation database from {} directory",
         config.compilation_database_dir);
@@ -53,58 +56,17 @@ int main(int argc, const char *argv[])
         compilation_database::from_directory(config.compilation_database_dir);
 
     for (const auto &[name, diagram] : config.diagrams) {
-        spdlog::info("Generating diagram {}.puml", name);
-        clanguml::model::class_diagram::diagram d;
-        d.name = name;
+        using config::class_diagram;
+        using config::sequence_diagram;
 
-        // Get all translation units matching the glob from diagram
-        // configuration
-        std::vector<std::filesystem::path> translation_units{};
-        for (const auto &g : diagram->glob) {
-            spdlog::debug("Processing glob: {}", g);
-            const auto matches = glob::glob(g);
-            std::copy(matches.begin(), matches.end(),
-                std::back_inserter(translation_units));
+        if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
+            generators::class_diagram::generate(
+                db, name, dynamic_cast<class_diagram &>(*diagram));
         }
-
-        // Process all matching translation units
-        for (const auto &tu_path : translation_units) {
-            spdlog::debug("Processing translation unit: {}",
-                std::filesystem::canonical(tu_path).c_str());
-
-            auto tu = db.parse_translation_unit(tu_path);
-
-            auto cursor = clang_getTranslationUnitCursor(tu);
-
-            if (clang_Cursor_isNull(cursor)) {
-                spdlog::debug("CURSOR IS NULL");
-            }
-
-            spdlog::debug("Cursor kind: {}",
-                clang_getCString(clang_getCursorKindSpelling(cursor.kind)));
-            spdlog::debug("Cursor name: {}",
-                clang_getCString(clang_getCursorDisplayName(cursor)));
-
-            clanguml::visitor::class_diagram::tu_context ctx(d);
-            auto res = clang_visitChildren(cursor,
-                clanguml::visitor::class_diagram::translation_unit_visitor,
-                &ctx);
-
-            spdlog::debug("Processing result: {}", res);
-
-            clang_suspendTranslationUnit(tu);
+        else if (std::dynamic_pointer_cast<sequence_diagram>(diagram)) {
+            generators::sequence_diagram::generate(
+                db, name, dynamic_cast<sequence_diagram &>(*diagram));
         }
-
-        std::filesystem::path path{"puml/" + d.name + ".puml"};
-        std::ofstream ofs;
-        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-
-        auto generator = clanguml::generators::class_diagram::puml::generator(
-            dynamic_cast<clanguml::config::class_diagram &>(*diagram), d);
-
-        ofs << generator;
-
-        ofs.close();
     }
     return 0;
 }
