@@ -1,6 +1,7 @@
 #pragma once
 
 #include "class_diagram_model.h"
+#include "cx/cursor.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>

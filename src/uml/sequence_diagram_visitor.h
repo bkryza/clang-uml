@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cx.h"
+#include "cx/cursor.h"
 #include "sequence_diagram_model.h"
 
 #include <clang-c/CXCompilationDatabase.h>

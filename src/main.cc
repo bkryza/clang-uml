@@ -3,7 +3,7 @@
 #include "puml/sequence_diagram_generator.h"
 #include "uml/class_diagram_model.h"
 #include "uml/class_diagram_visitor.h"
-#include "uml/compilation_database.h"
+#include "cx/compilation_database.h"
 #include "uml/sequence_diagram_visitor.h"
 
 #include <cli11/CLI11.hpp>
