@@ -1,14 +1,16 @@
 
 name: build
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v1
-    - name: build and run
+    - name: Install deps
+      run: sudo apt-get install cmake libyaml-cpp-dev libspdlog-dev libclang-cpp11-dev
+    - name: Build and unit test
       run: |
         mkdir build
         cd build
