@@ -5,9 +5,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
 namespace clanguml {
 namespace config {
@@ -18,7 +18,7 @@ struct diagram {
     std::string name;
     std::vector<std::string> glob;
     std::vector<std::string> puml;
-    std::string using_namespace;
+    std::vector<std::string> using_namespace;
 };
 
 enum class class_scopes { public_, protected_, private_ };
@@ -34,12 +34,14 @@ struct class_diagram : public diagram {
     {
         spdlog::debug("CHECKING IF {} IS WHITE LISTED", clazz);
         for (const auto &c : classes) {
-            std::string prefix{};
-            if (!using_namespace.empty()) {
-                prefix = using_namespace + "::";
+            for (const auto &ns : using_namespace) {
+                std::string prefix{};
+                if (!ns.empty()) {
+                    prefix = ns + "::";
+                }
+                if (prefix + c == clazz)
+                    return true;
             }
-            if (prefix + c == clazz)
-                return true;
         }
 
         return false;
@@ -81,7 +83,8 @@ using clanguml::config::source_location;
 template <> struct convert<class_diagram> {
     static bool decode(const Node &node, class_diagram &rhs)
     {
-        rhs.using_namespace = node["using_namespace"].as<std::string>();
+        rhs.using_namespace =
+            node["using_namespace"].as<std::vector<std::string>>();
         rhs.glob = node["glob"].as<std::vector<std::string>>();
         rhs.puml = node["puml"].as<std::vector<std::string>>();
         rhs.classes = node["classes"].as<std::vector<std::string>>();
@@ -98,18 +101,18 @@ template <> struct convert<source_location> {
     }
 };
 
-
 //
 // sequence_diagram Yaml decoder
 //
 template <> struct convert<sequence_diagram> {
     static bool decode(const Node &node, sequence_diagram &rhs)
     {
-        rhs.using_namespace = node["using_namespace"].as<std::string>();
+        rhs.using_namespace =
+            node["using_namespace"].as<std::vector<std::string>>();
         rhs.glob = node["glob"].as<std::vector<std::string>>();
         rhs.puml = node["puml"].as<std::vector<std::string>>();
 
-        if(node["start_from"])
+        if (node["start_from"])
             rhs.start_from = node["start_from"].as<source_location>();
         return true;
     }

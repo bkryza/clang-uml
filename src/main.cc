@@ -1,9 +1,9 @@
 #include "config/config.h"
+#include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
 #include "puml/sequence_diagram_generator.h"
 #include "uml/class_diagram_model.h"
 #include "uml/class_diagram_visitor.h"
-#include "cx/compilation_database.h"
 #include "uml/sequence_diagram_visitor.h"
 
 #include <cli11/CLI11.hpp>
@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
 
     spdlog::info("Loading clang-uml config from {}", config_path);
 
-    auto config = config::load(config_path);
+    auto config = clanguml::config::load(config_path);
 
     spdlog::info("Loading compilation database from {} directory",
         config.compilation_database_dir);
@@ -56,8 +56,8 @@ int main(int argc, const char *argv[])
         compilation_database::from_directory(config.compilation_database_dir);
 
     for (const auto &[name, diagram] : config.diagrams) {
-        using config::class_diagram;
-        using config::sequence_diagram;
+        using clanguml::config::class_diagram;
+        using clanguml::config::sequence_diagram;
 
         if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
             generators::class_diagram::generate(
@@ -67,6 +67,19 @@ int main(int argc, const char *argv[])
             generators::sequence_diagram::generate(
                 db, name, dynamic_cast<sequence_diagram &>(*diagram));
         }
+        /*
+                std::filesystem::path path{"puml/" + name + ".puml"};
+                std::ofstream ofs;
+                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+
+
+                // d.sort();
+                auto generator = puml::generator{diagram, d};
+
+                ofs << generator;
+
+                ofs.close();
+        */
     }
     return 0;
 }

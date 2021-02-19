@@ -4,15 +4,13 @@ diagrams:
   main_sequence_diagram:
     type: sequence
     glob:
-      - src/main.cc
-    using_namespace: clanguml
+      - t00001/t00001.cc
+    using_namespace: clanguml::t00001
     start_from:
-        file: src/puml/class_diagram_generator.h
-        line: 108
+        file: t00001/t00001.cc
+        line: 20
     classes:
-      - config
-      - diagram
-      - class_diagram
+      - A
+      - B
     puml:
       - 'note top of diagram: Aggregate template'
-

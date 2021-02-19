@@ -15,6 +15,7 @@ namespace clanguml {
 namespace visitor {
 namespace sequence_diagram {
 
+using clanguml::model::sequence_diagram::activity;
 using clanguml::model::sequence_diagram::diagram;
 using clanguml::model::sequence_diagram::message;
 using clanguml::model::sequence_diagram::message_t;
@@ -67,31 +68,43 @@ static enum CXChildVisitResult translation_unit_visitor(
             unsigned int offset{};
             clang_getFileLocation(
                 cursor.location(), &f, &line, &column, &offset);
+            std::string file{clang_getCString(clang_getFileName(f))};
 
+            auto &d = ctx->d;
             if (referenced.kind() == CXCursor_CXXMethod) {
-                if (sp_name.find("clanguml::") == 0) {
+                if (true/*sp_name.find("clanguml::") == 0 ||
+                    clang_Location_isFromMainFile(cursor.location())*/) {
                     // Get calling object
-                    std::string caller =
-                        ctx->current_method.semantic_parent().fully_qualified();
-                    if (caller.empty() &&
-                        clang_Location_isFromMainFile(cursor.location()) == 0)
-                        caller = "<MAIN>";
+                    std::string caller{};
+                    if (ctx->current_method.semantic_parent()
+                            .is_translation_unit() ||
+                        ctx->current_method.semantic_parent().is_namespace()) {
+                        caller =
+                            ctx->current_method.semantic_parent().fully_qualified() +
+                            "::" + ctx->current_method.spelling() + "()";
+                    }
+                    else {
+                        caller = ctx->current_method.semantic_parent().fully_qualified();
+                    }
 
-                    std::string caller_usr = ctx->current_method.usr();
+                    auto caller_usr = ctx->current_method.usr();
                     // Get called object
-                    std::string callee =
-                        cursor.referenced().semantic_parent().fully_qualified();
+                    auto callee =
+                        referenced.semantic_parent().fully_qualified();
+                    auto callee_usr = referenced.semantic_parent().usr();
 
                     // Get called method
-                    std::string called_message = cursor.spelling();
+                    auto called_message = cursor.spelling();
 
                     // Found method call: CXCursorKind () const
-                    spdlog::debug("Found method call at line {}:{} "
-                                  "\n\tCURRENT_METHOD: {}\n\tFROM: {}\n\tTO: "
-                                  "{}\n\tMESSAGE: {}",
-                        clang_getCString(clang_getFileName(f)), line,
-                        ctx->current_method.spelling(), caller, callee,
-                        called_message);
+                    spdlog::debug(
+                        "Adding method call at line {}:{} to diagram {}"
+                        "\n\tCURRENT_METHOD: {}\n\tFROM: '{}'\n\tTO: "
+                        "{}\n\tMESSAGE: {}\n\tFROM_USR: {}\n\tTO_USR: "
+                        "{}\n\tRETURN_TYPE: {}",
+                        file, line, d.name, ctx->current_method.spelling(),
+                        caller, callee, called_message, caller_usr, callee_usr,
+                        referenced.type().result_type().spelling());
 
                     message m;
                     m.type = message_t::kCall;
@@ -99,16 +112,25 @@ static enum CXChildVisitResult translation_unit_visitor(
                     m.from_usr = caller_usr;
                     m.line = line;
                     m.to = callee;
+                    m.to_usr = referenced.usr();
                     m.message = called_message;
+                    m.return_type = referenced.type().result_type().spelling();
 
-                    ctx->d.sequence.emplace_back(std::move(m));
+                    if (d.sequences.find(caller_usr) == d.sequences.end()) {
+                        activity a;
+                        a.usr = caller_usr;
+                        a.from = caller;
+                        d.sequences.insert({caller_usr, std::move(a)});
+                    }
+
+                    d.sequences[caller_usr].messages.emplace_back(std::move(m));
                 }
             }
             else if (referenced.kind() == CXCursor_FunctionDecl) {
                 // TODO
             }
 
-            ret = CXChildVisit_Continue;
+            ret = CXChildVisit_Recurse;
             break;
         }
         case CXCursor_Namespace: {

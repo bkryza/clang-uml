@@ -39,18 +39,22 @@ include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 
-add_subdirectory(tests)
-
 file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
 set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 
-add_executable(clang-uml ${SOURCES} ${MAIN_SOURCE_FILE})
+add_library(clang-umllib OBJECT ${SOURCES})
+
+add_executable(clang-uml ${MAIN_SOURCE_FILE})
 install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog)
+target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog clang-umllib)
 
 install(
         FILES
         # add include after DESTINATION, then it works
         DESTINATION include ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+# Enable testing via CTest
+enable_testing()
+add_subdirectory(tests)

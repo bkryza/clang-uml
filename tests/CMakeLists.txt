@@ -1,21 +1,27 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_CXX_STANDARD 20)
 
-# Explicitly list the test source code and headers. The Catch header-only unit
-# test framework is stored in with the test source.
-set(CLANG_UML_TEST_EXAMPLE_SRC
-    test_example.cpp
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_CXX_STANDARD 17)
+
+set(CLANG_UML_TEST_CASES_SRC
+    test_cases.cc
+    t00001/t00001.cc
 )
-set(CLANG_UML_TEST_EXAMPLE_HEADER
-    catch.hpp
+set(CLANG_UML_TEST_CASES_HEADER
+    catch.h
 )
 
-# Make an executable target that depends on the test source code we specified
-# above.
-add_executable(test-example ${CLANG_UML_TEST_EXAMPLE_SRC} ${CLANG_UML_TEST_EXAMPL_HEADER})
+add_executable(test_cases
+    ${CLANG_UML_TEST_CASES_SRC}
+    ${CLANG_UML_TEST_CASES_HEADER})
 
-# Enable testing via CTest
-enable_testing()
+target_link_libraries(test_cases
+    PRIVATE
+    ${LIBCLANG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+    spdlog::spdlog clang-umllib)
 
-# Add our test as runnable via CTest
-add_test(NAME test-example COMMAND test-example)
+configure_file(t00001/.clanguml t00001/.clanguml COPYONLY)
+
+add_test(NAME test_cases COMMAND test_cases)

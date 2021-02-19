@@ -46,6 +46,12 @@ public:
         return to_string(clang_getCursorSpelling(m_cursor));
     }
 
+    bool is_void() const
+    {
+        // Why do I have to do this like this?
+        return spelling() == "void";
+    }
+
     std::string fully_qualified() const
     {
         std::list<std::string> res;
@@ -96,6 +102,8 @@ public:
     bool is_expression() const { return clang_isExpression(kind()); }
 
     bool is_statement() const { return clang_isStatement(kind()); }
+
+    bool is_namespace() const { return kind() == CXCursor_Namespace; }
 
     bool is_attribute() const { return clang_isAttribute(kind()); }
 
