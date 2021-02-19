@@ -1,0 +1,16 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00001_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t00001/t00001.cc
+    using_namespace:
+      - clanguml::t00001
+    start_from:
+      - usr: "c:@N@clanguml@N@t00001@F@tmain#"
+    classes:
+      - A
+      - B
+    puml:
+      - 'note top of diagram: Aggregate template'
