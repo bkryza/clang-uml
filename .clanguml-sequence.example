@@ -4,13 +4,19 @@ diagrams:
   main_sequence_diagram:
     type: sequence
     glob:
-      - t00001/t00001.cc
-    using_namespace: clanguml::t00001
+      - src/main.cc
+    using_namespace:
+      - ""
     start_from:
-        file: t00001/t00001.cc
-        line: 20
-    classes:
-      - A
-      - B
-    puml:
-      - 'note top of diagram: Aggregate template'
+      - usr: "c:@F@main#I#**1C#"
+    include:
+      namespace:
+        - clanguml
+    exclude:
+      namespace:
+        - std
+    plantuml:
+      before:
+        - "' main test sequence diagram"
+      after:
+        - "' end"

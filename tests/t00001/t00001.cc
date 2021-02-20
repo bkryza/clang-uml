@@ -1,13 +1,26 @@
-#include <vector>
 #include <algorithm>
 #include <numeric>
+#include <vector>
 
 namespace clanguml {
 namespace t00001 {
 
+namespace detail {
+struct C {
+    auto add(int x, int y)
+    {
+        return x + y;
+    }
+};
+}
+
 class A {
 public:
-    int add(int x, int y) { return x + y; }
+    A()
+    {
+    }
+
+    int add(int x, int y) { return m_c.add(x, y); }
 
     int add3(int x, int y, int z)
     {
@@ -21,6 +34,9 @@ public:
     }
 
     void log_result(int r) {}
+
+private:
+    detail::C m_c{};
 };
 
 class B {

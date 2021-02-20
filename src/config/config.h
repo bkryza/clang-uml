@@ -31,6 +31,9 @@ struct source_location {
     using usr = std::string;
     using marker = std::string;
     using file = std::pair<std::string, int>;
+    // std::variant requires unique types, so we cannot add
+    // marker here, we need sth like boost::mp_unique
+    // type function
     using variant = std::variant<usr, file>;
 };
 
@@ -100,11 +103,27 @@ template <> struct convert<class_diagram> {
     }
 };
 
-template <> struct convert<source_location::variant> {
-    static bool decode(const Node &node, source_location::variant &rhs)
+template <> struct convert<std::vector<source_location::variant>> {
+    static bool decode(
+        const Node &node, std::vector<source_location::variant> &rhs)
     {
-        if(node["usr"])
-            rhs = node["usr"].as<source_location::usr>();
+        for (auto it = node.begin(); it != node.end(); ++it) {
+            const YAML::Node &n = *it;
+            if (n["usr"]) {
+                rhs.emplace_back(n["usr"].as<source_location::usr>());
+            }
+            else if (n["marker"]) {
+                rhs.emplace_back(n["marker"].as<source_location::marker>());
+            }
+            else if (n["file"] && n["line"]) {
+                rhs.emplace_back(std::make_pair(
+                    n["file"].as<std::string>(), n["line"].as<int>()));
+            }
+            else {
+                return false;
+            }
+        }
+
         return true;
     }
 };

@@ -19,6 +19,7 @@ namespace puml {
 
 using diagram_model = clanguml::model::sequence_diagram::diagram;
 using diagram_config = clanguml::config::sequence_diagram::diagram;
+using clanguml::config::source_location;
 using clanguml::model::sequence_diagram::activity;
 using clanguml::model::sequence_diagram::message;
 using clanguml::model::sequence_diagram::message_t;
@@ -83,14 +84,22 @@ public:
 
     void generate(std::ostream &ostr) const
     {
-        auto start_from = "c:@N@clanguml@N@t00001@F@tmain#";
         ostr << "@startuml" << std::endl;
 
         for (const auto &b : m_config.puml.before)
             ostr << b << std::endl;
 
-        generate_activity(m_model.sequences[start_from], ostr);
-
+        for (const auto &sf : m_config.start_from) {
+            std::string start_from;
+            if (std::holds_alternative<source_location::usr>(sf)) {
+                start_from = std::get<source_location::usr>(sf);
+            }
+            else {
+                // TODO: Add support for other sequence start location types
+                continue;
+            }
+            generate_activity(m_model.sequences[start_from], ostr);
+        }
         for (const auto &a : m_config.puml.after)
             ostr << a << std::endl;
 
