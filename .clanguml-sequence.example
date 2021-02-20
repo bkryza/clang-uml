@@ -10,11 +10,12 @@ diagrams:
     start_from:
       - usr: "c:@F@main#I#**1C#"
     include:
-      namespace:
+      namespaces:
         - clanguml
     exclude:
-      namespace:
+      namespaces:
         - std
+        - CLI
     plantuml:
       before:
         - "' main test sequence diagram"

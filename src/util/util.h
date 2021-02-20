@@ -10,6 +10,9 @@ std::string namespace_relative(
     const std::vector<std::string> &namespaces, const std::string &n)
 {
     for (const auto &ns : namespaces) {
+        if(ns.empty())
+            continue;
+
         if (n == ns)
             return "";
 

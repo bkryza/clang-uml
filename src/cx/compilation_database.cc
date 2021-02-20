@@ -14,7 +14,13 @@ compilation_database::compilation_database(CXCompilationDatabase &&d)
 
 compilation_database::~compilation_database()
 {
-    clang_CompilationDatabase_dispose(m_database);
+    //clang_CompilationDatabase_dispose(m_database);
+}
+
+compilation_database::compilation_database(compilation_database &&d)
+    : m_database{std::move(d.m_database)}
+    , m_index{std::move(d.m_index)}
+{
 }
 
 compilation_database compilation_database::from_directory(

@@ -18,13 +18,41 @@ struct plantuml {
     std::vector<std::string> after;
 };
 
+struct filter {
+    std::vector<std::string> namespaces;
+};
+
 struct diagram {
     virtual ~diagram() = default;
 
     std::string name;
     std::vector<std::string> glob;
     std::vector<std::string> using_namespace;
+
+    filter include;
+    filter exclude;
+
     plantuml puml;
+
+    bool should_include(const std::string &name) const
+    {
+        for (const auto &ex : exclude.namespaces) {
+            if (name.find(ex) == 0)
+                return false;
+        }
+
+        // If no inclusive namespaces are provided,
+        // allow all
+        if (include.namespaces.empty())
+            return true;
+
+        for (const auto &in : include.namespaces) {
+            if (name.find(in) == 0)
+                return true;
+        }
+
+        return false;
+    }
 };
 
 struct source_location {
@@ -34,7 +62,7 @@ struct source_location {
     // std::variant requires unique types, so we cannot add
     // marker here, we need sth like boost::mp_unique
     // type function
-    using variant = std::variant<usr, file>;
+    using variant = std::variant<usr, /* marker, */ file>;
 };
 
 enum class class_scopes { public_, protected_, private_ };
@@ -84,6 +112,7 @@ config load(const std::string &config_file);
 namespace YAML {
 using clanguml::config::class_diagram;
 using clanguml::config::config;
+using clanguml::config::filter;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
@@ -141,6 +170,18 @@ template <> struct convert<plantuml> {
 };
 
 //
+// filter Yaml decoder
+//
+template <> struct convert<filter> {
+    static bool decode(const Node &node, filter &rhs)
+    {
+        if (node["namespaces"])
+            rhs.namespaces = node["namespaces"].as<decltype(rhs.namespaces)>();
+        return true;
+    }
+};
+
+//
 // sequence_diagram Yaml decoder
 //
 template <> struct convert<sequence_diagram> {
@@ -150,6 +191,12 @@ template <> struct convert<sequence_diagram> {
             node["using_namespace"].as<std::vector<std::string>>();
         rhs.glob = node["glob"].as<std::vector<std::string>>();
         rhs.puml = node["plantuml"].as<plantuml>();
+
+        if (node["include"])
+            rhs.include = node["include"].as<decltype(rhs.include)>();
+
+        if (node["exclude"])
+            rhs.exclude = node["exclude"].as<decltype(rhs.exclude)>();
 
         if (node["start_from"])
             rhs.start_from = node["start_from"].as<decltype(rhs.start_from)>();
@@ -176,21 +223,21 @@ template <> struct convert<config> {
 
         for (const auto &d : diagrams) {
             const auto diagram_type = d.second["type"].as<std::string>();
+            auto name = d.first.as<std::string>();
             if (diagram_type == "class") {
-                rhs.diagrams[d.first.as<std::string>()] =
-                    std::make_shared<class_diagram>(
-                        d.second.as<class_diagram>());
+                rhs.diagrams[name] = std::make_shared<class_diagram>(
+                    d.second.as<class_diagram>());
             }
             if (diagram_type == "sequence") {
-                rhs.diagrams[d.first.as<std::string>()] =
-                    std::make_shared<sequence_diagram>(
-                        d.second.as<sequence_diagram>());
+                rhs.diagrams[name] = std::make_shared<sequence_diagram>(
+                    d.second.as<sequence_diagram>());
             }
             else {
                 spdlog::warn(
                     "Diagrams of type {} are not supported at the moment... ",
                     diagram_type);
             }
+            rhs.diagrams[name]->name = name;
         }
 
         return true;

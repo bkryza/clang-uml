@@ -15,6 +15,8 @@ public:
     compilation_database(CXCompilationDatabase &&d);
     ~compilation_database();
 
+    compilation_database(compilation_database &&d);
+
     CXCompilationDatabase &db();
 
     CXIndex &index();

@@ -6,10 +6,10 @@ diagrams:
     glob:
       - ../../tests/t00001/t00001.cc
     include:
-      namespace:
+      namespaces:
         - clanguml::t00001
     exclude:
-      namespace:
+      namespaces:
         - clanguml::t00001::detail
     using_namespace:
       - clanguml::t00001

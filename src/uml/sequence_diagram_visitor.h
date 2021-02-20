@@ -21,14 +21,16 @@ using clanguml::model::sequence_diagram::message;
 using clanguml::model::sequence_diagram::message_t;
 
 struct tu_context {
-    tu_context(diagram &d_)
+    tu_context(diagram &d_, const clanguml::config::sequence_diagram &config_)
         : d{d_}
+        , config{config_}
     {
     }
 
     std::vector<std::string> namespace_;
     cx::cursor current_method;
     clanguml::model::sequence_diagram::diagram &d;
+    const clanguml::config::sequence_diagram &config;
 };
 
 static enum CXChildVisitResult translation_unit_visitor(
@@ -71,20 +73,21 @@ static enum CXChildVisitResult translation_unit_visitor(
             std::string file{clang_getCString(clang_getFileName(f))};
 
             auto &d = ctx->d;
+            auto &config = ctx->config;
             if (referenced.kind() == CXCursor_CXXMethod) {
-                if (true/*sp_name.find("clanguml::") == 0 ||
-                    clang_Location_isFromMainFile(cursor.location())*/) {
+                if (config.should_include(sp_name)) {
                     // Get calling object
                     std::string caller{};
                     if (ctx->current_method.semantic_parent()
                             .is_translation_unit() ||
                         ctx->current_method.semantic_parent().is_namespace()) {
-                        caller =
-                            ctx->current_method.semantic_parent().fully_qualified() +
+                        caller = ctx->current_method.semantic_parent()
+                                     .fully_qualified() +
                             "::" + ctx->current_method.spelling() + "()";
                     }
                     else {
-                        caller = ctx->current_method.semantic_parent().fully_qualified();
+                        caller = ctx->current_method.semantic_parent()
+                                     .fully_qualified();
                     }
 
                     auto caller_usr = ctx->current_method.usr();

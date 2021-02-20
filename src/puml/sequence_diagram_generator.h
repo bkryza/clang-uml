@@ -156,7 +156,7 @@ clanguml::model::sequence_diagram::diagram generate(
         spdlog::debug("Cursor name: {}",
             clang_getCString(clang_getCursorDisplayName(cursor)));
 
-        clanguml::visitor::sequence_diagram::tu_context ctx(d);
+        clanguml::visitor::sequence_diagram::tu_context ctx(d, diagram);
         auto res = clang_visitChildren(cursor,
             clanguml::visitor::sequence_diagram::translation_unit_visitor,
             &ctx);

@@ -52,8 +52,7 @@ int main(int argc, const char *argv[])
     spdlog::info("Loading compilation database from {} directory",
         config.compilation_database_dir);
 
-    auto db =
-        compilation_database::from_directory(config.compilation_database_dir);
+    auto db = compilation_database::from_directory(config.compilation_database_dir);
 
     for (const auto &[name, diagram] : config.diagrams) {
         using clanguml::config::class_diagram;
@@ -82,5 +81,6 @@ int main(int argc, const char *argv[])
 
         ofs.close();
     }
+
     return 0;
 }
