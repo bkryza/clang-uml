@@ -7,18 +7,31 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 namespace clanguml {
 namespace config {
+
+struct plantuml {
+    std::vector<std::string> before;
+    std::vector<std::string> after;
+};
 
 struct diagram {
     virtual ~diagram() = default;
 
     std::string name;
     std::vector<std::string> glob;
-    std::vector<std::string> puml;
     std::vector<std::string> using_namespace;
+    plantuml puml;
+};
+
+struct source_location {
+    using usr = std::string;
+    using marker = std::string;
+    using file = std::pair<std::string, int>;
+    using variant = std::variant<usr, file>;
 };
 
 enum class class_scopes { public_, protected_, private_ };
@@ -32,7 +45,6 @@ struct class_diagram : public diagram {
 
     bool has_class(std::string clazz)
     {
-        spdlog::debug("CHECKING IF {} IS WHITE LISTED", clazz);
         for (const auto &c : classes) {
             for (const auto &ns : using_namespace) {
                 std::string prefix{};
@@ -48,15 +60,10 @@ struct class_diagram : public diagram {
     }
 };
 
-struct source_location {
-    std::string file;
-    unsigned int line;
-};
-
 struct sequence_diagram : public diagram {
     virtual ~sequence_diagram() = default;
 
-    std::optional<source_location> start_from;
+    std::vector<source_location::variant> start_from;
 };
 
 struct config {
@@ -74,6 +81,7 @@ config load(const std::string &config_file);
 namespace YAML {
 using clanguml::config::class_diagram;
 using clanguml::config::config;
+using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
 
@@ -86,17 +94,29 @@ template <> struct convert<class_diagram> {
         rhs.using_namespace =
             node["using_namespace"].as<std::vector<std::string>>();
         rhs.glob = node["glob"].as<std::vector<std::string>>();
-        rhs.puml = node["puml"].as<std::vector<std::string>>();
-        rhs.classes = node["classes"].as<std::vector<std::string>>();
+        if (node["puml"])
+            rhs.puml = node["plantuml"].as<plantuml>();
         return true;
     }
 };
 
-template <> struct convert<source_location> {
-    static bool decode(const Node &node, source_location &rhs)
+template <> struct convert<source_location::variant> {
+    static bool decode(const Node &node, source_location::variant &rhs)
     {
-        rhs.file = node["file"].as<std::string>();
-        rhs.line = node["line"].as<unsigned int>();
+        if(node["usr"])
+            rhs = node["usr"].as<source_location::usr>();
+        return true;
+    }
+};
+
+template <> struct convert<plantuml> {
+    static bool decode(const Node &node, plantuml &rhs)
+    {
+        if (node["before"])
+            rhs.before = node["before"].as<decltype(rhs.before)>();
+
+        if (node["after"])
+            rhs.after = node["after"].as<decltype(rhs.after)>();
         return true;
     }
 };
@@ -110,10 +130,10 @@ template <> struct convert<sequence_diagram> {
         rhs.using_namespace =
             node["using_namespace"].as<std::vector<std::string>>();
         rhs.glob = node["glob"].as<std::vector<std::string>>();
-        rhs.puml = node["puml"].as<std::vector<std::string>>();
+        rhs.puml = node["plantuml"].as<plantuml>();
 
         if (node["start_from"])
-            rhs.start_from = node["start_from"].as<source_location>();
+            rhs.start_from = node["start_from"].as<decltype(rhs.start_from)>();
         return true;
     }
 };

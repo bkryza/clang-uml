@@ -1,0 +1,197 @@
+#pragma once
+
+#include "config/config.h"
+#include "cx/compilation_database.h"
+#include "uml/class_diagram_model.h"
+#include "uml/class_diagram_visitor.h"
+#include "util/util.h"
+
+#include <glob/glob.hpp>
+
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+namespace clanguml {
+namespace generators {
+namespace class_diagram {
+namespace puml {
+
+using diagram_config = clanguml::config::class_diagram::diagram;
+using diagram_model = clanguml::model::class_diagram::diagram;
+using clanguml::model::class_diagram::class_;
+using clanguml::model::class_diagram::class_relationship;
+using clanguml::model::class_diagram::element;
+using clanguml::model::class_diagram::enum_;
+using clanguml::model::class_diagram::relationship_t;
+using clanguml::model::class_diagram::scope_t;
+using clanguml::visitor::class_diagram::tu_context;
+using namespace clanguml::util;
+
+std::string relative_to(std::string n, std::string c)
+{
+    if (c.rfind(n) == std::string::npos)
+        return c;
+
+    return c.substr(n.size() + 2);
+}
+
+class generator {
+public:
+    generator(clanguml::config::class_diagram &config, diagram_model &model)
+        : m_config(config)
+        , m_model(model)
+    {
+    }
+
+    std::string to_string(scope_t scope) const
+    {
+        switch (scope) {
+            case scope_t::kPublic:
+                return "+";
+            case scope_t::kProtected:
+                return "#";
+            case scope_t::kPrivate:
+                return "-";
+            default:
+                return "";
+        }
+    }
+
+    std::string to_string(relationship_t r) const
+    {
+        switch (r) {
+            case relationship_t::kComposition:
+                return "*--";
+            case relationship_t::kAggregation:
+                return "o--";
+            case relationship_t::kContainment:
+                return "+--";
+            case relationship_t::kAssociation:
+                return "--";
+            default:
+                return "";
+        }
+    }
+
+    void generate(const class_ &c, std::ostream &ostr) const
+    {
+        ostr << "Class " << c.name << " {" << std::endl;
+
+        for (const auto &m : c.methods) {
+            ostr << to_string(m.scope) << m.type << " " << m.name + "()"
+                 << std::endl;
+        }
+
+        for (const auto &m : c.members) {
+            ostr << to_string(m.scope) << m.type << " " << m.name << std::endl;
+        }
+
+        ostr << "}" << std::endl;
+
+        for (const auto &b : c.bases) {
+            ostr << b.name << " <|-- " << c.name << std::endl;
+        }
+
+        for (const auto &r : c.relationships) {
+            // only add UML relationships to classes in the diagram
+            if (m_config.has_class(r.destination))
+                ostr << c.name << " " << to_string(r.type) << " "
+                     << namespace_relative(m_config.using_namespace, r.destination)
+                     << " : " << r.label << std::endl;
+        }
+    }
+
+    void generate(const enum_ &e, std::ostream &ostr) const
+    {
+        ostr << "Enum " << e.name << " {" << std::endl;
+
+        for (const auto &enum_constant : e.constants) {
+            ostr << enum_constant << std::endl;
+        }
+
+        ostr << "}" << std::endl;
+    }
+
+    void generate(std::ostream &ostr) const
+    {
+        ostr << "@startuml" << std::endl;
+
+        for (const auto &c : m_model.classes) {
+            generate(c, ostr);
+            ostr << std::endl;
+        }
+
+        for (const auto &e : m_model.enums) {
+            generate(e, ostr);
+            ostr << std::endl;
+        }
+
+        ostr << "@enduml" << std::endl;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const generator &g);
+
+private:
+    clanguml::config::class_diagram &m_config;
+    diagram_model &m_model;
+};
+
+std::ostream &operator<<(std::ostream &os, const generator &g)
+{
+    g.generate(os);
+    return os;
+}
+}
+
+clanguml::model::class_diagram::diagram generate(
+    clanguml::cx::compilation_database &db, const std::string &name,
+    clanguml::config::class_diagram &diagram)
+{
+    spdlog::info("Generating diagram {}.puml", name);
+    clanguml::model::class_diagram::diagram d;
+    d.name = name;
+
+    // Get all translation units matching the glob from diagram
+    // configuration
+    std::vector<std::filesystem::path> translation_units{};
+    for (const auto &g : diagram.glob) {
+        spdlog::debug("Processing glob: {}", g);
+        const auto matches = glob::glob(g);
+        std::copy(matches.begin(), matches.end(),
+            std::back_inserter(translation_units));
+    }
+
+    // Process all matching translation units
+    for (const auto &tu_path : translation_units) {
+        spdlog::debug("Processing translation unit: {}",
+            std::filesystem::canonical(tu_path).c_str());
+
+        auto tu = db.parse_translation_unit(tu_path);
+
+        auto cursor = clang_getTranslationUnitCursor(tu);
+
+        if (clang_Cursor_isNull(cursor)) {
+            spdlog::debug("CURSOR IS NULL");
+        }
+
+        spdlog::debug("Cursor kind: {}",
+            clang_getCString(clang_getCursorKindSpelling(cursor.kind)));
+        spdlog::debug("Cursor name: {}",
+            clang_getCString(clang_getCursorDisplayName(cursor)));
+
+        clanguml::visitor::class_diagram::tu_context ctx(d);
+        auto res = clang_visitChildren(cursor,
+            clanguml::visitor::class_diagram::translation_unit_visitor, &ctx);
+        spdlog::debug("Processing result: {}", res);
+
+        clang_suspendTranslationUnit(tu);
+    }
+
+    return d;
+}
+}
+}
+}
+
