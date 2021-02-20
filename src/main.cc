@@ -59,27 +59,28 @@ int main(int argc, const char *argv[])
         using clanguml::config::class_diagram;
         using clanguml::config::sequence_diagram;
 
+        std::filesystem::path path{"puml/" + name + ".puml"};
+        std::ofstream ofs;
+        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+
         if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
-            generators::class_diagram::generate(
+            auto model = generators::class_diagram::generate(
                 db, name, dynamic_cast<class_diagram &>(*diagram));
+
+            ofs << clanguml::generators::class_diagram::puml::generator(
+                dynamic_cast<clanguml::config::class_diagram &>(*diagram),
+                model);
         }
         else if (std::dynamic_pointer_cast<sequence_diagram>(diagram)) {
-            generators::sequence_diagram::generate(
+            auto model = generators::sequence_diagram::generate(
                 db, name, dynamic_cast<sequence_diagram &>(*diagram));
+
+            ofs << clanguml::generators::sequence_diagram::puml::generator(
+                dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
+                model);
         }
-        /*
-                std::filesystem::path path{"puml/" + name + ".puml"};
-                std::ofstream ofs;
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
-
-                // d.sort();
-                auto generator = puml::generator{diagram, d};
-
-                ofs << generator;
-
-                ofs.close();
-        */
+        ofs.close();
     }
     return 0;
 }
