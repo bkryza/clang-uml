@@ -47,3 +47,4 @@ test: debug
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2
+	sudo chown -R $(shell id -u):$(shell id -g) src/*
