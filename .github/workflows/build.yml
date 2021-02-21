@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install deps
-      run: sudo apt-get install cmake libyaml-cpp-dev libspdlog-dev libclang-11-dev libclang-cpp11-dev
+      run: sudo apt-get install cmake libyaml-cpp-dev libspdlog-dev clang-11 libclang-11-dev libclang-cpp11-dev
     - name: Build and unit test
       run: |
         make debug
