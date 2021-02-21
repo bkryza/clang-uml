@@ -53,7 +53,7 @@ struct diagram {
     bool started{false};
     std::string name;
 
-    //std::map<std::string, activity> sequences;
+    // std::map<std::string, activity> sequences;
     std::map<std::string, activity> sequences;
 
     void sort()

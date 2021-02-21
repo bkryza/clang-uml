@@ -115,7 +115,8 @@ public:
             // only add UML relationships to classes in the diagram
             if (m_config.has_class(r.destination))
                 ostr << c.name << " " << to_string(r.type) << " "
-                     << namespace_relative(m_config.using_namespace, r.destination)
+                     << namespace_relative(
+                            m_config.using_namespace, r.destination)
                      << " : " << r.label << std::endl;
         }
     }
@@ -211,4 +212,3 @@ clanguml::model::class_diagram::diagram generate(
 }
 }
 }
-

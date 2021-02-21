@@ -38,8 +38,7 @@ public:
 
     CXIndex &index();
 
-    CXTranslationUnit parse_translation_unit(
-        const std::string &path);
+    CXTranslationUnit parse_translation_unit(const std::string &path);
 
     static compilation_database from_directory(const std::string &dir);
 

@@ -31,7 +31,7 @@ compilation_database::compilation_database(CXCompilationDatabase &&d)
 
 compilation_database::~compilation_database()
 {
-    //clang_CompilationDatabase_dispose(m_database);
+    // clang_CompilationDatabase_dispose(m_database);
 }
 
 compilation_database::compilation_database(compilation_database &&d)

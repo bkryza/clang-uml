@@ -7,18 +7,13 @@ namespace t00001 {
 
 namespace detail {
 struct C {
-    auto add(int x, int y)
-    {
-        return x + y;
-    }
+    auto add(int x, int y) { return x + y; }
 };
 }
 
 class A {
 public:
-    A()
-    {
-    }
+    A() {}
 
     int add(int x, int y) { return m_c.add(x, y); }
 

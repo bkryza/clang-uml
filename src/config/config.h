@@ -261,4 +261,3 @@ template <> struct convert<config> {
     }
 };
 }
-

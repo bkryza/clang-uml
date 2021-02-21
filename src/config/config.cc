@@ -28,4 +28,3 @@ config load(const std::string &config_file)
 }
 }
 }
-

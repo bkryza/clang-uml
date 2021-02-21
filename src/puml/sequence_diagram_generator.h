@@ -188,4 +188,3 @@ clanguml::model::sequence_diagram::diagram generate(
 }
 }
 }
-
