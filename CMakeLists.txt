@@ -24,7 +24,7 @@ find_package(yaml-cpp REQUIRED)
 message(STATUS "Checking for libclang...")
 find_package(LibClang REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fno-limit-debug-info ${LIBCLANG_CXXFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${LIBCLANG_CXXFLAGS}")
 
 # Thirdparty sources
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
