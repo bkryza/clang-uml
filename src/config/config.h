@@ -134,21 +134,6 @@ using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
 
-//
-// class_diagram Yaml decoder
-//
-template <> struct convert<class_diagram> {
-    static bool decode(const Node &node, class_diagram &rhs)
-    {
-        rhs.using_namespace =
-            node["using_namespace"].as<std::vector<std::string>>();
-        rhs.glob = node["glob"].as<std::vector<std::string>>();
-        if (node["puml"])
-            rhs.puml = node["plantuml"].as<plantuml>();
-        return true;
-    }
-};
-
 template <> struct convert<std::vector<source_location::variant>> {
     static bool decode(
         const Node &node, std::vector<source_location::variant> &rhs)
@@ -198,25 +183,52 @@ template <> struct convert<filter> {
     }
 };
 
+template <typename T> bool decode_diagram(const Node &node, T &rhs)
+{
+    if (node["using_namespace"])
+        rhs.using_namespace =
+            node["using_namespace"].as<std::vector<std::string>>();
+
+    if (node["glob"])
+        rhs.glob = node["glob"].as<std::vector<std::string>>();
+
+    if (node["include"])
+        rhs.include = node["include"].as<decltype(rhs.include)>();
+
+    if (node["exclude"])
+        rhs.exclude = node["exclude"].as<decltype(rhs.exclude)>();
+
+    if (node["plantuml"])
+        rhs.puml = node["plantuml"].as<plantuml>();
+
+    return true;
+}
+
+//
+// class_diagram Yaml decoder
+//
+template <> struct convert<class_diagram> {
+    static bool decode(const Node &node, class_diagram &rhs)
+    {
+        if (!decode_diagram(node, rhs))
+            return false;
+
+        return true;
+    }
+};
+
 //
 // sequence_diagram Yaml decoder
 //
 template <> struct convert<sequence_diagram> {
     static bool decode(const Node &node, sequence_diagram &rhs)
     {
-        rhs.using_namespace =
-            node["using_namespace"].as<std::vector<std::string>>();
-        rhs.glob = node["glob"].as<std::vector<std::string>>();
-        rhs.puml = node["plantuml"].as<plantuml>();
-
-        if (node["include"])
-            rhs.include = node["include"].as<decltype(rhs.include)>();
-
-        if (node["exclude"])
-            rhs.exclude = node["exclude"].as<decltype(rhs.exclude)>();
+        if (!decode_diagram(node, rhs))
+            return false;
 
         if (node["start_from"])
             rhs.start_from = node["start_from"].as<decltype(rhs.start_from)>();
+
         return true;
     }
 };
