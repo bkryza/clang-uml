@@ -72,12 +72,11 @@ struct tu_context {
 };
 
 enum CXChildVisitResult visit_if_cursor_valid(
-    CXCursor cursor, std::function<void(CXCursor)> f)
+    cx::cursor cursor, std::function<void(cx::cursor)> f)
 {
     enum CXChildVisitResult ret = CXChildVisit_Break;
-    CXString cursorName = clang_getCursorSpelling(cursor);
-    if (clang_isCursorDefinition(cursor)) {
-        if (*clang_getCString(cursorName)) {
+    if (cursor.is_definition()) {
+        if (!cursor.spelling().empty()) {
             f(cursor);
             ret = CXChildVisit_Continue;
         }
@@ -92,26 +91,25 @@ enum CXChildVisitResult visit_if_cursor_valid(
 }
 
 static enum CXChildVisitResult enum_visitor(
-    CXCursor cursor, CXCursor parent, CXClientData client_data)
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
     auto e = (struct enum_ *)client_data;
 
-    CXString cursorName = clang_getCursorSpelling(cursor);
-    std::string cursor_name_str = clang_getCString(cursorName);
+    cx::cursor cursor{std::move(cx_cursor)};
+    cx::cursor parent{std::move(cx_parent)};
 
-    spdlog::info(
-        "Visiting enum {}: {} - {}:{}", e->name, cursor_name_str, cursor.kind);
+    spdlog::info("Visiting enum {}: {} - {}:{}", e->name, cursor.spelling(),
+        cursor.kind());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
-    switch (cursor.kind) {
+    switch (cursor.kind()) {
         case CXCursor_EnumConstantDecl:
-            visit_if_cursor_valid(
-                cursor, [e, cursor_name_str](CXCursor cursor) {
-                    spdlog::info("Adding enum constant {}::{}", e->name,
-                        cursor_name_str);
+            visit_if_cursor_valid(cursor, [e](cx::cursor cursor) {
+                spdlog::info(
+                    "Adding enum constant {}::{}", e->name, cursor.spelling());
 
-                    e->constants.emplace_back(cursor_name_str);
-                });
+                e->constants.emplace_back(cursor.spelling());
+            });
 
             ret = CXChildVisit_Continue;
             break;
@@ -124,66 +122,66 @@ static enum CXChildVisitResult enum_visitor(
 }
 
 static enum CXChildVisitResult class_visitor(
-    CXCursor cursor, CXCursor parent, CXClientData client_data)
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
     auto c = (struct class_ *)client_data;
 
-    CXString cursorName = clang_getCursorSpelling(cursor);
-    std::string cursor_name_str = clang_getCString(cursorName);
+    cx::cursor cursor{std::move(cx_cursor)};
+    cx::cursor parent{std::move(cx_parent)};
+
+    std::string cursor_name_str = cursor.spelling();
 
     spdlog::info("Visiting {}: {} - {}:{}", c->is_struct ? "struct" : "class",
-        c->name, cursor_name_str, cursor.kind);
+        c->name, cursor_name_str, cursor.kind());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
-    switch (cursor.kind) {
+    switch (cursor.kind()) {
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
         case CXCursor_Destructor:
         case CXCursor_FunctionTemplate: {
-            visit_if_cursor_valid(
-                cursor, [c, cursor_name_str](CXCursor cursor) {
-                    class_method m;
-                    m.name = cursor_name_str;
-                    m.type = clang_getCString(clang_getTypeSpelling(
-                        clang_getResultType(clang_getCursorType(cursor))));
+            visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
+                class_method m;
+                m.name = cursor.spelling();
+                m.type = cursor.type().spelling();
 
-                    spdlog::info("Adding method {} {}::{}()", m.type, c->name,
-                        cursor_name_str);
+                spdlog::info("Adding method {} {}::{}()", m.type, c->name,
+                    cursor.spelling());
 
-                    c->methods.emplace_back(std::move(m));
-                });
+                c->methods.emplace_back(std::move(m));
+            });
             ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_FieldDecl: {
-            visit_if_cursor_valid(cursor, [c, cursor_name_str](CXCursor cursor) {
-                auto t = clang_getCursorType(cursor);
+            visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
+                auto t = cursor.type();
                 class_member m;
-                m.name = cursor_name_str;
-                m.type = clang_getCString(clang_getTypeSpelling(t));
+                m.name = cursor.spelling();
+                m.type = cursor.type().spelling();
 
                 spdlog::info("Adding member {} {}::{}", m.type, c->name,
-                    cursor_name_str);
+                    cursor.spelling());
 
                 relationship_t relationship_type = relationship_t::kOwnership;
 
                 // Parse the field declaration to determine the relationship
                 // type
-                if (!clang_isPODType(t)) {
+                if (!t.is_pod()) {
                     while (true) {
-                        if (t.kind == CXType_Pointer) {
+                        if (t.kind() == CXType_Pointer) {
                             relationship_type = relationship_t::kAssociation;
-                            t = clang_getPointeeType(t);
+                            t = t.pointee_type();
                             continue;
                         }
-                        else if (t.kind == CXType_LValueReference) {
+                        else if (t.kind() == CXType_LValueReference) {
                             relationship_type = relationship_t::kAggregation;
-                            t = clang_getPointeeType(t);
+                            t = t.pointee_type();
                             continue;
                         }
-                        else if (t.kind == CXType_RValueReference) {
+                        else if (t.kind() == CXType_RValueReference) {
                             relationship_type = relationship_t::kAssociation;
-                            t = clang_getPointeeType(t);
+                            t = t.pointee_type();
                             continue;
                         }
                         /*else if(t.kind == CXType_Elaborated) {
@@ -191,20 +189,17 @@ static enum CXChildVisitResult class_visitor(
                             continue;
                         }*/
                         else /*if (t.kind == CXType_Record) */ {
-                            spdlog::error("UNKNOWN CXTYPE: {}", t.kind);
+                            spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
                             class_relationship r;
                             auto template_argument_count =
-                                clang_Type_getNumTemplateArguments(t);
-                            std::string name{
-                                clang_getCString(clang_getTypeSpelling(t))};
+                                t.template_arguments_count();
+                            std::string name = t.spelling();
 
                             if (template_argument_count > 0) {
-                                std::vector<CXType> template_arguments;
+                                std::vector<cx::type> template_arguments;
                                 for (int i = 0; i < template_argument_count;
                                      i++) {
-                                    auto tt =
-                                        clang_Type_getTemplateArgumentAsType(
-                                            t, i);
+                                    auto tt = t.template_argument_type(i);
                                     template_arguments.push_back(tt);
                                 }
 
@@ -212,15 +207,13 @@ static enum CXChildVisitResult class_visitor(
                                     name.rfind("std::vector") == 0) {
                                     r.type = relationship_t::kAggregation;
                                     r.destination =
-                                        clang_getCString(clang_getTypeSpelling(
-                                            template_arguments[0]));
+                                        template_arguments[0].spelling();
                                 }
                                 if (name.rfind("map") == 0 ||
                                     name.rfind("std::map") == 0) {
                                     r.type = relationship_t::kAggregation;
                                     r.destination =
-                                        clang_getCString(clang_getTypeSpelling(
-                                            template_arguments[1]));
+                                        template_arguments[1].spelling();
                                 }
                                 r.label = m.name;
                                 c->relationships.emplace_back(std::move(r));
@@ -248,16 +241,16 @@ static enum CXChildVisitResult class_visitor(
             break;
         }
         case CXCursor_CXXBaseSpecifier: {
-            CXCursor ref_cursor = clang_getCursorReferenced(cursor);
-            CXString display_name = clang_getCursorDisplayName(ref_cursor);
+            auto ref_cursor = cursor.referenced();
+            auto display_name = ref_cursor.referenced().spelling();
 
-            auto base_access = clang_getCXXAccessSpecifier(cursor);
+            auto base_access = cursor.cxxaccess_specifier();
 
-            spdlog::error("Found base specifier: {} - {}", cursor_name_str,
-                clang_getCString(display_name));
+            spdlog::error(
+                "Found base specifier: {} - {}", cursor_name_str, display_name);
 
             class_parent cp;
-            cp.name = clang_getCString(display_name);
+            cp.name = display_name;
             cp.is_virtual = false;
             switch (base_access) {
                 case CX_CXXAccessSpecifier::CX_CXXPrivate:
@@ -287,24 +280,25 @@ static enum CXChildVisitResult class_visitor(
 };
 
 static enum CXChildVisitResult translation_unit_visitor(
-    CXCursor cursor, CXCursor parent, CXClientData client_data)
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
-    if (clang_Location_isFromMainFile(clang_getCursorLocation(cursor)) == 0) {
-        return CXChildVisit_Continue;
-    }
-
     struct tu_context *ctx = (struct tu_context *)client_data;
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
 
-    CXString cursorName = clang_getCursorSpelling(cursor);
-    std::string cursor_name_str = clang_getCString(cursorName);
+    cx::cursor cursor{std::move(cx_cursor)};
+    cx::cursor parent{std::move(cx_parent)};
+
+    if (clang_Location_isFromMainFile(cursor.location()) == 0) {
+        return CXChildVisit_Continue;
+    }
+    std::string cursor_name_str = cursor.spelling();
 
     spdlog::debug("Visiting cursor: {}", cursor_name_str);
 
     bool is_struct{false};
     auto scope{scope_t::kPrivate};
-    switch (cursor.kind) {
+    switch (cursor.kind()) {
         case CXCursor_StructDecl:
             spdlog::debug("Found struct declaration: {}", cursor_name_str);
 
@@ -319,17 +313,16 @@ static enum CXChildVisitResult translation_unit_visitor(
 
             scope = scope_t::kPublic;
 
-            visit_if_cursor_valid(
-                cursor, [ctx, is_struct, cursor_name_str](CXCursor cursor) {
-                    class_ c{};
-                    c.is_struct = is_struct;
-                    c.name = cursor_name_str;
-                    c.namespace_ = ctx->namespace_;
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                class_ c{};
+                c.is_struct = is_struct;
+                c.name = cursor.spelling();
+                c.namespace_ = ctx->namespace_;
 
-                    clang_visitChildren(cursor, class_visitor, &c);
+                clang_visitChildren(cursor.get(), class_visitor, &c);
 
-                    ctx->d.classes.emplace_back(std::move(c));
-                });
+                ctx->d.classes.emplace_back(std::move(c));
+            });
 
             ret = CXChildVisit_Continue;
             break;
@@ -337,16 +330,15 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_EnumDecl: {
             spdlog::debug("Found enum declaration: {}", cursor_name_str);
 
-            visit_if_cursor_valid(
-                cursor, [ctx, is_struct, cursor_name_str](CXCursor cursor) {
-                    enum_ e{};
-                    e.name = cursor_name_str;
-                    e.namespace_ = ctx->namespace_;
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                enum_ e{};
+                e.name = cursor.spelling();
+                e.namespace_ = ctx->namespace_;
 
-                    clang_visitChildren(cursor, enum_visitor, &e);
+                clang_visitChildren(cursor.get(), enum_visitor, &e);
 
-                    ctx->d.enums.emplace_back(std::move(e));
-                });
+                ctx->d.enums.emplace_back(std::move(e));
+            });
             ret = CXChildVisit_Continue;
 
             break;

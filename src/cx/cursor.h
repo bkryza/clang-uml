@@ -142,6 +142,11 @@ public:
         return clang_getCursorAvailability(m_cursor);
     }
 
+    CX_CXXAccessSpecifier cxxaccess_specifier() const
+    {
+        return clang_getCXXAccessSpecifier(m_cursor);
+    }
+
     std::string usr() const { return to_string(clang_getCursorUSR(m_cursor)); }
 
     const CXCursor &get() const { return m_cursor; }

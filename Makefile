@@ -44,6 +44,9 @@ release: release/CMakeLists.txt
 test: debug
 	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
 
+test_plantuml: test
+	plantuml debug/tests/puml/*.puml
+
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2

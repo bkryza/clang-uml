@@ -81,6 +81,7 @@ std::string generate_class_puml(
 void save_puml(const std::string &path, const std::string &puml)
 {
     std::filesystem::path p{path};
+    std::filesystem::create_directory(p.parent_path());
     spdlog::error("PWD: {}", std::filesystem::current_path().string());
     spdlog::error("SAVING TEST PWD {} DIAGRAM: {}", p.string());
     std::ofstream ofs;

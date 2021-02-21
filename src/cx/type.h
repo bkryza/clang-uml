@@ -91,6 +91,8 @@ public:
      *}
      */
 
+    CXTypeKind kind() const { return m_type.kind; }
+
     CXCallingConv calling_convention() const
     {
         return clang_getFunctionTypeCallingConv(m_type);
