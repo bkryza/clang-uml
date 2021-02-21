@@ -12,3 +12,4 @@ jobs:
     - name: Build and unit test
       run: |
         make debug
+        make test

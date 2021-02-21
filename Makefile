@@ -37,10 +37,12 @@ release/CMakeLists.txt:
 
 debug: debug/CMakeLists.txt
 	make -C debug -j
-	make -C debug test
 
 release: release/CMakeLists.txt
 	make -C release -j
+
+test: debug
+	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
 
 .PHONY: clang-format
 clang-format:

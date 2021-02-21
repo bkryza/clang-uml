@@ -41,7 +41,7 @@ auto generate_sequence_diagram(compilation_database &db,
 }
 
 auto generate_class_diagram(compilation_database &db,
-    std::shared_ptr<clanguml::config::class_diagram> diagram)
+    std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
         clanguml::generators::class_diagram::generate(db, diagram->name,
@@ -62,6 +62,31 @@ std::string generate_sequence_puml(
         dynamic_cast<clanguml::config::sequence_diagram &>(*config), model);
 
     return ss.str();
+}
+
+std::string generate_class_puml(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::model::class_diagram::diagram &model)
+{
+    using namespace clanguml::generators::class_diagram::puml;
+
+    std::stringstream ss;
+
+    ss << generator(
+        dynamic_cast<clanguml::config::class_diagram &>(*config), model);
+
+    return ss.str();
+}
+
+void save_puml(const std::string &path, const std::string &puml)
+{
+    std::filesystem::path p{path};
+    spdlog::error("PWD: {}", std::filesystem::current_path().string());
+    spdlog::error("SAVING TEST PWD {} DIAGRAM: {}", p.string());
+    std::ofstream ofs;
+    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
+    ofs << puml;
+    ofs.close();
 }
 
 TEST_CASE("Test t00001", "[unit-test]")
@@ -94,4 +119,39 @@ TEST_CASE("Test t00001", "[unit-test]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+
+    save_puml(
+        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+}
+
+TEST_CASE("Test t00002", "[unit-test]")
+{
+    spdlog::set_level(spdlog::level::debug);
+
+    auto [config, db] = load_config("t00002");
+
+    auto diagram = config.diagrams["t00002_class"];
+
+    REQUIRE(diagram->name == "t00002_class");
+
+    REQUIRE(diagram->include.namespaces.size() == 1);
+    REQUIRE_THAT(diagram->include.namespaces,
+        VectorContains(std::string{"clanguml::t00002"}));
+
+    REQUIRE(diagram->exclude.namespaces.size() == 0);
+
+    REQUIRE(diagram->should_include("clanguml::t00002::A"));
+    REQUIRE(!diagram->should_include("std::vector"));
+
+    auto model = generate_class_diagram(db, diagram);
+
+    REQUIRE(model.name == "t00002_class");
+
+    auto puml = generate_class_puml(diagram, model);
+
+    REQUIRE_THAT(puml, StartsWith("@startuml"));
+    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+
+    save_puml(
+        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }

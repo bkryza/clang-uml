@@ -119,6 +119,7 @@ struct config {
     // directory
     std::vector<std::string> glob;
     std::string compilation_database_dir{"."};
+    std::string output_directory{};
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
 };
 
@@ -241,6 +242,9 @@ template <> struct convert<config> {
     {
         if (node["glob"])
             rhs.glob = node["glob"].as<std::vector<std::string>>();
+
+        if (node["output_directory"])
+            rhs.output_directory = node["output_directory"].as<std::string>();
 
         if (node["compilation_database_dir"])
             rhs.compilation_database_dir =
