@@ -84,6 +84,15 @@ enum CXChildVisitResult visit_if_cursor_valid(
             ret = CXChildVisit_Recurse;
         }
     }
+    else if (cursor.is_declaration()) {
+        if (cursor.is_method_pure_virtual()) {
+            f(cursor);
+            ret = CXChildVisit_Continue;
+        }
+        else {
+            ret = CXChildVisit_Recurse;
+        }
+    }
     else {
         ret = CXChildVisit_Continue;
     }
@@ -143,7 +152,11 @@ static enum CXChildVisitResult class_visitor(
             visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
                 class_method m;
                 m.name = cursor.spelling();
-                m.type = cursor.type().spelling();
+                m.type = cursor.type().result_type().spelling();
+                m.is_pure_virtual = cursor.is_method_pure_virtual();
+                m.is_virtual = cursor.is_method_virtual();
+                m.is_const = cursor.is_method_const();
+                m.is_defaulted = cursor.is_method_defaulted();
 
                 spdlog::info("Adding method {} {}::{}()", m.type, c->name,
                     cursor.spelling());

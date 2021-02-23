@@ -94,11 +94,23 @@ public:
 
     void generate(const class_ &c, std::ostream &ostr) const
     {
-        ostr << "Class " << c.name << " {" << std::endl;
+        if (c.is_abstract())
+            ostr << "abstract ";
+        else
+            ostr << "class ";
+
+        ostr << c.name << " {" << std::endl;
 
         for (const auto &m : c.methods) {
-            ostr << to_string(m.scope) << m.type << " " << m.name + "()"
-                 << std::endl;
+            if (m.is_pure_virtual)
+                ostr << "{abstract} ";
+
+            ostr << to_string(m.scope) << m.type << " " << m.name + "()";
+
+            if (m.is_pure_virtual)
+                ostr << " = 0";
+
+            ostr << std::endl;
         }
 
         for (const auto &m : c.members) {

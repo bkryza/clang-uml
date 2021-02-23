@@ -63,6 +63,10 @@ struct method_argument {
 
 struct class_method : public class_element {
     std::vector<method_argument> arguments;
+    bool is_pure_virtual{false};
+    bool is_virtual{false};
+    bool is_const{false};
+    bool is_defaulted{false};
 };
 
 struct class_parent {
@@ -89,6 +93,14 @@ struct class_ : public element {
     std::vector<std::string> inner_classes;
 
     std::vector<class_relationship> relationships;
+
+    bool is_abstract() const
+    {
+        // TODO check if all base abstract methods are overriden
+        // with non-abstract methods
+        return std::any_of(methods.begin(), methods.end(),
+            [](const auto &method) { return method.is_pure_virtual; });
+    }
 };
 
 struct enum_ : public element {

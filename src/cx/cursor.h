@@ -132,6 +132,23 @@ public:
 
     bool is_preprocessing() const { return clang_isPreprocessing(kind()); }
 
+    bool is_method_virtual() const
+    {
+        return clang_CXXMethod_isVirtual(m_cursor);
+    }
+
+    bool is_method_const() const { return clang_CXXMethod_isConst(m_cursor); }
+
+    bool is_method_pure_virtual() const
+    {
+        return clang_CXXMethod_isPureVirtual(m_cursor);
+    }
+
+    bool is_method_defaulted() const
+    {
+        return clang_CXXMethod_isDefaulted(m_cursor);
+    }
+
     CXVisibilityKind visibitity() const
     {
         return clang_getCursorVisibility(m_cursor);
