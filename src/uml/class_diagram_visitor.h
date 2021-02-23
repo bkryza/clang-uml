@@ -75,17 +75,8 @@ enum CXChildVisitResult visit_if_cursor_valid(
     cx::cursor cursor, std::function<void(cx::cursor)> f)
 {
     enum CXChildVisitResult ret = CXChildVisit_Break;
-    if (cursor.is_definition()) {
+    if (cursor.is_definition() || cursor.is_declaration()) {
         if (!cursor.spelling().empty()) {
-            f(cursor);
-            ret = CXChildVisit_Continue;
-        }
-        else {
-            ret = CXChildVisit_Recurse;
-        }
-    }
-    else if (cursor.is_declaration()) {
-        if (cursor.is_method_pure_virtual()) {
             f(cursor);
             ret = CXChildVisit_Continue;
         }
@@ -97,6 +88,26 @@ enum CXChildVisitResult visit_if_cursor_valid(
         ret = CXChildVisit_Continue;
     }
     return ret;
+}
+
+scope_t cx_access_specifier_to_scope(CX_CXXAccessSpecifier as)
+{
+    scope_t res = scope_t::kPublic;
+    switch (as) {
+        case CX_CXXAccessSpecifier::CX_CXXPublic:
+            res = scope_t::kPublic;
+            break;
+        case CX_CXXAccessSpecifier::CX_CXXPrivate:
+            res = scope_t::kPrivate;
+            break;
+        case CX_CXXAccessSpecifier::CX_CXXProtected:
+            res = scope_t::kProtected;
+            break;
+        default:
+            break;
+    }
+
+    return res;
 }
 
 static enum CXChildVisitResult enum_visitor(
@@ -144,6 +155,8 @@ static enum CXChildVisitResult class_visitor(
         c->name, cursor_name_str, cursor.kind());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
+    bool is_constructor{false};
+    bool is_destructor{false};
     switch (cursor.kind()) {
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
@@ -157,6 +170,9 @@ static enum CXChildVisitResult class_visitor(
                 m.is_virtual = cursor.is_method_virtual();
                 m.is_const = cursor.is_method_const();
                 m.is_defaulted = cursor.is_method_defaulted();
+                m.is_static = cursor.is_method_static();
+                m.scope =
+                    cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
 
                 spdlog::info("Adding method {} {}::{}()", m.type, c->name,
                     cursor.spelling());
@@ -172,6 +188,8 @@ static enum CXChildVisitResult class_visitor(
                 class_member m;
                 m.name = cursor.spelling();
                 m.type = cursor.type().spelling();
+                m.scope =
+                    cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
 
                 spdlog::info("Adding member {} {}::{}", m.type, c->name,
                     cursor.spelling());

@@ -67,6 +67,7 @@ struct class_method : public class_element {
     bool is_virtual{false};
     bool is_const{false};
     bool is_defaulted{false};
+    bool is_static{false};
 };
 
 struct class_parent {

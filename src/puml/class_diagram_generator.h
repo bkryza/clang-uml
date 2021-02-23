@@ -101,18 +101,39 @@ public:
 
         ostr << c.name << " {" << std::endl;
 
+        //
+        // Process methods
+        //
         for (const auto &m : c.methods) {
             if (m.is_pure_virtual)
                 ostr << "{abstract} ";
 
-            ostr << to_string(m.scope) << m.type << " " << m.name + "()";
+            if (m.is_static)
+                ostr << "{static} ";
+
+            std::string type{};
+            if (m.type != "void")
+                type = m.type;
+
+            ostr << to_string(m.scope) << type << " " << m.name + "()";
+
+            if (m.is_const)
+                ostr << " const";
+
+            assert(!(m.is_pure_virtual && m.is_defaulted));
 
             if (m.is_pure_virtual)
                 ostr << " = 0";
 
+            if (m.is_defaulted)
+                ostr << " = default";
+
             ostr << std::endl;
         }
 
+        //
+        // Process members
+        //
         for (const auto &m : c.members) {
             ostr << to_string(m.scope) << m.type << " " << m.name << std::endl;
         }

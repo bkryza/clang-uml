@@ -160,3 +160,48 @@ TEST_CASE("Test t00002", "[unit-test]")
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }
+
+TEST_CASE("Test t00003", "[unit-test]")
+{
+    spdlog::set_level(spdlog::level::debug);
+
+    auto [config, db] = load_config("t00003");
+
+    auto diagram = config.diagrams["t00003_class"];
+
+    REQUIRE(diagram->name == "t00003_class");
+
+    REQUIRE(diagram->include.namespaces.size() == 1);
+    REQUIRE_THAT(diagram->include.namespaces,
+        VectorContains(std::string{"clanguml::t00003"}));
+
+    REQUIRE(diagram->exclude.namespaces.size() == 0);
+
+    REQUIRE(diagram->should_include("clanguml::t00003::A"));
+
+    auto model = generate_class_diagram(db, diagram);
+
+    REQUIRE(model.name == "t00003_class");
+
+    auto puml = generate_class_puml(diagram, model);
+
+    REQUIRE_THAT(puml, StartsWith("@startuml"));
+    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+    REQUIRE_THAT(puml, Contains("class A"));
+
+    REQUIRE_THAT(puml, Contains("+ A() = default"));
+    REQUIRE_THAT(puml, Contains("+ A() = default"));
+    REQUIRE_THAT(puml, Contains("+ A() = default"));
+    REQUIRE_THAT(puml, Contains("+ ~A() = default"));
+    REQUIRE_THAT(puml, Contains("+ basic_method()"));
+    REQUIRE_THAT(puml, Contains("{static} +int static_method()"));
+    REQUIRE_THAT(puml, Contains("+ const_method() const"));
+    REQUIRE_THAT(puml, Contains("# protected_method()"));
+    REQUIRE_THAT(puml, Contains("- private_method()"));
+    REQUIRE_THAT(puml, Contains("+int public_member"));
+    REQUIRE_THAT(puml, Contains("#int protected_member"));
+    REQUIRE_THAT(puml, Contains("-int private_member"));
+
+    save_puml(
+        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+}
