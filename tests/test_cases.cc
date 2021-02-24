@@ -201,6 +201,9 @@ TEST_CASE("Test t00003", "[unit-test]")
     REQUIRE_THAT(puml, Contains("+int public_member"));
     REQUIRE_THAT(puml, Contains("#int protected_member"));
     REQUIRE_THAT(puml, Contains("-int private_member"));
+    REQUIRE_THAT(puml, Contains("-int a"));
+    REQUIRE_THAT(puml, Contains("-int b"));
+    REQUIRE_THAT(puml, Contains("-int c"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

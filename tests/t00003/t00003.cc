@@ -23,6 +23,8 @@ private:
     void private_method() {}
 
     int private_member;
+
+    int a, b, c;
 };
 }
 }
