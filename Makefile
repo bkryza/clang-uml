@@ -27,11 +27,13 @@ clean:
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
+		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DLIBCLANG_LLVM_CONFIG_EXECUTABLE=/usr/bin/llvm-config-${LLVM_VERSION}
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
+		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DLIBCLANG_LLVM_CONFIG_EXECUTABLE=/usr/bin/llvm-config-${LLVM_VERSION}
 
