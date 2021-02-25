@@ -135,6 +135,9 @@ public:
         // Process members
         //
         for (const auto &m : c.members) {
+            if (m.is_static)
+                ostr << "{static} ";
+
             ostr << to_string(m.scope) << m.type << " " << m.name << std::endl;
         }
 

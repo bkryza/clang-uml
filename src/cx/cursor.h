@@ -137,6 +137,11 @@ public:
         return clang_CXXMethod_isVirtual(m_cursor);
     }
 
+    bool is_static() const
+    {
+        return clang_Cursor_getStorageClass(m_cursor) == CX_SC_Static;
+    }
+
     bool is_method_static() const { return clang_CXXMethod_isStatic(m_cursor); }
 
     bool is_method_const() const { return clang_CXXMethod_isConst(m_cursor); }

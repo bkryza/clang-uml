@@ -204,6 +204,7 @@ TEST_CASE("Test t00003", "[unit-test]")
     REQUIRE_THAT(puml, Contains("-int a"));
     REQUIRE_THAT(puml, Contains("-int b"));
     REQUIRE_THAT(puml, Contains("-int c"));
+    REQUIRE_THAT(puml, Contains("{static} +int static_int"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

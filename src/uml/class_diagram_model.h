@@ -54,6 +54,7 @@ struct class_element {
 
 struct class_member : public class_element {
     bool is_relationship{false};
+    bool is_static{false};
 };
 
 struct method_argument {

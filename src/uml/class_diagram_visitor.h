@@ -182,6 +182,7 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
             break;
         }
+        case CXCursor_VarDecl:
         case CXCursor_FieldDecl: {
             visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
                 auto t = cursor.type();
@@ -190,6 +191,7 @@ static enum CXChildVisitResult class_visitor(
                 m.type = cursor.type().spelling();
                 m.scope =
                     cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
+                m.is_static = cursor.is_static();
 
                 spdlog::info("Adding member {} {}::{}", m.type, c->name,
                     cursor.spelling());
@@ -215,11 +217,7 @@ static enum CXChildVisitResult class_visitor(
                             t = t.pointee_type();
                             continue;
                         }
-                        /*else if(t.kind == CXType_Elaborated) {
-                            t = clang_Type_getNamedType(t);
-                            continue;
-                        }*/
-                        else /*if (t.kind == CXType_Record) */ {
+                        else {
                             spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
                             class_relationship r;
                             auto template_argument_count =
@@ -259,9 +257,6 @@ static enum CXChildVisitResult class_visitor(
                             spdlog::debug(
                                 "Adding relationship to: {}", r.destination);
                         }
-                        // else {
-                        // spdlog::error("UNKNOWN CXTYPE: {}", t.kind);
-                        //}
                         break;
                     }
                 }
