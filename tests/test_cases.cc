@@ -255,9 +255,9 @@ TEST_CASE("Test t00004", "[unit-test]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, Contains("class A"));
-    REQUIRE_THAT(puml, Contains("A +-- A::AA"));
-    REQUIRE_THAT(puml, Contains("A::AA +-- A::AA::AAA"));
-    REQUIRE_THAT(puml, Contains("A::AA +-- A::AA::Lights"));
+    REQUIRE_THAT(puml, Contains("A +-- AA"));
+    REQUIRE_THAT(puml, Contains("AA +-- AAA"));
+    REQUIRE_THAT(puml, Contains("AA +-- Lights"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

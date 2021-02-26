@@ -23,6 +23,30 @@
 namespace clanguml {
 namespace util {
 
+std::vector<std::string> split(std::string str, std::string delimiter)
+{
+    std::vector<std::string> result;
+
+    while (str.size()) {
+        int index = str.find(delimiter);
+        if (index != std::string::npos) {
+            result.push_back(str.substr(0, index));
+            str = str.substr(index + delimiter.size());
+            if (str.size() == 0)
+                result.push_back(str);
+        }
+        else {
+            result.push_back(str);
+            str = "";
+        }
+    }
+
+    if (result.empty())
+        result.push_back(str);
+
+    return result;
+}
+
 std::string namespace_relative(
     const std::vector<std::string> &namespaces, const std::string &n)
 {
@@ -31,7 +55,7 @@ std::string namespace_relative(
             continue;
 
         if (n == ns)
-            return "";
+            return split(n, "::").back();
 
         if (n.find(ns) == 0) {
             if (n.size() <= ns.size() + 2)
