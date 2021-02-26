@@ -17,27 +17,10 @@
  */
 #define CATCH_CONFIG_MAIN
 
-#include "config/config.h"
-#include "cx/compilation_database.h"
-#include "puml/class_diagram_generator.h"
-#include "puml/sequence_diagram_generator.h"
-#include "uml/class_diagram_model.h"
-#include "uml/class_diagram_visitor.h"
-#include "uml/sequence_diagram_visitor.h"
+#include "test_cases.h"
 
-#include "catch.h"
-
-#include <complex>
-#include <filesystem>
-#include <string>
-
-using Catch::Matchers::Contains;
-using Catch::Matchers::EndsWith;
-using Catch::Matchers::StartsWith;
-using Catch::Matchers::VectorContains;
-using clanguml::cx::compilation_database;
-
-auto load_config(const std::string &test_name)
+std::pair<clanguml::config::config, compilation_database> load_config(
+    const std::string &test_name)
 {
     auto config = clanguml::config::load(test_name + "/.clanguml");
 
@@ -47,7 +30,8 @@ auto load_config(const std::string &test_name)
     return std::make_pair(std::move(config), std::move(db));
 }
 
-auto generate_sequence_diagram(compilation_database &db,
+clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
+    compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
@@ -57,7 +41,8 @@ auto generate_sequence_diagram(compilation_database &db,
     return diagram_model;
 }
 
-auto generate_class_diagram(compilation_database &db,
+clanguml::model::class_diagram::diagram generate_class_diagram(
+    compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
@@ -107,160 +92,7 @@ void save_puml(const std::string &path, const std::string &puml)
     ofs.close();
 }
 
-TEST_CASE("Test t00001", "[unit-test]")
-{
-    spdlog::set_level(spdlog::level::debug);
-
-    auto [config, db] = load_config("t00001");
-
-    auto diagram = config.diagrams["t00001_sequence"];
-
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00001"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->exclude.namespaces,
-        VectorContains(std::string{"clanguml::t00001::detail"}));
-
-    REQUIRE(diagram->should_include("clanguml::t00001::A"));
-    REQUIRE(!diagram->should_include("clanguml::t00001::detail::C"));
-    REQUIRE(!diagram->should_include("std::vector"));
-
-    REQUIRE(diagram->name == "t00001_sequence");
-
-    auto model = generate_sequence_diagram(db, diagram);
-
-    REQUIRE(model.name == "t00001_sequence");
-
-    auto puml = generate_sequence_puml(diagram, model);
-
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-
-    save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
-}
-
-TEST_CASE("Test t00002", "[unit-test]")
-{
-    spdlog::set_level(spdlog::level::debug);
-
-    auto [config, db] = load_config("t00002");
-
-    auto diagram = config.diagrams["t00002_class"];
-
-    REQUIRE(diagram->name == "t00002_class");
-
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00002"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
-    REQUIRE(diagram->should_include("clanguml::t00002::A"));
-    REQUIRE(!diagram->should_include("std::vector"));
-
-    auto model = generate_class_diagram(db, diagram);
-
-    REQUIRE(model.name == "t00002_class");
-
-    auto puml = generate_class_puml(diagram, model);
-
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("abstract A"));
-    REQUIRE_THAT(puml, Contains("class B"));
-    REQUIRE_THAT(puml, Contains("class C"));
-    REQUIRE_THAT(puml, Contains("class D"));
-
-    save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
-}
-
-TEST_CASE("Test t00003", "[unit-test]")
-{
-    spdlog::set_level(spdlog::level::debug);
-
-    auto [config, db] = load_config("t00003");
-
-    auto diagram = config.diagrams["t00003_class"];
-
-    REQUIRE(diagram->name == "t00003_class");
-
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00003"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
-    REQUIRE(diagram->should_include("clanguml::t00003::A"));
-
-    auto model = generate_class_diagram(db, diagram);
-
-    REQUIRE(model.name == "t00003_class");
-
-    auto puml = generate_class_puml(diagram, model);
-
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("class A"));
-
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ ~A() = default"));
-    REQUIRE_THAT(puml, Contains("+ basic_method()"));
-    REQUIRE_THAT(puml, Contains("{static} +int static_method()"));
-    REQUIRE_THAT(puml, Contains("+ const_method() const"));
-    REQUIRE_THAT(puml, Contains("# protected_method()"));
-    REQUIRE_THAT(puml, Contains("- private_method()"));
-    REQUIRE_THAT(puml, Contains("+int public_member"));
-    REQUIRE_THAT(puml, Contains("#int protected_member"));
-    REQUIRE_THAT(puml, Contains("-int private_member"));
-    REQUIRE_THAT(puml, Contains("-int a"));
-    REQUIRE_THAT(puml, Contains("-int b"));
-    REQUIRE_THAT(puml, Contains("-int c"));
-
-    save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
-}
-
-TEST_CASE("Test t00004", "[unit-test]")
-{
-    spdlog::set_level(spdlog::level::debug);
-
-    auto [config, db] = load_config("t00004");
-
-    auto diagram = config.diagrams["t00004_class"];
-
-    REQUIRE(diagram->name == "t00004_class");
-
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00004"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
-    REQUIRE(diagram->should_include("clanguml::t00004::A"));
-    REQUIRE(diagram->should_include("clanguml::t00004::A::AA"));
-    REQUIRE(diagram->should_include("clanguml::t00004::A:::AAA"));
-
-    auto model = generate_class_diagram(db, diagram);
-
-    REQUIRE(model.name == "t00004_class");
-
-    auto puml = generate_class_puml(diagram, model);
-
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("class A"));
-    REQUIRE_THAT(puml, Contains("A +-- AA"));
-    REQUIRE_THAT(puml, Contains("AA +-- AAA"));
-    REQUIRE_THAT(puml, Contains("AA +-- Lights"));
-    REQUIRE_THAT(puml, Contains("+ foo() const"));
-    REQUIRE_THAT(puml, Contains("+ foo2() const"));
-
-    save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
-}
+#include "t00001/test_case.h"
+#include "t00002/test_case.h"
+#include "t00003/test_case.h"
+#include "t00004/test_case.h"
