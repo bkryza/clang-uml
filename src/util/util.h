@@ -50,7 +50,11 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 std::string ns_relative(
     const std::vector<std::string> &namespaces, const std::string &n)
 {
-    for (const auto &ns : namespaces) {
+    std::vector<std::string> namespaces_sorted{namespaces};
+
+    std::sort(namespaces_sorted.rbegin(), namespaces_sorted.rend());
+
+    for (const auto &ns : namespaces_sorted) {
         if (ns.empty())
             continue;
 

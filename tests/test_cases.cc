@@ -258,6 +258,8 @@ TEST_CASE("Test t00004", "[unit-test]")
     REQUIRE_THAT(puml, Contains("A +-- AA"));
     REQUIRE_THAT(puml, Contains("AA +-- AAA"));
     REQUIRE_THAT(puml, Contains("AA +-- Lights"));
+    REQUIRE_THAT(puml, Contains("+ foo() const"));
+    REQUIRE_THAT(puml, Contains("+ foo2() const"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

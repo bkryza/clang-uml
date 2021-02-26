@@ -186,6 +186,7 @@ static enum CXChildVisitResult class_visitor(
 
                 ctx->ctx->d.classes.emplace_back(std::move(c));
             });
+            ret = CXChildVisit_Continue;
             break;
         case CXCursor_EnumDecl:
             if (!config.should_include(cursor.fully_qualified())) {
