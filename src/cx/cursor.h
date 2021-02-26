@@ -69,15 +69,33 @@ public:
         return spelling() == "void";
     }
 
+    /**
+     * @brief Return fully qualified cursor spelling
+     *
+     * This method generates a fully qualified name for the cursor by
+     * traversing the namespaces upwards.
+     *
+     * TODO: Add caching of this value.
+     *
+     * @return Fully qualified cursor spelling
+     */
     std::string fully_qualified() const
     {
         std::list<std::string> res;
         cursor iterator{m_cursor};
+        if (iterator.spelling().empty())
+            return {};
+
+        int limit = 100;
         while (iterator.kind() != CXCursor_TranslationUnit) {
             auto name = iterator.spelling();
             if (!name.empty())
                 res.push_front(iterator.spelling());
             iterator = iterator.semantic_parent();
+            if (limit-- == 0)
+                throw std::runtime_error(fmt::format(
+                    "Generating fully qualified name for '{}' failed at: '{}'",
+                    spelling(), fmt::join(res, "::")));
         }
 
         return fmt::format("{}", fmt::join(res, "::"));

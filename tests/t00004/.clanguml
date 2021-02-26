@@ -1,0 +1,17 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00004_class:
+    type: class
+    glob:
+      - ../../tests/t00004/t00004.cc
+    using_namespace:
+      - clanguml::t00004
+    include:
+      namespaces:
+        - clanguml::t00004
+    plantuml:
+      before:
+        - "' t00004 test class members"
+      after:
+        - 'note over "A": A class'

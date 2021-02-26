@@ -99,7 +99,8 @@ public:
         else
             ostr << "class ";
 
-        ostr << c.name << " {" << std::endl;
+        ostr << namespace_relative(m_config.using_namespace, c.name) << " {"
+             << std::endl;
 
         //
         // Process methods
@@ -148,18 +149,20 @@ public:
         }
 
         for (const auto &r : c.relationships) {
-            // only add UML relationships to classes in the diagram
-            if (m_config.has_class(r.destination))
-                ostr << c.name << " " << to_string(r.type) << " "
-                     << namespace_relative(
-                            m_config.using_namespace, r.destination)
-                     << " : " << r.label << std::endl;
+            ostr << namespace_relative(m_config.using_namespace, c.name) << " "
+                 << to_string(r.type) << " "
+                 << namespace_relative(m_config.using_namespace, r.destination);
+            if (!r.label.empty())
+                ostr << " : " << r.label;
+
+            ostr << std::endl;
         }
     }
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "Enum " << e.name << " {" << std::endl;
+        ostr << "Enum " << namespace_relative(m_config.using_namespace, e.name)
+             << " {" << std::endl;
 
         for (const auto &enum_constant : e.constants) {
             ostr << enum_constant << std::endl;
@@ -235,7 +238,7 @@ clanguml::model::class_diagram::diagram generate(
         spdlog::debug("Cursor name: {}",
             clang_getCString(clang_getCursorDisplayName(cursor)));
 
-        clanguml::visitor::class_diagram::tu_context ctx(d);
+        clanguml::visitor::class_diagram::tu_context ctx(d, diagram);
         auto res = clang_visitChildren(cursor,
             clanguml::visitor::class_diagram::translation_unit_visitor, &ctx);
         spdlog::debug("Processing result: {}", res);

@@ -9,6 +9,7 @@ set(CLANG_UML_TEST_CASES_SRC
     t00001/t00001.cc
     t00002/t00002.cc
     t00003/t00003.cc
+    t00004/t00004.cc
 )
 set(CLANG_UML_TEST_CASES_HEADER
     catch.h
@@ -27,5 +28,6 @@ target_link_libraries(test_cases
 configure_file(t00001/.clanguml t00001/.clanguml COPYONLY)
 configure_file(t00002/.clanguml t00002/.clanguml COPYONLY)
 configure_file(t00003/.clanguml t00003/.clanguml COPYONLY)
+configure_file(t00004/.clanguml t00004/.clanguml COPYONLY)
 
 add_test(NAME test_cases COMMAND test_cases)

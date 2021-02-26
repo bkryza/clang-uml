@@ -42,33 +42,26 @@ using clanguml::model::class_diagram::enum_;
 using clanguml::model::class_diagram::relationship_t;
 using clanguml::model::class_diagram::scope_t;
 
-template <typename T> struct element_visitor_context {
-    element_visitor_context(T &e)
-        : element(e)
-    {
-    }
-    CXCursorKind current_cursor_kind;
-    std::vector<std::string> namespace_;
-
-    T &element;
-};
-
-struct class_visitor_context : element_visitor_context<class_> {
-    class_visitor_context(class_ &c)
-        : element_visitor_context<class_>(c)
-    {
-    }
-    scope_t scope;
-};
-
 struct tu_context {
-    tu_context(diagram &d_)
+    tu_context(diagram &d_, const clanguml::config::class_diagram &config_)
         : d{d_}
+        , config{config_}
     {
     }
 
     std::vector<std::string> namespace_;
     class_diagram::diagram &d;
+    const clanguml::config::class_diagram &config;
+};
+
+template <typename T> struct element_visitor_context {
+    element_visitor_context(T &e)
+        : element(e)
+    {
+    }
+    tu_context *ctx;
+
+    T &element;
 };
 
 enum CXChildVisitResult visit_if_cursor_valid(
@@ -113,22 +106,22 @@ scope_t cx_access_specifier_to_scope(CX_CXXAccessSpecifier as)
 static enum CXChildVisitResult enum_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
-    auto e = (struct enum_ *)client_data;
+    auto ctx = (element_visitor_context<enum_> *)client_data;
 
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
-    spdlog::info("Visiting enum {}: {} - {}:{}", e->name, cursor.spelling(),
-        cursor.kind());
+    spdlog::info("Visiting enum {}: {} - {}:{}", ctx->element.name,
+        cursor.spelling(), cursor.kind());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
         case CXCursor_EnumConstantDecl:
-            visit_if_cursor_valid(cursor, [e](cx::cursor cursor) {
-                spdlog::info(
-                    "Adding enum constant {}::{}", e->name, cursor.spelling());
+            visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+                spdlog::info("Adding enum constant {}::{}", ctx->element.name,
+                    cursor.spelling());
 
-                e->constants.emplace_back(cursor.spelling());
+                ctx->element.constants.emplace_back(cursor.spelling());
             });
 
             ret = CXChildVisit_Continue;
@@ -144,25 +137,94 @@ static enum CXChildVisitResult enum_visitor(
 static enum CXChildVisitResult class_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
-    auto c = (struct class_ *)client_data;
+    auto ctx = (element_visitor_context<class_> *)client_data;
 
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
     std::string cursor_name_str = cursor.spelling();
 
-    spdlog::info("Visiting {}: {} - {}:{}", c->is_struct ? "struct" : "class",
-        c->name, cursor_name_str, cursor.kind());
+    spdlog::info("Visiting {}: {} - {}:{}",
+        ctx->element.is_struct ? "struct" : "class", ctx->element.name,
+        cursor_name_str, cursor.kind());
+
+    auto &config = ctx->ctx->config;
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     bool is_constructor{false};
     bool is_destructor{false};
+    bool is_struct{false};
+    bool is_vardecl{false};
     switch (cursor.kind()) {
+        case CXCursor_StructDecl:
+            is_struct = true;
+        case CXCursor_ClassDecl:
+        case CXCursor_ClassTemplate:
+            if (!config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                class_ c{};
+                c.is_struct = is_struct;
+                c.name = cursor.fully_qualified();
+                c.namespace_ = ctx->ctx->namespace_;
+
+                auto class_ctx = element_visitor_context<class_>(c);
+                class_ctx.ctx = ctx->ctx;
+
+                clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
+
+                class_relationship containment;
+                containment.type = relationship_t::kContainment;
+                containment.destination = c.name;
+                ctx->element.relationships.emplace_back(std::move(containment));
+
+                spdlog::info(
+                    "Added relationship {} +-- {}", ctx->element.name, c.name);
+
+                ctx->ctx->d.classes.emplace_back(std::move(c));
+            });
+            break;
+        case CXCursor_EnumDecl:
+            if (!config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                enum_ e{};
+                e.name = cursor.fully_qualified();
+                e.namespace_ = ctx->ctx->namespace_;
+
+                auto enum_ctx = element_visitor_context<enum_>(e);
+                enum_ctx.ctx = ctx->ctx;
+
+                clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
+
+                class_relationship containment;
+                containment.type = relationship_t::kContainment;
+                containment.destination = e.name;
+                ctx->element.relationships.emplace_back(std::move(containment));
+
+                spdlog::info(
+                    "Added relationship {} +-- {}", ctx->element.name, e.name);
+
+                ctx->ctx->d.enums.emplace_back(std::move(e));
+            });
+            ret = CXChildVisit_Continue;
+            break;
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
         case CXCursor_Destructor:
         case CXCursor_FunctionTemplate: {
-            visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
+            if (!config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+
+            visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
                 class_method m;
                 m.name = cursor.spelling();
                 m.type = cursor.type().result_type().spelling();
@@ -174,99 +236,116 @@ static enum CXChildVisitResult class_visitor(
                 m.scope =
                     cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
 
-                spdlog::info("Adding method {} {}::{}()", m.type, c->name,
-                    cursor.spelling());
+                spdlog::info("Adding method {} {}::{}()", m.type,
+                    ctx->element.name, cursor.spelling());
 
-                c->methods.emplace_back(std::move(m));
+                ctx->element.methods.emplace_back(std::move(m));
             });
             ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_VarDecl:
+            is_vardecl = true;
         case CXCursor_FieldDecl: {
-            visit_if_cursor_valid(cursor, [c](cx::cursor cursor) {
-                auto t = cursor.type();
-                class_member m;
-                m.name = cursor.spelling();
-                m.type = cursor.type().spelling();
-                m.scope =
-                    cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
-                m.is_static = cursor.is_static();
+            visit_if_cursor_valid(
+                cursor, [ctx, &config, is_vardecl](cx::cursor cursor) {
+                    auto t = cursor.type();
+                    class_member m;
+                    m.name = cursor.spelling();
+                    m.type = cursor.type().spelling();
+                    m.scope = cx_access_specifier_to_scope(
+                        cursor.cxxaccess_specifier());
+                    m.is_static = cursor.is_static();
 
-                spdlog::info("Adding member {} {}::{}", m.type, c->name,
-                    cursor.spelling());
+                    spdlog::info("Adding member {} {}::{}", m.type,
+                        ctx->element.name, cursor.spelling());
 
-                relationship_t relationship_type = relationship_t::kOwnership;
+                    relationship_t relationship_type =
+                        relationship_t::kOwnership;
 
-                // Parse the field declaration to determine the relationship
-                // type
-                if (!t.is_pod()) {
-                    while (true) {
-                        if (t.kind() == CXType_Pointer) {
-                            relationship_type = relationship_t::kAssociation;
-                            t = t.pointee_type();
-                            continue;
-                        }
-                        else if (t.kind() == CXType_LValueReference) {
-                            relationship_type = relationship_t::kAggregation;
-                            t = t.pointee_type();
-                            continue;
-                        }
-                        else if (t.kind() == CXType_RValueReference) {
-                            relationship_type = relationship_t::kAssociation;
-                            t = t.pointee_type();
-                            continue;
-                        }
-                        else {
-                            spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
-                            class_relationship r;
-                            auto template_argument_count =
-                                t.template_arguments_count();
-                            std::string name = t.spelling();
-
-                            if (template_argument_count > 0) {
-                                std::vector<cx::type> template_arguments;
-                                for (int i = 0; i < template_argument_count;
-                                     i++) {
-                                    auto tt = t.template_argument_type(i);
-                                    template_arguments.push_back(tt);
-                                }
-
-                                if (name.rfind("vector") == 0 ||
-                                    name.rfind("std::vector") == 0) {
-                                    r.type = relationship_t::kAggregation;
-                                    r.destination =
-                                        template_arguments[0].spelling();
-                                }
-                                if (name.rfind("map") == 0 ||
-                                    name.rfind("std::map") == 0) {
-                                    r.type = relationship_t::kAggregation;
-                                    r.destination =
-                                        template_arguments[1].spelling();
-                                }
-                                r.label = m.name;
-                                c->relationships.emplace_back(std::move(r));
+                    // Parse the field declaration to determine the relationship
+                    // type
+                    // Skip:
+                    //  - POD
+                    //  - function variables
+                    if (!t.is_pod() && !is_vardecl &&
+                        config.should_include(cursor.type().spelling())) {
+                        while (true) {
+                            if (t.kind() == CXType_Pointer) {
+                                relationship_type =
+                                    relationship_t::kAssociation;
+                                t = t.pointee_type();
+                                continue;
+                            }
+                            else if (t.kind() == CXType_LValueReference) {
+                                relationship_type =
+                                    relationship_t::kAggregation;
+                                t = t.pointee_type();
+                                continue;
+                            }
+                            else if (t.kind() == CXType_RValueReference) {
+                                relationship_type =
+                                    relationship_t::kAssociation;
+                                t = t.pointee_type();
+                                continue;
                             }
                             else {
-                                r.destination = name;
-                                r.type = relationship_type;
-                                r.label = m.name;
-                                c->relationships.emplace_back(std::move(r));
+                                spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
+                                class_relationship r;
+                                auto template_argument_count =
+                                    t.template_arguments_count();
+                                std::string name = t.spelling();
+
+                                if (template_argument_count > 0) {
+                                    std::vector<cx::type> template_arguments;
+                                    for (int i = 0; i < template_argument_count;
+                                         i++) {
+                                        auto tt = t.template_argument_type(i);
+                                        template_arguments.push_back(tt);
+                                    }
+
+                                    if (name.rfind("vector") == 0 ||
+                                        name.rfind("std::vector") == 0) {
+                                        r.type = relationship_t::kAggregation;
+                                        r.destination =
+                                            template_arguments[0].spelling();
+                                    }
+                                    if (name.rfind("map") == 0 ||
+                                        name.rfind("std::map") == 0) {
+                                        r.type = relationship_t::kAggregation;
+                                        r.destination =
+                                            template_arguments[1].spelling();
+                                    }
+                                    r.label = m.name;
+                                    ctx->element.relationships.emplace_back(
+                                        std::move(r));
+                                }
+                                else {
+                                    r.destination = name;
+                                    r.type = relationship_type;
+                                    r.label = m.name;
+                                    ctx->element.relationships.emplace_back(
+                                        std::move(r));
+                                }
+
+                                spdlog::debug("Adding relationship to: {}",
+                                    r.destination);
                             }
-
-                            spdlog::debug(
-                                "Adding relationship to: {}", r.destination);
+                            break;
                         }
-                        break;
                     }
-                }
 
-                c->members.emplace_back(std::move(m));
-            });
+                    ctx->element.members.emplace_back(std::move(m));
+                });
             ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_CXXBaseSpecifier: {
+            if (!config.should_include(cursor.referenced().fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+
             auto ref_cursor = cursor.referenced();
             auto display_name = ref_cursor.referenced().spelling();
 
@@ -292,7 +371,7 @@ static enum CXChildVisitResult class_visitor(
                     cp.access = class_parent::access_t::kPublic;
             }
 
-            c->bases.emplace_back(std::move(cp));
+            ctx->element.bases.emplace_back(std::move(cp));
 
             ret = CXChildVisit_Continue;
             break;
@@ -319,7 +398,6 @@ static enum CXChildVisitResult translation_unit_visitor(
         return CXChildVisit_Continue;
     }
     std::string cursor_name_str = cursor.spelling();
-
     spdlog::debug("Visiting cursor: {}", cursor_name_str);
 
     bool is_struct{false};
@@ -336,16 +414,23 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_ClassDecl: {
             spdlog::debug("Found class or class template declaration: {}",
                 cursor_name_str);
+            if (!ctx->config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
 
             scope = scope_t::kPublic;
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
                 class_ c{};
                 c.is_struct = is_struct;
-                c.name = cursor.spelling();
+                c.name = cursor.fully_qualified();
                 c.namespace_ = ctx->namespace_;
 
-                clang_visitChildren(cursor.get(), class_visitor, &c);
+                auto class_ctx = element_visitor_context<class_>(c);
+                class_ctx.ctx = ctx;
+
+                clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
 
                 ctx->d.classes.emplace_back(std::move(c));
             });
@@ -355,13 +440,20 @@ static enum CXChildVisitResult translation_unit_visitor(
         }
         case CXCursor_EnumDecl: {
             spdlog::debug("Found enum declaration: {}", cursor_name_str);
+            if (!ctx->config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
                 enum_ e{};
-                e.name = cursor.spelling();
+                e.name = cursor.fully_qualified();
                 e.namespace_ = ctx->namespace_;
 
-                clang_visitChildren(cursor.get(), enum_visitor, &e);
+                auto enum_ctx = element_visitor_context<enum_>(e);
+                enum_ctx.ctx = ctx;
+
+                clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
 
                 ctx->d.enums.emplace_back(std::move(e));
             });
