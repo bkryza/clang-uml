@@ -99,7 +99,7 @@ public:
         else
             ostr << "class ";
 
-        ostr << namespace_relative(m_config.using_namespace, c.name) << " {"
+        ostr << ns_relative(m_config.using_namespace, c.name) << " {"
              << std::endl;
 
         //
@@ -149,9 +149,9 @@ public:
         }
 
         for (const auto &r : c.relationships) {
-            ostr << namespace_relative(m_config.using_namespace, c.name) << " "
+            ostr << ns_relative(m_config.using_namespace, c.name) << " "
                  << to_string(r.type) << " "
-                 << namespace_relative(m_config.using_namespace, r.destination);
+                 << ns_relative(m_config.using_namespace, r.destination);
             if (!r.label.empty())
                 ostr << " : " << r.label;
 
@@ -161,8 +161,8 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "Enum " << namespace_relative(m_config.using_namespace, e.name)
-             << " {" << std::endl;
+        ostr << "Enum " << ns_relative(m_config.using_namespace, e.name) << " {"
+             << std::endl;
 
         for (const auto &enum_constant : e.constants) {
             ostr << enum_constant << std::endl;

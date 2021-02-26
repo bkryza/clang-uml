@@ -65,8 +65,8 @@ public:
 
     void generate_call(const message &m, std::ostream &ostr) const
     {
-        const auto from = namespace_relative(m_config.using_namespace, m.from);
-        const auto to = namespace_relative(m_config.using_namespace, m.to);
+        const auto from = ns_relative(m_config.using_namespace, m.from);
+        const auto to = ns_relative(m_config.using_namespace, m.to);
 
         ostr << '"' << from << "\" "
              << "->"
@@ -76,9 +76,8 @@ public:
     void generate_return(const message &m, std::ostream &ostr) const
     {
         if ((m.from != m.to) && (m.return_type != "void")) {
-            const auto from =
-                namespace_relative(m_config.using_namespace, m.from);
-            const auto to = namespace_relative(m_config.using_namespace, m.to);
+            const auto from = ns_relative(m_config.using_namespace, m.from);
+            const auto to = ns_relative(m_config.using_namespace, m.to);
 
             ostr << '"' << to << "\" "
                  << "-->"
@@ -89,7 +88,7 @@ public:
     void generate_activity(const activity &a, std::ostream &ostr) const
     {
         for (const auto &m : a.messages) {
-            const auto to = namespace_relative(m_config.using_namespace, m.to);
+            const auto to = ns_relative(m_config.using_namespace, m.to);
             generate_call(m, ostr);
             ostr << "activate " << '"' << to << '"' << std::endl;
             if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())

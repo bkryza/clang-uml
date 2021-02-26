@@ -47,7 +47,7 @@ std::vector<std::string> split(std::string str, std::string delimiter)
     return result;
 }
 
-std::string namespace_relative(
+std::string ns_relative(
     const std::vector<std::string> &namespaces, const std::string &n)
 {
     for (const auto &ns : namespaces) {
