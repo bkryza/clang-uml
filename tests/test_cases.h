@@ -143,6 +143,53 @@ struct Default {
     std::string m_method;
 };
 
+struct HasCallWithResultMatcher : ContainsMatcher {
+    HasCallWithResultMatcher(
+        CasedString const &comparator, CasedString const &resultComparator)
+        : ContainsMatcher(comparator)
+        , m_resultComparator{resultComparator}
+    {
+    }
+
+    bool match(std::string const &source) const override
+    {
+        return Catch::contains(
+                   m_comparator.adjustString(source), m_comparator.m_str) &&
+            Catch::contains(
+                m_comparator.adjustString(source), m_resultComparator.m_str);
+    }
+
+    CasedString m_resultComparator;
+};
+
+ContainsMatcher HasCall(std::string const &from, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, from, message),
+            caseSensitivity));
+}
+
+ContainsMatcher HasCall(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
+            caseSensitivity));
+}
+
+auto HasCallWithResponse(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return HasCallWithResultMatcher(
+        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
+            caseSensitivity),
+        CasedString(
+            fmt::format("\"{}\" --> \"{}\"", to, from), caseSensitivity));
+}
+
 ContainsMatcher IsClass(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

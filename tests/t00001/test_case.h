@@ -47,6 +47,11 @@ TEST_CASE("Test t00001", "[unit-test]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
+    REQUIRE_THAT(puml, HasCall("A", "log_result"));
+    REQUIRE_THAT(puml, HasCall("B", "A", "log_result"));
+    REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
+    REQUIRE_THAT(puml, HasCall("A", "add"));
+
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }
