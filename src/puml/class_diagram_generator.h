@@ -114,9 +114,9 @@ public:
 
             std::string type{};
             if (m.type != "void")
-                type = m.type;
+                type = m.type + " ";
 
-            ostr << to_string(m.scope) << type << " " << m.name + "()";
+            ostr << to_string(m.scope) << type << m.name + "()";
 
             if (m.is_const)
                 ostr << " const";
@@ -145,7 +145,8 @@ public:
         ostr << "}" << std::endl;
 
         for (const auto &b : c.bases) {
-            ostr << b.name << " <|-- " << c.name << std::endl;
+            ostr << ns_relative(m_config.using_namespace, b.name) << " <|-- "
+                 << ns_relative(m_config.using_namespace, c.name) << std::endl;
         }
 
         for (const auto &r : c.relationships) {
@@ -161,7 +162,7 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "Enum " << ns_relative(m_config.using_namespace, e.name) << " {"
+        ostr << "enum " << ns_relative(m_config.using_namespace, e.name) << " {"
              << std::endl;
 
         for (const auto &enum_constant : e.constants) {

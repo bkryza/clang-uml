@@ -57,3 +57,135 @@ std::string generate_class_puml(
     clanguml::model::class_diagram::diagram &model);
 
 void save_puml(const std::string &path, const std::string &puml);
+
+namespace clanguml {
+namespace test {
+namespace matchers {
+
+using Catch::CaseSensitive;
+using Catch::Matchers::StdString::CasedString;
+using Catch::Matchers::StdString::ContainsMatcher;
+
+struct Public {
+    Public(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return "+" + m_method; }
+
+    std::string m_method;
+};
+
+struct Protected {
+    Protected(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return "#" + m_method; }
+
+    std::string m_method;
+};
+
+struct Private {
+    Private(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return "-" + m_method; }
+
+    std::string m_method;
+};
+
+struct Abstract {
+    Abstract(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return "{abstract} " + m_method; }
+
+    std::string m_method;
+};
+
+struct Static {
+    Static(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return "{static} " + m_method; }
+
+    std::string m_method;
+};
+
+struct Const {
+    Const(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return m_method; }
+
+    std::string m_method;
+};
+
+struct Default {
+    Default(std::string const &method)
+        : m_method{method}
+    {
+    }
+
+    operator std::string() const { return m_method; }
+
+    std::string m_method;
+};
+
+ContainsMatcher IsClass(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("class " + str, caseSensitivity));
+}
+
+ContainsMatcher IsEnum(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("enum " + str, caseSensitivity));
+}
+
+ContainsMatcher IsAbstractClass(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("abstract " + str, caseSensitivity));
+}
+
+ContainsMatcher IsBaseClass(std::string const &base, std::string const &sub,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(base + " <|-- " + sub, caseSensitivity));
+}
+
+ContainsMatcher IsInnerClass(std::string const &parent,
+    std::string const &inner,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(parent + " +-- " + inner, caseSensitivity));
+}
+
+ContainsMatcher IsMethod(std::string const &name,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(name + "()", caseSensitivity));
+}
+
+ContainsMatcher IsField(std::string const &name,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(name, caseSensitivity));
+}
+}
+}
+}

@@ -44,12 +44,15 @@ TEST_CASE("Test t00004", "[unit-test]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("class A"));
-    REQUIRE_THAT(puml, Contains("A +-- AA"));
-    REQUIRE_THAT(puml, Contains("AA +-- AAA"));
-    REQUIRE_THAT(puml, Contains("AA +-- Lights"));
-    REQUIRE_THAT(puml, Contains("+ foo() const"));
-    REQUIRE_THAT(puml, Contains("+ foo2() const"));
+    REQUIRE_THAT(puml, IsClass("A"));
+    REQUIRE_THAT(puml, IsClass("AA"));
+    REQUIRE_THAT(puml, IsClass("AAA"));
+    REQUIRE_THAT(puml, IsEnum("Lights"));
+    REQUIRE_THAT(puml, IsInnerClass("A", "AA"));
+    REQUIRE_THAT(puml, IsInnerClass("AA", "AAA"));
+    REQUIRE_THAT(puml, IsInnerClass("AA", "Lights"));
+    REQUIRE_THAT(puml, IsMethod(Const(Public("foo"))));
+    REQUIRE_THAT(puml, IsMethod(Const(Public("foo2"))));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

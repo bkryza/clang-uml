@@ -44,21 +44,21 @@ TEST_CASE("Test t00003", "[unit-test]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, Contains("class A"));
 
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ A() = default"));
-    REQUIRE_THAT(puml, Contains("+ ~A() = default"));
-    REQUIRE_THAT(puml, Contains("+ basic_method()"));
-    REQUIRE_THAT(puml, Contains("{static} +int static_method()"));
-    REQUIRE_THAT(puml, Contains("+ const_method() const"));
-    REQUIRE_THAT(puml, Contains("# protected_method()"));
-    REQUIRE_THAT(puml, Contains("- private_method()"));
-    REQUIRE_THAT(puml, Contains("+int public_member"));
-    REQUIRE_THAT(puml, Contains("#int protected_member"));
-    REQUIRE_THAT(puml, Contains("-int private_member"));
-    REQUIRE_THAT(puml, Contains("-int a"));
-    REQUIRE_THAT(puml, Contains("-int b"));
-    REQUIRE_THAT(puml, Contains("-int c"));
+    REQUIRE_THAT(puml, IsMethod(Default(Public("A"))));
+    REQUIRE_THAT(puml, IsMethod(Default(Public("~A"))));
+
+    REQUIRE_THAT(puml, IsMethod(Public("basic_method")));
+    REQUIRE_THAT(puml, IsMethod(Static(Public("int static_method"))));
+    REQUIRE_THAT(puml, IsMethod(Const(Public("const_method"))));
+    REQUIRE_THAT(puml, IsMethod(Protected("protected_method")));
+    REQUIRE_THAT(puml, IsMethod(Private("private_method")));
+    REQUIRE_THAT(puml, IsField(Public("int public_member")));
+    REQUIRE_THAT(puml, IsField(Protected("int protected_member")));
+    REQUIRE_THAT(puml, IsField(Private("int private_member")));
+
+    REQUIRE_THAT(puml, IsField(Private("int a")));
+    REQUIRE_THAT(puml, IsField(Private("int b")));
+    REQUIRE_THAT(puml, IsField(Private("int c")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

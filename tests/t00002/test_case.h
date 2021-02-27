@@ -43,10 +43,16 @@ TEST_CASE("Test t00002", "[unit-test]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("abstract A"));
-    REQUIRE_THAT(puml, Contains("class B"));
-    REQUIRE_THAT(puml, Contains("class C"));
-    REQUIRE_THAT(puml, Contains("class D"));
+    REQUIRE_THAT(puml, IsAbstractClass("A"));
+    REQUIRE_THAT(puml, IsClass("B"));
+    REQUIRE_THAT(puml, IsClass("C"));
+    REQUIRE_THAT(puml, IsClass("D"));
+    REQUIRE_THAT(puml, IsBaseClass("A", "B"));
+    REQUIRE_THAT(puml, IsBaseClass("A", "C"));
+    REQUIRE_THAT(puml, IsBaseClass("B", "D"));
+    REQUIRE_THAT(puml, IsBaseClass("C", "D"));
+    REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_a"))));
+    REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_c"))));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

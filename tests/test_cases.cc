@@ -84,13 +84,24 @@ void save_puml(const std::string &path, const std::string &puml)
 {
     std::filesystem::path p{path};
     std::filesystem::create_directory(p.parent_path());
-    spdlog::error("PWD: {}", std::filesystem::current_path().string());
-    spdlog::error("SAVING TEST PWD {} DIAGRAM: {}", p.string());
     std::ofstream ofs;
     ofs.open(p, std::ofstream::out | std::ofstream::trunc);
     ofs << puml;
     ofs.close();
 }
+
+using clanguml::test::matchers::Abstract;
+using clanguml::test::matchers::Const;
+using clanguml::test::matchers::Default;
+using clanguml::test::matchers::IsAbstractClass;
+using clanguml::test::matchers::IsBaseClass;
+using clanguml::test::matchers::IsClass;
+using clanguml::test::matchers::IsEnum;
+using clanguml::test::matchers::IsInnerClass;
+using clanguml::test::matchers::Private;
+using clanguml::test::matchers::Protected;
+using clanguml::test::matchers::Public;
+using clanguml::test::matchers::Static;
 
 #include "t00001/test_case.h"
 #include "t00002/test_case.h"
