@@ -118,6 +118,11 @@ public:
 
     CXCursorKind kind() const { return m_cursor.kind; }
 
+    std::string kind_spelling() const
+    {
+        return to_string(clang_getCursorKindSpelling(m_cursor.kind));
+    }
+
     bool is_definition() const { return clang_isCursorDefinition(m_cursor); }
 
     bool is_declaration() const { return clang_isDeclaration(kind()); }

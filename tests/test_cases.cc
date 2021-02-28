@@ -96,9 +96,13 @@ using clanguml::test::matchers::Default;
 using clanguml::test::matchers::HasCall;
 using clanguml::test::matchers::HasCallWithResponse;
 using clanguml::test::matchers::IsAbstractClass;
+using clanguml::test::matchers::IsAggregation;
+using clanguml::test::matchers::IsAssociation;
 using clanguml::test::matchers::IsBaseClass;
 using clanguml::test::matchers::IsClass;
+using clanguml::test::matchers::IsComposition;
 using clanguml::test::matchers::IsEnum;
+using clanguml::test::matchers::IsField;
 using clanguml::test::matchers::IsInnerClass;
 using clanguml::test::matchers::Private;
 using clanguml::test::matchers::Protected;
@@ -109,3 +113,4 @@ using clanguml::test::matchers::Static;
 #include "t00002/test_case.h"
 #include "t00003/test_case.h"
 #include "t00004/test_case.h"
+#include "t00005/test_case.h"

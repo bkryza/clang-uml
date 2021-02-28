@@ -79,6 +79,7 @@ public:
     std::string to_string(relationship_t r) const
     {
         switch (r) {
+            case relationship_t::kOwnership:
             case relationship_t::kComposition:
                 return "*--";
             case relationship_t::kAggregation:
@@ -86,7 +87,7 @@ public:
             case relationship_t::kContainment:
                 return "+--";
             case relationship_t::kAssociation:
-                return "--";
+                return "-->";
             default:
                 return "";
         }
@@ -139,7 +140,9 @@ public:
             if (m.is_static)
                 ostr << "{static} ";
 
-            ostr << to_string(m.scope) << m.type << " " << m.name << std::endl;
+            ostr << to_string(m.scope)
+                 << ns_relative(m_config.using_namespace, m.type) << " "
+                 << m.name << std::endl;
         }
 
         ostr << "}" << std::endl;

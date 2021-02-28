@@ -33,6 +33,7 @@ namespace class_diagram {
 enum class scope_t { kPublic, kProtected, kPrivate };
 
 enum class relationship_t {
+    kNone,
     kExtension,
     kComposition,
     kAggregation,

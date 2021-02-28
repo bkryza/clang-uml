@@ -222,6 +222,30 @@ ContainsMatcher IsInnerClass(std::string const &parent,
         CasedString(parent + " +-- " + inner, caseSensitivity));
 }
 
+ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
+    std::string const &label,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} --> {} : {}", from, to, label), caseSensitivity));
+}
+
+ContainsMatcher IsComposition(std::string const &from, std::string const &to,
+    std::string const &label,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} *-- {} : {}", from, to, label), caseSensitivity));
+}
+
+ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
+    std::string const &label,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} o-- {} : {}", from, to, label), caseSensitivity));
+}
+
 ContainsMatcher IsMethod(std::string const &name,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

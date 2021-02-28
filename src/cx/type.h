@@ -21,6 +21,8 @@
 #include <clang-c/Index.h>
 #include <spdlog/spdlog.h>
 
+#include "util/util.h"
+
 namespace clanguml {
 namespace cx {
 
@@ -93,6 +95,11 @@ public:
 
     CXTypeKind kind() const { return m_type.kind; }
 
+    std::string kind_spelling()
+    {
+        return to_string(clang_getTypeKindSpelling(m_type.kind));
+    }
+
     CXCallingConv calling_convention() const
     {
         return clang_getFunctionTypeCallingConv(m_type);
@@ -115,6 +122,39 @@ public:
     }
 
     bool is_pod() const { return clang_isPODType(m_type); }
+
+    bool is_pointer() const { return kind() == CXType_Pointer; }
+
+    bool is_record() const { return kind() == CXType_Record; }
+
+    /**
+     * @brief Return final referenced type.
+     *
+     * This method allows to extract a final type in case a type consists of a
+     * single or multiple pointers or references.
+     *
+     * @return Referenced type.
+     */
+    type referenced() const
+    {
+        auto t = *this;
+        while (t.is_pointer() || t.is_reference()) {
+            t = t.pointee_type();
+        }
+
+        return t;
+    }
+
+    bool is_reference() const
+    {
+        return (kind() == CXType_LValueReference) ||
+            (kind() == CXType_RValueReference);
+    }
+
+    bool is_relationship() const
+    {
+        return is_pointer() || is_record() || is_reference() || !is_pod();
+    }
 
     type element_type() const { return clang_getElementType(m_type); }
 
@@ -155,6 +195,20 @@ public:
     CXRefQualifierKind cxxref_qualifier() const
     {
         return clang_Type_getCXXRefQualifier(m_type);
+    }
+
+    std::string unqualified() const
+    {
+        auto toks = clanguml::util::split(spelling(), " ");
+        const std::vector<std::string> qualifiers = {
+            "static", "const", "volatile", "register", "mutable"};
+
+        while (toks.size() > 0 &&
+            std::count(qualifiers.begin(), qualifiers.end(), toks.front())) {
+            toks.erase(toks.begin());
+        }
+
+        return fmt::format("{}", fmt::join(toks, " "));
     }
 
 private:

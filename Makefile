@@ -18,8 +18,10 @@
 # This Makefile is just a handy wrapper around cmake
 #
 
-# Specify LLVM version
+# Specify preferred LLVM version for CMake
 LLVM_VERSION ?= 11
+
+.DEFAULT_GOAL := test
 
 .PHONY: clean
 clean:

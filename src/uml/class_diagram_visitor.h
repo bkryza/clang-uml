@@ -253,86 +253,101 @@ static enum CXChildVisitResult class_visitor(
                     auto t = cursor.type();
                     class_member m;
                     m.name = cursor.spelling();
-                    m.type = cursor.type().spelling();
+                    m.type = cursor.type().canonical().unqualified();
                     m.scope = cx_access_specifier_to_scope(
                         cursor.cxxaccess_specifier());
                     m.is_static = cursor.is_static();
 
-                    spdlog::info("Adding member {} {}::{}", m.type,
-                        ctx->element.name, cursor.spelling());
+                    spdlog::info("Adding member {} {}::{} (type kind: {} | {} "
+                                 "| {} | {})",
+                        m.type, ctx->element.name, cursor.spelling(),
+                        t.kind_spelling(), t.pointee_type().spelling(),
+                        t.is_pod(), cursor.type().canonical().spelling());
 
-                    relationship_t relationship_type =
-                        relationship_t::kOwnership;
+                    relationship_t relationship_type = relationship_t::kNone;
 
                     // Parse the field declaration to determine the relationship
                     // type
                     // Skip:
                     //  - POD
                     //  - function variables
-                    if (!t.is_pod() && !is_vardecl &&
-                        config.should_include(cursor.type().spelling())) {
-                        while (true) {
-                            if (t.kind() == CXType_Pointer) {
-                                relationship_type =
-                                    relationship_t::kAssociation;
-                                t = t.pointee_type();
-                                continue;
-                            }
-                            else if (t.kind() == CXType_LValueReference) {
-                                relationship_type =
-                                    relationship_t::kAggregation;
-                                t = t.pointee_type();
-                                continue;
-                            }
-                            else if (t.kind() == CXType_RValueReference) {
-                                relationship_type =
-                                    relationship_t::kAssociation;
-                                t = t.pointee_type();
-                                continue;
+                    if (t.is_relationship() &&
+                        config.should_include(
+                            cursor.type().canonical().unqualified())) {
+                        spdlog::info(
+                            "Analazing possible relationship candidate: {}",
+                            t.spelling());
+                        if (t.kind() == CXType_Record) {
+                            spdlog::info(
+                                "Found relationship candidate record: {} | {}",
+                                t.spelling(), t.pointee_type().spelling());
+                            relationship_type = relationship_t::kOwnership;
+                        }
+                        else if (t.kind() == CXType_Pointer) {
+                            spdlog::info(
+                                "Found relationship candidate pointer: {}",
+                                t.spelling());
+                            relationship_type = relationship_t::kAssociation;
+                            t = t.referenced();
+                        }
+                        else if (t.kind() == CXType_LValueReference) {
+                            spdlog::info("Found relationship candidate "
+                                         "lvalue reference: {}",
+                                t.spelling());
+                            relationship_type = relationship_t::kAssociation;
+                            t = t.referenced();
+                        }
+                        else if (t.kind() == CXType_RValueReference) {
+                            spdlog::info("Found relationship candidate "
+                                         "rvalue reference: {}",
+                                t.spelling());
+                            relationship_type = relationship_t::kOwnership;
+                            t = t.referenced();
+                        }
+
+                        if (relationship_type != relationship_t::kNone) {
+                            spdlog::info(
+                                "Found unknown candidate: {}", t.spelling());
+                            spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
+                            class_relationship r;
+                            auto template_argument_count =
+                                t.template_arguments_count();
+                            std::string name = t.canonical().unqualified();
+
+                            if (template_argument_count > 0) {
+                                std::vector<cx::type> template_arguments;
+                                for (int i = 0; i < template_argument_count;
+                                     i++) {
+                                    auto tt = t.template_argument_type(i);
+                                    template_arguments.push_back(tt);
+                                }
+
+                                if (name.rfind("vector") == 0 ||
+                                    name.rfind("std::vector") == 0) {
+                                    r.type = relationship_t::kAggregation;
+                                    r.destination =
+                                        template_arguments[0].spelling();
+                                }
+                                if (name.rfind("map") == 0 ||
+                                    name.rfind("std::map") == 0) {
+                                    r.type = relationship_t::kAggregation;
+                                    r.destination =
+                                        template_arguments[1].spelling();
+                                }
+                                r.label = m.name;
+                                ctx->element.relationships.emplace_back(
+                                    std::move(r));
                             }
                             else {
-                                spdlog::error("UNKNOWN CXTYPE: {}", t.kind());
-                                class_relationship r;
-                                auto template_argument_count =
-                                    t.template_arguments_count();
-                                std::string name = t.spelling();
-
-                                if (template_argument_count > 0) {
-                                    std::vector<cx::type> template_arguments;
-                                    for (int i = 0; i < template_argument_count;
-                                         i++) {
-                                        auto tt = t.template_argument_type(i);
-                                        template_arguments.push_back(tt);
-                                    }
-
-                                    if (name.rfind("vector") == 0 ||
-                                        name.rfind("std::vector") == 0) {
-                                        r.type = relationship_t::kAggregation;
-                                        r.destination =
-                                            template_arguments[0].spelling();
-                                    }
-                                    if (name.rfind("map") == 0 ||
-                                        name.rfind("std::map") == 0) {
-                                        r.type = relationship_t::kAggregation;
-                                        r.destination =
-                                            template_arguments[1].spelling();
-                                    }
-                                    r.label = m.name;
-                                    ctx->element.relationships.emplace_back(
-                                        std::move(r));
-                                }
-                                else {
-                                    r.destination = name;
-                                    r.type = relationship_type;
-                                    r.label = m.name;
-                                    ctx->element.relationships.emplace_back(
-                                        std::move(r));
-                                }
-
-                                spdlog::debug("Adding relationship to: {}",
-                                    r.destination);
+                                r.destination = name;
+                                r.type = relationship_type;
+                                r.label = m.name;
+                                ctx->element.relationships.emplace_back(
+                                    std::move(r));
                             }
-                            break;
+
+                            spdlog::info(
+                                "Adding relationship to: {}", r.destination);
                         }
                     }
 
