@@ -18,6 +18,7 @@ public:
     int public_member;
     static int static_int;
     static const int static_const_int = 1;
+    static const auto auto_member{10UL};
 
 protected:
     void protected_method() {}
