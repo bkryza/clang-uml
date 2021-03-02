@@ -17,59 +17,44 @@
  */
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 namespace clanguml {
 namespace util {
 
-std::vector<std::string> split(std::string str, std::string delimiter)
-{
-    std::vector<std::string> result;
+/**
+ * @brief Split a string using delimiter
+ *
+ * Basic string split function, because C++ stdlib does not have one.
+ * In case the string does not contain the delimiter, the original
+ * string is returned as the only element of the vector.
+ *
+ * @param str String to split
+ * @param delimiter Delimiter string
+ *
+ * @return Vector of string tokens.
+ */
+std::vector<std::string> split(std::string str, std::string delimiter);
 
-    while (str.size()) {
-        int index = str.find(delimiter);
-        if (index != std::string::npos) {
-            result.push_back(str.substr(0, index));
-            str = str.substr(index + delimiter.size());
-            if (str.size() == 0)
-                result.push_back(str);
-        }
-        else {
-            result.push_back(str);
-            str = "";
-        }
-    }
-
-    if (result.empty())
-        result.push_back(str);
-
-    return result;
-}
-
+/**
+ * @brief Get name of the identifier relative to a set of namespaces
+ *
+ * This function tries to match a given C++ identifier (e.g.
+ * clanguml::util::split) to the longest namespace from the provided list
+ * matching the identifier from the left.
+ * If a match is found, the relative identifier is returned. If none of
+ * the namespaces match the identifier or if nothing is left after
+ * removing the matching namespace from the identifier, original identifier is
+ * returned.
+ *
+ * @param namespaces List of C++ namespaces to consider
+ * @param n Identifier to relativize
+ *
+ * @return Identifier relative to one of the matching namespaces.
+ */
 std::string ns_relative(
-    const std::vector<std::string> &namespaces, const std::string &n)
-{
-    std::vector<std::string> namespaces_sorted{namespaces};
-
-    std::sort(namespaces_sorted.rbegin(), namespaces_sorted.rend());
-
-    for (const auto &ns : namespaces_sorted) {
-        if (ns.empty())
-            continue;
-
-        if (n == ns)
-            return split(n, "::").back();
-
-        if (n.find(ns) == 0) {
-            if (n.size() <= ns.size() + 2)
-                return "";
-
-            return n.substr(ns.size() + 2);
-        }
-    }
-
-    return n;
-}
+    const std::vector<std::string> &namespaces, const std::string &n);
 }
 }
