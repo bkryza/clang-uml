@@ -54,6 +54,8 @@ TEST_CASE("Test t00002", "[unit-test]")
     REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_a"))));
     REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_c"))));
 
+    REQUIRE_THAT(puml, IsAssociation("D", "A", "as"));
+
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }

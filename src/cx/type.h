@@ -21,6 +21,7 @@
 #include <clang-c/Index.h>
 #include <spdlog/spdlog.h>
 
+#include "uml/class_diagram_model.h"
 #include "util/util.h"
 
 namespace clanguml {
@@ -151,9 +152,14 @@ public:
             (kind() == CXType_RValueReference);
     }
 
+    bool is_array() const { return clang_getArraySize(m_type) > -1; }
+
+    type array_type() const { return {clang_getArrayElementType(m_type)}; }
+
     bool is_relationship() const
     {
-        return is_pointer() || is_record() || is_reference() || !is_pod();
+        return is_pointer() || is_record() || is_reference() || !is_pod() ||
+            is_array() || (spelling().find("std::array") == 0);
     }
 
     type element_type() const { return clang_getElementType(m_type); }
@@ -180,6 +186,8 @@ public:
 
     type value_type() const { return clang_Type_getValueType(m_type); }
 
+    bool is_template() const { return template_arguments_count() > 0; }
+
     int template_arguments_count() const
     {
         return clang_Type_getNumTemplateArguments(m_type);
@@ -203,10 +211,12 @@ public:
         const std::vector<std::string> qualifiers = {
             "static", "const", "volatile", "register", "mutable"};
 
-        while (toks.size() > 0 &&
-            std::count(qualifiers.begin(), qualifiers.end(), toks.front())) {
-            toks.erase(toks.begin());
-        }
+        toks.erase(toks.begin(),
+            std::find_if(
+                toks.begin(), toks.end(), [&qualifiers](const auto &t) {
+                    return std::count(
+                               qualifiers.begin(), qualifiers.end(), t) == 0;
+                }));
 
         return fmt::format("{}", fmt::join(toks, " "));
     }
