@@ -21,22 +21,14 @@
 #include <clang-c/Index.h>
 #include <spdlog/spdlog.h>
 
+#include "cx/util.h"
 #include "uml/class_diagram_model.h"
 #include "util/util.h"
 
 namespace clanguml {
 namespace cx {
 
-namespace detail {
-std::string to_string(CXString &&cxs)
-{
-    std::string r{clang_getCString(cxs)};
-    clang_disposeString(cxs);
-    return r;
-}
-}
-
-using detail::to_string;
+using util::to_string;
 
 class type {
 public:
@@ -159,7 +151,9 @@ public:
     bool is_relationship() const
     {
         return is_pointer() || is_record() || is_reference() || !is_pod() ||
-            is_array() || (spelling().find("std::array") == 0);
+            is_array() ||
+            (spelling().find("std::array") ==
+                0 /* There must be a better way... */);
     }
 
     type element_type() const { return clang_getElementType(m_type); }
@@ -205,6 +199,11 @@ public:
         return clang_Type_getCXXRefQualifier(m_type);
     }
 
+    /**
+     * @brief Remove all qualifiers from field declaration.
+     *
+     * @return Unqualified identifier.
+     */
     std::string unqualified() const
     {
         auto toks = clanguml::util::split(spelling(), " ");

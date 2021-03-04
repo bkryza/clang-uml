@@ -140,6 +140,9 @@ cx::type get_underlying_type(cx::type t)
     if (name.find("std::map") == 0) {
         return get_underlying_type(template_arguments[1]);
     }
+    if (name.find("std::pair") == 0) {
+        return get_underlying_type(template_arguments[1]);
+    }
 
     return t;
 }
