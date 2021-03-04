@@ -57,7 +57,11 @@ TEST_CASE("Test t00006", "[unit-test]")
     REQUIRE_THAT(puml, IsClass("I"));
     REQUIRE_THAT(puml, IsClass("J"));
     REQUIRE_THAT(puml, IsClass("K"));
-    REQUIRE_THAT(puml, IsClass("R"));
+    REQUIRE_THAT(puml, IsClass("L"));
+    REQUIRE_THAT(puml, IsClass("M"));
+    REQUIRE_THAT(puml, IsClass("N"));
+    REQUIRE_THAT(puml, IsClass("NN"));
+    REQUIRE_THAT(puml, IsClass("NNN"));
 
     REQUIRE_THAT(puml, IsComposition("R", "A", "a"));
     REQUIRE_THAT(puml, IsAssociation("R", "B", "b"));
@@ -70,6 +74,11 @@ TEST_CASE("Test t00006", "[unit-test]")
     REQUIRE_THAT(puml, IsAssociation("R", "I", "i"));
     REQUIRE_THAT(puml, IsComposition("R", "J", "j"));
     REQUIRE_THAT(puml, IsAssociation("R", "K", "k"));
+    REQUIRE_THAT(puml, IsComposition("R", "L", "lm"));
+    REQUIRE_THAT(puml, IsComposition("R", "M", "lm"));
+    REQUIRE_THAT(puml, IsComposition("R", "N", "ns"));
+    REQUIRE_THAT(puml, IsComposition("R", "NN", "ns"));
+    REQUIRE_THAT(puml, IsComposition("R", "NNN", "ns"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

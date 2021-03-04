@@ -36,6 +36,21 @@ class J {
 class K {
 };
 
+class L {
+};
+
+class M {
+};
+
+class N {
+};
+
+class NN {
+};
+
+class NNN {
+};
+
 template <typename T> class custom_container {
 public:
     std::vector<T> data;
@@ -59,6 +74,10 @@ public:
 
     J j[10];
     K *k[20];
+
+    std::vector<std::pair<L, M>> lm;
+
+    std::tuple<N, NN, NNN> ns;
 };
 }
 }
