@@ -103,8 +103,9 @@ scope_t cx_access_specifier_to_scope(CX_CXXAccessSpecifier as)
     return res;
 }
 
-void find_relationships(
-    cx::type t, std::vector<std::pair<cx::type, relationship_t>> &relationships)
+void find_relationships(cx::type t,
+    std::vector<std::pair<cx::type, relationship_t>> &relationships,
+    relationship_t relationship_hint = relationship_t::kNone)
 {
     relationship_t relationship_type = relationship_t::kNone;
 
@@ -130,7 +131,12 @@ void find_relationships(
             find_relationships(template_arguments[0], relationships);
         }
         else if (name.find("std::shared_ptr") == 0) {
-            find_relationships(template_arguments[0], relationships);
+            find_relationships(template_arguments[0], relationships,
+                relationship_t::kAssociation);
+        }
+        else if (name.find("std::weak_ptr") == 0) {
+            find_relationships(template_arguments[0], relationships,
+                relationship_t::kAssociation);
         }
         else if (name.find("std::vector") == 0) {
             find_relationships(template_arguments[0], relationships);
@@ -145,7 +151,10 @@ void find_relationships(
         }
     }
     else if (t.kind() == CXType_Record) {
-        relationships.emplace_back(t, relationship_t::kOwnership);
+        if (relationship_hint != relationship_t::kNone)
+            relationships.emplace_back(t, relationship_hint);
+        else
+            relationships.emplace_back(t, relationship_t::kOwnership);
     }
     else if (t.kind() == CXType_Pointer) {
         relationships.emplace_back(t, relationship_t::kAssociation);

@@ -1,0 +1,12 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00007_class:
+    type: class
+    glob:
+      - ../../tests/t00007/t00007.cc
+    using_namespace:
+      - clanguml::t00007
+    include:
+      namespaces:
+        - clanguml::t00007

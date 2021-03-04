@@ -115,3 +115,4 @@ using clanguml::test::matchers::Static;
 #include "t00004/test_case.h"
 #include "t00005/test_case.h"
 #include "t00006/test_case.h"
+#include "t00007/test_case.h"
