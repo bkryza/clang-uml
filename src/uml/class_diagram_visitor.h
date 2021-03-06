@@ -209,9 +209,8 @@ static enum CXChildVisitResult class_visitor(
 
     std::string cursor_name_str = cursor.spelling();
 
-    spdlog::info("Visiting {}: {} - {}:{}",
-        ctx->element.is_struct ? "struct" : "class", ctx->element.name,
-        cursor_name_str, cursor.kind());
+    spdlog::info("Visiting {}: {} - {}",
+        ctx->element.is_struct ? "struct" : "class", ctx->element.name, cursor);
 
     auto &config = ctx->ctx->config;
 
@@ -285,19 +284,27 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
             break;
         case CXCursor_TemplateTypeParameter: {
-            spdlog::info(
-                "Found template type parameter: {}", cursor.spelling());
+            spdlog::info("Found template type parameter: {}: {}",
+                cursor.spelling(), cursor.type());
             class_template ct;
+            ct.type = "";
             ct.name = cursor.spelling();
+            ct.default_value = "";
             ctx->element.templates.emplace_back(std::move(ct));
 
             ret = CXChildVisit_Continue;
         } break;
-        case CXCursor_NonTypeTemplateParameter:
-            spdlog::info(
-                "Found template nontype parameter: {}", cursor.spelling());
+        case CXCursor_NonTypeTemplateParameter: {
+            spdlog::info("Found template nontype parameter: {}: {}",
+                cursor.spelling(), cursor.type());
+            class_template ct;
+            ct.type = cursor.type().canonical().spelling();
+            ct.name = cursor.spelling();
+            ct.default_value = "";
+            ctx->element.templates.emplace_back(std::move(ct));
+
             ret = CXChildVisit_Continue;
-            break;
+        } break;
         case CXCursor_TemplateTemplateParameter:
             spdlog::info(
                 "Found template template parameter: {}", cursor.spelling());
@@ -468,7 +475,7 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_ClassTemplate:
             [[fallthrough]];
         case CXCursor_ClassDecl: {
-            spdlog::debug("Found class or class template declaration: {}",
+            spdlog::info("Found class or class template declaration: {}",
                 cursor_name_str);
             if (!ctx->config.should_include(cursor.fully_qualified())) {
                 ret = CXChildVisit_Continue;

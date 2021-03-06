@@ -89,6 +89,8 @@ struct class_relationship {
 
 struct class_template {
     std::string name;
+    std::string type;
+    std::string default_value;
 };
 
 struct class_ : public element {

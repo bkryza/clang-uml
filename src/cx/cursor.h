@@ -223,3 +223,22 @@ private:
 };
 }
 }
+
+template <> struct fmt::formatter<clanguml::cx::cursor> {
+    template <typename ParseContext> constexpr auto parse(ParseContext &ctx)
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const clanguml::cx::cursor &c, FormatContext &ctx)
+    {
+        return fmt::format_to(ctx.out(),
+            "(cx::cursor spelling={}, display_name={}, kind={}, "
+            "is_expression={}, template_argument_count={})",
+            c.spelling(), c.display_name(), c.kind_spelling(),
+            c.is_expression(), c.template_argument_count()
+
+        );
+    }
+};

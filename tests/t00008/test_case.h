@@ -43,12 +43,14 @@ TEST_CASE("Test t00008", "[unit-test]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int), int N"));
 
     REQUIRE_THAT(puml, IsField(Public("T value")));
     REQUIRE_THAT(puml, IsField(Public("T * pointer")));
     REQUIRE_THAT(puml, IsField(Public("T & reference")));
     REQUIRE_THAT(puml, IsField(Public("std::vector<P> values")));
+    REQUIRE_THAT(puml, IsField(Public("std::array<int, N> ints")));
+    REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

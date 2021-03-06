@@ -105,8 +105,24 @@ public:
         if (!c.templates.empty()) {
             std::vector<std::string> tnames;
             std::transform(c.templates.cbegin(), c.templates.cend(),
-                std::back_inserter(tnames),
-                [](const auto &tmplt) { return tmplt.name; });
+                std::back_inserter(tnames), [this](const auto &tmplt) {
+                    std::vector<std::string> res;
+
+                    if (!tmplt.type.empty())
+                        res.push_back(
+                            ns_relative(m_config.using_namespace, tmplt.type));
+
+                    if (!tmplt.name.empty())
+                        res.push_back(
+                            ns_relative(m_config.using_namespace, tmplt.name));
+
+                    if (!tmplt.default_value.empty()) {
+                        res.push_back("=");
+                        res.push_back(tmplt.default_value);
+                    }
+
+                    return fmt::format("{}", fmt::join(res, " "));
+                });
             ostr << fmt::format("<{}>", fmt::join(tnames, ", "));
         }
 
