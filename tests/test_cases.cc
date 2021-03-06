@@ -100,6 +100,7 @@ using clanguml::test::matchers::IsAggregation;
 using clanguml::test::matchers::IsAssociation;
 using clanguml::test::matchers::IsBaseClass;
 using clanguml::test::matchers::IsClass;
+using clanguml::test::matchers::IsClassTemplate;
 using clanguml::test::matchers::IsComposition;
 using clanguml::test::matchers::IsEnum;
 using clanguml::test::matchers::IsField;
@@ -116,3 +117,4 @@ using clanguml::test::matchers::Static;
 #include "t00005/test_case.h"
 #include "t00006/test_case.h"
 #include "t00007/test_case.h"
+#include "t00008/test_case.h"

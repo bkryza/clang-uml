@@ -100,8 +100,17 @@ public:
         else
             ostr << "class ";
 
-        ostr << ns_relative(m_config.using_namespace, c.name) << " {"
-             << std::endl;
+        ostr << ns_relative(m_config.using_namespace, c.name);
+
+        if (!c.templates.empty()) {
+            std::vector<std::string> tnames;
+            std::transform(c.templates.cbegin(), c.templates.cend(),
+                std::back_inserter(tnames),
+                [](const auto &tmplt) { return tmplt.name; });
+            ostr << fmt::format("<{}>", fmt::join(tnames, ", "));
+        }
+
+        ostr << " {" << std::endl;
 
         //
         // Process methods

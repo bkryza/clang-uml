@@ -194,6 +194,26 @@ public:
         return clang_getCXXAccessSpecifier(m_cursor);
     }
 
+    int template_argument_count() const
+    {
+        return clang_Cursor_getNumTemplateArguments(m_cursor);
+    }
+
+    CXTemplateArgumentKind template_argument_kind(unsigned i) const
+    {
+        return clang_Cursor_getTemplateArgumentKind(m_cursor, i);
+    }
+
+    cx::type template_argument_type(unsigned i) const
+    {
+        return clang_Cursor_getTemplateArgumentType(m_cursor, i);
+    }
+
+    long long template_argument_value(unsigned i) const
+    {
+        return clang_Cursor_getTemplateArgumentValue(m_cursor, i);
+    }
+
     std::string usr() const { return to_string(clang_getCursorUSR(m_cursor)); }
 
     const CXCursor &get() const { return m_cursor; }

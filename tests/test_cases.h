@@ -196,6 +196,14 @@ ContainsMatcher IsClass(std::string const &str,
     return ContainsMatcher(CasedString("class " + str, caseSensitivity));
 }
 
+ContainsMatcher IsClassTemplate(std::string const &str,
+    std::string const &tmplt,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("class {}<{}>", str, tmplt), caseSensitivity));
+}
+
 ContainsMatcher IsEnum(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

@@ -87,6 +87,10 @@ struct class_relationship {
     std::string label;
 };
 
+struct class_template {
+    std::string name;
+};
+
 struct class_ : public element {
     bool is_struct{false};
     bool is_template{false};
@@ -94,8 +98,8 @@ struct class_ : public element {
     std::vector<class_method> methods;
     std::vector<class_parent> bases;
     std::vector<std::string> inner_classes;
-
     std::vector<class_relationship> relationships;
+    std::vector<class_template> templates;
 
     bool is_abstract() const
     {

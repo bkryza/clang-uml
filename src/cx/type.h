@@ -88,7 +88,7 @@ public:
 
     CXTypeKind kind() const { return m_type.kind; }
 
-    std::string kind_spelling()
+    std::string kind_spelling() const
     {
         return to_string(clang_getTypeKindSpelling(m_type.kind));
     }
@@ -182,6 +182,11 @@ public:
 
     bool is_template() const { return template_arguments_count() > 0; }
 
+    bool is_template_parameter() const
+    {
+        return canonical().spelling().find("type-parameter-") == 0;
+    }
+
     int template_arguments_count() const
     {
         return clang_Type_getNumTemplateArguments(m_type);
@@ -225,3 +230,20 @@ private:
 };
 }
 }
+
+template <> struct fmt::formatter<clanguml::cx::type> {
+    template <typename ParseContext> constexpr auto parse(ParseContext &ctx)
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const clanguml::cx::type &t, FormatContext &ctx)
+    {
+        return fmt::format_to(ctx.out(),
+            "(cx::type spelling={}, kind={}, pointee={}, "
+            "is_pod={}, canonical={}, is_relationship={})",
+            t.spelling(), t.kind_spelling(), t.pointee_type().spelling(),
+            t.is_pod(), t.canonical().spelling(), t.is_relationship());
+    }
+};

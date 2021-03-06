@@ -37,6 +37,7 @@ using clanguml::model::class_diagram::class_member;
 using clanguml::model::class_diagram::class_method;
 using clanguml::model::class_diagram::class_parent;
 using clanguml::model::class_diagram::class_relationship;
+using clanguml::model::class_diagram::class_template;
 using clanguml::model::class_diagram::diagram;
 using clanguml::model::class_diagram::enum_;
 using clanguml::model::class_diagram::relationship_t;
@@ -235,6 +236,9 @@ static enum CXChildVisitResult class_visitor(
                 c.name = cursor.fully_qualified();
                 c.namespace_ = ctx->ctx->namespace_;
 
+                spdlog::info("Class {} has {} template arguments.", c.name,
+                    cursor.template_argument_count());
+
                 auto class_ctx = element_visitor_context<class_>(c);
                 class_ctx.ctx = ctx->ctx;
 
@@ -280,6 +284,25 @@ static enum CXChildVisitResult class_visitor(
             });
             ret = CXChildVisit_Continue;
             break;
+        case CXCursor_TemplateTypeParameter: {
+            spdlog::info(
+                "Found template type parameter: {}", cursor.spelling());
+            class_template ct;
+            ct.name = cursor.spelling();
+            ctx->element.templates.emplace_back(std::move(ct));
+
+            ret = CXChildVisit_Continue;
+        } break;
+        case CXCursor_NonTypeTemplateParameter:
+            spdlog::info(
+                "Found template nontype parameter: {}", cursor.spelling());
+            ret = CXChildVisit_Continue;
+            break;
+        case CXCursor_TemplateTemplateParameter:
+            spdlog::info(
+                "Found template template parameter: {}", cursor.spelling());
+            ret = CXChildVisit_Continue;
+            break;
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
         case CXCursor_Destructor:
@@ -317,18 +340,18 @@ static enum CXChildVisitResult class_visitor(
                     auto t = cursor.type();
                     class_member m;
                     m.name = cursor.spelling();
-                    m.type = t.is_template() ? t.unqualified()
-                                             : t.canonical().unqualified();
+                    if (t.is_template())
+                        m.type = t.unqualified();
+                    else if (t.is_template_parameter())
+                        m.type = t.spelling();
+                    else
+                        m.type = t.canonical().unqualified();
                     m.scope = cx_access_specifier_to_scope(
                         cursor.cxxaccess_specifier());
                     m.is_static = cursor.is_static();
 
-                    spdlog::info("Adding member {} {}::{} (type kind: {} | {} "
-                                 "| {} | {} | {})",
-                        m.type, ctx->element.name, cursor.spelling(),
-                        t.kind_spelling(), t.pointee_type().spelling(),
-                        t.is_pod(), t.canonical().spelling(),
-                        t.is_relationship());
+                    spdlog::info("Adding member {} {}::{} {}", m.type,
+                        ctx->element.name, cursor.spelling(), t);
 
                     relationship_t relationship_type = relationship_t::kNone;
 
