@@ -5,6 +5,7 @@ namespace clanguml {
 namespace t00008 {
 
 using CMP = bool (*)(const int, const int);
+
 template <typename T, typename P = T, CMP = nullptr, int N = 3> class A {
 public:
     T value;
@@ -14,6 +15,11 @@ public:
     std::array<int, N> ints;
 
     CMP comparator;
+};
+
+template <typename T, template <typename> typename C> class B {
+public:
+    C<T> template_template;
 };
 }
 }

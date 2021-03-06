@@ -52,6 +52,10 @@ TEST_CASE("Test t00008", "[unit-test]")
     REQUIRE_THAT(puml, IsField(Public("std::array<int, N> ints")));
     REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
 
+    REQUIRE_THAT(puml, IsClassTemplate("B", "T, C<>"));
+
+    REQUIRE_THAT(puml, IsField(Public("C<T> template_template")));
+
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }

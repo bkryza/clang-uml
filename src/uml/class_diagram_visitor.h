@@ -305,11 +305,18 @@ static enum CXChildVisitResult class_visitor(
 
             ret = CXChildVisit_Continue;
         } break;
-        case CXCursor_TemplateTemplateParameter:
-            spdlog::info(
-                "Found template template parameter: {}", cursor.spelling());
+        case CXCursor_TemplateTemplateParameter: {
+            spdlog::info("Found template template parameter: {}: {}",
+                cursor.spelling(), cursor.type());
+
+            class_template ct;
+            ct.type = "";
+            ct.name = cursor.spelling() + "<>";
+            ct.default_value = "";
+            ctx->element.templates.emplace_back(std::move(ct));
+
             ret = CXChildVisit_Continue;
-            break;
+        } break;
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
         case CXCursor_Destructor:
