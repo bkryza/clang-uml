@@ -40,6 +40,7 @@ TEST_CASE("Test t00008", "[unit-test]")
     REQUIRE(model.name == "t00008_class");
 
     auto puml = generate_class_puml(diagram, model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));

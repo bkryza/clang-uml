@@ -39,10 +39,11 @@ TEST_CASE("Test t00003", "[unit-test]")
     REQUIRE(model.name == "t00003_class");
 
     auto puml = generate_class_puml(diagram, model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, Contains("class A"));
+    REQUIRE_THAT(puml, IsClass(_A("A")));
 
     REQUIRE_THAT(puml, IsMethod(Default(Public("A"))));
     REQUIRE_THAT(puml, IsMethod(Default(Public("~A"))));

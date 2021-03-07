@@ -91,6 +91,7 @@ void save_puml(const std::string &path, const std::string &puml)
 }
 
 using clanguml::test::matchers::Abstract;
+using clanguml::test::matchers::AliasMatcher;
 using clanguml::test::matchers::Const;
 using clanguml::test::matchers::Default;
 using clanguml::test::matchers::HasCall;

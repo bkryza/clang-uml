@@ -17,12 +17,16 @@
  */
 #pragma once
 
+#include "util/util.h"
+
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
 #include <spdlog/spdlog.h>
 
+#include <atomic>
 #include <functional>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <variant>
 
@@ -42,9 +46,22 @@ enum class relationship_t {
     kAssociation
 };
 
-struct element {
+class element {
+public:
+    element()
+        : m_id{m_nextId++}
+    {
+    }
     std::string name;
     std::vector<std::string> namespace_;
+
+    std::string alias() const { return fmt::format("C_{:010}", m_id); }
+
+protected:
+    const uint64_t m_id{0};
+
+private:
+    static std::atomic_uint64_t m_nextId;
 };
 
 struct class_element {
@@ -93,7 +110,8 @@ struct class_template {
     std::string default_value;
 };
 
-struct class_ : public element {
+class class_ : public element {
+public:
     bool is_struct{false};
     bool is_template{false};
     std::vector<class_member> members;
@@ -102,6 +120,42 @@ struct class_ : public element {
     std::vector<std::string> inner_classes;
     std::vector<class_relationship> relationships;
     std::vector<class_template> templates;
+
+    std::string full_name(
+        const std::vector<std::string> &using_namespaces) const
+    {
+        using namespace clanguml::util;
+
+        std::ostringstream ostr;
+        ostr << ns_relative(using_namespaces, name);
+
+        if (!templates.empty()) {
+            std::vector<std::string> tnames;
+            std::transform(templates.cbegin(), templates.cend(),
+                std::back_inserter(tnames),
+                [&using_namespaces](const auto &tmplt) {
+                    std::vector<std::string> res;
+
+                    if (!tmplt.type.empty())
+                        res.push_back(
+                            ns_relative(using_namespaces, tmplt.type));
+
+                    if (!tmplt.name.empty())
+                        res.push_back(
+                            ns_relative(using_namespaces, tmplt.name));
+
+                    if (!tmplt.default_value.empty()) {
+                        res.push_back("=");
+                        res.push_back(tmplt.default_value);
+                    }
+
+                    return fmt::format("{}", fmt::join(res, " "));
+                });
+            ostr << fmt::format("<{}>", fmt::join(tnames, ", "));
+        }
+
+        return ostr.str();
+    }
 
     bool is_abstract() const
     {
@@ -120,6 +174,18 @@ struct diagram {
     std::string name;
     std::vector<class_> classes;
     std::vector<enum_> enums;
+
+    std::string to_alias(const std::vector<std::string> &using_namespaces,
+        const std::string &full_name) const
+    {
+        for (const auto &c : classes) {
+            if (c.full_name(using_namespaces) == full_name) {
+                return c.alias();
+            }
+        }
+
+        return full_name;
+    }
 };
 }
 }

@@ -40,21 +40,22 @@ TEST_CASE("Test t00002", "[unit-test]")
     REQUIRE(model.name == "t00002_class");
 
     auto puml = generate_class_puml(diagram, model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass("A"));
-    REQUIRE_THAT(puml, IsClass("B"));
-    REQUIRE_THAT(puml, IsClass("C"));
-    REQUIRE_THAT(puml, IsClass("D"));
-    REQUIRE_THAT(puml, IsBaseClass("A", "B"));
-    REQUIRE_THAT(puml, IsBaseClass("A", "C"));
-    REQUIRE_THAT(puml, IsBaseClass("B", "D"));
-    REQUIRE_THAT(puml, IsBaseClass("C", "D"));
+    REQUIRE_THAT(puml, IsAbstractClass(_A("A")));
+    REQUIRE_THAT(puml, IsClass(_A("B")));
+    REQUIRE_THAT(puml, IsClass(_A("C")));
+    REQUIRE_THAT(puml, IsClass(_A("D")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("B")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("C")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("D")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("D")));
     REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_a"))));
     REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_c"))));
 
-    REQUIRE_THAT(puml, IsAssociation("D", "A", "as"));
+    REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "as"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

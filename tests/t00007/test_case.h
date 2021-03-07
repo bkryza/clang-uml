@@ -43,17 +43,18 @@ TEST_CASE("Test t00007", "[unit-test]")
     REQUIRE(model.name == "t00007_class");
 
     auto puml = generate_class_puml(diagram, model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass("A"));
-    REQUIRE_THAT(puml, IsClass("B"));
-    REQUIRE_THAT(puml, IsClass("C"));
-    REQUIRE_THAT(puml, IsClass("R"));
+    REQUIRE_THAT(puml, IsClass(_A("A")));
+    REQUIRE_THAT(puml, IsClass(_A("B")));
+    REQUIRE_THAT(puml, IsClass(_A("C")));
+    REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(puml, IsComposition("R", "A", "a"));
-    REQUIRE_THAT(puml, IsAssociation("R", "B", "b"));
-    REQUIRE_THAT(puml, IsAssociation("R", "C", "c"));
+    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("A"), "a"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "b"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "c"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

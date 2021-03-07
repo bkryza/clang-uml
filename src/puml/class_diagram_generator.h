@@ -95,38 +95,15 @@ public:
 
     void generate(const class_ &c, std::ostream &ostr) const
     {
+        std::string class_type{"class"};
         if (c.is_abstract())
-            ostr << "abstract ";
-        else
-            ostr << "class ";
+            class_type = "abstract";
 
-        ostr << ns_relative(m_config.using_namespace, c.name);
+        ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
 
-        if (!c.templates.empty()) {
-            std::vector<std::string> tnames;
-            std::transform(c.templates.cbegin(), c.templates.cend(),
-                std::back_inserter(tnames), [this](const auto &tmplt) {
-                    std::vector<std::string> res;
+        ostr << "\" as " << c.alias() << std::endl;
 
-                    if (!tmplt.type.empty())
-                        res.push_back(
-                            ns_relative(m_config.using_namespace, tmplt.type));
-
-                    if (!tmplt.name.empty())
-                        res.push_back(
-                            ns_relative(m_config.using_namespace, tmplt.name));
-
-                    if (!tmplt.default_value.empty()) {
-                        res.push_back("=");
-                        res.push_back(tmplt.default_value);
-                    }
-
-                    return fmt::format("{}", fmt::join(res, " "));
-                });
-            ostr << fmt::format("<{}>", fmt::join(tnames, ", "));
-        }
-
-        ostr << " {" << std::endl;
+        ostr << class_type << " " << c.alias() << " {" << std::endl;
 
         //
         // Process methods
@@ -173,14 +150,20 @@ public:
         ostr << "}" << std::endl;
 
         for (const auto &b : c.bases) {
-            ostr << ns_relative(m_config.using_namespace, b.name) << " <|-- "
-                 << ns_relative(m_config.using_namespace, c.name) << std::endl;
+            ostr << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, b.name))
+                 << " <|-- "
+                 << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, c.name))
+                 << std::endl;
         }
 
         for (const auto &r : c.relationships) {
-            ostr << ns_relative(m_config.using_namespace, c.name) << " "
-                 << to_string(r.type) << " "
-                 << ns_relative(m_config.using_namespace, r.destination);
+            ostr << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, c.name))
+                 << " " << to_string(r.type) << " "
+                 << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, r.destination));
             if (!r.label.empty())
                 ostr << " : " << r.label;
 

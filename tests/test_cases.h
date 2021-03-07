@@ -24,6 +24,7 @@
 #include "uml/class_diagram_model.h"
 #include "uml/class_diagram_visitor.h"
 #include "uml/sequence_diagram_visitor.h"
+#include "util/util.h"
 
 #include "catch.h"
 
@@ -36,6 +37,7 @@ using Catch::Matchers::EndsWith;
 using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
 using clanguml::cx::compilation_database;
+using namespace clanguml::util;
 
 std::pair<clanguml::config::config, compilation_database> load_config(
     const std::string &test_name);
@@ -190,6 +192,36 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
             fmt::format("\"{}\" --> \"{}\"", to, from), caseSensitivity));
 }
 
+struct AliasMatcher {
+    AliasMatcher(const std::string &puml_)
+        : puml{split(puml_, "\n")}
+    {
+    }
+
+    std::string operator()(const std::string &name)
+    {
+        std::vector<std::string> patterns;
+        patterns.push_back("class \"" + name + "\" as ");
+        patterns.push_back("abstract \"" + name + "\" as ");
+        patterns.push_back("enum \"" + name + "\" as ");
+
+        for (const auto &line : puml) {
+            for (const auto &pattern : patterns) {
+                const auto idx = line.find(pattern);
+                if (idx != std::string::npos) {
+                    std::string res = line.substr(idx + pattern.size());
+                    return trim(res);
+                }
+            }
+        }
+
+        throw std::runtime_error(fmt::format(
+            "Cannot find alias {} in {}", name, fmt::join(puml, "\n")));
+    }
+
+    const std::vector<std::string> puml;
+};
+
 ContainsMatcher IsClass(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -200,8 +232,8 @@ ContainsMatcher IsClassTemplate(std::string const &str,
     std::string const &tmplt,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("class {}<{}>", str, tmplt), caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("class \"{}<{}>\"", str, tmplt), caseSensitivity));
 }
 
 ContainsMatcher IsEnum(std::string const &str,
