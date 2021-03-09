@@ -56,13 +56,15 @@ struct tu_context {
 };
 
 template <typename T> struct element_visitor_context {
-    element_visitor_context(T &e)
+    element_visitor_context(diagram &d_, T &e)
         : element(e)
+        , d{d_}
     {
     }
     tu_context *ctx;
 
     T &element;
+    diagram &d;
 };
 
 enum CXChildVisitResult visit_if_cursor_valid(
@@ -238,7 +240,8 @@ static enum CXChildVisitResult class_visitor(
                 spdlog::info("Class {} has {} template arguments.", c.name,
                     cursor.template_argument_count());
 
-                auto class_ctx = element_visitor_context<class_>(c);
+                auto class_ctx =
+                    element_visitor_context<class_>(ctx->ctx->d, c);
                 class_ctx.ctx = ctx->ctx;
 
                 clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
@@ -266,7 +269,7 @@ static enum CXChildVisitResult class_visitor(
                 e.name = cursor.fully_qualified();
                 e.namespace_ = ctx->ctx->namespace_;
 
-                auto enum_ctx = element_visitor_context<enum_>(e);
+                auto enum_ctx = element_visitor_context<enum_>(ctx->ctx->d, e);
                 enum_ctx.ctx = ctx->ctx;
 
                 clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
@@ -367,6 +370,43 @@ static enum CXChildVisitResult class_visitor(
                     spdlog::info("Adding member {} {}::{} {}", m.type,
                         ctx->element.name, cursor.spelling(), t);
 
+                    if (t.is_unexposed()) {
+                        if (t.is_template_instantiation() &&
+                            t.type_declaration()
+                                    .specialized_cursor_template()
+                                    .kind() != CXCursor_InvalidFile) {
+                            spdlog::info(
+                                "Found template instantiation: {} ..|> {}",
+                                t.type_declaration(),
+                                t.type_declaration()
+                                    .specialized_cursor_template());
+                            class_ tinst;
+                            tinst.name = t.type_declaration().spelling();
+                            tinst.is_template_instantiation = true;
+                            tinst.usr = t.type_declaration().usr();
+                            for (int i = 0; i < t.template_arguments_count();
+                                 i++) {
+                                class_template ct;
+                                ct.type =
+                                    t.template_argument_type(i).spelling();
+                                tinst.templates.emplace_back(std::move(ct));
+                            }
+                            tinst.base_template_usr =
+                                t.type_declaration()
+                                    .specialized_cursor_template()
+                                    .usr();
+
+                            class_relationship r;
+                            r.destination = tinst.base_template_usr;
+                            r.type = relationship_t::kInstantiation;
+                            r.label = "";
+
+                            tinst.relationships.emplace_back(std::move(r));
+
+                            ctx->d.classes.emplace_back(std::move(tinst));
+                        }
+                    }
+
                     relationship_t relationship_type = relationship_t::kNone;
 
                     auto name = t.canonical().unqualified();
@@ -407,9 +447,13 @@ static enum CXChildVisitResult class_visitor(
 
                     ctx->element.members.emplace_back(std::move(m));
                 });
-            ret = CXChildVisit_Continue;
+            ret = CXChildVisit_Recurse;
             break;
         }
+        case CXCursor_ClassTemplatePartialSpecialization: {
+            spdlog::info("Found template specialization: {}", cursor);
+            ret = CXChildVisit_Continue;
+        } break;
         case CXCursor_CXXBaseSpecifier: {
             if (!config.should_include(cursor.referenced().fully_qualified())) {
                 ret = CXChildVisit_Continue;
@@ -493,11 +537,12 @@ static enum CXChildVisitResult translation_unit_visitor(
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
                 class_ c{};
+                c.usr = cursor.usr();
                 c.is_struct = is_struct;
                 c.name = cursor.fully_qualified();
                 c.namespace_ = ctx->namespace_;
 
-                auto class_ctx = element_visitor_context<class_>(c);
+                auto class_ctx = element_visitor_context<class_>(ctx->d, c);
                 class_ctx.ctx = ctx;
 
                 clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
@@ -520,7 +565,7 @@ static enum CXChildVisitResult translation_unit_visitor(
                 e.name = cursor.fully_qualified();
                 e.namespace_ = ctx->namespace_;
 
-                auto enum_ctx = element_visitor_context<enum_>(e);
+                auto enum_ctx = element_visitor_context<enum_>(ctx->d, e);
                 enum_ctx.ctx = ctx;
 
                 clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);

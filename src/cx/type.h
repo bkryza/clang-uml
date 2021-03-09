@@ -30,6 +30,8 @@ namespace cx {
 
 using util::to_string;
 
+class cursor;
+
 class type {
 public:
     type(CXType &&t)
@@ -49,6 +51,8 @@ public:
     }
 
     type canonical() const { return {clang_getCanonicalType(m_type)}; }
+
+    bool is_unexposed() const { return kind() == CXType_Unexposed; }
 
     bool is_const_qualified() const
     {
@@ -72,12 +76,7 @@ public:
 
     type pointee_type() const { return {clang_getPointeeType(m_type)}; }
 
-    /*
-     *cursor type_declaration() const
-     *{
-     *    return {clang_getTypeDeclaration(m_type)};
-     *}
-     */
+    cursor type_declaration() const;
 
     /*
      *std::string type_kind_spelling() const
@@ -151,7 +150,7 @@ public:
     bool is_relationship() const
     {
         return is_pointer() || is_record() || is_reference() || !is_pod() ||
-            is_array() ||
+            is_array() || is_template() ||
             (spelling().find("std::array") ==
                 0 /* There must be a better way... */);
     }
@@ -203,6 +202,15 @@ public:
     {
         return clang_Type_getCXXRefQualifier(m_type);
     }
+
+    bool is_template_instantiation() const
+    {
+        auto s = spelling();
+        auto it = s.find('<');
+        return it != std::string::npos;
+    }
+
+    std::string instantiation_template() const;
 
     /**
      * @brief Remove all qualifiers from field declaration.

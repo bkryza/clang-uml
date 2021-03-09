@@ -43,7 +43,8 @@ enum class relationship_t {
     kAggregation,
     kContainment,
     kOwnership,
-    kAssociation
+    kAssociation,
+    kInstantiation
 };
 
 class element {
@@ -112,14 +113,17 @@ struct class_template {
 
 class class_ : public element {
 public:
+    std::string usr;
     bool is_struct{false};
     bool is_template{false};
+    bool is_template_instantiation{false};
     std::vector<class_member> members;
     std::vector<class_method> methods;
     std::vector<class_parent> bases;
     std::vector<std::string> inner_classes;
     std::vector<class_relationship> relationships;
     std::vector<class_template> templates;
+    std::string base_template_usr;
 
     std::string full_name(
         const std::vector<std::string> &using_namespaces) const
@@ -185,6 +189,17 @@ struct diagram {
         }
 
         return full_name;
+    }
+
+    std::string usr_to_name(const std::vector<std::string> &using_namespaces,
+        const std::string &usr) const
+    {
+        for (const auto &c : classes) {
+            if (c.usr == usr)
+                return c.full_name(using_namespaces);
+        }
+
+        throw std::runtime_error("Cannot resolve USR: " + usr);
     }
 };
 }

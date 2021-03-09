@@ -88,6 +88,8 @@ public:
                 return "+--";
             case relationship_t::kAssociation:
                 return "-->";
+            case relationship_t::kInstantiation:
+                return "..|>";
             default:
                 return "";
         }
@@ -159,11 +161,22 @@ public:
         }
 
         for (const auto &r : c.relationships) {
+            std::string destination;
+            if (r.type == relationship_t::kInstantiation) {
+                destination = m_model.usr_to_name(
+                    m_config.using_namespace, r.destination);
+            }
+            else {
+                destination = r.destination;
+            }
+
             ostr << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, c.name))
+                        ns_relative(m_config.using_namespace,
+                            c.full_name(m_config.using_namespace)))
                  << " " << to_string(r.type) << " "
                  << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, r.destination));
+                        ns_relative(m_config.using_namespace, destination));
+
             if (!r.label.empty())
                 ostr << " : " << r.label;
 

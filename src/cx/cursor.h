@@ -19,6 +19,9 @@
 
 #include "cx/type.h"
 
+#include <list>
+#include <string>
+
 namespace clanguml {
 namespace cx {
 
@@ -212,6 +215,11 @@ public:
     long long template_argument_value(unsigned i) const
     {
         return clang_Cursor_getTemplateArgumentValue(m_cursor, i);
+    }
+
+    cursor specialized_cursor_template() const
+    {
+        return clang_getSpecializedCursorTemplate(m_cursor);
     }
 
     std::string usr() const { return to_string(clang_getCursorUSR(m_cursor)); }
