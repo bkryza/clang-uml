@@ -194,12 +194,15 @@ struct diagram {
     std::string usr_to_name(const std::vector<std::string> &using_namespaces,
         const std::string &usr) const
     {
+        if (usr.empty())
+            throw std::runtime_error("Empty USR");
+
         for (const auto &c : classes) {
             if (c.usr == usr)
                 return c.full_name(using_namespaces);
         }
 
-        throw std::runtime_error("Cannot resolve USR: " + usr);
+        return usr;
     }
 };
 }

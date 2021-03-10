@@ -369,23 +369,45 @@ static enum CXChildVisitResult class_visitor(
                         cursor.cxxaccess_specifier());
                     m.is_static = cursor.is_static();
 
-                    spdlog::info("Adding member {} {}::{} {}, {}", m.type,
-                        ctx->element.name, cursor.spelling(), t, tr);
+                    spdlog::info("Adding member {} {}::{} {}, {}, {}", m.type,
+                        ctx->element.name, cursor.spelling(), t, tr,
+                        tr.type_declaration());
 
                     if (tr.is_unexposed()) {
                         if (tr.is_template_instantiation() &&
-                            tr.type_declaration()
-                                    .specialized_cursor_template()
-                                    .kind() != CXCursor_InvalidFile) {
-                            spdlog::info(
-                                "Found template instantiation: {} ..|> {}",
-                                tr.type_declaration(),
+                            (tr.type_declaration().kind() !=
+                                    CXCursor_InvalidFile ||
                                 tr.type_declaration()
-                                    .specialized_cursor_template());
+                                        .specialized_cursor_template()
+                                        .kind() != CXCursor_InvalidFile)) {
+
+                            bool partial_specialization = false;
+                            auto template_type =
+                                tr.type_declaration()
+                                    .specialized_cursor_template();
+                            if (template_type.kind() == CXCursor_InvalidFile) {
+                                partial_specialization = true;
+                                template_type = tr.type_declaration();
+                            }
+
+                            spdlog::info(
+                                "Found template instantiation: {} ..|> {}", tr,
+                                template_type);
+
                             class_ tinst;
-                            tinst.name = tr.type_declaration().spelling();
+                            if (partial_specialization) {
+                                tinst.name = template_type.spelling();
+                            }
+                            else {
+                                tinst.name = template_type.spelling();
+                            }
                             tinst.is_template_instantiation = true;
-                            tinst.usr = tr.type_declaration().usr();
+                            if (partial_specialization) {
+                                tinst.usr = template_type.usr();
+                            }
+                            else {
+                                tinst.usr = tr.type_declaration().usr();
+                            }
                             for (int i = 0; i < tr.template_arguments_count();
                                  i++) {
                                 class_template ct;
@@ -393,10 +415,12 @@ static enum CXChildVisitResult class_visitor(
                                     tr.template_argument_type(i).spelling();
                                 tinst.templates.emplace_back(std::move(ct));
                             }
-                            tinst.base_template_usr =
-                                tr.type_declaration()
-                                    .specialized_cursor_template()
-                                    .usr();
+                            if (partial_specialization) {
+                                tinst.base_template_usr = template_type.usr();
+                            }
+                            else {
+                                tinst.base_template_usr = template_type.usr();
+                            }
 
                             class_relationship r;
                             r.destination = tinst.base_template_usr;
@@ -404,7 +428,12 @@ static enum CXChildVisitResult class_visitor(
                             r.label = "";
 
                             class_relationship a;
-                            a.destination = tinst.usr;
+                            if (partial_specialization) {
+                                a.destination = tr.spelling();
+                            }
+                            else {
+                                a.destination = tinst.usr;
+                            }
                             if (t.is_pointer() || t.is_reference())
                                 a.type = relationship_t::kAssociation;
                             else
