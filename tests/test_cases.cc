@@ -106,6 +106,7 @@ using clanguml::test::matchers::IsComposition;
 using clanguml::test::matchers::IsEnum;
 using clanguml::test::matchers::IsField;
 using clanguml::test::matchers::IsInnerClass;
+using clanguml::test::matchers::IsInstantiation;
 using clanguml::test::matchers::Private;
 using clanguml::test::matchers::Protected;
 using clanguml::test::matchers::Public;

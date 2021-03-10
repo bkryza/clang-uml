@@ -64,11 +64,14 @@ TEST_CASE("Test t00006", "[unit-test]")
     REQUIRE_THAT(puml, IsClass(_A("NN")));
     REQUIRE_THAT(puml, IsClass(_A("NNN")));
 
+    REQUIRE_THAT(puml,
+        IsInstantiation(_A("custom_container<T>"), _A("custom_container<E>")));
+
     REQUIRE_THAT(puml, IsComposition(_A("R"), _A("A"), "a"));
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "b"));
     REQUIRE_THAT(puml, IsComposition(_A("R"), _A("C"), "c"));
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "d"));
-    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("E"), "e"));
+    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("custom_container<E>"), "e"));
     REQUIRE_THAT(puml, IsComposition(_A("R"), _A("F"), "f"));
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G"), "g"));
     REQUIRE_THAT(puml, IsComposition(_A("R"), _A("H"), "h"));

@@ -47,18 +47,20 @@ TEST_CASE("Test t00009", "[unit-test]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
     REQUIRE_THAT(puml, IsClass(_A("B")));
 
-    /*
     REQUIRE_THAT(puml, IsField(Public("T value")));
-    REQUIRE_THAT(puml, IsField(Public("T * pointer")));
-    REQUIRE_THAT(puml, IsField(Public("T & reference")));
-    REQUIRE_THAT(puml, IsField(Public("std::vector<P> values")));
-    REQUIRE_THAT(puml, IsField(Public("std::array<int, N> ints")));
-    REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
+    REQUIRE_THAT(puml, IsField(Public("A<int> aint")));
+    REQUIRE_THAT(puml, IsField(Public("A<std::string> * astring")));
+    REQUIRE_THAT(
+        puml, IsField(Public("A<std::vector<std::string>> & avector")));
 
-    REQUIRE_THAT(puml, IsClassTemplate("B", "T, C<>"));
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<int>")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
 
-    REQUIRE_THAT(puml, IsField(Public("C<T> template_template")));
-    */
+    REQUIRE_THAT(puml, IsComposition(_A("B"), _A("A<int>"), "aint"));
+    REQUIRE_THAT(puml, IsAssociation(_A("B"), _A("A<std::string>"), "astring"));
+    REQUIRE_THAT(puml,
+        IsAssociation(_A("B"), _A("A<std::vector<std::string>>"), "avector"));
+
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
 }

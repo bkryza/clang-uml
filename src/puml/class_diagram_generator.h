@@ -166,6 +166,10 @@ public:
                 destination = m_model.usr_to_name(
                     m_config.using_namespace, r.destination);
             }
+            else if (r.destination.find("#") != std::string::npos) {
+                destination = m_model.usr_to_name(
+                    m_config.using_namespace, r.destination);
+            }
             else {
                 destination = r.destination;
             }

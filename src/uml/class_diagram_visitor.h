@@ -354,12 +354,14 @@ static enum CXChildVisitResult class_visitor(
         case CXCursor_FieldDecl: {
             visit_if_cursor_valid(
                 cursor, [ctx, &config, is_vardecl](cx::cursor cursor) {
+                    bool added_relation_to_instantiation{false};
                     auto t = cursor.type();
+                    auto tr = t.referenced();
                     class_member m;
                     m.name = cursor.spelling();
-                    if (t.is_template())
+                    if (tr.is_template())
                         m.type = t.unqualified();
-                    else if (t.is_template_parameter())
+                    else if (tr.is_template_parameter())
                         m.type = t.spelling();
                     else
                         m.type = t.canonical().unqualified();
@@ -367,32 +369,32 @@ static enum CXChildVisitResult class_visitor(
                         cursor.cxxaccess_specifier());
                     m.is_static = cursor.is_static();
 
-                    spdlog::info("Adding member {} {}::{} {}", m.type,
-                        ctx->element.name, cursor.spelling(), t);
+                    spdlog::info("Adding member {} {}::{} {}, {}", m.type,
+                        ctx->element.name, cursor.spelling(), t, tr);
 
-                    if (t.is_unexposed()) {
-                        if (t.is_template_instantiation() &&
-                            t.type_declaration()
+                    if (tr.is_unexposed()) {
+                        if (tr.is_template_instantiation() &&
+                            tr.type_declaration()
                                     .specialized_cursor_template()
                                     .kind() != CXCursor_InvalidFile) {
                             spdlog::info(
                                 "Found template instantiation: {} ..|> {}",
-                                t.type_declaration(),
-                                t.type_declaration()
+                                tr.type_declaration(),
+                                tr.type_declaration()
                                     .specialized_cursor_template());
                             class_ tinst;
-                            tinst.name = t.type_declaration().spelling();
+                            tinst.name = tr.type_declaration().spelling();
                             tinst.is_template_instantiation = true;
-                            tinst.usr = t.type_declaration().usr();
-                            for (int i = 0; i < t.template_arguments_count();
+                            tinst.usr = tr.type_declaration().usr();
+                            for (int i = 0; i < tr.template_arguments_count();
                                  i++) {
                                 class_template ct;
                                 ct.type =
-                                    t.template_argument_type(i).spelling();
+                                    tr.template_argument_type(i).spelling();
                                 tinst.templates.emplace_back(std::move(ct));
                             }
                             tinst.base_template_usr =
-                                t.type_declaration()
+                                tr.type_declaration()
                                     .specialized_cursor_template()
                                     .usr();
 
@@ -401,53 +403,68 @@ static enum CXChildVisitResult class_visitor(
                             r.type = relationship_t::kInstantiation;
                             r.label = "";
 
-                            tinst.relationships.emplace_back(std::move(r));
+                            class_relationship a;
+                            a.destination = tinst.usr;
+                            if (t.is_pointer() || t.is_reference())
+                                a.type = relationship_t::kAssociation;
+                            else
+                                a.type = relationship_t::kComposition;
+                            a.label = m.name;
 
+                            ctx->element.relationships.emplace_back(
+                                std::move(a));
+                            tinst.relationships.emplace_back(std::move(r));
                             ctx->d.classes.emplace_back(std::move(tinst));
+                            added_relation_to_instantiation = true;
                         }
                     }
+                    if (!added_relation_to_instantiation) {
 
-                    relationship_t relationship_type = relationship_t::kNone;
+                        relationship_t relationship_type =
+                            relationship_t::kNone;
 
-                    auto name = t.canonical().unqualified();
-                    auto destination = name;
+                        auto name = t.canonical().unqualified();
+                        auto destination = name;
 
-                    // Parse the field declaration to determine the relationship
-                    // type
-                    // Skip:
-                    //  - POD
-                    //  - function variables
-                    spdlog::info(
-                        "Analyzing possible relationship candidate: {}",
-                        t.canonical().unqualified());
+                        // Parse the field declaration to determine the
+                        // relationship type Skip:
+                        //  - POD
+                        //  - function variables
+                        spdlog::info(
+                            "Analyzing possible relationship candidate: {}",
+                            t.canonical().unqualified());
 
-                    if (t.is_relationship() &&
-                        (config.should_include(t.canonical().unqualified()) ||
-                            t.is_template() || t.is_array())) {
-                        std::vector<std::pair<cx::type, relationship_t>>
-                            relationships{};
-                        find_relationships(t, relationships);
+                        if (t.is_relationship() &&
+                            (config.should_include(
+                                 t.canonical().unqualified()) ||
+                                t.is_template() || t.is_array())) {
+                            std::vector<std::pair<cx::type, relationship_t>>
+                                relationships{};
+                            find_relationships(t, relationships);
 
-                        for (const auto &[type, relationship_type] :
-                            relationships) {
-                            if (relationship_type != relationship_t::kNone) {
-                                class_relationship r;
-                                r.destination =
-                                    type.referenced().canonical().unqualified();
-                                r.type = relationship_type;
-                                r.label = m.name;
-                                ctx->element.relationships.emplace_back(
-                                    std::move(r));
+                            for (const auto &[type, relationship_type] :
+                                relationships) {
+                                if (relationship_type !=
+                                    relationship_t::kNone) {
+                                    class_relationship r;
+                                    r.destination = type.referenced()
+                                                        .canonical()
+                                                        .unqualified();
+                                    r.type = relationship_type;
+                                    r.label = m.name;
+                                    ctx->element.relationships.emplace_back(
+                                        std::move(r));
 
-                                spdlog::info(
-                                    "Added relationship to: {}", r.destination);
+                                    spdlog::info("Added relationship to: {}",
+                                        r.destination);
+                                }
                             }
                         }
                     }
 
                     ctx->element.members.emplace_back(std::move(m));
                 });
-            ret = CXChildVisit_Recurse;
+            ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_ClassTemplatePartialSpecialization: {

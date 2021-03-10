@@ -286,6 +286,13 @@ ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
         fmt::format("{} o-- {} : {}", from, to, label), caseSensitivity));
 }
 
+ContainsMatcher IsInstantiation(std::string const &from, std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} ..|> {}", to, from), caseSensitivity));
+}
+
 ContainsMatcher IsMethod(std::string const &name,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
