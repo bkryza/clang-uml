@@ -90,12 +90,14 @@ public:
                 return "-->";
             case relationship_t::kInstantiation:
                 return "..|>";
+            case relationship_t::kFriendship:
+                return "<..";
             default:
                 return "";
         }
     }
 
-    void generate(const class_ &c, std::ostream &ostr) const
+    void generate_aliases(const class_ &c, std::ostream &ostr) const
     {
         std::string class_type{"class"};
         if (c.is_abstract())
@@ -104,6 +106,13 @@ public:
         ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
 
         ostr << "\" as " << c.alias() << std::endl;
+    }
+
+    void generate(const class_ &c, std::ostream &ostr) const
+    {
+        std::string class_type{"class"};
+        if (c.is_abstract())
+            class_type = "abstract";
 
         ostr << class_type << " " << c.alias() << " {" << std::endl;
 
@@ -166,7 +175,8 @@ public:
                 destination = m_model.usr_to_name(
                     m_config.using_namespace, r.destination);
             }
-            else if (r.destination.find("#") != std::string::npos) {
+            else if (r.destination.find("#") != std::string::npos ||
+                r.destination.find("@") != std::string::npos) {
                 destination = m_model.usr_to_name(
                     m_config.using_namespace, r.destination);
             }
@@ -203,6 +213,11 @@ public:
     void generate(std::ostream &ostr) const
     {
         ostr << "@startuml" << std::endl;
+
+        for (const auto &c : m_model.classes) {
+            generate_aliases(c, ostr);
+            ostr << std::endl;
+        }
 
         for (const auto &c : m_model.classes) {
             generate(c, ostr);

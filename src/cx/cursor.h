@@ -126,6 +126,8 @@ public:
         return to_string(clang_getCursorKindSpelling(m_cursor.kind));
     }
 
+    cursor definition() const { return clang_getCursorDefinition(m_cursor); }
+
     bool is_definition() const { return clang_isCursorDefinition(m_cursor); }
 
     bool is_declaration() const { return clang_isDeclaration(kind()); }

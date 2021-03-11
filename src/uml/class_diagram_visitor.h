@@ -201,6 +201,39 @@ static enum CXChildVisitResult enum_visitor(
     return ret;
 }
 
+static enum CXChildVisitResult friend_class_visitor(
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
+{
+    auto ctx = (element_visitor_context<class_> *)client_data;
+
+    cx::cursor cursor{std::move(cx_cursor)};
+    cx::cursor parent{std::move(cx_parent)};
+
+    spdlog::info("Visiting friend class declaration{}: {} - {}:{}",
+        ctx->element.name, cursor.spelling(), cursor.kind());
+
+    enum CXChildVisitResult ret = CXChildVisit_Break;
+    switch (cursor.kind()) {
+        case CXCursor_TypeRef: {
+            spdlog::info("Adding friend declaration: {}, {}", cursor,
+                cursor.referenced());
+            class_relationship r;
+            r.type = relationship_t::kFriendship;
+            r.label = "<<friend>>";
+            r.destination = cursor.referenced().usr();
+
+            ctx->element.relationships.emplace_back(std::move(r));
+
+            ret = CXChildVisit_Continue;
+        } break;
+        default:
+            ret = CXChildVisit_Continue;
+            break;
+    }
+
+    return ret;
+}
+
 static enum CXChildVisitResult class_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
@@ -534,8 +567,12 @@ static enum CXChildVisitResult class_visitor(
             ctx->element.bases.emplace_back(std::move(cp));
 
             ret = CXChildVisit_Continue;
-            break;
-        }
+        } break;
+        case CXCursor_FriendDecl: {
+            clang_visitChildren(cursor.get(), friend_class_visitor, ctx);
+
+            ret = CXChildVisit_Continue;
+        } break;
         default:
             ret = CXChildVisit_Continue;
             break;

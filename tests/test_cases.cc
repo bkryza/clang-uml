@@ -105,6 +105,7 @@ using clanguml::test::matchers::IsClassTemplate;
 using clanguml::test::matchers::IsComposition;
 using clanguml::test::matchers::IsEnum;
 using clanguml::test::matchers::IsField;
+using clanguml::test::matchers::IsFriend;
 using clanguml::test::matchers::IsInnerClass;
 using clanguml::test::matchers::IsInstantiation;
 using clanguml::test::matchers::Private;
@@ -122,3 +123,4 @@ using clanguml::test::matchers::Static;
 #include "t00008/test_case.h"
 #include "t00009/test_case.h"
 #include "t00010/test_case.h"
+#include "t00011/test_case.h"

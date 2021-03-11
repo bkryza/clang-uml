@@ -270,6 +270,13 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
         fmt::format("{} --> {} : {}", from, to, label), caseSensitivity));
 }
 
+ContainsMatcher IsFriend(std::string const &from, std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} <.. {} : <<friend>>", from, to), caseSensitivity));
+}
+
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
     std::string const &label,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
