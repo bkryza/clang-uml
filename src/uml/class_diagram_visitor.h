@@ -209,20 +209,23 @@ static enum CXChildVisitResult friend_class_visitor(
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
-    spdlog::info("Visiting friend class declaration{}: {} - {}:{}",
-        ctx->element.name, cursor.spelling(), cursor.kind());
+    spdlog::info("Visiting friend class declaration {}: {} - {}:{}",
+        ctx->element.name, cursor.spelling(), cursor.kind(),
+        cursor.referenced());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
+        case CXCursor_TemplateRef:
+        case CXCursor_ClassTemplate:
         case CXCursor_TypeRef: {
+            spdlog::info("Analyzing friend declaration: {}, {}", cursor,
+                cursor.specialized_cursor_template());
+
             if (!ctx->ctx->config.should_include(
                     cursor.referenced().fully_qualified())) {
                 ret = CXChildVisit_Continue;
                 break;
             }
-
-            spdlog::info("Adding friend declaration: {}, {}", cursor,
-                cursor.referenced());
 
             class_relationship r;
             r.type = relationship_t::kFriendship;

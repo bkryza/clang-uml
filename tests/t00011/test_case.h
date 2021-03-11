@@ -46,8 +46,10 @@ TEST_CASE("Test t00011", "[unit-test]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClass(_A("A")));
     REQUIRE_THAT(puml, IsClass(_A("B")));
+    REQUIRE_THAT(puml, IsClass(_A("D<T>")));
 
     REQUIRE_THAT(puml, IsFriend(_A("A"), _A("B")));
+    REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
