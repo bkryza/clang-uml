@@ -215,8 +215,15 @@ static enum CXChildVisitResult friend_class_visitor(
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
         case CXCursor_TypeRef: {
+            if (!ctx->ctx->config.should_include(
+                    cursor.referenced().fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+
             spdlog::info("Adding friend declaration: {}, {}", cursor,
                 cursor.referenced());
+
             class_relationship r;
             r.type = relationship_t::kFriendship;
             r.label = "<<friend>>";

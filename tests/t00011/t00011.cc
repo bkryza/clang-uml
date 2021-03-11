@@ -1,3 +1,8 @@
+namespace external {
+class C {
+};
+}
+
 namespace clanguml {
 namespace t00011 {
 
@@ -7,6 +12,7 @@ class A {
 private:
     void foo() {}
     friend class B;
+    friend class external::C;
 };
 
 class B {
