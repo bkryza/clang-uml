@@ -130,6 +130,16 @@ public:
 
     bool is_declaration() const { return clang_isDeclaration(kind()); }
 
+    bool is_forward_declaration() const
+    {
+        auto definition = clang_getCursorDefinition(m_cursor);
+
+        if (clang_equalCursors(definition, clang_getNullCursor()))
+            return true;
+
+        return !clang_equalCursors(m_cursor, definition);
+    }
+
     bool is_invalid_declaration() const
     {
         return clang_isInvalidDeclaration(m_cursor);

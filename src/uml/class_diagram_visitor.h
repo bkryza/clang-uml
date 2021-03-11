@@ -572,9 +572,13 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_ClassTemplate:
             [[fallthrough]];
         case CXCursor_ClassDecl: {
-            spdlog::info("Found class or class template declaration: {}",
-                cursor_name_str);
+            spdlog::info(
+                "Found class or class template declaration: {}", cursor);
             if (!ctx->config.should_include(cursor.fully_qualified())) {
+                ret = CXChildVisit_Continue;
+                break;
+            }
+            if (cursor.is_forward_declaration()) {
                 ret = CXChildVisit_Continue;
                 break;
             }
