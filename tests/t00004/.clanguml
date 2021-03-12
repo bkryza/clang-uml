@@ -12,8 +12,3 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00004
-    plantuml:
-      before:
-        - "' t00004 test class members"
-      after:
-        - 'note over "A": A class'

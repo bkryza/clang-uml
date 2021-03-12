@@ -113,6 +113,7 @@ using clanguml::test::matchers::Protected;
 using clanguml::test::matchers::Public;
 using clanguml::test::matchers::Static;
 
+#include "t00000/test_case.h"
 #include "t00001/test_case.h"
 #include "t00002/test_case.h"
 #include "t00003/test_case.h"

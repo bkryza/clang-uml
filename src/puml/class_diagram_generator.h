@@ -214,6 +214,9 @@ public:
     {
         ostr << "@startuml" << std::endl;
 
+        for (const auto &b : m_config.puml.before)
+            ostr << b << std::endl;
+
         for (const auto &c : m_model.classes) {
             generate_aliases(c, ostr);
             ostr << std::endl;
@@ -228,6 +231,9 @@ public:
             generate(e, ostr);
             ostr << std::endl;
         }
+
+        for (const auto &b : m_config.puml.after)
+            ostr << b << std::endl;
 
         ostr << "@enduml" << std::endl;
     }

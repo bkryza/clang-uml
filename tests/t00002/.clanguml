@@ -10,8 +10,3 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00002
-    plantuml:
-      before:
-        - "' t00002 test class diagram"
-      after:
-        - 'note over "A": A class'
