@@ -239,6 +239,12 @@ public:
         return clang_Cursor_getTranslationUnit(m_cursor);
     }
 
+    bool is_template_parameter_variadic() const
+    {
+        const auto &tokens = tokenize();
+        return tokens.size() > 2 && tokens[1] == "...";
+    }
+
     std::string usr() const { return to_string(clang_getCursorUSR(m_cursor)); }
 
     CXSourceRange extent() const { return clang_getCursorExtent(m_cursor); }

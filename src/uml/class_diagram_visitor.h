@@ -330,13 +330,13 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
             break;
         case CXCursor_TemplateTypeParameter: {
-            const auto &tokens = cursor.tokenize();
-            spdlog::info("Found template type parameter: {}: {}, [{}]", cursor,
-                cursor.type(), fmt::join(tokens, ", "));
+            spdlog::info("Found template type parameter: {}: {}, isvariadic={}",
+                cursor, cursor.type(), cursor.is_template_parameter_variadic());
+
             class_template ct;
             ct.type = "";
             ct.default_value = "";
-            ct.is_variadic = tokens.size() > 2 && tokens[1] == "...";
+            ct.is_variadic = cursor.is_template_parameter_variadic();
             ct.name = cursor.spelling();
             if (ct.is_variadic)
                 ct.name += "...";
@@ -347,6 +347,7 @@ static enum CXChildVisitResult class_visitor(
         case CXCursor_NonTypeTemplateParameter: {
             spdlog::info("Found template nontype parameter: {}: {}",
                 cursor.spelling(), cursor.type());
+
             class_template ct;
             ct.type = cursor.type().canonical().spelling();
             ct.name = cursor.spelling();
