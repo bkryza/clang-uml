@@ -234,7 +234,31 @@ public:
         return clang_getSpecializedCursorTemplate(m_cursor);
     }
 
+    CXTranslationUnit translation_unit() const
+    {
+        return clang_Cursor_getTranslationUnit(m_cursor);
+    }
+
     std::string usr() const { return to_string(clang_getCursorUSR(m_cursor)); }
+
+    CXSourceRange extent() const { return clang_getCursorExtent(m_cursor); }
+
+    std::vector<std::string> tokenize() const
+    {
+        auto range = extent();
+        std::vector<std::string> res;
+        CXToken *toks;
+        unsigned toks_count{0};
+        auto tu = translation_unit();
+
+        clang_tokenize(tu, range, &toks, &toks_count);
+
+        for (int i = 0; i < toks_count; i++) {
+            res.push_back(to_string(clang_getTokenSpelling(tu, toks[i])));
+        }
+
+        return res;
+    }
 
     const CXCursor &get() const { return m_cursor; }
 

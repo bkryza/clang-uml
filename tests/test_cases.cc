@@ -126,6 +126,7 @@ using clanguml::test::matchers::Static;
 #include "t00009/test_case.h"
 #include "t00010/test_case.h"
 #include "t00011/test_case.h"
+#include "t00012/test_case.h"
 
 //
 // Sequence diagram tests

@@ -110,6 +110,7 @@ struct class_template {
     std::string name;
     std::string type;
     std::string default_value;
+    bool is_variadic{false};
 };
 
 class class_ : public element {
