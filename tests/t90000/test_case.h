@@ -1,5 +1,5 @@
 /**
- * tests/t00000/test_case.cc
+ * tests/t90000/test_case.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-TEST_CASE("Test t00000", "[unit-test]")
+TEST_CASE("Test t90000", "[unit-test]")
 {
     spdlog::set_level(spdlog::level::debug);
 
-    auto [config, db] = load_config("t00000");
+    auto [config, db] = load_config("t90000");
 
-    auto diagram = config.diagrams["t00000_class"];
+    auto diagram = config.diagrams["t90000_class"];
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name == "t00000_class");
+    REQUIRE(model.name == "t90000_class");
 
     auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);

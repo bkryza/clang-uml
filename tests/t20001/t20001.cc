@@ -3,7 +3,7 @@
 #include <vector>
 
 namespace clanguml {
-namespace t00001 {
+namespace t20001 {
 
 namespace detail {
 struct C {

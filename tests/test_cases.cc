@@ -113,8 +113,9 @@ using clanguml::test::matchers::Protected;
 using clanguml::test::matchers::Public;
 using clanguml::test::matchers::Static;
 
-#include "t00000/test_case.h"
-#include "t00001/test_case.h"
+//
+// Class diagram tests
+//
 #include "t00002/test_case.h"
 #include "t00003/test_case.h"
 #include "t00004/test_case.h"
@@ -125,3 +126,13 @@ using clanguml::test::matchers::Static;
 #include "t00009/test_case.h"
 #include "t00010/test_case.h"
 #include "t00011/test_case.h"
+
+//
+// Sequence diagram tests
+//
+#include "t20001/test_case.h"
+
+//
+// Other tests (e.g. configuration file)
+//
+#include "t90000/test_case.h"

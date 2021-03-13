@@ -1,22 +1,22 @@
 compilation_database_dir: ..
 output_directory: puml
 diagrams:
-  t00001_sequence:
+  t20001_sequence:
     type: sequence
     glob:
-      - ../../tests/t00001/t00001.cc
+      - ../../tests/t20001/t20001.cc
     include:
       namespaces:
-        - clanguml::t00001
+        - clanguml::t20001
     exclude:
       namespaces:
-        - clanguml::t00001::detail
+        - clanguml::t20001::detail
     using_namespace:
-      - clanguml::t00001
+      - clanguml::t20001
     start_from:
-      - usr: "c:@N@clanguml@N@t00001@F@tmain#"
+      - usr: "c:@N@clanguml@N@t20001@F@tmain#"
     plantuml:
       before:
-        - "' t00001 test sequence diagram"
+        - "' t20001 test sequence diagram"
       after:
         - 'note over "tmain()": Main test function'

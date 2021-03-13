@@ -1,5 +1,5 @@
 /**
- * tests/t00001/test_case.cc
+ * tests/t20001/test_case.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,31 +16,31 @@
  * limitations under the License.
  */
 
-TEST_CASE("Test t00001", "[unit-test]")
+TEST_CASE("Test t20001", "[unit-test]")
 {
     spdlog::set_level(spdlog::level::debug);
 
-    auto [config, db] = load_config("t00001");
+    auto [config, db] = load_config("t20001");
 
-    auto diagram = config.diagrams["t00001_sequence"];
+    auto diagram = config.diagrams["t20001_sequence"];
 
     REQUIRE(diagram->include.namespaces.size() == 1);
     REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00001"}));
+        VectorContains(std::string{"clanguml::t20001"}));
 
     REQUIRE(diagram->exclude.namespaces.size() == 1);
     REQUIRE_THAT(diagram->exclude.namespaces,
-        VectorContains(std::string{"clanguml::t00001::detail"}));
+        VectorContains(std::string{"clanguml::t20001::detail"}));
 
-    REQUIRE(diagram->should_include("clanguml::t00001::A"));
-    REQUIRE(!diagram->should_include("clanguml::t00001::detail::C"));
+    REQUIRE(diagram->should_include("clanguml::t20001::A"));
+    REQUIRE(!diagram->should_include("clanguml::t20001::detail::C"));
     REQUIRE(!diagram->should_include("std::vector"));
 
-    REQUIRE(diagram->name == "t00001_sequence");
+    REQUIRE(diagram->name == "t20001_sequence");
 
     auto model = generate_sequence_diagram(db, diagram);
 
-    REQUIRE(model.name == "t00001_sequence");
+    REQUIRE(model.name == "t20001_sequence");
 
     auto puml = generate_sequence_puml(diagram, model);
 
