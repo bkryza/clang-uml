@@ -164,7 +164,7 @@ clanguml::model::sequence_diagram::diagram generate(
         auto cursor = clang_getTranslationUnitCursor(tu);
 
         if (clang_Cursor_isNull(cursor)) {
-            spdlog::debug("CURSOR IS NULL");
+            spdlog::debug("Cursor is NULL");
         }
 
         spdlog::debug("Cursor kind: {}",

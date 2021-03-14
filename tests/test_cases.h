@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
@@ -25,6 +27,8 @@
 #include "uml/class_diagram_visitor.h"
 #include "uml/sequence_diagram_visitor.h"
 #include "util/util.h"
+
+#define CATCH_CONFIG_RUNNER
 
 #include "catch.h"
 

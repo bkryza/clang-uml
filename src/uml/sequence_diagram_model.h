@@ -53,21 +53,9 @@ struct diagram {
     bool started{false};
     std::string name;
 
-    // std::map<std::string, activity> sequences;
     std::map<std::string, activity> sequences;
 
-    void sort()
-    {
-        /*
-        std::sort(sequence.begin(), sequence.end(),
-            [](const auto &a, const auto &b) -> bool {
-                if (a.from_usr == b.from_usr)
-                    return a.line > b.line;
-
-                return a.from_usr > b.from_usr;
-            });
-            */
-    }
+    void sort() {}
 };
 }
 }

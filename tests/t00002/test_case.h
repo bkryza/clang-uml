@@ -16,10 +16,8 @@
  * limitations under the License.
  */
 
-TEST_CASE("Test t00002", "[unit-test]")
+TEST_CASE("t00002", "[unit-test]")
 {
-    spdlog::set_level(spdlog::level::debug);
-
     auto [config, db] = load_config("t00002");
 
     auto diagram = config.diagrams["t00002_class"];

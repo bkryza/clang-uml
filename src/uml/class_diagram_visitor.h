@@ -178,14 +178,14 @@ static enum CXChildVisitResult enum_visitor(
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
-    spdlog::info("Visiting enum {}: {} - {}:{}", ctx->element.name,
+    spdlog::debug("Visiting enum {}: {} - {}:{}", ctx->element.name,
         cursor.spelling(), cursor.kind());
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
         case CXCursor_EnumConstantDecl:
             visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
-                spdlog::info("Adding enum constant {}::{}", ctx->element.name,
+                spdlog::debug("Adding enum constant {}::{}", ctx->element.name,
                     cursor.spelling());
 
                 ctx->element.constants.emplace_back(cursor.spelling());
@@ -209,7 +209,7 @@ static enum CXChildVisitResult friend_class_visitor(
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
-    spdlog::info("Visiting friend class declaration {}: {} - {}:{}",
+    spdlog::debug("Visiting friend class declaration {}: {} - {}:{}",
         ctx->element.name, cursor.spelling(), cursor.kind(),
         cursor.referenced());
 
@@ -218,7 +218,7 @@ static enum CXChildVisitResult friend_class_visitor(
         case CXCursor_TemplateRef:
         case CXCursor_ClassTemplate:
         case CXCursor_TypeRef: {
-            spdlog::info("Analyzing friend declaration: {}, {}", cursor,
+            spdlog::debug("Analyzing friend declaration: {}, {}", cursor,
                 cursor.specialized_cursor_template());
 
             if (!ctx->ctx->config.should_include(
@@ -254,7 +254,7 @@ static enum CXChildVisitResult class_visitor(
 
     std::string cursor_name_str = cursor.spelling();
 
-    spdlog::info("Visiting {}: {} - {}",
+    spdlog::debug("Visiting {}: {} - {}",
         ctx->element.is_struct ? "struct" : "class", ctx->element.name, cursor);
 
     auto &config = ctx->ctx->config;
@@ -280,7 +280,7 @@ static enum CXChildVisitResult class_visitor(
                 c.name = cursor.fully_qualified();
                 c.namespace_ = ctx->ctx->namespace_;
 
-                spdlog::info("Class {} has {} template arguments.", c.name,
+                spdlog::debug("Class {} has {} template arguments.", c.name,
                     cursor.template_argument_count());
 
                 auto class_ctx =
@@ -294,7 +294,7 @@ static enum CXChildVisitResult class_visitor(
                 containment.destination = c.name;
                 ctx->element.relationships.emplace_back(std::move(containment));
 
-                spdlog::info(
+                spdlog::debug(
                     "Added relationship {} +-- {}", ctx->element.name, c.name);
 
                 ctx->ctx->d.classes.emplace_back(std::move(c));
@@ -322,7 +322,7 @@ static enum CXChildVisitResult class_visitor(
                 containment.destination = e.name;
                 ctx->element.relationships.emplace_back(std::move(containment));
 
-                spdlog::info(
+                spdlog::debug(
                     "Added relationship {} +-- {}", ctx->element.name, e.name);
 
                 ctx->ctx->d.enums.emplace_back(std::move(e));
@@ -330,8 +330,9 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
             break;
         case CXCursor_TemplateTypeParameter: {
-            spdlog::info("Found template type parameter: {}: {}, isvariadic={}",
-                cursor, cursor.type(), cursor.is_template_parameter_variadic());
+            spdlog::debug(
+                "Found template type parameter: {}: {}, isvariadic={}", cursor,
+                cursor.type(), cursor.is_template_parameter_variadic());
 
             class_template ct;
             ct.type = "";
@@ -345,7 +346,7 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
         } break;
         case CXCursor_NonTypeTemplateParameter: {
-            spdlog::info(
+            spdlog::debug(
                 "Found template nontype parameter: {}: {}, isvariadic={}",
                 cursor.spelling(), cursor.type(),
                 cursor.is_template_parameter_variadic());
@@ -362,7 +363,7 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
         } break;
         case CXCursor_TemplateTemplateParameter: {
-            spdlog::info("Found template template parameter: {}: {}",
+            spdlog::debug("Found template template parameter: {}: {}",
                 cursor.spelling(), cursor.type());
 
             class_template ct;
@@ -394,7 +395,7 @@ static enum CXChildVisitResult class_visitor(
                 m.scope =
                     cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
 
-                spdlog::info("Adding method {} {}::{}()", m.type,
+                spdlog::debug("Adding method {} {}::{}()", m.type,
                     ctx->element.name, cursor.spelling());
 
                 ctx->element.methods.emplace_back(std::move(m));
@@ -422,7 +423,7 @@ static enum CXChildVisitResult class_visitor(
                         cursor.cxxaccess_specifier());
                     m.is_static = cursor.is_static();
 
-                    spdlog::info("Adding member {} {}::{} {}, {}, {}", m.type,
+                    spdlog::debug("Adding member {} {}::{} {}, {}, {}", m.type,
                         ctx->element.name, cursor.spelling(), t, tr,
                         tr.type_declaration());
 
@@ -443,7 +444,7 @@ static enum CXChildVisitResult class_visitor(
                                 template_type = tr.type_declaration();
                             }
 
-                            spdlog::info(
+                            spdlog::debug(
                                 "Found template instantiation: {} ..|> {}", tr,
                                 template_type);
 
@@ -472,7 +473,7 @@ static enum CXChildVisitResult class_visitor(
                                 ct.type = template_param;
                                 tinst.templates.emplace_back(std::move(ct));
 
-                                spdlog::info("Adding template argument '{}'",
+                                spdlog::debug("Adding template argument '{}'",
                                     template_param);
                             }
 
@@ -519,7 +520,7 @@ static enum CXChildVisitResult class_visitor(
                         // relationship type Skip:
                         //  - POD
                         //  - function variables
-                        spdlog::info(
+                        spdlog::debug(
                             "Analyzing possible relationship candidate: {}",
                             t.canonical().unqualified());
 
@@ -544,7 +545,7 @@ static enum CXChildVisitResult class_visitor(
                                     ctx->element.relationships.emplace_back(
                                         std::move(r));
 
-                                    spdlog::info("Added relationship to: {}",
+                                    spdlog::debug("Added relationship to: {}",
                                         r.destination);
                                 }
                             }
@@ -557,7 +558,7 @@ static enum CXChildVisitResult class_visitor(
             break;
         }
         case CXCursor_ClassTemplatePartialSpecialization: {
-            spdlog::info("Found template specialization: {}", cursor);
+            spdlog::debug("Found template specialization: {}", cursor);
             ret = CXChildVisit_Continue;
         } break;
         case CXCursor_CXXBaseSpecifier: {
@@ -571,7 +572,7 @@ static enum CXChildVisitResult class_visitor(
 
             auto base_access = cursor.cxxaccess_specifier();
 
-            spdlog::info(
+            spdlog::debug(
                 "Found base specifier: {} - {}", cursor_name_str, display_name);
 
             class_parent cp;
@@ -636,7 +637,7 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_ClassTemplate:
             [[fallthrough]];
         case CXCursor_ClassDecl: {
-            spdlog::info(
+            spdlog::debug(
                 "Found class or class template declaration: {}", cursor);
             if (!ctx->config.should_include(cursor.fully_qualified())) {
                 ret = CXChildVisit_Continue;

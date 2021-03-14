@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+//#define CATCH_CONFIG_MAIN
 
 #include "test_cases.h"
+
+#include <spdlog/spdlog.h>
 
 std::pair<clanguml::config::config, compilation_database> load_config(
     const std::string &test_name)
@@ -137,3 +139,15 @@ using clanguml::test::matchers::Static;
 // Other tests (e.g. configuration file)
 //
 #include "t90000/test_case.h"
+
+//
+// Main test function
+//
+int main(int argc, char *argv[])
+{
+    spdlog::default_logger_raw()->set_level(spdlog::level::debug);
+
+    int result = Catch::Session().run(argc, argv);
+
+    return result;
+}

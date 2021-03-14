@@ -261,7 +261,7 @@ template <> struct convert<config> {
                 rhs.diagrams[name] = std::make_shared<class_diagram>(
                     d.second.as<class_diagram>());
             }
-            if (diagram_type == "sequence") {
+            else if (diagram_type == "sequence") {
                 rhs.diagrams[name] = std::make_shared<sequence_diagram>(
                     d.second.as<sequence_diagram>());
             }
