@@ -266,6 +266,40 @@ public:
         return res;
     }
 
+    std::vector<std::string> tokenize_template_parameters() const
+    {
+        const auto &toks = tokenize();
+        std::vector<std::string> res;
+        bool inside_template{false};
+        bool is_namespace{false};
+        for (const auto &tok : toks) {
+            auto t = clanguml::util::trim(tok);
+            if (t == ">") {
+                break;
+            }
+            if (inside_template) {
+                if (t == ",")
+                    continue;
+                if (t == "::") {
+                    is_namespace = true;
+                    res.back() += t;
+                }
+                else if (is_namespace) {
+                    is_namespace = false;
+                    res.back() += t;
+                }
+                else {
+                    res.push_back(t);
+                }
+            }
+            if (t == "<") {
+                inside_template = true;
+            }
+        }
+
+        return res;
+    }
+
     const CXCursor &get() const { return m_cursor; }
 
 private:

@@ -69,6 +69,8 @@ public:
         return clang_isRestrictQualifiedType(m_type);
     }
 
+    bool is_invalid() const { return kind() == CXType_Invalid; }
+
     std::string typedef_name() const
     {
         return to_string(clang_getTypedefName(m_type));

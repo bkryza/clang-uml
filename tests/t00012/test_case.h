@@ -45,6 +45,7 @@ TEST_CASE("Test t00012", "[unit-test]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T, Ts..."));
+    REQUIRE_THAT(puml, IsClassTemplate("B", "int Is..."));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

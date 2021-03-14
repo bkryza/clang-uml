@@ -345,13 +345,18 @@ static enum CXChildVisitResult class_visitor(
             ret = CXChildVisit_Continue;
         } break;
         case CXCursor_NonTypeTemplateParameter: {
-            spdlog::info("Found template nontype parameter: {}: {}",
-                cursor.spelling(), cursor.type());
+            spdlog::info(
+                "Found template nontype parameter: {}: {}, isvariadic={}",
+                cursor.spelling(), cursor.type(),
+                cursor.is_template_parameter_variadic());
 
             class_template ct;
             ct.type = cursor.type().canonical().spelling();
             ct.name = cursor.spelling();
             ct.default_value = "";
+            ct.is_variadic = cursor.is_template_parameter_variadic();
+            if (ct.is_variadic)
+                ct.name += "...";
             ctx->element.templates.emplace_back(std::move(ct));
 
             ret = CXChildVisit_Continue;
@@ -456,13 +461,38 @@ static enum CXChildVisitResult class_visitor(
                             else {
                                 tinst.usr = tr.type_declaration().usr();
                             }
-                            for (int i = 0; i < tr.template_arguments_count();
-                                 i++) {
-                                class_template ct;
-                                ct.type =
-                                    tr.template_argument_type(i).spelling();
-                                tinst.templates.emplace_back(std::move(ct));
+
+                            if (!tr.template_argument_type(0).is_invalid()) {
+                                for (int i = 0;
+                                     i < tr.template_arguments_count(); i++) {
+                                    auto template_param =
+                                        tr.template_argument_type(i);
+                                    class_template ct;
+                                    ct.type = template_param.spelling();
+                                    tinst.templates.emplace_back(std::move(ct));
+
+                                    spdlog::info(
+                                        "Adding template argument '{}'",
+                                        template_param);
+                                }
                             }
+                            else {
+                                const auto &instantiation_params =
+                                    cursor.tokenize_template_parameters();
+
+                                for (const auto &template_param :
+                                    instantiation_params) {
+
+                                    class_template ct;
+                                    ct.type = template_param;
+                                    tinst.templates.emplace_back(std::move(ct));
+
+                                    spdlog::info(
+                                        "Adding template argument '{}'",
+                                        template_param);
+                                }
+                            }
+
                             if (partial_specialization) {
                                 tinst.base_template_usr = template_type.usr();
                             }
@@ -496,7 +526,6 @@ static enum CXChildVisitResult class_visitor(
                         }
                     }
                     if (!added_relation_to_instantiation) {
-
                         relationship_t relationship_type =
                             relationship_t::kNone;
 
