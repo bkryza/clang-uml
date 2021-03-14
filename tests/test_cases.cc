@@ -145,9 +145,21 @@ using clanguml::test::matchers::Static;
 //
 int main(int argc, char *argv[])
 {
-    spdlog::default_logger_raw()->set_level(spdlog::level::debug);
+    Catch::Session session;
+    using namespace Catch::clara;
 
-    int result = Catch::Session().run(argc, argv);
+    bool debug_log{false};
+    auto cli = session.cli() |
+        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
 
-    return result;
+    session.cli(cli);
+
+    int returnCode = session.applyCommandLine(argc, argv);
+    if (returnCode != 0)
+        return returnCode;
+
+    if (debug_log)
+        spdlog::default_logger_raw()->set_level(spdlog::level::debug);
+
+    return session.run();
 }
