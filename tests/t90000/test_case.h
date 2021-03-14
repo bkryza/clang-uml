@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-TEST_CASE("t90000", "[unit-test]")
+TEST_CASE("t90000", "[test-case][config]")
 {
     auto [config, db] = load_config("t90000");
 
