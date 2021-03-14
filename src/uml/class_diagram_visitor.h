@@ -462,35 +462,18 @@ static enum CXChildVisitResult class_visitor(
                                 tinst.usr = tr.type_declaration().usr();
                             }
 
-                            if (!tr.template_argument_type(0).is_invalid()) {
-                                for (int i = 0;
-                                     i < tr.template_arguments_count(); i++) {
-                                    auto template_param =
-                                        tr.template_argument_type(i);
-                                    class_template ct;
-                                    ct.type = template_param.spelling();
-                                    tinst.templates.emplace_back(std::move(ct));
+                            const auto &instantiation_params =
+                                cursor.tokenize_template_parameters();
 
-                                    spdlog::info(
-                                        "Adding template argument '{}'",
-                                        template_param);
-                                }
-                            }
-                            else {
-                                const auto &instantiation_params =
-                                    cursor.tokenize_template_parameters();
+                            for (const auto &template_param :
+                                instantiation_params) {
 
-                                for (const auto &template_param :
-                                    instantiation_params) {
+                                class_template ct;
+                                ct.type = template_param;
+                                tinst.templates.emplace_back(std::move(ct));
 
-                                    class_template ct;
-                                    ct.type = template_param;
-                                    tinst.templates.emplace_back(std::move(ct));
-
-                                    spdlog::info(
-                                        "Adding template argument '{}'",
-                                        template_param);
-                                }
+                                spdlog::info("Adding template argument '{}'",
+                                    template_param);
                             }
 
                             if (partial_specialization) {

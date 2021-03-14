@@ -268,36 +268,29 @@ public:
 
     std::vector<std::string> tokenize_template_parameters() const
     {
-        const auto &toks = tokenize();
+        auto toks = tokenize();
         std::vector<std::string> res;
         bool inside_template{false};
         bool is_namespace{false};
-        for (const auto &tok : toks) {
-            auto t = clanguml::util::trim(tok);
-            if (t == ">") {
-                break;
-            }
-            if (inside_template) {
-                if (t == ",")
-                    continue;
-                if (t == "::") {
-                    is_namespace = true;
-                    res.back() += t;
-                }
-                else if (is_namespace) {
-                    is_namespace = false;
-                    res.back() += t;
-                }
-                else {
-                    res.push_back(t);
-                }
-            }
-            if (t == "<") {
-                inside_template = true;
+
+        for (int i = 0; i < toks.size(); i++) {
+            // libclang returns ">..>>" in template as a single token...
+            auto t = toks[i];
+            if (std::all_of(t.begin(), t.end(),
+                    [](const char &c) { return c == '>'; })) {
+                toks[i] = ">";
+                for (int j = 0; j < t.size() - 1; j++)
+                    toks.insert(toks.begin() + i, ">");
             }
         }
+        auto template_start = std::find(toks.begin(), toks.end(), "<");
+        auto template_end = std::find(toks.rbegin(), toks.rend(), ">");
 
-        return res;
+        decltype(res) template_contents(
+            template_start + 1, template_end.base() - 1);
+
+        return clanguml::util::split(
+            fmt::format("{}", fmt::join(template_contents, "")), ",");
     }
 
     const CXCursor &get() const { return m_cursor; }
