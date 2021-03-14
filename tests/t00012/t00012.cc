@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <map>
 #include <numeric>
+#include <string>
 #include <variant>
 
 namespace clanguml {
