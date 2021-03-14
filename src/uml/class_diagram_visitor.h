@@ -571,7 +571,7 @@ static enum CXChildVisitResult class_visitor(
 
             auto base_access = cursor.cxxaccess_specifier();
 
-            spdlog::error(
+            spdlog::info(
                 "Found base specifier: {} - {}", cursor_name_str, display_name);
 
             class_parent cp;
