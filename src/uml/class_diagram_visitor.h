@@ -239,7 +239,7 @@ static enum CXChildVisitResult method_parameter_visitor(
 
                 assert(ctx->parent_class != nullptr);
 
-                ctx->parent_class->relationships.emplace_back(std::move(r));
+                ctx->parent_class->add_relationship(std::move(r));
             }
 
             ret = CXChildVisit_Continue;

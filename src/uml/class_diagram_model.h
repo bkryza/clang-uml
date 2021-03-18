@@ -117,6 +117,13 @@ struct class_relationship {
     std::string cardinality_source;
     std::string cardinality_destination;
     std::string label;
+
+    friend bool operator==(
+        const class_relationship &l, const class_relationship &r)
+    {
+        return l.type == r.type && l.destination == r.destination &&
+            l.label == r.label;
+    }
 };
 
 struct class_template {
@@ -139,6 +146,13 @@ public:
     std::vector<class_relationship> relationships;
     std::vector<class_template> templates;
     std::string base_template_usr;
+
+    void add_relationship(class_relationship &&cr)
+    {
+        auto it = std::find(relationships.begin(), relationships.end(), cr);
+        if (it == relationships.end())
+            relationships.emplace_back(std::move(cr));
+    }
 
     std::string full_name(
         const std::vector<std::string> &using_namespaces) const

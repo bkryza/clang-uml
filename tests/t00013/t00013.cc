@@ -33,6 +33,8 @@ public:
     // TODO: int get_b(const B &b) { return b.b; }
     int get_c(C c) { return c.c; }
     int get_d(D &&d) { return d.d; }
+    // Dependency relationship should be rendered only once
+    int get_d2(D &&d) { return d.d; }
 };
 }
 }
