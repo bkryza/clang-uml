@@ -39,4 +39,10 @@ TEST_CASE("Test ns_relative", "[unit-test]")
     using namespace clanguml::util;
 
     CHECK(ns_relative({}, "std::vector") == "std::vector");
+    CHECK(ns_relative({"std"}, "std::vector") == "vector");
+    CHECK(ns_relative({"std"}, "const std::vector&") == "const vector&");
+    CHECK(ns_relative({"std", "clanguml::t0"},
+              "static const std::vector<clanguml::t0::a>&") ==
+        "static const vector<a>&");
+    CHECK(ns_relative({"clanguml::t0"}, "clanguml::t0") == "t0");
 }

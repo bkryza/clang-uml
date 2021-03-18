@@ -18,6 +18,12 @@ public:
     auto double_int(const int i) { return 2 * i; }
     auto sum(const double a, const double b) { return a + b; }
 
+    auto default_int(int i = 12) { return i + 10; }
+    auto default_string(int i, std::string s = "abc")
+    {
+        return s + std::to_string(i);
+    }
+
     int public_member;
     static int static_int;
     static const int static_const_int = 1;

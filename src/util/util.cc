@@ -67,6 +67,8 @@ std::string ns_relative(
 
     std::sort(namespaces_sorted.rbegin(), namespaces_sorted.rend());
 
+    auto res = n;
+
     for (const auto &ns : namespaces_sorted) {
         if (ns.empty())
             continue;
@@ -74,15 +76,14 @@ std::string ns_relative(
         if (n == ns)
             return split(n, "::").back();
 
-        if (n.find(ns) == 0) {
-            if (n.size() <= ns.size() + 2)
-                return "";
-
-            return n.substr(ns.size() + 2);
+        auto ns_prefix = ns + "::";
+        auto it = res.find(ns_prefix);
+        while (it != std::string::npos) {
+            res.erase(it, ns_prefix.size());
+            it = res.find(ns_prefix);
         }
     }
-
-    return n;
+    return res;
 }
 }
 }

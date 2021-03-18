@@ -223,6 +223,7 @@ static enum CXChildVisitResult method_parameter_visitor(
             method_parameter mp;
             mp.name = cursor.spelling();
             mp.type = cursor.type().spelling();
+            mp.default_value = cursor.default_value();
 
             ctx->element.parameters.emplace_back(std::move(mp));
 

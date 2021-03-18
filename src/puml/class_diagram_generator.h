@@ -136,8 +136,9 @@ public:
             if (true) { // TODO: add option to disable parameter generation
                 std::vector<std::string> params;
                 std::transform(m.parameters.begin(), m.parameters.end(),
-                    std::back_inserter(params),
-                    [](const auto &mp) { return mp.to_string(); });
+                    std::back_inserter(params), [this](const auto &mp) {
+                        return mp.to_string(m_config.using_namespace);
+                    });
                 ostr << fmt::format("{}", fmt::join(params, ", "));
             }
             ostr << ")";

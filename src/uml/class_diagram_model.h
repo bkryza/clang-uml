@@ -82,12 +82,15 @@ struct method_parameter {
     std::string name;
     std::string default_value;
 
-    std::string to_string() const
+    std::string to_string(
+        const std::vector<std::string> &using_namespaces) const
     {
+        using namespace clanguml::util;
+        auto t = ns_relative(using_namespaces, type);
         if (default_value.empty())
-            return fmt::format("{} {}", type, name);
+            return fmt::format("{} {}", t, name);
 
-        return fmt::format("{} {} = {}", type, name, default_value);
+        return fmt::format("{} {} = {}", t, name, default_value);
     }
 };
 

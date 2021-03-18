@@ -194,6 +194,8 @@ public:
         return clang_CXXMethod_isDefaulted(m_cursor);
     }
 
+    bool is_method_parameter() const { return kind() == CXCursor_ParmDecl; }
+
     CXVisibilityKind visibitity() const
     {
         return clang_getCursorVisibility(m_cursor);
@@ -261,6 +263,20 @@ public:
 
         for (int i = 0; i < toks_count; i++) {
             res.push_back(to_string(clang_getTokenSpelling(tu, toks[i])));
+        }
+
+        return res;
+    }
+
+    std::string default_value() const
+    {
+        assert(is_method_parameter());
+
+        auto toks = tokenize();
+        std::string res;
+        auto it = std::find(toks.begin(), toks.end(), "=");
+        if (it != toks.end()) {
+            res = fmt::format("{}", fmt::join(it + 1, toks.end(), ""));
         }
 
         return res;
