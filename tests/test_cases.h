@@ -304,6 +304,13 @@ ContainsMatcher IsInstantiation(std::string const &from, std::string const &to,
         CasedString(fmt::format("{} ..|> {}", to, from), caseSensitivity));
 }
 
+ContainsMatcher IsDependency(std::string const &from, std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+}
+
 ContainsMatcher IsMethod(std::string const &name,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

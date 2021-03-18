@@ -15,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//#define CATCH_CONFIG_MAIN
-
 #include "test_cases.h"
 
 #include <spdlog/spdlog.h>
@@ -105,6 +103,7 @@ using clanguml::test::matchers::IsBaseClass;
 using clanguml::test::matchers::IsClass;
 using clanguml::test::matchers::IsClassTemplate;
 using clanguml::test::matchers::IsComposition;
+using clanguml::test::matchers::IsDependency;
 using clanguml::test::matchers::IsEnum;
 using clanguml::test::matchers::IsField;
 using clanguml::test::matchers::IsFriend;
@@ -129,6 +128,7 @@ using clanguml::test::matchers::Static;
 #include "t00010/test_case.h"
 #include "t00011/test_case.h"
 #include "t00012/test_case.h"
+#include "t00013/test_case.h"
 
 //
 // Sequence diagram tests

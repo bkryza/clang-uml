@@ -45,7 +45,8 @@ enum class relationship_t {
     kOwnership,
     kAssociation,
     kInstantiation,
-    kFriendship
+    kFriendship,
+    kDependency
 };
 
 class element {

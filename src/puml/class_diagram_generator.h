@@ -92,6 +92,8 @@ public:
                 return "..|>";
             case relationship_t::kFriendship:
                 return "<..";
+            case relationship_t::kDependency:
+                return "..>";
             default:
                 return "";
         }

@@ -65,6 +65,7 @@ template <typename T> struct element_visitor_context {
     tu_context *ctx;
 
     T &element;
+    class_ *parent_class{};
     diagram &d;
 };
 
@@ -220,26 +221,26 @@ static enum CXChildVisitResult method_parameter_visitor(
             spdlog::debug(
                 "Analyzing method parameter: {}, {}", cursor, cursor.type());
 
+            auto t = cursor.type();
             method_parameter mp;
             mp.name = cursor.spelling();
-            mp.type = cursor.type().spelling();
+            mp.type = t.spelling();
             mp.default_value = cursor.default_value();
 
             ctx->element.parameters.emplace_back(std::move(mp));
 
-            /* TODO: handle dependency relationships based
-             * on method arguments
-             *
-             if (ctx->ctx->config.should_include(
-                    cursor.type().referenced().fully_qualified())) {
+            if (t.is_relationship() &&
+                ctx->ctx->config.should_include(t.referenced().spelling()) &&
+                (t.referenced().spelling() != ctx->parent_class->name)) {
 
-            class_relationship r;
-            r.type = relationship_t::kDependency;
-            r.destination = cursor.type().referenced().usr();
+                class_relationship r;
+                r.type = relationship_t::kDependency;
+                r.destination = t.referenced().spelling();
 
-            ctx->element.relationships.emplace_back(std::move(r));
+                assert(ctx->parent_class != nullptr);
+
+                ctx->parent_class->relationships.emplace_back(std::move(r));
             }
-            */
 
             ret = CXChildVisit_Continue;
         } break;
@@ -448,6 +449,7 @@ static enum CXChildVisitResult class_visitor(
                 auto method_ctx =
                     element_visitor_context<class_method>(ctx->d, m);
                 method_ctx.ctx = ctx->ctx;
+                method_ctx.parent_class = &ctx->element;
 
                 clang_visitChildren(
                     cursor.get(), method_parameter_visitor, &method_ctx);
