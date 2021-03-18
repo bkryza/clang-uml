@@ -452,8 +452,9 @@ static enum CXChildVisitResult class_visitor(
                 clang_visitChildren(
                     cursor.get(), method_parameter_visitor, &method_ctx);
 
-                spdlog::debug("Adding method {} {}::{}()", m.type,
-                    ctx->element.name, cursor.spelling());
+                spdlog::debug("Adding method {} {}::{}()",
+                    cursor.type().result_type(), ctx->element.name,
+                    cursor.spelling());
 
                 ctx->element.methods.emplace_back(std::move(m));
             });

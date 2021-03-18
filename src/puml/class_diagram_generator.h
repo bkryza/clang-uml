@@ -130,7 +130,8 @@ public:
             if (m.type != "void")
                 type = m.type + " ";
 
-            ostr << to_string(m.scope) << type << m.name;
+            ostr << to_string(m.scope)
+                 << ns_relative(m_config.using_namespace, type) << m.name;
 
             ostr << "(";
             if (true) { // TODO: add option to disable parameter generation

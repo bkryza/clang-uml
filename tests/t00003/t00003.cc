@@ -6,6 +6,10 @@ namespace t00003 {
 class A {
 public:
     A() = default;
+    A(int i)
+        : private_member{i}
+    {
+    }
     A(A &&) = default;
     A(const A &) = default;
     virtual ~A() = default;
@@ -19,10 +23,12 @@ public:
     auto sum(const double a, const double b) { return a + b; }
 
     auto default_int(int i = 12) { return i + 10; }
-    auto default_string(int i, std::string s = "abc")
+    std::string default_string(int i, std::string s = "abc")
     {
         return s + std::to_string(i);
     }
+
+    static A create_from_int(int i) { return A(i); }
 
     int public_member;
     static int static_int;
