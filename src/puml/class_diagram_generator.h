@@ -130,7 +130,17 @@ public:
             if (m.type != "void")
                 type = m.type + " ";
 
-            ostr << to_string(m.scope) << type << m.name + "()";
+            ostr << to_string(m.scope) << type << m.name;
+
+            ostr << "(";
+            if (true) { // TODO: add option to disable parameter generation
+                std::vector<std::string> params;
+                std::transform(m.parameters.begin(), m.parameters.end(),
+                    std::back_inserter(params),
+                    [](const auto &mp) { return mp.to_string(); });
+                ostr << fmt::format("{}", fmt::join(params, ", "));
+            }
+            ostr << ")";
 
             if (m.is_const)
                 ostr << " const";

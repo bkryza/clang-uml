@@ -15,6 +15,9 @@ public:
     void const_method() const {}
     auto auto_method() { return 1; }
 
+    auto double_int(const int i) { return 2 * i; }
+    auto sum(const double a, const double b) { return a + b; }
+
     int public_member;
     static int static_int;
     static const int static_const_int = 1;

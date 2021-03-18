@@ -40,6 +40,7 @@ using clanguml::model::class_diagram::class_relationship;
 using clanguml::model::class_diagram::class_template;
 using clanguml::model::class_diagram::diagram;
 using clanguml::model::class_diagram::enum_;
+using clanguml::model::class_diagram::method_parameter;
 using clanguml::model::class_diagram::relationship_t;
 using clanguml::model::class_diagram::scope_t;
 
@@ -193,6 +194,54 @@ static enum CXChildVisitResult enum_visitor(
 
             ret = CXChildVisit_Continue;
             break;
+        default:
+            ret = CXChildVisit_Continue;
+            break;
+    }
+
+    return ret;
+}
+
+static enum CXChildVisitResult method_parameter_visitor(
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
+{
+    auto ctx = (element_visitor_context<class_method> *)client_data;
+
+    cx::cursor cursor{std::move(cx_cursor)};
+    cx::cursor parent{std::move(cx_parent)};
+
+    spdlog::debug("Visiting method declaration {}: {} - {}:{}",
+        ctx->element.name, cursor.spelling(), cursor.kind(),
+        cursor.referenced());
+
+    enum CXChildVisitResult ret = CXChildVisit_Break;
+    switch (cursor.kind()) {
+        case CXCursor_ParmDecl: {
+            spdlog::debug(
+                "Analyzing method parameter: {}, {}", cursor, cursor.type());
+
+            method_parameter mp;
+            mp.name = cursor.spelling();
+            mp.type = cursor.type().spelling();
+
+            ctx->element.parameters.emplace_back(std::move(mp));
+
+            /* TODO: handle dependency relationships based
+             * on method arguments
+             *
+             if (ctx->ctx->config.should_include(
+                    cursor.type().referenced().fully_qualified())) {
+
+            class_relationship r;
+            r.type = relationship_t::kDependency;
+            r.destination = cursor.type().referenced().usr();
+
+            ctx->element.relationships.emplace_back(std::move(r));
+            }
+            */
+
+            ret = CXChildVisit_Continue;
+        } break;
         default:
             ret = CXChildVisit_Continue;
             break;
@@ -394,6 +443,13 @@ static enum CXChildVisitResult class_visitor(
                 m.is_static = cursor.is_method_static();
                 m.scope =
                     cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
+
+                auto method_ctx =
+                    element_visitor_context<class_method>(ctx->d, m);
+                method_ctx.ctx = ctx->ctx;
+
+                clang_visitChildren(
+                    cursor.get(), method_parameter_visitor, &method_ctx);
 
                 spdlog::debug("Adding method {} {}::{}()", m.type,
                     ctx->element.name, cursor.spelling());

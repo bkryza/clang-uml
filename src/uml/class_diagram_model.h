@@ -77,13 +77,22 @@ struct class_member : public class_element {
     bool is_static{false};
 };
 
-struct method_argument {
+struct method_parameter {
     std::string type;
     std::string name;
+    std::string default_value;
+
+    std::string to_string() const
+    {
+        if (default_value.empty())
+            return fmt::format("{} {}", type, name);
+
+        return fmt::format("{} {} = {}", type, name, default_value);
+    }
 };
 
 struct class_method : public class_element {
-    std::vector<method_argument> arguments;
+    std::vector<method_parameter> parameters;
     bool is_pure_virtual{false};
     bool is_virtual{false};
     bool is_const{false};
