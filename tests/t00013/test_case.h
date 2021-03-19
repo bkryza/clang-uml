@@ -24,7 +24,6 @@ TEST_CASE("t00013", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00013_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
     REQUIRE_THAT(diagram->include.namespaces,
         VectorContains(std::string{"clanguml::t00013"}));
 
@@ -32,6 +31,7 @@ TEST_CASE("t00013", "[test-case][class]")
 
     REQUIRE(diagram->should_include("clanguml::t00013::A"));
     REQUIRE(diagram->should_include("clanguml::t00013::B"));
+    REQUIRE(diagram->should_include("ABCD::F"));
 
     auto model = generate_class_diagram(db, diagram);
 
@@ -50,6 +50,8 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("C")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("D")));
+    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<T>")));
+    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
     REQUIRE_THAT(puml, IsDependency(_A("D"), _A("R")));
 
     save_puml(

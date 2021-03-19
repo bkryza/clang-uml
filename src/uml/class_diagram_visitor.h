@@ -218,8 +218,8 @@ static enum CXChildVisitResult method_parameter_visitor(
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
         case CXCursor_ParmDecl: {
-            spdlog::debug(
-                "Analyzing method parameter: {}, {}", cursor, cursor.type());
+            spdlog::debug("Analyzing method parameter: {}, {}, {}", cursor,
+                cursor.type(), cursor.type().named_type());
 
             auto t = cursor.type();
             method_parameter mp;
@@ -228,21 +228,35 @@ static enum CXChildVisitResult method_parameter_visitor(
             mp.default_value = cursor.default_value();
 
             ctx->element.parameters.emplace_back(std::move(mp));
+            std::string rdestination{};
 
-            if (t.is_relationship() &&
-                ctx->ctx->config.should_include(t.referenced().spelling()) &&
-                (t.referenced().spelling() != ctx->parent_class->name)) {
+            if (t.is_relationship()) {
+                if (t.is_template_instantiation()) {
+                    rdestination = t.referenced().instantiation_template();
+                }
+                else {
+                    rdestination = t.referenced().spelling();
+                }
 
-                class_relationship r;
-                r.type = relationship_t::kDependency;
-                r.destination = t.referenced().spelling();
+                if (ctx->ctx->config.should_include(rdestination) &&
+                    rdestination != ctx->parent_class->name) {
 
-                assert(ctx->parent_class != nullptr);
+                    spdlog::debug("ADDING DEPENDENCY TO {} \n\tCURSOR={} "
+                                  "\n\tREFTYPE={} \n\tTYPEDECL={}",
+                        rdestination, cursor, t.referenced(),
+                        t.referenced().type_declaration().usr());
 
-                ctx->parent_class->add_relationship(std::move(r));
+                    class_relationship r;
+                    r.type = relationship_t::kDependency;
+                    r.destination = t.referenced().type_declaration().usr();
+
+                    assert(ctx->parent_class != nullptr);
+
+                    ctx->parent_class->add_relationship(std::move(r));
+                }
+
+                ret = CXChildVisit_Continue;
             }
-
-            ret = CXChildVisit_Continue;
         } break;
         default:
             ret = CXChildVisit_Continue;

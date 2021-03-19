@@ -231,7 +231,7 @@ struct diagram {
                 return c.full_name(using_namespaces);
         }
 
-        return usr;
+        return "";
     }
 };
 }
