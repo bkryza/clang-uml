@@ -310,6 +310,126 @@ static enum CXChildVisitResult friend_class_visitor(
 }
 
 static enum CXChildVisitResult class_visitor(
+    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data);
+
+static void process_class_declaration(
+    cx::cursor cursor, bool is_struct, class_ *parent, struct tu_context *ctx)
+{
+    class_ c;
+    c.usr = cursor.usr();
+    c.is_struct = is_struct;
+    c.name = cursor.fully_qualified();
+    c.namespace_ = ctx->namespace_;
+
+    spdlog::debug("Class {} has {} template arguments.", c.name,
+        cursor.template_argument_count());
+
+    auto class_ctx = element_visitor_context<class_>(ctx->d, c);
+    class_ctx.ctx = ctx;
+
+    clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
+
+    if (parent != nullptr) {
+        class_relationship containment;
+        containment.type = relationship_t::kContainment;
+        containment.destination = c.name;
+        parent->relationships.emplace_back(std::move(containment));
+
+        spdlog::debug("Added relationship {} +-- {}", parent->name, c.name);
+    }
+
+    ctx->d.classes.emplace_back(std::move(c));
+}
+
+static class_ build_template_instantiation(cx::cursor cursor, cx::type t)
+{
+    auto template_type = t.type_declaration().specialized_cursor_template();
+
+    spdlog::debug("Found template instantiation: {} ..|> {}", t, template_type);
+
+    bool partial_specialization = false;
+    if (template_type.kind() == CXCursor_InvalidFile) {
+        partial_specialization = true;
+        template_type = t.type_declaration();
+    }
+
+    class_ tinst;
+    tinst.name = template_type.spelling();
+    tinst.name = template_type.spelling();
+    tinst.is_template_instantiation = true;
+    if (partial_specialization) {
+        tinst.usr = template_type.usr();
+    }
+    else {
+        tinst.usr = t.type_declaration().usr();
+    }
+
+    const auto &instantiation_params = cursor.tokenize_template_parameters();
+
+    for (const auto &template_param : instantiation_params) {
+
+        class_template ct;
+        ct.type = template_param;
+        tinst.templates.emplace_back(std::move(ct));
+
+        spdlog::debug("Adding template argument '{}'", template_param);
+    }
+
+    tinst.base_template_usr = template_type.usr();
+
+    return tinst;
+}
+
+static bool process_template_specialization_class_field(
+    cx::cursor cursor, cx::type t, element_visitor_context<class_> *ctx)
+{
+    auto tr = t.referenced();
+    if (tr.is_template_instantiation() &&
+        (tr.type_declaration().kind() != CXCursor_InvalidFile ||
+            tr.type_declaration().specialized_cursor_template().kind() !=
+                CXCursor_InvalidFile)) {
+
+        class_ tinst = build_template_instantiation(cursor, tr);
+
+        class_relationship r;
+        r.destination = tinst.base_template_usr;
+        r.type = relationship_t::kInstantiation;
+        r.label = "";
+
+        class_relationship a;
+
+        bool partial_specialization = false;
+        auto template_type =
+            tr.type_declaration().specialized_cursor_template();
+        if (template_type.kind() == CXCursor_InvalidFile) {
+            partial_specialization = true;
+            template_type = tr.type_declaration();
+        }
+
+        if (partial_specialization) {
+            a.destination = tr.spelling();
+        }
+        else {
+            a.destination = tinst.usr;
+        }
+        if (t.is_pointer() || t.is_reference())
+            a.type = relationship_t::kAssociation;
+        else
+            a.type = relationship_t::kComposition;
+
+        a.label = cursor.spelling();
+
+        ctx->element.relationships.emplace_back(std::move(a));
+        tinst.relationships.emplace_back(std::move(r));
+
+        ctx->d.classes.emplace_back(std::move(tinst));
+        return true;
+    }
+
+    return false;
+}
+
+static enum CXChildVisitResult class_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
     auto ctx = (element_visitor_context<class_> *)client_data;
@@ -340,29 +460,8 @@ static enum CXChildVisitResult class_visitor(
             }
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                class_ c{};
-                c.is_struct = is_struct;
-                c.name = cursor.fully_qualified();
-                c.namespace_ = ctx->ctx->namespace_;
-
-                spdlog::debug("Class {} has {} template arguments.", c.name,
-                    cursor.template_argument_count());
-
-                auto class_ctx =
-                    element_visitor_context<class_>(ctx->ctx->d, c);
-                class_ctx.ctx = ctx->ctx;
-
-                clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
-
-                class_relationship containment;
-                containment.type = relationship_t::kContainment;
-                containment.destination = c.name;
-                ctx->element.relationships.emplace_back(std::move(containment));
-
-                spdlog::debug(
-                    "Added relationship {} +-- {}", ctx->element.name, c.name);
-
-                ctx->ctx->d.classes.emplace_back(std::move(c));
+                process_class_declaration(
+                    cursor, is_struct, &ctx->element, ctx->ctx);
             });
             ret = CXChildVisit_Continue;
             break;
@@ -502,86 +601,9 @@ static enum CXChildVisitResult class_visitor(
                         tr.type_declaration());
 
                     if (tr.is_unexposed()) {
-                        if (tr.is_template_instantiation() &&
-                            (tr.type_declaration().kind() !=
-                                    CXCursor_InvalidFile ||
-                                tr.type_declaration()
-                                        .specialized_cursor_template()
-                                        .kind() != CXCursor_InvalidFile)) {
-
-                            bool partial_specialization = false;
-                            auto template_type =
-                                tr.type_declaration()
-                                    .specialized_cursor_template();
-                            if (template_type.kind() == CXCursor_InvalidFile) {
-                                partial_specialization = true;
-                                template_type = tr.type_declaration();
-                            }
-
-                            spdlog::debug(
-                                "Found template instantiation: {} ..|> {}", tr,
-                                template_type);
-
-                            class_ tinst;
-                            if (partial_specialization) {
-                                tinst.name = template_type.spelling();
-                            }
-                            else {
-                                tinst.name = template_type.spelling();
-                            }
-                            tinst.is_template_instantiation = true;
-                            if (partial_specialization) {
-                                tinst.usr = template_type.usr();
-                            }
-                            else {
-                                tinst.usr = tr.type_declaration().usr();
-                            }
-
-                            const auto &instantiation_params =
-                                cursor.tokenize_template_parameters();
-
-                            for (const auto &template_param :
-                                instantiation_params) {
-
-                                class_template ct;
-                                ct.type = template_param;
-                                tinst.templates.emplace_back(std::move(ct));
-
-                                spdlog::debug("Adding template argument '{}'",
-                                    template_param);
-                            }
-
-                            if (partial_specialization) {
-                                tinst.base_template_usr = template_type.usr();
-                            }
-                            else {
-                                tinst.base_template_usr = template_type.usr();
-                            }
-
-                            class_relationship r;
-                            r.destination = tinst.base_template_usr;
-                            r.type = relationship_t::kInstantiation;
-                            r.label = "";
-
-                            class_relationship a;
-                            if (partial_specialization) {
-                                a.destination = tr.spelling();
-                            }
-                            else {
-                                a.destination = tinst.usr;
-                            }
-                            if (t.is_pointer() || t.is_reference())
-                                a.type = relationship_t::kAssociation;
-                            else
-                                a.type = relationship_t::kComposition;
-                            a.label = m.name;
-
-                            ctx->element.relationships.emplace_back(
-                                std::move(a));
-                            tinst.relationships.emplace_back(std::move(r));
-                            ctx->d.classes.emplace_back(std::move(tinst));
-                            added_relation_to_instantiation = true;
-                        }
+                        added_relation_to_instantiation =
+                            process_template_specialization_class_field(
+                                cursor, t, ctx);
                     }
                     if (!added_relation_to_instantiation) {
                         relationship_t relationship_type =
@@ -725,18 +747,7 @@ static enum CXChildVisitResult translation_unit_visitor(
             scope = scope_t::kPublic;
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                class_ c{};
-                c.usr = cursor.usr();
-                c.is_struct = is_struct;
-                c.name = cursor.fully_qualified();
-                c.namespace_ = ctx->namespace_;
-
-                auto class_ctx = element_visitor_context<class_>(ctx->d, c);
-                class_ctx.ctx = ctx;
-
-                clang_visitChildren(cursor.get(), class_visitor, &class_ctx);
-
-                ctx->d.classes.emplace_back(std::move(c));
+                process_class_declaration(cursor, is_struct, nullptr, ctx);
             });
 
             ret = CXChildVisit_Continue;
