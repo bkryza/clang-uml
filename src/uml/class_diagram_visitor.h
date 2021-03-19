@@ -341,6 +341,30 @@ static void process_class_declaration(
     ctx->d.classes.emplace_back(std::move(c));
 }
 
+static void process_enum_declaration(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    enum_ e{};
+    e.name = cursor.fully_qualified();
+    e.namespace_ = ctx->namespace_;
+
+    auto enum_ctx = element_visitor_context<enum_>(ctx->d, e);
+    enum_ctx.ctx = ctx;
+
+    clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
+
+    if (parent != nullptr) {
+        class_relationship containment;
+        containment.type = relationship_t::kContainment;
+        containment.destination = e.name;
+        parent->relationships.emplace_back(std::move(containment));
+
+        spdlog::debug("Added relationship {} +-- {}", parent->name, e.name);
+    }
+
+    ctx->d.enums.emplace_back(std::move(e));
+}
+
 static class_ build_template_instantiation(cx::cursor cursor, cx::type t)
 {
     auto template_type = t.type_declaration().specialized_cursor_template();
@@ -472,24 +496,7 @@ static enum CXChildVisitResult class_visitor(
             }
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                enum_ e{};
-                e.name = cursor.fully_qualified();
-                e.namespace_ = ctx->ctx->namespace_;
-
-                auto enum_ctx = element_visitor_context<enum_>(ctx->ctx->d, e);
-                enum_ctx.ctx = ctx->ctx;
-
-                clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
-
-                class_relationship containment;
-                containment.type = relationship_t::kContainment;
-                containment.destination = e.name;
-                ctx->element.relationships.emplace_back(std::move(containment));
-
-                spdlog::debug(
-                    "Added relationship {} +-- {}", ctx->element.name, e.name);
-
-                ctx->ctx->d.enums.emplace_back(std::move(e));
+                process_enum_declaration(cursor, &ctx->element, ctx->ctx);
             });
             ret = CXChildVisit_Continue;
             break;
@@ -761,16 +768,7 @@ static enum CXChildVisitResult translation_unit_visitor(
             }
 
             visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                enum_ e{};
-                e.name = cursor.fully_qualified();
-                e.namespace_ = ctx->namespace_;
-
-                auto enum_ctx = element_visitor_context<enum_>(ctx->d, e);
-                enum_ctx.ctx = ctx;
-
-                clang_visitChildren(cursor.get(), enum_visitor, &enum_ctx);
-
-                ctx->d.enums.emplace_back(std::move(e));
+                process_enum_declaration(cursor, nullptr, ctx);
             });
             ret = CXChildVisit_Continue;
 
