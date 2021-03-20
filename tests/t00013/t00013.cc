@@ -48,6 +48,7 @@ public:
 
     template <typename T> T get_e(E<T> &e) { return e.e; }
     int get_int_e(const E<int> &e) { return e.e; }
+    int get_int_e2(E<int> &e) { return e.e; }
 
     template <typename T> T get_f(const F<T> &f) { return f.f; }
 

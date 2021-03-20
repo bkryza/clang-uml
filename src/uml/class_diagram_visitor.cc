@@ -237,7 +237,7 @@ enum CXChildVisitResult method_parameter_visitor(
 
                         r.destination = t.referenced().unqualified();
 
-                        ctx->d.classes.emplace_back(std::move(tinst));
+                        ctx->d.add_class(std::move(tinst));
                     }
                     else
                         r.destination = t.referenced().type_declaration().usr();
@@ -453,7 +453,7 @@ enum CXChildVisitResult process_class_declaration(
         spdlog::debug("Added relationship {} +-- {}", parent->name, c.name);
     }
 
-    ctx->d.classes.emplace_back(std::move(c));
+    ctx->d.add_class(std::move(c));
 
     return CXChildVisit_Continue;
 }
@@ -482,7 +482,7 @@ enum CXChildVisitResult process_enum_declaration(
         spdlog::debug("Added relationship {} +-- {}", parent->name, e.name);
     }
 
-    ctx->d.enums.emplace_back(std::move(e));
+    ctx->d.add_enum(std::move(e));
 
     return CXChildVisit_Continue;
 }
@@ -569,7 +569,7 @@ bool process_template_specialization_class_field(
 
         tinst.add_relationship(std::move(r));
 
-        ctx->d.classes.emplace_back(std::move(tinst));
+        ctx->d.add_class(std::move(tinst));
         return true;
     }
 

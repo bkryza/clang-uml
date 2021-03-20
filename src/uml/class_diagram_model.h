@@ -131,6 +131,11 @@ struct class_template {
     std::string type;
     std::string default_value;
     bool is_variadic{false};
+
+    friend bool operator==(const class_template &l, const class_template &r)
+    {
+        return (l.name == r.name) && (l.type == r.type);
+    }
 };
 
 class class_ : public element {
@@ -146,6 +151,11 @@ public:
     std::vector<class_relationship> relationships;
     std::vector<class_template> templates;
     std::string base_template_usr;
+
+    friend bool operator==(const class_ &l, const class_ &r)
+    {
+        return (l.usr == r.usr) && (l.templates == r.templates);
+    }
 
     void add_relationship(class_relationship &&cr)
     {
@@ -201,12 +211,32 @@ public:
 
 struct enum_ : public element {
     std::vector<std::string> constants;
+
+    friend bool operator==(const enum_ &l, const enum_ &r)
+    {
+        return l.name == r.name;
+    }
 };
 
 struct diagram {
     std::string name;
     std::vector<class_> classes;
     std::vector<enum_> enums;
+
+    void add_class(class_ &&c)
+    {
+        spdlog::debug("ADDING CLASS: {}, {}", c.name, c.usr);
+        auto it = std::find(classes.begin(), classes.end(), c);
+        if (it == classes.end())
+            classes.emplace_back(std::move(c));
+    }
+
+    void add_enum(enum_ &&e)
+    {
+        auto it = std::find(enums.begin(), enums.end(), e);
+        if (it == enums.end())
+            enums.emplace_back(std::move(e));
+    }
 
     std::string to_alias(const std::vector<std::string> &using_namespaces,
         const std::string &full_name) const
