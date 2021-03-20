@@ -183,7 +183,8 @@ enum CXChildVisitResult method_parameter_visitor(
     switch (cursor.kind()) {
         case CXCursor_ParmDecl: {
             spdlog::debug("Analyzing method parameter: {}, {}, {}", cursor,
-                cursor.type(), cursor.type().named_type());
+                cursor.type().referenced(),
+                cursor.type().referenced().type_declaration());
 
             auto t = cursor.type();
             method_parameter mp;
@@ -198,6 +199,10 @@ enum CXChildVisitResult method_parameter_visitor(
                 if (t.is_template_instantiation()) {
                     rdestination = t.referenced().instantiation_template();
                 }
+                else if (t.spelling().find('<') != std::string::npos) {
+                    rdestination =
+                        t.referenced().type_declaration().fully_qualified();
+                }
                 else {
                     rdestination = t.referenced().spelling();
                 }
@@ -205,18 +210,43 @@ enum CXChildVisitResult method_parameter_visitor(
                 if (ctx->ctx->config.should_include(rdestination) &&
                     rdestination != ctx->parent_class->name) {
 
-                    spdlog::debug("ADDING DEPENDENCY TO {} \n\tCURSOR={} "
+                    spdlog::debug("Adding dependency to {} \n\tCURSOR={} "
                                   "\n\tREFTYPE={} \n\tTYPEDECL={}",
-                        rdestination, cursor, t.referenced(),
-                        t.referenced().type_declaration().usr());
+                        t.referenced().spelling(), cursor, t.referenced(),
+                        t.referenced().type_declaration());
 
                     class_relationship r;
                     r.type = relationship_t::kDependency;
-                    r.destination = t.referenced().type_declaration().usr();
+
+                    if (t.referenced().is_template_instantiation() &&
+                        (t.referenced().type_declaration().kind() !=
+                                CXCursor_InvalidFile ||
+                            t.referenced()
+                                    .type_declaration()
+                                    .specialized_cursor_template()
+                                    .kind() != CXCursor_InvalidFile)) {
+                        class_ tinst = build_template_instantiation(
+                            cursor, t.referenced());
+
+                        class_relationship ri;
+                        ri.destination = tinst.base_template_usr;
+                        ri.type = relationship_t::kInstantiation;
+                        ri.label = "";
+
+                        tinst.add_relationship(std::move(ri));
+
+                        r.destination = t.referenced().unqualified();
+
+                        ctx->d.classes.emplace_back(std::move(tinst));
+                    }
+                    else
+                        r.destination = t.referenced().type_declaration().usr();
 
                     assert(ctx->parent_class != nullptr);
 
-                    ctx->parent_class->add_relationship(std::move(r));
+                    if ((r.destination != ctx->parent_class->name) &&
+                        (r.destination != ctx->parent_class->usr))
+                        ctx->parent_class->add_relationship(std::move(r));
                 }
 
                 ret = CXChildVisit_Continue;
@@ -500,7 +530,7 @@ bool process_template_specialization_class_field(
     cx::cursor cursor, cx::type t, class_ *parent, struct tu_context *ctx)
 {
     auto tr = t.referenced();
-    if (tr.is_template_instantiation() &&
+    if (tr.spelling().find('<') != std::string::npos &&
         (tr.type_declaration().kind() != CXCursor_InvalidFile ||
             tr.type_declaration().specialized_cursor_template().kind() !=
                 CXCursor_InvalidFile)) {
@@ -537,7 +567,7 @@ bool process_template_specialization_class_field(
 
         parent->relationships.emplace_back(std::move(a));
 
-        tinst.relationships.emplace_back(std::move(r));
+        tinst.add_relationship(std::move(r));
 
         ctx->d.classes.emplace_back(std::move(tinst));
         return true;
@@ -756,4 +786,3 @@ enum CXChildVisitResult translation_unit_visitor(
 }
 }
 }
-

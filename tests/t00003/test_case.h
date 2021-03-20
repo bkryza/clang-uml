@@ -43,6 +43,8 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClass(_A("A")));
 
+    REQUIRE_THAT(puml, !IsDependency(_A("A"), _A("A")));
+
     REQUIRE_THAT(puml, IsMethod(Default(Public("A"))));
     REQUIRE_THAT(puml, IsMethod(Default(Public("~A"))));
 

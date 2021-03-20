@@ -38,5 +38,13 @@ std::string type::instantiation_template() const
 
     return cur.fully_qualified();
 }
+
+bool type::is_template_instantiation() const
+{
+    auto s = spelling();
+    auto it = s.find('<');
+    return it != std::string::npos &&
+        referenced().type_declaration().kind() != CXCursor_ClassTemplate;
+}
 }
 }

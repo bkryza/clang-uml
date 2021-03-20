@@ -60,5 +60,14 @@ std::vector<std::string> split(std::string str, std::string delimiter);
  */
 std::string ns_relative(
     const std::vector<std::string> &namespaces, const std::string &n);
+
+/**
+ * @brief Remove any qualifiers (e.g. const) from type.
+ *
+ * @param s String spelling of the type.
+ *
+ * @return Unqualified type spelling.
+ */
+std::string unqualify(const std::string &s);
 }
 }

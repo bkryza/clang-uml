@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "util/util.h"
+
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
@@ -51,8 +53,10 @@ struct diagram {
 
     plantuml puml;
 
-    bool should_include(const std::string &name) const
+    bool should_include(const std::string &name_) const
     {
+        auto name = clanguml::util::unqualify(name_);
+
         for (const auto &ex : exclude.namespaces) {
             if (name.find(ex) == 0)
                 return false;
@@ -67,6 +71,8 @@ struct diagram {
             if (name.find(in) == 0)
                 return true;
         }
+
+        spdlog::debug("Skipping from diagram: {}", name);
 
         return false;
     }
