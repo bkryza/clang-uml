@@ -70,21 +70,20 @@ template <typename T> struct element_visitor_context {
 };
 
 enum CXChildVisitResult visit_if_cursor_valid(
-    cx::cursor cursor, std::function<void(cx::cursor)> f)
+    cx::cursor cursor, std::function<enum CXChildVisitResult(cx::cursor)> f)
 {
     enum CXChildVisitResult ret = CXChildVisit_Break;
+
     if (cursor.is_definition() || cursor.is_declaration()) {
-        if (!cursor.spelling().empty()) {
-            f(cursor);
-            ret = CXChildVisit_Continue;
-        }
-        else {
+        if (!cursor.spelling().empty())
+            ret = f(cursor);
+        else
             ret = CXChildVisit_Recurse;
-        }
     }
     else {
         ret = CXChildVisit_Continue;
     }
+
     return ret;
 }
 
@@ -186,14 +185,13 @@ static enum CXChildVisitResult enum_visitor(
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
         case CXCursor_EnumConstantDecl:
-            visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
                 spdlog::debug("Adding enum constant {}::{}", ctx->element.name,
                     cursor.spelling());
 
                 ctx->element.constants.emplace_back(cursor.spelling());
+                return CXChildVisit_Continue;
             });
-
-            ret = CXChildVisit_Continue;
             break;
         default:
             ret = CXChildVisit_Continue;
@@ -348,9 +346,97 @@ static enum CXChildVisitResult process_class_base_specifier(
     return CXChildVisit_Continue;
 }
 
-static void process_class_declaration(
+static enum CXChildVisitResult process_template_type_parameter(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    spdlog::debug("Found template type parameter: {}: {}, isvariadic={}",
+        cursor, cursor.type(), cursor.is_template_parameter_variadic());
+
+    class_template ct;
+    ct.type = "";
+    ct.default_value = "";
+    ct.is_variadic = cursor.is_template_parameter_variadic();
+    ct.name = cursor.spelling();
+    if (ct.is_variadic)
+        ct.name += "...";
+    parent->templates.emplace_back(std::move(ct));
+
+    return CXChildVisit_Continue;
+}
+
+static enum CXChildVisitResult process_template_nontype_parameter(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    spdlog::debug("Found template nontype parameter: {}: {}, isvariadic={}",
+        cursor.spelling(), cursor.type(),
+        cursor.is_template_parameter_variadic());
+
+    class_template ct;
+    ct.type = cursor.type().canonical().spelling();
+    ct.name = cursor.spelling();
+    ct.default_value = "";
+    ct.is_variadic = cursor.is_template_parameter_variadic();
+    if (ct.is_variadic)
+        ct.name += "...";
+    parent->templates.emplace_back(std::move(ct));
+
+    return CXChildVisit_Continue;
+}
+
+static enum CXChildVisitResult process_template_template_parameter(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    spdlog::debug("Found template template parameter: {}: {}",
+        cursor.spelling(), cursor.type());
+
+    class_template ct;
+    ct.type = "";
+    ct.name = cursor.spelling() + "<>";
+    ct.default_value = "";
+    parent->templates.emplace_back(std::move(ct));
+
+    return CXChildVisit_Continue;
+}
+
+static enum CXChildVisitResult process_method(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    if (!ctx->config.should_include(cursor.fully_qualified()))
+        return CXChildVisit_Continue;
+
+    class_method m;
+    m.name = cursor.spelling();
+    m.type = cursor.type().result_type().spelling();
+    m.is_pure_virtual = cursor.is_method_pure_virtual();
+    m.is_virtual = cursor.is_method_virtual();
+    m.is_const = cursor.is_method_const();
+    m.is_defaulted = cursor.is_method_defaulted();
+    m.is_static = cursor.is_method_static();
+    m.scope = cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
+
+    auto method_ctx = element_visitor_context<class_method>(ctx->d, m);
+    method_ctx.ctx = ctx;
+    method_ctx.parent_class = parent;
+
+    clang_visitChildren(cursor.get(), method_parameter_visitor, &method_ctx);
+
+    spdlog::debug("Adding method {} {}::{}()", cursor.type().result_type(),
+        parent->name, cursor.spelling());
+
+    parent->methods.emplace_back(std::move(m));
+
+    return CXChildVisit_Continue;
+}
+
+static enum CXChildVisitResult process_class_declaration(
     cx::cursor cursor, bool is_struct, class_ *parent, struct tu_context *ctx)
 {
+    if (!ctx->config.should_include(cursor.fully_qualified()))
+        return CXChildVisit_Continue;
+
+    if (cursor.is_forward_declaration())
+        return CXChildVisit_Continue;
+
     class_ c;
     c.usr = cursor.usr();
     c.is_struct = is_struct;
@@ -375,11 +461,16 @@ static void process_class_declaration(
     }
 
     ctx->d.classes.emplace_back(std::move(c));
+
+    return CXChildVisit_Continue;
 }
 
-static void process_enum_declaration(
+static enum CXChildVisitResult process_enum_declaration(
     cx::cursor cursor, class_ *parent, struct tu_context *ctx)
 {
+    if (!ctx->config.should_include(cursor.fully_qualified()))
+        return CXChildVisit_Continue;
+
     enum_ e{};
     e.name = cursor.fully_qualified();
     e.namespace_ = ctx->namespace_;
@@ -399,6 +490,8 @@ static void process_enum_declaration(
     }
 
     ctx->d.enums.emplace_back(std::move(e));
+
+    return CXChildVisit_Continue;
 }
 
 static class_ build_template_instantiation(cx::cursor cursor, cx::type t)
@@ -441,7 +534,7 @@ static class_ build_template_instantiation(cx::cursor cursor, cx::type t)
 }
 
 static bool process_template_specialization_class_field(
-    cx::cursor cursor, cx::type t, element_visitor_context<class_> *ctx)
+    cx::cursor cursor, cx::type t, class_ *parent, struct tu_context *ctx)
 {
     auto tr = t.referenced();
     if (tr.is_template_instantiation() &&
@@ -479,7 +572,8 @@ static bool process_template_specialization_class_field(
 
         a.label = cursor.spelling();
 
-        ctx->element.relationships.emplace_back(std::move(a));
+        parent->relationships.emplace_back(std::move(a));
+
         tinst.relationships.emplace_back(std::move(r));
 
         ctx->d.classes.emplace_back(std::move(tinst));
@@ -487,6 +581,69 @@ static bool process_template_specialization_class_field(
     }
 
     return false;
+}
+
+static enum CXChildVisitResult process_field(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    bool added_relation_to_instantiation{false};
+    auto t = cursor.type();
+    auto tr = t.referenced();
+
+    class_member m;
+    m.name = cursor.spelling();
+    if (tr.is_template())
+        m.type = t.unqualified();
+    else if (tr.is_template_parameter())
+        m.type = t.spelling();
+    else
+        m.type = t.canonical().unqualified();
+    m.scope = cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
+    m.is_static = cursor.is_static();
+
+    spdlog::debug("Adding member {} {}::{} {}, {}, {}", m.type, parent->name,
+        cursor.spelling(), t, tr, tr.type_declaration());
+
+    if (tr.is_unexposed()) {
+        added_relation_to_instantiation =
+            process_template_specialization_class_field(cursor, t, parent, ctx);
+    }
+    if (!added_relation_to_instantiation) {
+        relationship_t relationship_type = relationship_t::kNone;
+
+        auto name = t.canonical().unqualified();
+        auto destination = name;
+
+        // Parse the field declaration to determine the
+        // relationship type Skip:
+        //  - POD
+        //  - function variables
+        spdlog::debug("Analyzing possible relationship candidate: {}",
+            t.canonical().unqualified());
+
+        if (t.is_relationship() &&
+            (ctx->config.should_include(t.canonical().unqualified()) ||
+                t.is_template() || t.is_array())) {
+            std::vector<std::pair<cx::type, relationship_t>> relationships{};
+            find_relationships(t, relationships);
+
+            for (const auto &[type, relationship_type] : relationships) {
+                if (relationship_type != relationship_t::kNone) {
+                    class_relationship r;
+                    r.destination = type.referenced().canonical().unqualified();
+                    r.type = relationship_type;
+                    r.label = m.name;
+                    parent->relationships.emplace_back(std::move(r));
+
+                    spdlog::debug("Added relationship to: {}", r.destination);
+                }
+            }
+        }
+    }
+
+    parent->members.emplace_back(std::move(m));
+
+    return CXChildVisit_Continue;
 }
 
 static enum CXChildVisitResult class_visitor(
@@ -514,186 +671,46 @@ static enum CXChildVisitResult class_visitor(
             is_struct = true;
         case CXCursor_ClassDecl:
         case CXCursor_ClassTemplate:
-            if (!config.should_include(cursor.fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                process_class_declaration(
-                    cursor, is_struct, &ctx->element, ctx->ctx);
-            });
-            ret = CXChildVisit_Continue;
+            ret = visit_if_cursor_valid(
+                cursor, [ctx, is_struct](cx::cursor cursor) {
+                    return process_class_declaration(
+                        cursor, is_struct, &ctx->element, ctx->ctx);
+                });
             break;
         case CXCursor_EnumDecl:
-            if (!config.should_include(cursor.fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                process_enum_declaration(cursor, &ctx->element, ctx->ctx);
+            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+                return process_enum_declaration(
+                    cursor, &ctx->element, ctx->ctx);
             });
-            ret = CXChildVisit_Continue;
             break;
-        case CXCursor_TemplateTypeParameter: {
-            spdlog::debug(
-                "Found template type parameter: {}: {}, isvariadic={}", cursor,
-                cursor.type(), cursor.is_template_parameter_variadic());
-
-            class_template ct;
-            ct.type = "";
-            ct.default_value = "";
-            ct.is_variadic = cursor.is_template_parameter_variadic();
-            ct.name = cursor.spelling();
-            if (ct.is_variadic)
-                ct.name += "...";
-            ctx->element.templates.emplace_back(std::move(ct));
-
-            ret = CXChildVisit_Continue;
-        } break;
-        case CXCursor_NonTypeTemplateParameter: {
-            spdlog::debug(
-                "Found template nontype parameter: {}: {}, isvariadic={}",
-                cursor.spelling(), cursor.type(),
-                cursor.is_template_parameter_variadic());
-
-            class_template ct;
-            ct.type = cursor.type().canonical().spelling();
-            ct.name = cursor.spelling();
-            ct.default_value = "";
-            ct.is_variadic = cursor.is_template_parameter_variadic();
-            if (ct.is_variadic)
-                ct.name += "...";
-            ctx->element.templates.emplace_back(std::move(ct));
-
-            ret = CXChildVisit_Continue;
-        } break;
-        case CXCursor_TemplateTemplateParameter: {
-            spdlog::debug("Found template template parameter: {}: {}",
-                cursor.spelling(), cursor.type());
-
-            class_template ct;
-            ct.type = "";
-            ct.name = cursor.spelling() + "<>";
-            ct.default_value = "";
-            ctx->element.templates.emplace_back(std::move(ct));
-
-            ret = CXChildVisit_Continue;
-        } break;
+        case CXCursor_TemplateTypeParameter:
+            ret = process_template_type_parameter(
+                cursor, &ctx->element, ctx->ctx);
+            break;
+        case CXCursor_NonTypeTemplateParameter:
+            ret = process_template_nontype_parameter(
+                cursor, &ctx->element, ctx->ctx);
+            break;
+        case CXCursor_TemplateTemplateParameter:
+            ret = process_template_template_parameter(
+                cursor, &ctx->element, ctx->ctx);
+            break;
         case CXCursor_CXXMethod:
         case CXCursor_Constructor:
         case CXCursor_Destructor:
         case CXCursor_FunctionTemplate: {
-            if (!config.should_include(cursor.fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
-                class_method m;
-                m.name = cursor.spelling();
-                m.type = cursor.type().result_type().spelling();
-                m.is_pure_virtual = cursor.is_method_pure_virtual();
-                m.is_virtual = cursor.is_method_virtual();
-                m.is_const = cursor.is_method_const();
-                m.is_defaulted = cursor.is_method_defaulted();
-                m.is_static = cursor.is_method_static();
-                m.scope =
-                    cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
-
-                auto method_ctx =
-                    element_visitor_context<class_method>(ctx->d, m);
-                method_ctx.ctx = ctx->ctx;
-                method_ctx.parent_class = &ctx->element;
-
-                clang_visitChildren(
-                    cursor.get(), method_parameter_visitor, &method_ctx);
-
-                spdlog::debug("Adding method {} {}::{}()",
-                    cursor.type().result_type(), ctx->element.name,
-                    cursor.spelling());
-
-                ctx->element.methods.emplace_back(std::move(m));
+            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+                return process_method(cursor, &ctx->element, ctx->ctx);
             });
-            ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_VarDecl:
             is_vardecl = true;
         case CXCursor_FieldDecl: {
-            visit_if_cursor_valid(
+            ret = visit_if_cursor_valid(
                 cursor, [ctx, &config, is_vardecl](cx::cursor cursor) {
-                    bool added_relation_to_instantiation{false};
-                    auto t = cursor.type();
-                    auto tr = t.referenced();
-                    class_member m;
-                    m.name = cursor.spelling();
-                    if (tr.is_template())
-                        m.type = t.unqualified();
-                    else if (tr.is_template_parameter())
-                        m.type = t.spelling();
-                    else
-                        m.type = t.canonical().unqualified();
-                    m.scope = cx_access_specifier_to_scope(
-                        cursor.cxxaccess_specifier());
-                    m.is_static = cursor.is_static();
-
-                    spdlog::debug("Adding member {} {}::{} {}, {}, {}", m.type,
-                        ctx->element.name, cursor.spelling(), t, tr,
-                        tr.type_declaration());
-
-                    if (tr.is_unexposed()) {
-                        added_relation_to_instantiation =
-                            process_template_specialization_class_field(
-                                cursor, t, ctx);
-                    }
-                    if (!added_relation_to_instantiation) {
-                        relationship_t relationship_type =
-                            relationship_t::kNone;
-
-                        auto name = t.canonical().unqualified();
-                        auto destination = name;
-
-                        // Parse the field declaration to determine the
-                        // relationship type Skip:
-                        //  - POD
-                        //  - function variables
-                        spdlog::debug(
-                            "Analyzing possible relationship candidate: {}",
-                            t.canonical().unqualified());
-
-                        if (t.is_relationship() &&
-                            (config.should_include(
-                                 t.canonical().unqualified()) ||
-                                t.is_template() || t.is_array())) {
-                            std::vector<std::pair<cx::type, relationship_t>>
-                                relationships{};
-                            find_relationships(t, relationships);
-
-                            for (const auto &[type, relationship_type] :
-                                relationships) {
-                                if (relationship_type !=
-                                    relationship_t::kNone) {
-                                    class_relationship r;
-                                    r.destination = type.referenced()
-                                                        .canonical()
-                                                        .unqualified();
-                                    r.type = relationship_type;
-                                    r.label = m.name;
-                                    ctx->element.relationships.emplace_back(
-                                        std::move(r));
-
-                                    spdlog::debug("Added relationship to: {}",
-                                        r.destination);
-                                }
-                            }
-                        }
-                    }
-
-                    ctx->element.members.emplace_back(std::move(m));
+                    return process_field(cursor, &ctx->element, ctx->ctx);
                 });
-            ret = CXChildVisit_Continue;
             break;
         }
         case CXCursor_ClassTemplatePartialSpecialization: {
@@ -726,18 +743,16 @@ static enum CXChildVisitResult translation_unit_visitor(
     cx::cursor cursor{std::move(cx_cursor)};
     cx::cursor parent{std::move(cx_parent)};
 
-    if (clang_Location_isFromMainFile(cursor.location()) == 0) {
+    if (clang_Location_isFromMainFile(cursor.location()) == 0)
         return CXChildVisit_Continue;
-    }
-    std::string cursor_name_str = cursor.spelling();
-    spdlog::debug("Visiting cursor: {}", cursor_name_str);
+
+    spdlog::debug("Visiting cursor: {}", cursor.spelling());
 
     bool is_struct{false};
     auto scope{scope_t::kPrivate};
     switch (cursor.kind()) {
         case CXCursor_StructDecl:
-            spdlog::debug("Found struct declaration: {}", cursor_name_str);
-
+            spdlog::debug("Found struct declaration: {}", cursor.spelling());
             is_struct = true;
 
             [[fallthrough]];
@@ -746,49 +761,31 @@ static enum CXChildVisitResult translation_unit_visitor(
         case CXCursor_ClassDecl: {
             spdlog::debug(
                 "Found class or class template declaration: {}", cursor);
-            if (!ctx->config.should_include(cursor.fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-            if (cursor.is_forward_declaration()) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
             scope = scope_t::kPublic;
-
-            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                process_class_declaration(cursor, is_struct, nullptr, ctx);
-            });
-
-            ret = CXChildVisit_Continue;
+            ret = visit_if_cursor_valid(
+                cursor, [ctx, is_struct](cx::cursor cursor) {
+                    return process_class_declaration(
+                        cursor, is_struct, nullptr, ctx);
+                });
             break;
         }
         case CXCursor_EnumDecl: {
-            spdlog::debug("Found enum declaration: {}", cursor_name_str);
-            if (!ctx->config.should_include(cursor.fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
-                process_enum_declaration(cursor, nullptr, ctx);
-            });
-            ret = CXChildVisit_Continue;
-
+            spdlog::debug("Found enum declaration: {}", cursor.spelling());
+            ret = visit_if_cursor_valid(
+                cursor, [ctx, is_struct](cx::cursor cursor) {
+                    return process_enum_declaration(cursor, nullptr, ctx);
+                });
             break;
         }
         case CXCursor_Namespace: {
-            spdlog::debug("Found namespace specifier: {}", cursor_name_str);
-
+            spdlog::debug("Found namespace specifier: {}", cursor.spelling());
             ret = CXChildVisit_Recurse;
-
             break;
         }
         default:
-            spdlog::debug("Found cursor: {}", cursor_name_str);
-
+            spdlog::debug("Found cursor: {}", cursor.spelling());
             ret = CXChildVisit_Recurse;
+            break;
     }
 
     return ret;
