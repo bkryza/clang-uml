@@ -312,6 +312,42 @@ static enum CXChildVisitResult friend_class_visitor(
 static enum CXChildVisitResult class_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data);
 
+static enum CXChildVisitResult process_class_base_specifier(
+    cx::cursor cursor, class_ *parent, struct tu_context *ctx)
+{
+    if (!ctx->config.should_include(cursor.referenced().fully_qualified()))
+        return CXChildVisit_Continue;
+
+    auto ref_cursor = cursor.referenced();
+    auto display_name = ref_cursor.referenced().spelling();
+
+    auto base_access = cursor.cxxaccess_specifier();
+
+    spdlog::debug(
+        "Found base specifier: {} - {}", cursor.spelling(), display_name);
+
+    class_parent cp;
+    cp.name = display_name;
+    cp.is_virtual = false;
+    switch (base_access) {
+        case CX_CXXAccessSpecifier::CX_CXXPrivate:
+            cp.access = class_parent::access_t::kPrivate;
+            break;
+        case CX_CXXAccessSpecifier::CX_CXXPublic:
+            cp.access = class_parent::access_t::kPublic;
+            break;
+        case CX_CXXAccessSpecifier::CX_CXXProtected:
+            cp.access = class_parent::access_t::kProtected;
+            break;
+        default:
+            cp.access = class_parent::access_t::kPublic;
+    }
+
+    parent->bases.emplace_back(std::move(cp));
+
+    return CXChildVisit_Continue;
+}
+
 static void process_class_declaration(
     cx::cursor cursor, bool is_struct, class_ *parent, struct tu_context *ctx)
 {
@@ -664,41 +700,9 @@ static enum CXChildVisitResult class_visitor(
             spdlog::debug("Found template specialization: {}", cursor);
             ret = CXChildVisit_Continue;
         } break;
-        case CXCursor_CXXBaseSpecifier: {
-            if (!config.should_include(cursor.referenced().fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            auto ref_cursor = cursor.referenced();
-            auto display_name = ref_cursor.referenced().spelling();
-
-            auto base_access = cursor.cxxaccess_specifier();
-
-            spdlog::debug(
-                "Found base specifier: {} - {}", cursor_name_str, display_name);
-
-            class_parent cp;
-            cp.name = display_name;
-            cp.is_virtual = false;
-            switch (base_access) {
-                case CX_CXXAccessSpecifier::CX_CXXPrivate:
-                    cp.access = class_parent::access_t::kPrivate;
-                    break;
-                case CX_CXXAccessSpecifier::CX_CXXPublic:
-                    cp.access = class_parent::access_t::kPublic;
-                    break;
-                case CX_CXXAccessSpecifier::CX_CXXProtected:
-                    cp.access = class_parent::access_t::kProtected;
-                    break;
-                default:
-                    cp.access = class_parent::access_t::kPublic;
-            }
-
-            ctx->element.bases.emplace_back(std::move(cp));
-
-            ret = CXChildVisit_Continue;
-        } break;
+        case CXCursor_CXXBaseSpecifier:
+            ret = process_class_base_specifier(cursor, &ctx->element, ctx->ctx);
+            break;
         case CXCursor_FriendDecl: {
             clang_visitChildren(cursor.get(), friend_class_visitor, ctx);
 
