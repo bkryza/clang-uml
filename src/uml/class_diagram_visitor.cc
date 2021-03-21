@@ -599,8 +599,11 @@ enum CXChildVisitResult process_field(
 
     m.is_static = cursor.is_static();
 
-    spdlog::debug("Adding member {} {}::{} {}, {}, {}", m.type, parent->name,
-        cursor.spelling(), t, tr, tr.type_declaration());
+    spdlog::debug(
+        "Adding member {} {}::{} "
+        "\n\tCURSOR={}\n\tTYPE={}\n\tTYPEDECL={}\n\tUNDERLYINGTYPE={}",
+        m.type, parent->name, cursor.spelling(), cursor, t,
+        tr.type_declaration(), tr.type_declaration().underlying_type());
 
     if (tr.is_unexposed()) {
         added_relation_to_instantiation =

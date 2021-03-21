@@ -211,6 +211,11 @@ public:
         return clang_getCXXAccessSpecifier(m_cursor);
     }
 
+    cx::type underlying_type() const
+    {
+        return clang_getTypedefDeclUnderlyingType(m_cursor);
+    }
+
     int template_argument_count() const
     {
         return clang_Cursor_getNumTemplateArguments(m_cursor);

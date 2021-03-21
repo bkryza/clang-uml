@@ -91,8 +91,8 @@ std::string ns_relative(
 std::string unqualify(const std::string &s)
 {
     auto toks = clanguml::util::split(s, " ");
-    const std::vector<std::string> qualifiers = {
-        "static", "const", "volatile", "register", "mutable", "struct", "enum"};
+    const std::vector<std::string> qualifiers = {"static", "const", "volatile",
+        "register", "constexpr", "mutable", "struct", "enum"};
 
     toks.erase(toks.begin(),
         std::find_if(toks.begin(), toks.end(), [&qualifiers](const auto &t) {
