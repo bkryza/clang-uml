@@ -228,14 +228,14 @@ enum CXChildVisitResult method_parameter_visitor(
                         class_ tinst = build_template_instantiation(
                             cursor, t.referenced());
 
+                        // Add template instantiation relationship
                         class_relationship ri;
                         ri.destination = tinst.base_template_usr;
                         ri.type = relationship_t::kInstantiation;
                         ri.label = "";
-
                         tinst.add_relationship(std::move(ri));
 
-                        r.destination = t.referenced().unqualified();
+                        r.destination = tinst.usr;
 
                         ctx->d.add_class(std::move(tinst));
                     }
@@ -500,8 +500,7 @@ class_ build_template_instantiation(cx::cursor cursor, cx::type t)
     }
 
     class_ tinst;
-    tinst.name = template_type.spelling();
-    tinst.name = template_type.spelling();
+    tinst.name = template_type.fully_qualified();
     tinst.is_template_instantiation = true;
     if (partial_specialization) {
         tinst.usr = template_type.usr();
@@ -547,6 +546,9 @@ bool process_template_specialization_class_field(
         bool partial_specialization = false;
         auto template_type =
             tr.type_declaration().specialized_cursor_template();
+
+        // Check if this is partial specialization
+        // TODO: Is there a better way to do it?
         if (template_type.kind() == CXCursor_InvalidFile) {
             partial_specialization = true;
             template_type = tr.type_declaration();
@@ -585,13 +587,16 @@ enum CXChildVisitResult process_field(
 
     class_member m;
     m.name = cursor.spelling();
+
     if (tr.is_template())
         m.type = t.unqualified();
     else if (tr.is_template_parameter())
         m.type = t.spelling();
     else
         m.type = t.canonical().unqualified();
+
     m.scope = cx_access_specifier_to_scope(cursor.cxxaccess_specifier());
+
     m.is_static = cursor.is_static();
 
     spdlog::debug("Adding member {} {}::{} {}, {}, {}", m.type, parent->name,

@@ -40,7 +40,7 @@ class R {
 public:
     int get_a(A *a) { return a->a; }
     int get_b(B &b) { return b.b; }
-    // TODO: int get_const_b(const B &b) { return b.b; }
+    int get_const_b(const B &b) { return b.b; }
     int get_c(C c) { return c.c; }
     int get_d(D &&d) { return d.d; }
     // Dependency relationship should be rendered only once
@@ -51,6 +51,7 @@ public:
     int get_int_e2(E<int> &e) { return e.e; }
 
     template <typename T> T get_f(const F<T> &f) { return f.f; }
+    int get_int_f(const F<int> &f) { return f.f; }
 
 private:
     mutable E<std::string> estring;
