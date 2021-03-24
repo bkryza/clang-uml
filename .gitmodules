@@ -1,3 +1,4 @@
 [submodule "thirdparty/cppast"]
 	path = thirdparty/cppast
-	url = https://github.com/foonathan/cppast
+	url = https://github.com/bkryza/cppast
+	branch = handle-exposed-template-arguments

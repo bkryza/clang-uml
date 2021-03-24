@@ -19,7 +19,20 @@
 
 #include <spdlog/spdlog.h>
 
-std::pair<clanguml::config::config, compilation_database> load_config(
+std::pair<clanguml::config::config, cppast::libclang_compilation_database>
+load_config(const std::string &test_name)
+{
+    auto config = clanguml::config::load(test_name + "/.clanguml");
+
+    // auto db = clanguml::cx::compilation_database::from_directory(
+    // config.compilation_database_dir);
+
+    cppast::libclang_compilation_database db(config.compilation_database_dir);
+
+    return std::make_pair(std::move(config), std::move(db));
+}
+
+std::pair<clanguml::config::config, compilation_database> load_config2(
     const std::string &test_name)
 {
     auto config = clanguml::config::load(test_name + "/.clanguml");
@@ -42,7 +55,7 @@ clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
 }
 
 clanguml::model::class_diagram::diagram generate_class_diagram(
-    compilation_database &db,
+    cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
@@ -134,7 +147,7 @@ using clanguml::test::matchers::Static;
 //
 // Sequence diagram tests
 //
-#include "t20001/test_case.h"
+//#include "t20001/test_case.h"
 
 //
 // Other tests (e.g. configuration file)

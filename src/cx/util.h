@@ -19,6 +19,7 @@
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
+#include <cppast/cpp_entity.hpp>
 
 #include <string>
 
@@ -37,6 +38,10 @@ namespace util {
  * @return std::string instance
  */
 std::string to_string(CXString &&cxs);
+
+std::string full_name(const cppast::cpp_entity &e);
+
+std::string fully_prefixed(const cppast::cpp_entity &e);
 
 } // namespace util
 } // namespace cx

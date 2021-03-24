@@ -17,6 +17,12 @@
  */
 #include "class_diagram_visitor.h"
 
+#include <cppast/cpp_array_type.hpp>
+#include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_member_function.hpp>
+#include <cppast/cpp_member_variable.hpp>
+#include <cppast/cpp_template.hpp>
+#include <cppast/cpp_variable.hpp>
 #include <spdlog/spdlog.h>
 
 namespace clanguml {
@@ -34,6 +40,405 @@ using clanguml::model::class_diagram::enum_;
 using clanguml::model::class_diagram::method_parameter;
 using clanguml::model::class_diagram::relationship_t;
 using clanguml::model::class_diagram::scope_t;
+
+namespace detail {
+scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
+{
+    scope_t res = scope_t::kPublic;
+    switch (as) {
+        case cppast::cpp_access_specifier_kind::cpp_public:
+            res = scope_t::kPublic;
+            break;
+        case cppast::cpp_access_specifier_kind::cpp_private:
+            res = scope_t::kPrivate;
+            break;
+        case cppast::cpp_access_specifier_kind::cpp_protected:
+            res = scope_t::kProtected;
+            break;
+        default:
+            break;
+    }
+
+    return res;
+}
+}
+
+void tu_visitor::operator()(const cppast::cpp_entity &file)
+{
+    std::string prefix;
+    // visit each entity in the file
+    cppast::visit(file,
+        [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
+            if (e.kind() == cppast::cpp_entity_kind::class_t) {
+                spdlog::debug("{}'{}' - {}", prefix,
+                    cx::util::fully_prefixed(e), cppast::to_string(e.kind()));
+
+                auto &cls = static_cast<const cppast::cpp_class &>(e);
+
+                if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
+                    process_class_declaration(cls);
+            }
+        });
+}
+
+void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
+{
+    class_ c;
+    c.usr = cx::util::full_name(cls);
+    c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
+    c.name = cx::util::full_name(cls);
+
+    cppast::cpp_access_specifier_kind last_access_specifier =
+        cppast::cpp_access_specifier_kind::cpp_private;
+
+    // Process class child entities
+    if (c.is_struct)
+        last_access_specifier = cppast::cpp_access_specifier_kind::cpp_public;
+
+    for (auto &child : cls) {
+        if (child.kind() == cppast::cpp_entity_kind::access_specifier_t) {
+            auto &as = static_cast<const cppast::cpp_access_specifier &>(child);
+            last_access_specifier = as.access_specifier();
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
+            auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
+            process_field(mv, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
+            auto &mv = static_cast<const cppast::cpp_variable &>(child);
+            process_static_field(mv, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::member_function_t) {
+            auto &mf = static_cast<const cppast::cpp_member_function &>(child);
+            process_method(mf, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::function_t) {
+            auto &mf = static_cast<const cppast::cpp_function &>(child);
+            process_static_method(mf, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
+            auto &mc = static_cast<const cppast::cpp_constructor &>(child);
+            process_constructor(mc, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
+            auto &mc = static_cast<const cppast::cpp_destructor &>(child);
+            process_destructor(mc, c, last_access_specifier);
+        }
+    }
+
+    // Process class bases
+    for (auto &base : cls.bases()) {
+        class_parent cp;
+        cp.name = clanguml::cx::util::fully_prefixed(base);
+        cp.is_virtual = base.is_virtual();
+        switch (base.access_specifier()) {
+            case cppast::cpp_access_specifier_kind::cpp_private:
+                cp.access = class_parent::access_t::kPrivate;
+                break;
+            case cppast::cpp_access_specifier_kind::cpp_public:
+                cp.access = class_parent::access_t::kPublic;
+                break;
+            case cppast::cpp_access_specifier_kind::cpp_protected:
+                cp.access = class_parent::access_t::kProtected;
+                break;
+            default:
+                cp.access = class_parent::access_t::kPublic;
+        }
+
+        c.bases.emplace_back(std::move(cp));
+    }
+
+    // Process class template arguments
+    if (cppast::is_templated(cls)) {
+        auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
+        for (const auto &tp : scope.template_parameters()) {
+            if (tp.kind() ==
+                cppast::cpp_entity_kind::template_type_parameter_t) {
+                process_template_type_parameter(
+                    static_cast<const cppast::cpp_template_type_parameter &>(
+                        tp),
+                    c);
+            }
+            else if (tp.kind() ==
+                cppast::cpp_entity_kind::non_type_template_parameter_t) {
+                process_template_nontype_parameter(
+                    static_cast<
+                        const cppast::cpp_non_type_template_parameter &>(tp),
+                    c);
+            }
+            else if (tp.kind() ==
+                cppast::cpp_entity_kind::template_template_parameter_t) {
+                process_template_template_parameter(
+                    static_cast<
+                        const cppast::cpp_template_template_parameter &>(tp),
+                    c);
+            }
+        }
+    }
+
+    ctx.d.add_class(std::move(c));
+}
+
+void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
+    cppast::cpp_access_specifier_kind as)
+{
+    class_member m;
+    m.name = mv.name();
+    m.type = cppast::to_string(mv.type());
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+    m.is_static = false;
+
+    if (mv.type().kind() != cppast::cpp_type_kind::builtin_t) {
+        std::vector<std::pair<std::string, relationship_t>> relationships;
+
+        find_relationships(mv.type(), relationships);
+
+        for (const auto &[type, relationship_type] : relationships) {
+            if (relationship_type != relationship_t::kNone) {
+                class_relationship r;
+                r.destination = type;
+                r.type = relationship_type;
+                r.label = m.name;
+                c.relationships.emplace_back(std::move(r));
+
+                spdlog::debug("Added relationship to: {}", r.destination);
+            }
+        }
+    }
+
+    c.members.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
+    cppast::cpp_access_specifier_kind as)
+{
+    class_member m;
+    m.name = mv.name();
+    m.type = cppast::to_string(mv.type());
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+    m.is_static = true;
+
+    c.members.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_method(const cppast::cpp_member_function &mf,
+    class_ &c, cppast::cpp_access_specifier_kind as)
+{
+    class_method m;
+    m.name = util::trim(mf.name());
+    m.type = cppast::to_string(mf.return_type());
+    m.is_pure_virtual = cppast::is_pure(mf.virtual_info());
+    m.is_virtual = cppast::is_virtual(mf.virtual_info());
+    m.is_const = cppast::is_const(mf.cv_qualifier());
+    m.is_defaulted = false; // cursor.is_method_defaulted();
+    m.is_static = false;    // cppast::is_static(mf.storage_class());
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+
+    for (auto &param : mf.parameters())
+        process_function_parameter(param, m);
+
+    c.methods.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_static_method(const cppast::cpp_function &mf,
+    class_ &c, cppast::cpp_access_specifier_kind as)
+{
+    class_method m;
+    m.name = util::trim(mf.name());
+    m.type = cppast::to_string(mf.return_type());
+    m.is_pure_virtual = false;
+    m.is_virtual = false;
+    m.is_const = false;
+    m.is_defaulted = false;
+    m.is_static = true;
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+
+    for (auto &param : mf.parameters())
+        process_function_parameter(param, m);
+
+    c.methods.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
+    class_ &c, cppast::cpp_access_specifier_kind as)
+{
+    class_method m;
+    m.name = util::trim(mf.name());
+    m.type = "void";
+    m.is_pure_virtual = false;
+    m.is_virtual = false;
+    m.is_const = false;
+    m.is_defaulted = false;
+    m.is_static = false;
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+
+    for (auto &param : mf.parameters())
+        process_function_parameter(param, m);
+
+    c.methods.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
+    cppast::cpp_access_specifier_kind as)
+{
+    class_method m;
+    m.name = util::trim(mf.name());
+    m.type = "void";
+    m.is_pure_virtual = false;
+    m.is_virtual = cppast::is_virtual(mf.virtual_info());
+    m.is_const = false;
+    m.is_defaulted = false;
+    m.is_static = false;
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+
+    c.methods.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_function_parameter(
+    const cppast::cpp_function_parameter &param, class_method &m)
+{
+    method_parameter mp;
+    mp.name = param.name();
+    mp.type = cppast::to_string(param.type());
+
+    auto dv = param.default_value();
+    if (dv)
+        switch (dv.value().kind()) {
+            case cppast::cpp_expression_kind::literal_t:
+                mp.default_value =
+                    static_cast<const cppast::cpp_literal_expression &>(
+                        dv.value())
+                        .value();
+                break;
+            case cppast::cpp_expression_kind::unexposed_t:
+                mp.default_value =
+                    static_cast<const cppast::cpp_unexposed_expression &>(
+                        dv.value())
+                        .expression()
+                        .as_string();
+                break;
+            default:
+                mp.default_value = "{}";
+        }
+
+    m.parameters.emplace_back(std::move(mp));
+}
+
+void tu_visitor::process_template_type_parameter(
+    const cppast::cpp_template_type_parameter &t, class_ &parent)
+{
+    class_template ct;
+    ct.type = "";
+    ct.default_value = "";
+    ct.is_variadic = t.is_variadic();
+    ct.name = t.name();
+    if (ct.is_variadic)
+        ct.name += "...";
+    parent.templates.emplace_back(std::move(ct));
+}
+
+void tu_visitor::process_template_nontype_parameter(
+    const cppast::cpp_non_type_template_parameter &t, class_ &parent)
+{
+    class_template ct;
+    ct.type = cppast::to_string(t.type());
+    ct.name = t.name();
+    ct.default_value = "";
+    ct.is_variadic = t.is_variadic();
+    if (ct.is_variadic)
+        ct.name += "...";
+    parent.templates.emplace_back(std::move(ct));
+}
+
+void tu_visitor::process_template_template_parameter(
+    const cppast::cpp_template_template_parameter &t, class_ &parent)
+{
+    class_template ct;
+    ct.type = "";
+    ct.name = t.name() + "<>";
+    ct.default_value = "";
+    parent.templates.emplace_back(std::move(ct));
+}
+
+void tu_visitor::find_relationships(const cppast::cpp_type &t_,
+    std::vector<std::pair<std::string, relationship_t>> &relationships,
+    relationship_t relationship_hint)
+{
+    relationship_t relationship_type = relationship_hint;
+    const auto &t = cppast::remove_cv(t_);
+
+    if (t.kind() == cppast::cpp_type_kind::array_t) {
+        auto &a = static_cast<const cppast::cpp_array_type &>(t);
+        find_relationships(
+            a.value_type(), relationships, relationship_t::kComposition);
+        return;
+    }
+
+    auto name = cppast::to_string(t);
+
+    if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        class_relationship r;
+
+        auto &tinst =
+            static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
+        if (!tinst.arguments_exposed()) {
+            spdlog::debug(
+                "Template instantiation {} has no exposed arguments", name);
+
+            return;
+        }
+
+        const auto &args = tinst.arguments().value();
+
+        if (name.find("std::unique_ptr") == 0) {
+            find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kComposition);
+        }
+        else if (name.find("std::shared_ptr") == 0) {
+            find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAssociation);
+        }
+        else if (name.find("std::weak_ptr") == 0) {
+            find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAssociation);
+        }
+        else if (name.find("std::vector") == 0) {
+            find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAggregation);
+        }
+        else {
+            for (const auto &arg : args) {
+                find_relationships(
+                    arg.type().value(), relationships, relationship_type);
+            }
+        }
+    }
+    else if (t.kind() == cppast::cpp_type_kind::user_defined_t) {
+        if (relationship_type != relationship_t::kNone)
+            relationships.emplace_back(cppast::to_string(t), relationship_hint);
+        else
+            relationships.emplace_back(
+                cppast::to_string(t), relationship_t::kComposition);
+    }
+    else if (t.kind() == cppast::cpp_type_kind::pointer_t) {
+        auto &p = static_cast<const cppast::cpp_pointer_type &>(t);
+        find_relationships(
+            p.pointee(), relationships, relationship_t::kAssociation);
+    }
+    else if (t.kind() == cppast::cpp_type_kind::reference_t) {
+        auto &r = static_cast<const cppast::cpp_reference_type &>(t);
+        auto rt = relationship_t::kAssociation;
+        if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
+            rt = relationship_t::kComposition;
+        }
+        find_relationships(r.referee(), relationships, rt);
+    }
+}
+
+//
+// ============== OLD CODE =======================
+//
 
 enum CXChildVisitResult visit_if_cursor_valid(
     cx::cursor cursor, std::function<enum CXChildVisitResult(cx::cursor)> f)

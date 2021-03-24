@@ -23,6 +23,8 @@
 #include "uml/class_diagram_visitor.h"
 #include "util/util.h"
 
+#include <cppast/libclang_parser.hpp>
+#include <cppast/cpp_entity_index.hpp>
 #include <glob/glob.hpp>
 
 #include <filesystem>
@@ -267,7 +269,7 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 }
 
 clanguml::model::class_diagram::diagram generate(
-    clanguml::cx::compilation_database &db, const std::string &name,
+    cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram)
 {
     spdlog::info("Generating diagram {}.puml", name);
@@ -276,7 +278,7 @@ clanguml::model::class_diagram::diagram generate(
 
     // Get all translation units matching the glob from diagram
     // configuration
-    std::vector<std::filesystem::path> translation_units{};
+    std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
         spdlog::debug("Processing glob: {}", g);
         const auto matches = glob::glob(g);
@@ -284,12 +286,19 @@ clanguml::model::class_diagram::diagram generate(
             std::back_inserter(translation_units));
     }
 
+    cppast::cpp_entity_index idx;
+    cppast::simple_file_parser<cppast::libclang_parser> parser{type_safe::ref(idx)};
+
     // Process all matching translation units
+    clanguml::visitor::class_diagram::tu_visitor ctx(d, diagram);
+    cppast::parse_files(parser, translation_units, db);
+    for (auto &file : parser.files())
+        ctx(file);
+
+    /*
     for (const auto &tu_path : translation_units) {
         spdlog::debug("Processing translation unit: {}",
             std::filesystem::canonical(tu_path).c_str());
-
-        auto tu = db.parse_translation_unit(tu_path);
 
         auto cursor = clang_getTranslationUnitCursor(tu);
 
@@ -309,6 +318,7 @@ clanguml::model::class_diagram::diagram generate(
 
         clang_suspendTranslationUnit(tu);
     }
+    */
 
     return d;
 }

@@ -43,7 +43,9 @@ using Catch::Matchers::VectorContains;
 using clanguml::cx::compilation_database;
 using namespace clanguml::util;
 
-std::pair<clanguml::config::config, compilation_database> load_config(
+std::pair<clanguml::config::config, cppast::libclang_compilation_database>
+load_config(const std::string &test_name);
+std::pair<clanguml::config::config, compilation_database> load_config2(
     const std::string &test_name);
 
 clanguml::model::sequence_diagram::diagram generate_sequence_diagram(

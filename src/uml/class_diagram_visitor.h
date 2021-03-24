@@ -23,6 +23,11 @@
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
+#include <cppast/cpp_member_function.hpp>
+#include <cppast/cpp_member_variable.hpp>
+#include <cppast/cpp_template_parameter.hpp>
+#include <cppast/cpp_type.hpp>
+#include <cppast/visitor.hpp>
 
 #include <functional>
 #include <memory>
@@ -56,6 +61,67 @@ template <typename T> struct element_visitor_context {
     T &element;
     clanguml::model::class_diagram::class_ *parent_class{};
     clanguml::model::class_diagram::diagram &d;
+};
+
+class tu_visitor {
+public:
+    tu_visitor(clanguml::model::class_diagram::diagram &d_,
+        const clanguml::config::class_diagram &config_)
+        : ctx{d_, config_}
+    {
+    }
+
+    void operator()(const cppast::cpp_entity &file);
+
+    void process_class_declaration(const cppast::cpp_class &cls);
+
+    void process_field(const cppast::cpp_member_variable &mv,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_static_field(const cppast::cpp_variable &mv,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_method(const cppast::cpp_member_function &mf,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_static_method(const cppast::cpp_function &mf,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_constructor(const cppast::cpp_constructor &mf,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_destructor(const cppast::cpp_destructor &mf,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_function_parameter(const cppast::cpp_function_parameter &param,
+        clanguml::model::class_diagram::class_method &m);
+
+    void find_relationships(const cppast::cpp_type &t,
+        std::vector<std::pair<std::string,
+            clanguml::model::class_diagram::relationship_t>> &relationships,
+        clanguml::model::class_diagram::relationship_t relationship_hint =
+            clanguml::model::class_diagram::relationship_t::kNone);
+
+    void process_template_type_parameter(
+        const cppast::cpp_template_type_parameter &t,
+        clanguml::model::class_diagram::class_ &parent);
+
+    void process_template_nontype_parameter(
+        const cppast::cpp_non_type_template_parameter &t,
+        clanguml::model::class_diagram::class_ &parent);
+
+    void process_template_template_parameter(
+        const cppast::cpp_template_template_parameter &t,
+        clanguml::model::class_diagram::class_ &parent);
+
+private:
+    tu_context ctx;
 };
 
 // Visitors
