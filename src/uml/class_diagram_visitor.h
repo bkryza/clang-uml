@@ -75,6 +75,8 @@ public:
 
     void process_class_declaration(const cppast::cpp_class &cls);
 
+    void process_enum_declaration(const cppast::cpp_enum &enm);
+
     void process_field(const cppast::cpp_member_variable &mv,
         clanguml::model::class_diagram::class_ &c,
         cppast::cpp_access_specifier_kind as);

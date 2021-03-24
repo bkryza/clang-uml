@@ -23,6 +23,7 @@
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template.hpp>
 #include <cppast/cpp_variable.hpp>
+#include <cppast/cpp_enum.hpp>
 #include <spdlog/spdlog.h>
 
 namespace clanguml {
@@ -71,14 +72,36 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
                 spdlog::debug("{}'{}' - {}", prefix,
-                    cx::util::fully_prefixed(e), cppast::to_string(e.kind()));
+                    cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
 
                 if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
                     process_class_declaration(cls);
             }
+            else if(e.kind() == cppast::cpp_entity_kind::enum_t) {
+                spdlog::debug("{}'{}' - {}", prefix,
+                    cx::util::full_name(e), cppast::to_string(e.kind()));
+
+                auto &enm = static_cast<const cppast::cpp_enum &>(e);
+
+                if (ctx.config.should_include(cx::util::fully_prefixed(enm)))
+                    process_enum_declaration(enm);
+            }
         });
+}
+
+void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm) {
+    enum_ e;
+    e.name = cx::util::full_name(enm);
+
+    for(const auto& ev : enm) {
+        if(ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
+            e.constants.push_back(ev.name());
+        }
+    }
+
+    ctx.d.add_enum(std::move(e));
 }
 
 void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
