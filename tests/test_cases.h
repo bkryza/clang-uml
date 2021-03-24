@@ -265,7 +265,7 @@ ContainsMatcher IsInnerClass(std::string const &parent,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
-        CasedString(parent + " +-- " + inner, caseSensitivity));
+        CasedString(inner + " --+ " + parent, caseSensitivity));
 }
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,

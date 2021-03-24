@@ -211,6 +211,7 @@ public:
 
 struct enum_ : public element {
     std::vector<std::string> constants;
+    std::vector<class_relationship> relationships;
 
     friend bool operator==(const enum_ &l, const enum_ &r)
     {

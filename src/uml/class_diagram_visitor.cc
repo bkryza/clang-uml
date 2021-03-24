@@ -19,11 +19,11 @@
 
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_enum.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template.hpp>
 #include <cppast/cpp_variable.hpp>
-#include <cppast/cpp_enum.hpp>
 #include <spdlog/spdlog.h>
 
 namespace clanguml {
@@ -71,17 +71,17 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                spdlog::debug("{}'{}' - {}", prefix,
-                    cx::util::full_name(e), cppast::to_string(e.kind()));
+                spdlog::debug("{}'{}' - {}", prefix, cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
 
                 if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
                     process_class_declaration(cls);
             }
-            else if(e.kind() == cppast::cpp_entity_kind::enum_t) {
-                spdlog::debug("{}'{}' - {}", prefix,
-                    cx::util::full_name(e), cppast::to_string(e.kind()));
+            else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
+                spdlog::debug("{}'{}' - {}", prefix, cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
@@ -91,13 +91,29 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
         });
 }
 
-void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm) {
+void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
+{
     enum_ e;
     e.name = cx::util::full_name(enm);
 
-    for(const auto& ev : enm) {
-        if(ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
+    for (const auto &ev : enm) {
+        if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
             e.constants.push_back(ev.name());
+        }
+    }
+
+    // Find if class is contained in another class
+    for (auto cur = enm.parent(); cur; cur = cur.value().parent()) {
+        // find nearest parent class, if any
+        if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
+            class_relationship containment;
+            containment.type = relationship_t::kContainment;
+            containment.destination = cx::util::full_name(cur.value());
+            e.relationships.emplace_back(std::move(containment));
+
+            spdlog::debug("Added relationship {} +-- {}", e.name,
+                containment.destination);
+            break;
         }
     }
 
@@ -196,6 +212,22 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
                         const cppast::cpp_template_template_parameter &>(tp),
                     c);
             }
+        }
+    }
+
+    // Find if class is contained in another class
+    for (auto cur = cls.parent(); cur; cur = cur.value().parent()) {
+        // find nearest parent class, if any
+        if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
+            class_relationship containment;
+            containment.type = relationship_t::kContainment;
+            containment.destination = cx::util::full_name(cur.value());
+            c.relationships.emplace_back(std::move(containment));
+
+            spdlog::debug("Added relationship {} +-- {}",
+                c.full_name(ctx.config.using_namespace),
+                containment.destination);
+            break;
         }
     }
 
