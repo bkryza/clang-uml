@@ -18,6 +18,7 @@
 #include "class_diagram_visitor.h"
 
 #include <cppast/cpp_array_type.hpp>
+#include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_enum.hpp>
 #include <cppast/cpp_member_function.hpp>
@@ -123,7 +124,6 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
 void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
 {
     class_ c;
-    c.usr = cx::util::full_name(cls);
     c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
     c.name = cx::util::full_name(cls);
 
@@ -230,6 +230,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             break;
         }
     }
+    cls.set_user_data(strdup(c.full_name(ctx.config.using_namespace).c_str()));
+    c.usr = c.full_name(ctx.config.using_namespace);
 
     ctx.d.add_class(std::move(c));
 }
@@ -243,6 +245,52 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     m.scope = detail::cpp_access_specifier_to_scope(as);
     m.is_static = false;
 
+    const auto &tr = cx::util::unreferenced(mv.type());
+    if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        const auto &template_instantiation_type =
+            static_cast<const cppast::cpp_template_instantiation_type &>(tr);
+        if (template_instantiation_type.primary_template()
+                .get(ctx.entity_index)
+                .size()) {
+            // Here we need the name of the primary template with full namespace
+            // prefix to apply config inclusion filters
+            auto primary_template_name = cx::util::full_name(
+                template_instantiation_type.primary_template()
+                    .get(ctx.entity_index)[0]
+                    .get());
+
+            spdlog::debug(
+                "MAYBE BUILDING INSTANTIATION FOR: {}", primary_template_name);
+
+            if (ctx.config.should_include(primary_template_name)) {
+                class_ tinst = build_template_instantiation(
+                    mv, template_instantiation_type);
+
+                class_relationship r;
+                r.destination = tinst.base_template_usr;
+                r.type = relationship_t::kInstantiation;
+                r.label = "";
+                tinst.add_relationship(std::move(r));
+
+                class_relationship rr;
+                rr.destination = tinst.usr;
+                if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
+                    mv.type().kind() == cppast::cpp_type_kind::reference_t)
+                    rr.type = relationship_t::kAssociation;
+                else
+                    rr.type = relationship_t::kComposition;
+                rr.label = mv.name();
+                spdlog::debug(
+                    "Adding field instantiation relationship {} {} {} : {}",
+                    rr.destination, model::class_diagram::to_string(rr.type),
+                    c.usr, rr.label);
+                c.add_relationship(std::move(rr));
+
+                ctx.d.add_class(std::move(tinst));
+            }
+        }
+    }
+
     if (mv.type().kind() != cppast::cpp_type_kind::builtin_t) {
         std::vector<std::pair<std::string, relationship_t>> relationships;
 
@@ -254,9 +302,12 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.destination = type;
                 r.type = relationship_type;
                 r.label = m.name;
-                c.relationships.emplace_back(std::move(r));
 
-                spdlog::debug("Added relationship to: {}", r.destination);
+                spdlog::debug("Adding field relationship {} {} {} : {}",
+                    r.destination, model::class_diagram::to_string(r.type),
+                    c.usr, r.label);
+
+                c.relationships.emplace_back(std::move(r));
             }
         }
     }
@@ -419,8 +470,10 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     std::vector<std::pair<std::string, relationship_t>> &relationships,
     relationship_t relationship_hint)
 {
+    spdlog::debug("Finding relationships for type {}", cppast::to_string(t_));
+
     relationship_t relationship_type = relationship_hint;
-    const auto &t = cppast::remove_cv(t_);
+    const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
 
     if (t.kind() == cppast::cpp_type_kind::array_t) {
         auto &a = static_cast<const cppast::cpp_array_type &>(t);
@@ -460,7 +513,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         }
         else if (name.find("std::vector") == 0) {
             find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
+                relationship_t::kComposition);
         }
         else {
             for (const auto &arg : args) {
@@ -469,26 +522,72 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
             }
         }
     }
-    else if (t.kind() == cppast::cpp_type_kind::user_defined_t) {
-        if (relationship_type != relationship_t::kNone)
-            relationships.emplace_back(cppast::to_string(t), relationship_hint);
-        else
-            relationships.emplace_back(
-                cppast::to_string(t), relationship_t::kComposition);
-    }
-    else if (t.kind() == cppast::cpp_type_kind::pointer_t) {
-        auto &p = static_cast<const cppast::cpp_pointer_type &>(t);
+    else if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
+        auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
+        spdlog::debug("TEST2");
         find_relationships(
             p.pointee(), relationships, relationship_t::kAssociation);
     }
-    else if (t.kind() == cppast::cpp_type_kind::reference_t) {
-        auto &r = static_cast<const cppast::cpp_reference_type &>(t);
+    else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
+        spdlog::debug("TEST3");
+        auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
         auto rt = relationship_t::kAssociation;
         if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
             rt = relationship_t::kComposition;
         }
         find_relationships(r.referee(), relationships, rt);
     }
+    else if (cppast::remove_cv(t_).kind() ==
+        cppast::cpp_type_kind::user_defined_t) {
+        if (ctx.config.should_include(cppast::to_string(t_.canonical())))
+            if (relationship_type != relationship_t::kNone)
+                relationships.emplace_back(
+                    cppast::to_string(cppast::remove_cv(t_)), relationship_type);
+            else
+                relationships.emplace_back(
+                    cppast::to_string(cppast::remove_cv(t_)), relationship_t::kComposition);
+    }
+}
+
+class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
+    const cppast::cpp_template_instantiation_type &t)
+{
+    spdlog::debug("Found template instantiation: {} ..|> {}",
+        cppast::to_string(t.canonical()), t.primary_template().name());
+
+    class_ tinst;
+    const auto &primary_template_ref =
+        static_cast<const cppast::cpp_class_template &>(
+            t.primary_template().get(ctx.entity_index)[0].get())
+            .class_();
+    tinst.name = primary_template_ref.name();
+    if (primary_template_ref.user_data())
+        tinst.base_template_usr =
+            static_cast<const char *>(primary_template_ref.user_data());
+
+    tinst.is_template_instantiation = true;
+
+    for (const auto &targ : t.arguments().value()) {
+        class_template ct;
+        if (targ.type()) {
+            ct.type = cppast::to_string(targ.type().value());
+        }
+        else if (targ.expression()) {
+            const auto &exp = targ.expression().value();
+            if (exp.kind() == cppast::cpp_expression_kind::literal_t)
+                ct.type =
+                    static_cast<const cppast::cpp_literal_expression &>(exp)
+                        .value();
+        }
+
+        spdlog::debug("Adding template argument '{}'", ct.type);
+
+        tinst.templates.emplace_back(std::move(ct));
+    }
+
+    tinst.usr = tinst.full_name(ctx.config.using_namespace);
+
+    return tinst;
 }
 
 //

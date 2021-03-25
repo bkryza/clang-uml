@@ -22,6 +22,36 @@ namespace clanguml {
 namespace model {
 namespace class_diagram {
 std::atomic_uint64_t element::m_nextId = 1;
+
+std::string to_string(relationship_t r)
+{
+    switch (r) {
+        case relationship_t::kNone:
+            return "none";
+        case relationship_t::kExtension:
+            return "extension";
+        case relationship_t::kComposition:
+            return "composition";
+        case relationship_t::kAggregation:
+            return "aggregation";
+        case relationship_t::kContainment:
+            return "containment";
+        case relationship_t::kOwnership:
+            return "ownership";
+        case relationship_t::kAssociation:
+            return "association";
+        case relationship_t::kInstantiation:
+            return "instantiation";
+        case relationship_t::kFriendship:
+            return "frendship";
+        case relationship_t::kDependency:
+            return "dependency";
+        default:
+            return "invalid";
+    }
+}
+
+
 }
 }
 }

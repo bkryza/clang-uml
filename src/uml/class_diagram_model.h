@@ -49,6 +49,8 @@ enum class relationship_t {
     kDependency
 };
 
+std::string to_string(relationship_t r);
+
 class element {
 public:
     element()
@@ -226,7 +228,7 @@ struct diagram {
 
     void add_class(class_ &&c)
     {
-        spdlog::debug("ADDING CLASS: {}, {}", c.name, c.usr);
+        spdlog::debug("Adding class: {}, {}", c.name, c.usr);
         auto it = std::find(classes.begin(), classes.end(), c);
         if (it == classes.end())
             classes.emplace_back(std::move(c));

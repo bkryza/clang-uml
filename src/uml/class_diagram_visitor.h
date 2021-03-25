@@ -38,14 +38,17 @@ namespace visitor {
 namespace class_diagram {
 
 struct tu_context {
-    tu_context(clanguml::model::class_diagram::diagram &d_,
+    tu_context(cppast::cpp_entity_index &idx,
+        clanguml::model::class_diagram::diagram &d_,
         const clanguml::config::class_diagram &config_)
-        : d{d_}
+        : entity_index{idx}
+        , d{d_}
         , config{config_}
     {
     }
 
     std::vector<std::string> namespace_;
+    cppast::cpp_entity_index &entity_index;
     clanguml::model::class_diagram::diagram &d;
     const clanguml::config::class_diagram &config;
 };
@@ -65,9 +68,10 @@ template <typename T> struct element_visitor_context {
 
 class tu_visitor {
 public:
-    tu_visitor(clanguml::model::class_diagram::diagram &d_,
+    tu_visitor(cppast::cpp_entity_index &idx_,
+        clanguml::model::class_diagram::diagram &d_,
         const clanguml::config::class_diagram &config_)
-        : ctx{d_, config_}
+        : ctx{idx_, d_, config_}
     {
     }
 
@@ -123,6 +127,10 @@ public:
         clanguml::model::class_diagram::class_ &parent);
 
 private:
+    clanguml::model::class_diagram::class_ build_template_instantiation(
+        const cppast::cpp_entity &e,
+        const cppast::cpp_template_instantiation_type &t);
+
     tu_context ctx;
 };
 

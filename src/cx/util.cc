@@ -91,6 +91,18 @@ std::string fully_prefixed(const cppast::cpp_entity &e)
 
     return fmt::format("{}", fmt::join(res.rbegin(), res.rend(), "::"));
 }
+
+const cppast::cpp_type &unreferenced(const cppast::cpp_type &t)
+{
+    if (t.kind() == cppast::cpp_type_kind::pointer_t)
+        return unreferenced(
+            static_cast<const cppast::cpp_pointer_type &>(t).pointee());
+    else if (t.kind() == cppast::cpp_type_kind::reference_t)
+        return unreferenced(
+            static_cast<const cppast::cpp_reference_type &>(t).referee());
+
+    return t;
+}
 } // namespace util
 } // namespace cx
 } // namespace clanguml

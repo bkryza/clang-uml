@@ -318,7 +318,7 @@ clanguml::model::class_diagram::diagram generate(
         type_safe::ref(idx)};
 
     // Process all matching translation units
-    clanguml::visitor::class_diagram::tu_visitor ctx(d, diagram);
+    clanguml::visitor::class_diagram::tu_visitor ctx(idx, d, diagram);
     cppast::parse_files(parser, translation_units, db);
     for (auto &file : parser.files())
         ctx(file);
