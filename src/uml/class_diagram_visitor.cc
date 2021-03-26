@@ -21,6 +21,7 @@
 #include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_enum.hpp>
+#include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template.hpp>
@@ -48,17 +49,17 @@ scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
 {
     scope_t res = scope_t::kPublic;
     switch (as) {
-        case cppast::cpp_access_specifier_kind::cpp_public:
-            res = scope_t::kPublic;
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_private:
-            res = scope_t::kPrivate;
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_protected:
-            res = scope_t::kProtected;
-            break;
-        default:
-            break;
+    case cppast::cpp_access_specifier_kind::cpp_public:
+        res = scope_t::kPublic;
+        break;
+    case cppast::cpp_access_specifier_kind::cpp_private:
+        res = scope_t::kPrivate;
+        break;
+    case cppast::cpp_access_specifier_kind::cpp_protected:
+        res = scope_t::kProtected;
+        break;
+    default:
+        break;
     }
 
     return res;
@@ -67,12 +68,16 @@ scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
 
 void tu_visitor::operator()(const cppast::cpp_entity &file)
 {
-    std::string prefix;
-    // visit each entity in the file
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
+            if (info.is_old_entity()) {
+                spdlog::debug(
+                    "Entity {} already visited - skipping...", e.name());
+                return;
+            }
+
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                spdlog::debug("{}'{}' - {}", prefix, cx::util::full_name(e),
+                spdlog::debug("'{}' - {}", cx::util::full_name(e),
                     cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
@@ -81,7 +86,7 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
-                spdlog::debug("{}'{}' - {}", prefix, cx::util::full_name(e),
+                spdlog::debug("'{}' - {}", cx::util::full_name(e),
                     cppast::to_string(e.kind()));
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
@@ -163,6 +168,28 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             auto &mc = static_cast<const cppast::cpp_destructor &>(child);
             process_destructor(mc, c, last_access_specifier);
         }
+       else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
+            auto &fr = static_cast<const cppast::cpp_friend &>(child);
+
+            spdlog::debug("Found friend declaration: {}, {}",
+                child.name(),
+                child.scope_name() ? child.scope_name().value().name()
+                                   : "<no-scope>");
+
+            process_friend(fr, c);
+        }
+        else if (cppast::is_friended(child)) {
+            auto &fr =
+                static_cast<const cppast::cpp_friend &>(child.parent().value());
+
+            spdlog::debug("Found friend template: {}", child.name());
+
+            process_friend(fr, c);
+        }
+        else {
+            spdlog::debug("Found some other class child: {} ({})",
+                child.name(), cppast::to_string(child.kind()));
+        }
     }
 
     // Process class bases
@@ -170,18 +197,19 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         class_parent cp;
         cp.name = clanguml::cx::util::fully_prefixed(base);
         cp.is_virtual = base.is_virtual();
+
         switch (base.access_specifier()) {
-            case cppast::cpp_access_specifier_kind::cpp_private:
-                cp.access = class_parent::access_t::kPrivate;
-                break;
-            case cppast::cpp_access_specifier_kind::cpp_public:
-                cp.access = class_parent::access_t::kPublic;
-                break;
-            case cppast::cpp_access_specifier_kind::cpp_protected:
-                cp.access = class_parent::access_t::kProtected;
-                break;
-            default:
-                cp.access = class_parent::access_t::kPublic;
+        case cppast::cpp_access_specifier_kind::cpp_private:
+            cp.access = class_parent::access_t::kPrivate;
+            break;
+        case cppast::cpp_access_specifier_kind::cpp_public:
+            cp.access = class_parent::access_t::kPublic;
+            break;
+        case cppast::cpp_access_specifier_kind::cpp_protected:
+            cp.access = class_parent::access_t::kProtected;
+            break;
+        default:
+            cp.access = class_parent::access_t::kPublic;
         }
 
         c.bases.emplace_back(std::move(cp));
@@ -222,15 +250,22 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             class_relationship containment;
             containment.type = relationship_t::kContainment;
             containment.destination = cx::util::full_name(cur.value());
-            c.relationships.emplace_back(std::move(containment));
+            c.add_relationship(std::move(containment));
 
             spdlog::debug("Added relationship {} +-- {}",
                 c.full_name(ctx.config.using_namespace),
                 containment.destination);
+
             break;
         }
     }
+
     cls.set_user_data(strdup(c.full_name(ctx.config.using_namespace).c_str()));
+
+    spdlog::debug("Setting user data for class {}, {}",
+        static_cast<const char *>(cls.user_data()),
+        fmt::ptr(reinterpret_cast<const void *>(&cls)));
+
     c.usr = c.full_name(ctx.config.using_namespace);
 
     ctx.d.add_class(std::move(c));
@@ -260,7 +295,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                     .get());
 
             spdlog::debug(
-                "MAYBE BUILDING INSTANTIATION FOR: {}", primary_template_name);
+                "Maybe building instantiation for: {}", primary_template_name);
 
             if (ctx.config.should_include(primary_template_name)) {
                 class_ tinst = build_template_instantiation(
@@ -410,21 +445,20 @@ void tu_visitor::process_function_parameter(
     auto dv = param.default_value();
     if (dv)
         switch (dv.value().kind()) {
-            case cppast::cpp_expression_kind::literal_t:
-                mp.default_value =
-                    static_cast<const cppast::cpp_literal_expression &>(
-                        dv.value())
-                        .value();
-                break;
-            case cppast::cpp_expression_kind::unexposed_t:
-                mp.default_value =
-                    static_cast<const cppast::cpp_unexposed_expression &>(
-                        dv.value())
-                        .expression()
-                        .as_string();
-                break;
-            default:
-                mp.default_value = "{}";
+        case cppast::cpp_expression_kind::literal_t:
+            mp.default_value =
+                static_cast<const cppast::cpp_literal_expression &>(dv.value())
+                    .value();
+            break;
+        case cppast::cpp_expression_kind::unexposed_t:
+            mp.default_value =
+                static_cast<const cppast::cpp_unexposed_expression &>(
+                    dv.value())
+                    .expression()
+                    .as_string();
+            break;
+        default:
+            mp.default_value = "{}";
         }
 
     m.parameters.emplace_back(std::move(mp));
@@ -466,6 +500,66 @@ void tu_visitor::process_template_template_parameter(
     parent.templates.emplace_back(std::move(ct));
 }
 
+void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
+{
+    class_relationship r;
+    r.type = relationship_t::kFriendship;
+    r.label = "<<friend>>";
+
+    if (f.type()) {
+        auto name = cppast::to_string(f.type().value());
+
+        if (!ctx.config.should_include(name))
+            return;
+
+        spdlog::debug("Type friend declaration {}", name);
+
+        r.destination = name;
+    }
+    else if (f.entity()) {
+        std::string name{};
+
+        if (f.entity().value().kind() ==
+            cppast::cpp_entity_kind::class_template_t) {
+            const auto &ft = static_cast<const cppast::cpp_class_template &>(
+                f.entity().value());
+            const auto &class_ = ft.class_();
+            auto scope = cppast::cpp_scope_name(type_safe::ref(ft));
+            if (ft.class_().user_data() == nullptr) {
+                spdlog::warn(
+                    "Empty user data in friend class template: {}, {}, {}",
+                    ft.name(),
+                    fmt::ptr(reinterpret_cast<const void *>(&ft.class_())),
+                    scope.name());
+                return;
+            }
+
+            spdlog::debug("Entity friend declaration {} ({})", name,
+                static_cast<const char *>(ft.user_data()));
+
+            name = static_cast<const char *>(ft.user_data());
+        }
+        else {
+            spdlog::debug("Entity friend declaration {} ({},{})", name,
+                cppast::is_templated(f.entity().value()),
+                cppast::to_string(f.entity().value().kind()));
+
+            name = cx::util::full_name(f.entity().value());
+        }
+
+        if (!ctx.config.should_include(name))
+            return;
+
+        r.destination = name;
+    }
+    else {
+        spdlog::debug("Friend declaration points neither to type or entity.");
+        return;
+    }
+
+    parent.add_relationship(std::move(r));
+}
+
 void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     std::vector<std::pair<std::string, relationship_t>> &relationships,
     relationship_t relationship_hint)
@@ -499,6 +593,9 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
 
         const auto &args = tinst.arguments().value();
 
+        // Try to match common containers
+        // TODO: Refactor to a separate class with configurable
+        //       container list
         if (name.find("std::unique_ptr") == 0) {
             find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kComposition);
@@ -524,12 +621,10 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     }
     else if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
         auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
-        spdlog::debug("TEST2");
         find_relationships(
             p.pointee(), relationships, relationship_t::kAssociation);
     }
     else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
-        spdlog::debug("TEST3");
         auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
         auto rt = relationship_t::kAssociation;
         if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
@@ -542,10 +637,12 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         if (ctx.config.should_include(cppast::to_string(t_.canonical())))
             if (relationship_type != relationship_t::kNone)
                 relationships.emplace_back(
-                    cppast::to_string(cppast::remove_cv(t_)), relationship_type);
+                    cppast::to_string(cppast::remove_cv(t_)),
+                    relationship_type);
             else
                 relationships.emplace_back(
-                    cppast::to_string(cppast::remove_cv(t_)), relationship_t::kComposition);
+                    cppast::to_string(cppast::remove_cv(t_)),
+                    relationship_t::kComposition);
     }
 }
 
@@ -616,17 +713,17 @@ scope_t cx_access_specifier_to_scope(CX_CXXAccessSpecifier as)
 {
     scope_t res = scope_t::kPublic;
     switch (as) {
-        case CX_CXXAccessSpecifier::CX_CXXPublic:
-            res = scope_t::kPublic;
-            break;
-        case CX_CXXAccessSpecifier::CX_CXXPrivate:
-            res = scope_t::kPrivate;
-            break;
-        case CX_CXXAccessSpecifier::CX_CXXProtected:
-            res = scope_t::kProtected;
-            break;
-        default:
-            break;
+    case CX_CXXAccessSpecifier::CX_CXXPublic:
+        res = scope_t::kPublic;
+        break;
+    case CX_CXXAccessSpecifier::CX_CXXPrivate:
+        res = scope_t::kPrivate;
+        break;
+    case CX_CXXAccessSpecifier::CX_CXXProtected:
+        res = scope_t::kProtected;
+        break;
+    default:
+        break;
     }
 
     return res;
@@ -709,18 +806,18 @@ enum CXChildVisitResult enum_visitor(
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
-        case CXCursor_EnumConstantDecl:
-            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
-                spdlog::debug("Adding enum constant {}::{}", ctx->element.name,
-                    cursor.spelling());
+    case CXCursor_EnumConstantDecl:
+        ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+            spdlog::debug("Adding enum constant {}::{}", ctx->element.name,
+                cursor.spelling());
 
-                ctx->element.constants.emplace_back(cursor.spelling());
-                return CXChildVisit_Continue;
-            });
-            break;
-        default:
-            ret = CXChildVisit_Continue;
-            break;
+            ctx->element.constants.emplace_back(cursor.spelling());
+            return CXChildVisit_Continue;
+        });
+        break;
+    default:
+        ret = CXChildVisit_Continue;
+        break;
     }
 
     return ret;
@@ -740,80 +837,80 @@ enum CXChildVisitResult method_parameter_visitor(
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
-        case CXCursor_ParmDecl: {
-            spdlog::debug("Analyzing method parameter: {}, {}, {}", cursor,
-                cursor.type().referenced(),
-                cursor.type().referenced().type_declaration());
+    case CXCursor_ParmDecl: {
+        spdlog::debug("Analyzing method parameter: {}, {}, {}", cursor,
+            cursor.type().referenced(),
+            cursor.type().referenced().type_declaration());
 
-            auto t = cursor.type();
-            method_parameter mp;
-            mp.name = cursor.spelling();
-            mp.type = t.spelling();
-            mp.default_value = cursor.default_value();
+        auto t = cursor.type();
+        method_parameter mp;
+        mp.name = cursor.spelling();
+        mp.type = t.spelling();
+        mp.default_value = cursor.default_value();
 
-            ctx->element.parameters.emplace_back(std::move(mp));
-            std::string rdestination{};
+        ctx->element.parameters.emplace_back(std::move(mp));
+        std::string rdestination{};
 
-            if (t.is_relationship()) {
-                if (t.is_template_instantiation()) {
-                    rdestination = t.referenced().instantiation_template();
-                }
-                else if (t.spelling().find('<') != std::string::npos) {
-                    rdestination =
-                        t.referenced().type_declaration().fully_qualified();
-                }
-                else {
-                    rdestination = t.referenced().spelling();
-                }
-
-                if (ctx->ctx->config.should_include(rdestination) &&
-                    rdestination != ctx->parent_class->name) {
-
-                    spdlog::debug("Adding dependency to {} \n\tCURSOR={} "
-                                  "\n\tREFTYPE={} \n\tTYPEDECL={}",
-                        t.referenced().spelling(), cursor, t.referenced(),
-                        t.referenced().type_declaration());
-
-                    class_relationship r;
-                    r.type = relationship_t::kDependency;
-
-                    if (t.referenced().is_template_instantiation() &&
-                        (t.referenced().type_declaration().kind() !=
-                                CXCursor_InvalidFile ||
-                            t.referenced()
-                                    .type_declaration()
-                                    .specialized_cursor_template()
-                                    .kind() != CXCursor_InvalidFile)) {
-                        class_ tinst = build_template_instantiation(
-                            cursor, t.referenced());
-
-                        // Add template instantiation relationship
-                        class_relationship ri;
-                        ri.destination = tinst.base_template_usr;
-                        ri.type = relationship_t::kInstantiation;
-                        ri.label = "";
-                        tinst.add_relationship(std::move(ri));
-
-                        r.destination = tinst.usr;
-
-                        ctx->d.add_class(std::move(tinst));
-                    }
-                    else
-                        r.destination = t.referenced().type_declaration().usr();
-
-                    assert(ctx->parent_class != nullptr);
-
-                    if ((r.destination != ctx->parent_class->name) &&
-                        (r.destination != ctx->parent_class->usr))
-                        ctx->parent_class->add_relationship(std::move(r));
-                }
-
-                ret = CXChildVisit_Continue;
+        if (t.is_relationship()) {
+            if (t.is_template_instantiation()) {
+                rdestination = t.referenced().instantiation_template();
             }
-        } break;
-        default:
+            else if (t.spelling().find('<') != std::string::npos) {
+                rdestination =
+                    t.referenced().type_declaration().fully_qualified();
+            }
+            else {
+                rdestination = t.referenced().spelling();
+            }
+
+            if (ctx->ctx->config.should_include(rdestination) &&
+                rdestination != ctx->parent_class->name) {
+
+                spdlog::debug("Adding dependency to {} \n\tCURSOR={} "
+                              "\n\tREFTYPE={} \n\tTYPEDECL={}",
+                    t.referenced().spelling(), cursor, t.referenced(),
+                    t.referenced().type_declaration());
+
+                class_relationship r;
+                r.type = relationship_t::kDependency;
+
+                if (t.referenced().is_template_instantiation() &&
+                    (t.referenced().type_declaration().kind() !=
+                            CXCursor_InvalidFile ||
+                        t.referenced()
+                                .type_declaration()
+                                .specialized_cursor_template()
+                                .kind() != CXCursor_InvalidFile)) {
+                    class_ tinst =
+                        build_template_instantiation(cursor, t.referenced());
+
+                    // Add template instantiation relationship
+                    class_relationship ri;
+                    ri.destination = tinst.base_template_usr;
+                    ri.type = relationship_t::kInstantiation;
+                    ri.label = "";
+                    tinst.add_relationship(std::move(ri));
+
+                    r.destination = tinst.usr;
+
+                    ctx->d.add_class(std::move(tinst));
+                }
+                else
+                    r.destination = t.referenced().type_declaration().usr();
+
+                assert(ctx->parent_class != nullptr);
+
+                if ((r.destination != ctx->parent_class->name) &&
+                    (r.destination != ctx->parent_class->usr))
+                    ctx->parent_class->add_relationship(std::move(r));
+            }
+
             ret = CXChildVisit_Continue;
-            break;
+        }
+    } break;
+    default:
+        ret = CXChildVisit_Continue;
+        break;
     }
 
     return ret;
@@ -833,30 +930,30 @@ enum CXChildVisitResult friend_class_visitor(
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
     switch (cursor.kind()) {
-        case CXCursor_TemplateRef:
-        case CXCursor_ClassTemplate:
-        case CXCursor_TypeRef: {
-            spdlog::debug("Analyzing friend declaration: {}, {}", cursor,
-                cursor.specialized_cursor_template());
+    case CXCursor_TemplateRef:
+    case CXCursor_ClassTemplate:
+    case CXCursor_TypeRef: {
+        spdlog::debug("Analyzing friend declaration: {}, {}", cursor,
+            cursor.specialized_cursor_template());
 
-            if (!ctx->ctx->config.should_include(
-                    cursor.referenced().fully_qualified())) {
-                ret = CXChildVisit_Continue;
-                break;
-            }
-
-            class_relationship r;
-            r.type = relationship_t::kFriendship;
-            r.label = "<<friend>>";
-            r.destination = cursor.referenced().usr();
-
-            ctx->element.relationships.emplace_back(std::move(r));
-
-            ret = CXChildVisit_Continue;
-        } break;
-        default:
+        if (!ctx->ctx->config.should_include(
+                cursor.referenced().fully_qualified())) {
             ret = CXChildVisit_Continue;
             break;
+        }
+
+        class_relationship r;
+        r.type = relationship_t::kFriendship;
+        r.label = "<<friend>>";
+        r.destination = cursor.referenced().usr();
+
+        ctx->element.relationships.emplace_back(std::move(r));
+
+        ret = CXChildVisit_Continue;
+    } break;
+    default:
+        ret = CXChildVisit_Continue;
+        break;
     }
 
     return ret;
@@ -880,17 +977,17 @@ enum CXChildVisitResult process_class_base_specifier(
     cp.name = display_name;
     cp.is_virtual = false;
     switch (base_access) {
-        case CX_CXXAccessSpecifier::CX_CXXPrivate:
-            cp.access = class_parent::access_t::kPrivate;
-            break;
-        case CX_CXXAccessSpecifier::CX_CXXPublic:
-            cp.access = class_parent::access_t::kPublic;
-            break;
-        case CX_CXXAccessSpecifier::CX_CXXProtected:
-            cp.access = class_parent::access_t::kProtected;
-            break;
-        default:
-            cp.access = class_parent::access_t::kPublic;
+    case CX_CXXAccessSpecifier::CX_CXXPrivate:
+        cp.access = class_parent::access_t::kPrivate;
+        break;
+    case CX_CXXAccessSpecifier::CX_CXXPublic:
+        cp.access = class_parent::access_t::kPublic;
+        break;
+    case CX_CXXAccessSpecifier::CX_CXXProtected:
+        cp.access = class_parent::access_t::kProtected;
+        break;
+    default:
+        cp.access = class_parent::access_t::kPublic;
     }
 
     parent->bases.emplace_back(std::move(cp));
@@ -1227,67 +1324,65 @@ enum CXChildVisitResult class_visitor(
     bool is_struct{false};
     bool is_vardecl{false};
     switch (cursor.kind()) {
-        case CXCursor_StructDecl:
-            is_struct = true;
-        case CXCursor_ClassDecl:
-        case CXCursor_ClassTemplate:
-            ret = visit_if_cursor_valid(
-                cursor, [ctx, is_struct](cx::cursor cursor) {
-                    return process_class_declaration(
-                        cursor, is_struct, &ctx->element, ctx->ctx);
-                });
-            break;
-        case CXCursor_EnumDecl:
-            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
-                return process_enum_declaration(
-                    cursor, &ctx->element, ctx->ctx);
+    case CXCursor_StructDecl:
+        is_struct = true;
+    case CXCursor_ClassDecl:
+    case CXCursor_ClassTemplate:
+        ret =
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                return process_class_declaration(
+                    cursor, is_struct, &ctx->element, ctx->ctx);
             });
-            break;
-        case CXCursor_TemplateTypeParameter:
-            ret = process_template_type_parameter(
-                cursor, &ctx->element, ctx->ctx);
-            break;
-        case CXCursor_NonTypeTemplateParameter:
-            ret = process_template_nontype_parameter(
-                cursor, &ctx->element, ctx->ctx);
-            break;
-        case CXCursor_TemplateTemplateParameter:
-            ret = process_template_template_parameter(
-                cursor, &ctx->element, ctx->ctx);
-            break;
-        case CXCursor_CXXMethod:
-        case CXCursor_Constructor:
-        case CXCursor_Destructor:
-        case CXCursor_FunctionTemplate: {
-            ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
-                return process_method(cursor, &ctx->element, ctx->ctx);
+        break;
+    case CXCursor_EnumDecl:
+        ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+            return process_enum_declaration(cursor, &ctx->element, ctx->ctx);
+        });
+        break;
+    case CXCursor_TemplateTypeParameter:
+        ret = process_template_type_parameter(cursor, &ctx->element, ctx->ctx);
+        break;
+    case CXCursor_NonTypeTemplateParameter:
+        ret =
+            process_template_nontype_parameter(cursor, &ctx->element, ctx->ctx);
+        break;
+    case CXCursor_TemplateTemplateParameter:
+        ret = process_template_template_parameter(
+            cursor, &ctx->element, ctx->ctx);
+        break;
+    case CXCursor_CXXMethod:
+    case CXCursor_Constructor:
+    case CXCursor_Destructor:
+    case CXCursor_FunctionTemplate: {
+        ret = visit_if_cursor_valid(cursor, [ctx](cx::cursor cursor) {
+            return process_method(cursor, &ctx->element, ctx->ctx);
+        });
+        break;
+    }
+    case CXCursor_VarDecl:
+        is_vardecl = true;
+    case CXCursor_FieldDecl: {
+        ret = visit_if_cursor_valid(
+            cursor, [ctx, &config, is_vardecl](cx::cursor cursor) {
+                return process_field(cursor, &ctx->element, ctx->ctx);
             });
-            break;
-        }
-        case CXCursor_VarDecl:
-            is_vardecl = true;
-        case CXCursor_FieldDecl: {
-            ret = visit_if_cursor_valid(
-                cursor, [ctx, &config, is_vardecl](cx::cursor cursor) {
-                    return process_field(cursor, &ctx->element, ctx->ctx);
-                });
-            break;
-        }
-        case CXCursor_ClassTemplatePartialSpecialization: {
-            spdlog::debug("Found template specialization: {}", cursor);
-            ret = CXChildVisit_Continue;
-        } break;
-        case CXCursor_CXXBaseSpecifier:
-            ret = process_class_base_specifier(cursor, &ctx->element, ctx->ctx);
-            break;
-        case CXCursor_FriendDecl: {
-            clang_visitChildren(cursor.get(), friend_class_visitor, ctx);
+        break;
+    }
+    case CXCursor_ClassTemplatePartialSpecialization: {
+        spdlog::debug("Found template specialization: {}", cursor);
+        ret = CXChildVisit_Continue;
+    } break;
+    case CXCursor_CXXBaseSpecifier:
+        ret = process_class_base_specifier(cursor, &ctx->element, ctx->ctx);
+        break;
+    case CXCursor_FriendDecl: {
+        clang_visitChildren(cursor.get(), friend_class_visitor, ctx);
 
-            ret = CXChildVisit_Continue;
-        } break;
-        default:
-            ret = CXChildVisit_Continue;
-            break;
+        ret = CXChildVisit_Continue;
+    } break;
+    default:
+        ret = CXChildVisit_Continue;
+        break;
     }
 
     return ret;
@@ -1311,41 +1406,40 @@ enum CXChildVisitResult translation_unit_visitor(
     bool is_struct{false};
     auto scope{scope_t::kPrivate};
     switch (cursor.kind()) {
-        case CXCursor_StructDecl:
-            spdlog::debug("Found struct declaration: {}", cursor.spelling());
-            is_struct = true;
+    case CXCursor_StructDecl:
+        spdlog::debug("Found struct declaration: {}", cursor.spelling());
+        is_struct = true;
 
-            [[fallthrough]];
-        case CXCursor_ClassTemplate:
-            [[fallthrough]];
-        case CXCursor_ClassDecl: {
-            spdlog::debug(
-                "Found class or class template declaration: {}", cursor);
-            scope = scope_t::kPublic;
-            ret = visit_if_cursor_valid(
-                cursor, [ctx, is_struct](cx::cursor cursor) {
-                    return process_class_declaration(
-                        cursor, is_struct, nullptr, ctx);
-                });
-            break;
-        }
-        case CXCursor_EnumDecl: {
-            spdlog::debug("Found enum declaration: {}", cursor.spelling());
-            ret = visit_if_cursor_valid(
-                cursor, [ctx, is_struct](cx::cursor cursor) {
-                    return process_enum_declaration(cursor, nullptr, ctx);
-                });
-            break;
-        }
-        case CXCursor_Namespace: {
-            spdlog::debug("Found namespace specifier: {}", cursor.spelling());
-            ret = CXChildVisit_Recurse;
-            break;
-        }
-        default:
-            spdlog::debug("Found cursor: {}", cursor.spelling());
-            ret = CXChildVisit_Recurse;
-            break;
+        [[fallthrough]];
+    case CXCursor_ClassTemplate:
+        [[fallthrough]];
+    case CXCursor_ClassDecl: {
+        spdlog::debug("Found class or class template declaration: {}", cursor);
+        scope = scope_t::kPublic;
+        ret =
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                return process_class_declaration(
+                    cursor, is_struct, nullptr, ctx);
+            });
+        break;
+    }
+    case CXCursor_EnumDecl: {
+        spdlog::debug("Found enum declaration: {}", cursor.spelling());
+        ret =
+            visit_if_cursor_valid(cursor, [ctx, is_struct](cx::cursor cursor) {
+                return process_enum_declaration(cursor, nullptr, ctx);
+            });
+        break;
+    }
+    case CXCursor_Namespace: {
+        spdlog::debug("Found namespace specifier: {}", cursor.spelling());
+        ret = CXChildVisit_Recurse;
+        break;
+    }
+    default:
+        spdlog::debug("Found cursor: {}", cursor.spelling());
+        ret = CXChildVisit_Recurse;
+        break;
     }
 
     return ret;

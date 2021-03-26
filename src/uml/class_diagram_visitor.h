@@ -23,6 +23,7 @@
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
+#include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template_parameter.hpp>
@@ -124,6 +125,9 @@ public:
 
     void process_template_template_parameter(
         const cppast::cpp_template_template_parameter &t,
+        clanguml::model::class_diagram::class_ &parent);
+
+    void process_friend(const cppast::cpp_friend &t,
         clanguml::model::class_diagram::class_ &parent);
 
 private:

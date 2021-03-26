@@ -17,8 +17,11 @@ private:
     void foo() {}
     friend class B;
     friend class external::C;
+    // TODO
     template <typename T> friend class D;
-    // TODO: Add friend for a template specialization
+    // TODO
+    friend class D<int>;
+    friend class D<A>;
 };
 
 class B {
