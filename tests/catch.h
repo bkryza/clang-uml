@@ -11426,43 +11426,42 @@ public:
     void use(Colour::Code _colourCode) override
     {
         switch (_colourCode) {
-            case Colour::None:
-                return setTextAttribute(originalForegroundAttributes);
-            case Colour::White:
-                return setTextAttribute(
-                    FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
-            case Colour::Red:
-                return setTextAttribute(FOREGROUND_RED);
-            case Colour::Green:
-                return setTextAttribute(FOREGROUND_GREEN);
-            case Colour::Blue:
-                return setTextAttribute(FOREGROUND_BLUE);
-            case Colour::Cyan:
-                return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
-            case Colour::Yellow:
-                return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
-            case Colour::Grey:
-                return setTextAttribute(0);
+        case Colour::None:
+            return setTextAttribute(originalForegroundAttributes);
+        case Colour::White:
+            return setTextAttribute(
+                FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
+        case Colour::Red:
+            return setTextAttribute(FOREGROUND_RED);
+        case Colour::Green:
+            return setTextAttribute(FOREGROUND_GREEN);
+        case Colour::Blue:
+            return setTextAttribute(FOREGROUND_BLUE);
+        case Colour::Cyan:
+            return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
+        case Colour::Yellow:
+            return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
+        case Colour::Grey:
+            return setTextAttribute(0);
 
-            case Colour::LightGrey:
-                return setTextAttribute(FOREGROUND_INTENSITY);
-            case Colour::BrightRed:
-                return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
-            case Colour::BrightGreen:
-                return setTextAttribute(
-                    FOREGROUND_INTENSITY | FOREGROUND_GREEN);
-            case Colour::BrightWhite:
-                return setTextAttribute(FOREGROUND_INTENSITY |
-                    FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
-            case Colour::BrightYellow:
-                return setTextAttribute(
-                    FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+        case Colour::LightGrey:
+            return setTextAttribute(FOREGROUND_INTENSITY);
+        case Colour::BrightRed:
+            return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
+        case Colour::BrightGreen:
+            return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+        case Colour::BrightWhite:
+            return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN |
+                FOREGROUND_RED | FOREGROUND_BLUE);
+        case Colour::BrightYellow:
+            return setTextAttribute(
+                FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
 
-            case Colour::Bright:
-                CATCH_INTERNAL_ERROR("not a colour");
+        case Colour::Bright:
+            CATCH_INTERNAL_ERROR("not a colour");
 
-            default:
-                CATCH_ERROR("Unknown colour requested");
+        default:
+            CATCH_ERROR("Unknown colour requested");
         }
     }
 
@@ -11509,37 +11508,37 @@ public:
     void use(Colour::Code _colourCode) override
     {
         switch (_colourCode) {
-            case Colour::None:
-            case Colour::White:
-                return setColour("[0m");
-            case Colour::Red:
-                return setColour("[0;31m");
-            case Colour::Green:
-                return setColour("[0;32m");
-            case Colour::Blue:
-                return setColour("[0;34m");
-            case Colour::Cyan:
-                return setColour("[0;36m");
-            case Colour::Yellow:
-                return setColour("[0;33m");
-            case Colour::Grey:
-                return setColour("[1;30m");
+        case Colour::None:
+        case Colour::White:
+            return setColour("[0m");
+        case Colour::Red:
+            return setColour("[0;31m");
+        case Colour::Green:
+            return setColour("[0;32m");
+        case Colour::Blue:
+            return setColour("[0;34m");
+        case Colour::Cyan:
+            return setColour("[0;36m");
+        case Colour::Yellow:
+            return setColour("[0;33m");
+        case Colour::Grey:
+            return setColour("[1;30m");
 
-            case Colour::LightGrey:
-                return setColour("[0;37m");
-            case Colour::BrightRed:
-                return setColour("[1;31m");
-            case Colour::BrightGreen:
-                return setColour("[1;32m");
-            case Colour::BrightWhite:
-                return setColour("[1;37m");
-            case Colour::BrightYellow:
-                return setColour("[1;33m");
+        case Colour::LightGrey:
+            return setColour("[0;37m");
+        case Colour::BrightRed:
+            return setColour("[1;31m");
+        case Colour::BrightGreen:
+            return setColour("[1;32m");
+        case Colour::BrightWhite:
+            return setColour("[1;37m");
+        case Colour::BrightYellow:
+            return setColour("[1;33m");
 
-            case Colour::Bright:
-                CATCH_INTERNAL_ERROR("not a colour");
-            default:
-                CATCH_INTERNAL_ERROR("Unknown colour requested");
+        case Colour::Bright:
+            CATCH_INTERNAL_ERROR("not a colour");
+        default:
+            CATCH_INTERNAL_ERROR("Unknown colour requested");
         }
     }
     static IColourImpl *instance()
@@ -12965,13 +12964,13 @@ WithinUlpsMatcher::WithinUlpsMatcher(
 bool WithinUlpsMatcher::match(double const &matchee) const
 {
     switch (m_type) {
-        case FloatingPointKind::Float:
-            return almostEqualUlps<float>(static_cast<float>(matchee),
-                static_cast<float>(m_target), m_ulps);
-        case FloatingPointKind::Double:
-            return almostEqualUlps<double>(matchee, m_target, m_ulps);
-        default:
-            CATCH_INTERNAL_ERROR("Unknown FloatingPointKind value");
+    case FloatingPointKind::Float:
+        return almostEqualUlps<float>(
+            static_cast<float>(matchee), static_cast<float>(m_target), m_ulps);
+    case FloatingPointKind::Double:
+        return almostEqualUlps<double>(matchee, m_target, m_ulps);
+    default:
+        CATCH_INTERNAL_ERROR("Unknown FloatingPointKind value");
     }
 }
 
@@ -13340,32 +13339,32 @@ Capturer::Capturer(StringRef macroName, SourceLineInfo const &lineInfo,
     for (size_t pos = 0; pos < names.size(); ++pos) {
         char c = names[pos];
         switch (c) {
-            case '[':
-            case '{':
-            case '(':
-                // It is basically impossible to disambiguate between
-                // comparison and start of template args in this context
-                //            case '<':
-                openings.push(c);
-                break;
-            case ']':
-            case '}':
-            case ')':
-                //           case '>':
-                openings.pop();
-                break;
-            case '"':
-            case '\'':
-                pos = skipq(pos, c);
-                break;
-            case ',':
-                if (start != pos && openings.empty()) {
-                    m_messages.emplace_back(macroName, lineInfo, resultType);
-                    m_messages.back().message =
-                        static_cast<std::string>(trimmed(start, pos));
-                    m_messages.back().message += " := ";
-                    start = pos;
-                }
+        case '[':
+        case '{':
+        case '(':
+            // It is basically impossible to disambiguate between
+            // comparison and start of template args in this context
+            //            case '<':
+            openings.push(c);
+            break;
+        case ']':
+        case '}':
+        case ')':
+            //           case '>':
+            openings.pop();
+            break;
+        case '"':
+        case '\'':
+            pos = skipq(pos, c);
+            break;
+        case ',':
+            if (start != pos && openings.empty()) {
+                m_messages.emplace_back(macroName, lineInfo, resultType);
+                m_messages.back().message =
+                    static_cast<std::string>(trimmed(start, pos));
+                m_messages.back().message += " := ";
+                start = pos;
+            }
         }
     }
     assert(openings.empty() && "Mismatched openings");
@@ -15763,16 +15762,16 @@ std::vector<TestCase> sortTests(
     std::vector<TestCase> sorted = unsortedTestCases;
 
     switch (config.runOrder()) {
-        case RunTests::InLexicographicalOrder:
-            std::sort(sorted.begin(), sorted.end());
-            break;
-        case RunTests::InRandomOrder:
-            seedRng(config);
-            std::shuffle(sorted.begin(), sorted.end(), rng());
-            break;
-        case RunTests::InDeclarationOrder:
-            // already in declaration order
-            break;
+    case RunTests::InLexicographicalOrder:
+        std::sort(sorted.begin(), sorted.end());
+        break;
+    case RunTests::InRandomOrder:
+        seedRng(config);
+        std::shuffle(sorted.begin(), sorted.end(), rng());
+        break;
+    case RunTests::InDeclarationOrder:
+        // already in declaration order
+        break;
     }
     return sorted;
 }
@@ -16005,25 +16004,25 @@ void TrackerBase::close()
         m_ctx.currentTracker().close();
 
     switch (m_runState) {
-        case NeedsAnotherRun:
-            break;
+    case NeedsAnotherRun:
+        break;
 
-        case Executing:
+    case Executing:
+        m_runState = CompletedSuccessfully;
+        break;
+    case ExecutingChildren:
+        if (std::all_of(m_children.begin(), m_children.end(),
+                [](ITrackerPtr const &t) { return t->isComplete(); }))
             m_runState = CompletedSuccessfully;
-            break;
-        case ExecutingChildren:
-            if (std::all_of(m_children.begin(), m_children.end(),
-                    [](ITrackerPtr const &t) { return t->isComplete(); }))
-                m_runState = CompletedSuccessfully;
-            break;
+        break;
 
-        case NotStarted:
-        case CompletedSuccessfully:
-        case Failed:
-            CATCH_INTERNAL_ERROR("Illogical state: " << m_runState);
+    case NotStarted:
+    case CompletedSuccessfully:
+    case Failed:
+        CATCH_INTERNAL_ERROR("Illogical state: " << m_runState);
 
-        default:
-            CATCH_INTERNAL_ERROR("Unknown state: " << m_runState);
+    default:
+        CATCH_INTERNAL_ERROR("Unknown state: " << m_runState);
     }
     moveToParent();
     m_ctx.completeCycle();
@@ -16304,23 +16303,23 @@ bool TestSpecParser::visitChar(char c)
     }
 
     switch (m_mode) {
-        case None:
-            if (processNoneChar(c))
-                return true;
-            break;
-        case Name:
-            processNameChar(c);
-            break;
-        case EscapedName:
-            endMode();
-            addCharToPattern(c);
+    case None:
+        if (processNoneChar(c))
             return true;
-        default:
-        case Tag:
-        case QuotedName:
-            if (processOtherChar(c))
-                return true;
-            break;
+        break;
+    case Name:
+        processNameChar(c);
+        break;
+    case EscapedName:
+        endMode();
+        addCharToPattern(c);
+        return true;
+    default:
+    case Tag:
+    case QuotedName:
+        if (processOtherChar(c))
+            return true;
+        break;
     }
 
     m_substring += c;
@@ -16335,20 +16334,20 @@ bool TestSpecParser::visitChar(char c)
 bool TestSpecParser::processNoneChar(char c)
 {
     switch (c) {
-        case ' ':
-            return true;
-        case '~':
-            m_exclusion = true;
-            return false;
-        case '[':
-            startNewMode(Tag);
-            return false;
-        case '"':
-            startNewMode(QuotedName);
-            return false;
-        default:
-            startNewMode(Name);
-            return false;
+    case ' ':
+        return true;
+    case '~':
+        m_exclusion = true;
+        return false;
+    case '[':
+        startNewMode(Tag);
+        return false;
+    case '"':
+        startNewMode(QuotedName);
+        return false;
+    default:
+        startNewMode(Name);
+        return false;
     }
 }
 void TestSpecParser::processNameChar(char c)
@@ -16373,17 +16372,17 @@ void TestSpecParser::startNewMode(Mode mode) { m_mode = mode; }
 void TestSpecParser::endMode()
 {
     switch (m_mode) {
-        case Name:
-        case QuotedName:
-            return addNamePattern();
-        case Tag:
-            return addTagPattern();
-        case EscapedName:
-            revertBackToLastMode();
-            return;
-        case None:
-        default:
-            return startNewMode(None);
+    case Name:
+    case QuotedName:
+        return addNamePattern();
+    case Tag:
+        return addTagPattern();
+    case EscapedName:
+        revertBackToLastMode();
+        return;
+    case None:
+    default:
+        return startNewMode(None);
     }
 }
 void TestSpecParser::escape()
@@ -16395,18 +16394,18 @@ void TestSpecParser::escape()
 bool TestSpecParser::isControlChar(char c) const
 {
     switch (m_mode) {
-        default:
-            return false;
-        case None:
-            return c == '~';
-        case Name:
-            return c == '[';
-        case EscapedName:
-            return true;
-        case QuotedName:
-            return c == '"';
-        case Tag:
-            return c == '[' || c == ']';
+    default:
+        return false;
+    case None:
+        return c == '~';
+    case Name:
+        return c == '[';
+    case EscapedName:
+        return true;
+    case QuotedName:
+        return c == '"';
+    case Tag:
+        return c == '[' || c == ']';
     }
 }
 
@@ -16671,15 +16670,15 @@ std::string StringMaker<std::string>::convert(const std::string &str)
     std::string s("\"");
     for (char c : str) {
         switch (c) {
-            case '\n':
-                s.append("\\n");
-                break;
-            case '\t':
-                s.append("\\t");
-                break;
-            default:
-                s.push_back(c);
-                break;
+        case '\n':
+            s.append("\\n");
+            break;
+        case '\t':
+            s.append("\\t");
+            break;
+        default:
+            s.push_back(c);
+            break;
         }
     }
     s.append("\"");
@@ -16987,16 +16986,16 @@ WildcardPattern::WildcardPattern(
 bool WildcardPattern::matches(std::string const &str) const
 {
     switch (m_wildcard) {
-        case NoWildcard:
-            return m_pattern == normaliseString(str);
-        case WildcardAtStart:
-            return endsWith(normaliseString(str), m_pattern);
-        case WildcardAtEnd:
-            return startsWith(normaliseString(str), m_pattern);
-        case WildcardAtBothEnds:
-            return contains(normaliseString(str), m_pattern);
-        default:
-            CATCH_INTERNAL_ERROR("Unknown enum");
+    case NoWildcard:
+        return m_pattern == normaliseString(str);
+    case WildcardAtStart:
+        return endsWith(normaliseString(str), m_pattern);
+    case WildcardAtEnd:
+        return startsWith(normaliseString(str), m_pattern);
+    case WildcardAtBothEnds:
+        return contains(normaliseString(str), m_pattern);
+    default:
+        CATCH_INTERNAL_ERROR("Unknown enum");
     }
 }
 
@@ -17093,94 +17092,94 @@ void XmlEncode::encodeTo(std::ostream &os) const
     for (std::size_t idx = 0; idx < m_str.size(); ++idx) {
         unsigned char c = m_str[idx];
         switch (c) {
-            case '<':
-                os << "&lt;";
+        case '<':
+            os << "&lt;";
+            break;
+        case '&':
+            os << "&amp;";
+            break;
+
+        case '>':
+            // See: http://www.w3.org/TR/xml/#syntax
+            if (idx > 2 && m_str[idx - 1] == ']' && m_str[idx - 2] == ']')
+                os << "&gt;";
+            else
+                os << c;
+            break;
+
+        case '\"':
+            if (m_forWhat == ForAttributes)
+                os << "&quot;";
+            else
+                os << c;
+            break;
+
+        default:
+            // Check for control characters and invalid utf-8
+
+            // Escape control characters in standard ascii
+            // see
+            // http://stackoverflow.com/questions/404107/why-are-control-characters-illegal-in-xml-1-0
+            if (c < 0x09 || (c > 0x0D && c < 0x20) || c == 0x7F) {
+                hexEscapeChar(os, c);
                 break;
-            case '&':
-                os << "&amp;";
+            }
+
+            // Plain ASCII: Write it to stream
+            if (c < 0x7F) {
+                os << c;
                 break;
+            }
 
-            case '>':
-                // See: http://www.w3.org/TR/xml/#syntax
-                if (idx > 2 && m_str[idx - 1] == ']' && m_str[idx - 2] == ']')
-                    os << "&gt;";
-                else
-                    os << c;
+            // UTF-8 territory
+            // Check if the encoding is valid and if it is not, hex escape
+            // bytes. Important: We do not check the exact decoded values
+            // for validity, only the encoding format First check that this
+            // bytes is a valid lead byte: This means that it is not encoded
+            // as 1111 1XXX Or as 10XX XXXX
+            if (c < 0xC0 || c >= 0xF8) {
+                hexEscapeChar(os, c);
                 break;
+            }
 
-            case '\"':
-                if (m_forWhat == ForAttributes)
-                    os << "&quot;";
-                else
-                    os << c;
+            auto encBytes = trailingBytes(c);
+            // Are there enough bytes left to avoid accessing out-of-bounds
+            // memory?
+            if (idx + encBytes - 1 >= m_str.size()) {
+                hexEscapeChar(os, c);
                 break;
+            }
+            // The header is valid, check data
+            // The next encBytes bytes must together be a valid utf-8
+            // This means: bitpattern 10XX XXXX and the extracted value is
+            // sane (ish)
+            bool valid = true;
+            uint32_t value = headerValue(c);
+            for (std::size_t n = 1; n < encBytes; ++n) {
+                unsigned char nc = m_str[idx + n];
+                valid &= ((nc & 0xC0) == 0x80);
+                value = (value << 6) | (nc & 0x3F);
+            }
 
-            default:
-                // Check for control characters and invalid utf-8
-
-                // Escape control characters in standard ascii
-                // see
-                // http://stackoverflow.com/questions/404107/why-are-control-characters-illegal-in-xml-1-0
-                if (c < 0x09 || (c > 0x0D && c < 0x20) || c == 0x7F) {
-                    hexEscapeChar(os, c);
-                    break;
-                }
-
-                // Plain ASCII: Write it to stream
-                if (c < 0x7F) {
-                    os << c;
-                    break;
-                }
-
-                // UTF-8 territory
-                // Check if the encoding is valid and if it is not, hex escape
-                // bytes. Important: We do not check the exact decoded values
-                // for validity, only the encoding format First check that this
-                // bytes is a valid lead byte: This means that it is not encoded
-                // as 1111 1XXX Or as 10XX XXXX
-                if (c < 0xC0 || c >= 0xF8) {
-                    hexEscapeChar(os, c);
-                    break;
-                }
-
-                auto encBytes = trailingBytes(c);
-                // Are there enough bytes left to avoid accessing out-of-bounds
-                // memory?
-                if (idx + encBytes - 1 >= m_str.size()) {
-                    hexEscapeChar(os, c);
-                    break;
-                }
-                // The header is valid, check data
-                // The next encBytes bytes must together be a valid utf-8
-                // This means: bitpattern 10XX XXXX and the extracted value is
-                // sane (ish)
-                bool valid = true;
-                uint32_t value = headerValue(c);
-                for (std::size_t n = 1; n < encBytes; ++n) {
-                    unsigned char nc = m_str[idx + n];
-                    valid &= ((nc & 0xC0) == 0x80);
-                    value = (value << 6) | (nc & 0x3F);
-                }
-
-                if (
-                    // Wrong bit pattern of following bytes
-                    (!valid) ||
-                    // Overlong encodings
-                    (value < 0x80) ||
-                    (0x80 <= value && value < 0x800 && encBytes > 2) ||
-                    (0x800 < value && value < 0x10000 && encBytes > 3) ||
-                    // Encoded value out of range
-                    (value >= 0x110000)) {
-                    hexEscapeChar(os, c);
-                    break;
-                }
-
-                // If we got here, this is in fact a valid(ish) utf-8 sequence
-                for (std::size_t n = 0; n < encBytes; ++n) {
-                    os << m_str[idx + n];
-                }
-                idx += encBytes - 1;
+            if (
+                // Wrong bit pattern of following bytes
+                (!valid) ||
+                // Overlong encodings
+                (value < 0x80) ||
+                (0x80 <= value && value < 0x800 && encBytes > 2) ||
+                (0x800 < value && value < 0x10000 && encBytes > 3) ||
+                // Encoded value out of range
+                (value >= 0x110000)) {
+                hexEscapeChar(os, c);
                 break;
+            }
+
+            // If we got here, this is in fact a valid(ish) utf-8 sequence
+            for (std::size_t n = 0; n < encBytes; ++n) {
+                os << m_str[idx + n];
+            }
+            idx += encBytes - 1;
+            break;
         }
     }
 }
@@ -17528,66 +17527,66 @@ public:
         itMessage = messages.begin();
 
         switch (result.getResultType()) {
-            case ResultWas::Ok:
-                printResultType(Colour::ResultSuccess, passedString());
-                printOriginalExpression();
-                printReconstructedExpression();
-                if (!result.hasExpression())
-                    printRemainingMessages(Colour::None);
-                else
-                    printRemainingMessages();
-                break;
-            case ResultWas::ExpressionFailed:
-                if (result.isOk())
-                    printResultType(Colour::ResultSuccess,
-                        failedString() + std::string(" - but was ok"));
-                else
-                    printResultType(Colour::Error, failedString());
-                printOriginalExpression();
-                printReconstructedExpression();
-                printRemainingMessages();
-                break;
-            case ResultWas::ThrewException:
-                printResultType(Colour::Error, failedString());
-                printIssue("unexpected exception with message:");
-                printMessage();
-                printExpressionWas();
-                printRemainingMessages();
-                break;
-            case ResultWas::FatalErrorCondition:
-                printResultType(Colour::Error, failedString());
-                printIssue("fatal error condition with message:");
-                printMessage();
-                printExpressionWas();
-                printRemainingMessages();
-                break;
-            case ResultWas::DidntThrowException:
-                printResultType(Colour::Error, failedString());
-                printIssue("expected exception, got none");
-                printExpressionWas();
-                printRemainingMessages();
-                break;
-            case ResultWas::Info:
-                printResultType(Colour::None, "info");
-                printMessage();
-                printRemainingMessages();
-                break;
-            case ResultWas::Warning:
-                printResultType(Colour::None, "warning");
-                printMessage();
-                printRemainingMessages();
-                break;
-            case ResultWas::ExplicitFailure:
-                printResultType(Colour::Error, failedString());
-                printIssue("explicitly");
+        case ResultWas::Ok:
+            printResultType(Colour::ResultSuccess, passedString());
+            printOriginalExpression();
+            printReconstructedExpression();
+            if (!result.hasExpression())
                 printRemainingMessages(Colour::None);
-                break;
-                // These cases are here to prevent compiler warnings
-            case ResultWas::Unknown:
-            case ResultWas::FailureBit:
-            case ResultWas::Exception:
-                printResultType(Colour::Error, "** internal error **");
-                break;
+            else
+                printRemainingMessages();
+            break;
+        case ResultWas::ExpressionFailed:
+            if (result.isOk())
+                printResultType(Colour::ResultSuccess,
+                    failedString() + std::string(" - but was ok"));
+            else
+                printResultType(Colour::Error, failedString());
+            printOriginalExpression();
+            printReconstructedExpression();
+            printRemainingMessages();
+            break;
+        case ResultWas::ThrewException:
+            printResultType(Colour::Error, failedString());
+            printIssue("unexpected exception with message:");
+            printMessage();
+            printExpressionWas();
+            printRemainingMessages();
+            break;
+        case ResultWas::FatalErrorCondition:
+            printResultType(Colour::Error, failedString());
+            printIssue("fatal error condition with message:");
+            printMessage();
+            printExpressionWas();
+            printRemainingMessages();
+            break;
+        case ResultWas::DidntThrowException:
+            printResultType(Colour::Error, failedString());
+            printIssue("expected exception, got none");
+            printExpressionWas();
+            printRemainingMessages();
+            break;
+        case ResultWas::Info:
+            printResultType(Colour::None, "info");
+            printMessage();
+            printRemainingMessages();
+            break;
+        case ResultWas::Warning:
+            printResultType(Colour::None, "warning");
+            printMessage();
+            printRemainingMessages();
+            break;
+        case ResultWas::ExplicitFailure:
+            printResultType(Colour::Error, failedString());
+            printIssue("explicitly");
+            printRemainingMessages(Colour::None);
+            break;
+            // These cases are here to prevent compiler warnings
+        case ResultWas::Unknown:
+        case ResultWas::FailureBit:
+        case ResultWas::Exception:
+            printResultType(Colour::Error, "** internal error **");
+            break;
         }
     }
 
@@ -17786,70 +17785,70 @@ public:
         , printInfoMessages(_printInfoMessages)
     {
         switch (result.getResultType()) {
-            case ResultWas::Ok:
+        case ResultWas::Ok:
+            colour = Colour::Success;
+            passOrFail = "PASSED";
+            // if( result.hasMessage() )
+            if (_stats.infoMessages.size() == 1)
+                messageLabel = "with message";
+            if (_stats.infoMessages.size() > 1)
+                messageLabel = "with messages";
+            break;
+        case ResultWas::ExpressionFailed:
+            if (result.isOk()) {
                 colour = Colour::Success;
-                passOrFail = "PASSED";
-                // if( result.hasMessage() )
-                if (_stats.infoMessages.size() == 1)
-                    messageLabel = "with message";
-                if (_stats.infoMessages.size() > 1)
-                    messageLabel = "with messages";
-                break;
-            case ResultWas::ExpressionFailed:
-                if (result.isOk()) {
-                    colour = Colour::Success;
-                    passOrFail = "FAILED - but was ok";
-                }
-                else {
-                    colour = Colour::Error;
-                    passOrFail = "FAILED";
-                }
-                if (_stats.infoMessages.size() == 1)
-                    messageLabel = "with message";
-                if (_stats.infoMessages.size() > 1)
-                    messageLabel = "with messages";
-                break;
-            case ResultWas::ThrewException:
+                passOrFail = "FAILED - but was ok";
+            }
+            else {
                 colour = Colour::Error;
                 passOrFail = "FAILED";
-                messageLabel = "due to unexpected exception with ";
-                if (_stats.infoMessages.size() == 1)
-                    messageLabel += "message";
-                if (_stats.infoMessages.size() > 1)
-                    messageLabel += "messages";
-                break;
-            case ResultWas::FatalErrorCondition:
-                colour = Colour::Error;
-                passOrFail = "FAILED";
-                messageLabel = "due to a fatal error condition";
-                break;
-            case ResultWas::DidntThrowException:
-                colour = Colour::Error;
-                passOrFail = "FAILED";
-                messageLabel =
-                    "because no exception was thrown where one was expected";
-                break;
-            case ResultWas::Info:
-                messageLabel = "info";
-                break;
-            case ResultWas::Warning:
-                messageLabel = "warning";
-                break;
-            case ResultWas::ExplicitFailure:
-                passOrFail = "FAILED";
-                colour = Colour::Error;
-                if (_stats.infoMessages.size() == 1)
-                    messageLabel = "explicitly with message";
-                if (_stats.infoMessages.size() > 1)
-                    messageLabel = "explicitly with messages";
-                break;
-                // These cases are here to prevent compiler warnings
-            case ResultWas::Unknown:
-            case ResultWas::FailureBit:
-            case ResultWas::Exception:
-                passOrFail = "** internal error **";
-                colour = Colour::Error;
-                break;
+            }
+            if (_stats.infoMessages.size() == 1)
+                messageLabel = "with message";
+            if (_stats.infoMessages.size() > 1)
+                messageLabel = "with messages";
+            break;
+        case ResultWas::ThrewException:
+            colour = Colour::Error;
+            passOrFail = "FAILED";
+            messageLabel = "due to unexpected exception with ";
+            if (_stats.infoMessages.size() == 1)
+                messageLabel += "message";
+            if (_stats.infoMessages.size() > 1)
+                messageLabel += "messages";
+            break;
+        case ResultWas::FatalErrorCondition:
+            colour = Colour::Error;
+            passOrFail = "FAILED";
+            messageLabel = "due to a fatal error condition";
+            break;
+        case ResultWas::DidntThrowException:
+            colour = Colour::Error;
+            passOrFail = "FAILED";
+            messageLabel =
+                "because no exception was thrown where one was expected";
+            break;
+        case ResultWas::Info:
+            messageLabel = "info";
+            break;
+        case ResultWas::Warning:
+            messageLabel = "warning";
+            break;
+        case ResultWas::ExplicitFailure:
+            passOrFail = "FAILED";
+            colour = Colour::Error;
+            if (_stats.infoMessages.size() == 1)
+                messageLabel = "explicitly with message";
+            if (_stats.infoMessages.size() > 1)
+                messageLabel = "explicitly with messages";
+            break;
+            // These cases are here to prevent compiler warnings
+        case ResultWas::Unknown:
+        case ResultWas::FailureBit:
+        case ResultWas::Exception:
+            passOrFail = "** internal error **";
+            colour = Colour::Error;
+            break;
         }
     }
 
@@ -17988,37 +17987,37 @@ public:
     auto value() const -> double
     {
         switch (m_units) {
-            case Unit::Microseconds:
-                return m_inNanoseconds /
-                    static_cast<double>(s_nanosecondsInAMicrosecond);
-            case Unit::Milliseconds:
-                return m_inNanoseconds /
-                    static_cast<double>(s_nanosecondsInAMillisecond);
-            case Unit::Seconds:
-                return m_inNanoseconds /
-                    static_cast<double>(s_nanosecondsInASecond);
-            case Unit::Minutes:
-                return m_inNanoseconds /
-                    static_cast<double>(s_nanosecondsInAMinute);
-            default:
-                return m_inNanoseconds;
+        case Unit::Microseconds:
+            return m_inNanoseconds /
+                static_cast<double>(s_nanosecondsInAMicrosecond);
+        case Unit::Milliseconds:
+            return m_inNanoseconds /
+                static_cast<double>(s_nanosecondsInAMillisecond);
+        case Unit::Seconds:
+            return m_inNanoseconds /
+                static_cast<double>(s_nanosecondsInASecond);
+        case Unit::Minutes:
+            return m_inNanoseconds /
+                static_cast<double>(s_nanosecondsInAMinute);
+        default:
+            return m_inNanoseconds;
         }
     }
     auto unitsAsString() const -> std::string
     {
         switch (m_units) {
-            case Unit::Nanoseconds:
-                return "ns";
-            case Unit::Microseconds:
-                return "us";
-            case Unit::Milliseconds:
-                return "ms";
-            case Unit::Seconds:
-                return "s";
-            case Unit::Minutes:
-                return "m";
-            default:
-                return "** internal error **";
+        case Unit::Nanoseconds:
+            return "ns";
+        case Unit::Microseconds:
+            return "us";
+        case Unit::Milliseconds:
+            return "ms";
+        case Unit::Seconds:
+            return "s";
+        case Unit::Minutes:
+            return "m";
+        default:
+            return "** internal error **";
         }
     }
     friend auto operator<<(std::ostream &os, Duration const &duration)
@@ -18742,25 +18741,25 @@ void JunitReporter::writeAssertion(AssertionStats const &stats)
     if (!result.isOk()) {
         std::string elementName;
         switch (result.getResultType()) {
-            case ResultWas::ThrewException:
-            case ResultWas::FatalErrorCondition:
-                elementName = "error";
-                break;
-            case ResultWas::ExplicitFailure:
-            case ResultWas::ExpressionFailed:
-            case ResultWas::DidntThrowException:
-                elementName = "failure";
-                break;
+        case ResultWas::ThrewException:
+        case ResultWas::FatalErrorCondition:
+            elementName = "error";
+            break;
+        case ResultWas::ExplicitFailure:
+        case ResultWas::ExpressionFailed:
+        case ResultWas::DidntThrowException:
+            elementName = "failure";
+            break;
 
-            // We should never see these here:
-            case ResultWas::Info:
-            case ResultWas::Warning:
-            case ResultWas::Ok:
-            case ResultWas::Unknown:
-            case ResultWas::FailureBit:
-            case ResultWas::Exception:
-                elementName = "internalError";
-                break;
+        // We should never see these here:
+        case ResultWas::Info:
+        case ResultWas::Warning:
+        case ResultWas::Ok:
+        case ResultWas::Unknown:
+        case ResultWas::FailureBit:
+        case ResultWas::Exception:
+            elementName = "internalError";
+            break;
         }
 
         XmlWriter::ScopedElement e = xml.scopedElement(elementName);
@@ -19105,32 +19104,32 @@ bool XmlReporter::assertionEnded(AssertionStats const &assertionStats)
 
     // And... Print a result applicable to each result type.
     switch (result.getResultType()) {
-        case ResultWas::ThrewException:
-            m_xml.startElement("Exception");
-            writeSourceInfo(result.getSourceInfo());
-            m_xml.writeText(result.getMessage());
-            m_xml.endElement();
-            break;
-        case ResultWas::FatalErrorCondition:
-            m_xml.startElement("FatalErrorCondition");
-            writeSourceInfo(result.getSourceInfo());
-            m_xml.writeText(result.getMessage());
-            m_xml.endElement();
-            break;
-        case ResultWas::Info:
-            m_xml.scopedElement("Info").writeText(result.getMessage());
-            break;
-        case ResultWas::Warning:
-            // Warning will already have been written
-            break;
-        case ResultWas::ExplicitFailure:
-            m_xml.startElement("Failure");
-            writeSourceInfo(result.getSourceInfo());
-            m_xml.writeText(result.getMessage());
-            m_xml.endElement();
-            break;
-        default:
-            break;
+    case ResultWas::ThrewException:
+        m_xml.startElement("Exception");
+        writeSourceInfo(result.getSourceInfo());
+        m_xml.writeText(result.getMessage());
+        m_xml.endElement();
+        break;
+    case ResultWas::FatalErrorCondition:
+        m_xml.startElement("FatalErrorCondition");
+        writeSourceInfo(result.getSourceInfo());
+        m_xml.writeText(result.getMessage());
+        m_xml.endElement();
+        break;
+    case ResultWas::Info:
+        m_xml.scopedElement("Info").writeText(result.getMessage());
+        break;
+    case ResultWas::Warning:
+        // Warning will already have been written
+        break;
+    case ResultWas::ExplicitFailure:
+        m_xml.startElement("Failure");
+        writeSourceInfo(result.getSourceInfo());
+        m_xml.writeText(result.getMessage());
+        m_xml.endElement();
+        break;
+    default:
+        break;
     }
 
     if (result.hasExpression())

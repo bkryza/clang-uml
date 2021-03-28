@@ -3,6 +3,7 @@
 #include <numeric>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace clanguml {
 namespace t00012 {

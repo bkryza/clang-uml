@@ -54,12 +54,12 @@ public:
     std::string to_string(message_t r) const
     {
         switch (r) {
-            case message_t::kCall:
-                return "->";
-            case message_t::kReturn:
-                return "<--";
-            default:
-                return "";
+        case message_t::kCall:
+            return "->";
+        case message_t::kReturn:
+            return "<--";
+        default:
+            return "";
         }
     }
 

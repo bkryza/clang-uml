@@ -44,7 +44,7 @@ std::string full_name(const cppast::cpp_entity &e);
 
 std::string fully_prefixed(const cppast::cpp_entity &e);
 
-const cppast::cpp_type& unreferenced(const cppast::cpp_type &t);
+const cppast::cpp_type &unreferenced(const cppast::cpp_type &t);
 
 } // namespace util
 } // namespace cx

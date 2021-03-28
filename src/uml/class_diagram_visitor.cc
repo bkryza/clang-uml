@@ -77,8 +77,8 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
             }
 
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                spdlog::debug("'{}' - {}", cx::util::full_name(e),
-                    cppast::to_string(e.kind()));
+                spdlog::debug("========== Visiting '{}' - {}",
+                    cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
 
@@ -86,8 +86,8 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
-                spdlog::debug("'{}' - {}", cx::util::full_name(e),
-                    cppast::to_string(e.kind()));
+                spdlog::debug("========== Visiting '{}' - {}",
+                    cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
@@ -146,6 +146,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         }
         else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
             auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
+            spdlog::debug("Found member variable {}", mv.name());
             process_field(mv, c, last_access_specifier);
         }
         else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
@@ -168,11 +169,10 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             auto &mc = static_cast<const cppast::cpp_destructor &>(child);
             process_destructor(mc, c, last_access_specifier);
         }
-       else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
+        else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
             auto &fr = static_cast<const cppast::cpp_friend &>(child);
 
-            spdlog::debug("Found friend declaration: {}, {}",
-                child.name(),
+            spdlog::debug("Found friend declaration: {}, {}", child.name(),
                 child.scope_name() ? child.scope_name().value().name()
                                    : "<no-scope>");
 
@@ -187,8 +187,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             process_friend(fr, c);
         }
         else {
-            spdlog::debug("Found some other class child: {} ({})",
-                child.name(), cppast::to_string(child.kind()));
+            spdlog::debug("Found some other class child: {} ({})", child.name(),
+                cppast::to_string(child.kind()));
         }
     }
 
@@ -217,10 +217,13 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
 
     // Process class template arguments
     if (cppast::is_templated(cls)) {
+        spdlog::debug("Processing class template parameters...");
         auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
         for (const auto &tp : scope.template_parameters()) {
             if (tp.kind() ==
                 cppast::cpp_entity_kind::template_type_parameter_t) {
+                spdlog::debug(
+                    "Processing template type parameter {}", tp.name());
                 process_template_type_parameter(
                     static_cast<const cppast::cpp_template_type_parameter &>(
                         tp),
@@ -228,6 +231,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             }
             else if (tp.kind() ==
                 cppast::cpp_entity_kind::non_type_template_parameter_t) {
+                spdlog::debug(
+                    "Processing template nontype parameter {}", tp.name());
                 process_template_nontype_parameter(
                     static_cast<
                         const cppast::cpp_non_type_template_parameter &>(tp),
@@ -235,6 +240,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             }
             else if (tp.kind() ==
                 cppast::cpp_entity_kind::template_template_parameter_t) {
+                spdlog::debug(
+                    "Processing template template parameter {}", tp.name());
                 process_template_template_parameter(
                     static_cast<
                         const cppast::cpp_template_template_parameter &>(tp),
@@ -281,7 +288,14 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     m.is_static = false;
 
     const auto &tr = cx::util::unreferenced(mv.type());
+
+    spdlog::debug(
+        "Processing field with unreferenced type of kind {}", tr.kind());
+
     if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        spdlog::debug("Processing field with template instatiation type {}",
+            cppast::to_string(tr));
+
         const auto &template_instantiation_type =
             static_cast<const cppast::cpp_template_instantiation_type &>(tr);
         if (template_instantiation_type.primary_template()
@@ -324,6 +338,11 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 ctx.d.add_class(std::move(tinst));
             }
         }
+    }
+    else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
+        spdlog::debug(
+            "Processing field with unexposed type {}", cppast::to_string(tr));
+        // TODO
     }
 
     if (mv.type().kind() != cppast::cpp_type_kind::builtin_t) {
@@ -614,8 +633,9 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         }
         else {
             for (const auto &arg : args) {
-                find_relationships(
-                    arg.type().value(), relationships, relationship_type);
+                if (arg.type())
+                    find_relationships(
+                        arg.type().value(), relationships, relationship_type);
             }
         }
     }
@@ -675,6 +695,11 @@ class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
                 ct.type =
                     static_cast<const cppast::cpp_literal_expression &>(exp)
                         .value();
+            else if (exp.kind() == cppast::cpp_expression_kind::unexposed_t)
+                ct.type =
+                    static_cast<const cppast::cpp_unexposed_expression &>(exp)
+                        .expression()
+                        .as_string();
         }
 
         spdlog::debug("Adding template argument '{}'", ct.type);

@@ -67,37 +67,37 @@ public:
     std::string to_string(scope_t scope) const
     {
         switch (scope) {
-            case scope_t::kPublic:
-                return "+";
-            case scope_t::kProtected:
-                return "#";
-            case scope_t::kPrivate:
-                return "-";
-            default:
-                return "";
+        case scope_t::kPublic:
+            return "+";
+        case scope_t::kProtected:
+            return "#";
+        case scope_t::kPrivate:
+            return "-";
+        default:
+            return "";
         }
     }
 
     std::string to_string(relationship_t r) const
     {
         switch (r) {
-            case relationship_t::kOwnership:
-            case relationship_t::kComposition:
-                return "*--";
-            case relationship_t::kAggregation:
-                return "o--";
-            case relationship_t::kContainment:
-                return "--+";
-            case relationship_t::kAssociation:
-                return "-->";
-            case relationship_t::kInstantiation:
-                return "..|>";
-            case relationship_t::kFriendship:
-                return "<..";
-            case relationship_t::kDependency:
-                return "..>";
-            default:
-                return "";
+        case relationship_t::kOwnership:
+        case relationship_t::kComposition:
+            return "*--";
+        case relationship_t::kAggregation:
+            return "o--";
+        case relationship_t::kContainment:
+            return "--+";
+        case relationship_t::kAssociation:
+            return "-->";
+        case relationship_t::kInstantiation:
+            return "..|>";
+        case relationship_t::kFriendship:
+            return "<..";
+        case relationship_t::kDependency:
+            return "..>";
+        default:
+            return "";
         }
     }
 
