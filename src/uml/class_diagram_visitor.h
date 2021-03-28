@@ -24,6 +24,7 @@
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
 #include <cppast/cpp_friend.hpp>
+#include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template_parameter.hpp>
@@ -91,6 +92,10 @@ public:
         cppast::cpp_access_specifier_kind as);
 
     void process_method(const cppast::cpp_member_function &mf,
+        clanguml::model::class_diagram::class_ &c,
+        cppast::cpp_access_specifier_kind as);
+
+    void process_template_method(const cppast::cpp_function_template &mf,
         clanguml::model::class_diagram::class_ &c,
         cppast::cpp_access_specifier_kind as);
 

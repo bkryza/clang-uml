@@ -81,9 +81,18 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
-
-                if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
-                    process_class_declaration(cls);
+                if (cls.begin() == cls.end()) {
+                    auto &clsdef = static_cast<const cppast::cpp_class &>(
+                        cppast::get_definition(ctx.entity_index, cls).value());
+                    if (ctx.config.should_include(
+                            cx::util::fully_prefixed(clsdef)))
+                        process_class_declaration(clsdef);
+                }
+                else {
+                    if (ctx.config.should_include(
+                            cx::util::fully_prefixed(cls)))
+                        process_class_declaration(cls);
+                }
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
                 spdlog::debug("========== Visiting '{}' - {}",
@@ -160,6 +169,11 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         else if (child.kind() == cppast::cpp_entity_kind::function_t) {
             auto &mf = static_cast<const cppast::cpp_function &>(child);
             process_static_method(mf, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::function_template_t) {
+            auto &tm =
+                static_cast<const cppast::cpp_function_template &>(child);
+            process_template_method(tm, c, last_access_specifier);
         }
         else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
             auto &mc = static_cast<const cppast::cpp_constructor &>(child);
@@ -397,6 +411,34 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     for (auto &param : mf.parameters())
         process_function_parameter(param, m);
 
+    spdlog::debug("Adding method: {}", m.name);
+
+    c.methods.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_template_method(
+    const cppast::cpp_function_template &mf, class_ &c,
+    cppast::cpp_access_specifier_kind as)
+{
+    class_method m;
+    m.name = util::trim(mf.name());
+    m.type = cppast::to_string(
+        static_cast<const cppast::cpp_member_function &>(mf.function())
+            .return_type());
+    m.is_pure_virtual = false; // cppast::is_pure(mf.virtual_info());
+    m.is_virtual = false;      // cppast::is_virtual(mf.virtual_info());
+    m.is_const = cppast::is_const(
+        static_cast<const cppast::cpp_member_function &>(mf.function())
+            .cv_qualifier());
+    m.is_defaulted = false; // cursor.is_method_defaulted();
+    m.is_static = false;    // cppast::is_static(mf.storage_class());
+    m.scope = detail::cpp_access_specifier_to_scope(as);
+
+    for (auto &param : mf.function().parameters())
+        process_function_parameter(param, m);
+
+    spdlog::debug("Adding template method: {}", m.name);
+
     c.methods.emplace_back(std::move(m));
 }
 
@@ -415,6 +457,8 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
 
     for (auto &param : mf.parameters())
         process_function_parameter(param, m);
+
+    spdlog::debug("Adding static method: {}", m.name);
 
     c.methods.emplace_back(std::move(m));
 }

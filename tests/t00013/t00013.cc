@@ -2,7 +2,6 @@
 #include <map>
 #include <numeric>
 #include <string>
-#include <variant>
 
 namespace ABCD {
 template <typename T> struct F {
