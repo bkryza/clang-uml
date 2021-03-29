@@ -306,7 +306,10 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     spdlog::debug(
         "Processing field with unreferenced type of kind {}", tr.kind());
 
-    if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+    if (tr.kind() == cppast::cpp_type_kind::builtin_t) {
+        spdlog::debug("Builtin type found for field: {}", m.name);
+    }
+    else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
         spdlog::debug("Processing field with template instatiation type {}",
             cppast::to_string(tr));
 

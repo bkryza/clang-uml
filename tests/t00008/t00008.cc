@@ -17,19 +17,18 @@ public:
     CMP comparator;
 };
 
-/*
- * TODO: Handle template template properly.
- *
+template <typename T> struct Vector {
+    std::vector<T> values;
+};
+
 template <typename T, template <typename> typename C> struct B {
     C<T> template_template;
 };
 
 struct D {
-    // libclang claims that the type spelling of 'ints' is 'int'...
-    B<int, std::vector> ints;
+    B<int, Vector> ints;
 
-    void add(int i) { ints.template_template.push_back(i); }
+    void add(int i) { ints.template_template.values.push_back(i); }
 };
-*/
 }
 }

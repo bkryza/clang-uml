@@ -43,6 +43,7 @@ TEST_CASE("t00008", "[test-case][class]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int), int N"));
+    REQUIRE_THAT(puml, IsClassTemplate("B", "T, C<>"));
 
     REQUIRE_THAT(puml, IsField(Public("T value")));
     REQUIRE_THAT(puml, IsField(Public("T * pointer")));
