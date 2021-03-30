@@ -42,8 +42,9 @@ TEST_CASE("t00008", "[test-case][class]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    //TODO: add option to resolve using declared types
-    //REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int), int N"));
+    // TODO: add option to resolve using declared types
+    // REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int), int
+    // N"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, CMP, int N"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T, C<>"));
 
@@ -52,8 +53,8 @@ TEST_CASE("t00008", "[test-case][class]")
     REQUIRE_THAT(puml, IsField(Public("T& reference")));
     REQUIRE_THAT(puml, IsField(Public("std::vector<P> values")));
     REQUIRE_THAT(puml, IsField(Public("std::array<int,N> ints")));
-    //TODO: add option to resolve using declared types
-    //REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
+    // TODO: add option to resolve using declared types
+    // REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
     REQUIRE_THAT(puml, IsField(Public("CMP comparator")));
 
     save_puml(
