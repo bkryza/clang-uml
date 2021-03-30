@@ -6,7 +6,10 @@ jobs:
   build-ubuntu:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Install deps
       run: sudo apt-get install ccache cmake libyaml-cpp-dev libspdlog-dev clang-11 libclang-11-dev libclang-cpp11-dev
     - name: Build and unit test

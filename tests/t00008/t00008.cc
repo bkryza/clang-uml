@@ -17,9 +17,18 @@ public:
     CMP comparator;
 };
 
-template <typename T, template <typename> typename C> class B {
-public:
+template <typename T> struct Vector {
+    std::vector<T> values;
+};
+
+template <typename T, template <typename> typename C> struct B {
     C<T> template_template;
+};
+
+struct D {
+    B<int, Vector> ints;
+
+    void add(int i) { ints.template_template.values.push_back(i); }
 };
 }
 }

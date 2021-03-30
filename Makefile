@@ -21,7 +21,7 @@
 # Specify preferred LLVM version for CMake
 LLVM_VERSION ?= 11
 
-.DEFAULT_GOAL := test
+.DEFAULT_GOAL := debug
 
 .PHONY: clean
 clean:

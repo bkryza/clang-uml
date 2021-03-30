@@ -15,6 +15,8 @@ set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 
+set(LLVM_PREFERRED_VERSION 11.0.0)
+
 message(STATUS "Checking for spdlog...")
 find_package(spdlog REQUIRED)
 
@@ -28,6 +30,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${LIBCLANG_CXXFLAGS}")
 
 # Thirdparty sources
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
+add_subdirectory(thirdparty/cppast)
 
 find_package(LLVM REQUIRED CONFIG)
 set(CLANG_INCLUDE_DIRS "llvm/clang/include")
@@ -37,6 +40,9 @@ include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
+include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/include)
+include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/include)
+include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/external/debug_assert)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 
 file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
@@ -47,7 +53,7 @@ add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
 install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog clang-umllib)
+target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog cppast clang-umllib)
 
 install(
         FILES

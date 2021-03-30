@@ -49,6 +49,8 @@ enum class relationship_t {
     kDependency
 };
 
+std::string to_string(relationship_t r);
+
 class element {
 public:
     element()
@@ -211,6 +213,7 @@ public:
 
 struct enum_ : public element {
     std::vector<std::string> constants;
+    std::vector<class_relationship> relationships;
 
     friend bool operator==(const enum_ &l, const enum_ &r)
     {
@@ -225,17 +228,22 @@ struct diagram {
 
     void add_class(class_ &&c)
     {
-        spdlog::debug("ADDING CLASS: {}, {}", c.name, c.usr);
+        spdlog::debug("Adding class: {}, {}", c.name, c.usr);
         auto it = std::find(classes.begin(), classes.end(), c);
         if (it == classes.end())
             classes.emplace_back(std::move(c));
+        else
+            spdlog::debug("Class {} already in the model", c.name);
     }
 
     void add_enum(enum_ &&e)
     {
+        spdlog::debug("Adding enum: {}", e.name);
         auto it = std::find(enums.begin(), enums.end(), e);
         if (it == enums.end())
             enums.emplace_back(std::move(e));
+        else
+            spdlog::debug("Enum {} already in the model", e.name);
     }
 
     std::string to_alias(const std::vector<std::string> &using_namespaces,

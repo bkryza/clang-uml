@@ -23,6 +23,8 @@
 #include "uml/class_diagram_visitor.h"
 #include "util/util.h"
 
+#include <cppast/cpp_entity_index.hpp>
+#include <cppast/libclang_parser.hpp>
 #include <glob/glob.hpp>
 
 #include <filesystem>
@@ -65,37 +67,37 @@ public:
     std::string to_string(scope_t scope) const
     {
         switch (scope) {
-            case scope_t::kPublic:
-                return "+";
-            case scope_t::kProtected:
-                return "#";
-            case scope_t::kPrivate:
-                return "-";
-            default:
-                return "";
+        case scope_t::kPublic:
+            return "+";
+        case scope_t::kProtected:
+            return "#";
+        case scope_t::kPrivate:
+            return "-";
+        default:
+            return "";
         }
     }
 
     std::string to_string(relationship_t r) const
     {
         switch (r) {
-            case relationship_t::kOwnership:
-            case relationship_t::kComposition:
-                return "*--";
-            case relationship_t::kAggregation:
-                return "o--";
-            case relationship_t::kContainment:
-                return "+--";
-            case relationship_t::kAssociation:
-                return "-->";
-            case relationship_t::kInstantiation:
-                return "..|>";
-            case relationship_t::kFriendship:
-                return "<..";
-            case relationship_t::kDependency:
-                return "..>";
-            default:
-                return "";
+        case relationship_t::kOwnership:
+        case relationship_t::kComposition:
+            return "*--";
+        case relationship_t::kAggregation:
+            return "o--";
+        case relationship_t::kContainment:
+            return "--+";
+        case relationship_t::kAssociation:
+            return "-->";
+        case relationship_t::kInstantiation:
+            return "..|>";
+        case relationship_t::kFriendship:
+            return "<..";
+        case relationship_t::kDependency:
+            return "..>";
+        default:
+            return "";
         }
     }
 
@@ -222,6 +224,33 @@ public:
         }
 
         ostr << "}" << std::endl;
+
+        for (const auto &r : e.relationships) {
+            std::string destination;
+            if (r.destination.find("#") != std::string::npos ||
+                r.destination.find("@") != std::string::npos) {
+                destination = m_model.usr_to_name(
+                    m_config.using_namespace, r.destination);
+                if (destination.empty()) {
+                    ostr << "' ";
+                    destination = r.destination;
+                }
+            }
+            else {
+                destination = r.destination;
+            }
+
+            ostr << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, e.name))
+                 << " " << to_string(r.type) << " "
+                 << m_model.to_alias(m_config.using_namespace,
+                        ns_relative(m_config.using_namespace, destination));
+
+            if (!r.label.empty())
+                ostr << " : " << r.label;
+
+            ostr << std::endl;
+        }
     }
 
     void generate(std::ostream &ostr) const
@@ -267,7 +296,7 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 }
 
 clanguml::model::class_diagram::diagram generate(
-    clanguml::cx::compilation_database &db, const std::string &name,
+    cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram)
 {
     spdlog::info("Generating diagram {}.puml", name);
@@ -276,7 +305,7 @@ clanguml::model::class_diagram::diagram generate(
 
     // Get all translation units matching the glob from diagram
     // configuration
-    std::vector<std::filesystem::path> translation_units{};
+    std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
         spdlog::debug("Processing glob: {}", g);
         const auto matches = glob::glob(g);
@@ -284,12 +313,20 @@ clanguml::model::class_diagram::diagram generate(
             std::back_inserter(translation_units));
     }
 
+    cppast::cpp_entity_index idx;
+    cppast::simple_file_parser<cppast::libclang_parser> parser{
+        type_safe::ref(idx)};
+
     // Process all matching translation units
+    clanguml::visitor::class_diagram::tu_visitor ctx(idx, d, diagram);
+    cppast::parse_files(parser, translation_units, db);
+    for (auto &file : parser.files())
+        ctx(file);
+
+    /*
     for (const auto &tu_path : translation_units) {
         spdlog::debug("Processing translation unit: {}",
             std::filesystem::canonical(tu_path).c_str());
-
-        auto tu = db.parse_translation_unit(tu_path);
 
         auto cursor = clang_getTranslationUnitCursor(tu);
 
@@ -309,6 +346,7 @@ clanguml::model::class_diagram::diagram generate(
 
         clang_suspendTranslationUnit(tu);
     }
+    */
 
     return d;
 }

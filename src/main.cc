@@ -25,6 +25,7 @@
 #include "uml/sequence_diagram_visitor.h"
 
 #include <cli11/CLI11.hpp>
+#include <cppast/libclang_parser.hpp>
 #include <glob/glob.hpp>
 #include <spdlog/spdlog.h>
 
@@ -73,6 +74,8 @@ int main(int argc, const char *argv[])
     auto db =
         compilation_database::from_directory(config.compilation_database_dir);
 
+    cppast::libclang_compilation_database db2(config.compilation_database_dir);
+
     for (const auto &[name, diagram] : config.diagrams) {
         using clanguml::config::class_diagram;
         using clanguml::config::sequence_diagram;
@@ -83,7 +86,7 @@ int main(int argc, const char *argv[])
 
         if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
             auto model = generators::class_diagram::generate(
-                db, name, dynamic_cast<class_diagram &>(*diagram));
+                db2, name, dynamic_cast<class_diagram &>(*diagram));
 
             ofs << clanguml::generators::class_diagram::puml::generator(
                 dynamic_cast<clanguml::config::class_diagram &>(*diagram),

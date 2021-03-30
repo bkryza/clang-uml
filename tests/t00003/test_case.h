@@ -56,7 +56,8 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, IsField(Public("int public_member")));
     REQUIRE_THAT(puml, IsField(Protected("int protected_member")));
     REQUIRE_THAT(puml, IsField(Private("int private_member")));
-    REQUIRE_THAT(puml, IsField(Static(Public("unsigned long auto_member"))));
+    REQUIRE_THAT(
+        puml, IsField(Static(Public("unsigned long const auto_member"))));
 
     REQUIRE_THAT(puml, IsField(Private("int a")));
     REQUIRE_THAT(puml, IsField(Private("int b")));

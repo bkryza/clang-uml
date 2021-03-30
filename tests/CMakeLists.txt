@@ -31,7 +31,7 @@ target_link_libraries(test_util
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    spdlog::spdlog clang-umllib)
+    spdlog::spdlog clang-umllib cppast)
 
 
 add_executable(test_cases
@@ -42,7 +42,7 @@ target_link_libraries(test_cases
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    spdlog::spdlog clang-umllib)
+    spdlog::spdlog clang-umllib cppast)
 
 foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
     file(RELATIVE_PATH

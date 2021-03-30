@@ -58,8 +58,8 @@ TEST_CASE("t00005", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("R")));
 
     REQUIRE_THAT(puml, IsField(Public("int some_int")));
-    REQUIRE_THAT(puml, IsField(Public("int * some_int_pointer")));
-    REQUIRE_THAT(puml, IsField(Public("int ** some_int_pointer_pointer")));
+    REQUIRE_THAT(puml, IsField(Public("int* some_int_pointer")));
+    REQUIRE_THAT(puml, IsField(Public("int** some_int_pointer_pointer")));
 
     REQUIRE_THAT(puml, IsComposition(_A("R"), _A("A"), "a"));
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "b"));

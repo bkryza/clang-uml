@@ -1,5 +1,5 @@
 /**
- * tests/t00013/test_case.cc
+ * tests/t00014/test_case.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,33 +16,32 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00013", "[test-case][class]")
+TEST_CASE("t00014", "[test-case][class]")
 {
-    auto [config, db] = load_config("t00013");
+    auto [config, db] = load_config("t00014");
 
-    auto diagram = config.diagrams["t00013_class"];
+    auto diagram = config.diagrams["t00014_class"];
 
-    REQUIRE(diagram->name == "t00013_class");
+    REQUIRE(diagram->name == "t00014_class");
 
     REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00013"}));
+        VectorContains(std::string{"clanguml::t00014"}));
 
     REQUIRE(diagram->exclude.namespaces.size() == 0);
 
-    REQUIRE(diagram->should_include("clanguml::t00013::A"));
-    REQUIRE(diagram->should_include("clanguml::t00013::B"));
-    REQUIRE(diagram->should_include("ABCD::F"));
+    REQUIRE(diagram->should_include("clanguml::t00014::S"));
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name == "t00013_class");
+    REQUIRE(model.name == "t00014_class");
 
     auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P"));
+    /*
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("C")));
     REQUIRE_THAT(puml, IsClass(_A("D")));
@@ -60,6 +59,7 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
+    */
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
