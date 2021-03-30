@@ -70,29 +70,21 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 {
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
-            if (info.is_old_entity()) {
-                spdlog::debug(
-                    "Entity {} already visited - skipping...", e.name());
-                return;
-            }
-
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
                 spdlog::debug("========== Visiting '{}' - {}",
                     cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
-                if (cls.begin() == cls.end()) {
-                    auto &clsdef = static_cast<const cppast::cpp_class &>(
-                        cppast::get_definition(ctx.entity_index, cls).value());
-                    if (ctx.config.should_include(
-                            cx::util::fully_prefixed(clsdef)))
-                        process_class_declaration(clsdef);
+                auto &clsdef = static_cast<const cppast::cpp_class &>(
+                    cppast::get_definition(ctx.entity_index, cls).value());
+                if (&cls != &clsdef) {
+                    spdlog::debug(
+                        "Forward declaration of class {} - skipping...",
+                        cls.name());
+                    return;
                 }
-                else {
-                    if (ctx.config.should_include(
-                            cx::util::fully_prefixed(cls)))
-                        process_class_declaration(cls);
-                }
+                if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
+                    process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
                 spdlog::debug("========== Visiting '{}' - {}",
@@ -364,7 +356,6 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
 
     if (mv.type().kind() != cppast::cpp_type_kind::builtin_t) {
         std::vector<std::pair<std::string, relationship_t>> relationships;
-
         find_relationships(mv.type(), relationships);
 
         for (const auto &[type, relationship_type] : relationships) {
@@ -408,11 +399,11 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     m.is_virtual = cppast::is_virtual(mf.virtual_info());
     m.is_const = cppast::is_const(mf.cv_qualifier());
     m.is_defaulted = false; // cursor.is_method_defaulted();
-    m.is_static = false;    // cppast::is_static(mf.storage_class());
+    m.is_static = false;
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.parameters())
-        process_function_parameter(param, m);
+        process_function_parameter(param, m, c);
 
     spdlog::debug("Adding method: {}", m.name);
 
@@ -438,7 +429,7 @@ void tu_visitor::process_template_method(
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.function().parameters())
-        process_function_parameter(param, m);
+        process_function_parameter(param, m, c);
 
     spdlog::debug("Adding template method: {}", m.name);
 
@@ -459,7 +450,7 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.parameters())
-        process_function_parameter(param, m);
+        process_function_parameter(param, m, c);
 
     spdlog::debug("Adding static method: {}", m.name);
 
@@ -480,7 +471,7 @@ void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.parameters())
-        process_function_parameter(param, m);
+        process_function_parameter(param, m, c);
 
     c.methods.emplace_back(std::move(m));
 }
@@ -502,7 +493,7 @@ void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
 }
 
 void tu_visitor::process_function_parameter(
-    const cppast::cpp_function_parameter &param, class_method &m)
+    const cppast::cpp_function_parameter &param, class_method &m, class_ &c)
 {
     method_parameter mp;
     mp.name = param.name();
@@ -526,6 +517,24 @@ void tu_visitor::process_function_parameter(
         default:
             mp.default_value = "{}";
         }
+
+    // find relationship for the type
+    std::vector<std::pair<std::string, relationship_t>> relationships;
+    find_relationships(param.type(), relationships);
+    for (const auto &[type, relationship_type] : relationships) {
+        if ((relationship_type != relationship_t::kNone) && (type != c.name)) {
+            class_relationship r;
+            r.destination = type;
+            r.type = relationship_t::kDependency;
+            r.label = mp.name;
+
+            spdlog::debug("Adding field relationship {} {} {} : {}",
+                r.destination, model::class_diagram::to_string(r.type), c.usr,
+                r.label);
+
+            c.add_relationship(std::move(r));
+        }
+    }
 
     m.parameters.emplace_back(std::move(mp));
 }
@@ -716,8 +725,9 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
 class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
     const cppast::cpp_template_instantiation_type &t)
 {
-    spdlog::debug("Found template instantiation: {} ..|> {}",
-        cppast::to_string(t.canonical()), t.primary_template().name());
+    spdlog::debug("Found template instantiation: {} ({}) ..|> {}",
+        cppast::to_string(t), cppast::to_string(t.canonical()),
+        t.primary_template().name());
 
     class_ tinst;
     const auto &primary_template_ref =
@@ -728,6 +738,9 @@ class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
     if (primary_template_ref.user_data())
         tinst.base_template_usr =
             static_cast<const char *>(primary_template_ref.user_data());
+    else
+        spdlog::warn(
+            "No user data for base template {}", primary_template_ref.name());
 
     tinst.is_template_instantiation = true;
 

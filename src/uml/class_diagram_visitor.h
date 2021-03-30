@@ -112,7 +112,8 @@ public:
         cppast::cpp_access_specifier_kind as);
 
     void process_function_parameter(const cppast::cpp_function_parameter &param,
-        clanguml::model::class_diagram::class_method &m);
+        clanguml::model::class_diagram::class_method &m,
+        clanguml::model::class_diagram::class_ &c);
 
     void find_relationships(const cppast::cpp_type &t,
         std::vector<std::pair<std::string,
