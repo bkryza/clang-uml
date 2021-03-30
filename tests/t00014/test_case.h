@@ -40,7 +40,7 @@ TEST_CASE("t00014", "[test-case][class]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("S")));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P"));
     /*
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("C")));

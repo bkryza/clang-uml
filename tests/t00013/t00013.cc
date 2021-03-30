@@ -45,7 +45,7 @@ public:
     // Dependency relationship should be rendered only once
     int get_d2(D &&d) { return d.d; }
 
-    template <typename T> T get_e(E<T> &e) { return e.e; }
+    template <typename T> T get_e(E<T> e) { return e.e; }
     int get_int_e(const E<int> &e) { return e.e; }
     int get_int_e2(E<int> &e) { return e.e; }
 

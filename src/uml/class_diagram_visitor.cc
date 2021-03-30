@@ -520,19 +520,64 @@ void tu_visitor::process_function_parameter(
 
     // find relationship for the type
     std::vector<std::pair<std::string, relationship_t>> relationships;
-    find_relationships(param.type(), relationships);
+    find_relationships(cppast::remove_cv(param.type()), relationships,
+        relationship_t::kDependency);
     for (const auto &[type, relationship_type] : relationships) {
         if ((relationship_type != relationship_t::kNone) && (type != c.name)) {
             class_relationship r;
             r.destination = type;
             r.type = relationship_t::kDependency;
-            r.label = mp.name;
+            r.label = "";
 
             spdlog::debug("Adding field relationship {} {} {} : {}",
                 r.destination, model::class_diagram::to_string(r.type), c.usr,
                 r.label);
 
             c.add_relationship(std::move(r));
+        }
+    }
+
+    // Also consider the container itself if it is user defined type
+    const auto &t = cppast::remove_cv(cx::util::unreferenced(param.type()));
+    spdlog::debug("###### {}", cppast::to_string(t));
+    if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        auto &template_instantiation_type =
+            static_cast<const cppast::cpp_template_instantiation_type &>(t);
+        if (template_instantiation_type.primary_template()
+                .get(ctx.entity_index)
+                .size()) {
+            // Here we need the name of the primary template with full
+            // namespace prefix to apply config inclusion filters
+            auto primary_template_name = cx::util::full_name(
+                template_instantiation_type.primary_template()
+                    .get(ctx.entity_index)[0]
+                    .get());
+
+            spdlog::debug(
+                "Maybe building instantiation for: {}", primary_template_name);
+
+            if (ctx.config.should_include(primary_template_name)) {
+                class_ tinst = build_template_instantiation(
+                    param, template_instantiation_type);
+
+                class_relationship r;
+                r.destination = tinst.base_template_usr;
+                r.type = relationship_t::kInstantiation;
+                r.label = "";
+                tinst.add_relationship(std::move(r));
+
+                class_relationship rr;
+                rr.destination = tinst.usr;
+                rr.type = relationship_t::kDependency;
+                rr.label = "";
+                spdlog::debug(
+                    "Adding field instantiation relationship {} {} {} : {}",
+                    rr.destination, model::class_diagram::to_string(rr.type),
+                    c.usr, rr.label);
+                c.add_relationship(std::move(rr));
+
+                ctx.d.add_class(std::move(tinst));
+            }
         }
     }
 
@@ -639,7 +684,8 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     std::vector<std::pair<std::string, relationship_t>> &relationships,
     relationship_t relationship_hint)
 {
-    spdlog::debug("Finding relationships for type {}", cppast::to_string(t_));
+    spdlog::debug("Finding relationships for type {}, {}",
+        cppast::to_string(t_), t_.kind());
 
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
@@ -697,8 +743,10 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     }
     else if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
         auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
-        find_relationships(
-            p.pointee(), relationships, relationship_t::kAssociation);
+        auto rt = relationship_t::kAssociation;
+        if (relationship_hint == relationship_t::kDependency)
+            rt = relationship_hint;
+        find_relationships(p.pointee(), relationships, rt);
     }
     else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
         auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
@@ -706,6 +754,8 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
             rt = relationship_t::kComposition;
         }
+        if (relationship_hint == relationship_t::kDependency)
+            rt = relationship_hint;
         find_relationships(r.referee(), relationships, rt);
     }
     else if (cppast::remove_cv(t_).kind() ==
@@ -713,28 +763,33 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         if (ctx.config.should_include(cppast::to_string(t_.canonical())))
             if (relationship_type != relationship_t::kNone)
                 relationships.emplace_back(
-                    cppast::to_string(cppast::remove_cv(t_)),
-                    relationship_type);
+                    cppast::to_string(t), relationship_type);
             else
                 relationships.emplace_back(
-                    cppast::to_string(cppast::remove_cv(t_)),
-                    relationship_t::kComposition);
+                    cppast::to_string(t), relationship_t::kComposition);
     }
 }
 
 class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
     const cppast::cpp_template_instantiation_type &t)
 {
-    spdlog::debug("Found template instantiation: {} ({}) ..|> {}",
+    auto full_template_name = cx::util::full_name(
+        t.primary_template().get(ctx.entity_index)[0].get());
+
+    spdlog::debug("Found template instantiation: {} ({}) ..|> {}, {}",
         cppast::to_string(t), cppast::to_string(t.canonical()),
-        t.primary_template().name());
+        t.primary_template().name(), full_template_name);
 
     class_ tinst;
     const auto &primary_template_ref =
         static_cast<const cppast::cpp_class_template &>(
             t.primary_template().get(ctx.entity_index)[0].get())
             .class_();
+
     tinst.name = primary_template_ref.name();
+    if(full_template_name.back() == ':')
+        tinst.name = full_template_name + tinst.name;
+
     if (primary_template_ref.user_data())
         tinst.base_template_usr =
             static_cast<const char *>(primary_template_ref.user_data());
