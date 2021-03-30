@@ -24,9 +24,6 @@ load_config(const std::string &test_name)
 {
     auto config = clanguml::config::load(test_name + "/.clanguml");
 
-    // auto db = clanguml::cx::compilation_database::from_directory(
-    // config.compilation_database_dir);
-
     cppast::libclang_compilation_database db(config.compilation_database_dir);
 
     return std::make_pair(std::move(config), std::move(db));
@@ -147,7 +144,7 @@ using clanguml::test::matchers::Static;
 //
 // Sequence diagram tests
 //
-//#include "t20001/test_case.h"
+#include "t20001/test_case.h"
 
 //
 // Other tests (e.g. configuration file)
