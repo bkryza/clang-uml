@@ -226,11 +226,16 @@ struct diagram {
     std::vector<class_> classes;
     std::vector<enum_> enums;
 
+    bool has_class(const std::string &usr) const
+    {
+        return std::any_of(classes.cbegin(), classes.cend(),
+            [&usr](const auto &c) { return c.usr == usr; });
+    }
+
     void add_class(class_ &&c)
     {
         spdlog::debug("Adding class: {}, {}", c.name, c.usr);
-        auto it = std::find(classes.begin(), classes.end(), c);
-        if (it == classes.end())
+        if (!has_class(c.usr))
             classes.emplace_back(std::move(c));
         else
             spdlog::debug("Class {} already in the model", c.name);
