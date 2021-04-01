@@ -101,6 +101,29 @@ public:
         }
     }
 
+    std::string name(relationship_t r) const
+    {
+        switch (r) {
+        case relationship_t::kOwnership:
+        case relationship_t::kComposition:
+            return "composition";
+        case relationship_t::kAggregation:
+            return "aggregation";
+        case relationship_t::kContainment:
+            return "containment";
+        case relationship_t::kAssociation:
+            return "association";
+        case relationship_t::kInstantiation:
+            return "instantiation";
+        case relationship_t::kFriendship:
+            return "friendship";
+        case relationship_t::kDependency:
+            return "dependency";
+        default:
+            return "unknown";
+        }
+    }
+
     void generate_aliases(const class_ &c, std::ostream &ostr) const
     {
         std::string class_type{"class"};
@@ -176,16 +199,20 @@ public:
 
         ostr << "}" << std::endl;
 
-        for (const auto &b : c.bases) {
-            ostr << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, b.name))
-                 << " <|-- "
-                 << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, c.name))
-                 << std::endl;
-        }
+        if (m_config.should_include_relationship("inheritance"))
+            for (const auto &b : c.bases) {
+                ostr << m_model.to_alias(m_config.using_namespace,
+                            ns_relative(m_config.using_namespace, b.name))
+                     << " <|-- "
+                     << m_model.to_alias(m_config.using_namespace,
+                            ns_relative(m_config.using_namespace, c.name))
+                     << std::endl;
+            }
 
         for (const auto &r : c.relationships) {
+            if (!m_config.should_include_relationship(name(r.type)))
+                continue;
+
             std::string destination;
             if (r.destination.find("#") != std::string::npos ||
                 r.destination.find("@") != std::string::npos) {
@@ -226,6 +253,9 @@ public:
         ostr << "}" << std::endl;
 
         for (const auto &r : e.relationships) {
+            if (!m_config.should_include_relationship(name(r.type)))
+                continue;
+
             std::string destination;
             if (r.destination.find("#") != std::string::npos ||
                 r.destination.find("@") != std::string::npos) {
@@ -260,20 +290,23 @@ public:
         for (const auto &b : m_config.puml.before)
             ostr << b << std::endl;
 
-        for (const auto &c : m_model.classes) {
-            generate_aliases(c, ostr);
-            ostr << std::endl;
+        if (m_config.should_include_entities("classes")) {
+            for (const auto &c : m_model.classes) {
+                generate_aliases(c, ostr);
+                ostr << std::endl;
+            }
+
+            for (const auto &c : m_model.classes) {
+                generate(c, ostr);
+                ostr << std::endl;
+            }
         }
 
-        for (const auto &c : m_model.classes) {
-            generate(c, ostr);
-            ostr << std::endl;
-        }
-
-        for (const auto &e : m_model.enums) {
-            generate(e, ostr);
-            ostr << std::endl;
-        }
+        if (m_config.should_include_entities("enums"))
+            for (const auto &e : m_model.enums) {
+                generate(e, ostr);
+                ostr << std::endl;
+            }
 
         for (const auto &b : m_config.puml.after)
             ostr << b << std::endl;

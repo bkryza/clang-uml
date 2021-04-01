@@ -39,6 +39,17 @@ struct plantuml {
 
 struct filter {
     std::vector<std::string> namespaces;
+
+    // Valid values are:
+    //   - inheritance
+    //   - dependency
+    //   - instantiation
+    std::vector<std::string> relationships;
+
+    // E.g.:
+    //   - classes
+    //   - enums
+    std::vector<std::string> entity_types;
 };
 
 struct diagram {
@@ -52,6 +63,42 @@ struct diagram {
     filter exclude;
 
     plantuml puml;
+
+    bool should_include_entities(const std::string &ent)
+    {
+        for (const auto &ex : exclude.entity_types) {
+            if (ent == ex)
+                return false;
+        }
+
+        if (include.entity_types.empty())
+            return true;
+
+        for (const auto &in : include.entity_types) {
+            if (ent == in)
+                return true;
+        }
+
+        return false;
+    }
+
+    bool should_include_relationship(const std::string &rel)
+    {
+        for (const auto &ex : exclude.relationships) {
+            if (rel == ex)
+                return false;
+        }
+
+        if (include.relationships.empty())
+            return true;
+
+        for (const auto &in : include.relationships) {
+            if (rel == in)
+                return true;
+        }
+
+        return false;
+    }
 
     bool should_include(const std::string &name_) const
     {
@@ -186,6 +233,15 @@ template <> struct convert<filter> {
     {
         if (node["namespaces"])
             rhs.namespaces = node["namespaces"].as<decltype(rhs.namespaces)>();
+
+        if (node["relationships"])
+            rhs.relationships =
+                node["relationships"].as<decltype(rhs.relationships)>();
+
+        if (node["entity_types"])
+            rhs.entity_types =
+                node["entity_types"].as<decltype(rhs.entity_types)>();
+
         return true;
     }
 };

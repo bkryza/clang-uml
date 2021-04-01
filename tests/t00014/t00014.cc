@@ -18,12 +18,13 @@ template <typename T> using AString = A<T, std::string>;
 
 using AIntString = AString<int>;
 using AStringString = AString<std::string>;
+using BStringString = AStringString;
 
 class R {
     A<bool, std::string> boolstring;
     AString<float> floatstring;
     AIntString intstring;
-    AStringString stringstring;
+    BStringString stringstring;
 };
 }
 }

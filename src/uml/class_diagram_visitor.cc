@@ -75,13 +75,15 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     cx::util::full_name(e), cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
-                auto &clsdef = static_cast<const cppast::cpp_class &>(
-                    cppast::get_definition(ctx.entity_index, cls).value());
-                if (&cls != &clsdef) {
-                    spdlog::debug(
-                        "Forward declaration of class {} - skipping...",
-                        cls.name());
-                    return;
+                if (cppast::get_definition(ctx.entity_index, cls)) {
+                    auto &clsdef = static_cast<const cppast::cpp_class &>(
+                        cppast::get_definition(ctx.entity_index, cls).value());
+                    if (&cls != &clsdef) {
+                        spdlog::debug(
+                            "Forward declaration of class {} - skipping...",
+                            cls.name());
+                        return;
+                    }
                 }
                 if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
                     process_class_declaration(cls);
