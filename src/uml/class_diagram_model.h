@@ -25,6 +25,7 @@
 
 #include <atomic>
 #include <functional>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -140,6 +141,11 @@ struct class_template {
     }
 };
 
+struct type_alias {
+    std::string alias;
+    std::string underlying_type;
+};
+
 class class_ : public element {
 public:
     std::string usr;
@@ -153,10 +159,18 @@ public:
     std::vector<class_relationship> relationships;
     std::vector<class_template> templates;
     std::string base_template_usr;
+    std::map<std::string, type_alias> type_aliases;
 
     friend bool operator==(const class_ &l, const class_ &r)
     {
         return (l.usr == r.usr) && (l.templates == r.templates);
+    }
+
+    void add_type_alias(type_alias &&ta)
+    {
+        spdlog::debug(
+            "Adding class alias: {} -> {}", ta.alias, ta.underlying_type);
+        type_aliases[ta.alias] = std::move(ta);
     }
 
     void add_relationship(class_relationship &&cr)
@@ -225,11 +239,20 @@ struct diagram {
     std::string name;
     std::vector<class_> classes;
     std::vector<enum_> enums;
+    std::map<std::string, type_alias> type_aliases;
 
     bool has_class(const std::string &usr) const
     {
         return std::any_of(classes.cbegin(), classes.cend(),
             [&usr](const auto &c) { return c.usr == usr; });
+    }
+
+    void add_type_alias(type_alias &&ta)
+    {
+        spdlog::debug(
+            "Adding global alias: {} -> {}", ta.alias, ta.underlying_type);
+
+        type_aliases[ta.alias] = std::move(ta);
     }
 
     void add_class(class_ &&c)

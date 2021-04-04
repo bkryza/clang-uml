@@ -17,9 +17,11 @@
  */
 
 #include "cx/util.h"
+#include "util/util.h"
 
 #include <cppast/cpp_class.hpp>
 #include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_template.hpp>
 #include <spdlog/spdlog.h>
 
 namespace clanguml {
@@ -62,6 +64,19 @@ std::string full_name(const cppast::cpp_entity &e)
         return scopes + e.name();
 }
 
+std::string full_name(const cppast::cpp_type &t,
+    const cppast::cpp_entity_index &idx, bool inside_class)
+{
+    std::string t_ns;
+    if (!inside_class)
+        t_ns = ns(t, idx);
+
+    if (t_ns.size() > 0)
+        return t_ns + "::" + cppast::to_string(t);
+
+    return cppast::to_string(t);
+}
+
 std::string ns(const cppast::cpp_entity &e)
 {
     std::vector<std::string> res{};
@@ -73,8 +88,45 @@ std::string ns(const cppast::cpp_entity &e)
         }
         it = it.value().parent();
     }
+    std::reverse(res.begin(), res.end());
 
-    return fmt::format("{}", fmt::join(res.rbegin(), res.rend(), "::"));
+    return fmt::format("{}", fmt::join(res, "::"));
+}
+
+bool is_inside_class(const cppast::cpp_entity &e)
+{
+    auto it = e.parent();
+    while (it) {
+        if (it.value().kind() == cppast::cpp_entity_kind::class_t) {
+            return true;
+        }
+        it = it.value().parent();
+    }
+    return false;
+}
+
+std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
+{
+    auto canon = cppast::to_string(t.canonical());
+    auto full_name = canon.substr(0, canon.find("<"));
+    if (canon.find("type-parameter-") == std::string::npos) {
+        // This is an easy case, canonical representation contains full
+        // namespace
+        auto ns_toks = clanguml::util::split(full_name, "::");
+        if (ns_toks.size() > 0)
+            ns_toks.pop_back();
+        return fmt::format(
+            "{}", fmt::join(ns_toks.begin(), ns_toks.end(), "::"));
+    }
+    else {
+        // This is a bug/feature in libclang, where canonical representation of
+        // a template type with incomplete specialization doesn't have a full
+        // namespace We have to extract it from te primary template
+        const auto &primary_template =
+            static_cast<const cppast::cpp_template_instantiation_type &>(t)
+                .primary_template();
+        return ns(primary_template.get(idx)[0].get());
+    }
 }
 
 std::string fully_prefixed(const cppast::cpp_entity &e)

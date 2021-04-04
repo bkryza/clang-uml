@@ -25,6 +25,7 @@
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_template.hpp>
+#include <cppast/cpp_type_alias.hpp>
 #include <cppast/cpp_variable.hpp>
 #include <spdlog/spdlog.h>
 
@@ -43,6 +44,7 @@ using clanguml::model::class_diagram::enum_;
 using clanguml::model::class_diagram::method_parameter;
 using clanguml::model::class_diagram::relationship_t;
 using clanguml::model::class_diagram::scope_t;
+using clanguml::model::class_diagram::type_alias;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
@@ -96,6 +98,18 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 
                 if (ctx.config.should_include(cx::util::fully_prefixed(enm)))
                     process_enum_declaration(enm);
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
+                spdlog::debug("========== Visiting '{}' - {}",
+                    cx::util::full_name(e), cppast::to_string(e.kind()));
+
+                auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
+                type_alias t;
+                t.alias = cx::util::full_name(ta);
+                t.underlying_type = cx::util::full_name(ta.underlying_type(),
+                    ctx.entity_index, cx::util::is_inside_class(e));
+
+                ctx.d.add_type_alias(std::move(t));
             }
         });
 }
