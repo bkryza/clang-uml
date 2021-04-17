@@ -169,8 +169,10 @@ int main(int argc, char *argv[])
     if (returnCode != 0)
         return returnCode;
 
-    if (debug_log)
+    if (debug_log) {
         spdlog::default_logger_raw()->set_level(spdlog::level::debug);
+        spdlog::default_logger_raw()->set_pattern("[%l] %v");
+    }
 
     return session.run();
 }

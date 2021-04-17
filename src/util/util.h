@@ -17,7 +17,10 @@
  */
 #pragma once
 
+#include <spdlog/spdlog.h>
+
 #include <algorithm>
+#include <string.h>
 #include <string>
 #include <vector>
 
@@ -27,6 +30,21 @@ namespace util {
 std::string ltrim(const std::string &s);
 std::string rtrim(const std::string &s);
 std::string trim(const std::string &s);
+
+#define __FILENAME__                                                           \
+    (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+#define LOG_WARN(fmt__, ...)                                                   \
+    spdlog::warn(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,      \
+        ##__VA_ARGS__)
+
+#define LOG_INFO(fmt__, ...)                                                   \
+    spdlog::info(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,      \
+        ##__VA_ARGS__)
+
+#define LOG_DBG(fmt__, ...)                                                    \
+    spdlog::debug(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,     \
+        ##__VA_ARGS__)
 
 /**
  * @brief Split a string using delimiter
