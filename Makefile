@@ -51,6 +51,9 @@ test: debug
 test_plantuml: test
 	plantuml debug/tests/puml/*.puml
 
+document_test_cases: test_plantuml
+	python3 util/generate_test_cases_docs.py
+
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2

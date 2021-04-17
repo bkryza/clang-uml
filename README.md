@@ -44,6 +44,15 @@ To build under Ubuntu follow the following steps:
     make release # or make debug for debug builds
 ```
 
+## Documentation
+
+### Examples
+
+#### Test cases
+
+The build-in test cases used for unit testing of the clang-uml, can be browsed [here](./docs/test_cases.md)
+
+
 ## LICENSE
 
     Copyright 2021-present Bartek Kryza <bkryza@gmail.com>

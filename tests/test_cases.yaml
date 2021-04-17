@@ -1,0 +1,49 @@
+test_cases:
+  Class diagrams:
+    - name: t00002
+      title: Basic class inheritance
+      description:
+    - name: t00003
+      title: Class field and methods
+      description:
+    - name: t00004
+      title: Nested classes and enums
+      description:
+    - name: t00005
+      title: Basic class field relationships
+      description:
+    - name: t00006
+      title: Class field relationships inferred from templates
+      description:
+    - name: t00007
+      title: Smart pointers
+      description:
+    - name: t00008
+      title: Template and template template relationships
+      description:
+    - name: t00009
+      title: Template instantiation
+      description:
+    - name: t00010
+      title: Basic template instantiation
+      description:
+    - name: t00011
+      title: Friend relationships
+      description:
+    - name: t00012
+      title: Advanced template instantiations
+      description:
+    - name: t00013
+      title: Template instantiation relationships
+      description:
+    - name: t00014
+      title: Alias template instantiation
+      description:
+  Sequence diagrams:
+    - name: t20001
+      title: Basic sequence diagram
+      description:
+  Configuration diagrams:
+    - name: t90000
+      title: Basic config test
+      description:
