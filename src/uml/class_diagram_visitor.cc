@@ -17,6 +17,7 @@
  */
 #include "class_diagram_visitor.h"
 
+#include <cppast/cpp_alias_template.hpp>
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
@@ -73,16 +74,15 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
             if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                spdlog::debug("========== Visiting '{}' - {}",
-                    cx::util::full_name(e), cppast::to_string(e.kind()));
+                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
                 if (cppast::get_definition(ctx.entity_index, cls)) {
                     auto &clsdef = static_cast<const cppast::cpp_class &>(
                         cppast::get_definition(ctx.entity_index, cls).value());
                     if (&cls != &clsdef) {
-                        spdlog::debug(
-                            "Forward declaration of class {} - skipping...",
+                        LOG_DBG("Forward declaration of class {} - skipping...",
                             cls.name());
                         return;
                     }
@@ -91,8 +91,8 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
-                spdlog::debug("========== Visiting '{}' - {}",
-                    cx::util::full_name(e), cppast::to_string(e.kind()));
+                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
@@ -100,8 +100,8 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     process_enum_declaration(enm);
             }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
-                spdlog::debug("========== Visiting '{}' - {}",
-                    cx::util::full_name(e), cppast::to_string(e.kind()));
+                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
 
                 auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
                 type_alias t;
@@ -109,7 +109,31 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                 t.underlying_type = cx::util::full_name(ta.underlying_type(),
                     ctx.entity_index, cx::util::is_inside_class(e));
 
+                ctx.add_type_alias(cx::util::full_name(ta),
+                    type_safe::ref(ta.underlying_type()));
+
                 ctx.d.add_type_alias(std::move(t));
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::alias_template_t) {
+                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                    cppast::to_string(e.kind()));
+
+                auto &at = static_cast<const cppast::cpp_alias_template &>(e);
+
+                class_ tinst = build_template_instantiation(static_cast<
+                    const cppast::cpp_template_instantiation_type &>(
+                    at.type_alias().underlying_type()));
+
+                class_relationship r;
+                r.destination = tinst.base_template_usr;
+                r.type = relationship_t::kInstantiation;
+                r.label = "";
+                tinst.add_relationship(std::move(r));
+
+                LOG_DBG("Created template instantiation: {}, {}, {}",
+                    tinst.name, tinst.usr, tinst.base_template_usr);
+
+                ctx.d.add_class(std::move(tinst));
             }
         });
 }
@@ -134,7 +158,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
             containment.destination = cx::util::full_name(cur.value());
             e.relationships.emplace_back(std::move(containment));
 
-            spdlog::debug("Added relationship {} +-- {}", e.name,
+            LOG_DBG("Added relationship {} +-- {}", e.name,
                 containment.destination);
             break;
         }
@@ -163,7 +187,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         }
         else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
             auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
-            spdlog::debug("Found member variable {}", mv.name());
+            LOG_DBG("Found member variable {}", mv.name());
             process_field(mv, c, last_access_specifier);
         }
         else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
@@ -194,7 +218,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
             auto &fr = static_cast<const cppast::cpp_friend &>(child);
 
-            spdlog::debug("Found friend declaration: {}, {}", child.name(),
+            LOG_DBG("Found friend declaration: {}, {}", child.name(),
                 child.scope_name() ? child.scope_name().value().name()
                                    : "<no-scope>");
 
@@ -204,12 +228,12 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             auto &fr =
                 static_cast<const cppast::cpp_friend &>(child.parent().value());
 
-            spdlog::debug("Found friend template: {}", child.name());
+            LOG_DBG("Found friend template: {}", child.name());
 
             process_friend(fr, c);
         }
         else {
-            spdlog::debug("Found some other class child: {} ({})", child.name(),
+            LOG_DBG("Found some other class child: {} ({})", child.name(),
                 cppast::to_string(child.kind()));
         }
     }
@@ -239,13 +263,12 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
 
     // Process class template arguments
     if (cppast::is_templated(cls)) {
-        spdlog::debug("Processing class template parameters...");
+        LOG_DBG("Processing class template parameters...");
         auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
         for (const auto &tp : scope.template_parameters()) {
             if (tp.kind() ==
                 cppast::cpp_entity_kind::template_type_parameter_t) {
-                spdlog::debug(
-                    "Processing template type parameter {}", tp.name());
+                LOG_DBG("Processing template type parameter {}", tp.name());
                 process_template_type_parameter(
                     static_cast<const cppast::cpp_template_type_parameter &>(
                         tp),
@@ -253,8 +276,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             }
             else if (tp.kind() ==
                 cppast::cpp_entity_kind::non_type_template_parameter_t) {
-                spdlog::debug(
-                    "Processing template nontype parameter {}", tp.name());
+                LOG_DBG("Processing template nontype parameter {}", tp.name());
                 process_template_nontype_parameter(
                     static_cast<
                         const cppast::cpp_non_type_template_parameter &>(tp),
@@ -262,8 +284,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             }
             else if (tp.kind() ==
                 cppast::cpp_entity_kind::template_template_parameter_t) {
-                spdlog::debug(
-                    "Processing template template parameter {}", tp.name());
+                LOG_DBG("Processing template template parameter {}", tp.name());
                 process_template_template_parameter(
                     static_cast<
                         const cppast::cpp_template_template_parameter &>(tp),
@@ -281,7 +302,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
             containment.destination = cx::util::full_name(cur.value());
             c.add_relationship(std::move(containment));
 
-            spdlog::debug("Added relationship {} +-- {}",
+            LOG_DBG("Added relationship {} +-- {}",
                 c.full_name(ctx.config.using_namespace),
                 containment.destination);
 
@@ -291,13 +312,81 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
 
     cls.set_user_data(strdup(c.full_name(ctx.config.using_namespace).c_str()));
 
-    spdlog::debug("Setting user data for class {}, {}",
+    LOG_DBG("Setting user data for class {}, {}",
         static_cast<const char *>(cls.user_data()),
         fmt::ptr(reinterpret_cast<const void *>(&cls)));
 
     c.usr = c.full_name(ctx.config.using_namespace);
 
     ctx.d.add_class(std::move(c));
+}
+
+void tu_visitor::process_field_with_template_instantiation(
+    const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
+    class_ &c)
+{
+    LOG_DBG("Processing field with template instatiation type {}",
+        cppast::to_string(tr));
+
+    const auto &template_instantiation_type =
+        static_cast<const cppast::cpp_template_instantiation_type &>(tr);
+    if (template_instantiation_type.primary_template()
+            .get(ctx.entity_index)
+            .size()) {
+        // Here we need the name of the primary template with full namespace
+        // prefix to apply config inclusion filters
+        auto primary_template_name =
+            cx::util::full_name(template_instantiation_type.primary_template()
+                                    .get(ctx.entity_index)[0]
+                                    .get());
+
+        LOG_DBG("Maybe building instantiation for: {}{}", primary_template_name,
+            cppast::to_string(tr));
+
+        if (ctx.config.should_include(primary_template_name)) {
+            const auto &unaliased =
+                static_cast<const cppast::cpp_template_instantiation_type &>(
+                    resolve_alias(template_instantiation_type));
+            class_ tinst = build_template_instantiation(unaliased);
+
+            class_relationship r;
+            const auto &tt = cppast::remove_cv(
+                cx::util::unreferenced(template_instantiation_type));
+            auto fn = cx::util::full_name(tt, ctx.entity_index, false);
+            fn = util::split(fn, "<")[0];
+
+            if (ctx.has_type_alias(fn)) {
+                // If this is a template alias - set the instantiation
+                // relationship to the first alias target
+                r.destination = cppast::to_string(ctx.get_type_alias(fn).get());
+            }
+            else {
+                // Otherwise point to the base template
+                r.destination = tinst.base_template_usr;
+            }
+            r.type = relationship_t::kInstantiation;
+            r.label = "";
+            tinst.add_relationship(std::move(r));
+
+            class_relationship rr;
+            rr.destination = tinst.usr;
+            if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
+                mv.type().kind() == cppast::cpp_type_kind::reference_t)
+                rr.type = relationship_t::kAssociation;
+            else
+                rr.type = relationship_t::kComposition;
+            rr.label = mv.name();
+            LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
+                rr.destination, model::class_diagram::to_string(rr.type), c.usr,
+                rr.label);
+            c.add_relationship(std::move(rr));
+
+            LOG_DBG("Created template instantiation: {}, {}", tinst.name,
+                tinst.usr);
+
+            ctx.d.add_class(std::move(tinst));
+        }
+    }
 }
 
 void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
@@ -309,70 +398,32 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     m.scope = detail::cpp_access_specifier_to_scope(as);
     m.is_static = false;
 
-    const auto &tr = cx::util::unreferenced(mv.type());
+    auto &tr = cx::util::unreferenced(cppast::remove_cv(mv.type()));
 
-    spdlog::debug(
-        "Processing field with unreferenced type of kind {}", tr.kind());
+    LOG_DBG("Processing field {} with unreferenced type of kind {}", mv.name(),
+        tr.kind());
 
     if (tr.kind() == cppast::cpp_type_kind::builtin_t) {
-        spdlog::debug("Builtin type found for field: {}", m.name);
+        LOG_DBG("Builtin type found for field: {}", m.name);
+    }
+    else if (tr.kind() == cppast::cpp_type_kind::user_defined_t) {
+        LOG_DBG("Processing user defined type field {} {}",
+            cppast::to_string(tr), mv.name());
     }
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        spdlog::debug("Processing field with template instatiation type {}",
-            cppast::to_string(tr));
-
-        const auto &template_instantiation_type =
-            static_cast<const cppast::cpp_template_instantiation_type &>(tr);
-        if (template_instantiation_type.primary_template()
-                .get(ctx.entity_index)
-                .size()) {
-            // Here we need the name of the primary template with full namespace
-            // prefix to apply config inclusion filters
-            auto primary_template_name = cx::util::full_name(
-                template_instantiation_type.primary_template()
-                    .get(ctx.entity_index)[0]
-                    .get());
-
-            spdlog::debug(
-                "Maybe building instantiation for: {}", primary_template_name);
-
-            if (ctx.config.should_include(primary_template_name)) {
-                class_ tinst = build_template_instantiation(
-                    mv, template_instantiation_type);
-
-                class_relationship r;
-                r.destination = tinst.base_template_usr;
-                r.type = relationship_t::kInstantiation;
-                r.label = "";
-                tinst.add_relationship(std::move(r));
-
-                class_relationship rr;
-                rr.destination = tinst.usr;
-                if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
-                    mv.type().kind() == cppast::cpp_type_kind::reference_t)
-                    rr.type = relationship_t::kAssociation;
-                else
-                    rr.type = relationship_t::kComposition;
-                rr.label = mv.name();
-                spdlog::debug(
-                    "Adding field instantiation relationship {} {} {} : {}",
-                    rr.destination, model::class_diagram::to_string(rr.type),
-                    c.usr, rr.label);
-                c.add_relationship(std::move(rr));
-
-                ctx.d.add_class(std::move(tinst));
-            }
-        }
+        process_field_with_template_instantiation(mv, resolve_alias(tr), c);
     }
     else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
-        spdlog::debug(
+        LOG_DBG(
             "Processing field with unexposed type {}", cppast::to_string(tr));
         // TODO
     }
 
-    if (mv.type().kind() != cppast::cpp_type_kind::builtin_t) {
+    if (tr.kind() != cppast::cpp_type_kind::builtin_t &&
+        tr.kind() != cppast::cpp_type_kind::template_parameter_t) {
+        const auto &ttt = resolve_alias(mv.type());
         std::vector<std::pair<std::string, relationship_t>> relationships;
-        find_relationships(mv.type(), relationships);
+        find_relationships(ttt, relationships);
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
@@ -381,7 +432,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.type = relationship_type;
                 r.label = m.name;
 
-                spdlog::debug("Adding field relationship {} {} {} : {}",
+                LOG_DBG("Adding field relationship {} {} {} : {}",
                     r.destination, model::class_diagram::to_string(r.type),
                     c.usr, r.label);
 
@@ -414,14 +465,14 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     m.is_pure_virtual = cppast::is_pure(mf.virtual_info());
     m.is_virtual = cppast::is_virtual(mf.virtual_info());
     m.is_const = cppast::is_const(mf.cv_qualifier());
-    m.is_defaulted = false; // cursor.is_method_defaulted();
+    m.is_defaulted = false;
     m.is_static = false;
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.parameters())
         process_function_parameter(param, m, c);
 
-    spdlog::debug("Adding method: {}", m.name);
+    LOG_DBG("Adding method: {}", m.name);
 
     c.methods.emplace_back(std::move(m));
 }
@@ -435,19 +486,19 @@ void tu_visitor::process_template_method(
     m.type = cppast::to_string(
         static_cast<const cppast::cpp_member_function &>(mf.function())
             .return_type());
-    m.is_pure_virtual = false; // cppast::is_pure(mf.virtual_info());
-    m.is_virtual = false;      // cppast::is_virtual(mf.virtual_info());
+    m.is_pure_virtual = false;
+    m.is_virtual = false;
     m.is_const = cppast::is_const(
         static_cast<const cppast::cpp_member_function &>(mf.function())
             .cv_qualifier());
-    m.is_defaulted = false; // cursor.is_method_defaulted();
-    m.is_static = false;    // cppast::is_static(mf.storage_class());
+    m.is_defaulted = false;
+    m.is_static = false;
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     for (auto &param : mf.function().parameters())
         process_function_parameter(param, m, c);
 
-    spdlog::debug("Adding template method: {}", m.name);
+    LOG_DBG("Adding template method: {}", m.name);
 
     c.methods.emplace_back(std::move(m));
 }
@@ -468,7 +519,7 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
     for (auto &param : mf.parameters())
         process_function_parameter(param, m, c);
 
-    spdlog::debug("Adding static method: {}", m.name);
+    LOG_DBG("Adding static method: {}", m.name);
 
     c.methods.emplace_back(std::move(m));
 }
@@ -545,9 +596,8 @@ void tu_visitor::process_function_parameter(
             r.type = relationship_t::kDependency;
             r.label = "";
 
-            spdlog::debug("Adding field relationship {} {} {} : {}",
-                r.destination, model::class_diagram::to_string(r.type), c.usr,
-                r.label);
+            LOG_DBG("Adding field relationship {} {} {} : {}", r.destination,
+                model::class_diagram::to_string(r.type), c.usr, r.label);
 
             c.add_relationship(std::move(r));
         }
@@ -555,7 +605,6 @@ void tu_visitor::process_function_parameter(
 
     // Also consider the container itself if it is user defined type
     const auto &t = cppast::remove_cv(cx::util::unreferenced(param.type()));
-    spdlog::debug("###### {}", cppast::to_string(t));
     if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
         auto &template_instantiation_type =
             static_cast<const cppast::cpp_template_instantiation_type &>(t);
@@ -569,12 +618,15 @@ void tu_visitor::process_function_parameter(
                     .get(ctx.entity_index)[0]
                     .get());
 
-            spdlog::debug(
+            LOG_DBG(
                 "Maybe building instantiation for: {}", primary_template_name);
 
             if (ctx.config.should_include(primary_template_name)) {
-                class_ tinst = build_template_instantiation(
-                    param, template_instantiation_type);
+                class_ tinst =
+                    build_template_instantiation(template_instantiation_type);
+
+                LOG_DBG("Created template instantiation: {}, {}", tinst.name,
+                    tinst.usr);
 
                 class_relationship r;
                 r.destination = tinst.base_template_usr;
@@ -586,8 +638,7 @@ void tu_visitor::process_function_parameter(
                 rr.destination = tinst.usr;
                 rr.type = relationship_t::kDependency;
                 rr.label = "";
-                spdlog::debug(
-                    "Adding field instantiation relationship {} {} {} : {}",
+                LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
                     rr.destination, model::class_diagram::to_string(rr.type),
                     c.usr, rr.label);
                 c.add_relationship(std::move(rr));
@@ -648,7 +699,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
         if (!ctx.config.should_include(name))
             return;
 
-        spdlog::debug("Type friend declaration {}", name);
+        LOG_DBG("Type friend declaration {}", name);
 
         r.destination = name;
     }
@@ -670,13 +721,13 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
                 return;
             }
 
-            spdlog::debug("Entity friend declaration {} ({})", name,
+            LOG_DBG("Entity friend declaration {} ({})", name,
                 static_cast<const char *>(ft.user_data()));
 
             name = static_cast<const char *>(ft.user_data());
         }
         else {
-            spdlog::debug("Entity friend declaration {} ({},{})", name,
+            LOG_DBG("Entity friend declaration {} ({},{})", name,
                 cppast::is_templated(f.entity().value()),
                 cppast::to_string(f.entity().value().kind()));
 
@@ -689,7 +740,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
         r.destination = name;
     }
     else {
-        spdlog::debug("Friend declaration points neither to type or entity.");
+        LOG_DBG("Friend declaration points neither to type or entity.");
         return;
     }
 
@@ -700,8 +751,8 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     std::vector<std::pair<std::string, relationship_t>> &relationships,
     relationship_t relationship_hint)
 {
-    spdlog::debug("Finding relationships for type {}, {}",
-        cppast::to_string(t_), t_.kind());
+    LOG_DBG("Finding relationships for type {}, {}", cppast::to_string(t_),
+        t_.kind());
 
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
@@ -722,8 +773,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
             static_cast<const cppast::cpp_template_instantiation_type &>(t);
 
         if (!tinst.arguments_exposed()) {
-            spdlog::debug(
-                "Template instantiation {} has no exposed arguments", name);
+            LOG_DBG("Template instantiation {} has no exposed arguments", name);
 
             return;
         }
@@ -776,23 +826,36 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     }
     else if (cppast::remove_cv(t_).kind() ==
         cppast::cpp_type_kind::user_defined_t) {
-        if (ctx.config.should_include(cppast::to_string(t_.canonical())))
+        LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
+            cppast::to_string(t_.canonical()));
+        if (ctx.config.should_include(cppast::to_string(t_.canonical()))) {
             if (relationship_type != relationship_t::kNone)
                 relationships.emplace_back(
                     cppast::to_string(t), relationship_type);
             else
                 relationships.emplace_back(
                     cppast::to_string(t), relationship_t::kComposition);
+        }
+
+        // Check if t_ has an alias in the alias index
+        const auto fn =
+            cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index, false);
+        if (ctx.has_type_alias(fn)) {
+            LOG_DBG("Find relationship in alias of {} | {}", fn,
+                cppast::to_string(ctx.get_type_alias(fn).get()));
+            find_relationships(
+                ctx.get_type_alias(fn).get(), relationships, relationship_type);
+        }
     }
 }
 
-class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
+class_ tu_visitor::build_template_instantiation(/*const cppast::cpp_entity &e,*/
     const cppast::cpp_template_instantiation_type &t)
 {
     auto full_template_name = cx::util::full_name(
         t.primary_template().get(ctx.entity_index)[0].get());
 
-    spdlog::debug("Found template instantiation: {} ({}) ..|> {}, {}",
+    LOG_DBG("Found template instantiation: {} ({}) ..|> {}, {}",
         cppast::to_string(t), cppast::to_string(t.canonical()),
         t.primary_template().name(), full_template_name);
 
@@ -802,15 +865,18 @@ class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
             t.primary_template().get(ctx.entity_index)[0].get())
             .class_();
 
-    tinst.name = primary_template_ref.name();
+    tinst.name = util::split(
+        cppast::to_string(t), "<")[0]; // primary_template_ref.name();
     if (full_template_name.back() == ':')
         tinst.name = full_template_name + tinst.name;
 
-    if (primary_template_ref.user_data())
+    if (primary_template_ref.user_data()) {
         tinst.base_template_usr =
             static_cast<const char *>(primary_template_ref.user_data());
+        LOG_DBG("Primary template ref set to: {}", tinst.base_template_usr);
+    }
     else
-        spdlog::warn(
+        LOG_WARN(
             "No user data for base template {}", primary_template_ref.name());
 
     tinst.is_template_instantiation = true;
@@ -833,7 +899,7 @@ class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
                         .as_string();
         }
 
-        spdlog::debug("Adding template argument '{}'", ct.type);
+        LOG_DBG("Adding template argument '{}'", ct.type);
 
         tinst.templates.emplace_back(std::move(ct));
     }
@@ -841,6 +907,17 @@ class_ tu_visitor::build_template_instantiation(const cppast::cpp_entity &e,
     tinst.usr = tinst.full_name(ctx.config.using_namespace);
 
     return tinst;
+}
+
+const cppast::cpp_type &tu_visitor::resolve_alias(const cppast::cpp_type &t)
+{
+    const auto &tt = cppast::remove_cv(cx::util::unreferenced(t));
+    const auto fn = cx::util::full_name(tt, ctx.entity_index, false);
+    if (ctx.has_type_alias(fn)) {
+        return ctx.get_type_alias_final(tt).get();
+    }
+
+    return t;
 }
 }
 }

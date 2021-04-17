@@ -71,8 +71,11 @@ std::string full_name(const cppast::cpp_type &t,
     if (!inside_class)
         t_ns = ns(t, idx);
 
-    if (t_ns.size() > 0)
-        return t_ns + "::" + cppast::to_string(t);
+    auto t_name = cppast::to_string(t);
+
+    if (t_ns.size() > 0 &&
+        t_name.substr(0, t_name.find("<")).find("::") == std::string::npos)
+        return t_ns + "::" + t_name;
 
     return cppast::to_string(t);
 }
@@ -107,25 +110,55 @@ bool is_inside_class(const cppast::cpp_entity &e)
 
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
 {
-    auto canon = cppast::to_string(t.canonical());
-    auto full_name = canon.substr(0, canon.find("<"));
-    if (canon.find("type-parameter-") == std::string::npos) {
-        // This is an easy case, canonical representation contains full
-        // namespace
-        auto ns_toks = clanguml::util::split(full_name, "::");
-        if (ns_toks.size() > 0)
-            ns_toks.pop_back();
-        return fmt::format(
-            "{}", fmt::join(ns_toks.begin(), ns_toks.end(), "::"));
+    if (t.kind() == cppast::cpp_type_kind::user_defined_t &&
+        (static_cast<const cppast::cpp_user_defined_type &>(t)
+                .entity()
+                .get(idx)
+                .size() > 0)) {
+        // If this is a user defined type - return the namespace of the
+        // entity
+        return ns(static_cast<const cppast::cpp_user_defined_type &>(t)
+                      .entity()
+                      .get(idx)[0]
+                      .get());
+    }
+    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        if (static_cast<const cppast::cpp_template_instantiation_type &>(t)
+                .primary_template()
+                .get(idx)
+                .size() > 0)
+            return ns(
+                static_cast<const cppast::cpp_template_instantiation_type &>(t)
+                    .primary_template()
+                    .get(idx)[0]
+                    .get());
+        else
+            return "";
     }
     else {
-        // This is a bug/feature in libclang, where canonical representation of
-        // a template type with incomplete specialization doesn't have a full
-        // namespace We have to extract it from te primary template
-        const auto &primary_template =
-            static_cast<const cppast::cpp_template_instantiation_type &>(t)
-                .primary_template();
-        return ns(primary_template.get(idx)[0].get());
+        auto canon = cppast::to_string(t.canonical());
+        auto full_name = canon.substr(0, canon.find("<"));
+        if (full_name.empty()) {
+            return "";
+        }
+        else if (canon.find("type-parameter-") == std::string::npos) {
+            // This is an easy case, canonical representation contains full
+            // namespace
+            auto ns_toks = clanguml::util::split(full_name, "::");
+            if (ns_toks.size() > 0)
+                ns_toks.pop_back();
+            return fmt::format(
+                "{}", fmt::join(ns_toks.begin(), ns_toks.end(), "::"));
+        }
+        else {
+            // This is a bug/feature in libclang, where canonical representation
+            // of a template type with incomplete specialization doesn't have a
+            // full namespace. We have to extract it from te primary template
+            const auto &primary_template =
+                static_cast<const cppast::cpp_template_instantiation_type &>(t)
+                    .primary_template();
+            return ns(primary_template.get(idx)[0].get());
+        }
     }
 }
 

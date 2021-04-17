@@ -30,8 +30,10 @@
 #include <cppast/cpp_template_parameter.hpp>
 #include <cppast/cpp_type.hpp>
 #include <cppast/visitor.hpp>
+#include <type_safe/reference.hpp>
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -49,10 +51,78 @@ struct tu_context {
     {
     }
 
+    bool has_type_alias(const std::string &full_name) const
+    {
+        bool res = alias_index.find(full_name) != alias_index.end();
+        LOG_DBG("Alias {} {} found in index", full_name, res ? "" : "not");
+        return res;
+    }
+
+    void add_type_alias(const std::string &full_name,
+        type_safe::object_ref<const cppast::cpp_type> &&ref)
+    {
+        if (!has_type_alias(full_name)) {
+            LOG_DBG("Stored type alias: {} -> {} ", full_name,
+                cppast::to_string(ref.get()));
+            alias_index.emplace(full_name, std::move(ref));
+        }
+    }
+
+    type_safe::object_ref<const cppast::cpp_type> get_type_alias(
+        const std::string &full_name) const
+    {
+        assert(has_type_alias(full_name));
+
+        return alias_index.at(full_name);
+    }
+
+    type_safe::object_ref<const cppast::cpp_type> get_type_alias_final(
+        const cppast::cpp_type &t) const
+    {
+        const auto fn =
+            cx::util::full_name(cppast::remove_cv(t), entity_index, false);
+
+        if (has_type_alias(fn)) {
+            return get_type_alias_final(alias_index.at(fn).get());
+        }
+
+        return type_safe::ref(t);
+    }
+
+    bool has_type_alias_template(const std::string &full_name) const
+    {
+        bool res =
+            alias_template_index.find(full_name) != alias_template_index.end();
+        LOG_DBG(
+            "Alias template {} {} found in index", full_name, res ? "" : "not");
+        return res;
+    }
+
+    void add_type_alias_template(const std::string &full_name,
+        type_safe::object_ref<const cppast::cpp_type> &&ref)
+    {
+        if (!has_type_alias_template(full_name)) {
+            LOG_DBG("Stored type alias template for: {} ", full_name);
+            alias_template_index.emplace(full_name, std::move(ref));
+        }
+    }
+
+    type_safe::object_ref<const cppast::cpp_type> get_type_alias_template(
+        const std::string &full_name) const
+    {
+        assert(has_type_alias_template(full_name));
+
+        return alias_template_index.at(full_name);
+    }
+
     std::vector<std::string> namespace_;
     cppast::cpp_entity_index &entity_index;
     clanguml::model::class_diagram::diagram &d;
     const clanguml::config::class_diagram &config;
+    std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
+        alias_index;
+    std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
+        alias_template_index;
 };
 
 template <typename T> struct element_visitor_context {
@@ -86,6 +156,10 @@ public:
     void process_field(const cppast::cpp_member_variable &mv,
         clanguml::model::class_diagram::class_ &c,
         cppast::cpp_access_specifier_kind as);
+
+    void process_field_with_template_instantiation(
+        const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
+        clanguml::model::class_diagram::class_ &c);
 
     void process_static_field(const cppast::cpp_variable &mv,
         clanguml::model::class_diagram::class_ &c,
@@ -138,8 +212,9 @@ public:
 
 private:
     clanguml::model::class_diagram::class_ build_template_instantiation(
-        const cppast::cpp_entity &e,
         const cppast::cpp_template_instantiation_type &t);
+
+    const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
 
     tu_context ctx;
 };

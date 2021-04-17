@@ -42,17 +42,17 @@ TEST_CASE("t00010", "[test-case][class]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
 
     REQUIRE_THAT(puml, IsField(Public("A<T,std::string> astring")));
     REQUIRE_THAT(puml, IsField(Public("B<int> aintstring")));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T, P>"), _A("A<T, std::string>")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("B<T>"), _A("B<int>")));
 
     REQUIRE_THAT(
-        puml, IsComposition(_A("B<T>"), _A("A<T, std::string>"), "astring"));
+        puml, IsComposition(_A("B<T>"), _A("A<T,std::string>"), "astring"));
     REQUIRE_THAT(puml, IsComposition(_A("C"), _A("B<int>"), "aintstring"));
 
     save_puml(

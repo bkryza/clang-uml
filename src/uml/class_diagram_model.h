@@ -168,8 +168,7 @@ public:
 
     void add_type_alias(type_alias &&ta)
     {
-        spdlog::debug(
-            "Adding class alias: {} -> {}", ta.alias, ta.underlying_type);
+        LOG_DBG("Adding class alias: {} -> {}", ta.alias, ta.underlying_type);
         type_aliases[ta.alias] = std::move(ta);
     }
 
@@ -210,7 +209,7 @@ public:
 
                     return fmt::format("{}", fmt::join(res, " "));
                 });
-            ostr << fmt::format("<{}>", fmt::join(tnames, ", "));
+            ostr << fmt::format("<{}>", fmt::join(tnames, ","));
         }
 
         return ostr.str();
@@ -249,29 +248,28 @@ struct diagram {
 
     void add_type_alias(type_alias &&ta)
     {
-        spdlog::debug(
-            "Adding global alias: {} -> {}", ta.alias, ta.underlying_type);
+        LOG_DBG("Adding global alias: {} -> {}", ta.alias, ta.underlying_type);
 
         type_aliases[ta.alias] = std::move(ta);
     }
 
     void add_class(class_ &&c)
     {
-        spdlog::debug("Adding class: {}, {}", c.name, c.usr);
+        LOG_DBG("Adding class: {}, {}", c.name, c.usr);
         if (!has_class(c.usr))
             classes.emplace_back(std::move(c));
         else
-            spdlog::debug("Class {} already in the model", c.name);
+            LOG_DBG("Class {} already in the model", c.name);
     }
 
     void add_enum(enum_ &&e)
     {
-        spdlog::debug("Adding enum: {}", e.name);
+        LOG_DBG("Adding enum: {}", e.name);
         auto it = std::find(enums.begin(), enums.end(), e);
         if (it == enums.end())
             enums.emplace_back(std::move(e));
         else
-            spdlog::debug("Enum {} already in the model", e.name);
+            LOG_DBG("Enum {} already in the model", e.name);
     }
 
     std::string to_alias(const std::vector<std::string> &using_namespaces,

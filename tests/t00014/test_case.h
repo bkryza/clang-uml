@@ -40,26 +40,23 @@ TEST_CASE("t00014", "[test-case][class]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T, P"));
-    /*
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("R")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("C")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("D")));
-    REQUIRE_THAT(puml, IsDependency(_A("D"), _A("R")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<T>")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<int>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<int>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
-    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("E<std::string>"), "estring"));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
-    */
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
+    REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
+
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
+    // TODO
+    // REQUIRE_THAT(puml, IsInstantiation(_A("A<T,std::string>"),
+    // _A("A<bool,std::string>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
+    REQUIRE_THAT(
+        puml, IsComposition(_A("R"), _A("A<bool,std::string>"), "boolstring"));
+    REQUIRE_THAT(
+        puml, IsComposition(_A("R"), _A("AString<float>"), "floatstring"));
+    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("B"), "bs"));
+    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("B"), "bs2"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
