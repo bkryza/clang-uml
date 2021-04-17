@@ -39,7 +39,7 @@ using AStringString = AString<std::string>;
 using BStringString = AStringString;
 
 class R {
-    //clang-uml: tinst A<T, std::string>
+    // clang-uml: tinst A<T, std::string>
     A<bool, std::string> boolstring;
     AString<float> floatstring;
     AIntString intstring;
