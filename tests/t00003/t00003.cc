@@ -1,4 +1,5 @@
 #include <functional>
+#include <string>
 
 namespace clanguml {
 namespace t00003 {

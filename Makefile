@@ -18,9 +18,6 @@
 # This Makefile is just a handy wrapper around cmake
 #
 
-# Specify preferred LLVM version for CMake
-LLVM_VERSION ?= 11
-
 .DEFAULT_GOAL := debug
 
 .PHONY: clean
@@ -30,14 +27,12 @@ clean:
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DLIBCLANG_LLVM_CONFIG_EXECUTABLE=/usr/bin/llvm-config-${LLVM_VERSION}
+		-DCMAKE_BUILD_TYPE=Debug
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DLIBCLANG_LLVM_CONFIG_EXECUTABLE=/usr/bin/llvm-config-${LLVM_VERSION}
+		-DCMAKE_BUILD_TYPE=Release
 
 debug: debug/CMakeLists.txt
 	make -C debug -j
