@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
@@ -23,6 +25,7 @@
 #include "uml/class_diagram_model.h"
 #include "uml/class_diagram_visitor.h"
 #include "uml/sequence_diagram_visitor.h"
+#include "util/util.h"
 
 #include <cli11/CLI11.hpp>
 #include <cppast/libclang_parser.hpp>
@@ -45,8 +48,6 @@ using cx::compilation_database;
 
 int main(int argc, const char *argv[])
 {
-    spdlog::set_pattern("[%l] %v");
-
     CLI::App app{"Clang-based PlantUML generator from C++ sources"};
 
     std::string config_path{".clanguml"};
@@ -61,14 +62,16 @@ int main(int argc, const char *argv[])
 
     CLI11_PARSE(app, argc, argv);
 
-    if (verbose)
-        spdlog::set_level(spdlog::level::debug);
+    if (verbose) {
+        spdlog::default_logger_raw()->set_level(spdlog::level::debug);
+        spdlog::default_logger_raw()->set_pattern("[%l] %v");
+    }
 
-    spdlog::info("Loading clang-uml config from {}", config_path);
+    LOG_INFO("Loading clang-uml config from {}", config_path);
 
     auto config = clanguml::config::load(config_path);
 
-    spdlog::info("Loading compilation database from {} directory",
+    LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir);
 
     auto db =
