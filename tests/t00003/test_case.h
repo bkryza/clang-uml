@@ -45,23 +45,23 @@ TEST_CASE("t00003", "[test-case][class]")
 
     REQUIRE_THAT(puml, !IsDependency(_A("A"), _A("A")));
 
-    REQUIRE_THAT(puml, IsMethod(Default(Public("A"))));
-    REQUIRE_THAT(puml, IsMethod(Default(Public("~A"))));
+    REQUIRE_THAT(puml, (IsMethod<Public, Default>("A")));
+    REQUIRE_THAT(puml, (IsMethod<Public, Default>("~A")));
 
-    REQUIRE_THAT(puml, IsMethod(Public("basic_method")));
-    REQUIRE_THAT(puml, IsMethod(Static(Public("int static_method"))));
-    REQUIRE_THAT(puml, IsMethod(Const(Public("const_method"))));
-    REQUIRE_THAT(puml, IsMethod(Protected("protected_method")));
-    REQUIRE_THAT(puml, IsMethod(Private("private_method")));
-    REQUIRE_THAT(puml, IsField(Public("int public_member")));
-    REQUIRE_THAT(puml, IsField(Protected("int protected_member")));
-    REQUIRE_THAT(puml, IsField(Private("int private_member")));
+    REQUIRE_THAT(puml, (IsMethod<Public>("basic_method")));
+    REQUIRE_THAT(puml, (IsMethod<Public, Static>("static_method", "int")));
+    REQUIRE_THAT(puml, (IsMethod<Public, Const>("const_method")));
+    REQUIRE_THAT(puml, (IsMethod<Protected>("protected_method")));
+    REQUIRE_THAT(puml, (IsMethod<Private>("private_method")));
+    REQUIRE_THAT(puml, (IsField<Public>("public_member", "int")));
+    REQUIRE_THAT(puml, (IsField<Protected>("protected_member", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("private_member", "int")));
     REQUIRE_THAT(
-        puml, IsField(Static(Public("unsigned long const auto_member"))));
+        puml, (IsField<Public, Static>("auto_member", "unsigned long const")));
 
-    REQUIRE_THAT(puml, IsField(Private("int a")));
-    REQUIRE_THAT(puml, IsField(Private("int b")));
-    REQUIRE_THAT(puml, IsField(Private("int c")));
+    REQUIRE_THAT(puml, (IsField<Private>("a", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("b", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("c", "int")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

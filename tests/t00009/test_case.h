@@ -45,10 +45,11 @@ TEST_CASE("t00009", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
     REQUIRE_THAT(puml, IsClass(_A("B")));
 
-    REQUIRE_THAT(puml, IsField(Public("T value")));
-    REQUIRE_THAT(puml, IsField(Public("A<int> aint")));
-    REQUIRE_THAT(puml, IsField(Public("A<std::string>* astring")));
-    REQUIRE_THAT(puml, IsField(Public("A<std::vector<std::string>>& avector")));
+    REQUIRE_THAT(puml, (IsField<Public>("value", "T")));
+    REQUIRE_THAT(puml, (IsField<Public>("aint", "A<int>")));
+    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<std::string>*")));
+    REQUIRE_THAT(
+        puml, (IsField<Public>("avector", "A<std::vector<std::string>>&")));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<int>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<std::string>")));

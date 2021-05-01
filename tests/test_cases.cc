@@ -100,29 +100,7 @@ void save_puml(const std::string &path, const std::string &puml)
     ofs.close();
 }
 
-using clanguml::test::matchers::Abstract;
-using clanguml::test::matchers::AliasMatcher;
-using clanguml::test::matchers::Const;
-using clanguml::test::matchers::Default;
-using clanguml::test::matchers::HasCall;
-using clanguml::test::matchers::HasCallWithResponse;
-using clanguml::test::matchers::IsAbstractClass;
-using clanguml::test::matchers::IsAggregation;
-using clanguml::test::matchers::IsAssociation;
-using clanguml::test::matchers::IsBaseClass;
-using clanguml::test::matchers::IsClass;
-using clanguml::test::matchers::IsClassTemplate;
-using clanguml::test::matchers::IsComposition;
-using clanguml::test::matchers::IsDependency;
-using clanguml::test::matchers::IsEnum;
-using clanguml::test::matchers::IsField;
-using clanguml::test::matchers::IsFriend;
-using clanguml::test::matchers::IsInnerClass;
-using clanguml::test::matchers::IsInstantiation;
-using clanguml::test::matchers::Private;
-using clanguml::test::matchers::Protected;
-using clanguml::test::matchers::Public;
-using clanguml::test::matchers::Static;
+using namespace clanguml::test::matchers;
 
 //
 // Class diagram tests

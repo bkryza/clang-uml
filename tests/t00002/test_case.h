@@ -50,8 +50,8 @@ TEST_CASE("t00002", "[test-case][class]")
     REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("C")));
     REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("D")));
     REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("D")));
-    REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_a"))));
-    REQUIRE_THAT(puml, IsMethod(Abstract(Public("foo_c"))));
+    REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_a")));
+    REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_c")));
 
     REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "as"));
 

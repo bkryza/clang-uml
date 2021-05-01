@@ -153,12 +153,9 @@ public:
             if (m.is_static)
                 ostr << "{static} ";
 
-            std::string type{};
-            if (m.type != "void")
-                type = m.type + " ";
+            std::string type{m.type};
 
-            ostr << to_string(m.scope)
-                 << ns_relative(m_config.using_namespace, type) << m.name;
+            ostr << to_string(m.scope) << m.name;
 
             ostr << "(";
             if (true) { // TODO: add option to disable parameter generation
@@ -182,6 +179,8 @@ public:
             if (m.is_defaulted)
                 ostr << " = default";
 
+            ostr << " : " << ns_relative(m_config.using_namespace, type);
+
             ostr << std::endl;
         }
 
@@ -192,9 +191,8 @@ public:
             if (m.is_static)
                 ostr << "{static} ";
 
-            ostr << to_string(m.scope)
-                 << ns_relative(m_config.using_namespace, m.type) << " "
-                 << m.name << std::endl;
+            ostr << to_string(m.scope) << m.name << " : "
+                 << ns_relative(m_config.using_namespace, m.type) << std::endl;
         }
 
         ostr << "}" << std::endl;
@@ -355,31 +353,6 @@ clanguml::model::class_diagram::diagram generate(
     cppast::parse_files(parser, translation_units, db);
     for (auto &file : parser.files())
         ctx(file);
-
-    /*
-    for (const auto &tu_path : translation_units) {
-        spdlog::debug("Processing translation unit: {}",
-            std::filesystem::canonical(tu_path).c_str());
-
-        auto cursor = clang_getTranslationUnitCursor(tu);
-
-        if (clang_Cursor_isNull(cursor)) {
-            spdlog::debug("CURSOR IS NULL");
-        }
-
-        spdlog::debug("Cursor kind: {}",
-            clang_getCString(clang_getCursorKindSpelling(cursor.kind)));
-        spdlog::debug("Cursor name: {}",
-            clang_getCString(clang_getCursorDisplayName(cursor)));
-
-        clanguml::visitor::class_diagram::tu_context ctx(d, diagram);
-        auto res = clang_visitChildren(cursor,
-            clanguml::visitor::class_diagram::translation_unit_visitor, &ctx);
-        spdlog::debug("Processing result: {}", res);
-
-        clang_suspendTranslationUnit(tu);
-    }
-    */
 
     return d;
 }

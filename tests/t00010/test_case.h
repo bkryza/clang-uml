@@ -45,8 +45,8 @@ TEST_CASE("t00010", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
 
-    REQUIRE_THAT(puml, IsField(Public("A<T,std::string> astring")));
-    REQUIRE_THAT(puml, IsField(Public("B<int> aintstring")));
+    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<T,std::string>")));
+    REQUIRE_THAT(puml, (IsField<Public>("aintstring", "B<int>")));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("B<T>"), _A("B<int>")));

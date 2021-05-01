@@ -74,81 +74,30 @@ using Catch::CaseSensitive;
 using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
 
+template <typename T, typename... Ts> constexpr bool has_type() noexcept
+{
+    return (std::is_same_v<T, Ts> || ... || false);
+}
+
 struct Public {
-    Public(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return "+" + m_method; }
-
-    std::string m_method;
 };
 
 struct Protected {
-    Protected(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return "#" + m_method; }
-
-    std::string m_method;
 };
 
 struct Private {
-    Private(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return "-" + m_method; }
-
-    std::string m_method;
 };
 
 struct Abstract {
-    Abstract(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return "{abstract} " + m_method; }
-
-    std::string m_method;
 };
 
 struct Static {
-    Static(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return "{static} " + m_method; }
-
-    std::string m_method;
 };
 
 struct Const {
-    Const(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return m_method; }
-
-    std::string m_method;
 };
 
 struct Default {
-    Default(std::string const &method)
-        : m_method{method}
-    {
-    }
-
-    operator std::string() const { return m_method; }
-
-    std::string m_method;
 };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
@@ -313,16 +262,60 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
 }
 
+template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
+    std::string const &type = "void",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString(name + "()", caseSensitivity));
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += "{abstract} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    pattern += "()";
+
+    if constexpr (has_type<Const, Ts...>())
+        pattern += " const";
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += " = 0";
+
+    pattern += " : " + type;
+
+    return ContainsMatcher(CasedString(pattern, caseSensitivity));
 }
 
+template <typename... Ts>
 ContainsMatcher IsField(std::string const &name,
+    std::string const &type = "void",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString(name, caseSensitivity));
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    return ContainsMatcher(
+        CasedString(pattern + " : " + type, caseSensitivity));
 }
 }
 }
