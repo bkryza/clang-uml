@@ -13,6 +13,7 @@
  * [t00012](./test_cases/t00012.md) - Advanced template instantiations
  * [t00013](./test_cases/t00013.md) - Template instantiation relationships
  * [t00014](./test_cases/t00014.md) - Alias template instantiation
+ * [t00015](./test_cases/t00015.md) - Namespace fun
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
