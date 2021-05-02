@@ -216,6 +216,10 @@ public:
                 r.destination.find("@") != std::string::npos) {
                 destination = m_model.usr_to_name(
                     m_config.using_namespace, r.destination);
+
+                // If something went wrong and we have an empty destination
+                // generate the relationship but comment it out for
+                // debugging
                 if (destination.empty()) {
                     ostr << "' ";
                     destination = r.destination;

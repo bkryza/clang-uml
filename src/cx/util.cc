@@ -24,6 +24,8 @@
 #include <cppast/cpp_template.hpp>
 #include <spdlog/spdlog.h>
 
+#include <list>
+
 namespace clanguml {
 namespace cx {
 namespace util {
@@ -35,7 +37,8 @@ std::string to_string(CXString &&cxs)
     return r;
 }
 
-std::string full_name(const cppast::cpp_entity &e)
+std::string full_name(
+    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e)
 {
     if (e.name().empty())
         return "";
@@ -43,25 +46,16 @@ std::string full_name(const cppast::cpp_entity &e)
         // parameters don't have a full name
         return e.name();
 
-    std::string scopes;
+    std::vector<std::string> fn;
 
-    for (auto cur = e.parent(); cur; cur = cur.value().parent())
-        // prepend each scope, if there is any
-        if (cur.value().kind() == cppast::cpp_entity_kind::namespace_t)
-            type_safe::with(cur.value().scope_name(),
-                [&](const cppast::cpp_scope_name &cur_scope) {
-                    scopes = cur_scope.name() + "::" + scopes;
-                });
+    for (const auto &ns : current_ns) {
+        if (!ns.empty())
+            fn.push_back(ns);
+    }
 
-    if (e.kind() == cppast::cpp_entity_kind::class_t) {
-        auto &c = static_cast<const cppast::cpp_class &>(e);
-        return scopes /*+ c.semantic_scope()*/ + c.name();
-    }
-    else if (e.kind() == cppast::cpp_entity_kind::class_template_t) {
-        return scopes;
-    }
-    else
-        return scopes + e.name();
+    fn.push_back(e.name());
+
+    return fmt::format("{}", fmt::join(fn, "::"));
 }
 
 std::string full_name(const cppast::cpp_type &t,
@@ -87,7 +81,8 @@ std::string ns(const cppast::cpp_entity &e)
     auto it = e.parent();
     while (it) {
         if (it.value().kind() == cppast::cpp_entity_kind::namespace_t) {
-            res.push_back(it.value().name());
+            if (!it.value().name().empty())
+                res.push_back(it.value().name());
         }
         it = it.value().parent();
     }
@@ -162,14 +157,40 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
     }
 }
 
-std::string fully_prefixed(const cppast::cpp_entity &e)
+std::string fully_prefixed(
+    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e)
 {
+    if (e.name().find("::") != std::string::npos) {
+        // the name already contains namespace, but it could be not
+        // absolute, i.e. relative to some supernamespace of current
+        // namespace context
+        std::list<std::string> res;
+
+        for (const auto &n : clanguml::util::split(e.name(), "::"))
+            res.push_back(n);
+
+        std::list<std::string> prefix_ns;
+        for (const auto &n : current_ns) {
+            if (!n.empty() && n != res.front())
+                prefix_ns.push_back(n);
+            else
+                break;
+        }
+
+        prefix_ns.reverse();
+        for (const auto &n : prefix_ns)
+            res.push_front(n);
+
+        return fmt::format("{}", fmt::join(res, "::"));
+    }
+
     std::vector<std::string> res{e.name()};
 
     auto it = e.parent();
     while (it) {
         if (it.value().kind() == cppast::cpp_entity_kind::namespace_t) {
-            res.push_back(it.value().name());
+            if (!it.value().name().empty())
+                res.push_back(it.value().name());
         }
         it = it.value().parent();
     }

@@ -73,8 +73,22 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 {
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
-            if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+            if (e.kind() == cppast::cpp_entity_kind::namespace_t) {
+                if (info.event ==
+                    cppast::visitor_info::container_entity_enter) {
+                    LOG_DBG("========== Visiting '{}' - {}", e.name(),
+                        cppast::to_string(e.kind()));
+                    ctx.namespace_.push_back(e.name());
+                }
+                else {
+                    LOG_DBG("========== Leaving '{}' - {}", e.name(),
+                        cppast::to_string(e.kind()));
+                    ctx.namespace_.pop_back();
+                }
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::class_t) {
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
                     cppast::to_string(e.kind()));
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
@@ -87,35 +101,40 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                         return;
                     }
                 }
-                if (ctx.config.should_include(cx::util::fully_prefixed(cls)))
+                if (ctx.config.should_include(
+                        cx::util::fully_prefixed(ctx.namespace_, cls)))
                     process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
-                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
                     cppast::to_string(e.kind()));
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
-                if (ctx.config.should_include(cx::util::fully_prefixed(enm)))
+                if (ctx.config.should_include(
+                        cx::util::fully_prefixed(ctx.namespace_, enm)))
                     process_enum_declaration(enm);
             }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
-                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
                     cppast::to_string(e.kind()));
 
                 auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
                 type_alias t;
-                t.alias = cx::util::full_name(ta);
+                t.alias = cx::util::full_name(ctx.namespace_, ta);
                 t.underlying_type = cx::util::full_name(ta.underlying_type(),
                     ctx.entity_index, cx::util::is_inside_class(e));
 
-                ctx.add_type_alias(cx::util::full_name(ta),
+                ctx.add_type_alias(cx::util::full_name(ctx.namespace_, ta),
                     type_safe::ref(ta.underlying_type()));
 
                 ctx.d.add_type_alias(std::move(t));
             }
             else if (e.kind() == cppast::cpp_entity_kind::alias_template_t) {
-                LOG_DBG("========== Visiting '{}' - {}", cx::util::full_name(e),
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
                     cppast::to_string(e.kind()));
 
                 auto &at = static_cast<const cppast::cpp_alias_template &>(e);
@@ -141,7 +160,7 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
 {
     enum_ e;
-    e.name = cx::util::full_name(enm);
+    e.name = cx::util::full_name(ctx.namespace_, enm);
 
     for (const auto &ev : enm) {
         if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
@@ -155,7 +174,8 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
         if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
             class_relationship containment;
             containment.type = relationship_t::kContainment;
-            containment.destination = cx::util::full_name(cur.value());
+            containment.destination =
+                cx::util::full_name(ctx.namespace_, cur.value());
             e.relationships.emplace_back(std::move(containment));
 
             LOG_DBG("Added relationship {} +-- {}", e.name,
@@ -171,7 +191,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
 {
     class_ c;
     c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
-    c.name = cx::util::full_name(cls);
+    c.name = cx::util::full_name(ctx.namespace_, cls);
 
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
@@ -241,7 +261,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
     // Process class bases
     for (auto &base : cls.bases()) {
         class_parent cp;
-        cp.name = clanguml::cx::util::fully_prefixed(base);
+        cp.name = clanguml::cx::util::fully_prefixed(ctx.namespace_, base);
         cp.is_virtual = base.is_virtual();
 
         switch (base.access_specifier()) {
@@ -299,7 +319,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
             class_relationship containment;
             containment.type = relationship_t::kContainment;
-            containment.destination = cx::util::full_name(cur.value());
+            containment.destination =
+                cx::util::full_name(ctx.namespace_, cur.value());
             c.add_relationship(std::move(containment));
 
             LOG_DBG("Added relationship {} +-- {}",
@@ -335,10 +356,10 @@ void tu_visitor::process_field_with_template_instantiation(
             .size()) {
         // Here we need the name of the primary template with full namespace
         // prefix to apply config inclusion filters
-        auto primary_template_name =
-            cx::util::full_name(template_instantiation_type.primary_template()
-                                    .get(ctx.entity_index)[0]
-                                    .get());
+        auto primary_template_name = cx::util::full_name(ctx.namespace_,
+            template_instantiation_type.primary_template()
+                .get(ctx.entity_index)[0]
+                .get());
 
         LOG_DBG("Maybe building instantiation for: {}{}", primary_template_name,
             cppast::to_string(tr));
@@ -564,7 +585,27 @@ void tu_visitor::process_function_parameter(
 {
     method_parameter mp;
     mp.name = param.name();
-    mp.type = cppast::to_string(param.type());
+    const auto &param_type =
+        cppast::remove_cv(cx::util::unreferenced(param.type()));
+    if (param_type.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        // Template instantiation parameters are not fully prefixed
+        // so we have to deduce the correct namespace prefix of the
+        // template which is being instantiated
+        mp.type = cppast::to_string(param.type());
+
+        auto &template_instantiation_type =
+            static_cast<const cppast::cpp_template_instantiation_type &>(
+                param_type);
+        auto &primary_template_entity =
+            template_instantiation_type.primary_template();
+
+        auto trawname = cppast::to_string(template_instantiation_type);
+        auto pte = cx::util::fully_prefixed(ctx.namespace_,
+            primary_template_entity.get(ctx.entity_index)[0].get());
+    }
+    else {
+        mp.type = cppast::to_string(param.type());
+    }
 
     auto dv = param.default_value();
     if (dv)
@@ -613,7 +654,7 @@ void tu_visitor::process_function_parameter(
                 .size()) {
             // Here we need the name of the primary template with full
             // namespace prefix to apply config inclusion filters
-            auto primary_template_name = cx::util::full_name(
+            auto primary_template_name = cx::util::full_name(ctx.namespace_,
                 template_instantiation_type.primary_template()
                     .get(ctx.entity_index)[0]
                     .get());
@@ -638,7 +679,7 @@ void tu_visitor::process_function_parameter(
                 rr.destination = tinst.usr;
                 rr.type = relationship_t::kDependency;
                 rr.label = "";
-                LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
+                LOG_DBG("Adding field dependency relationship {} {} {} : {}",
                     rr.destination, model::class_diagram::to_string(rr.type),
                     c.usr, rr.label);
                 c.add_relationship(std::move(rr));
@@ -731,7 +772,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
                 cppast::is_templated(f.entity().value()),
                 cppast::to_string(f.entity().value().kind()));
 
-            name = cx::util::full_name(f.entity().value());
+            name = cx::util::full_name(ctx.namespace_, f.entity().value());
         }
 
         if (!ctx.config.should_include(name))
@@ -849,24 +890,23 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     }
 }
 
-class_ tu_visitor::build_template_instantiation(/*const cppast::cpp_entity &e,*/
+class_ tu_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t)
 {
-    auto full_template_name = cx::util::full_name(
-        t.primary_template().get(ctx.entity_index)[0].get());
+    const auto &primary_template_ref =
+        static_cast<const cppast::cpp_class_template &>(
+            t.primary_template().get(ctx.entity_index)[0].get())
+            .class_();
+
+    auto full_template_name =
+        cx::util::full_name(ctx.namespace_, primary_template_ref);
 
     LOG_DBG("Found template instantiation: {} ({}) ..|> {}, {}",
         cppast::to_string(t), cppast::to_string(t.canonical()),
         t.primary_template().name(), full_template_name);
 
     class_ tinst;
-    const auto &primary_template_ref =
-        static_cast<const cppast::cpp_class_template &>(
-            t.primary_template().get(ctx.entity_index)[0].get())
-            .class_();
 
-    tinst.name = util::split(
-        cppast::to_string(t), "<")[0]; // primary_template_ref.name();
     if (full_template_name.back() == ':')
         tinst.name = full_template_name + tinst.name;
 
@@ -878,6 +918,19 @@ class_ tu_visitor::build_template_instantiation(/*const cppast::cpp_entity &e,*/
     else
         LOG_WARN(
             "No user data for base template {}", primary_template_ref.name());
+
+    // Extract namespace from base template name
+    auto ns_toks = clanguml::util::split(
+        tinst.base_template_usr.substr(0, tinst.base_template_usr.find('<')),
+        "::");
+
+    std::string ns;
+    if (ns_toks.size() > 1) {
+        ns = fmt::format(
+            "{}::", fmt::join(ns_toks.begin(), ns_toks.end() - 1, "::"));
+    }
+
+    tinst.name = ns + util::split(cppast::to_string(t), "<")[0];
 
     tinst.is_template_instantiation = true;
 
@@ -905,6 +958,10 @@ class_ tu_visitor::build_template_instantiation(/*const cppast::cpp_entity &e,*/
     }
 
     tinst.usr = tinst.full_name(ctx.config.using_namespace);
+    if (tinst.usr.substr(0, tinst.usr.find('<')).find("::") ==
+        std::string::npos) {
+        tinst.usr = ns + tinst.usr;
+    }
 
     return tinst;
 }

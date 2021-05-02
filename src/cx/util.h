@@ -40,12 +40,14 @@ namespace util {
  */
 std::string to_string(CXString &&cxs);
 
-std::string full_name(const cppast::cpp_entity &e);
+std::string full_name(
+    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e);
 
 std::string full_name(const cppast::cpp_type &t,
     const cppast::cpp_entity_index &idx, bool inside_class);
 
-std::string fully_prefixed(const cppast::cpp_entity &e);
+std::string fully_prefixed(
+    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e);
 
 const cppast::cpp_type &unreferenced(const cppast::cpp_type &t);
 
