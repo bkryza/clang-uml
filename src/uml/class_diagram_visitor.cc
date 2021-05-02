@@ -296,30 +296,38 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
     if (cppast::is_templated(cls)) {
         LOG_DBG("Processing class template parameters...");
         auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
-        for (const auto &tp : scope.template_parameters()) {
-            if (tp.kind() ==
-                cppast::cpp_entity_kind::template_type_parameter_t) {
-                LOG_DBG("Processing template type parameter {}", tp.name());
-                process_template_type_parameter(
-                    static_cast<const cppast::cpp_template_type_parameter &>(
-                        tp),
-                    c);
-            }
-            else if (tp.kind() ==
-                cppast::cpp_entity_kind::non_type_template_parameter_t) {
-                LOG_DBG("Processing template nontype parameter {}", tp.name());
-                process_template_nontype_parameter(
-                    static_cast<
-                        const cppast::cpp_non_type_template_parameter &>(tp),
-                    c);
-            }
-            else if (tp.kind() ==
-                cppast::cpp_entity_kind::template_template_parameter_t) {
-                LOG_DBG("Processing template template parameter {}", tp.name());
-                process_template_template_parameter(
-                    static_cast<
-                        const cppast::cpp_template_template_parameter &>(tp),
-                    c);
+        // Even if this is a template the scope.is_templated() returns
+        // false when the template parameter list is empty
+        if (scope.is_templated()) {
+            for (const auto &tp : scope.template_parameters()) {
+                if (tp.kind() ==
+                    cppast::cpp_entity_kind::template_type_parameter_t) {
+                    LOG_DBG("Processing template type parameter {}", tp.name());
+                    process_template_type_parameter(
+                        static_cast<
+                            const cppast::cpp_template_type_parameter &>(tp),
+                        c);
+                }
+                else if (tp.kind() ==
+                    cppast::cpp_entity_kind::non_type_template_parameter_t) {
+                    LOG_DBG(
+                        "Processing template nontype parameter {}", tp.name());
+                    process_template_nontype_parameter(
+                        static_cast<
+                            const cppast::cpp_non_type_template_parameter &>(
+                            tp),
+                        c);
+                }
+                else if (tp.kind() ==
+                    cppast::cpp_entity_kind::template_template_parameter_t) {
+                    LOG_DBG(
+                        "Processing template template parameter {}", tp.name());
+                    process_template_template_parameter(
+                        static_cast<
+                            const cppast::cpp_template_template_parameter &>(
+                            tp),
+                        c);
+                }
             }
         }
     }
@@ -756,7 +764,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
         r.destination = name;
     }
     else if (f.entity()) {
-        std::string name{};
+        std::string name {};
 
         if (f.entity().value().kind() ==
             cppast::cpp_entity_kind::class_template_t) {

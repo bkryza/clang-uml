@@ -42,6 +42,9 @@ test_cases:
     - name: t00015
       title: Namespace fun
       description:
+    - name: t00016
+      title: Unnamed enums and empty templates
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram
