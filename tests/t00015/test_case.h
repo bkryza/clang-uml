@@ -41,8 +41,10 @@ TEST_CASE("t00015", "[test-case][class]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::Anon")));
+    REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
+    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2_v0_9_0::A")));
+    REQUIRE_THAT(puml, IsClass(_A("ns1::Anon")));
+    REQUIRE_THAT(puml, IsClass(_A("ns3::ns1::ns2::Anon")));
     REQUIRE_THAT(puml, IsClass(_A("ns3::B")));
 
     save_puml(

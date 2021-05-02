@@ -25,6 +25,7 @@
 #include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
+#include <cppast/cpp_namespace.hpp>
 #include <cppast/cpp_template.hpp>
 #include <cppast/cpp_type_alias.hpp>
 #include <cppast/cpp_variable.hpp>
@@ -78,12 +79,22 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     cppast::visitor_info::container_entity_enter) {
                     LOG_DBG("========== Visiting '{}' - {}", e.name(),
                         cppast::to_string(e.kind()));
-                    ctx.namespace_.push_back(e.name());
+
+                    const auto &ns_declaration =
+                        static_cast<const cppast::cpp_namespace &>(e);
+                    if (!ns_declaration.is_anonymous() &&
+                        !ns_declaration.is_inline())
+                        ctx.namespace_.push_back(e.name());
                 }
                 else {
                     LOG_DBG("========== Leaving '{}' - {}", e.name(),
                         cppast::to_string(e.kind()));
-                    ctx.namespace_.pop_back();
+
+                    const auto &ns_declaration =
+                        static_cast<const cppast::cpp_namespace &>(e);
+                    if (!ns_declaration.is_anonymous() &&
+                        !ns_declaration.is_inline())
+                        ctx.namespace_.pop_back();
                 }
             }
             else if (e.kind() == cppast::cpp_entity_kind::class_t) {

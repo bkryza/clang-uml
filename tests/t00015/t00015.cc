@@ -1,9 +1,15 @@
 namespace clanguml {
 namespace t00015 {
 
-namespace ns1::ns2 {
+namespace ns1 {
+inline namespace ns2_v1_0_0 {
 class A {
 };
+}
+
+namespace ns2_v0_9_0 {
+class [[deprecated]] A {};
+}
 
 namespace {
 class Anon final : public A {
@@ -14,7 +20,7 @@ class Anon final : public A {
 namespace ns3 {
 
 namespace ns1::ns2 {
-class Anon : public t00015::ns1::ns2::A {
+class Anon : public t00015::ns1::A {
 };
 }
 
