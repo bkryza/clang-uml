@@ -97,6 +97,18 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                         ctx.namespace_.pop_back();
                 }
             }
+            else if (e.kind() ==
+                cppast::cpp_entity_kind::class_template_specialization_t) {
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
+                    cppast::to_string(e.kind()));
+
+                auto &tspec = static_cast<
+                    const cppast::cpp_class_template_specialization &>(e);
+
+                process_class_declaration(
+                    tspec.class_(), type_safe::ref(tspec));
+            }
             else if (e.kind() == cppast::cpp_entity_kind::class_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
                     cx::util::full_name(ctx.namespace_, e),
@@ -112,6 +124,7 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                         return;
                     }
                 }
+
                 if (ctx.config.should_include(
                         cx::util::fully_prefixed(ctx.namespace_, cls)))
                     process_class_declaration(cls);
@@ -170,6 +183,12 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 
 void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
 {
+    if (enm.name().empty()) {
+        // Anonymous enum values should be rendered as class fields
+        // with type enum
+        return;
+    }
+
     enum_ e;
     e.name = cx::util::full_name(ctx.namespace_, enm);
 
@@ -179,7 +198,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
         }
     }
 
-    // Find if class is contained in another class
+    // Find if enum is contained in a class
     for (auto cur = enm.parent(); cur; cur = cur.value().parent()) {
         // find nearest parent class, if any
         if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
@@ -198,7 +217,8 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     ctx.d.add_enum(std::move(e));
 }
 
-void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
+void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
+    type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
     class_ c;
     c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
@@ -245,6 +265,14 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
             auto &mc = static_cast<const cppast::cpp_destructor &>(child);
             process_destructor(mc, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::enum_t) {
+            auto &en = static_cast<const cppast::cpp_enum &>(child);
+            if (en.name().empty()) {
+                // Here we only want to handle anonymous enums, regular nested
+                // enums are handled in the file-level visitor
+                process_anonymous_enum(en, c, last_access_specifier);
+            }
         }
         else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
             auto &fr = static_cast<const cppast::cpp_friend &>(child);
@@ -296,30 +324,131 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
     if (cppast::is_templated(cls)) {
         LOG_DBG("Processing class template parameters...");
         auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
-        for (const auto &tp : scope.template_parameters()) {
-            if (tp.kind() ==
-                cppast::cpp_entity_kind::template_type_parameter_t) {
-                LOG_DBG("Processing template type parameter {}", tp.name());
-                process_template_type_parameter(
-                    static_cast<const cppast::cpp_template_type_parameter &>(
-                        tp),
-                    c);
+        // Even if this is a template the scope.is_templated() returns
+        // false when the template parameter list is empty
+        if (scope.is_templated()) {
+            for (const auto &tp : scope.template_parameters()) {
+                if (tp.kind() ==
+                    cppast::cpp_entity_kind::template_type_parameter_t) {
+                    LOG_DBG("Processing template type parameter {}", tp.name());
+                    process_template_type_parameter(
+                        static_cast<
+                            const cppast::cpp_template_type_parameter &>(tp),
+                        c);
+                }
+                else if (tp.kind() ==
+                    cppast::cpp_entity_kind::non_type_template_parameter_t) {
+                    LOG_DBG(
+                        "Processing template nontype parameter {}", tp.name());
+                    process_template_nontype_parameter(
+                        static_cast<
+                            const cppast::cpp_non_type_template_parameter &>(
+                            tp),
+                        c);
+                }
+                else if (tp.kind() ==
+                    cppast::cpp_entity_kind::template_template_parameter_t) {
+                    LOG_DBG(
+                        "Processing template template parameter {}", tp.name());
+                    process_template_template_parameter(
+                        static_cast<
+                            const cppast::cpp_template_template_parameter &>(
+                            tp),
+                        c);
+                }
             }
-            else if (tp.kind() ==
-                cppast::cpp_entity_kind::non_type_template_parameter_t) {
-                LOG_DBG("Processing template nontype parameter {}", tp.name());
-                process_template_nontype_parameter(
-                    static_cast<
-                        const cppast::cpp_non_type_template_parameter &>(tp),
-                    c);
+        }
+        else {
+            LOG_WARN("Class {} is templated but it's scope {} is not - "
+                     "probably this is a specialization",
+                cls.name(), scope.name());
+
+            // Add specialization arguments
+            if (tspec) {
+                if (!tspec.value().arguments_exposed()) {
+                    // Create template specialization with unexposed arguments
+                    auto ua = tspec.value().unexposed_arguments().as_string();
+
+                    // Naive parse of template arguments:
+                    auto toks = util::split(ua, ",");
+                    for (const auto &t : toks) {
+                        class_template ct;
+                        ct.type = t;
+                        ct.default_value = "";
+                        ct.is_variadic = false;
+                        ct.name = "";
+                        c.templates.emplace_back(std::move(ct));
+
+                        const auto &primary_template_ref =
+                            static_cast<const cppast::cpp_class_template &>(
+                                tspec.value()
+                                    .primary_template()
+                                    .get(ctx.entity_index)[0]
+                                    .get())
+                                .class_();
+
+                        if (primary_template_ref.user_data()) {
+                            auto base_template_usr = static_cast<const char *>(
+                                primary_template_ref.user_data());
+                            LOG_DBG("Primary template ref set to: {}",
+                                base_template_usr);
+                            // Add template specialization/instantiation
+                            // relationship
+                            class_relationship r;
+                            r.type = relationship_t::kInstantiation;
+                            r.label = "";
+                            r.destination = base_template_usr;
+                            c.add_relationship(std::move(r));
+                        }
+                        else {
+                            LOG_WARN("No user data for base template {}",
+                                primary_template_ref.name());
+                        }
+                    }
+                }
+                else {
+                    for (auto &tp : tspec.value().parameters()) {
+                        switch (tp.kind()) {
+                        case cppast::cpp_entity_kind::
+                            template_type_parameter_t: {
+                            LOG_DBG("Processing template type parameter {}",
+                                tp.name());
+                            process_template_type_parameter(
+                                static_cast<const cppast::
+                                        cpp_template_type_parameter &>(tp),
+                                c);
+                        } break;
+                        case cppast::cpp_entity_kind::
+                            non_type_template_parameter_t: {
+                            LOG_DBG("Processing template nontype parameter {}",
+                                tp.name());
+                            process_template_nontype_parameter(
+                                static_cast<const cppast::
+                                        cpp_non_type_template_parameter &>(tp),
+                                c);
+                        } break;
+                        case cppast::cpp_entity_kind::
+                            template_template_parameter_t: {
+                            LOG_DBG("Processing template template parameter {}",
+                                tp.name());
+                            process_template_template_parameter(
+                                static_cast<const cppast::
+                                        cpp_template_template_parameter &>(tp),
+                                c);
+                        } break;
+                        default:
+                            LOG_DBG("Unhandled template parameter "
+                                    "type {}",
+                                cppast::to_string(tp.kind()));
+                            break;
+                        }
+                    }
+                }
             }
-            else if (tp.kind() ==
-                cppast::cpp_entity_kind::template_template_parameter_t) {
-                LOG_DBG("Processing template template parameter {}", tp.name());
-                process_template_template_parameter(
-                    static_cast<
-                        const cppast::cpp_template_template_parameter &>(tp),
-                    c);
+            else {
+                LOG_DBG("Skipping template class declaration which has only "
+                        "unexposed arguments but no tspec provided");
+                return;
             }
         }
     }
@@ -474,6 +603,21 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     }
 
     c.members.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_anonymous_enum(
+    const cppast::cpp_enum &en, class_ &c, cppast::cpp_access_specifier_kind as)
+{
+    for (const auto &ev : en) {
+        if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
+            class_member m;
+            m.name = ev.name();
+            m.type = "enum"; // TODO: Try to figure out real enum type
+            m.scope = detail::cpp_access_specifier_to_scope(as);
+            m.is_static = false;
+            c.members.emplace_back(std::move(m));
+        }
+    }
 }
 
 void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,

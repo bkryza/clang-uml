@@ -14,6 +14,7 @@
  * [t00013](./test_cases/t00013.md) - Template instantiation relationships
  * [t00014](./test_cases/t00014.md) - Alias template instantiation
  * [t00015](./test_cases/t00015.md) - Namespace fun
+ * [t00016](./test_cases/t00016.md) - Unnamed enums and empty templates
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
