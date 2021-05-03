@@ -170,6 +170,12 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 
 void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
 {
+    if (enm.name().empty()) {
+        // Anonymous enum values should be rendered as class fields
+        // with type enum
+        return;
+    }
+
     enum_ e;
     e.name = cx::util::full_name(ctx.namespace_, enm);
 
@@ -179,7 +185,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
         }
     }
 
-    // Find if class is contained in another class
+    // Find if enum is contained in a class
     for (auto cur = enm.parent(); cur; cur = cur.value().parent()) {
         // find nearest parent class, if any
         if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
@@ -245,6 +251,14 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
         else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
             auto &mc = static_cast<const cppast::cpp_destructor &>(child);
             process_destructor(mc, c, last_access_specifier);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::enum_t) {
+            auto &en = static_cast<const cppast::cpp_enum &>(child);
+            if (en.name().empty()) {
+                // Here we only want to handle anonymous enums, regular nested
+                // enums are handled in the file-level visitor
+                process_anonymous_enum(en, c, last_access_specifier);
+            }
         }
         else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
             auto &fr = static_cast<const cppast::cpp_friend &>(child);
@@ -482,6 +496,21 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     }
 
     c.members.emplace_back(std::move(m));
+}
+
+void tu_visitor::process_anonymous_enum(
+    const cppast::cpp_enum &en, class_ &c, cppast::cpp_access_specifier_kind as)
+{
+    for (const auto &ev : en) {
+        if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
+            class_member m;
+            m.name = ev.name();
+            m.type = "enum"; // TODO: Try to figure out real enum type
+            m.scope = detail::cpp_access_specifier_to_scope(as);
+            m.is_static = false;
+            c.members.emplace_back(std::move(m));
+        }
+    }
 }
 
 void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
@@ -764,7 +793,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
         r.destination = name;
     }
     else if (f.entity()) {
-        std::string name {};
+        std::string name{};
 
         if (f.entity().value().kind() ==
             cppast::cpp_entity_kind::class_template_t) {
