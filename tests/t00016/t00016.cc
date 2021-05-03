@@ -1,7 +1,7 @@
 namespace clanguml {
 namespace t00016 {
 
-template <typename T> struct is_numeric {
+template <typename> struct is_numeric {
     enum { value = false };
 };
 

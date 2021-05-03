@@ -45,9 +45,9 @@ struct tu_context {
     tu_context(cppast::cpp_entity_index &idx,
         clanguml::model::class_diagram::diagram &d_,
         const clanguml::config::class_diagram &config_)
-        : entity_index {idx}
-        , d {d_}
-        , config {config_}
+        : entity_index{idx}
+        , d{d_}
+        , config{config_}
     {
     }
 
@@ -128,13 +128,13 @@ struct tu_context {
 template <typename T> struct element_visitor_context {
     element_visitor_context(clanguml::model::class_diagram::diagram &d_, T &e)
         : element(e)
-        , d {d_}
+        , d{d_}
     {
     }
     tu_context *ctx;
 
     T &element;
-    clanguml::model::class_diagram::class_ *parent_class {};
+    clanguml::model::class_diagram::class_ *parent_class{};
     clanguml::model::class_diagram::diagram &d;
 };
 
@@ -143,7 +143,7 @@ public:
     tu_visitor(cppast::cpp_entity_index &idx_,
         clanguml::model::class_diagram::diagram &d_,
         const clanguml::config::class_diagram &config_)
-        : ctx {idx_, d_, config_}
+        : ctx{idx_, d_, config_}
     {
     }
 
