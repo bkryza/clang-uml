@@ -97,6 +97,17 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                         ctx.namespace_.pop_back();
                 }
             }
+            else if (e.kind() ==
+                cppast::cpp_entity_kind::class_template_specialization_t) {
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.namespace_, e),
+                    cppast::to_string(e.kind()));
+
+                auto &tspec = static_cast<
+                    const cppast::cpp_class_template_specialization &>(e);
+
+                process_class_declaration(tspec.class_(), tspec);
+            }
             else if (e.kind() == cppast::cpp_entity_kind::class_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
                     cx::util::full_name(ctx.namespace_, e),
@@ -112,6 +123,7 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                         return;
                     }
                 }
+
                 if (ctx.config.should_include(
                         cx::util::fully_prefixed(ctx.namespace_, cls)))
                     process_class_declaration(cls);
@@ -204,7 +216,8 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     ctx.d.add_enum(std::move(e));
 }
 
-void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
+void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
+    type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
     class_ c;
     c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
@@ -343,6 +356,10 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls)
                         c);
                 }
             }
+        }
+        else {
+            LOG_WARN("Class {} is templated but it's scope {} is not :-|",
+                cls.name(), scope.name());
         }
     }
 
@@ -793,7 +810,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
         r.destination = name;
     }
     else if (f.entity()) {
-        std::string name{};
+        std::string name {};
 
         if (f.entity().value().kind() ==
             cppast::cpp_entity_kind::class_template_t) {
