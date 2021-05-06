@@ -52,12 +52,15 @@ int main(int argc, const char *argv[])
 
     std::string config_path{".clanguml"};
     std::string compilation_database_dir{'.'};
+    std::vector<std::string> diagram_names{};
     bool verbose{false};
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
     app.add_option("-d,--compile-database", compilation_database_dir,
         "Location of configuration file");
+    app.add_option("-n,--diagram-name", diagram_names,
+        "List of diagram names to generate");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
 
     CLI11_PARSE(app, argc, argv);
@@ -80,6 +83,13 @@ int main(int argc, const char *argv[])
     cppast::libclang_compilation_database db2(config.compilation_database_dir);
 
     for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() &&
+            std::find(diagram_names.begin(), diagram_names.end(), name) ==
+                diagram_names.end())
+            continue;
+
         using clanguml::config::class_diagram;
         using clanguml::config::sequence_diagram;
 
