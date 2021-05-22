@@ -13,6 +13,15 @@ TODO
 
 ## Usage
 
+### Generating compile commands database
+`clang-uml` requires an up-to-date
+[compile-commands.json](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
+file, containing the list of commands used for compiling the source code.
+Nowadays, this file can be generated rather easily using multiple methods:
+  * For [CMake](https://cmake.org/) projects, simply invoke the `cmake` command
+    as `cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...`
+  * For Make projects checkout [compiledb](https://github.com/nickdiego/compiledb) or [Bear](https://github.com/rizsotto/Bear)
+
 ### Invocation
 
 ### Configuration file format and examples

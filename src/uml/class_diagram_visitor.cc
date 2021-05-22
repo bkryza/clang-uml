@@ -659,9 +659,12 @@ void tu_visitor::process_template_method(
 {
     class_method m;
     m.name = util::trim(mf.name());
-    m.type = cppast::to_string(
-        static_cast<const cppast::cpp_member_function &>(mf.function())
-            .return_type());
+    if (mf.function().kind() == cppast::cpp_entity_kind::constructor_t)
+        m.type = "void";
+    else
+        m.type = cppast::to_string(
+            static_cast<const cppast::cpp_member_function &>(mf.function())
+                .return_type());
     m.is_pure_virtual = false;
     m.is_virtual = false;
     m.is_const = cppast::is_const(
@@ -747,16 +750,6 @@ void tu_visitor::process_function_parameter(
         // so we have to deduce the correct namespace prefix of the
         // template which is being instantiated
         mp.type = cppast::to_string(param.type());
-
-        auto &template_instantiation_type =
-            static_cast<const cppast::cpp_template_instantiation_type &>(
-                param_type);
-        auto &primary_template_entity =
-            template_instantiation_type.primary_template();
-
-        auto trawname = cppast::to_string(template_instantiation_type);
-        auto pte = cx::util::fully_prefixed(ctx.namespace_,
-            primary_template_entity.get(ctx.entity_index)[0].get());
     }
     else {
         mp.type = cppast::to_string(param.type());
@@ -885,6 +878,13 @@ void tu_visitor::process_template_template_parameter(
 
 void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
 {
+    // Only process friends to other classes or class templates
+    if (!f.entity() ||
+        (f.entity().value().kind() != cppast::cpp_entity_kind::class_t) &&
+            (f.entity().value().kind() !=
+                cppast::cpp_entity_kind::class_template_t))
+        return;
+
     class_relationship r;
     r.type = relationship_t::kFriendship;
     r.label = "<<friend>>";
