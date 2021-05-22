@@ -124,7 +124,7 @@ public:
         }
     }
 
-    void generate_aliases(const class_ &c, std::ostream &ostr) const
+    void generate_alias(const class_ &c, std::ostream &ostr) const
     {
         std::string class_type{"class"};
         if (c.is_abstract())
@@ -133,6 +133,13 @@ public:
         ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
 
         ostr << "\" as " << c.alias() << std::endl;
+    }
+
+    void generate_alias(const enum_ &e, std::ostream &ostr) const
+    {
+        ostr << "enum" << " \"" << e.full_name(m_config.using_namespace);
+
+        ostr << "\" as " << e.alias() << std::endl;
     }
 
     void generate(const class_ &c, std::ostream &ostr) const
@@ -266,7 +273,7 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum " << ns_relative(m_config.using_namespace, e.name) << " {"
+        ostr << "enum " << e.alias() << " {"
              << std::endl;
 
         for (const auto &enum_constant : e.constants) {
@@ -325,7 +332,12 @@ public:
 
         if (m_config.should_include_entities("classes")) {
             for (const auto &c : m_model.classes) {
-                generate_aliases(c, ostr);
+                generate_alias(c, ostr);
+                ostr << std::endl;
+            }
+
+            for (const auto &e : m_model.enums) {
+                generate_alias(e, ostr);
                 ostr << std::endl;
             }
 

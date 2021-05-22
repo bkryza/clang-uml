@@ -175,9 +175,9 @@ public:
 
     void add_relationship(class_relationship &&cr)
     {
-        if (cr.destination.empty() || type_aliases.count(cr.destination) == 0) {
+        if (cr.destination.empty()) {
             LOG_WARN(
-                "Skipping relationship '{}' - {} - '{}' due to missing alias",
+                "Skipping relationship '{}' - {} - '{}' due empty destination",
                 cr.destination, to_string(cr.type), usr);
             return;
         }
@@ -240,6 +240,18 @@ struct enum_ : public element {
     {
         return l.name == r.name;
     }
+
+    std::string full_name(
+        const std::vector<std::string> &using_namespaces) const
+    {
+        using namespace clanguml::util;
+
+        std::ostringstream ostr;
+        ostr << ns_relative(using_namespaces, name);
+
+        return ostr.str();
+    }
+
 };
 
 struct diagram {
@@ -286,6 +298,12 @@ struct diagram {
         for (const auto &c : classes) {
             if (c.full_name(using_namespaces) == full_name) {
                 return c.alias();
+            }
+        }
+
+        for (const auto &e : enums) {
+            if (e.full_name(using_namespaces) == full_name) {
+                return e.alias();
             }
         }
 
