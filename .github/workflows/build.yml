@@ -11,7 +11,7 @@ jobs:
       with:
         submodules: recursive
     - name: Install deps
-      run: sudo apt-get install ccache cmake libyaml-cpp-dev libspdlog-dev clang-11 libclang-11-dev libclang-cpp11-dev
+      run: sudo apt-get install ccache cmake libyaml-cpp-dev libspdlog-dev clang-12 libclang-12-dev libclang-cpp12-dev
     - name: Build and unit test
       run: |
         make debug

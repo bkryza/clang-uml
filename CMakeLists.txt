@@ -15,7 +15,7 @@ set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 
-set(LLVM_PREFERRED_VERSION 11.0.0)
+set(LLVM_PREFERRED_VERSION 12.0.0)
 
 message(STATUS "Checking for spdlog...")
 find_package(spdlog REQUIRED)
