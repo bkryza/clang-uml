@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "util/error.h"
 #include "util/util.h"
 
 #include <clang-c/CXCompilationDatabase.h>
@@ -174,6 +175,13 @@ public:
 
     void add_relationship(class_relationship &&cr)
     {
+        if (cr.destination.empty()) {
+            LOG_WARN(
+                "Skipping relationship '{}' - {} - '{}' due empty destination",
+                cr.destination, to_string(cr.type), usr);
+            return;
+        }
+
         auto it = std::find(relationships.begin(), relationships.end(), cr);
         if (it == relationships.end())
             relationships.emplace_back(std::move(cr));
@@ -232,6 +240,17 @@ struct enum_ : public element {
     {
         return l.name == r.name;
     }
+
+    std::string full_name(
+        const std::vector<std::string> &using_namespaces) const
+    {
+        using namespace clanguml::util;
+
+        std::ostringstream ostr;
+        ostr << ns_relative(using_namespaces, name);
+
+        return ostr.str();
+    }
 };
 
 struct diagram {
@@ -281,7 +300,14 @@ struct diagram {
             }
         }
 
-        return full_name;
+        for (const auto &e : enums) {
+            if (e.full_name(using_namespaces) == full_name) {
+                return e.alias();
+            }
+        }
+
+        throw error::uml_alias_missing(
+            fmt::format("Missing alias for {}", full_name));
     }
 
     std::string usr_to_name(const std::vector<std::string> &using_namespaces,

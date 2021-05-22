@@ -124,7 +124,7 @@ public:
         }
     }
 
-    void generate_aliases(const class_ &c, std::ostream &ostr) const
+    void generate_alias(const class_ &c, std::ostream &ostr) const
     {
         std::string class_type{"class"};
         if (c.is_abstract())
@@ -133,6 +133,14 @@ public:
         ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
 
         ostr << "\" as " << c.alias() << std::endl;
+    }
+
+    void generate_alias(const enum_ &e, std::ostream &ostr) const
+    {
+        ostr << "enum"
+             << " \"" << e.full_name(m_config.using_namespace);
+
+        ostr << "\" as " << e.alias() << std::endl;
     }
 
     void generate(const class_ &c, std::ostream &ostr) const
@@ -199,54 +207,74 @@ public:
 
         if (m_config.should_include_relationship("inheritance"))
             for (const auto &b : c.bases) {
-                ostr << m_model.to_alias(m_config.using_namespace,
-                            ns_relative(m_config.using_namespace, b.name))
-                     << " <|-- "
-                     << m_model.to_alias(m_config.using_namespace,
-                            ns_relative(m_config.using_namespace, c.name))
-                     << std::endl;
+                std::stringstream relstr;
+                try {
+                    relstr << m_model.to_alias(m_config.using_namespace,
+                                  ns_relative(m_config.using_namespace, b.name))
+                           << " <|-- "
+                           << m_model.to_alias(m_config.using_namespace,
+                                  ns_relative(m_config.using_namespace, c.name))
+                           << std::endl;
+                    ostr << relstr.str();
+                }
+                catch (error::uml_alias_missing &e) {
+                    LOG_ERROR("Skipping inheritance relation from {} to {} due "
+                              "to: {}",
+                        b.name, c.name, e.what());
+                }
             }
 
         for (const auto &r : c.relationships) {
             if (!m_config.should_include_relationship(name(r.type)))
                 continue;
 
-            std::string destination;
-            if (r.destination.find("#") != std::string::npos ||
-                r.destination.find("@") != std::string::npos) {
-                destination = m_model.usr_to_name(
-                    m_config.using_namespace, r.destination);
+            std::stringstream relstr;
 
-                // If something went wrong and we have an empty destination
-                // generate the relationship but comment it out for
-                // debugging
-                if (destination.empty()) {
-                    ostr << "' ";
+            std::string destination;
+            try {
+                if (r.destination.find("#") != std::string::npos ||
+                    r.destination.find("@") != std::string::npos) {
+                    destination = m_model.usr_to_name(
+                        m_config.using_namespace, r.destination);
+
+                    // If something went wrong and we have an empty destination
+                    // generate the relationship but comment it out for
+                    // debugging
+                    if (destination.empty()) {
+                        relstr << "' ";
+                        destination = r.destination;
+                    }
+                }
+                else {
                     destination = r.destination;
                 }
+
+                relstr << m_model.to_alias(m_config.using_namespace,
+                              ns_relative(m_config.using_namespace,
+                                  c.full_name(m_config.using_namespace)))
+                       << " " << to_string(r.type) << " "
+                       << m_model.to_alias(m_config.using_namespace,
+                              ns_relative(
+                                  m_config.using_namespace, destination));
+
+                if (!r.label.empty())
+                    relstr << " : " << r.label;
+
+                relstr << std::endl;
+                ostr << relstr.str();
             }
-            else {
-                destination = r.destination;
+            catch (error::uml_alias_missing &e) {
+                LOG_ERROR("Skipping {} relation from {} to {} due "
+                          "to: {}",
+                    to_string(r.type), c.full_name(m_config.using_namespace),
+                    destination, e.what());
             }
-
-            ostr << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace,
-                            c.full_name(m_config.using_namespace)))
-                 << " " << to_string(r.type) << " "
-                 << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, destination));
-
-            if (!r.label.empty())
-                ostr << " : " << r.label;
-
-            ostr << std::endl;
         }
     }
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum " << ns_relative(m_config.using_namespace, e.name) << " {"
-             << std::endl;
+        ostr << "enum " << e.alias() << " {" << std::endl;
 
         for (const auto &enum_constant : e.constants) {
             ostr << enum_constant << std::endl;
@@ -259,29 +287,39 @@ public:
                 continue;
 
             std::string destination;
-            if (r.destination.find("#") != std::string::npos ||
-                r.destination.find("@") != std::string::npos) {
-                destination = m_model.usr_to_name(
-                    m_config.using_namespace, r.destination);
-                if (destination.empty()) {
-                    ostr << "' ";
+            std::stringstream relstr;
+            try {
+                if (r.destination.find("#") != std::string::npos ||
+                    r.destination.find("@") != std::string::npos) {
+                    destination = m_model.usr_to_name(
+                        m_config.using_namespace, r.destination);
+                    if (destination.empty()) {
+                        relstr << "' ";
+                        destination = r.destination;
+                    }
+                }
+                else {
                     destination = r.destination;
                 }
+
+                relstr << m_model.to_alias(m_config.using_namespace,
+                              ns_relative(m_config.using_namespace, e.name))
+                       << " " << to_string(r.type) << " "
+                       << m_model.to_alias(m_config.using_namespace,
+                              ns_relative(
+                                  m_config.using_namespace, destination));
+
+                if (!r.label.empty())
+                    relstr << " : " << r.label;
+
+                relstr << std::endl;
+                ostr << relstr.str();
             }
-            else {
-                destination = r.destination;
+            catch (error::uml_alias_missing &ex) {
+                LOG_ERROR("Skipping {} relation from {} to {} due "
+                          "to: {}",
+                    to_string(r.type), e.name, destination, ex.what());
             }
-
-            ostr << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, e.name))
-                 << " " << to_string(r.type) << " "
-                 << m_model.to_alias(m_config.using_namespace,
-                        ns_relative(m_config.using_namespace, destination));
-
-            if (!r.label.empty())
-                ostr << " : " << r.label;
-
-            ostr << std::endl;
         }
     }
 
@@ -294,7 +332,12 @@ public:
 
         if (m_config.should_include_entities("classes")) {
             for (const auto &c : m_model.classes) {
-                generate_aliases(c, ostr);
+                generate_alias(c, ostr);
+                ostr << std::endl;
+            }
+
+            for (const auto &e : m_model.enums) {
+                generate_alias(e, ostr);
                 ostr << std::endl;
             }
 

@@ -34,6 +34,10 @@ std::string trim(const std::string &s);
 #define __FILENAME__                                                           \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+#define LOG_ERROR(fmt__, ...)                                                  \
+    spdlog::error(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,     \
+        ##__VA_ARGS__)
+
 #define LOG_WARN(fmt__, ...)                                                   \
     spdlog::warn(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,      \
         ##__VA_ARGS__)

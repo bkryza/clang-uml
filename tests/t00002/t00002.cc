@@ -36,5 +36,28 @@ public:
 private:
     std::vector<A *> as;
 };
+
+//
+// NOTE: libclang fails on:
+//
+//   class D : public virtual B, public virtual C {
+//
+class E : virtual public B, virtual public C {
+public:
+    void foo_a() override
+    {
+        for (auto a : as)
+            a->foo_a();
+    }
+
+    void foo_c() override
+    {
+        for (auto a : as)
+            a->foo_c();
+    }
+
+private:
+    std::vector<A *> as;
+};
 }
 }

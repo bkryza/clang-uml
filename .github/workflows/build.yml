@@ -10,8 +10,12 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: recursive
+    - name: Install add-apt-repository
+      run: sudo apt-get install software-properties-common
+    - name: Add llvm repository
+      run: sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main' && sudo apt update
     - name: Install deps
-      run: sudo apt-get install ccache cmake libyaml-cpp-dev libspdlog-dev clang-11 libclang-11-dev libclang-cpp11-dev
+      run: sudo apt-get install ccache cmake libyaml-cpp-dev libspdlog-dev clang-12 libclang-12-dev libclang-cpp12-dev
     - name: Build and unit test
       run: |
         make debug

@@ -46,10 +46,10 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("A")));
     REQUIRE_THAT(puml, IsClass(_A("AA")));
     REQUIRE_THAT(puml, IsClass(_A("AAA")));
-    REQUIRE_THAT(puml, IsEnum("Lights"));
+    REQUIRE_THAT(puml, IsEnum(_A("Lights")));
     REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("AA")));
     REQUIRE_THAT(puml, IsInnerClass(_A("AA"), _A("AAA")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("AA"), "Lights"));
+    REQUIRE_THAT(puml, IsInnerClass(_A("AA"), _A("Lights")));
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo2")));
 
