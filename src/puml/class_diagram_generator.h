@@ -137,7 +137,8 @@ public:
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum" << " \"" << e.full_name(m_config.using_namespace);
+        ostr << "enum"
+             << " \"" << e.full_name(m_config.using_namespace);
 
         ostr << "\" as " << e.alias() << std::endl;
     }
@@ -273,8 +274,7 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum " << e.alias() << " {"
-             << std::endl;
+        ostr << "enum " << e.alias() << " {" << std::endl;
 
         for (const auto &enum_constant : e.constants) {
             ostr << enum_constant << std::endl;

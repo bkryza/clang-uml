@@ -251,7 +251,6 @@ struct enum_ : public element {
 
         return ostr.str();
     }
-
 };
 
 struct diagram {
