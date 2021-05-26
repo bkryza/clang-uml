@@ -19,6 +19,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <regex>
+
 namespace clanguml {
 namespace util {
 
@@ -100,6 +102,29 @@ std::string unqualify(const std::string &s)
         }));
 
     return fmt::format("{}", fmt::join(toks, " "));
+}
+
+bool find_element_alias(
+    const std::string &input, std::tuple<std::string, size_t, size_t> &result)
+{
+
+    std::regex alias_regex("(@A\\([^\\).]+\\))");
+
+    auto alias_it =
+        std::sregex_iterator(input.begin(), input.end(), alias_regex);
+    auto end_it = std::sregex_iterator();
+
+    if (alias_it == end_it)
+        return false;
+
+    std::smatch match = *alias_it;
+    std::string alias = match.str().substr(3, match.str().size() - 4);
+
+    std::get<0>(result) = alias;
+    std::get<1>(result) = match.position();
+    std::get<2>(result) = match.length();
+
+    return true;
 }
 }
 }

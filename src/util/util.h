@@ -91,5 +91,18 @@ std::string ns_relative(
  * @return Unqualified type spelling.
  */
 std::string unqualify(const std::string &s);
+
+/**
+ * @brief Find element alias in Puml note
+ *
+ * Finds aliases of the form @A(entity_name) in the Puml notes
+ * or directives.
+ * The match, if any, is returned in the result tuple:
+ *   (entity_name, offset, length)
+ *
+ * @return True if match was found
+ */
+bool find_element_alias(
+    const std::string &input, std::tuple<std::string, size_t, size_t> &result);
 }
 }

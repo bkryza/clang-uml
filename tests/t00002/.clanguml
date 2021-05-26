@@ -10,3 +10,6 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00002
+    plantuml:
+      after:
+        - 'note left of @A(A) : Base abstract interface.'

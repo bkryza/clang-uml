@@ -327,8 +327,18 @@ public:
     {
         ostr << "@startuml" << std::endl;
 
-        for (const auto &b : m_config.puml.before)
-            ostr << b << std::endl;
+        for (const auto &b : m_config.puml.before) {
+            std::string note{b};
+            std::tuple<std::string, size_t, size_t> alias_match;
+            while (util::find_element_alias(note, alias_match)) {
+                auto alias = m_model.to_alias(m_config.using_namespace,
+                    ns_relative(
+                        m_config.using_namespace, std::get<0>(alias_match)));
+                note.replace(
+                    std::get<1>(alias_match), std::get<2>(alias_match), alias);
+            }
+            ostr << note << std::endl;
+        }
 
         if (m_config.should_include_entities("classes")) {
             for (const auto &c : m_model.classes) {
@@ -353,8 +363,19 @@ public:
                 ostr << std::endl;
             }
 
-        for (const auto &b : m_config.puml.after)
-            ostr << b << std::endl;
+        // Process aliases in any of the puml directives
+        for (const auto &b : m_config.puml.after) {
+            std::string note{b};
+            std::tuple<std::string, size_t, size_t> alias_match;
+            while (util::find_element_alias(note, alias_match)) {
+                auto alias = m_model.to_alias(m_config.using_namespace,
+                    ns_relative(
+                        m_config.using_namespace, std::get<0>(alias_match)));
+                note.replace(
+                    std::get<1>(alias_match), std::get<2>(alias_match), alias);
+            }
+            ostr << note << std::endl;
+        }
 
         ostr << "@enduml" << std::endl;
     }
