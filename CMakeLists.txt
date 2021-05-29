@@ -19,6 +19,7 @@ set(LLVM_PREFERRED_VERSION 12.0.0)
 
 message(STATUS "Checking for spdlog...")
 find_package(spdlog REQUIRED)
+add_definitions(-DSPDLOG_FMT_EXTERNAL)
 
 message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp REQUIRED)
@@ -36,6 +37,14 @@ find_package(LLVM REQUIRED CONFIG)
 set(CLANG_INCLUDE_DIRS "llvm/clang/include")
 set(CLANG_LIBS clang)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    execute_process(COMMAND gcc --print-file-name=include
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    OUTPUT_VARIABLE GCC_STDDEF_INCLUDE)
+    message(STATUS "FOUND GCC STDDEF INCLUDE ${GCC_STDDEF_INCLUDE}")
+    include_directories(${GCC_STDDEF_INCLUDE})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE}")
+endif()
 include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
