@@ -174,8 +174,13 @@ static inline fs::path expand_tilde(fs::path path)
 {
     if (path.empty())
         return path;
-
+#ifdef _WIN32
+    char *home;
+    size_t sz;
+    errno_t err = _dupenv_s(&home, &sz, "USERPROFILE");
+#else
     const char *home = std::getenv("HOME");
+#endif
     if (home == nullptr) {
         throw std::invalid_argument(
             "error: Unable to expand `~` - HOME environment variable not set.");
@@ -199,7 +204,8 @@ static inline bool has_magic(const std::string &pathname)
 
 static inline bool is_hidden(const std::string &pathname)
 {
-    return pathname[0] == '.';
+    return std::regex_match(
+        pathname, std::regex("^(.*\\/)*\\.[^\\.\\/]+\\/*$"));
 }
 
 static inline bool is_recursive(const std::string &pattern)
@@ -232,7 +238,7 @@ static inline std::vector<fs::path> iter_directory(
                 }
             }
         }
-        catch (std::exception &e) {
+        catch (std::exception &) {
             // not a directory
             // do nothing
         }
@@ -263,6 +269,7 @@ static inline std::vector<fs::path> rlistdir(
 static inline std::vector<fs::path> glob2(
     const fs::path &dirname, const std::string &pattern, bool dironly)
 {
+    // std::cout << "In glob2\n";
     std::vector<fs::path> result;
     assert(is_recursive(pattern));
     for (auto &dir : rlistdir(dirname, dironly)) {
@@ -277,14 +284,17 @@ static inline std::vector<fs::path> glob2(
 static inline std::vector<fs::path> glob1(
     const fs::path &dirname, const std::string &pattern, bool dironly)
 {
+    // std::cout << "In glob1\n";
     auto names = iter_directory(dirname, dironly);
     std::vector<fs::path> filtered_names;
     for (auto &n : names) {
         if (!is_hidden(n.string())) {
             filtered_names.push_back(n.filename());
             // if (n.is_relative()) {
+            //   // std::cout << "Filtered (Relative): " << n << "\n";
             //   filtered_names.push_back(fs::relative(n));
             // } else {
+            //   // std::cout << "Filtered (Absolute): " << n << "\n";
             //   filtered_names.push_back(n.filename());
             // }
         }
@@ -295,6 +305,7 @@ static inline std::vector<fs::path> glob1(
 static inline std::vector<fs::path> glob0(
     const fs::path &dirname, const fs::path &basename, bool /*dironly*/)
 {
+    // std::cout << "In glob0\n";
     std::vector<fs::path> result;
     if (basename.empty()) {
         // 'q*x/' should match only directories.
@@ -343,23 +354,23 @@ static inline std::vector<fs::path> glob(
 
     if (dirname.empty()) {
         if (recursive && is_recursive(basename.string())) {
-            return glob2(dirname, basename, dironly);
+            return glob2(dirname, basename.string(), dironly);
         }
         else {
-            return glob1(dirname, basename, dironly);
+            return glob1(dirname, basename.string(), dironly);
         }
     }
 
     std::vector<fs::path> dirs;
     if (dirname != fs::path(pathname) && has_magic(dirname.string())) {
-        dirs = glob(dirname, recursive, true);
+        dirs = glob(dirname.string(), recursive, true);
     }
     else {
         dirs = {dirname};
     }
 
     std::function<std::vector<fs::path>(
-        const fs::path &, const fs::path &, bool)>
+        const fs::path &, const std::string &, bool)>
         glob_in_dir;
     if (has_magic(basename.string())) {
         if (recursive && is_recursive(basename.string())) {
@@ -374,7 +385,7 @@ static inline std::vector<fs::path> glob(
     }
 
     for (auto &d : dirs) {
-        for (auto &name : glob_in_dir(d, basename, dironly)) {
+        for (auto &name : glob_in_dir(d, basename.string(), dironly)) {
             fs::path subresult = name;
             if (name.parent_path().empty()) {
                 subresult = d / name;

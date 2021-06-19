@@ -407,7 +407,7 @@ clanguml::model::class_diagram::diagram generate(
     std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
         spdlog::debug("Processing glob: {}", g);
-        const auto matches = glob::glob(g);
+        const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));
     }
