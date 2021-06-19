@@ -21,6 +21,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
   * For [CMake](https://cmake.org/) projects, simply invoke the `cmake` command
     as `cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...`
   * For Make projects checkout [compiledb](https://github.com/nickdiego/compiledb) or [Bear](https://github.com/rizsotto/Bear)
+  * For Boost-based projects try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
 
 ### Invocation
 
