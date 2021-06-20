@@ -155,6 +155,9 @@ public:
         // Process methods
         //
         for (const auto &m : c.methods) {
+            if (!m_config.should_include(m.scope))
+                continue;
+
             if (m.is_pure_virtual)
                 ostr << "{abstract} ";
 
@@ -196,6 +199,9 @@ public:
         // Process members
         //
         for (const auto &m : c.members) {
+            if (!m_config.should_include(m.scope))
+                continue;
+
             if (m.is_static)
                 ostr << "{static} ";
 

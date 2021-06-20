@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "uml/class_diagram_model.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>
@@ -50,6 +51,11 @@ struct filter {
     //   - classes
     //   - enums
     std::vector<std::string> entity_types;
+
+    // E.g.:
+    //   - public
+    //   - private
+    std::vector<model::class_diagram::scope_t> scopes;
 };
 
 struct diagram {
@@ -123,6 +129,24 @@ struct diagram {
 
         return false;
     }
+
+    bool should_include(const model::class_diagram::scope_t scope) const
+    {
+        for (const auto &s : exclude.scopes) {
+            if (s == scope)
+                return false;
+        }
+
+        if (include.scopes.empty())
+            return true;
+
+        for (const auto &s : include.scopes) {
+            if (s == scope)
+                return true;
+        }
+
+        return false;
+    }
 };
 
 struct source_location {
@@ -135,15 +159,10 @@ struct source_location {
     using variant = std::variant<usr, /* marker, */ file>;
 };
 
-enum class class_scopes { public_, protected_, private_ };
-
 struct class_diagram : public diagram {
     virtual ~class_diagram() = default;
 
     std::vector<std::string> classes;
-    std::vector<class_scopes> methods;
-    std::vector<class_scopes> members;
-
     bool has_class(std::string clazz)
     {
         for (const auto &c : classes) {
@@ -187,6 +206,22 @@ using clanguml::config::filter;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
+using clanguml::model::class_diagram::scope_t;
+template <> struct convert<scope_t> {
+    static bool decode(const Node &node, scope_t &rhs)
+    {
+        if (node.as<std::string>() == "public")
+            rhs = scope_t::kPublic;
+        else if (node.as<std::string>() == "protected")
+            rhs = scope_t::kProtected;
+        else if (node.as<std::string>() == "private")
+            rhs = scope_t::kPrivate;
+        else
+            return false;
+
+        return true;
+    }
+};
 
 template <> struct convert<std::vector<source_location::variant>> {
     static bool decode(
@@ -241,6 +276,9 @@ template <> struct convert<filter> {
         if (node["entity_types"])
             rhs.entity_types =
                 node["entity_types"].as<decltype(rhs.entity_types)>();
+
+        if (node["scopes"])
+            rhs.scopes = node["scopes"].as<decltype(rhs.scopes)>();
 
         return true;
     }
