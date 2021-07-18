@@ -40,12 +40,9 @@ namespace puml {
 using diagram_config = clanguml::config::class_diagram::diagram;
 using diagram_model = clanguml::model::class_diagram::diagram;
 using clanguml::model::class_diagram::class_;
-using clanguml::model::class_diagram::class_relationship;
-using clanguml::model::class_diagram::element;
 using clanguml::model::class_diagram::enum_;
 using clanguml::model::class_diagram::relationship_t;
 using clanguml::model::class_diagram::scope_t;
-using clanguml::visitor::class_diagram::tu_context;
 using namespace clanguml::util;
 
 std::string relative_to(std::string n, std::string c)

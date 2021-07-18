@@ -53,6 +53,13 @@ document_test_cases: test_plantuml
 submodules:
 	git submodule update --init --recursive
 
+.PHONY: init_compile_commands
+init_compile_commands: debug
+	ln -sf debug/compile_commands.json compile_commands.json
+
+.PHONY: init
+	init: submodules init_compile_commands
+
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2
