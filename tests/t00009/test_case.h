@@ -54,7 +54,7 @@ TEST_CASE("t00009", "[test-case][class]")
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<int>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
 
-    REQUIRE_THAT(puml, IsComposition(_A("B"), _A("A<int>"), "aint"));
+    REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "aint"));
     REQUIRE_THAT(puml, IsAssociation(_A("B"), _A("A<std::string>"), "astring"));
     REQUIRE_THAT(puml,
         IsAssociation(_A("B"), _A("A<std::vector<std::string>>"), "avector"));

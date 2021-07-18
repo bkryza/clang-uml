@@ -535,7 +535,7 @@ void tu_visitor::process_field_with_template_instantiation(
                 mv.type().kind() == cppast::cpp_type_kind::reference_t)
                 rr.type = relationship_t::kAssociation;
             else
-                rr.type = relationship_t::kComposition;
+                rr.type = relationship_t::kAggregation;
             rr.label = mv.name();
             LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
                 rr.destination, model::class_diagram::to_string(rr.type), c.usr,
@@ -956,7 +956,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
     if (t.kind() == cppast::cpp_type_kind::array_t) {
         auto &a = static_cast<const cppast::cpp_array_type &>(t);
         find_relationships(
-            a.value_type(), relationships, relationship_t::kComposition);
+            a.value_type(), relationships, relationship_t::kAggregation);
         return;
     }
 
@@ -981,7 +981,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         //       container list
         if (name.find("std::unique_ptr") == 0) {
             find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kComposition);
+                relationship_t::kAggregation);
         }
         else if (name.find("std::shared_ptr") == 0) {
             find_relationships(args[0u].type().value(), relationships,
@@ -993,7 +993,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         }
         else if (name.find("std::vector") == 0) {
             find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kComposition);
+                relationship_t::kAggregation);
         }
         else {
             for (const auto &arg : args) {
@@ -1014,7 +1014,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
         auto rt = relationship_t::kAssociation;
         if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
-            rt = relationship_t::kComposition;
+            rt = relationship_t::kAggregation;
         }
         if (relationship_hint == relationship_t::kDependency)
             rt = relationship_hint;
@@ -1030,7 +1030,7 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
                     cppast::to_string(t), relationship_type);
             else
                 relationships.emplace_back(
-                    cppast::to_string(t), relationship_t::kComposition);
+                    cppast::to_string(t), relationship_t::kAggregation);
         }
 
         // Check if t_ has an alias in the alias index

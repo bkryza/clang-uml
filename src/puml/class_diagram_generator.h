@@ -142,6 +142,9 @@ public:
 
     void generate(const class_ &c, std::ostream &ostr) const
     {
+
+        const auto uns = m_config.using_namespace;
+
         std::string class_type{"class"};
         if (c.is_abstract())
             class_type = "abstract";
@@ -187,7 +190,7 @@ public:
             if (m.is_defaulted)
                 ostr << " = default";
 
-            ostr << " : " << ns_relative(m_config.using_namespace, type);
+            ostr << " : " << ns_relative(uns, type);
 
             ostr << std::endl;
         }
@@ -203,7 +206,7 @@ public:
                 ostr << "{static} ";
 
             ostr << to_string(m.scope) << m.name << " : "
-                 << ns_relative(m_config.using_namespace, m.type) << std::endl;
+                 << ns_relative(uns, m.type) << std::endl;
         }
 
         ostr << "}" << std::endl;
@@ -212,11 +215,9 @@ public:
             for (const auto &b : c.bases) {
                 std::stringstream relstr;
                 try {
-                    relstr << m_model.to_alias(m_config.using_namespace,
-                                  ns_relative(m_config.using_namespace, b.name))
+                    relstr << m_model.to_alias(uns, ns_relative(uns, b.name))
                            << " <|-- "
-                           << m_model.to_alias(m_config.using_namespace,
-                                  ns_relative(m_config.using_namespace, c.name))
+                           << m_model.to_alias(uns, ns_relative(uns, c.name))
                            << std::endl;
                     ostr << relstr.str();
                 }
@@ -237,8 +238,7 @@ public:
             try {
                 if (r.destination.find("#") != std::string::npos ||
                     r.destination.find("@") != std::string::npos) {
-                    destination = m_model.usr_to_name(
-                        m_config.using_namespace, r.destination);
+                    destination = m_model.usr_to_name(uns, r.destination);
 
                     // If something went wrong and we have an empty destination
                     // generate the relationship but comment it out for
@@ -252,13 +252,10 @@ public:
                     destination = r.destination;
                 }
 
-                relstr << m_model.to_alias(m_config.using_namespace,
-                              ns_relative(m_config.using_namespace,
-                                  c.full_name(m_config.using_namespace)))
+                relstr << m_model.to_alias(
+                              uns, ns_relative(uns, c.full_name(uns)))
                        << " " << to_string(r.type) << " "
-                       << m_model.to_alias(m_config.using_namespace,
-                              ns_relative(
-                                  m_config.using_namespace, destination));
+                       << m_model.to_alias(uns, ns_relative(uns, destination));
 
                 if (!r.label.empty())
                     relstr << " : " << r.label;
@@ -269,8 +266,7 @@ public:
             catch (error::uml_alias_missing &e) {
                 LOG_ERROR("Skipping {} relation from {} to {} due "
                           "to: {}",
-                    to_string(r.type), c.full_name(m_config.using_namespace),
-                    destination, e.what());
+                    to_string(r.type), c.full_name(uns), destination, e.what());
             }
         }
     }

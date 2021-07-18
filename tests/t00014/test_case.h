@@ -52,11 +52,11 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
     REQUIRE_THAT(
-        puml, IsComposition(_A("R"), _A("A<bool,std::string>"), "boolstring"));
+        puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "boolstring"));
     REQUIRE_THAT(
-        puml, IsComposition(_A("R"), _A("AString<float>"), "floatstring"));
-    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("B"), "bs"));
-    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("B"), "bs2"));
+        puml, IsAggregation(_A("R"), _A("AString<float>"), "floatstring"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "bs"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "bs2"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
