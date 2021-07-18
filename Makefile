@@ -49,6 +49,10 @@ test_plantuml: test
 document_test_cases: test_plantuml
 	python3 util/generate_test_cases_docs.py
 
+.PHONY: submodules
+submodules:
+	git submodule update --init --recursive
+
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2
