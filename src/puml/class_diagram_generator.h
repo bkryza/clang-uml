@@ -341,16 +341,24 @@ public:
 
         if (m_config.should_include_entities("classes")) {
             for (const auto &c : m_model.classes) {
+                if (!c.is_template_instantiation &&
+                    !m_config.should_include(c.name))
+                    continue;
                 generate_alias(c, ostr);
                 ostr << std::endl;
             }
 
             for (const auto &e : m_model.enums) {
+                if (!m_config.should_include(e.name))
+                    continue;
                 generate_alias(e, ostr);
                 ostr << std::endl;
             }
 
             for (const auto &c : m_model.classes) {
+                if (!c.is_template_instantiation &&
+                    !m_config.should_include(c.name))
+                    continue;
                 generate(c, ostr);
                 ostr << std::endl;
             }

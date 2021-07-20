@@ -1,5 +1,5 @@
 /**
- * tests/t00014/test_case.cc
+ * tests/t00014/test_case.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -27,7 +27,7 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(diagram->include.namespaces,
         VectorContains(std::string{"clanguml::t00014"}));
 
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
+    REQUIRE(diagram->exclude.namespaces.size() == 2);
 
     REQUIRE(diagram->should_include("clanguml::t00014::S"));
 
@@ -46,9 +46,6 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
-    // TODO
-    // REQUIRE_THAT(puml, IsInstantiation(_A("A<T,std::string>"),
-    // _A("A<bool,std::string>")));
     REQUIRE_THAT(
         puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
     REQUIRE_THAT(

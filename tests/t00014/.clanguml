@@ -10,3 +10,7 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00014
+    exclude:
+      namespaces:
+        - std
+        - clanguml::t00014::std

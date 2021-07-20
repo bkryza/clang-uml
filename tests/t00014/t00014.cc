@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <functional>
 #include <ios>
 #include <map>
 #include <numeric>
@@ -27,6 +28,9 @@ template <typename T, typename P> struct A {
 
 template <typename T> using AString = A<T, std::string>;
 
+template <typename... T> using GeneralCallback = std::function<void(T..., int)>;
+using VoidCallback = GeneralCallback<>;
+
 struct B {
     std::string value;
 };
@@ -46,6 +50,8 @@ class R {
     AStringString stringstring;
     BVector bs;
     BVector2 bs2;
+    GeneralCallback<AIntString> cb;
+    VoidCallback vcb;
 };
 }
 }

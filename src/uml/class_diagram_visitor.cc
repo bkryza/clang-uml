@@ -1048,31 +1048,40 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
 class_ tu_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t)
 {
-    const auto &primary_template_ref =
-        static_cast<const cppast::cpp_class_template &>(
-            t.primary_template().get(ctx.entity_index)[0].get())
-            .class_();
-
-    auto full_template_name =
-        cx::util::full_name(ctx.namespace_, primary_template_ref);
-
-    LOG_DBG("Found template instantiation: {} ({}) ..|> {}, {}",
-        cppast::to_string(t), cppast::to_string(t.canonical()),
-        t.primary_template().name(), full_template_name);
-
     class_ tinst;
+    std::string full_template_name;
 
-    if (full_template_name.back() == ':')
-        tinst.name = full_template_name + tinst.name;
+    if (t.primary_template().get(ctx.entity_index).size()) {
+        const auto &primary_template_ref =
+            static_cast<const cppast::cpp_class_template &>(
+                t.primary_template().get(ctx.entity_index)[0].get())
+                .class_();
 
-    if (primary_template_ref.user_data()) {
-        tinst.base_template_usr =
-            static_cast<const char *>(primary_template_ref.user_data());
-        LOG_DBG("Primary template ref set to: {}", tinst.base_template_usr);
+        full_template_name =
+            cx::util::full_name(ctx.namespace_, primary_template_ref);
+
+        LOG_DBG("Found template instantiation: {} ({}) ..|> {}, {}",
+            cppast::to_string(t), cppast::to_string(t.canonical()),
+            t.primary_template().name(), full_template_name);
+
+        if (full_template_name.back() == ':')
+            tinst.name = full_template_name + tinst.name;
+
+        if (primary_template_ref.user_data()) {
+            tinst.base_template_usr =
+                static_cast<const char *>(primary_template_ref.user_data());
+            LOG_DBG("Primary template ref set to: {}", tinst.base_template_usr);
+        }
+        else
+            LOG_WARN("No user data for base template {}",
+                primary_template_ref.name());
     }
-    else
-        LOG_WARN(
-            "No user data for base template {}", primary_template_ref.name());
+    else {
+        LOG_WARN("Template instantiation {} has no primary template",
+            cppast::to_string(t));
+
+        full_template_name = cppast::to_string(t);
+    }
 
     // Extract namespace from base template name
     auto ns_toks = clanguml::util::split(

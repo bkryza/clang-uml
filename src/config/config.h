@@ -111,8 +111,10 @@ struct diagram {
         auto name = clanguml::util::unqualify(name_);
 
         for (const auto &ex : exclude.namespaces) {
-            if (name.find(ex) == 0)
+            if (name.find(ex) == 0) {
+                spdlog::debug("Skipping from diagram: {}", name);
                 return false;
+            }
         }
 
         // If no inclusive namespaces are provided,
