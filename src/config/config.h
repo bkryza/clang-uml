@@ -165,6 +165,8 @@ struct class_diagram : public diagram {
     virtual ~class_diagram() = default;
 
     std::vector<std::string> classes;
+    bool include_relations_also_as_members{true};
+
     bool has_class(std::string clazz)
     {
         for (const auto &c : classes) {
@@ -315,6 +317,11 @@ template <> struct convert<class_diagram> {
     {
         if (!decode_diagram(node, rhs))
             return false;
+
+        if (node["include_relations_also_as_members"])
+            rhs.include_relations_also_as_members =
+                node["include_relations_also_as_members"]
+                    .as<decltype(rhs.include_relations_also_as_members)>();
 
         return true;
     }

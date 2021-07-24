@@ -1,0 +1,13 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00017_class:
+    type: class
+    include_relations_also_as_members: false
+    glob:
+      - ../../tests/t00017/t00017.cc
+    using_namespace:
+      - clanguml::t00017
+    include:
+      namespaces:
+        - clanguml::t00017

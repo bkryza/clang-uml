@@ -196,10 +196,64 @@ public:
         }
 
         //
+        // Process relationships
+        //
+        std::set<std::string> rendered_relations;
+
+        std::stringstream all_relations_str;
+        for (const auto &r : c.relationships) {
+            if (!m_config.should_include_relationship(name(r.type)))
+                continue;
+
+            std::stringstream relstr;
+            std::string destination;
+            try {
+                if (r.destination.find("#") != std::string::npos ||
+                    r.destination.find("@") != std::string::npos) {
+                    destination = m_model.usr_to_name(uns, r.destination);
+
+                    // If something went wrong and we have an empty destination
+                    // generate the relationship but comment it out for
+                    // debugging
+                    if (destination.empty()) {
+                        relstr << "' ";
+                        destination = r.destination;
+                    }
+                }
+                else {
+                    destination = r.destination;
+                }
+
+                relstr << m_model.to_alias(
+                              uns, ns_relative(uns, c.full_name(uns)))
+                       << " " << to_string(r.type) << " "
+                       << m_model.to_alias(uns, ns_relative(uns, destination));
+
+                if (!r.label.empty()) {
+                    relstr << " : " << to_string(r.scope) << r.label;
+                    rendered_relations.emplace(r.label);
+                }
+
+                relstr << std::endl;
+
+                all_relations_str << relstr.str();
+            }
+            catch (error::uml_alias_missing &e) {
+                LOG_ERROR("Skipping {} relation from {} to {} due "
+                          "to: {}",
+                    to_string(r.type), c.full_name(uns), destination, e.what());
+            }
+        }
+
+        //
         // Process members
         //
         for (const auto &m : c.members) {
             if (!m_config.should_include(m.scope))
+                continue;
+
+            if (!m_config.include_relations_also_as_members &&
+                rendered_relations.find(m.name) != rendered_relations.end())
                 continue;
 
             if (m.is_static)
@@ -228,47 +282,8 @@ public:
                 }
             }
 
-        for (const auto &r : c.relationships) {
-            if (!m_config.should_include_relationship(name(r.type)))
-                continue;
-
-            std::stringstream relstr;
-
-            std::string destination;
-            try {
-                if (r.destination.find("#") != std::string::npos ||
-                    r.destination.find("@") != std::string::npos) {
-                    destination = m_model.usr_to_name(uns, r.destination);
-
-                    // If something went wrong and we have an empty destination
-                    // generate the relationship but comment it out for
-                    // debugging
-                    if (destination.empty()) {
-                        relstr << "' ";
-                        destination = r.destination;
-                    }
-                }
-                else {
-                    destination = r.destination;
-                }
-
-                relstr << m_model.to_alias(
-                              uns, ns_relative(uns, c.full_name(uns)))
-                       << " " << to_string(r.type) << " "
-                       << m_model.to_alias(uns, ns_relative(uns, destination));
-
-                if (!r.label.empty())
-                    relstr << " : " << to_string(r.scope) << r.label;
-
-                relstr << std::endl;
-                ostr << relstr.str();
-            }
-            catch (error::uml_alias_missing &e) {
-                LOG_ERROR("Skipping {} relation from {} to {} due "
-                          "to: {}",
-                    to_string(r.type), c.full_name(uns), destination, e.what());
-            }
-        }
+        // Print relationships
+        ostr << all_relations_str.str();
     }
 
     void generate(const enum_ &e, std::ostream &ostr) const
