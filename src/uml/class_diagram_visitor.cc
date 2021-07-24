@@ -1032,14 +1032,11 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         cppast::cpp_type_kind::user_defined_t) {
         LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
             cppast::to_string(t_.canonical()));
-        if (ctx.config.should_include(cppast::to_string(t_.canonical()))) {
-            if (relationship_type != relationship_t::kNone)
-                relationships.emplace_back(
-                    cppast::to_string(t), relationship_type);
-            else
-                relationships.emplace_back(
-                    cppast::to_string(t), relationship_t::kAggregation);
-        }
+        if (relationship_type != relationship_t::kNone)
+            relationships.emplace_back(cppast::to_string(t), relationship_type);
+        else
+            relationships.emplace_back(
+                cppast::to_string(t), relationship_t::kAggregation);
 
         // Check if t_ has an alias in the alias index
         const auto fn =
