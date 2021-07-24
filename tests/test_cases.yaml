@@ -48,6 +48,9 @@ test_cases:
     - name: t00017
       title: Test include relations also as members flag
       description:
+    - name: t00018
+      title: Pimpl pattern
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram
