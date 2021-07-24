@@ -53,7 +53,7 @@ TEST_CASE("t00002", "[test-case][class]")
     REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_a")));
     REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_c")));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "as"));
+    REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

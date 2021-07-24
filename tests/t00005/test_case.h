@@ -61,17 +61,17 @@ TEST_CASE("t00005", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer", "int*")));
     REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer_pointer", "int**")));
 
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "a"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "b"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "c"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "d"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("E"), "e"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("F"), "f"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G"), "g"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("H"), "h"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("I"), "i"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("J"), "j"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "k"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "+c"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+d"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("E"), "+e"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("F"), "+f"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G"), "+g"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("H"), "+h"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("I"), "+i"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("J"), "+j"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "+k"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

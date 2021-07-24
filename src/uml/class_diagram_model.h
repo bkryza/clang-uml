@@ -36,7 +36,7 @@ namespace clanguml {
 namespace model {
 namespace class_diagram {
 
-enum class scope_t { kPublic, kProtected, kPrivate };
+enum class scope_t { kPublic, kProtected, kPrivate, kNone };
 
 enum class relationship_t {
     kNone,
@@ -121,6 +121,7 @@ struct class_relationship {
     std::string cardinality_source;
     std::string cardinality_destination;
     std::string label;
+    scope_t scope{scope_t::kNone};
 
     friend bool operator==(
         const class_relationship &l, const class_relationship &r)

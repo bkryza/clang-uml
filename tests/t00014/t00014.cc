@@ -48,7 +48,11 @@ class R {
     AString<float> floatstring;
     AIntString intstring;
     AStringString stringstring;
+
+protected:
     BVector bs;
+
+public:
     BVector2 bs2;
     GeneralCallback<AIntString> cb;
     VoidCallback vcb;

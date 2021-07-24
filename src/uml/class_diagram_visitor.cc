@@ -171,6 +171,7 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                 r.destination = tinst.base_template_usr;
                 r.type = relationship_t::kInstantiation;
                 r.label = "";
+                r.scope = scope_t::kNone;
                 tinst.add_relationship(std::move(r));
 
                 LOG_DBG("Created template instantiation: {}, {}, {}",
@@ -206,6 +207,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
             containment.type = relationship_t::kContainment;
             containment.destination =
                 cx::util::full_name(ctx.namespace_, cur.value());
+            containment.scope = scope_t::kNone;
             e.relationships.emplace_back(std::move(containment));
 
             LOG_DBG("Added relationship {} +-- {}", e.name,
@@ -398,6 +400,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
                             r.type = relationship_t::kInstantiation;
                             r.label = "";
                             r.destination = base_template_usr;
+                            r.scope = scope_t::kNone;
                             c.add_relationship(std::move(r));
                         }
                         else {
@@ -484,7 +487,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
 
 void tu_visitor::process_field_with_template_instantiation(
     const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
-    class_ &c)
+    class_ &c, cppast::cpp_access_specifier_kind as)
 {
     LOG_DBG("Processing field with template instatiation type {}",
         cppast::to_string(tr));
@@ -527,6 +530,7 @@ void tu_visitor::process_field_with_template_instantiation(
             }
             r.type = relationship_t::kInstantiation;
             r.label = "";
+            r.scope = scope_t::kNone;
             tinst.add_relationship(std::move(r));
 
             class_relationship rr;
@@ -537,9 +541,12 @@ void tu_visitor::process_field_with_template_instantiation(
             else
                 rr.type = relationship_t::kAggregation;
             rr.label = mv.name();
+            rr.scope = detail::cpp_access_specifier_to_scope(as);
+
             LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
                 rr.destination, model::class_diagram::to_string(rr.type), c.usr,
                 rr.label);
+
             c.add_relationship(std::move(rr));
 
             LOG_DBG("Created template instantiation: {}, {}", tinst.name,
@@ -572,7 +579,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
             cppast::to_string(tr), mv.name());
     }
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        process_field_with_template_instantiation(mv, resolve_alias(tr), c);
+        process_field_with_template_instantiation(mv, resolve_alias(tr), c, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
         LOG_DBG(
@@ -592,6 +599,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.destination = type;
                 r.type = relationship_type;
                 r.label = m.name;
+                r.scope = m.scope;
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
                     r.destination, model::class_diagram::to_string(r.type),

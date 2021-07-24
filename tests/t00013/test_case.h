@@ -56,7 +56,8 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<int>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<int>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("E<std::string>"), "estring"));
+    REQUIRE_THAT(
+        puml, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));

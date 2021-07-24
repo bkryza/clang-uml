@@ -258,7 +258,7 @@ public:
                        << m_model.to_alias(uns, ns_relative(uns, destination));
 
                 if (!r.label.empty())
-                    relstr << " : " << r.label;
+                    relstr << " : " << to_string(r.scope) << r.label;
 
                 relstr << std::endl;
                 ostr << relstr.str();

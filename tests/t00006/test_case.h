@@ -65,22 +65,22 @@ TEST_CASE("t00006", "[test-case][class]")
     REQUIRE_THAT(puml,
         IsInstantiation(_A("custom_container<T>"), _A("custom_container<E>")));
 
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "a"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "b"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("C"), "c"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "d"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("custom_container<E>"), "e"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("F"), "f"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G"), "g"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("H"), "h"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("I"), "i"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("J"), "j"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "k"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("L"), "lm"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("M"), "lm"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("N"), "ns"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("NN"), "ns"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("NNN"), "ns"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("C"), "+c"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+d"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("custom_container<E>"), "+e"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("F"), "+f"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G"), "+g"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("H"), "+h"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("I"), "+i"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("J"), "+j"));
+    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "+k"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("L"), "+lm"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("M"), "+lm"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("N"), "+ns"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("NN"), "+ns"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("NNN"), "+ns"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
