@@ -18,7 +18,7 @@
 ## limitations under the License.
 ##
 
-
+import os
 import yaml
 from shutil import copyfile
 
@@ -52,9 +52,14 @@ with open(r'tests/test_cases.yaml') as f:
                 tc.write(config)
                 tc.write("\n```\n")
                 tc.write("## Source code\n")
-                tc.write("```cpp\n")
-                tc.write(open('tests/{0}/{0}.cc'.format(name), 'r').read())
-                tc.write("\n```\n")
+                for source_file in os.listdir("tests/{0}/".format(name)):
+                    if source_file.endswith(".h") or source_file.endswith(".cc"):
+                        if source_file == "test_case.h":
+                            continue
+                        tc.write("File {}\n".format(source_file))
+                        tc.write("```cpp\n")
+                        tc.write(open('tests/{0}/{1}'.format(name, source_file), 'r').read())
+                        tc.write("\n```\n")
 
                 # Copy and link the diagram image
                 config_dict = yaml.full_load(config)
