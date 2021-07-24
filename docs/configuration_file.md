@@ -9,6 +9,7 @@
 ### Diagram options
 * `type` - type of diagram, one of [`class`, `sequence`]
 * `glob` - list of glob patterns to match source code files for analysis
+* `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`
 * `include` - definition of inclusion patterns:
     * `namespaces` - list of namespaces to include
