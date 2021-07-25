@@ -17,6 +17,7 @@
  * [t00016](./test_cases/t00016.md) - Unnamed enums and empty templates
  * [t00017](./test_cases/t00017.md) - Test include relations also as members flag
  * [t00018](./test_cases/t00018.md) - Pimpl pattern
+ * [t00019](./test_cases/t00019.md) - Layercake pattern
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
