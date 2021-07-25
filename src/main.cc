@@ -50,7 +50,7 @@ int main(int argc, const char *argv[])
 {
     CLI::App app{"Clang-based PlantUML generator from C++ sources"};
 
-    std::string config_path{".clanguml"};
+    std::string config_path{".clang-uml"};
     std::string compilation_database_dir{'.'};
     std::vector<std::string> diagram_names{};
     bool verbose{false};

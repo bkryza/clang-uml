@@ -59,7 +59,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
   * For Boost-based projects try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
 
 ### Invocation
-By default, `config-uml` will assume that the configuration file `.clanguml`
+By default, `config-uml` will assume that the configuration file `.clang-uml`
 and compilation database `compile_commands.json` files are in the
 current directory, so if they are in the top level directory of a project,
 simply run:
@@ -68,7 +68,7 @@ clang-uml
 ```
 
 The output path for diagrams, as well as alternative location of
-compilation database can be specified in `.clanguml` configuration file.
+compilation database can be specified in `.clang-uml` configuration file.
 
 For other options checkout help:
 ```bash
