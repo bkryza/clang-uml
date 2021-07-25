@@ -24,6 +24,7 @@
  * [t00023](./test_cases/t00023.md) - Strategy pattern
  * [t00024](./test_cases/t00024.md) - Proxy pattern
  * [t00025](./test_cases/t00025.md) - Template proxy pattern
+ * [t00026](./test_cases/t00026.md) - Template memento pattern
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
