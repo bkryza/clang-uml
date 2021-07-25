@@ -271,7 +271,8 @@ public:
                 try {
                     relstr << m_model.to_alias(uns, ns_relative(uns, b.name))
                            << " <|-- "
-                           << m_model.to_alias(uns, ns_relative(uns, c.name))
+                           << m_model.to_alias(
+                                  uns, ns_relative(uns, c.full_name(uns)))
                            << std::endl;
                     ostr << relstr.str();
                 }

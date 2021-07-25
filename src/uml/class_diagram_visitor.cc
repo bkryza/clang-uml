@@ -319,6 +319,8 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
             cp.access = class_parent::access_t::kPublic;
         }
 
+        LOG_DBG("Found base class {} for class {}", cp.name, c.name);
+
         c.bases.emplace_back(std::move(cp));
     }
 
