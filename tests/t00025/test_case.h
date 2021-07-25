@@ -46,10 +46,14 @@ TEST_CASE("t00025", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("Proxy", "T"));
     REQUIRE_THAT(puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target1>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target2>")));
-    REQUIRE_THAT(puml, IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
-    REQUIRE_THAT(puml, IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
-    REQUIRE_THAT(puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
-    REQUIRE_THAT(puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
+    REQUIRE_THAT(puml,
+        IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
+    REQUIRE_THAT(puml,
+        IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
+    REQUIRE_THAT(
+        puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
+    REQUIRE_THAT(
+        puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

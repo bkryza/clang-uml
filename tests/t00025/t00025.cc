@@ -5,20 +5,20 @@ namespace t00025 {
 
 class Target1 {
 public:
-    void m1() { }
-    void m2() { }
+    void m1() {}
+    void m2() {}
 };
 
 class Target2 {
 public:
-    void m1() { }
-    void m2() { }
+    void m1() {}
+    void m2() {}
 };
 
 template <typename T> class Proxy {
 public:
     Proxy(std::shared_ptr<T> target)
-        : m_target {std::move(target)}
+        : m_target{std::move(target)}
     {
     }
     void m1() { m_target->m1(); }

@@ -485,12 +485,14 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     ctx.d.add_class(std::move(c));
 }
 
-void tu_visitor::process_field_with_template_instantiation(
+bool tu_visitor::process_field_with_template_instantiation(
     const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
     class_ &c, cppast::cpp_access_specifier_kind as)
 {
     LOG_DBG("Processing field with template instatiation type {}",
         cppast::to_string(tr));
+
+    bool res = false;
 
     const auto &template_instantiation_type =
         static_cast<const cppast::cpp_template_instantiation_type &>(tr);
@@ -549,17 +551,23 @@ void tu_visitor::process_field_with_template_instantiation(
 
             c.add_relationship(std::move(rr));
 
+            res = true;
+
             LOG_DBG("Created template instantiation: {}, {}", tinst.name,
                 tinst.usr);
 
             ctx.d.add_class(std::move(tinst));
         }
     }
+
+    return res;
 }
 
 void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
+    bool template_instantiation_added_as_aggregation{false};
+
     class_member m;
     m.name = mv.name();
     m.type = cppast::to_string(mv.type());
@@ -579,7 +587,9 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
             cppast::to_string(tr), mv.name());
     }
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        process_field_with_template_instantiation(mv, resolve_alias(tr), c, as);
+        template_instantiation_added_as_aggregation =
+            process_field_with_template_instantiation(
+                mv, resolve_alias(tr), c, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
         LOG_DBG(
@@ -587,11 +597,12 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
         // TODO
     }
 
-    if (tr.kind() != cppast::cpp_type_kind::builtin_t &&
-        tr.kind() != cppast::cpp_type_kind::template_parameter_t) {
+    if (!template_instantiation_added_as_aggregation &&
+        (tr.kind() != cppast::cpp_type_kind::builtin_t) &&
+        (tr.kind() != cppast::cpp_type_kind::template_parameter_t)) {
         const auto &ttt = resolve_alias(mv.type());
         std::vector<std::pair<std::string, relationship_t>> relationships;
-        find_relationships(ttt, relationships);
+        auto found = find_relationships(ttt, relationships);
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
@@ -951,10 +962,12 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
     parent.add_relationship(std::move(r));
 }
 
-void tu_visitor::find_relationships(const cppast::cpp_type &t_,
+bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
     std::vector<std::pair<std::string, relationship_t>> &relationships,
     relationship_t relationship_hint)
 {
+    bool found{false};
+
     LOG_DBG("Finding relationships for type {}, {}", cppast::to_string(t_),
         t_.kind());
 
@@ -963,60 +976,19 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
 
     if (t.kind() == cppast::cpp_type_kind::array_t) {
         auto &a = static_cast<const cppast::cpp_array_type &>(t);
-        find_relationships(
+        found = find_relationships(
             a.value_type(), relationships, relationship_t::kAggregation);
-        return;
+        return found;
     }
 
     auto name = cppast::to_string(t);
 
-    if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        class_relationship r;
-
-        auto &tinst =
-            static_cast<const cppast::cpp_template_instantiation_type &>(t);
-
-        if (!tinst.arguments_exposed()) {
-            LOG_DBG("Template instantiation {} has no exposed arguments", name);
-
-            return;
-        }
-
-        const auto &args = tinst.arguments().value();
-
-        // Try to match common containers
-        // TODO: Refactor to a separate class with configurable
-        //       container list
-        if (name.find("std::unique_ptr") == 0) {
-            find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
-        }
-        else if (name.find("std::shared_ptr") == 0) {
-            find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAssociation);
-        }
-        else if (name.find("std::weak_ptr") == 0) {
-            find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAssociation);
-        }
-        else if (name.find("std::vector") == 0) {
-            find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
-        }
-        else {
-            for (const auto &arg : args) {
-                if (arg.type())
-                    find_relationships(
-                        arg.type().value(), relationships, relationship_type);
-            }
-        }
-    }
-    else if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
+    if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
         auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
         auto rt = relationship_t::kAssociation;
         if (relationship_hint == relationship_t::kDependency)
             rt = relationship_hint;
-        find_relationships(p.pointee(), relationships, rt);
+        found = find_relationships(p.pointee(), relationships, rt);
     }
     else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
         auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
@@ -1026,12 +998,12 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         }
         if (relationship_hint == relationship_t::kDependency)
             rt = relationship_hint;
-        find_relationships(r.referee(), relationships, rt);
+        found = find_relationships(r.referee(), relationships, rt);
     }
-    else if (cppast::remove_cv(t_).kind() ==
-        cppast::cpp_type_kind::user_defined_t) {
+    if (cppast::remove_cv(t_).kind() == cppast::cpp_type_kind::user_defined_t) {
         LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
             cppast::to_string(t_.canonical()));
+
         if (relationship_type != relationship_t::kNone)
             relationships.emplace_back(cppast::to_string(t), relationship_type);
         else
@@ -1044,10 +1016,56 @@ void tu_visitor::find_relationships(const cppast::cpp_type &t_,
         if (ctx.has_type_alias(fn)) {
             LOG_DBG("Find relationship in alias of {} | {}", fn,
                 cppast::to_string(ctx.get_type_alias(fn).get()));
-            find_relationships(
+            found = find_relationships(
                 ctx.get_type_alias(fn).get(), relationships, relationship_type);
+            if (found)
+                return found;
         }
     }
+    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        class_relationship r;
+
+        auto &tinst =
+            static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
+        if (!tinst.arguments_exposed()) {
+            LOG_DBG("Template instantiation {} has no exposed arguments", name);
+
+            return found;
+        }
+
+        const auto &args = tinst.arguments().value();
+
+        // Try to match common containers
+        // TODO: Refactor to a separate class with configurable
+        //       container list
+        if (name.find("std::unique_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAggregation);
+        }
+        else if (name.find("std::shared_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAssociation);
+        }
+        else if (name.find("std::weak_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAssociation);
+        }
+        else if (name.find("std::vector") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAggregation);
+        }
+        else {
+            for (const auto &arg : args) {
+                if (arg.type()) {
+                    found = find_relationships(
+                        arg.type().value(), relationships, relationship_type);
+                }
+            }
+        }
+    }
+
+    return found;
 }
 
 class_ tu_visitor::build_template_instantiation(
