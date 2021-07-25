@@ -2,7 +2,7 @@
 
 ![linux build](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
 
-`clang-uml` is an automatic ![PlantUML](https://plantuml.com/) class and sequence
+`clang-uml` is an automatic [PlantUML](https://plantuml.com) class and sequence
 diagram generator, driven by YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 existing project code. The configuration file or files for `clang-uml` define the
@@ -238,7 +238,7 @@ generates the following diagram (via PlantUML):
 
 ### Test cases
 
-The build-in test cases used for unit testing of the clang-uml, can be browsed [here](./docs/test_cases.md)
+The build-in test cases used for unit testing of the `clang-uml`, can be browsed [here](./docs/test_cases.md).
 
 
 ## LICENSE
