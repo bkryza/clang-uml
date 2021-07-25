@@ -163,7 +163,7 @@ public:
         clanguml::model::class_diagram::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
-    void process_field_with_template_instantiation(
+    bool process_field_with_template_instantiation(
         const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
         clanguml::model::class_diagram::class_ &c,
         cppast::cpp_access_specifier_kind as);
@@ -196,7 +196,7 @@ public:
         clanguml::model::class_diagram::class_method &m,
         clanguml::model::class_diagram::class_ &c);
 
-    void find_relationships(const cppast::cpp_type &t,
+    bool find_relationships(const cppast::cpp_type &t,
         std::vector<std::pair<std::string,
             clanguml::model::class_diagram::relationship_t>> &relationships,
         clanguml::model::class_diagram::relationship_t relationship_hint =
