@@ -19,6 +19,7 @@
  * [t00018](./test_cases/t00018.md) - Pimpl pattern
  * [t00019](./test_cases/t00019.md) - Layercake pattern
  * [t00020](./test_cases/t00020.md) - Abstract factory pattern
+ * [t00021](./test_cases/t00021.md) - Visitor pattern
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
