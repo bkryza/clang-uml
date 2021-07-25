@@ -22,6 +22,7 @@
  * [t00021](./test_cases/t00021.md) - Visitor pattern
  * [t00022](./test_cases/t00022.md) - Template method pattern
  * [t00023](./test_cases/t00023.md) - Strategy pattern
+ * [t00024](./test_cases/t00024.md) - Proxy pattern
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams
