@@ -1,0 +1,14 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00004_class:
+    type: class
+    glob:
+      - ../../tests/t00004/t00004.cc
+    using_namespace:
+      - clanguml::t00004
+      - clanguml::t00004::A
+      - clanguml::t00004::A::AA
+    include:
+      namespaces:
+        - clanguml::t00004
