@@ -46,3 +46,25 @@ TEST_CASE("Test ns_relative", "[unit-test]")
         "static const vector<a>&");
     CHECK(ns_relative({"clanguml::t0"}, "clanguml::t0") == "t0");
 }
+
+TEST_CASE("Test replace_all", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    const std::string orig = R"(
+                        Lorem ipsum \clanguml{note} something something...
+
+                        \clanguml{style}
+
+                        )";
+    std::string text{orig};
+
+    CHECK(replace_all(text, "NOTHERE", "HERE") == false);
+    CHECK(replace_all(text, "\\clanguml", "@clanguml") == true);
+    CHECK(replace_all(text, "something", "nothing") == true);
+    CHECK(replace_all(text, "something", "nothing") == false);
+    CHECK(replace_all(text, "nothing", "something") == true);
+    CHECK(replace_all(text, "@clanguml", "\\clanguml") == true);
+
+    CHECK(text == orig);
+}
