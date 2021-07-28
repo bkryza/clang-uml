@@ -38,6 +38,10 @@ struct note : public command {
     static std::shared_ptr<command> from_string(std::string_view c);
 };
 
+struct skip : public command {
+    static std::shared_ptr<command> from_string(std::string_view c);
+};
+
 struct style : public command {
     std::string spec;
     static std::shared_ptr<command> from_string(std::string_view c);

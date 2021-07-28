@@ -111,3 +111,20 @@ TEST_CASE("Test command parser on aggregation", "[unit-test]")
     CHECK(n1);
     CHECK(n1->multiplicity == "0..1:0..*");
 }
+
+TEST_CASE("Test command parser on skip", "[unit-test]")
+{
+    std::string comment = R"(
+    \clanguml{skip}
+    )";
+
+    using namespace clanguml::command_parser;
+
+    auto commands = parse(comment);
+
+    CHECK(commands.size() == 1);
+
+    auto n1 = std::dynamic_pointer_cast<skip>(commands.at(0));
+
+    CHECK(n1);
+}

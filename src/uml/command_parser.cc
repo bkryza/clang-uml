@@ -30,6 +30,9 @@ std::shared_ptr<command> command::from_string(std::string_view c)
     if (c.find("note") == 0) {
         return note::from_string(c);
     }
+    else if (c.find("skip") == 0) {
+        return skip::from_string(c);
+    }
     else if (c.find("style") == 0) {
         return style::from_string(c);
     }
@@ -65,6 +68,13 @@ std::shared_ptr<command> note::from_string(std::string_view c)
 
     return res;
 }
+
+std::shared_ptr<command> skip::from_string(std::string_view c)
+{
+    auto res = std::make_shared<skip>();
+    return res;
+}
+
 
 std::shared_ptr<command> style::from_string(std::string_view c)
 {
