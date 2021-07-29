@@ -36,11 +36,11 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     if (c.find(note::label) == 0) {
         return note::from_string(c);
     }
-    else if (c.find(skip::label) == 0) {
-        return skip::from_string(c);
-    }
     else if (c.find(skip_relationship::label) == 0) {
         return skip_relationship::from_string(c);
+    }
+    else if (c.find(skip::label) == 0) {
+        return skip::from_string(c);
     }
     else if (c.find(style::label) == 0) {
         return style::from_string(c);
@@ -58,17 +58,25 @@ std::shared_ptr<decorator> note::from_string(std::string_view c)
     auto it = c.begin();
     std::advance(it, note::label.size());
 
-    if (*it != '[')
-        return {};
+    if (*it == '[') {
+        std::advance(it, 1);
 
-    std::advance(it, 1);
+        auto pos = std::distance(c.begin(), it);
+        auto note_position = c.substr(pos, c.find("]", pos) - pos);
+        if (!note_position.empty())
+            res->position = note_position;
+
+        std::advance(it, note_position.size() + 1);
+    }
+    else if (*it == ' ') {
+        std::advance(it, 1);
+    }
+    else {
+        LOG_WARN("Invalid note decorator: {}", c);
+        return {};
+    }
 
     auto pos = std::distance(c.begin(), it);
-    res->position = c.substr(pos, c.find("]", pos) - pos);
-
-    std::advance(it, res->position.size() + 1);
-
-    pos = std::distance(c.begin(), it);
     res->text = c.substr(pos, c.find("}", pos) - pos);
 
     res->position = util::trim(res->position);

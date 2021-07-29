@@ -17,7 +17,6 @@
  */
 #pragma once
 
-#include "config/config.h"
 #include <functional>
 #include <map>
 #include <memory>
@@ -34,7 +33,7 @@ struct decorator {
 struct note : public decorator {
     static const std::string label;
 
-    std::string position;
+    std::string position{"left"};
     std::string text;
 
     static std::shared_ptr<decorator> from_string(std::string_view c);

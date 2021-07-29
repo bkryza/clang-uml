@@ -229,6 +229,10 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
 
+    // Process class documentation comment
+    if(cls.comment().has_value())
+        c.decorators = decorators::parse(cls.comment().value());
+
     // Process class child entities
     if (c.is_struct)
         last_access_specifier = cppast::cpp_access_specifier_kind::cpp_public;

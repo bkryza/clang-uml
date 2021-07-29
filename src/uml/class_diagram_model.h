@@ -19,6 +19,7 @@
 
 #include "util/error.h"
 #include "util/util.h"
+#include "decorators.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
@@ -61,6 +62,7 @@ public:
     }
     std::string name;
     std::vector<std::string> namespace_;
+    std::vector<std::shared_ptr<decorators::decorator>> decorators;
 
     std::string alias() const { return fmt::format("C_{:010}", m_id); }
 

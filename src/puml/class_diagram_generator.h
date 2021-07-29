@@ -129,7 +129,7 @@ public:
 
         ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
 
-        ostr << "\" as " << c.alias() << std::endl;
+        ostr << "\" as " << c.alias() << '\n';
     }
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const
@@ -137,7 +137,7 @@ public:
         ostr << "enum"
              << " \"" << e.full_name(m_config.using_namespace);
 
-        ostr << "\" as " << e.alias() << std::endl;
+        ostr << "\" as " << e.alias() << '\n';
     }
 
     void generate(const class_ &c, std::ostream &ostr) const
@@ -149,7 +149,7 @@ public:
         if (c.is_abstract())
             class_type = "abstract";
 
-        ostr << class_type << " " << c.alias() << " {" << std::endl;
+        ostr << class_type << " " << c.alias() << " {" << '\n';
 
         //
         // Process methods
@@ -192,7 +192,7 @@ public:
 
             ostr << " : " << ns_relative(uns, type);
 
-            ostr << std::endl;
+            ostr << '\n';
         }
 
         //
@@ -234,7 +234,7 @@ public:
                     rendered_relations.emplace(r.label);
                 }
 
-                relstr << std::endl;
+                relstr << '\n';
 
                 all_relations_str << relstr.str();
             }
@@ -260,10 +260,10 @@ public:
                 ostr << "{static} ";
 
             ostr << to_string(m.scope) << m.name << " : "
-                 << ns_relative(uns, m.type) << std::endl;
+                 << ns_relative(uns, m.type) << '\n';
         }
 
-        ostr << "}" << std::endl;
+        ostr << "}" << '\n';
 
         if (m_config.should_include_relationship("inheritance"))
             for (const auto &b : c.bases) {
@@ -273,7 +273,7 @@ public:
                            << " <|-- "
                            << m_model.to_alias(
                                   uns, ns_relative(uns, c.full_name(uns)))
-                           << std::endl;
+                           << '\n';
                     ostr << relstr.str();
                 }
                 catch (error::uml_alias_missing &e) {
@@ -283,19 +283,30 @@ public:
                 }
             }
 
+        //
+        // Process notes
+        //
+        for (auto decorator : c.decorators) {
+            auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+            if (note) {
+                ostr << "note " << note->position << " of " << c.alias()
+                     << " : " << note->text << '\n';
+            }
+        }
+
         // Print relationships
         ostr << all_relations_str.str();
     }
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum " << e.alias() << " {" << std::endl;
+        ostr << "enum " << e.alias() << " {" << '\n';
 
         for (const auto &enum_constant : e.constants) {
-            ostr << enum_constant << std::endl;
+            ostr << enum_constant << '\n';
         }
 
-        ostr << "}" << std::endl;
+        ostr << "}" << '\n';
 
         for (const auto &r : e.relationships) {
             if (!m_config.should_include_relationship(name(r.type)))
@@ -327,7 +338,7 @@ public:
                 if (!r.label.empty())
                     relstr << " : " << r.label;
 
-                relstr << std::endl;
+                relstr << '\n';
                 ostr << relstr.str();
             }
             catch (error::uml_alias_missing &ex) {
@@ -340,7 +351,7 @@ public:
 
     void generate(std::ostream &ostr) const
     {
-        ostr << "@startuml" << std::endl;
+        ostr << "@startuml" << '\n';
 
         for (const auto &b : m_config.puml.before) {
             std::string note{b};
@@ -352,7 +363,7 @@ public:
                 note.replace(
                     std::get<1>(alias_match), std::get<2>(alias_match), alias);
             }
-            ostr << note << std::endl;
+            ostr << note << '\n';
         }
 
         if (m_config.should_include_entities("classes")) {
@@ -361,14 +372,14 @@ public:
                     !m_config.should_include(c.name))
                     continue;
                 generate_alias(c, ostr);
-                ostr << std::endl;
+                ostr << '\n';
             }
 
             for (const auto &e : m_model.enums) {
                 if (!m_config.should_include(e.name))
                     continue;
                 generate_alias(e, ostr);
-                ostr << std::endl;
+                ostr << '\n';
             }
 
             for (const auto &c : m_model.classes) {
@@ -376,14 +387,14 @@ public:
                     !m_config.should_include(c.name))
                     continue;
                 generate(c, ostr);
-                ostr << std::endl;
+                ostr << '\n';
             }
         }
 
         if (m_config.should_include_entities("enums"))
             for (const auto &e : m_model.enums) {
                 generate(e, ostr);
-                ostr << std::endl;
+                ostr << '\n';
             }
 
         // Process aliases in any of the puml directives
@@ -397,10 +408,10 @@ public:
                 note.replace(
                     std::get<1>(alias_match), std::get<2>(alias_match), alias);
             }
-            ostr << note << std::endl;
+            ostr << note << '\n';
         }
 
-        ostr << "@enduml" << std::endl;
+        ostr << "@enduml" << '\n';
     }
 
     friend std::ostream &operator<<(std::ostream &os, const generator &g);
