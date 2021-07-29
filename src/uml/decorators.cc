@@ -52,66 +52,90 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     return {};
 }
 
-std::shared_ptr<decorator> note::from_string(std::string_view c)
+bool decorator::applies_to_diagram(std::string name)
 {
-    auto res = std::make_shared<note>();
+    return diagrams.empty() ||
+        (std::find(diagrams.begin(), diagrams.end(), name) != diagrams.end());
+}
+
+decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
+{
+    decorator_toks res;
+    res.label = label;
+    size_t pos{};
     auto it = c.begin();
-    std::advance(it, note::label.size());
+    std::advance(it, label.size());
+
+    if (*it == ':') {
+        std::advance(it, 1);
+
+        pos = std::distance(c.begin(), it);
+        // If the diagram list is provided after ':', [] is mandatory
+        // even if empty
+        auto d = c.substr(pos, c.find("[", pos) - pos);
+        if (!d.empty()) {
+            std::string d_str{d};
+            d_str.erase(std::remove_if(d_str.begin(), d_str.end(),
+                            (int (*)(int))std::isspace),
+                d_str.end());
+            res.diagrams = util::split(d_str, ",");
+        }
+
+        std::advance(it, d.size());
+    }
 
     if (*it == '[') {
         std::advance(it, 1);
 
-        auto pos = std::distance(c.begin(), it);
-        auto note_position = c.substr(pos, c.find("]", pos) - pos);
-        if (!note_position.empty())
-            res->position = note_position;
+        pos = std::distance(c.begin(), it);
+        res.param = c.substr(pos, c.find("]", pos) - pos);
 
-        std::advance(it, note_position.size() + 1);
+        std::advance(it, res.param.size() + 1);
     }
     else if (std::isspace(*it)) {
         std::advance(it, 1);
     }
-    else {
-        LOG_WARN("Invalid note decorator: {}", c);
-        return {};
-    }
 
-    auto pos = std::distance(c.begin(), it);
-    res->text = c.substr(pos, c.find("}", pos) - pos);
+    pos = std::distance(c.begin(), it);
+    res.text = c.substr(pos, c.find("}", pos) - pos);
+    res.text = util::trim(res.text);
+    res.param = util::trim(res.param);
 
-    res->position = util::trim(res->position);
-    res->text = util::trim(res->text);
+    return res;
+}
+
+std::shared_ptr<decorator> note::from_string(std::string_view c)
+{
+    auto res = std::make_shared<note>();
+    auto toks = res->tokenize(note::label, c);
+
+    res->diagrams = toks.diagrams;
+
+    if (!toks.param.empty())
+        res->position = toks.param;
+
+    res->text = toks.text;
 
     return res;
 }
 
 std::shared_ptr<decorator> skip::from_string(std::string_view c)
 {
-    auto res = std::make_shared<skip>();
-    return res;
+    return std::make_shared<skip>();
 }
 
 std::shared_ptr<decorator> skip_relationship::from_string(std::string_view c)
 {
-    auto res = std::make_shared<skip_relationship>();
-    return res;
+    return std::make_shared<skip_relationship>();
 }
 
 std::shared_ptr<decorator> style::from_string(std::string_view c)
 {
     auto res = std::make_shared<style>();
-    auto it = c.begin();
-    std::advance(it, style::label.size());
+    auto toks = res->tokenize(style::label, c);
 
-    if (*it != '[')
-        return {};
-
-    std::advance(it, 1);
-
-    auto pos = std::distance(c.begin(), it);
-    res->spec = c.substr(pos, c.find("]", pos) - pos);
-
-    res->spec = util::trim(res->spec);
+    res->diagrams = toks.diagrams;
+    res->spec = toks.param;
 
     return res;
 }
@@ -119,18 +143,10 @@ std::shared_ptr<decorator> style::from_string(std::string_view c)
 std::shared_ptr<decorator> aggregation::from_string(std::string_view c)
 {
     auto res = std::make_shared<aggregation>();
-    auto it = c.begin();
-    std::advance(it, aggregation::label.size());
+    auto toks = res->tokenize(aggregation::label, c);
 
-    if (*it != '[')
-        return {};
-
-    std::advance(it, 1);
-
-    auto pos = std::distance(c.begin(), it);
-    res->multiplicity = c.substr(pos, c.find("]", pos) - pos);
-
-    res->multiplicity = util::trim(res->multiplicity);
+    res->diagrams = toks.diagrams;
+    res->multiplicity = toks.param;
 
     return res;
 }

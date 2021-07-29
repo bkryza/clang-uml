@@ -157,3 +157,31 @@ TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
 
     CHECK(n1);
 }
+
+TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
+{
+    std::string comment = R"(
+    \clanguml{note:diagram1,  diagram2,
+    diagram3[left] Note only for diagrams 1, 2 and 3.}
+    )";
+
+    using namespace clanguml::decorators;
+
+    auto decorators = parse(comment);
+
+    CHECK(decorators.size() == 1);
+
+    auto n1 = std::dynamic_pointer_cast<note>(decorators.at(0));
+
+    CHECK(n1);
+    CHECK(n1->diagrams.size() == 3);
+    CHECK(n1->diagrams[0] == "diagram1");
+    CHECK(n1->diagrams[1] == "diagram2");
+    CHECK(n1->diagrams[2] == "diagram3");
+
+    CHECK(n1->position == "left");
+    CHECK(n1->text == "Note only for diagrams 1, 2 and 3.");
+
+    CHECK(n1->applies_to_diagram("diagram2"));
+    CHECK(!n1->applies_to_diagram("diagram4"));
+}

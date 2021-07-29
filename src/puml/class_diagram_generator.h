@@ -288,7 +288,7 @@ public:
         //
         for (auto decorator : c.decorators) {
             auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-            if (note) {
+            if (note && note->applies_to_diagram(m_config.name)) {
                 ostr << "note " << note->position << " of " << c.alias() << '\n'
                      << note->text << '\n'
                      << "end note\n";
@@ -355,7 +355,7 @@ public:
         //
         for (auto decorator : e.decorators) {
             auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-            if (note) {
+            if (note && note->applies_to_diagram(m_config.name)) {
                 ostr << "note " << note->position << " of " << e.alias() << '\n'
                      << note->text << '\n'
                      << "end note\n";

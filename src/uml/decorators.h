@@ -24,10 +24,25 @@
 
 namespace clanguml {
 namespace decorators {
+// \clanguml{label:diagram1,diagram2[param] text}
+struct decorator_toks {
+    std::string label;
+    std::vector<std::string> diagrams;
+    std::string param;
+    std::string text;
+};
 
 struct decorator {
+    std::vector<std::string> diagrams;
+
     virtual ~decorator() = default;
+
     static std::shared_ptr<decorator> from_string(std::string_view c);
+
+    bool applies_to_diagram(std::string name);
+
+protected:
+    decorator_toks tokenize(const std::string &label, std::string_view c);
 };
 
 struct note : public decorator {

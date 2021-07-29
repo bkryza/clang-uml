@@ -59,6 +59,7 @@ note.)";
     REQUIRE_THAT(puml, HasNote(_A("D"), "left", d_note));
     REQUIRE_THAT(puml, HasNote(_A("E<T>"), "left", "E template class note."));
     REQUIRE_THAT(puml, HasNote(_A("F"), "bottom", "F enum note."));
+    REQUIRE_THAT(puml, !HasNote(_A("G"), "left", "G class note."));
     REQUIRE_THAT(puml, HasNote(_A("R"), "right", "R class note."));
 
     save_puml(
