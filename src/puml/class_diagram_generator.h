@@ -289,8 +289,9 @@ public:
         for (auto decorator : c.decorators) {
             auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
             if (note) {
-                ostr << "note " << note->position << " of " << c.alias()
-                     << " : " << note->text << '\n';
+                ostr << "note " << note->position << " of " << c.alias() << '\n'
+                     << note->text << '\n'
+                     << "end note\n";
             }
         }
 
@@ -339,12 +340,25 @@ public:
                     relstr << " : " << r.label;
 
                 relstr << '\n';
+
                 ostr << relstr.str();
             }
             catch (error::uml_alias_missing &ex) {
                 LOG_ERROR("Skipping {} relation from {} to {} due "
                           "to: {}",
                     to_string(r.type), e.name, destination, ex.what());
+            }
+        }
+
+        //
+        // Process notes
+        //
+        for (auto decorator : e.decorators) {
+            auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+            if (note) {
+                ostr << "note " << note->position << " of " << e.alias() << '\n'
+                     << note->text << '\n'
+                     << "end note\n";
             }
         }
     }

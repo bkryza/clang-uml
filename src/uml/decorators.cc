@@ -68,7 +68,7 @@ std::shared_ptr<decorator> note::from_string(std::string_view c)
 
         std::advance(it, note_position.size() + 1);
     }
-    else if (*it == ' ') {
+    else if (std::isspace(*it)) {
         std::advance(it, 1);
     }
     else {

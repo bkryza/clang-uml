@@ -262,6 +262,15 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
 }
 
+ContainsMatcher HasNote(std::string const &cls, std::string const &position,
+    std::string const &note,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("note {} of {}", position, cls),
+            caseSensitivity));
+}
+
 template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
     std::string const &type = "void",

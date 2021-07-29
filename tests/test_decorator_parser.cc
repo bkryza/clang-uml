@@ -56,16 +56,20 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     @clanguml{note[ top  ]
 
             This is a comment    }
+    \clanguml{note This is a comment}
+    \clanguml{note[] This is a comment}
     )";
 
     using namespace clanguml::decorators;
 
     auto decorators = parse(comment);
 
-    CHECK(decorators.size() == 2);
+    CHECK(decorators.size() == 4);
 
     auto n1 = std::dynamic_pointer_cast<note>(decorators.at(0));
     auto n2 = std::dynamic_pointer_cast<note>(decorators.at(1));
+    auto n3 = std::dynamic_pointer_cast<note>(decorators.at(2));
+    auto n4 = std::dynamic_pointer_cast<note>(decorators.at(3));
 
     CHECK(n1);
     CHECK(n1->position == "left");
@@ -74,6 +78,14 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     CHECK(n2);
     CHECK(n2->position == "top");
     CHECK(n2->text == "This is a comment");
+
+    CHECK(n3);
+    CHECK(n3->position == "left");
+    CHECK(n3->text == "This is a comment");
+
+    CHECK(n4);
+    CHECK(n4->position == "left");
+    CHECK(n4->text == "This is a comment");
 }
 
 TEST_CASE("Test decorator parser on style", "[unit-test]")

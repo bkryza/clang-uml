@@ -74,5 +74,5 @@ foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
 endforeach()
 
 add_test(NAME test_util COMMAND test_util)
-add_test(NAME test_command_parser COMMAND test_command_parser)
+add_test(NAME test_decorator_parser COMMAND test_decorator_parser)
 add_test(NAME test_cases COMMAND test_cases)

@@ -193,6 +193,10 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     enum_ e;
     e.name = cx::util::full_name(ctx.namespace_, enm);
 
+    // Process enum documentation comment
+    if (enm.comment().has_value())
+        e.decorators = decorators::parse(enm.comment().value());
+
     for (const auto &ev : enm) {
         if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
             e.constants.push_back(ev.name());
@@ -230,8 +234,15 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
         cppast::cpp_access_specifier_kind::cpp_private;
 
     // Process class documentation comment
-    if(cls.comment().has_value())
-        c.decorators = decorators::parse(cls.comment().value());
+    if (cppast::is_templated(cls)) {
+        if (cls.parent().value().comment().has_value())
+            c.decorators =
+                decorators::parse(cls.parent().value().comment().value());
+    }
+    else {
+        if (cls.comment().has_value())
+            c.decorators = decorators::parse(cls.comment().value());
+    }
 
     // Process class child entities
     if (c.is_struct)
