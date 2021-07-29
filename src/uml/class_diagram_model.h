@@ -17,9 +17,9 @@
  */
 #pragma once
 
+#include "decorators.h"
 #include "util/error.h"
 #include "util/util.h"
-#include "decorators.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>

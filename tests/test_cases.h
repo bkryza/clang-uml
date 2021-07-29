@@ -266,9 +266,8 @@ ContainsMatcher HasNote(std::string const &cls, std::string const &position,
     std::string const &note,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("note {} of {}", position, cls),
-            caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("note {} of {}", position, cls), caseSensitivity));
 }
 
 template <typename... Ts>

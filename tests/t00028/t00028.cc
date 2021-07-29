@@ -26,16 +26,12 @@ class D {
 };
 
 /// \clanguml{note E template class note.}
-template<typename T> class E {
+template <typename T> class E {
     T param;
 };
 
 /// @clanguml{note[ bottom ] F enum note.}
-enum class F {
-    one,
-    two,
-    three
-};
+enum class F { one, two, three };
 
 /// \clanguml{note[right] R class note.}
 class R {

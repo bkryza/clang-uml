@@ -69,4 +69,3 @@ std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block);
 
 } // namespace decorators
 } // namespace clanguml
-
