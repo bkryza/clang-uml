@@ -1,5 +1,5 @@
 /**
- * src/uml/command_parser.cc
+ * src/uml/decorators.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "command_parser.h"
+#include "decorators.h"
 
 #include "util/util.h"
 
@@ -23,7 +23,7 @@
 #include <string_view>
 
 namespace clanguml {
-namespace command_parser {
+namespace decorators {
 
 const std::string note::label = "note";
 const std::string skip::label = "skip";
@@ -31,7 +31,7 @@ const std::string skip_relationship::label = "skiprelationship";
 const std::string style::label = "style";
 const std::string aggregation::label = "aggregation";
 
-std::shared_ptr<command> command::from_string(std::string_view c)
+std::shared_ptr<decorator> decorator::from_string(std::string_view c)
 {
     if (c.find(note::label) == 0) {
         return note::from_string(c);
@@ -52,7 +52,7 @@ std::shared_ptr<command> command::from_string(std::string_view c)
     return {};
 }
 
-std::shared_ptr<command> note::from_string(std::string_view c)
+std::shared_ptr<decorator> note::from_string(std::string_view c)
 {
     auto res = std::make_shared<note>();
     auto it = c.begin();
@@ -77,19 +77,19 @@ std::shared_ptr<command> note::from_string(std::string_view c)
     return res;
 }
 
-std::shared_ptr<command> skip::from_string(std::string_view c)
+std::shared_ptr<decorator> skip::from_string(std::string_view c)
 {
     auto res = std::make_shared<skip>();
     return res;
 }
 
-std::shared_ptr<command> skip_relationship::from_string(std::string_view c)
+std::shared_ptr<decorator> skip_relationship::from_string(std::string_view c)
 {
     auto res = std::make_shared<skip_relationship>();
     return res;
 }
 
-std::shared_ptr<command> style::from_string(std::string_view c)
+std::shared_ptr<decorator> style::from_string(std::string_view c)
 {
     auto res = std::make_shared<style>();
     auto it = c.begin();
@@ -108,7 +108,7 @@ std::shared_ptr<command> style::from_string(std::string_view c)
     return res;
 }
 
-std::shared_ptr<command> aggregation::from_string(std::string_view c)
+std::shared_ptr<decorator> aggregation::from_string(std::string_view c)
 {
     auto res = std::make_shared<aggregation>();
     auto it = c.begin();
@@ -127,9 +127,9 @@ std::shared_ptr<command> aggregation::from_string(std::string_view c)
     return res;
 }
 
-std::vector<std::shared_ptr<command>> parse(std::string documentation_block)
+std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block)
 {
-    std::vector<std::shared_ptr<command>> res;
+    std::vector<std::shared_ptr<decorator>> res;
     const std::string begin_tag{"@clanguml"};
     const auto begin_tag_size = begin_tag.size();
 
@@ -148,7 +148,7 @@ std::vector<std::shared_ptr<command>> parse(std::string documentation_block)
             return res;
 
         auto com =
-            command::from_string(block_view.substr(c_begin + 1, c_end - 2));
+            decorator::from_string(block_view.substr(c_begin + 1, c_end - 2));
 
         if (com)
             res.emplace_back(std::move(com));
@@ -159,6 +159,6 @@ std::vector<std::shared_ptr<command>> parse(std::string documentation_block)
     return res;
 };
 
-} // namespace command_parser
+} // namespace decorators
 } // namespace clanguml
 

@@ -1,5 +1,5 @@
 /**
- * tests/test_command_parser.cc
+ * tests/test_decorator_parser.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,11 +17,11 @@
  */
 #define CATCH_CONFIG_MAIN
 
-#include "uml/command_parser.h"
+#include "uml/decorators.h"
 
 #include "catch.h"
 
-TEST_CASE("Test command parser on regular comment", "[unit-test]")
+TEST_CASE("Test decorator parser on regular comment", "[unit-test]")
 {
     std::string comment = R"(
     \brief This is a comment.
@@ -33,14 +33,14 @@ TEST_CASE("Test command parser on regular comment", "[unit-test]")
 
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.empty());
+    CHECK(decorators.empty());
 }
 
-TEST_CASE("Test command parser on note", "[unit-test]")
+TEST_CASE("Test decorator parser on note", "[unit-test]")
 {
     std::string comment = R"(
     \brief This is a comment.
@@ -58,14 +58,14 @@ TEST_CASE("Test command parser on note", "[unit-test]")
             This is a comment    }
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.size() == 2);
+    CHECK(decorators.size() == 2);
 
-    auto n1 = std::dynamic_pointer_cast<note>(commands.at(0));
-    auto n2 = std::dynamic_pointer_cast<note>(commands.at(1));
+    auto n1 = std::dynamic_pointer_cast<note>(decorators.at(0));
+    auto n2 = std::dynamic_pointer_cast<note>(decorators.at(1));
 
     CHECK(n1);
     CHECK(n1->position == "left");
@@ -76,72 +76,72 @@ TEST_CASE("Test command parser on note", "[unit-test]")
     CHECK(n2->text == "This is a comment");
 }
 
-TEST_CASE("Test command parser on style", "[unit-test]")
+TEST_CASE("Test decorator parser on style", "[unit-test]")
 {
     std::string comment = R"(
     \clanguml{style[#green,dashed,thickness=4]}
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.size() == 1);
+    CHECK(decorators.size() == 1);
 
-    auto n1 = std::dynamic_pointer_cast<style>(commands.at(0));
+    auto n1 = std::dynamic_pointer_cast<style>(decorators.at(0));
 
     CHECK(n1);
     CHECK(n1->spec == "#green,dashed,thickness=4");
 }
 
-TEST_CASE("Test command parser on aggregation", "[unit-test]")
+TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
 {
     std::string comment = R"(
     \clanguml{aggregation[0..1:0..*]}
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.size() == 1);
+    CHECK(decorators.size() == 1);
 
-    auto n1 = std::dynamic_pointer_cast<aggregation>(commands.at(0));
+    auto n1 = std::dynamic_pointer_cast<aggregation>(decorators.at(0));
 
     CHECK(n1);
     CHECK(n1->multiplicity == "0..1:0..*");
 }
 
-TEST_CASE("Test command parser on skip", "[unit-test]")
+TEST_CASE("Test decorator parser on skip", "[unit-test]")
 {
     std::string comment = R"(
     \clanguml{skip}
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.size() == 1);
+    CHECK(decorators.size() == 1);
 
-    auto n1 = std::dynamic_pointer_cast<skip>(commands.at(0));
+    auto n1 = std::dynamic_pointer_cast<skip>(decorators.at(0));
 
     CHECK(n1);
 }
 
-TEST_CASE("Test command parser on skiprelationship", "[unit-test]")
+TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
 {
     std::string comment = R"(
     \clanguml{skiprelationship}
     )";
 
-    using namespace clanguml::command_parser;
+    using namespace clanguml::decorators;
 
-    auto commands = parse(comment);
+    auto decorators = parse(comment);
 
-    CHECK(commands.size() == 1);
+    CHECK(decorators.size() == 1);
 
-    auto n1 = std::dynamic_pointer_cast<skip_relationship>(commands.at(0));
+    auto n1 = std::dynamic_pointer_cast<skip_relationship>(decorators.at(0));
 
     CHECK(n1);
 }

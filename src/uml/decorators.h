@@ -1,5 +1,5 @@
 /**
- * src/uml/command_parser.h
+ * src/uml/decorators.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,50 +24,50 @@
 #include <string>
 
 namespace clanguml {
-namespace command_parser {
+namespace decorators {
 
-struct command {
-    virtual ~command() = default;
-    static std::shared_ptr<command> from_string(std::string_view c);
+struct decorator {
+    virtual ~decorator() = default;
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct note : public command {
+struct note : public decorator {
     static const std::string label;
 
     std::string position;
     std::string text;
 
-    static std::shared_ptr<command> from_string(std::string_view c);
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct skip : public command {
+struct skip : public decorator {
     static const std::string label;
 
-    static std::shared_ptr<command> from_string(std::string_view c);
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct skip_relationship : public command {
+struct skip_relationship : public decorator {
     static const std::string label;
 
-    static std::shared_ptr<command> from_string(std::string_view c);
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct style : public command {
+struct style : public decorator {
     static const std::string label;
 
     std::string spec;
-    static std::shared_ptr<command> from_string(std::string_view c);
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct aggregation : public command {
+struct aggregation : public decorator {
     static const std::string label;
 
     std::string multiplicity;
-    static std::shared_ptr<command> from_string(std::string_view c);
+    static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-std::vector<std::shared_ptr<command>> parse(std::string documentation_block);
+std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block);
 
-} // namespace command_parser
+} // namespace decorators
 } // namespace clanguml
 

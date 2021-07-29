@@ -23,11 +23,11 @@ set(CLANG_UML_TEST_CASES_HEADER
     catch.h
 )
 
-set(CLANG_UML_TEST_COMMAND_PARSER_SRC
-    test_command_parser.cc
+set(CLANG_UML_TEST_DECORATOR_PARSER_SRC
+    test_decorator_parser.cc
     ${TEST_UTIL_SOURCES}
 )
-set(CLANG_UML_TEST_COMMAND_PARSER_HEADER
+set(CLANG_UML_TEST_DECORATOR_PARSER_HEADER
     catch.h
 )
 
@@ -41,11 +41,11 @@ target_link_libraries(test_util
     ${YAML_CPP_LIBRARIES}
     spdlog::spdlog clang-umllib cppast)
 
-add_executable(test_command_parser
-    ${CLANG_UML_TEST_COMMAND_PARSER_SRC}
-    ${CLANG_UML_TEST_COMMAND_PARSER_HEADER})
+add_executable(test_decorator_parser
+    ${CLANG_UML_TEST_DECORATOR_PARSER_SRC}
+    ${CLANG_UML_TEST_DECORATOR_PARSER_HEADER})
 
-target_link_libraries(test_command_parser
+target_link_libraries(test_decorator_parser
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
