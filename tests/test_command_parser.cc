@@ -128,3 +128,20 @@ TEST_CASE("Test command parser on skip", "[unit-test]")
 
     CHECK(n1);
 }
+
+TEST_CASE("Test command parser on skiprelationship", "[unit-test]")
+{
+    std::string comment = R"(
+    \clanguml{skiprelationship}
+    )";
+
+    using namespace clanguml::command_parser;
+
+    auto commands = parse(comment);
+
+    CHECK(commands.size() == 1);
+
+    auto n1 = std::dynamic_pointer_cast<skip_relationship>(commands.at(0));
+
+    CHECK(n1);
+}

@@ -25,18 +25,27 @@
 namespace clanguml {
 namespace command_parser {
 
+const std::string note::label = "note";
+const std::string skip::label = "skip";
+const std::string skip_relationship::label = "skiprelationship";
+const std::string style::label = "style";
+const std::string aggregation::label = "aggregation";
+
 std::shared_ptr<command> command::from_string(std::string_view c)
 {
-    if (c.find("note") == 0) {
+    if (c.find(note::label) == 0) {
         return note::from_string(c);
     }
-    else if (c.find("skip") == 0) {
+    else if (c.find(skip::label) == 0) {
         return skip::from_string(c);
     }
-    else if (c.find("style") == 0) {
+    else if (c.find(skip_relationship::label) == 0) {
+        return skip_relationship::from_string(c);
+    }
+    else if (c.find(style::label) == 0) {
         return style::from_string(c);
     }
-    else if (c.find("aggregation") == 0) {
+    else if (c.find(aggregation::label) == 0) {
         return aggregation::from_string(c);
     }
 
@@ -47,8 +56,7 @@ std::shared_ptr<command> note::from_string(std::string_view c)
 {
     auto res = std::make_shared<note>();
     auto it = c.begin();
-    // Skip 'note'
-    std::advance(it, 4);
+    std::advance(it, note::label.size());
 
     if (*it != '[')
         return {};
@@ -75,13 +83,17 @@ std::shared_ptr<command> skip::from_string(std::string_view c)
     return res;
 }
 
+std::shared_ptr<command> skip_relationship::from_string(std::string_view c)
+{
+    auto res = std::make_shared<skip_relationship>();
+    return res;
+}
 
 std::shared_ptr<command> style::from_string(std::string_view c)
 {
     auto res = std::make_shared<style>();
     auto it = c.begin();
-    // Skip 'style'
-    std::advance(it, 5);
+    std::advance(it, style::label.size());
 
     if (*it != '[')
         return {};
@@ -100,8 +112,7 @@ std::shared_ptr<command> aggregation::from_string(std::string_view c)
 {
     auto res = std::make_shared<aggregation>();
     auto it = c.begin();
-    // Skip 'aggregation'
-    std::advance(it, 11);
+    std::advance(it, aggregation::label.size());
 
     if (*it != '[')
         return {};

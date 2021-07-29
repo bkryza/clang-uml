@@ -32,6 +32,8 @@ struct command {
 };
 
 struct note : public command {
+    static const std::string label;
+
     std::string position;
     std::string text;
 
@@ -39,15 +41,27 @@ struct note : public command {
 };
 
 struct skip : public command {
+    static const std::string label;
+
+    static std::shared_ptr<command> from_string(std::string_view c);
+};
+
+struct skip_relationship : public command {
+    static const std::string label;
+
     static std::shared_ptr<command> from_string(std::string_view c);
 };
 
 struct style : public command {
+    static const std::string label;
+
     std::string spec;
     static std::shared_ptr<command> from_string(std::string_view c);
 };
 
 struct aggregation : public command {
+    static const std::string label;
+
     std::string multiplicity;
     static std::shared_ptr<command> from_string(std::string_view c);
 };
