@@ -52,12 +52,12 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     \param a int an int
     \param b float a float
 
-    \clanguml{note[left] This is a comment}
-    @clanguml{note[ top  ]
+    \uml{note[left] This is a comment}
+    @uml{note[ top  ]
 
             This is a comment    }
-    \clanguml{note This is a comment}
-    \clanguml{note[] This is a comment}
+    \uml{note This is a comment}
+    \uml{note[] This is a comment}
     )";
 
     using namespace clanguml::decorators;
@@ -88,10 +88,58 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     CHECK(n4->text == "This is a comment");
 }
 
+TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
+{
+    std::string comment = R"(
+    \brief This is a comment.
+
+    This is a longer comment.
+
+    \
+
+    \param a int an int
+    \param b float a float
+
+    \clanguml{note[left] This is a comment}
+    @clanguml{note[ top  ]
+
+            This is a comment    }
+    \clanguml{note This is a comment}
+    \clanguml{note[] This is a comment}
+    )";
+
+    using namespace clanguml::decorators;
+
+    auto decorators = parse(comment, "clanguml");
+
+    CHECK(decorators.size() == 4);
+
+    auto n1 = std::dynamic_pointer_cast<note>(decorators.at(0));
+    auto n2 = std::dynamic_pointer_cast<note>(decorators.at(1));
+    auto n3 = std::dynamic_pointer_cast<note>(decorators.at(2));
+    auto n4 = std::dynamic_pointer_cast<note>(decorators.at(3));
+
+    CHECK(n1);
+    CHECK(n1->position == "left");
+    CHECK(n1->text == "This is a comment");
+
+    CHECK(n2);
+    CHECK(n2->position == "top");
+    CHECK(n2->text == "This is a comment");
+
+    CHECK(n3);
+    CHECK(n3->position == "left");
+    CHECK(n3->text == "This is a comment");
+
+    CHECK(n4);
+    CHECK(n4->position == "left");
+    CHECK(n4->text == "This is a comment");
+}
+
 TEST_CASE("Test decorator parser on style", "[unit-test]")
 {
     std::string comment = R"(
-    \clanguml{style[#green,dashed,thickness=4]}
+    \uml{style[#green,dashed,thickness=4]}
     )";
 
     using namespace clanguml::decorators;
@@ -109,7 +157,7 @@ TEST_CASE("Test decorator parser on style", "[unit-test]")
 TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
 {
     std::string comment = R"(
-    \clanguml{aggregation[0..1:0..*]}
+    \uml{aggregation[0..1:0..*]}
     )";
 
     using namespace clanguml::decorators;
@@ -127,7 +175,7 @@ TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
 TEST_CASE("Test decorator parser on skip", "[unit-test]")
 {
     std::string comment = R"(
-    \clanguml{skip}
+    \uml{skip}
     )";
 
     using namespace clanguml::decorators;
@@ -144,7 +192,7 @@ TEST_CASE("Test decorator parser on skip", "[unit-test]")
 TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
 {
     std::string comment = R"(
-    \clanguml{skiprelationship}
+    \uml{skiprelationship}
     )";
 
     using namespace clanguml::decorators;
@@ -161,7 +209,7 @@ TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
 TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
 {
     std::string comment = R"(
-    \clanguml{note:diagram1,  diagram2,
+    \uml{note:diagram1,  diagram2,
     diagram3[left] Note only for diagrams 1, 2 and 3.}
     )";
 

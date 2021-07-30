@@ -151,19 +151,21 @@ std::shared_ptr<decorator> aggregation::from_string(std::string_view c)
     return res;
 }
 
-std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block)
+std::vector<std::shared_ptr<decorator>> parse(
+    std::string documentation_block, std::string clanguml_tag)
 {
     std::vector<std::shared_ptr<decorator>> res;
-    const std::string begin_tag{"@clanguml"};
+    const std::string begin_tag{"@" + clanguml_tag};
     const auto begin_tag_size = begin_tag.size();
 
-    // First replace all \clanguml occurences with @clanguml
-    util::replace_all(documentation_block, "\\clanguml", "@clanguml");
+    // First replace all \uml occurences with @uml
+    util::replace_all(
+        documentation_block, "\\" + clanguml_tag, "@" + clanguml_tag);
     documentation_block = util::trim(documentation_block);
 
     std::string_view block_view{documentation_block};
 
-    auto pos = block_view.find("@clanguml{");
+    auto pos = block_view.find("@" + clanguml_tag + "{");
     while (pos < documentation_block.size()) {
         auto c_begin = pos + begin_tag_size;
         auto c_end = documentation_block.find("}", c_begin);
@@ -177,7 +179,7 @@ std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block)
         if (com)
             res.emplace_back(std::move(com));
 
-        pos = block_view.find("@clanguml{", c_end);
+        pos = block_view.find("@" + clanguml_tag + "{", c_end);
     }
 
     return res;

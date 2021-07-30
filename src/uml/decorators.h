@@ -24,7 +24,6 @@
 
 namespace clanguml {
 namespace decorators {
-// \clanguml{label:diagram1,diagram2[param] text}
 struct decorator_toks {
     std::string label;
     std::vector<std::string> diagrams;
@@ -80,7 +79,8 @@ struct aggregation : public decorator {
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-std::vector<std::shared_ptr<decorator>> parse(std::string documentation_block);
+std::vector<std::shared_ptr<decorator>> parse(
+    std::string documentation_block, std::string clanguml_tag = "uml");
 
 } // namespace decorators
 } // namespace clanguml
