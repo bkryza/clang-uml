@@ -81,6 +81,15 @@ test_cases:
     - name: t00028
       title: PlantUML note decorator test case
       description:
+    - name: t00029
+      title: PlantUML skip decorator test case
+      description:
+    - name: t00030
+      title: PlantUML relationship decorators test case
+      description:
+    - name: t00031
+      title: PlantUML style decorator test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram
