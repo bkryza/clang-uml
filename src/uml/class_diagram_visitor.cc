@@ -193,6 +193,12 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     enum_ e;
     e.name = cx::util::full_name(ctx.namespace_, enm);
 
+    if (enm.comment().has_value())
+        e.decorators = decorators::parse(enm.comment().value());
+
+    if (e.skip())
+        return;
+
     // Process enum documentation comment
     if (enm.comment().has_value())
         e.decorators = decorators::parse(enm.comment().value());
@@ -229,6 +235,12 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     class_ c;
     c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
     c.name = cx::util::full_name(ctx.namespace_, cls);
+
+    if (cls.comment().has_value())
+        c.decorators = decorators::parse(cls.comment().value());
+
+    if (c.skip())
+        return;
 
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;

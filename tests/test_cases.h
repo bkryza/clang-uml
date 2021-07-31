@@ -170,8 +170,7 @@ struct AliasMatcher {
             }
         }
 
-        throw std::runtime_error(fmt::format(
-            "Cannot find alias {} in {}", name, fmt::join(puml, "\n")));
+        return "__INVALID__ALIAS__";
     }
 
     const std::vector<std::string> puml;
