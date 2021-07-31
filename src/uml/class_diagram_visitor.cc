@@ -199,6 +199,8 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     if (e.skip())
         return;
 
+    e.style = e.style_spec();
+
     // Process enum documentation comment
     if (enm.comment().has_value())
         e.decorators = decorators::parse(enm.comment().value());
@@ -239,9 +241,6 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     if (cls.comment().has_value())
         c.decorators = decorators::parse(cls.comment().value());
 
-    if (c.skip())
-        return;
-
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
 
@@ -255,6 +254,11 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
         if (cls.comment().has_value())
             c.decorators = decorators::parse(cls.comment().value());
     }
+
+    if (c.skip())
+        return;
+
+    c.style = c.style_spec();
 
     // Process class child entities
     if (c.is_struct)
@@ -515,7 +519,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
 
 bool tu_visitor::process_field_with_template_instantiation(
     const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
-    class_ &c, cppast::cpp_access_specifier_kind as)
+    class_ &c, class_member &m, cppast::cpp_access_specifier_kind as)
 {
     LOG_DBG("Processing field with template instatiation type {}",
         cppast::to_string(tr));
@@ -572,6 +576,17 @@ bool tu_visitor::process_field_with_template_instantiation(
                 rr.type = relationship_t::kAggregation;
             rr.label = mv.name();
             rr.scope = detail::cpp_access_specifier_to_scope(as);
+            rr.style = m.style_spec();
+
+            auto [decorator_rtype, decorator_rmult] = m.relationship();
+            if (decorator_rtype != relationship_t::kNone) {
+                rr.type = decorator_rtype;
+                auto mult = util::split(decorator_rmult, ":");
+                if (mult.size() == 2) {
+                    rr.multiplicity_source = mult[0];
+                    rr.multiplicity_destination = mult[1];
+                }
+            }
 
             LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
                 rr.destination, model::class_diagram::to_string(rr.type), c.usr,
@@ -623,7 +638,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
         template_instantiation_added_as_aggregation =
             process_field_with_template_instantiation(
-                mv, resolve_alias(tr), c, as);
+                mv, resolve_alias(tr), c, m, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
         LOG_DBG(
@@ -646,6 +661,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.type = relationship_type;
                 r.label = m.name;
                 r.scope = m.scope;
+                r.style = m.style_spec();
 
                 auto [decorator_rtype, decorator_rmult] = m.relationship();
                 if (decorator_rtype != relationship_t::kNone) {

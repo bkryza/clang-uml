@@ -166,6 +166,7 @@ public:
     bool process_field_with_template_instantiation(
         const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
         clanguml::model::class_diagram::class_ &c,
+        clanguml::model::class_diagram::class_member &m,
         cppast::cpp_access_specifier_kind as);
 
     void process_static_field(const cppast::cpp_variable &mv,

@@ -54,6 +54,10 @@ enum class relationship_t {
 
 std::string to_string(relationship_t r);
 
+struct stylable_element {
+    std::string style;
+};
+
 struct decorated_element {
     std::vector<std::shared_ptr<decorators::decorator>> decorators;
 
@@ -92,6 +96,15 @@ struct decorated_element {
                         ->multiplicity};
 
         return {relationship_t::kNone, ""};
+    }
+
+    std::string style_spec()
+    {
+        for (auto d : decorators)
+            if (std::dynamic_pointer_cast<decorators::style>(d))
+                return std::dynamic_pointer_cast<decorators::style>(d)->spec;
+
+        return "";
     }
 };
 
@@ -157,7 +170,7 @@ struct class_parent {
     access_t access;
 };
 
-struct class_relationship : public decorated_element {
+struct class_relationship : public decorated_element, public stylable_element {
     relationship_t type{relationship_t::kAssociation};
     std::string destination;
     std::string multiplicity_source;
@@ -190,7 +203,7 @@ struct type_alias {
     std::string underlying_type;
 };
 
-class class_ : public element {
+class class_ : public element, public stylable_element {
 public:
     std::string usr;
     bool is_struct{false};
@@ -275,7 +288,7 @@ public:
     }
 };
 
-struct enum_ : public element {
+struct enum_ : public element, public stylable_element {
     std::vector<std::string> constants;
     std::vector<class_relationship> relationships;
 

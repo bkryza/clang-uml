@@ -1,5 +1,5 @@
 /**
- * tests/t00029/test_case.cc
+ * tests/t00031/test_case.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,25 +16,25 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00029", "[test-case][class]")
+TEST_CASE("t00031", "[test-case][class]")
 {
-    auto [config, db] = load_config("t00029");
+    auto [config, db] = load_config("t00031");
 
-    auto diagram = config.diagrams["t00029_class"];
+    auto diagram = config.diagrams["t00031_class"];
 
-    REQUIRE(diagram->name == "t00029_class");
+    REQUIRE(diagram->name == "t00031_class");
 
     REQUIRE(diagram->include.namespaces.size() == 1);
     REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00029"}));
+        VectorContains(std::string{"clanguml::t00031"}));
 
     REQUIRE(diagram->exclude.namespaces.size() == 0);
 
-    REQUIRE(diagram->should_include("clanguml::t00029::A"));
+    REQUIRE(diagram->should_include("clanguml::t00031::A"));
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name == "t00029_class");
+    REQUIRE(model.name == "t00031_class");
 
     auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);
@@ -43,22 +43,22 @@ TEST_CASE("t00029", "[test-case][class]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, !IsClass(_A("B")));
+    REQUIRE_THAT(puml, IsEnum(_A("B")));
     REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-    REQUIRE_THAT(puml, !IsClassTemplate("D", "T"));
-    REQUIRE_THAT(puml, IsEnum(_A("E")));
-    REQUIRE_THAT(puml, !IsEnum(_A("F")));
-    REQUIRE_THAT(puml, IsClass(_A("G1")));
-    REQUIRE_THAT(puml, IsClass(_A("G2")));
-    REQUIRE_THAT(puml, IsClass(_A("G3")));
-    REQUIRE_THAT(puml, IsClass(_A("G4")));
+    REQUIRE_THAT(puml, IsClass(_A("D")));
 
-    REQUIRE_THAT(puml, IsClass(_A("R")));
-
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("G1"), "+g1"));
-    REQUIRE_THAT(puml, !IsAggregation(_A("R"), _A("G2"), "+g2"));
-    REQUIRE_THAT(puml, !IsAggregation(_A("R"), _A("G3"), "+g3"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G4"), "+g4"));
+    REQUIRE_THAT(puml,
+        IsAssociationWithStyle(
+            _A("R"), _A("A"), "+aaa", "#red,dashed,thickness=2"));
+    REQUIRE_THAT(puml,
+        IsCompositionWithStyle(
+            _A("R"), _A("B"), "+bbb", "#green,dashed,thickness=4"));
+    REQUIRE_THAT(puml,
+        IsAggregationWithStyle(
+            _A("R"), _A("C<int>"), "+ccc", "#blue,dotted,thickness=8"));
+    REQUIRE_THAT(puml,
+        IsAssociationWithStyle(
+            _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

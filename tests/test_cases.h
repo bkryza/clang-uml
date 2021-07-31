@@ -283,6 +283,33 @@ ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
         fmt::format(format_string, from, to, label), caseSensitivity));
 }
 
+ContainsMatcher IsAggregationWithStyle(std::string const &from,
+    std::string const &to, std::string const &label, std::string style,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} o-[{}]- {} : {}", from, style, to, label),
+            caseSensitivity));
+}
+
+ContainsMatcher IsAssociationWithStyle(std::string const &from,
+    std::string const &to, std::string const &label, std::string style,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} -[{}]-> {} : {}", from, style, to, label),
+            caseSensitivity));
+}
+
+ContainsMatcher IsCompositionWithStyle(std::string const &from,
+    std::string const &to, std::string const &label, std::string style,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} *-[{}]- {} : {}", from, style, to, label),
+            caseSensitivity));
+}
+
 ContainsMatcher IsInstantiation(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

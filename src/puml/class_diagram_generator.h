@@ -75,24 +75,24 @@ public:
         }
     }
 
-    std::string to_string(relationship_t r) const
+    std::string to_string(relationship_t r, std::string style = "") const
     {
         switch (r) {
         case relationship_t::kOwnership:
         case relationship_t::kComposition:
-            return "*--";
+            return style.empty() ? "*--" : fmt::format("*-[{}]-", style);
         case relationship_t::kAggregation:
-            return "o--";
+            return style.empty() ? "o--" : fmt::format("o-[{}]-", style);
         case relationship_t::kContainment:
-            return "--+";
+            return style.empty() ? "--+" : fmt::format("-[{}]-+", style);
         case relationship_t::kAssociation:
-            return "-->";
+            return style.empty() ? "-->" : fmt::format("-[{}]->", style);
         case relationship_t::kInstantiation:
-            return "..|>";
+            return style.empty() ? "..|>" : fmt::format(".[{}].|>", style);
         case relationship_t::kFriendship:
-            return "<..";
+            return style.empty() ? "<.." : fmt::format("<.[{}].", style);
         case relationship_t::kDependency:
-            return "..>";
+            return style.empty() ? "..>" : fmt::format(".[{}].>", style);
         default:
             return "";
         }
@@ -149,7 +149,12 @@ public:
         if (c.is_abstract())
             class_type = "abstract";
 
-        ostr << class_type << " " << c.alias() << " {" << '\n';
+        ostr << class_type << " " << c.alias();
+
+        if(!c.style.empty())
+            ostr << " " << c.style;
+
+        ostr << " {" << '\n';
 
         //
         // Process methods
@@ -228,7 +233,7 @@ public:
                 if (!r.multiplicity_source.empty())
                     puml_relation += "\"" + r.multiplicity_source + "\" ";
 
-                puml_relation += to_string(r.type);
+                puml_relation += to_string(r.type, r.style);
 
                 if (!r.multiplicity_destination.empty())
                     puml_relation += " \"" + r.multiplicity_destination + "\"";
@@ -310,7 +315,12 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const
     {
-        ostr << "enum " << e.alias() << " {" << '\n';
+        ostr << "enum " << e.alias();
+
+        if(!e.style.empty())
+            ostr << " " << e.style;
+
+        ostr << " {" << '\n';
 
         for (const auto &enum_constant : e.constants) {
             ostr << enum_constant << '\n';
