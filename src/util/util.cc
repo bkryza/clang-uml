@@ -126,5 +126,20 @@ bool find_element_alias(
 
     return true;
 }
+
+bool replace_all(
+    std::string &input, std::string pattern, std::string replace_with)
+{
+    bool replaced{false};
+
+    auto pos = input.find(pattern);
+    while (pos < input.size()) {
+        input.replace(pos, pattern.size(), replace_with);
+        pos = input.find(pattern, pos + replace_with.size());
+        replaced = true;
+    }
+
+    return replaced;
+}
 }
 }

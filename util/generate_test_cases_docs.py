@@ -46,7 +46,7 @@ with open(r'tests/test_cases.yaml') as f:
                     tc.write("{}\n".format(test_case['description']))
 
                 # Write test config file
-                config = open('tests/{0}/.clanguml'.format(name), 'r').read()
+                config = open('tests/{0}/.clang-uml'.format(name), 'r').read()
                 tc.write("## Config\n")
                 tc.write("```yaml\n")
                 tc.write(config)

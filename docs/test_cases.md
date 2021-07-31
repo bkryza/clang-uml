@@ -26,6 +26,10 @@
  * [t00025](./test_cases/t00025.md) - Template proxy pattern
  * [t00026](./test_cases/t00026.md) - Template memento pattern
  * [t00027](./test_cases/t00027.md) - Template decorator pattern
+ * [t00028](./test_cases/t00028.md) - PlantUML note decorator test case
+ * [t00029](./test_cases/t00029.md) - PlantUML skip decorator test case
+ * [t00030](./test_cases/t00030.md) - PlantUML relationship decorators test case
+ * [t00031](./test_cases/t00031.md) - PlantUML style decorator test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams

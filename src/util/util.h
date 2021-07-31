@@ -104,5 +104,15 @@ std::string unqualify(const std::string &s);
  */
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result);
+
+/**
+ * @brief Find and replace in string
+ *
+ * Replaces all occurences of pattern with replace_with in input string.
+ *
+ * @return True if at least on replacement was made
+ */
+bool replace_all(
+    std::string &input, std::string pattern, std::string replace_with);
 }
 }
