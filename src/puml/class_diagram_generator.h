@@ -151,7 +151,7 @@ public:
 
         ostr << class_type << " " << c.alias();
 
-        if(!c.style.empty())
+        if (!c.style.empty())
             ostr << " " << c.style;
 
         ostr << " {" << '\n';
@@ -317,7 +317,7 @@ public:
     {
         ostr << "enum " << e.alias();
 
-        if(!e.style.empty())
+        if (!e.style.empty())
             ostr << " " << e.style;
 
         ostr << " {" << '\n';
