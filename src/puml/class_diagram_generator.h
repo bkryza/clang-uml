@@ -224,9 +224,18 @@ public:
                     destination = r.destination;
                 }
 
+                std::string puml_relation;
+                if (!r.multiplicity_source.empty())
+                    puml_relation += "\"" + r.multiplicity_source + "\" ";
+
+                puml_relation += to_string(r.type);
+
+                if (!r.multiplicity_destination.empty())
+                    puml_relation += " \"" + r.multiplicity_destination + "\"";
+
                 relstr << m_model.to_alias(
                               uns, ns_relative(uns, c.full_name(uns)))
-                       << " " << to_string(r.type) << " "
+                       << " " << puml_relation << " "
                        << m_model.to_alias(uns, ns_relative(uns, destination));
 
                 if (!r.label.empty()) {

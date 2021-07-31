@@ -217,11 +217,23 @@ ContainsMatcher IsInnerClass(std::string const &parent,
 }
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
-    std::string const &label,
+    std::string const &label, std::string multiplicity_source = "",
+    std::string multiplicity_dest = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += " -->";
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}";
+
     return ContainsMatcher(CasedString(
-        fmt::format("{} --> {} : {}", from, to, label), caseSensitivity));
+        fmt::format(format_string, from, to, label), caseSensitivity));
 }
 
 ContainsMatcher IsFriend(std::string const &from, std::string const &to,
@@ -232,19 +244,43 @@ ContainsMatcher IsFriend(std::string const &from, std::string const &to,
 }
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
-    std::string const &label,
+    std::string const &label, std::string multiplicity_source = "",
+    std::string multiplicity_dest = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += " *--";
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}";
+
     return ContainsMatcher(CasedString(
-        fmt::format("{} *-- {} : {}", from, to, label), caseSensitivity));
+        fmt::format(format_string, from, to, label), caseSensitivity));
 }
 
 ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
-    std::string const &label,
+    std::string const &label, std::string multiplicity_source = "",
+    std::string multiplicity_dest = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += " o--";
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}";
+
     return ContainsMatcher(CasedString(
-        fmt::format("{} o-- {} : {}", from, to, label), caseSensitivity));
+        fmt::format(format_string, from, to, label), caseSensitivity));
 }
 
 ContainsMatcher IsInstantiation(std::string const &from, std::string const &to,

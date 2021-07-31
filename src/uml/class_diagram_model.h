@@ -57,7 +57,7 @@ std::string to_string(relationship_t r);
 struct decorated_element {
     std::vector<std::shared_ptr<decorators::decorator>> decorators;
 
-    bool skip()
+    bool skip() const
     {
         for (auto d : decorators)
             if (std::dynamic_pointer_cast<decorators::skip>(d))
@@ -66,13 +66,32 @@ struct decorated_element {
         return false;
     }
 
-    bool skip_relationship()
+    bool skip_relationship() const
     {
         for (auto d : decorators)
             if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
                 return true;
 
         return false;
+    }
+
+    std::pair<relationship_t, std::string> relationship() const
+    {
+        for (auto &d : decorators)
+            if (std::dynamic_pointer_cast<decorators::association>(d))
+                return {relationship_t::kAssociation,
+                    std::dynamic_pointer_cast<decorators::relationship>(d)
+                        ->multiplicity};
+            else if (std::dynamic_pointer_cast<decorators::aggregation>(d))
+                return {relationship_t::kAggregation,
+                    std::dynamic_pointer_cast<decorators::relationship>(d)
+                        ->multiplicity};
+            else if (std::dynamic_pointer_cast<decorators::composition>(d))
+                return {relationship_t::kComposition,
+                    std::dynamic_pointer_cast<decorators::relationship>(d)
+                        ->multiplicity};
+
+        return {relationship_t::kNone, ""};
     }
 };
 
@@ -141,8 +160,8 @@ struct class_parent {
 struct class_relationship : public decorated_element {
     relationship_t type{relationship_t::kAssociation};
     std::string destination;
-    std::string cardinality_source;
-    std::string cardinality_destination;
+    std::string multiplicity_source;
+    std::string multiplicity_destination;
     std::string label;
     scope_t scope{scope_t::kNone};
 

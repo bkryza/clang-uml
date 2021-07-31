@@ -72,10 +72,25 @@ struct style : public decorator {
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
-struct aggregation : public decorator {
+struct relationship : public decorator {
+    std::string multiplicity;
+};
+
+struct aggregation : public relationship {
     static const std::string label;
 
-    std::string multiplicity;
+    static std::shared_ptr<decorator> from_string(std::string_view c);
+};
+
+struct composition : public relationship {
+    static const std::string label;
+
+    static std::shared_ptr<decorator> from_string(std::string_view c);
+};
+
+struct association : public relationship {
+    static const std::string label;
+
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 

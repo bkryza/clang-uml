@@ -647,6 +647,16 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.label = m.name;
                 r.scope = m.scope;
 
+                auto [decorator_rtype, decorator_rmult] = m.relationship();
+                if (decorator_rtype != relationship_t::kNone) {
+                    r.type = decorator_rtype;
+                    auto mult = util::split(decorator_rmult, ":");
+                    if (mult.size() == 2) {
+                        r.multiplicity_source = mult[0];
+                        r.multiplicity_destination = mult[1];
+                    }
+                }
+
                 LOG_DBG("Adding field relationship {} {} {} : {}",
                     r.destination, model::class_diagram::to_string(r.type),
                     c.usr, r.label);

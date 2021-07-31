@@ -30,6 +30,8 @@ const std::string skip::label = "skip";
 const std::string skip_relationship::label = "skiprelationship";
 const std::string style::label = "style";
 const std::string aggregation::label = "aggregation";
+const std::string composition::label = "composition";
+const std::string association::label = "association";
 
 std::shared_ptr<decorator> decorator::from_string(std::string_view c)
 {
@@ -47,6 +49,12 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     }
     else if (c.find(aggregation::label) == 0) {
         return aggregation::from_string(c);
+    }
+    else if (c.find(composition::label) == 0) {
+        return composition::from_string(c);
+    }
+    else if (c.find(association::label) == 0) {
+        return association::from_string(c);
     }
 
     return {};
@@ -144,6 +152,28 @@ std::shared_ptr<decorator> aggregation::from_string(std::string_view c)
 {
     auto res = std::make_shared<aggregation>();
     auto toks = res->tokenize(aggregation::label, c);
+
+    res->diagrams = toks.diagrams;
+    res->multiplicity = toks.param;
+
+    return res;
+}
+
+std::shared_ptr<decorator> composition::from_string(std::string_view c)
+{
+    auto res = std::make_shared<composition>();
+    auto toks = res->tokenize(composition::label, c);
+
+    res->diagrams = toks.diagrams;
+    res->multiplicity = toks.param;
+
+    return res;
+}
+
+std::shared_ptr<decorator> association::from_string(std::string_view c)
+{
+    auto res = std::make_shared<association>();
+    auto toks = res->tokenize(association::label, c);
 
     res->diagrams = toks.diagrams;
     res->multiplicity = toks.param;
