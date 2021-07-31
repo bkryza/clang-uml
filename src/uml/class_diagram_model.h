@@ -54,7 +54,29 @@ enum class relationship_t {
 
 std::string to_string(relationship_t r);
 
-class element {
+struct decorated_element {
+    std::vector<std::shared_ptr<decorators::decorator>> decorators;
+
+    bool skip()
+    {
+        for (auto d : decorators)
+            if (std::dynamic_pointer_cast<decorators::skip>(d))
+                return true;
+
+        return false;
+    }
+
+    bool skip_relationship()
+    {
+        for (auto d : decorators)
+            if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
+                return true;
+
+        return false;
+    }
+};
+
+class element : public decorated_element {
 public:
     element()
         : m_id{m_nextId++}
@@ -62,7 +84,6 @@ public:
     }
     std::string name;
     std::vector<std::string> namespace_;
-    std::vector<std::shared_ptr<decorators::decorator>> decorators;
 
     std::string alias() const { return fmt::format("C_{:010}", m_id); }
 
@@ -73,7 +94,7 @@ private:
     static std::atomic_uint64_t m_nextId;
 };
 
-struct class_element {
+struct class_element : public decorated_element {
     scope_t scope;
     std::string name;
     std::string type;
@@ -84,7 +105,7 @@ struct class_member : public class_element {
     bool is_static{false};
 };
 
-struct method_parameter {
+struct method_parameter : public decorated_element {
     std::string type;
     std::string name;
     std::string default_value;
@@ -117,7 +138,7 @@ struct class_parent {
     access_t access;
 };
 
-struct class_relationship {
+struct class_relationship : public decorated_element {
     relationship_t type{relationship_t::kAssociation};
     std::string destination;
     std::string cardinality_source;
