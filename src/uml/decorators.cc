@@ -25,14 +25,6 @@
 namespace clanguml {
 namespace decorators {
 
-const std::string note::label = "note";
-const std::string skip::label = "skip";
-const std::string skip_relationship::label = "skiprelationship";
-const std::string style::label = "style";
-const std::string aggregation::label = "aggregation";
-const std::string composition::label = "composition";
-const std::string association::label = "association";
-
 std::shared_ptr<decorator> decorator::from_string(std::string_view c)
 {
     if (c.find(note::label) == 0) {

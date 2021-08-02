@@ -45,7 +45,7 @@ protected:
 };
 
 struct note : public decorator {
-    static const std::string label;
+    static inline const std::string label{"note"};
 
     std::string position{"left"};
     std::string text;
@@ -54,19 +54,19 @@ struct note : public decorator {
 };
 
 struct skip : public decorator {
-    static const std::string label;
+    static inline const std::string label{"skip"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
 struct skip_relationship : public decorator {
-    static const std::string label;
+    static inline const std::string label{"skiprelationship"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
 struct style : public decorator {
-    static const std::string label;
+    static inline const std::string label{"style"};
 
     std::string spec;
     static std::shared_ptr<decorator> from_string(std::string_view c);
@@ -77,19 +77,19 @@ struct relationship : public decorator {
 };
 
 struct aggregation : public relationship {
-    static const std::string label;
+    static inline const std::string label{"aggregation"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
 struct composition : public relationship {
-    static const std::string label;
+    static inline const std::string label{"composition"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
 struct association : public relationship {
-    static const std::string label;
+    static inline const std::string label{"association"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
