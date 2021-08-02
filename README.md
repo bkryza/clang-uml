@@ -149,9 +149,19 @@ generates the following diagram (via PlantUML):
 | Nesting (A has inner class B)  | Class B is an inner class of A
 | Friendship (A is a friend of B)| Class A is an friend class of B
 
-#### Inline directives
+#### Comment decorators
 
-TODO
+`clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
+generation of UML diagrams from C++ and overriding default inference rules for relationships.
+
+The following decorators are currently supported:
+- [note](docs/test_cases/t00028.md) - add a PlantUML note to a C++ entity
+- [skip](docs/test_cases/t00029.md) - skip the underlying C++ entity
+- [skiprelationship](docs/test_cases/t00029.md) - skip only relationship generation for a class property
+- [composition](docs/test_cases/t00030.md) - document the property as composition
+- [association](docs/test_cases/t00030.md) - document the property as association
+- [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
+- [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
 
 ### Sequence diagrams
 
