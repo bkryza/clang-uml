@@ -22,15 +22,16 @@ struct C {
     void operator()() { }
 };
 
-template <typename T, typename... Ts>
+template <typename T, typename L, typename... Ts>
 struct Overload : public Base, public T, public Ts... {
     using Ts::operator()...;
+    L counter;
 };
 
 template <class... Ts> Overload(Ts...) -> Overload<Ts...>;
 
 struct R {
-    Overload<TBase, A, B, C> overload;
+    Overload<TBase, int, A, B, C> overload;
 };
 
 } // namespace t00032
