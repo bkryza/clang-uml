@@ -1185,6 +1185,8 @@ class_ tu_visitor::build_template_instantiation(
     class_ tinst;
     std::string full_template_name;
 
+    std::vector<std::tuple<std::string, int, bool>> template_base_params{};
+
     if (t.primary_template().get(ctx.entity_index).size()) {
         const auto &primary_template_ref =
             static_cast<const cppast::cpp_class_template &>(
@@ -1200,6 +1202,54 @@ class_ tu_visitor::build_template_instantiation(
 
         if (full_template_name.back() == ':')
             tinst.name = full_template_name + tinst.name;
+
+        std::vector<std::pair<std::string, bool>> template_parameter_names{};
+        if (primary_template_ref.scope_name().has_value()) {
+            for (const auto &tp : primary_template_ref.scope_name()
+                                      .value()
+                                      .template_parameters()) {
+                template_parameter_names.emplace_back(
+                    tp.name(), tp.is_variadic());
+            }
+        }
+
+        // Check if the primary template has any base classes
+        int base_index = 0;
+        for (const auto &base : primary_template_ref.bases()) {
+            if (base.kind() == cppast::cpp_entity_kind::base_class_t) {
+                const auto &base_class =
+                    static_cast<const cppast::cpp_base_class &>(base);
+
+                const auto base_class_name =
+                    cppast::to_string(base_class.type());
+
+                LOG_ERROR("FOUND TEMPLATE INSTANTIATION BASE: {}, {}, {}",
+                    cppast::to_string(base.kind()), base_class_name,
+                    base_index);
+
+                // Check if any of the primary template arguments has a
+                // parameter equal to this type
+                auto it = std::find_if(template_parameter_names.begin(),
+                    template_parameter_names.end(),
+                    [&base_class_name](
+                        const auto &p) { return p.first == base_class_name; });
+
+                if (it != template_parameter_names.end()) {
+                    // Found base class which is a template parameter
+                    LOG_ERROR("FOUND BASE CLASS WHICH IS A TEMPLATE PARAMETER "
+                              "{}, {}, {}",
+                        it->first, it->second,
+                        std::distance(template_parameter_names.begin(), it));
+                    template_base_params.emplace_back(it->first, it->second,
+                        std::distance(template_parameter_names.begin(), it));
+                }
+                else {
+                    // This is a regular base class - it is handled by
+                    // process_template
+                }
+            }
+            base_index++;
+        }
 
         if (primary_template_ref.user_data()) {
             tinst.base_template_usr =
@@ -1232,6 +1282,7 @@ class_ tu_visitor::build_template_instantiation(
 
     tinst.is_template_instantiation = true;
 
+    // Process template argumetns
     for (const auto &targ : t.arguments().value()) {
         class_template ct;
         if (targ.type()) {
@@ -1254,6 +1305,8 @@ class_ tu_visitor::build_template_instantiation(
 
         tinst.templates.emplace_back(std::move(ct));
     }
+
+    // Check if template inherits from any of the template arguments
 
     tinst.usr = tinst.full_name(ctx.config.using_namespace);
     if (tinst.usr.substr(0, tinst.usr.find('<')).find("::") ==
