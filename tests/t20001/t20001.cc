@@ -13,7 +13,7 @@ struct C {
 
 class A {
 public:
-    A() {}
+    A() { }
 
     int add(int x, int y) { return m_c.add(x, y); }
 
@@ -28,7 +28,7 @@ public:
         return res;
     }
 
-    void log_result(int r) {}
+    void log_result(int r) { }
 
 private:
     detail::C m_c{};

@@ -18,14 +18,14 @@ protected:
 
 class A1 : public A {
 protected:
-    void method1() override {}
-    void method2() override {}
+    void method1() override { }
+    void method2() override { }
 };
 
 class A2 : public A {
 protected:
-    void method1() override {}
-    void method2() override {}
+    void method1() override { }
+    void method2() override { }
 };
 }
 }

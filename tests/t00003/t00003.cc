@@ -15,9 +15,9 @@ public:
     A(const A &) = default;
     virtual ~A() = default;
 
-    void basic_method() {}
+    void basic_method() { }
     static int static_method() { return 0; }
-    void const_method() const {}
+    void const_method() const { }
     auto auto_method() { return 1; }
 
     auto double_int(const int i) { return 2 * i; }
@@ -37,7 +37,7 @@ public:
     static const auto auto_member{10UL};
 
 protected:
-    void protected_method() {}
+    void protected_method() { }
 
     int protected_member;
 
@@ -46,7 +46,7 @@ protected:
     };
 
 private:
-    void private_method() {}
+    void private_method() { }
 
     int private_member;
     int a, b, c;

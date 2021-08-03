@@ -163,6 +163,17 @@ The following decorators are currently supported:
 - [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
 - [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
 
+##### Doxygen integration
+`clang-uml` can be omitted completed in ![Doxygen](https://www.doxygen.nl/index.html), by adding the following
+lines to the Doxygen config file:
+
+```
+ALIASES                += clanguml=""
+ALIASES                += clanguml{1}=""
+ALIASES                += clanguml{2}=""
+ALIASES                += clanguml{3}=""
+```
+
 ### Sequence diagrams
 
 #### Example

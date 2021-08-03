@@ -30,6 +30,7 @@
  * [t00029](./test_cases/t00029.md) - PlantUML skip decorator test case
  * [t00030](./test_cases/t00030.md) - PlantUML relationship decorators test case
  * [t00031](./test_cases/t00031.md) - PlantUML style decorator test case
+ * [t00032](./test_cases/t00032.md) - Class template with template base classes test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram
 ## Configuration diagrams

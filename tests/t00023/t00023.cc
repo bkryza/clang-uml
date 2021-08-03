@@ -11,17 +11,17 @@ public:
 
 class StrategyA : public Strategy {
 public:
-    void algorithm() override {}
+    void algorithm() override { }
 };
 
 class StrategyB : public Strategy {
 public:
-    void algorithm() override {}
+    void algorithm() override { }
 };
 
 class StrategyC : public Strategy {
 public:
-    void algorithm() override {}
+    void algorithm() override { }
 };
 
 class Context {

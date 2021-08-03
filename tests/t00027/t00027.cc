@@ -16,7 +16,7 @@ class Line : public Shape, public T<Line<>>... {
 public:
     void display() override
     {
-        std::apply([](auto &&... x) { (x.display(), ...); },
+        std::apply([](auto &&...x) { (x.display(), ...); },
             std::forward_as_tuple(T<Line<>>()...));
     }
 };
@@ -26,7 +26,7 @@ class Text : public Shape, public T<Text<>>... {
 public:
     void display() override
     {
-        std::apply([](auto &&... x) { (x.display(), ...); },
+        std::apply([](auto &&...x) { (x.display(), ...); },
             std::forward_as_tuple(T<Text<>>()...));
     }
 };
@@ -37,12 +37,12 @@ struct ShapeDecorator {
 
 template <typename T> class Color : public ShapeDecorator {
 public:
-    void display() override {}
+    void display() override { }
 };
 
 template <typename T> class Weight : public ShapeDecorator {
 public:
-    void display() override {}
+    void display() override { }
 };
 
 struct Window {

@@ -90,6 +90,9 @@ test_cases:
     - name: t00031
       title: PlantUML style decorator test case
       description:
+    - name: t00032
+      title: Class template with template base classes test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram

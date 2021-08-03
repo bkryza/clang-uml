@@ -31,6 +31,8 @@
 #include <cppast/cpp_variable.hpp>
 #include <spdlog/spdlog.h>
 
+#include <deque>
+
 namespace clanguml {
 namespace visitor {
 namespace class_diagram {
@@ -1185,6 +1187,8 @@ class_ tu_visitor::build_template_instantiation(
     class_ tinst;
     std::string full_template_name;
 
+    std::deque<std::tuple<std::string, int, bool>> template_base_params{};
+
     if (t.primary_template().get(ctx.entity_index).size()) {
         const auto &primary_template_ref =
             static_cast<const cppast::cpp_class_template &>(
@@ -1200,6 +1204,54 @@ class_ tu_visitor::build_template_instantiation(
 
         if (full_template_name.back() == ':')
             tinst.name = full_template_name + tinst.name;
+
+        std::vector<std::pair<std::string, bool>> template_parameter_names{};
+        if (primary_template_ref.scope_name().has_value()) {
+            for (const auto &tp : primary_template_ref.scope_name()
+                                      .value()
+                                      .template_parameters()) {
+                template_parameter_names.emplace_back(
+                    tp.name(), tp.is_variadic());
+            }
+        }
+
+        // Check if the primary template has any base classes
+        int base_index = 0;
+        for (const auto &base : primary_template_ref.bases()) {
+            if (base.kind() == cppast::cpp_entity_kind::base_class_t) {
+                const auto &base_class =
+                    static_cast<const cppast::cpp_base_class &>(base);
+
+                const auto base_class_name =
+                    cppast::to_string(base_class.type());
+
+                LOG_DBG("Found template instantiation base: {}, {}, {}",
+                    cppast::to_string(base.kind()), base_class_name,
+                    base_index);
+
+                // Check if any of the primary template arguments has a
+                // parameter equal to this type
+                auto it = std::find_if(template_parameter_names.begin(),
+                    template_parameter_names.end(),
+                    [&base_class_name](
+                        const auto &p) { return p.first == base_class_name; });
+
+                if (it != template_parameter_names.end()) {
+                    // Found base class which is a template parameter
+                    LOG_DBG("Found base class which is a template parameter "
+                            "{}, {}, {}",
+                        it->first, it->second,
+                        std::distance(template_parameter_names.begin(), it));
+                    template_base_params.emplace_back(it->first, it->second,
+                        std::distance(template_parameter_names.begin(), it));
+                }
+                else {
+                    // This is a regular base class - it is handled by
+                    // process_template
+                }
+            }
+            base_index++;
+        }
 
         if (primary_template_ref.user_data()) {
             tinst.base_template_usr =
@@ -1232,7 +1284,11 @@ class_ tu_visitor::build_template_instantiation(
 
     tinst.is_template_instantiation = true;
 
+    // Process template argumetns
+    int arg_index{0};
+    bool variadic_params{false};
     for (const auto &targ : t.arguments().value()) {
+        bool add_template_argument_as_base_class{false};
         class_template ct;
         if (targ.type()) {
             ct.type = cppast::to_string(targ.type().value());
@@ -1248,6 +1304,31 @@ class_ tu_visitor::build_template_instantiation(
                     static_cast<const cppast::cpp_unexposed_expression &>(exp)
                         .expression()
                         .as_string();
+        }
+
+        // In case any of the template arguments are base classes, add
+        // them as parents of the current template instantiation class
+        if (template_base_params.size() > 0) {
+            auto [arg_name, is_variadic, index] = template_base_params.front();
+            if (variadic_params)
+                add_template_argument_as_base_class = true;
+            else {
+                variadic_params = is_variadic;
+                if (arg_index == index) {
+                    add_template_argument_as_base_class = true;
+                    template_base_params.pop_front();
+                }
+            }
+
+            if (add_template_argument_as_base_class) {
+                LOG_DBG("Adding template argument '{}' as base class", ct.type);
+
+                class_parent cp;
+                cp.access = class_parent::access_t::kPublic;
+                cp.name = ct.type;
+
+                tinst.bases.emplace_back(std::move(cp));
+            }
         }
 
         LOG_DBG("Adding template argument '{}'", ct.type);
