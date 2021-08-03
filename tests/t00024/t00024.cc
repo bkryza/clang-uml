@@ -13,14 +13,14 @@ public:
 
 class Target1 : public Target {
 public:
-    void m1() override {}
-    void m2() override {}
+    void m1() override { }
+    void m2() override { }
 };
 
 class Target2 : public Target {
 public:
-    void m1() override {}
-    void m2() override {}
+    void m1() override { }
+    void m2() override { }
 };
 
 class Proxy : public Target {

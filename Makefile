@@ -62,4 +62,4 @@ init_compile_commands: debug
 
 .PHONY: clang-format
 clang-format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.2
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3

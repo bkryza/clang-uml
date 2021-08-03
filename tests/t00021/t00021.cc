@@ -15,20 +15,20 @@ public:
 
 class Visitor1 : public Visitor {
 public:
-    void visit_A(const A &item) const override {}
-    void visit_B(const B &item) const override {}
+    void visit_A(const A &item) const override { }
+    void visit_B(const B &item) const override { }
 };
 
 class Visitor2 : public Visitor {
 public:
-    void visit_A(const A &item) const override {}
-    void visit_B(const B &item) const override {}
+    void visit_A(const A &item) const override { }
+    void visit_B(const B &item) const override { }
 };
 
 class Visitor3 : public Visitor {
 public:
-    void visit_A(const A &item) const override {}
-    void visit_B(const B &item) const override {}
+    void visit_A(const A &item) const override { }
+    void visit_B(const B &item) const override { }
 };
 
 class Item {
@@ -39,12 +39,12 @@ public:
 
 class A : public Item {
 public:
-    void accept(const Visitor &visitor) const override {}
+    void accept(const Visitor &visitor) const override { }
 };
 
 class B : public Item {
 public:
-    void accept(const Visitor &visitor) const override {}
+    void accept(const Visitor &visitor) const override { }
 };
 }
 }

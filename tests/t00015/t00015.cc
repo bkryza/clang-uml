@@ -8,7 +8,8 @@ class A {
 }
 
 namespace ns2_v0_9_0 {
-class [[deprecated]] A {};
+class [[deprecated]] A {
+};
 }
 
 namespace {

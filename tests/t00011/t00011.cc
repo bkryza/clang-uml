@@ -14,7 +14,7 @@ template <typename T> class D {
 
 class A {
 private:
-    void foo() {}
+    void foo() { }
     friend class B;
     friend class external::C;
     // TODO

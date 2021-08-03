@@ -27,7 +27,7 @@ class R;
 
 struct D {
     int d;
-    void print(R *r) {}
+    void print(R *r) { }
 };
 
 template <typename T> struct E {

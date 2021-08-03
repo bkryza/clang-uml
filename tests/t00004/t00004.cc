@@ -3,7 +3,7 @@ namespace t00004 {
 
 class A {
 public:
-    void foo() const {}
+    void foo() const { }
 
     class AA {
     public:
@@ -13,7 +13,7 @@ public:
         };
     };
 
-    void foo2() const {}
+    void foo2() const { }
 };
 }
 }
