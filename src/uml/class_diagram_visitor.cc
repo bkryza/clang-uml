@@ -1259,51 +1259,56 @@ class_ tu_visitor::build_template_instantiation(
 
             LOG_DBG("Template argument is a type {}", ct.type);
 
-            if (targ.type().value().kind() ==
-                cppast::cpp_type_kind::template_instantiation_t) {
-                class_ nested_tinst = build_template_instantiation(static_cast<
-                    const cppast::cpp_template_instantiation_type &>(
-                    targ.type().value()));
+            auto fn = cx::util::full_name(
+                cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
+                ctx.entity_index, false);
 
-                auto fn = cx::util::full_name(
-                    cppast::remove_cv(
-                        cx::util::unreferenced(targ.type().value())),
-                    ctx.entity_index, false);
-                fn = util::split(fn, "<")[0];
+            if (ctx.config.should_include(fn)) {
 
-                class_relationship tinst_dependency;
-                tinst_dependency.type = relationship_t::kDependency;
-                tinst_dependency.label = "";
+                if (targ.type().value().kind() ==
+                    cppast::cpp_type_kind::template_instantiation_t) {
+                    class_ nested_tinst =
+                        build_template_instantiation(static_cast<
+                            const cppast::cpp_template_instantiation_type &>(
+                            targ.type().value()));
 
-                tinst_dependency.destination =
-                    nested_tinst.full_name(ctx.config.using_namespace);
+                    fn = util::split(fn, "<")[0];
 
-                LOG_DBG("Creating nested template dependency to template "
-                        "instantiation {} -> {}",
-                    tinst.full_name(ctx.config.using_namespace),
-                    tinst_dependency.destination);
+                    class_relationship tinst_dependency;
+                    tinst_dependency.type = relationship_t::kDependency;
+                    tinst_dependency.label = "";
 
-                tinst.add_relationship(std::move(tinst_dependency));
+                    tinst_dependency.destination =
+                        nested_tinst.full_name(ctx.config.using_namespace);
 
-                ctx.d.add_class(std::move(nested_tinst));
-            }
-            else if (targ.type().value().kind() ==
-                cppast::cpp_type_kind::user_defined_t) {
-                class_relationship tinst_dependency;
-                tinst_dependency.type = relationship_t::kDependency;
-                tinst_dependency.label = "";
+                    LOG_DBG("Creating nested template dependency to template "
+                            "instantiation {} -> {}",
+                        tinst.full_name(ctx.config.using_namespace),
+                        tinst_dependency.destination);
 
-                tinst_dependency.destination = cx::util::full_name(
-                    cppast::remove_cv(
-                        cx::util::unreferenced(targ.type().value())),
-                    ctx.entity_index, false);
+                    tinst.add_relationship(std::move(tinst_dependency));
 
-                LOG_DBG("Creating nested template dependency to user defined "
+                    ctx.d.add_class(std::move(nested_tinst));
+                }
+                else if (targ.type().value().kind() ==
+                    cppast::cpp_type_kind::user_defined_t) {
+                    class_relationship tinst_dependency;
+                    tinst_dependency.type = relationship_t::kDependency;
+                    tinst_dependency.label = "";
+
+                    tinst_dependency.destination = cx::util::full_name(
+                        cppast::remove_cv(
+                            cx::util::unreferenced(targ.type().value())),
+                        ctx.entity_index, false);
+
+                    LOG_DBG(
+                        "Creating nested template dependency to user defined "
                         "type {} -> {}",
-                    tinst.full_name(ctx.config.using_namespace),
-                    tinst_dependency.destination);
+                        tinst.full_name(ctx.config.using_namespace),
+                        tinst_dependency.destination);
 
-                tinst.add_relationship(std::move(tinst_dependency));
+                    tinst.add_relationship(std::move(tinst_dependency));
+                }
             }
         }
         else if (targ.expression()) {
