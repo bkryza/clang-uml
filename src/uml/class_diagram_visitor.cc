@@ -169,16 +169,6 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
                     const cppast::cpp_template_instantiation_type &>(
                     at.type_alias().underlying_type()));
 
-                class_relationship r;
-                r.destination = tinst.base_template_usr;
-                r.type = relationship_t::kInstantiation;
-                r.label = "";
-                r.scope = scope_t::kNone;
-                tinst.add_relationship(std::move(r));
-
-                LOG_DBG("Created template instantiation: {}, {}, {}",
-                    tinst.name, tinst.usr, tinst.base_template_usr);
-
                 ctx.d.add_class(std::move(tinst));
             }
         });
@@ -549,26 +539,8 @@ bool tu_visitor::process_field_with_template_instantiation(
                     resolve_alias(template_instantiation_type));
             class_ tinst = build_template_instantiation(unaliased);
 
-            class_relationship r;
-            const auto &tt = cppast::remove_cv(
-                cx::util::unreferenced(template_instantiation_type));
-            auto fn = cx::util::full_name(tt, ctx.entity_index, false);
-            fn = util::split(fn, "<")[0];
-
-            if (ctx.has_type_alias(fn)) {
-                // If this is a template alias - set the instantiation
-                // relationship to the first alias target
-                r.destination = cppast::to_string(ctx.get_type_alias(fn).get());
-            }
-            else {
-                // Otherwise point to the base template
-                r.destination = tinst.base_template_usr;
-            }
-            r.type = relationship_t::kInstantiation;
-            r.label = "";
-            r.scope = scope_t::kNone;
-            tinst.add_relationship(std::move(r));
-
+            // Infer the relationship of this field to the template
+            // instantiation
             class_relationship rr;
             rr.destination = tinst.usr;
             if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
@@ -580,6 +552,7 @@ bool tu_visitor::process_field_with_template_instantiation(
             rr.scope = detail::cpp_access_specifier_to_scope(as);
             rr.style = m.style_spec();
 
+            // Process field decorators
             auto [decorator_rtype, decorator_rmult] = m.relationship();
             if (decorator_rtype != relationship_t::kNone) {
                 rr.type = decorator_rtype;
@@ -937,15 +910,6 @@ void tu_visitor::process_function_parameter(
                     class_ tinst = build_template_instantiation(
                         template_instantiation_type);
 
-                    LOG_DBG("Created template instantiation: {}, {}",
-                        tinst.name, tinst.usr);
-
-                    class_relationship r;
-                    r.destination = tinst.base_template_usr;
-                    r.type = relationship_t::kInstantiation;
-                    r.label = "";
-                    tinst.add_relationship(std::move(r));
-
                     class_relationship rr;
                     rr.destination = tinst.usr;
                     rr.type = relationship_t::kDependency;
@@ -1292,6 +1256,17 @@ class_ tu_visitor::build_template_instantiation(
         class_template ct;
         if (targ.type()) {
             ct.type = cppast::to_string(targ.type().value());
+
+            LOG_DBG("Template argument is a type {}", ct.type);
+
+            if (targ.type().value().kind() ==
+                cppast::cpp_type_kind::template_instantiation_t) {
+                class_ nested_tinst = build_template_instantiation(static_cast<
+                    const cppast::cpp_template_instantiation_type &>(
+                    targ.type().value()));
+
+                ctx.d.add_class(std::move(nested_tinst));
+            }
         }
         else if (targ.expression()) {
             const auto &exp = targ.expression().value();
@@ -1304,6 +1279,8 @@ class_ tu_visitor::build_template_instantiation(
                     static_cast<const cppast::cpp_unexposed_expression &>(exp)
                         .expression()
                         .as_string();
+
+            LOG_DBG("Template argument is an expression {}", ct.type);
         }
 
         // In case any of the template arguments are base classes, add
@@ -1341,6 +1318,27 @@ class_ tu_visitor::build_template_instantiation(
         std::string::npos) {
         tinst.usr = ns + tinst.usr;
     }
+
+    // Add instantiation relationship to primary template of this
+    // instantiation
+    class_relationship r;
+    const auto &tt = cppast::remove_cv(cx::util::unreferenced(t));
+    auto fn = cx::util::full_name(tt, ctx.entity_index, false);
+    fn = util::split(fn, "<")[0];
+
+    if (ctx.has_type_alias(fn)) {
+        // If this is a template alias - set the instantiation
+        // relationship to the first alias target
+        r.destination = cppast::to_string(ctx.get_type_alias(fn).get());
+    }
+    else {
+        // Otherwise point to the base template
+        r.destination = tinst.base_template_usr;
+    }
+    r.type = relationship_t::kInstantiation;
+    r.label = "";
+    r.scope = scope_t::kNone;
+    tinst.add_relationship(std::move(r));
 
     return tinst;
 }
