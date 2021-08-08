@@ -220,7 +220,8 @@ public:
 
 private:
     clanguml::model::class_diagram::class_ build_template_instantiation(
-        const cppast::cpp_template_instantiation_type &t);
+        const cppast::cpp_template_instantiation_type &t,
+        std::optional<clanguml::model::class_diagram::class_ *> parent = {});
 
     const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
 

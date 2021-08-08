@@ -21,7 +21,7 @@ struct D {
 };
 
 struct R {
-    A<B<C<D>>> abc;
+    std::shared_ptr<A<B<std::unique_ptr<C<D>>>>> abc;
 };
 
 } // namespace t00033

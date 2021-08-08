@@ -513,70 +513,73 @@ bool tu_visitor::process_field_with_template_instantiation(
     const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
     class_ &c, class_member &m, cppast::cpp_access_specifier_kind as)
 {
-    LOG_DBG("Processing field with template instatiation type {}",
+    LOG_DBG("Processing field with template instantiation type {}",
         cppast::to_string(tr));
 
     bool res = false;
 
     const auto &template_instantiation_type =
         static_cast<const cppast::cpp_template_instantiation_type &>(tr);
-    if (template_instantiation_type.primary_template()
-            .get(ctx.entity_index)
-            .size()) {
-        // Here we need the name of the primary template with full namespace
-        // prefix to apply config inclusion filters
-        auto primary_template_name = cx::util::full_name(ctx.namespace_,
-            template_instantiation_type.primary_template()
-                .get(ctx.entity_index)[0]
-                .get());
 
-        LOG_DBG("Maybe building instantiation for: {}{}", primary_template_name,
-            cppast::to_string(tr));
+    const auto &unaliased =
+        static_cast<const cppast::cpp_template_instantiation_type &>(
+            resolve_alias(template_instantiation_type));
 
-        if (ctx.config.should_include(primary_template_name)) {
-            const auto &unaliased =
-                static_cast<const cppast::cpp_template_instantiation_type &>(
-                    resolve_alias(template_instantiation_type));
-            class_ tinst = build_template_instantiation(unaliased);
+    // if (unaliased.primary_template().get(ctx.entity_index).size()) {
+    // Here we need the name of the primary template with full namespace
+    // prefix to apply config inclusion filters
+    // auto primary_template_name = cx::util::full_name(ctx.namespace_,
+    // unaliased.primary_template().get(ctx.entity_index)[0].get());
 
-            // Infer the relationship of this field to the template
-            // instantiation
-            class_relationship rr;
-            rr.destination = tinst.usr;
-            if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
-                mv.type().kind() == cppast::cpp_type_kind::reference_t)
-                rr.type = relationship_t::kAssociation;
-            else
-                rr.type = relationship_t::kAggregation;
-            rr.label = mv.name();
-            rr.scope = detail::cpp_access_specifier_to_scope(as);
-            rr.style = m.style_spec();
+    // LOG_DBG("Maybe building instantiation for: {}, {}",
+    // primary_template_name, cppast::to_string(tr));
 
-            // Process field decorators
-            auto [decorator_rtype, decorator_rmult] = m.relationship();
-            if (decorator_rtype != relationship_t::kNone) {
-                rr.type = decorator_rtype;
-                auto mult = util::split(decorator_rmult, ":");
-                if (mult.size() == 2) {
-                    rr.multiplicity_source = mult[0];
-                    rr.multiplicity_destination = mult[1];
-                }
-            }
+    // if (ctx.config.should_include(primary_template_name)) {
+    class_ tinst = build_template_instantiation(unaliased);
 
-            LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
-                rr.destination, model::class_diagram::to_string(rr.type), c.usr,
-                rr.label);
+    // Infer the relationship of this field to the template
+    // instantiation
+    class_relationship rr;
+    rr.destination = tinst.usr;
+    if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
+        mv.type().kind() == cppast::cpp_type_kind::reference_t)
+        rr.type = relationship_t::kAssociation;
+    else
+        rr.type = relationship_t::kAggregation;
+    rr.label = mv.name();
+    rr.scope = detail::cpp_access_specifier_to_scope(as);
+    rr.style = m.style_spec();
 
-            c.add_relationship(std::move(rr));
-
-            res = true;
-
-            LOG_DBG("Created template instantiation: {}, {}", tinst.name,
-                tinst.usr);
-
-            ctx.d.add_class(std::move(tinst));
+    // Process field decorators
+    auto [decorator_rtype, decorator_rmult] = m.relationship();
+    if (decorator_rtype != relationship_t::kNone) {
+        rr.type = decorator_rtype;
+        auto mult = util::split(decorator_rmult, ":");
+        if (mult.size() == 2) {
+            rr.multiplicity_source = mult[0];
+            rr.multiplicity_destination = mult[1];
         }
     }
+
+    if (ctx.config.should_include(tinst.name)) {
+        LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
+            rr.destination, model::class_diagram::to_string(rr.type), c.usr,
+            rr.label);
+
+        c.add_relationship(std::move(rr));
+
+        res = true;
+
+        LOG_DBG(
+            "Created template instantiation: {}, {}", tinst.name, tinst.usr);
+
+        ctx.d.add_class(std::move(tinst));
+    }
+    //}
+    //}
+    // else {
+    // LOG_DBG("Field template instantiation has no primary template?");
+    //}
 
     return res;
 }
@@ -1146,7 +1149,8 @@ bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
 }
 
 class_ tu_visitor::build_template_instantiation(
-    const cppast::cpp_template_instantiation_type &t)
+    const cppast::cpp_template_instantiation_type &t,
+    std::optional<clanguml::model::class_diagram::class_ *> parent)
 {
     class_ tinst;
     std::string full_template_name;
@@ -1263,51 +1267,68 @@ class_ tu_visitor::build_template_instantiation(
                 cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
                 ctx.entity_index, false);
 
-            if (ctx.config.should_include(fn)) {
+            if (targ.type().value().kind() ==
+                cppast::cpp_type_kind::template_instantiation_t) {
 
-                if (targ.type().value().kind() ==
-                    cppast::cpp_type_kind::template_instantiation_t) {
-                    class_ nested_tinst =
-                        build_template_instantiation(static_cast<
-                            const cppast::cpp_template_instantiation_type &>(
-                            targ.type().value()));
+                const auto &nested_template_parameter = static_cast<
+                    const cppast::cpp_template_instantiation_type &>(
+                    targ.type().value());
 
-                    fn = util::split(fn, "<")[0];
+                class_ nested_tinst =
+                    build_template_instantiation(nested_template_parameter,
+                        ctx.config.should_include(tinst.name)
+                            ? std::make_optional(&tinst)
+                            : parent);
 
-                    class_relationship tinst_dependency;
-                    tinst_dependency.type = relationship_t::kDependency;
-                    tinst_dependency.label = "";
+                class_relationship tinst_dependency;
+                tinst_dependency.type = relationship_t::kDependency;
+                tinst_dependency.label = "";
 
-                    tinst_dependency.destination =
-                        nested_tinst.full_name(ctx.config.using_namespace);
+                tinst_dependency.destination =
+                    nested_tinst.full_name(ctx.config.using_namespace);
 
+                if (ctx.config.should_include(fn)) {
                     LOG_DBG("Creating nested template dependency to template "
-                            "instantiation {} -> {}",
-                        tinst.full_name(ctx.config.using_namespace),
+                            "instantiation {}, {} -> {}",
+                        fn, tinst.full_name(ctx.config.using_namespace),
                         tinst_dependency.destination);
 
                     tinst.add_relationship(std::move(tinst_dependency));
+                }
+                else if (parent) {
+                    LOG_DBG("Creating nested template dependency to template "
+                            "instantiation {}, {} -> {}",
+                        fn, (*parent)->full_name(ctx.config.using_namespace),
+                        tinst_dependency.destination);
 
+                    (*parent)->add_relationship(std::move(tinst_dependency));
+                }
+
+                if (ctx.config.should_include(fn)) {
                     ctx.d.add_class(std::move(nested_tinst));
                 }
-                else if (targ.type().value().kind() ==
-                    cppast::cpp_type_kind::user_defined_t) {
-                    class_relationship tinst_dependency;
-                    tinst_dependency.type = relationship_t::kDependency;
-                    tinst_dependency.label = "";
+            }
+            else if (targ.type().value().kind() ==
+                cppast::cpp_type_kind::user_defined_t) {
+                class_relationship tinst_dependency;
+                tinst_dependency.type = relationship_t::kDependency;
+                tinst_dependency.label = "";
 
-                    tinst_dependency.destination = cx::util::full_name(
-                        cppast::remove_cv(
-                            cx::util::unreferenced(targ.type().value())),
-                        ctx.entity_index, false);
+                tinst_dependency.destination = cx::util::full_name(
+                    cppast::remove_cv(
+                        cx::util::unreferenced(targ.type().value())),
+                    ctx.entity_index, false);
 
-                    LOG_DBG(
-                        "Creating nested template dependency to user defined "
+                LOG_DBG("Creating nested template dependency to user defined "
                         "type {} -> {}",
-                        tinst.full_name(ctx.config.using_namespace),
-                        tinst_dependency.destination);
+                    tinst.full_name(ctx.config.using_namespace),
+                    tinst_dependency.destination);
 
+                if (ctx.config.should_include(fn)) {
                     tinst.add_relationship(std::move(tinst_dependency));
+                }
+                else if (parent) {
+                    (*parent)->add_relationship(std::move(tinst_dependency));
                 }
             }
         }
