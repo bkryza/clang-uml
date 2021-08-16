@@ -240,8 +240,10 @@ public:
 
                 relstr << m_model.to_alias(
                               uns, ns_relative(uns, c.full_name(uns)))
+                              //uns, c.full_name(uns))
                        << " " << puml_relation << " "
                        << m_model.to_alias(uns, ns_relative(uns, destination));
+                       //<< m_model.to_alias(uns, destination);
 
                 if (!r.label.empty()) {
                     relstr << " : " << to_string(r.scope) << r.label;

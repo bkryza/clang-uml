@@ -1157,16 +1157,25 @@ class_ tu_visitor::build_template_instantiation(
 
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};
 
+    // Determine the full template name
     if (t.primary_template().get(ctx.entity_index).size()) {
         const auto &primary_template_ref =
             static_cast<const cppast::cpp_class_template &>(
                 t.primary_template().get(ctx.entity_index)[0].get())
                 .class_();
 
+        if (parent)
+            LOG_DBG("Template parent is {}",
+                (*parent)->full_name(ctx.config.using_namespace));
+        else
+            LOG_DBG("Template parent is empty");
+
         full_template_name =
             cx::util::full_name(ctx.namespace_, primary_template_ref);
 
-        LOG_DBG("Found template instantiation: {} ({}) ..|> {}, {}",
+        LOG_DBG("Found template instantiation: "
+                "type={}, canonical={}, primary_template={}, full_"
+                "template={}",
             cppast::to_string(t), cppast::to_string(t.canonical()),
             t.primary_template().name(), full_template_name);
 
@@ -1237,10 +1246,11 @@ class_ tu_visitor::build_template_instantiation(
         full_template_name = cppast::to_string(t);
     }
 
+    LOG_DBG("BUILDING TEMPLATE INSTANTIATION FOR {}", full_template_name);
+
     // Extract namespace from base template name
     auto ns_toks = clanguml::util::split(
-        tinst.base_template_usr.substr(0, tinst.base_template_usr.find('<')),
-        "::");
+        full_template_name.substr(0, full_template_name.find('<')), "::");
 
     std::string ns;
     if (ns_toks.size() > 1) {
@@ -1252,6 +1262,12 @@ class_ tu_visitor::build_template_instantiation(
 
     tinst.is_template_instantiation = true;
 
+    tinst.usr = tinst.full_name(ctx.config.using_namespace);
+    if (tinst.usr.substr(0, tinst.usr.find('<')).find("::") ==
+        std::string::npos) {
+        tinst.usr = ns + tinst.usr;
+    }
+
     // Process template argumetns
     int arg_index{0};
     bool variadic_params{false};
@@ -1262,7 +1278,6 @@ class_ tu_visitor::build_template_instantiation(
             ct.type = cppast::to_string(targ.type().value());
 
             LOG_DBG("Template argument is a type {}", ct.type);
-
             auto fn = cx::util::full_name(
                 cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
                 ctx.entity_index, false);
@@ -1274,38 +1289,58 @@ class_ tu_visitor::build_template_instantiation(
                     const cppast::cpp_template_instantiation_type &>(
                     targ.type().value());
 
-                class_ nested_tinst =
-                    build_template_instantiation(nested_template_parameter,
-                        ctx.config.should_include(tinst.name)
-                            ? std::make_optional(&tinst)
-                            : parent);
-
                 class_relationship tinst_dependency;
                 tinst_dependency.type = relationship_t::kDependency;
                 tinst_dependency.label = "";
 
+                std::string nnn{"empty"};
+                if (parent)
+                    nnn = (*parent)->name;
+
+                LOG_ERROR("CALLING BTI WITH PARENT {} ### ({})",
+                    ctx.config.should_include(fn) ? tinst.name : nnn, fn);
+
+                class_ nested_tinst =
+                    build_template_instantiation(nested_template_parameter,
+                        ctx.config.should_include(tinst.usr)
+                            ? std::make_optional(&tinst)
+                            : parent);
+
+                LOG_ERROR("++++ NESTED TEMPLATE FULL NAME IS {} ({})",
+                    nested_tinst.usr, fn);
+
                 tinst_dependency.destination =
                     nested_tinst.full_name(ctx.config.using_namespace);
 
+                auto nested_tinst_usr = nested_tinst.usr;
+
                 if (ctx.config.should_include(fn)) {
-                    LOG_DBG("Creating nested template dependency to template "
-                            "instantiation {}, {} -> {}",
+                    ctx.d.add_class(std::move(nested_tinst));
+                }
+
+                if (ctx.config.should_include(tinst.usr)) {
+                    LOG_DBG(
+                        "++ Creating nested template dependency to template "
+                        "instantiation {}, {} -> {}",
                         fn, tinst.full_name(ctx.config.using_namespace),
                         tinst_dependency.destination);
 
                     tinst.add_relationship(std::move(tinst_dependency));
                 }
                 else if (parent) {
-                    LOG_DBG("Creating nested template dependency to template "
+                    LOG_DBG("** Creating nested template dependency to parent "
+                            "template "
                             "instantiation {}, {} -> {}",
                         fn, (*parent)->full_name(ctx.config.using_namespace),
                         tinst_dependency.destination);
 
                     (*parent)->add_relationship(std::move(tinst_dependency));
                 }
-
-                if (ctx.config.should_include(fn)) {
-                    ctx.d.add_class(std::move(nested_tinst));
+                else {
+                    LOG_DBG("-- No nested template dependency to template "
+                            "instantiation: {}, {} -> {}",
+                        fn, tinst.full_name(ctx.config.using_namespace),
+                        tinst_dependency.destination);
                 }
             }
             else if (targ.type().value().kind() ==
@@ -1375,12 +1410,6 @@ class_ tu_visitor::build_template_instantiation(
         LOG_DBG("Adding template argument '{}'", ct.type);
 
         tinst.templates.emplace_back(std::move(ct));
-    }
-
-    tinst.usr = tinst.full_name(ctx.config.using_namespace);
-    if (tinst.usr.substr(0, tinst.usr.find('<')).find("::") ==
-        std::string::npos) {
-        tinst.usr = ns + tinst.usr;
     }
 
     // Add instantiation relationship to primary template of this
