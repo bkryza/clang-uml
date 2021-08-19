@@ -525,22 +525,12 @@ bool tu_visitor::process_field_with_template_instantiation(
         static_cast<const cppast::cpp_template_instantiation_type &>(
             resolve_alias(template_instantiation_type));
 
-    // if (unaliased.primary_template().get(ctx.entity_index).size()) {
-    // Here we need the name of the primary template with full namespace
-    // prefix to apply config inclusion filters
-    // auto primary_template_name = cx::util::full_name(ctx.namespace_,
-    // unaliased.primary_template().get(ctx.entity_index)[0].get());
-
-    // LOG_DBG("Maybe building instantiation for: {}, {}",
-    // primary_template_name, cppast::to_string(tr));
-
-    // if (ctx.config.should_include(primary_template_name)) {
     class_ tinst = build_template_instantiation(unaliased);
 
     // Infer the relationship of this field to the template
     // instantiation
     class_relationship rr;
-    rr.destination = tinst.usr;
+    rr.destination = tinst.full_name(ctx.config.using_namespace);
     if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
         mv.type().kind() == cppast::cpp_type_kind::reference_t)
         rr.type = relationship_t::kAssociation;
@@ -575,11 +565,6 @@ bool tu_visitor::process_field_with_template_instantiation(
 
         ctx.d.add_class(std::move(tinst));
     }
-    //}
-    //}
-    // else {
-    // LOG_DBG("Field template instantiation has no primary template?");
-    //}
 
     return res;
 }
@@ -1048,8 +1033,11 @@ bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
 {
     bool found{false};
 
-    LOG_DBG("Finding relationships for type {}, {}", cppast::to_string(t_),
-        t_.kind());
+    const auto fn =
+        cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index, false);
+
+    LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
+        t_.kind(), fn);
 
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
@@ -1091,8 +1079,6 @@ bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
                 cppast::to_string(t), relationship_t::kAggregation);
 
         // Check if t_ has an alias in the alias index
-        const auto fn =
-            cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index, false);
         if (ctx.has_type_alias(fn)) {
             LOG_DBG("Find relationship in alias of {} | {}", fn,
                 cppast::to_string(ctx.get_type_alias(fn).get()));
@@ -1134,6 +1120,29 @@ bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
         else if (name.find("std::vector") == 0) {
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kAggregation);
+        }
+        else if (ctx.config.should_include(fn)) {
+            LOG_DBG("User defined template instantiation: {} | {}",
+                cppast::to_string(t_), cppast::to_string(t_.canonical()));
+
+            if (relationship_type != relationship_t::kNone)
+                relationships.emplace_back(
+                    cppast::to_string(t), relationship_type);
+            else
+                relationships.emplace_back(
+                    cppast::to_string(t), relationship_t::kAggregation);
+
+            // Check if t_ has an alias in the alias index
+            if (ctx.has_type_alias(fn)) {
+                LOG_DBG("Find relationship in alias of {} | {}", fn,
+                    cppast::to_string(ctx.get_type_alias(fn).get()));
+                found = find_relationships(ctx.get_type_alias(fn).get(),
+                    relationships, relationship_type);
+                if (found)
+                    return found;
+            }
+
+            return found;
         }
         else {
             for (const auto &arg : args) {

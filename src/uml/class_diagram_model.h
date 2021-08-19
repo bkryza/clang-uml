@@ -350,6 +350,8 @@ struct diagram {
     std::string to_alias(const std::vector<std::string> &using_namespaces,
         const std::string &full_name) const
     {
+        LOG_DBG("Looking for alias for {}", full_name);
+
         for (const auto &c : classes) {
             if (c.full_name(using_namespaces) == full_name) {
                 return c.alias();
