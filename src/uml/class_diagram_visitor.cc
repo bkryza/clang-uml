@@ -526,6 +526,7 @@ bool tu_visitor::process_field_with_template_instantiation(
             resolve_alias(template_instantiation_type));
 
     class_ tinst = build_template_instantiation(unaliased);
+    tinst.usr = tinst.full_name(ctx.config.using_namespace);
 
     // Infer the relationship of this field to the template
     // instantiation

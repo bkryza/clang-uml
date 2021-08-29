@@ -63,7 +63,7 @@ std::string full_name(const cppast::cpp_type &t,
 {
     std::string t_ns;
     if (!inside_class)
-        t_ns = ns(t, idx);
+        t_ns = ns(cppast::remove_cv(unreferenced(t)), idx);
 
     auto t_name = cppast::to_string(t);
 
