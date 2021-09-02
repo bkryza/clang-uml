@@ -48,13 +48,18 @@ TEST_CASE("t00033", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("D")));
     REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(puml, IsDependency(_A("A<B<C<D>>>"), _A("B<C<D>>")));
-    REQUIRE_THAT(puml, IsDependency(_A("B<C<D>>"), _A("C<D>")));
+    REQUIRE_THAT(puml,
+        IsDependency(
+            _A("A<B<std::unique_ptr<C<D>>>>"), _A("B<std::unique_ptr<C<D>>>")));
+    REQUIRE_THAT(
+        puml, IsDependency(_A("B<std::unique_ptr<C<D>>>"), _A("C<D>")));
     REQUIRE_THAT(puml, IsDependency(_A("C<D>"), _A("D")));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("C<T>"), _A("C<D>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<T>"), _A("B<C<D>>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<B<C<D>>>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
