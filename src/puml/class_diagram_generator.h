@@ -206,11 +206,12 @@ public:
         std::set<std::string> rendered_relations;
 
         std::stringstream all_relations_str;
+        std::set<std::string> unique_relations;
         for (const auto &r : c.relationships) {
             if (!m_config.should_include_relationship(name(r.type)))
                 continue;
 
-            LOG_DBG("===== Processing relationship {}", to_string(r.type));
+            LOG_DBG("== Processing relationship {}", to_string(r.type));
 
             std::stringstream relstr;
             std::string destination;
@@ -231,7 +232,7 @@ public:
                     destination = r.destination;
                 }
 
-                LOG_DBG("========= Destination is: {}", destination);
+                LOG_DBG("=== Destination is: {}", destination);
 
                 std::string puml_relation;
                 if (!r.multiplicity_source.empty())
@@ -252,14 +253,18 @@ public:
                     rendered_relations.emplace(r.label);
                 }
 
-                relstr << '\n';
+                if (unique_relations.count(relstr.str()) == 0) {
+                    unique_relations.emplace(relstr.str());
 
-                LOG_DBG("Adding relation {}", relstr.str());
+                    relstr << '\n';
 
-                all_relations_str << relstr.str();
+                    LOG_DBG("=== Adding relation {}", relstr.str());
+
+                    all_relations_str << relstr.str();
+                }
             }
             catch (error::uml_alias_missing &e) {
-                LOG_ERROR("Skipping {} relation from {} to {} due "
+                LOG_ERROR("=== Skipping {} relation from {} to {} due "
                           "to: {}",
                     to_string(r.type), c.full_name(uns), destination, e.what());
             }
@@ -297,8 +302,9 @@ public:
                     ostr << relstr.str();
                 }
                 catch (error::uml_alias_missing &e) {
-                    LOG_ERROR("Skipping inheritance relation from {} to {} due "
-                              "to: {}",
+                    LOG_ERROR(
+                        "=== Skipping inheritance relation from {} to {} due "
+                        "to: {}",
                         b.name, c.name, e.what());
                 }
             }
