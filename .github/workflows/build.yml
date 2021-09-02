@@ -12,8 +12,6 @@ jobs:
         submodules: recursive
     - name: Install add-apt-repository
       run: sudo apt-get install software-properties-common
-    - name: Add llvm repository
-      run: sudo add-apt-repository 'deb [trusted=yes] http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main' && sudo apt update --allow-unauthenticated
     - name: Install deps
       run: sudo apt install ccache cmake libyaml-cpp-dev libfmt-dev libspdlog-dev clang-12 libclang-12-dev libclang-cpp12-dev
     - name: Build and unit test
