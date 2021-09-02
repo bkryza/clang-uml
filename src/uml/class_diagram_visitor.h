@@ -195,7 +195,8 @@ public:
 
     void process_function_parameter(const cppast::cpp_function_parameter &param,
         clanguml::model::class_diagram::class_method &m,
-        clanguml::model::class_diagram::class_ &c);
+        clanguml::model::class_diagram::class_ &c,
+        const std::set<std::string> &template_parameter_names = {});
 
     bool find_relationships(const cppast::cpp_type &t,
         std::vector<std::pair<std::string,

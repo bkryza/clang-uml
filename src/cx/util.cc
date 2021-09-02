@@ -62,8 +62,9 @@ std::string full_name(const cppast::cpp_type &t,
     const cppast::cpp_entity_index &idx, bool inside_class)
 {
     std::string t_ns;
-    if (!inside_class)
+    if (!inside_class) {
         t_ns = ns(cppast::remove_cv(unreferenced(t)), idx);
+    }
 
     auto t_name = cppast::to_string(t);
 
@@ -121,12 +122,13 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
         if (static_cast<const cppast::cpp_template_instantiation_type &>(t)
                 .primary_template()
                 .get(idx)
-                .size() > 0)
+                .size() > 0) {
             return ns(
                 static_cast<const cppast::cpp_template_instantiation_type &>(t)
                     .primary_template()
                     .get(idx)[0]
                     .get());
+        }
         else
             return "";
     }

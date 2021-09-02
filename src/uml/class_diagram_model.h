@@ -334,7 +334,7 @@ struct diagram {
         if (!has_class(c.usr))
             classes.emplace_back(std::move(c));
         else
-            LOG_DBG("Class {} already in the model", c.name);
+            LOG_DBG("Class {} ({}) already in the model", c.name, c.usr);
     }
 
     void add_enum(enum_ &&e)

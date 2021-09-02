@@ -736,8 +736,13 @@ void tu_visitor::process_template_method(
     if (m.skip())
         return;
 
+    std::set<std::string> template_parameter_names;
+    for (const auto &template_parameter : mf.parameters()) {
+        template_parameter_names.emplace(template_parameter.name());
+    }
+
     for (auto &param : mf.function().parameters())
-        process_function_parameter(param, m, c);
+        process_function_parameter(param, m, c, template_parameter_names);
 
     LOG_DBG("Adding template method: {}", m.name);
 
@@ -813,7 +818,8 @@ void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
 }
 
 void tu_visitor::process_function_parameter(
-    const cppast::cpp_function_parameter &param, class_method &m, class_ &c)
+    const cppast::cpp_function_parameter &param, class_method &m, class_ &c,
+    const std::set<std::string> &template_parameter_names)
 {
     method_parameter mp;
     mp.name = param.name();
@@ -827,7 +833,7 @@ void tu_visitor::process_function_parameter(
     const auto &param_type =
         cppast::remove_cv(cx::util::unreferenced(param.type()));
     if (param_type.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        // Template instantiation parameters are not fully prefixed
+        // TODO: Template instantiation parameters are not fully prefixed
         // so we have to deduce the correct namespace prefix of the
         // template which is being instantiated
         mp.type = cppast::to_string(param.type());
@@ -882,35 +888,74 @@ void tu_visitor::process_function_parameter(
         if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
             auto &template_instantiation_type =
                 static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
             if (template_instantiation_type.primary_template()
                     .get(ctx.entity_index)
                     .size()) {
+
                 // Here we need the name of the primary template with full
                 // namespace prefix to apply config inclusion filters
                 auto primary_template_name = cx::util::full_name(ctx.namespace_,
                     template_instantiation_type.primary_template()
                         .get(ctx.entity_index)[0]
                         .get());
+                // Now check if the template arguments of this function param
+                // are a subset of the method template params - if yes this is
+                // not an instantiation but just a reference to an existing
+                // template
+                bool template_is_not_instantiation{false};
+                for (const auto &template_argument :
+                    template_instantiation_type.arguments().value()) {
+                    const auto template_argument_name =
+                        cppast::to_string(template_argument.type().value());
+                    if (template_parameter_names.count(template_argument_name) >
+                        0) {
+                        template_is_not_instantiation = true;
+                        break;
+                    }
+                }
 
                 LOG_DBG("Maybe building instantiation for: {}",
                     primary_template_name);
 
                 if (ctx.config.should_include(primary_template_name)) {
-                    class_ tinst = build_template_instantiation(
-                        template_instantiation_type);
 
-                    class_relationship rr;
-                    rr.destination = tinst.usr;
-                    rr.type = relationship_t::kDependency;
-                    rr.label = "";
-                    LOG_DBG(
-                        "Adding field dependency relationship {} {} {} : {}",
-                        rr.destination,
-                        model::class_diagram::to_string(rr.type), c.usr,
-                        rr.label);
-                    c.add_relationship(std::move(rr));
+                    if (template_is_not_instantiation) {
+                        LOG_DBG("Template is not an instantiation - "
+                                "only adding reference to template {}",
+                            cx::util::full_name(
+                                cppast::remove_cv(t), ctx.entity_index, false));
+                        class_relationship rr;
+                        rr.destination = cx::util::full_name(
+                            cppast::remove_cv(t), ctx.entity_index, false);
+                        rr.type = relationship_t::kDependency;
+                        rr.label = "";
+                        LOG_DBG("Adding field template dependency relationship "
+                                "{} {} {} "
+                                ": {}",
+                            rr.destination,
+                            model::class_diagram::to_string(rr.type), c.usr,
+                            rr.label);
+                        c.add_relationship(std::move(rr));
+                    }
+                    else {
+                        // First check if tinst already exists
+                        class_ tinst = build_template_instantiation(
+                            template_instantiation_type);
 
-                    ctx.d.add_class(std::move(tinst));
+                        class_relationship rr;
+                        rr.destination = tinst.usr;
+                        rr.type = relationship_t::kDependency;
+                        rr.label = "";
+                        LOG_DBG("Adding field dependency relationship {} {} {} "
+                                ": {}",
+                            rr.destination,
+                            model::class_diagram::to_string(rr.type), c.usr,
+                            rr.label);
+                        c.add_relationship(std::move(rr));
+
+                        ctx.d.add_class(std::move(tinst));
+                    }
                 }
             }
         }
@@ -1256,10 +1301,11 @@ class_ tu_visitor::build_template_instantiation(
         full_template_name = cppast::to_string(t);
     }
 
-    LOG_DBG("BUILDING TEMPLATE INSTANTIATION FOR {}", full_template_name);
+    LOG_DBG("Building template instantiation for {}", full_template_name);
 
     // Extract namespace from base template name
-    auto ns_toks = clanguml::util::split(
+    std::vector<std::string> ns_toks;
+    ns_toks = clanguml::util::split(
         full_template_name.substr(0, full_template_name.find('<')), "::");
 
     std::string ns;
@@ -1267,6 +1313,8 @@ class_ tu_visitor::build_template_instantiation(
         ns = fmt::format(
             "{}::", fmt::join(ns_toks.begin(), ns_toks.end() - 1, "::"));
     }
+
+    LOG_DBG("Template namespace is {}", ns);
 
     tinst.name = ns + util::split(cppast::to_string(t), "<")[0];
 
@@ -1307,17 +1355,11 @@ class_ tu_visitor::build_template_instantiation(
                 if (parent)
                     nnn = (*parent)->name;
 
-                LOG_ERROR("CALLING BTI WITH PARENT {} ### ({})",
-                    ctx.config.should_include(fn) ? tinst.name : nnn, fn);
-
                 class_ nested_tinst =
                     build_template_instantiation(nested_template_parameter,
                         ctx.config.should_include(tinst.usr)
                             ? std::make_optional(&tinst)
                             : parent);
-
-                LOG_ERROR("++++ NESTED TEMPLATE FULL NAME IS {} ({})",
-                    nested_tinst.usr, fn);
 
                 tinst_dependency.destination =
                     nested_tinst.full_name(ctx.config.using_namespace);
@@ -1329,16 +1371,15 @@ class_ tu_visitor::build_template_instantiation(
                 }
 
                 if (ctx.config.should_include(tinst.usr)) {
-                    LOG_DBG(
-                        "++ Creating nested template dependency to template "
-                        "instantiation {}, {} -> {}",
+                    LOG_DBG("Creating nested template dependency to template "
+                            "instantiation {}, {} -> {}",
                         fn, tinst.full_name(ctx.config.using_namespace),
                         tinst_dependency.destination);
 
                     tinst.add_relationship(std::move(tinst_dependency));
                 }
                 else if (parent) {
-                    LOG_DBG("** Creating nested template dependency to parent "
+                    LOG_DBG("Creating nested template dependency to parent "
                             "template "
                             "instantiation {}, {} -> {}",
                         fn, (*parent)->full_name(ctx.config.using_namespace),
@@ -1347,7 +1388,7 @@ class_ tu_visitor::build_template_instantiation(
                     (*parent)->add_relationship(std::move(tinst_dependency));
                 }
                 else {
-                    LOG_DBG("-- No nested template dependency to template "
+                    LOG_DBG("No nested template dependency to template "
                             "instantiation: {}, {} -> {}",
                         fn, tinst.full_name(ctx.config.using_namespace),
                         tinst_dependency.destination);
@@ -1421,6 +1462,16 @@ class_ tu_visitor::build_template_instantiation(
 
         tinst.templates.emplace_back(std::move(ct));
     }
+
+    // Now update usr with the template arguments of the
+    // instantiations... (there must be a better way)
+    tinst.usr = tinst.full_name(ctx.config.using_namespace);
+    if (tinst.usr.substr(0, tinst.usr.find('<')).find("::") ==
+        std::string::npos) {
+        tinst.usr = ns + tinst.usr;
+    }
+
+    LOG_DBG("Setting tinst usr to {}", tinst.usr);
 
     // Add instantiation relationship to primary template of this
     // instantiation

@@ -231,6 +231,8 @@ public:
                     destination = r.destination;
                 }
 
+                LOG_DBG("========= Destination is: {}", destination);
+
                 std::string puml_relation;
                 if (!r.multiplicity_source.empty())
                     puml_relation += "\"" + r.multiplicity_source + "\" ";
@@ -251,6 +253,8 @@ public:
                 }
 
                 relstr << '\n';
+
+                LOG_DBG("Adding relation {}", relstr.str());
 
                 all_relations_str << relstr.str();
             }
