@@ -61,63 +61,23 @@ struct stylable_element {
 struct decorated_element {
     std::vector<std::shared_ptr<decorators::decorator>> decorators;
 
-    bool skip() const
-    {
-        for (auto d : decorators)
-            if (std::dynamic_pointer_cast<decorators::skip>(d))
-                return true;
+    bool skip() const;
 
-        return false;
-    }
+    bool skip_relationship() const;
 
-    bool skip_relationship() const
-    {
-        for (auto d : decorators)
-            if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
-                return true;
+    std::pair<relationship_t, std::string> relationship() const;
 
-        return false;
-    }
-
-    std::pair<relationship_t, std::string> relationship() const
-    {
-        for (auto &d : decorators)
-            if (std::dynamic_pointer_cast<decorators::association>(d))
-                return {relationship_t::kAssociation,
-                    std::dynamic_pointer_cast<decorators::relationship>(d)
-                        ->multiplicity};
-            else if (std::dynamic_pointer_cast<decorators::aggregation>(d))
-                return {relationship_t::kAggregation,
-                    std::dynamic_pointer_cast<decorators::relationship>(d)
-                        ->multiplicity};
-            else if (std::dynamic_pointer_cast<decorators::composition>(d))
-                return {relationship_t::kComposition,
-                    std::dynamic_pointer_cast<decorators::relationship>(d)
-                        ->multiplicity};
-
-        return {relationship_t::kNone, ""};
-    }
-
-    std::string style_spec()
-    {
-        for (auto d : decorators)
-            if (std::dynamic_pointer_cast<decorators::style>(d))
-                return std::dynamic_pointer_cast<decorators::style>(d)->spec;
-
-        return "";
-    }
+    std::string style_spec();
 };
 
 class element : public decorated_element {
 public:
-    element()
-        : m_id{m_nextId++}
-    {
-    }
+    element();
+
+    std::string alias() const;
+
     std::string name;
     std::vector<std::string> namespace_;
-
-    std::string alias() const { return fmt::format("C_{:010}", m_id); }
 
 protected:
     const uint64_t m_id{0};
@@ -143,15 +103,7 @@ struct method_parameter : public decorated_element {
     std::string default_value;
 
     std::string to_string(
-        const std::vector<std::string> &using_namespaces) const
-    {
-        using namespace clanguml::util;
-        auto t = ns_relative(using_namespaces, type);
-        if (default_value.empty())
-            return fmt::format("{} {}", t, name);
-
-        return fmt::format("{} {} = {}", t, name, default_value);
-    }
+        const std::vector<std::string> &using_namespaces) const;
 };
 
 struct class_method : public class_element {
@@ -179,11 +131,7 @@ struct class_relationship : public decorated_element, public stylable_element {
     scope_t scope{scope_t::kNone};
 
     friend bool operator==(
-        const class_relationship &l, const class_relationship &r)
-    {
-        return l.type == r.type && l.destination == r.destination &&
-            l.label == r.label;
-    }
+        const class_relationship &l, const class_relationship &r);
 };
 
 struct class_template {
@@ -192,10 +140,7 @@ struct class_template {
     std::string default_value;
     bool is_variadic{false};
 
-    friend bool operator==(const class_template &l, const class_template &r)
-    {
-        return (l.name == r.name) && (l.type == r.type);
-    }
+    friend bool operator==(const class_template &l, const class_template &r);
 };
 
 struct type_alias {
@@ -218,95 +163,26 @@ public:
     std::string base_template_usr;
     std::map<std::string, type_alias> type_aliases;
 
-    friend bool operator==(const class_ &l, const class_ &r)
-    {
-        return (l.usr == r.usr) && (l.templates == r.templates);
-    }
+    friend bool operator==(const class_ &l, const class_ &r);
 
-    void add_type_alias(type_alias &&ta)
-    {
-        LOG_DBG("Adding class alias: {} -> {}", ta.alias, ta.underlying_type);
-        type_aliases[ta.alias] = std::move(ta);
-    }
+    void add_type_alias(type_alias &&ta);
 
-    void add_relationship(class_relationship &&cr)
-    {
-        if (cr.destination.empty()) {
-            LOG_WARN(
-                "Skipping relationship '{}' - {} - '{}' due empty destination",
-                cr.destination, to_string(cr.type), usr);
-            return;
-        }
-
-        auto it = std::find(relationships.begin(), relationships.end(), cr);
-        if (it == relationships.end())
-            relationships.emplace_back(std::move(cr));
-    }
+    void add_relationship(class_relationship &&cr);
 
     std::string full_name(
-        const std::vector<std::string> &using_namespaces) const
-    {
-        using namespace clanguml::util;
+        const std::vector<std::string> &using_namespaces) const;
 
-        std::ostringstream ostr;
-        ostr << ns_relative(using_namespaces, name);
-
-        if (!templates.empty()) {
-            std::vector<std::string> tnames;
-            std::transform(templates.cbegin(), templates.cend(),
-                std::back_inserter(tnames),
-                [&using_namespaces](const auto &tmplt) {
-                    std::vector<std::string> res;
-
-                    if (!tmplt.type.empty())
-                        res.push_back(
-                            ns_relative(using_namespaces, tmplt.type));
-
-                    if (!tmplt.name.empty())
-                        res.push_back(
-                            ns_relative(using_namespaces, tmplt.name));
-
-                    if (!tmplt.default_value.empty()) {
-                        res.push_back("=");
-                        res.push_back(tmplt.default_value);
-                    }
-
-                    return fmt::format("{}", fmt::join(res, " "));
-                });
-            ostr << fmt::format("<{}>", fmt::join(tnames, ","));
-        }
-
-        return ostr.str();
-    }
-
-    bool is_abstract() const
-    {
-        // TODO check if all base abstract methods are overriden
-        // with non-abstract methods
-        return std::any_of(methods.begin(), methods.end(),
-            [](const auto &method) { return method.is_pure_virtual; });
-    }
+    bool is_abstract() const;
 };
 
 struct enum_ : public element, public stylable_element {
     std::vector<std::string> constants;
     std::vector<class_relationship> relationships;
 
-    friend bool operator==(const enum_ &l, const enum_ &r)
-    {
-        return l.name == r.name;
-    }
+    friend bool operator==(const enum_ &l, const enum_ &r);
 
     std::string full_name(
-        const std::vector<std::string> &using_namespaces) const
-    {
-        using namespace clanguml::util;
-
-        std::ostringstream ostr;
-        ostr << ns_relative(using_namespaces, name);
-
-        return ostr.str();
-    }
+        const std::vector<std::string> &using_namespaces) const;
 };
 
 struct diagram {
@@ -315,72 +191,19 @@ struct diagram {
     std::vector<enum_> enums;
     std::map<std::string, type_alias> type_aliases;
 
-    bool has_class(const std::string &usr) const
-    {
-        return std::any_of(classes.cbegin(), classes.cend(),
-            [&usr](const auto &c) { return c.usr == usr; });
-    }
+    bool has_class(const std::string &usr) const;
 
-    void add_type_alias(type_alias &&ta)
-    {
-        LOG_DBG("Adding global alias: {} -> {}", ta.alias, ta.underlying_type);
+    void add_type_alias(type_alias &&ta);
 
-        type_aliases[ta.alias] = std::move(ta);
-    }
+    void add_class(class_ &&c);
 
-    void add_class(class_ &&c)
-    {
-        LOG_DBG("Adding class: {}, {}", c.name, c.usr);
-        if (!has_class(c.usr))
-            classes.emplace_back(std::move(c));
-        else
-            LOG_DBG("Class {} ({}) already in the model", c.name, c.usr);
-    }
-
-    void add_enum(enum_ &&e)
-    {
-        LOG_DBG("Adding enum: {}", e.name);
-        auto it = std::find(enums.begin(), enums.end(), e);
-        if (it == enums.end())
-            enums.emplace_back(std::move(e));
-        else
-            LOG_DBG("Enum {} already in the model", e.name);
-    }
+    void add_enum(enum_ &&e);
 
     std::string to_alias(const std::vector<std::string> &using_namespaces,
-        const std::string &full_name) const
-    {
-        LOG_DBG("Looking for alias for {}", full_name);
-
-        for (const auto &c : classes) {
-            if (c.full_name(using_namespaces) == full_name) {
-                return c.alias();
-            }
-        }
-
-        for (const auto &e : enums) {
-            if (e.full_name(using_namespaces) == full_name) {
-                return e.alias();
-            }
-        }
-
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for {}", full_name));
-    }
+        const std::string &full_name) const;
 
     std::string usr_to_name(const std::vector<std::string> &using_namespaces,
-        const std::string &usr) const
-    {
-        if (usr.empty())
-            throw std::runtime_error("Empty USR");
-
-        for (const auto &c : classes) {
-            if (c.usr == usr)
-                return c.full_name(using_namespaces);
-        }
-
-        return "";
-    }
+        const std::string &usr) const;
 };
 }
 }
