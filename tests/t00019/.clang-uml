@@ -11,8 +11,3 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00019
-    plantuml:
-      after:
-        - '@A(Base) <|-- @A(Layer3<LowerLayer>)'
-        - '@A(Layer3<LowerLayer>) <|-- @A(Layer2<LowerLayer>)'
-        - '@A(Layer2<LowerLayer>) <|-- @A(Layer1<LowerLayer>)'
