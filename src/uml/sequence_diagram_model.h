@@ -54,8 +54,6 @@ struct diagram {
     std::string name;
 
     std::map<std::string, activity> sequences;
-
-    void sort() { }
 };
 }
 }
