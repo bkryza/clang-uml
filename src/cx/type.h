@@ -34,93 +34,43 @@ class cursor;
 
 class type {
 public:
-    type(CXType &&t)
-        : m_type{std::move(t)}
-    {
-    }
+    type(CXType &&t);
+
     ~type() = default;
 
-    std::string spelling() const
-    {
-        return to_string(clang_getTypeSpelling(m_type));
-    }
+    std::string spelling() const;
 
-    bool operator==(const type &b) const
-    {
-        return clang_equalTypes(m_type, b.get());
-    }
+    bool operator==(const type &b) const;
 
-    type canonical() const { return {clang_getCanonicalType(m_type)}; }
+    type canonical() const;
+    bool is_unexposed() const;
+    bool is_const_qualified() const;
 
-    bool is_unexposed() const { return kind() == CXType_Unexposed; }
+    bool is_volatile_qualified() const;
 
-    bool is_const_qualified() const
-    {
-        return clang_isConstQualifiedType(m_type);
-    }
+    bool is_restricted_qualified() const;
 
-    bool is_volatile_qualified() const
-    {
-        return clang_isVolatileQualifiedType(m_type);
-    }
+    bool is_invalid() const;
+    std::string typedef_name() const;
 
-    bool is_restricted_qualified() const
-    {
-        return clang_isRestrictQualifiedType(m_type);
-    }
-
-    bool is_invalid() const { return kind() == CXType_Invalid; }
-
-    std::string typedef_name() const
-    {
-        return to_string(clang_getTypedefName(m_type));
-    }
-
-    type pointee_type() const { return {clang_getPointeeType(m_type)}; }
-
+    type pointee_type() const;
     cursor type_declaration() const;
 
-    /*
-     *std::string type_kind_spelling() const
-     *{
-     *    return clang_getTypeKindSpelling(kind());
-     *}
-     */
+    CXTypeKind kind() const;
+    std::string kind_spelling() const;
 
-    CXTypeKind kind() const { return m_type.kind; }
+    CXCallingConv calling_convention() const;
 
-    std::string kind_spelling() const
-    {
-        return to_string(clang_getTypeKindSpelling(m_type.kind));
-    }
+    type result_type() const;
+    int exception_specification_type() const;
 
-    CXCallingConv calling_convention() const
-    {
-        return clang_getFunctionTypeCallingConv(m_type);
-    }
+    int argument_type_count() const;
+    type argument_type(int i) const;
+    bool is_function_variadic() const;
 
-    type result_type() const { return clang_getResultType(m_type); }
-
-    int exception_specification_type() const
-    {
-        return clang_getExceptionSpecificationType(m_type);
-    }
-
-    int argument_type_count() const { return clang_getNumArgTypes(m_type); }
-
-    type argument_type(int i) const { return {clang_getArgType(m_type, i)}; }
-
-    bool is_function_variadic() const
-    {
-        return clang_isFunctionTypeVariadic(m_type);
-    }
-
-    bool is_pod() const { return clang_isPODType(m_type); }
-
-    bool is_pointer() const { return kind() == CXType_Pointer; }
-
-    bool is_record() const { return kind() == CXType_Record; }
-
+    bool is_pod() const;
+    bool is_pointer() const;
+    bool is_record() const;
     /**
      * @brief Return final referenced type.
      *
@@ -129,81 +79,34 @@ public:
      *
      * @return Referenced type.
      */
-    type referenced() const
-    {
-        auto t = *this;
-        while (t.is_pointer() || t.is_reference()) {
-            t = t.pointee_type();
-        }
+    type referenced() const;
 
-        return t;
-    }
+    bool is_reference() const;
 
-    bool is_reference() const
-    {
-        return (kind() == CXType_LValueReference) ||
-            (kind() == CXType_RValueReference);
-    }
+    bool is_array() const;
+    type array_type() const;
+    bool is_relationship() const;
 
-    bool is_array() const { return clang_getArraySize(m_type) > -1; }
+    type element_type() const;
+    long long element_count() const;
+    type array_element_type() const;
 
-    type array_type() const { return {clang_getArrayElementType(m_type)}; }
+    type named_type() const;
+    CXTypeNullabilityKind nullability() const;
 
-    bool is_relationship() const
-    {
-        return is_pointer() || is_record() || is_reference() || !is_pod() ||
-            is_array() || is_template() ||
-            (spelling().find("std::array") ==
-                0 /* There must be a better way... */);
-    }
+    type class_type() const;
+    long long size_of() const;
+    type modified_type() const;
+    type value_type() const;
+    bool is_template() const;
+    bool is_template_parameter() const;
 
-    type element_type() const { return clang_getElementType(m_type); }
+    int template_arguments_count() const;
 
-    long long element_count() const { return clang_getNumElements(m_type); }
+    type template_argument_type(int i) const;
 
-    type array_element_type() const
-    {
-        return clang_getArrayElementType(m_type);
-    }
-
-    type named_type() const { return clang_Type_getNamedType(m_type); }
-
-    CXTypeNullabilityKind nullability() const
-    {
-        return clang_Type_getNullability(m_type);
-    }
-
-    type class_type() const { return clang_Type_getClassType(m_type); }
-
-    long long size_of() const { return clang_Type_getSizeOf(m_type); }
-
-    type modified_type() const { return clang_Type_getModifiedType(m_type); }
-
-    type value_type() const { return clang_Type_getValueType(m_type); }
-
-    bool is_template() const { return template_arguments_count() > 0; }
-
-    bool is_template_parameter() const
-    {
-        return canonical().spelling().find("type-parameter-") == 0;
-    }
-
-    int template_arguments_count() const
-    {
-        return clang_Type_getNumTemplateArguments(m_type);
-    }
-
-    type template_argument_type(int i) const
-    {
-        return clang_Type_getTemplateArgumentAsType(m_type, i);
-    }
-
-    const CXType &get() const { return m_type; }
-
-    CXRefQualifierKind cxxref_qualifier() const
-    {
-        return clang_Type_getCXXRefQualifier(m_type);
-    }
+    const CXType &get() const;
+    CXRefQualifierKind cxxref_qualifier() const;
 
     bool is_template_instantiation() const;
 
@@ -214,10 +117,7 @@ public:
      *
      * @return Unqualified identifier.
      */
-    std::string unqualified() const
-    {
-        return clanguml::util::unqualify(spelling());
-    }
+    std::string unqualified() const;
 
 private:
     CXType m_type;
