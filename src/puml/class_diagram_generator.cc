@@ -273,7 +273,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     //
     // Process notes
     //
-    for (auto decorator : c.decorators) {
+    for (auto decorator : c.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
         if (note && note->applies_to_diagram(m_config.name)) {
             ostr << "note " << note->position << " of " << c.alias() << '\n'
@@ -334,7 +334,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
     //
     // Process notes
     //
-    for (auto decorator : e.decorators) {
+    for (auto decorator : e.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
         if (note && note->applies_to_diagram(m_config.name)) {
             ostr << "note " << note->position << " of " << e.alias() << '\n'

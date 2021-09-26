@@ -64,7 +64,7 @@ std::string stylable_element::style() const { return style_; }
 
 bool decorated_element::skip() const
 {
-    for (auto d : decorators)
+    for (auto d : decorators_)
         if (std::dynamic_pointer_cast<decorators::skip>(d))
             return true;
 
@@ -73,7 +73,7 @@ bool decorated_element::skip() const
 
 bool decorated_element::skip_relationship() const
 {
-    for (auto d : decorators)
+    for (auto d : decorators_)
         if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
             return true;
 
@@ -82,7 +82,7 @@ bool decorated_element::skip_relationship() const
 
 std::pair<relationship_t, std::string> decorated_element::relationship() const
 {
-    for (auto &d : decorators)
+    for (auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::association>(d))
             return {relationship_t::kAssociation,
                 std::dynamic_pointer_cast<decorators::relationship>(d)
@@ -101,11 +101,25 @@ std::pair<relationship_t, std::string> decorated_element::relationship() const
 
 std::string decorated_element::style_spec()
 {
-    for (auto d : decorators)
+    for (auto d : decorators_)
         if (std::dynamic_pointer_cast<decorators::style>(d))
             return std::dynamic_pointer_cast<decorators::style>(d)->spec;
 
     return "";
+}
+
+const std::vector<std::shared_ptr<decorators::decorator>> &
+decorated_element::decorators() const
+{
+    return decorators_;
+}
+
+void decorated_element::add_decorators(
+    const std::vector<std::shared_ptr<decorators::decorator>> &decorators)
+{
+    for (auto d : decorators) {
+        decorators_.push_back(d);
+    }
 }
 
 //

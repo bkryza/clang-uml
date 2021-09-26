@@ -63,9 +63,8 @@ private:
     std::string style_;
 };
 
-struct decorated_element {
-    std::vector<std::shared_ptr<decorators::decorator>> decorators;
-
+class decorated_element {
+public:
     bool skip() const;
 
     bool skip_relationship() const;
@@ -73,6 +72,15 @@ struct decorated_element {
     std::pair<relationship_t, std::string> relationship() const;
 
     std::string style_spec();
+
+    const std::vector<std::shared_ptr<decorators::decorator>> &
+    decorators() const;
+
+    void add_decorators(
+        const std::vector<std::shared_ptr<decorators::decorator>> &decorators);
+
+private:
+    std::vector<std::shared_ptr<decorators::decorator>> decorators_;
 };
 
 struct class_element : public decorated_element {

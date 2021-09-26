@@ -283,7 +283,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     e.set_name(cx::util::full_name(ctx.namespace_, enm));
 
     if (enm.comment().has_value())
-        e.decorators = decorators::parse(enm.comment().value());
+        e.add_decorators(decorators::parse(enm.comment().value()));
 
     if (e.skip())
         return;
@@ -292,7 +292,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
 
     // Process enum documentation comment
     if (enm.comment().has_value())
-        e.decorators = decorators::parse(enm.comment().value());
+        e.add_decorators(decorators::parse(enm.comment().value()));
 
     for (const auto &ev : enm) {
         if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
@@ -328,7 +328,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     c.set_name(cx::util::full_name(ctx.namespace_, cls));
 
     if (cls.comment().has_value())
-        c.decorators = decorators::parse(cls.comment().value());
+        c.add_decorators(decorators::parse(cls.comment().value()));
 
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
@@ -336,12 +336,12 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     // Process class documentation comment
     if (cppast::is_templated(cls)) {
         if (cls.parent().value().comment().has_value())
-            c.decorators =
-                decorators::parse(cls.parent().value().comment().value());
+            c.add_decorators(
+                decorators::parse(cls.parent().value().comment().value()));
     }
     else {
         if (cls.comment().has_value())
-            c.decorators = decorators::parse(cls.comment().value());
+            c.add_decorators(decorators::parse(cls.comment().value()));
     }
 
     if (c.skip())
@@ -675,7 +675,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
     m.is_static = false;
 
     if (mv.comment().has_value())
-        m.decorators = decorators::parse(mv.comment().value());
+        m.add_decorators(decorators::parse(mv.comment().value()));
 
     if (m.skip())
         return;
@@ -767,7 +767,7 @@ void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
     m.is_static = true;
 
     if (mv.comment().has_value())
-        m.decorators = decorators::parse(mv.comment().value());
+        m.add_decorators(decorators::parse(mv.comment().value()));
 
     if (m.skip())
         return;
@@ -789,7 +789,7 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     if (mf.comment().has_value())
-        m.decorators = decorators::parse(mf.comment().value());
+        m.add_decorators(decorators::parse(mf.comment().value()));
 
     if (m.skip())
         return;
@@ -824,7 +824,7 @@ void tu_visitor::process_template_method(
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     if (mf.comment().has_value())
-        m.decorators = decorators::parse(mf.comment().value());
+        m.add_decorators(decorators::parse(mf.comment().value()));
 
     if (m.skip())
         return;
@@ -856,7 +856,7 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     if (mf.comment().has_value())
-        m.decorators = decorators::parse(mf.comment().value());
+        m.add_decorators(decorators::parse(mf.comment().value()));
 
     if (m.skip())
         return;
@@ -883,7 +883,7 @@ void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
     if (mf.comment().has_value())
-        m.decorators = decorators::parse(mf.comment().value());
+        m.add_decorators(decorators::parse(mf.comment().value()));
 
     if (m.skip())
         return;
@@ -918,7 +918,7 @@ void tu_visitor::process_function_parameter(
     mp.name = param.name();
 
     if (param.comment().has_value())
-        m.decorators = decorators::parse(param.comment().value());
+        m.add_decorators(decorators::parse(param.comment().value()));
 
     if (mp.skip())
         return;
@@ -1109,7 +1109,7 @@ void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
     r.label = "<<friend>>";
 
     if (f.comment().has_value())
-        r.decorators = decorators::parse(f.comment().value());
+        r.add_decorators(decorators::parse(f.comment().value()));
 
     if (r.skip() || r.skip_relationship())
         return;
