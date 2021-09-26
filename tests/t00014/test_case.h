@@ -33,7 +33,7 @@ TEST_CASE("t00014", "[test-case][class]")
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name == "t00014_class");
+    REQUIRE(model.name() == "t00014_class");
 
     auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);

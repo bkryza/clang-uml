@@ -219,11 +219,15 @@ private:
     std::vector<std::string> constants_;
 };
 
-struct diagram {
-    std::string name;
-    std::vector<class_> classes;
-    std::vector<enum_> enums;
-    std::map<std::string, type_alias> type_aliases;
+class diagram {
+public:
+    std::string name() const;
+
+    void set_name(const std::string& name);
+
+    const std::vector<class_> classes() const;
+
+    const std::vector<enum_> enums() const;
 
     bool has_class(const class_ &c) const;
 
@@ -234,6 +238,12 @@ struct diagram {
     void add_enum(enum_ &&e);
 
     std::string to_alias(const std::string &full_name) const;
+
+private:
+    std::string name_;
+    std::vector<class_> classes_;
+    std::vector<enum_> enums_;
+    std::map<std::string, type_alias> type_aliases_;
 };
 }
 }

@@ -361,7 +361,7 @@ void generator::generate(std::ostream &ostr) const
     }
 
     if (m_config.should_include_entities("classes")) {
-        for (const auto &c : m_model.classes) {
+        for (const auto &c : m_model.classes()) {
             if (!c.is_template_instantiation &&
                 !m_config.should_include(c.name()))
                 continue;
@@ -369,14 +369,14 @@ void generator::generate(std::ostream &ostr) const
             ostr << '\n';
         }
 
-        for (const auto &e : m_model.enums) {
+        for (const auto &e : m_model.enums()) {
             if (!m_config.should_include(e.name()))
                 continue;
             generate_alias(e, ostr);
             ostr << '\n';
         }
 
-        for (const auto &c : m_model.classes) {
+        for (const auto &c : m_model.classes()) {
             if (!c.is_template_instantiation &&
                 !m_config.should_include(c.name()))
                 continue;
@@ -386,7 +386,7 @@ void generator::generate(std::ostream &ostr) const
     }
 
     if (m_config.should_include_entities("enums"))
-        for (const auto &e : m_model.enums) {
+        for (const auto &e : m_model.enums()) {
             generate(e, ostr);
             ostr << '\n';
         }
@@ -419,7 +419,7 @@ clanguml::model::class_diagram::diagram generate(
 {
     spdlog::info("Generating diagram {}.puml", name);
     clanguml::model::class_diagram::diagram d;
-    d.name = name;
+    d.set_name(name);
 
     // Get all translation units matching the glob from diagram
     // configuration
