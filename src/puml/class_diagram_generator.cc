@@ -130,8 +130,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     ostr << class_type << " " << c.alias();
 
-    if (!c.style.empty())
-        ostr << " " << c.style;
+    if (!c.style().empty())
+        ostr << " " << c.style();
 
     ostr << " {" << '\n';
 
@@ -203,7 +203,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             if (!r.multiplicity_source.empty())
                 puml_relation += "\"" + r.multiplicity_source + "\" ";
 
-            puml_relation += to_string(r.type, r.style);
+            puml_relation += to_string(r.type, r.style());
 
             if (!r.multiplicity_destination.empty())
                 puml_relation += " \"" + r.multiplicity_destination + "\"";
@@ -290,8 +290,8 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 {
     ostr << "enum " << e.alias();
 
-    if (!e.style.empty())
-        ostr << " " << e.style;
+    if (!e.style().empty())
+        ostr << " " << e.style();
 
     ostr << " {" << '\n';
 

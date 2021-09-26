@@ -288,7 +288,7 @@ void tu_visitor::process_enum_declaration(const cppast::cpp_enum &enm)
     if (e.skip())
         return;
 
-    e.style = e.style_spec();
+    e.set_style(e.style_spec());
 
     // Process enum documentation comment
     if (enm.comment().has_value())
@@ -347,7 +347,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     if (c.skip())
         return;
 
-    c.style = c.style_spec();
+    c.set_style(c.style_spec());
 
     // Process class child entities
     if (c.is_struct())
@@ -633,7 +633,7 @@ bool tu_visitor::process_field_with_template_instantiation(
         rr.type = relationship_t::kAggregation;
     rr.label = mv.name();
     rr.scope = detail::cpp_access_specifier_to_scope(as);
-    rr.style = m.style_spec();
+    rr.set_style(m.style_spec());
 
     // Process field decorators
     auto [decorator_rtype, decorator_rmult] = m.relationship();
@@ -718,7 +718,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 r.type = relationship_type;
                 r.label = m.name;
                 r.scope = m.scope;
-                r.style = m.style_spec();
+                r.set_style(m.style_spec());
 
                 auto [decorator_rtype, decorator_rmult] = m.relationship();
                 if (decorator_rtype != relationship_t::kNone) {

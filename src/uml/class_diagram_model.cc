@@ -52,6 +52,13 @@ std::string to_string(relationship_t r)
 }
 
 //
+// stylable_element
+//
+void stylable_element::set_style(const std::string &style) { style_ = style; }
+
+std::string stylable_element::style() const { return style_; }
+
+//
 // decorated_element
 //
 

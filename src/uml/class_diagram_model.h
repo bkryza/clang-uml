@@ -54,8 +54,13 @@ enum class relationship_t {
 
 std::string to_string(relationship_t r);
 
-struct stylable_element {
-    std::string style;
+class stylable_element {
+public:
+    void set_style(const std::string &style);
+    std::string style() const;
+
+private:
+    std::string style_;
 };
 
 struct decorated_element {
