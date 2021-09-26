@@ -172,21 +172,29 @@ struct type_alias {
 
 class class_ : public element, public stylable_element {
 public:
-    class_(const std::vector<std::string> &using_namespaces)
-        : element{using_namespaces}
-    {
-    }
+    class_(const std::vector<std::string> &using_namespaces);
 
-    bool is_struct{false};
-    bool is_template{false};
-    bool is_template_instantiation{false};
-    std::vector<class_member> members;
-    std::vector<class_method> methods;
-    std::vector<class_parent> bases;
-    std::vector<std::string> inner_classes;
-    std::vector<class_template> templates;
-    std::string base_template_full_name;
-    std::map<std::string, type_alias> type_aliases;
+    bool is_struct() const;
+    void set_is_struct(bool is_struct);
+
+    bool is_template() const;
+    void set_is_template(bool is_template);
+
+    bool is_template_instantiation() const;
+    void set_is_template_instantiation(bool is_template_instantiation);
+
+    void add_member(class_member &&member);
+    void add_method(class_method &&method);
+    void add_parent(class_parent &&parent);
+    void add_template(class_template &&tmplt);
+
+    const std::vector<class_member> &members() const;
+    const std::vector<class_method> &methods() const;
+    const std::vector<class_parent> &parents() const;
+    const std::vector<class_template> &templates() const;
+
+    void set_base_template(const std::string &full_name);
+    std::string base_template() const;
 
     friend bool operator==(const class_ &l, const class_ &r);
 
@@ -197,23 +205,30 @@ public:
     bool is_abstract() const;
 
 private:
+    bool is_struct_{false};
+    bool is_template_{false};
+    bool is_template_instantiation_{false};
+    std::vector<class_member> members_;
+    std::vector<class_method> methods_;
+    std::vector<class_parent> bases_;
+    std::vector<class_template> templates_;
+    std::string base_template_full_name_;
+    std::map<std::string, type_alias> type_aliases_;
+
     std::string full_name_;
 };
 
 struct enum_ : public element, public stylable_element {
 public:
-    enum_(const std::vector<std::string> &using_namespaces)
-        : element{using_namespaces}
-    {
-    }
+    enum_(const std::vector<std::string> &using_namespaces);
 
     friend bool operator==(const enum_ &l, const enum_ &r);
 
     std::string full_name(bool relative = true) const override;
 
-    std::vector<std::string> &constants() { return constants_; }
+    std::vector<std::string> &constants();
 
-    const std::vector<std::string> &constants() const { return constants_; }
+    const std::vector<std::string> &constants() const;
 
 private:
     std::vector<std::string> constants_;
@@ -223,7 +238,7 @@ class diagram {
 public:
     std::string name() const;
 
-    void set_name(const std::string& name);
+    void set_name(const std::string &name);
 
     const std::vector<class_> classes() const;
 

@@ -324,7 +324,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
     class_ c{ctx.config.using_namespace};
-    c.is_struct = cls.class_kind() == cppast::cpp_class_kind::struct_t;
+    c.set_is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
     c.set_name(cx::util::full_name(ctx.namespace_, cls));
 
     if (cls.comment().has_value())
@@ -350,7 +350,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     c.style = c.style_spec();
 
     // Process class child entities
-    if (c.is_struct)
+    if (c.is_struct())
         last_access_specifier = cppast::cpp_access_specifier_kind::cpp_public;
 
     for (auto &child : cls) {
@@ -440,7 +440,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
 
         LOG_DBG("Found base class {} for class {}", cp.name, c.name());
 
-        c.bases.emplace_back(std::move(cp));
+        c.add_parent(std::move(cp));
     }
 
     // Process class template arguments
@@ -500,7 +500,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
                         ct.default_value = "";
                         ct.is_variadic = false;
                         ct.name = "";
-                        c.templates.emplace_back(std::move(ct));
+                        c.add_template(std::move(ct));
 
                         const auto &primary_template_ref =
                             static_cast<const cppast::cpp_class_template &>(
@@ -739,7 +739,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
         }
     }
 
-    c.members.emplace_back(std::move(m));
+    c.add_member(std::move(m));
 }
 
 void tu_visitor::process_anonymous_enum(
@@ -752,7 +752,7 @@ void tu_visitor::process_anonymous_enum(
             m.type = "enum"; // TODO: Try to figure out real enum type
             m.scope = detail::cpp_access_specifier_to_scope(as);
             m.is_static = false;
-            c.members.emplace_back(std::move(m));
+            c.add_member(std::move(m));
         }
     }
 }
@@ -772,7 +772,7 @@ void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
     if (m.skip())
         return;
 
-    c.members.emplace_back(std::move(m));
+    c.add_member(std::move(m));
 }
 
 void tu_visitor::process_method(const cppast::cpp_member_function &mf,
@@ -799,7 +799,7 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
 
     LOG_DBG("Adding method: {}", m.name);
 
-    c.methods.emplace_back(std::move(m));
+    c.add_method(std::move(m));
 }
 
 void tu_visitor::process_template_method(
@@ -839,7 +839,7 @@ void tu_visitor::process_template_method(
 
     LOG_DBG("Adding template method: {}", m.name);
 
-    c.methods.emplace_back(std::move(m));
+    c.add_method(std::move(m));
 }
 
 void tu_visitor::process_static_method(const cppast::cpp_function &mf,
@@ -866,7 +866,7 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
 
     LOG_DBG("Adding static method: {}", m.name);
 
-    c.methods.emplace_back(std::move(m));
+    c.add_method(std::move(m));
 }
 
 void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
@@ -891,7 +891,7 @@ void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
     for (auto &param : mf.parameters())
         process_function_parameter(param, m, c);
 
-    c.methods.emplace_back(std::move(m));
+    c.add_method(std::move(m));
 }
 
 void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
@@ -907,7 +907,7 @@ void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
     m.is_static = false;
     m.scope = detail::cpp_access_specifier_to_scope(as);
 
-    c.methods.emplace_back(std::move(m));
+    c.add_method(std::move(m));
 }
 
 void tu_visitor::process_function_parameter(
@@ -1069,7 +1069,7 @@ void tu_visitor::process_template_type_parameter(
     ct.name = t.name();
     if (ct.is_variadic)
         ct.name += "...";
-    parent.templates.emplace_back(std::move(ct));
+    parent.add_template(std::move(ct));
 }
 
 void tu_visitor::process_template_nontype_parameter(
@@ -1082,7 +1082,7 @@ void tu_visitor::process_template_nontype_parameter(
     ct.is_variadic = t.is_variadic();
     if (ct.is_variadic)
         ct.name += "...";
-    parent.templates.emplace_back(std::move(ct));
+    parent.add_template(std::move(ct));
 }
 
 void tu_visitor::process_template_template_parameter(
@@ -1092,7 +1092,7 @@ void tu_visitor::process_template_template_parameter(
     ct.type = "";
     ct.name = t.name() + "<>";
     ct.default_value = "";
-    parent.templates.emplace_back(std::move(ct));
+    parent.add_template(std::move(ct));
 }
 
 void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
@@ -1381,10 +1381,9 @@ class_ tu_visitor::build_template_instantiation(
         }
 
         if (primary_template_ref.user_data()) {
-            tinst.base_template_full_name =
-                static_cast<const char *>(primary_template_ref.user_data());
-            LOG_DBG("Primary template ref set to: {}",
-                tinst.base_template_full_name);
+            tinst.set_base_template(
+                static_cast<const char *>(primary_template_ref.user_data()));
+            LOG_DBG("Primary template ref set to: {}", tinst.base_template());
         }
         else
             LOG_WARN("No user data for base template {}",
@@ -1414,7 +1413,7 @@ class_ tu_visitor::build_template_instantiation(
 
     tinst.set_name(ns + util::split(cppast::to_string(t), "<")[0]);
 
-    tinst.is_template_instantiation = true;
+    tinst.set_is_template_instantiation(true);
 
     if (tinst.full_name().substr(0, tinst.full_name().find('<')).find("::") ==
         std::string::npos) {
@@ -1545,13 +1544,13 @@ class_ tu_visitor::build_template_instantiation(
                 cp.access = class_parent::access_t::kPublic;
                 cp.name = ct.type;
 
-                tinst.bases.emplace_back(std::move(cp));
+                tinst.add_parent(std::move(cp));
             }
         }
 
         LOG_DBG("Adding template argument '{}'", ct.type);
 
-        tinst.templates.emplace_back(std::move(ct));
+        tinst.add_template(std::move(ct));
     }
 
     // Add instantiation relationship to primary template of this
@@ -1568,7 +1567,7 @@ class_ tu_visitor::build_template_instantiation(
     }
     else {
         // Otherwise point to the base template
-        r.destination = tinst.base_template_full_name;
+        r.destination = tinst.base_template();
     }
     r.type = relationship_t::kInstantiation;
     r.label = "";

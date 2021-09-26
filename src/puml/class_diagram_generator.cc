@@ -138,7 +138,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     //
     // Process methods
     //
-    for (const auto &m : c.methods) {
+    for (const auto &m : c.methods()) {
         if (!m_config.should_include(m.scope))
             continue;
 
@@ -237,7 +237,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     //
     // Process members
     //
-    for (const auto &m : c.members) {
+    for (const auto &m : c.members()) {
         if (!m_config.should_include(m.scope))
             continue;
 
@@ -255,7 +255,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     ostr << "}" << '\n';
 
     if (m_config.should_include_relationship("inheritance"))
-        for (const auto &b : c.bases) {
+        for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
                 relstr << m_model.to_alias(ns_relative(uns, b.name)) << " <|-- "
@@ -362,7 +362,7 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation &&
+            if (!c.is_template_instantiation() &&
                 !m_config.should_include(c.name()))
                 continue;
             generate_alias(c, ostr);
@@ -377,7 +377,7 @@ void generator::generate(std::ostream &ostr) const
         }
 
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation &&
+            if (!c.is_template_instantiation() &&
                 !m_config.should_include(c.name()))
                 continue;
             generate(c, ostr);
