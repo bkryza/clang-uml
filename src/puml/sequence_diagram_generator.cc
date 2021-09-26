@@ -29,7 +29,6 @@ using clanguml::model::sequence_diagram::message_t;
 using clanguml::visitor::sequence_diagram::tu_context;
 using namespace clanguml::util;
 
-
 //
 // generator
 //

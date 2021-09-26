@@ -106,7 +106,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     if (c.is_abstract())
         class_type = "abstract";
 
-    ostr << class_type << " \"" << c.full_name(m_config.using_namespace);
+    ostr << class_type << " \"" << c.full_name();
 
     ostr << "\" as " << c.alias() << '\n';
 }
@@ -114,7 +114,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
     ostr << "enum"
-         << " \"" << e.full_name(m_config.using_namespace);
+         << " \"" << e.full_name();
 
     ostr << "\" as " << e.alias() << '\n';
 }
@@ -186,7 +186,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
-    for (const auto &r : c.relationships) {
+    for (const auto &r : c.relationships()) {
         if (!m_config.should_include_relationship(name(r.type)))
             continue;
 
@@ -195,21 +195,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         std::stringstream relstr;
         std::string destination;
         try {
-            if (r.destination.find("#") != std::string::npos ||
-                r.destination.find("@") != std::string::npos) {
-                destination = m_model.usr_to_name(uns, r.destination);
-
-                // If something went wrong and we have an empty destination
-                // generate the relationship but comment it out for
-                // debugging
-                if (destination.empty()) {
-                    relstr << "' ";
-                    destination = r.destination;
-                }
-            }
-            else {
-                destination = r.destination;
-            }
+            destination = r.destination;
 
             LOG_DBG("=== Destination is: {}", destination);
 
@@ -222,9 +208,9 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             if (!r.multiplicity_destination.empty())
                 puml_relation += " \"" + r.multiplicity_destination + "\"";
 
-            relstr << m_model.to_alias(uns, ns_relative(uns, c.full_name(uns)))
-                   << " " << puml_relation << " "
-                   << m_model.to_alias(uns, ns_relative(uns, destination));
+            relstr << m_model.to_alias(ns_relative(uns, c.full_name())) << " "
+                   << puml_relation << " "
+                   << m_model.to_alias(ns_relative(uns, destination));
 
             if (!r.label.empty()) {
                 relstr << " : " << to_string(r.scope) << r.label;
@@ -244,7 +230,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_ERROR("=== Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type), c.full_name(uns), destination, e.what());
+                to_string(r.type), c.full_name(), destination, e.what());
         }
     }
 
@@ -272,17 +258,15 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         for (const auto &b : c.bases) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(uns, ns_relative(uns, b.name))
-                       << " <|-- "
-                       << m_model.to_alias(
-                              uns, ns_relative(uns, c.full_name(uns)))
+                relstr << m_model.to_alias(ns_relative(uns, b.name)) << " <|-- "
+                       << m_model.to_alias(ns_relative(uns, c.full_name()))
                        << '\n';
                 ostr << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
                 LOG_ERROR("=== Skipping inheritance relation from {} to {} due "
                           "to: {}",
-                    b.name, c.name, e.what());
+                    b.name, c.name(), e.what());
             }
         }
 
@@ -311,36 +295,26 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 
     ostr << " {" << '\n';
 
-    for (const auto &enum_constant : e.constants) {
+    for (const auto &enum_constant : e.constants()) {
         ostr << enum_constant << '\n';
     }
 
     ostr << "}" << '\n';
 
-    for (const auto &r : e.relationships) {
+    for (const auto &r : e.relationships()) {
         if (!m_config.should_include_relationship(name(r.type)))
             continue;
 
         std::string destination;
         std::stringstream relstr;
         try {
-            if (r.destination.find("#") != std::string::npos ||
-                r.destination.find("@") != std::string::npos) {
-                destination = m_model.usr_to_name(
-                    m_config.using_namespace, r.destination);
-                if (destination.empty()) {
-                    relstr << "' ";
-                    destination = r.destination;
-                }
-            }
-            else {
-                destination = r.destination;
-            }
 
-            relstr << m_model.to_alias(m_config.using_namespace,
-                          ns_relative(m_config.using_namespace, e.name))
+            destination = r.destination;
+
+            relstr << m_model.to_alias(
+                          ns_relative(m_config.using_namespace, e.name()))
                    << " " << to_string(r.type) << " "
-                   << m_model.to_alias(m_config.using_namespace,
+                   << m_model.to_alias(
                           ns_relative(m_config.using_namespace, destination));
 
             if (!r.label.empty())
@@ -353,7 +327,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
         catch (error::uml_alias_missing &ex) {
             LOG_ERROR("Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type), e.name, destination, ex.what());
+                to_string(r.type), e.full_name(), destination, ex.what());
         }
     }
 
@@ -378,9 +352,8 @@ void generator::generate(std::ostream &ostr) const
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(m_config.using_namespace,
-                ns_relative(
-                    m_config.using_namespace, std::get<0>(alias_match)));
+            auto alias = m_model.to_alias(ns_relative(
+                m_config.using_namespace, std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
@@ -390,14 +363,14 @@ void generator::generate(std::ostream &ostr) const
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes) {
             if (!c.is_template_instantiation &&
-                !m_config.should_include(c.name))
+                !m_config.should_include(c.name()))
                 continue;
             generate_alias(c, ostr);
             ostr << '\n';
         }
 
         for (const auto &e : m_model.enums) {
-            if (!m_config.should_include(e.name))
+            if (!m_config.should_include(e.name()))
                 continue;
             generate_alias(e, ostr);
             ostr << '\n';
@@ -405,7 +378,7 @@ void generator::generate(std::ostream &ostr) const
 
         for (const auto &c : m_model.classes) {
             if (!c.is_template_instantiation &&
-                !m_config.should_include(c.name))
+                !m_config.should_include(c.name()))
                 continue;
             generate(c, ostr);
             ostr << '\n';
@@ -423,9 +396,8 @@ void generator::generate(std::ostream &ostr) const
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(m_config.using_namespace,
-                ns_relative(
-                    m_config.using_namespace, std::get<0>(alias_match)));
+            auto alias = m_model.to_alias(ns_relative(
+                m_config.using_namespace, std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }

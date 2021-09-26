@@ -105,12 +105,47 @@ std::string decorated_element::style_spec()
 // element
 //
 
-element::element()
-    : m_id{m_nextId++}
+element::element(const std::vector<std::string> &using_namespaces)
+    : using_namespaces_{using_namespaces}
+    , m_id{m_nextId++}
 {
 }
 
 std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
+
+void element::add_relationship(class_relationship &&cr)
+{
+    if (cr.destination.empty()) {
+        LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty "
+                 "destination",
+            cr.destination, to_string(cr.type), full_name(true));
+        return;
+    }
+
+    auto it = std::find(relationships_.begin(), relationships_.end(), cr);
+    if (it == relationships_.end())
+        relationships_.emplace_back(std::move(cr));
+}
+
+void element::set_using_namespaces(const std::vector<std::string> &un)
+{
+    using_namespaces_ = un;
+}
+
+const std::vector<std::string> &element::using_namespaces() const
+{
+    return using_namespaces_;
+}
+
+std::vector<class_relationship> &element::relationships()
+{
+    return relationships_;
+}
+
+const std::vector<class_relationship> &element::relationships() const
+{
+    return relationships_;
+}
 
 //
 // method_parameter
@@ -152,7 +187,7 @@ bool operator==(const class_template &l, const class_template &r)
 
 bool operator==(const class_ &l, const class_ &r)
 {
-    return (l.usr == r.usr) && (l.templates == r.templates);
+    return l.full_name() == r.full_name();
 }
 
 void class_::add_type_alias(type_alias &&ta)
@@ -161,38 +196,27 @@ void class_::add_type_alias(type_alias &&ta)
     type_aliases[ta.alias] = std::move(ta);
 }
 
-void class_::add_relationship(class_relationship &&cr)
-{
-    if (cr.destination.empty()) {
-        LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty destination",
-            cr.destination, to_string(cr.type), usr);
-        return;
-    }
-
-    auto it = std::find(relationships.begin(), relationships.end(), cr);
-    if (it == relationships.end())
-        relationships.emplace_back(std::move(cr));
-}
-
-std::string class_::full_name(
-    const std::vector<std::string> &using_namespaces) const
+std::string class_::full_name(bool relative) const
 {
     using namespace clanguml::util;
 
     std::ostringstream ostr;
-    ostr << ns_relative(using_namespaces, name);
+    if (relative)
+        ostr << ns_relative(using_namespaces(), name());
+    else
+        ostr << name();
 
     if (!templates.empty()) {
         std::vector<std::string> tnames;
         std::transform(templates.cbegin(), templates.cend(),
-            std::back_inserter(tnames), [&using_namespaces](const auto &tmplt) {
+            std::back_inserter(tnames), [this](const auto &tmplt) {
                 std::vector<std::string> res;
 
                 if (!tmplt.type.empty())
-                    res.push_back(ns_relative(using_namespaces, tmplt.type));
+                    res.push_back(ns_relative(using_namespaces(), tmplt.type));
 
                 if (!tmplt.name.empty())
-                    res.push_back(ns_relative(using_namespaces, tmplt.name));
+                    res.push_back(ns_relative(using_namespaces(), tmplt.name));
 
                 if (!tmplt.default_value.empty()) {
                     res.push_back("=");
@@ -219,15 +243,17 @@ bool class_::is_abstract() const
 // enum_
 //
 
-bool operator==(const enum_ &l, const enum_ &r) { return l.name == r.name; }
+bool operator==(const enum_ &l, const enum_ &r) { return l.name() == r.name(); }
 
-std::string enum_::full_name(
-    const std::vector<std::string> &using_namespaces) const
+std::string enum_::full_name(bool relative) const
 {
     using namespace clanguml::util;
 
     std::ostringstream ostr;
-    ostr << ns_relative(using_namespaces, name);
+    if (relative)
+        ostr << ns_relative(using_namespaces(), name());
+    else
+        ostr << name();
 
     return ostr.str();
 }
@@ -236,10 +262,10 @@ std::string enum_::full_name(
 // diagram
 //
 
-bool diagram::has_class(const std::string &usr) const
+bool diagram::has_class(const class_ &c) const
 {
     return std::any_of(classes.cbegin(), classes.cend(),
-        [&usr](const auto &c) { return c.usr == usr; });
+        [&c](const auto &cc) { return cc.full_name() == c.full_name(); });
 }
 
 void diagram::add_type_alias(type_alias &&ta)
@@ -251,57 +277,41 @@ void diagram::add_type_alias(type_alias &&ta)
 
 void diagram::add_class(class_ &&c)
 {
-    LOG_DBG("Adding class: {}, {}", c.name, c.usr);
-    if (!has_class(c.usr))
+    LOG_DBG("Adding class: {}, {}", c.name(), c.full_name());
+    if (!has_class(c))
         classes.emplace_back(std::move(c));
     else
-        LOG_DBG("Class {} ({}) already in the model", c.name, c.usr);
+        LOG_DBG("Class {} ({}) already in the model", c.name(), c.full_name());
 }
 
 void diagram::add_enum(enum_ &&e)
 {
-    LOG_DBG("Adding enum: {}", e.name);
+    LOG_DBG("Adding enum: {}", e.name());
     auto it = std::find(enums.begin(), enums.end(), e);
     if (it == enums.end())
         enums.emplace_back(std::move(e));
     else
-        LOG_DBG("Enum {} already in the model", e.name);
+        LOG_DBG("Enum {} already in the model", e.name());
 }
 
-std::string diagram::to_alias(const std::vector<std::string> &using_namespaces,
-    const std::string &full_name) const
+std::string diagram::to_alias(const std::string &full_name) const
 {
     LOG_DBG("Looking for alias for {}", full_name);
 
     for (const auto &c : classes) {
-        if (c.full_name(using_namespaces) == full_name) {
+        if (c.full_name() == full_name) {
             return c.alias();
         }
     }
 
     for (const auto &e : enums) {
-        if (e.full_name(using_namespaces) == full_name) {
+        if (e.full_name() == full_name) {
             return e.alias();
         }
     }
 
     throw error::uml_alias_missing(
         fmt::format("Missing alias for {}", full_name));
-}
-
-std::string diagram::usr_to_name(
-    const std::vector<std::string> &using_namespaces,
-    const std::string &usr) const
-{
-    if (usr.empty())
-        throw std::runtime_error("Empty USR");
-
-    for (const auto &c : classes) {
-        if (c.usr == usr)
-            return c.full_name(using_namespaces);
-    }
-
-    return "";
 }
 
 }

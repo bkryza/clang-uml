@@ -17,9 +17,9 @@
  */
 #pragma once
 
+#include "config/config.h"
 #include "cx/cursor.h"
 #include "sequence_diagram_model.h"
-#include "config/config.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
