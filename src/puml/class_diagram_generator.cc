@@ -258,7 +258,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(ns_relative(uns, b.name)) << " <|-- "
+                relstr << m_model.to_alias(ns_relative(uns, b.name()))
+                       << " <|-- "
                        << m_model.to_alias(ns_relative(uns, c.full_name()))
                        << '\n';
                 ostr << relstr.str();
@@ -266,7 +267,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             catch (error::uml_alias_missing &e) {
                 LOG_ERROR("=== Skipping inheritance relation from {} to {} due "
                           "to: {}",
-                    b.name, c.name(), e.what());
+                    b.name(), c.name(), e.what());
             }
         }
 

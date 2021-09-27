@@ -421,24 +421,24 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     // Process class bases
     for (auto &base : cls.bases()) {
         class_parent cp;
-        cp.name = clanguml::cx::util::fully_prefixed(ctx.namespace_, base);
-        cp.is_virtual = base.is_virtual();
+        cp.set_name(clanguml::cx::util::fully_prefixed(ctx.namespace_, base));
+        cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {
         case cppast::cpp_access_specifier_kind::cpp_private:
-            cp.access = class_parent::access_t::kPrivate;
+            cp.set_access(class_parent::access_t::kPrivate);
             break;
         case cppast::cpp_access_specifier_kind::cpp_public:
-            cp.access = class_parent::access_t::kPublic;
+            cp.set_access(class_parent::access_t::kPublic);
             break;
         case cppast::cpp_access_specifier_kind::cpp_protected:
-            cp.access = class_parent::access_t::kProtected;
+            cp.set_access(class_parent::access_t::kProtected);
             break;
         default:
-            cp.access = class_parent::access_t::kPublic;
+            cp.set_access(class_parent::access_t::kPublic);
         }
 
-        LOG_DBG("Found base class {} for class {}", cp.name, c.name());
+        LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
 
         c.add_parent(std::move(cp));
     }
@@ -1527,8 +1527,8 @@ class_ tu_visitor::build_template_instantiation(
                 LOG_DBG("Adding template argument '{}' as base class", ct.type);
 
                 class_parent cp;
-                cp.access = class_parent::access_t::kPublic;
-                cp.name = ct.type;
+                cp.set_access(class_parent::access_t::kPublic);
+                cp.set_name(ct.type);
 
                 tinst.add_parent(std::move(cp));
             }

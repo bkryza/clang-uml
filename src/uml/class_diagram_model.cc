@@ -280,6 +280,24 @@ void class_method::add_parameter(method_parameter &&parameter)
 }
 
 //
+// class_parent
+//
+void class_parent::set_name(const std::string &name) { name_ = name; }
+
+std::string class_parent::name() const { return name_; }
+
+void class_parent::is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
+
+bool class_parent::is_virtual() const { return is_virtual_; }
+
+void class_parent::set_access(class_parent::access_t access)
+{
+    access_ = access;
+}
+
+class_parent::access_t class_parent::access() const { return access_; }
+
+//
 // class_relationship
 //
 

@@ -166,11 +166,23 @@ private:
     bool is_static_{false};
 };
 
-struct class_parent {
+class class_parent {
+public:
     enum class access_t { kPublic, kProtected, kPrivate };
-    std::string name;
-    bool is_virtual{false};
-    access_t access;
+
+    void set_name(const std::string &name);
+    std::string name() const;
+
+    void is_virtual(bool is_virtual);
+    bool is_virtual() const;
+
+    void set_access(access_t access);
+    access_t access() const;
+
+private:
+    std::string name_;
+    bool is_virtual_{false};
+    access_t access_;
 };
 
 struct class_relationship : public decorated_element, public stylable_element {
