@@ -173,10 +173,10 @@ std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
 
 void element::add_relationship(class_relationship &&cr)
 {
-    if (cr.destination.empty()) {
+    if (cr.destination().empty()) {
         LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty "
                  "destination",
-            cr.destination, to_string(cr.type), full_name(true));
+            cr.destination(), to_string(cr.type()), full_name(true));
         return;
     }
 
@@ -300,11 +300,67 @@ class_parent::access_t class_parent::access() const { return access_; }
 //
 // class_relationship
 //
+class_relationship::class_relationship(relationship_t type,
+    const std::string &destination, scope_t scope, const std::string &label,
+    const std::string &multiplicity_source,
+    const std::string &multiplicity_destination)
+    : type_{type}
+    , destination_{destination}
+    , scope_{scope}
+    , label_{label}
+    , multiplicity_source_{multiplicity_source}
+    , multiplicity_destination_{multiplicity_destination}
+{
+}
+
+void class_relationship::set_type(relationship_t type) noexcept
+{
+    type_ = type;
+}
+
+relationship_t class_relationship::type() const noexcept { return type_; }
+
+void class_relationship::set_destination(const std::string &destination)
+{
+    destination_ = destination;
+}
+
+std::string class_relationship::destination() const { return destination_; }
+
+void class_relationship::set_multiplicity_source(
+    const std::string &multiplicity_source)
+{
+    multiplicity_source_ = multiplicity_source;
+}
+
+std::string class_relationship::multiplicity_source() const
+{
+    return multiplicity_source_;
+}
+
+void class_relationship::set_multiplicity_destination(
+    const std::string &multiplicity_destination)
+{
+    multiplicity_destination_ = multiplicity_destination;
+}
+
+std::string class_relationship::multiplicity_destination() const
+{
+    return multiplicity_destination_;
+}
+
+void class_relationship::set_label(const std::string &label) { label_ = label; }
+
+std::string class_relationship::label() const { return label_; }
+
+void class_relationship::set_scope(scope_t scope) noexcept { scope_ = scope; }
+
+scope_t class_relationship::scope() const noexcept { return scope_; }
 
 bool operator==(const class_relationship &l, const class_relationship &r)
 {
-    return l.type == r.type && l.destination == r.destination &&
-        l.label == r.label;
+    return l.type() == r.type() && l.destination() == r.destination() &&
+        l.label() == r.label();
 }
 
 //

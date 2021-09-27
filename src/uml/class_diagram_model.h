@@ -185,16 +185,44 @@ private:
     access_t access_;
 };
 
-struct class_relationship : public decorated_element, public stylable_element {
-    relationship_t type{relationship_t::kAssociation};
-    std::string destination;
-    std::string multiplicity_source;
-    std::string multiplicity_destination;
-    std::string label;
-    scope_t scope{scope_t::kNone};
+class class_relationship : public decorated_element, public stylable_element {
+public:
+    class_relationship(relationship_t type, const std::string &destination,
+        scope_t scope = scope_t::kNone, const std::string &label = "",
+        const std::string &multiplicity_source = "",
+        const std::string &multiplicity_destination = "");
+
+    virtual ~class_relationship() = default;
+
+    void set_type(relationship_t type) noexcept;
+    relationship_t type() const noexcept;
+
+    void set_destination(const std::string &destination);
+    std::string destination() const;
+
+    void set_multiplicity_source(const std::string &multiplicity_source);
+    std::string multiplicity_source() const;
+
+    void set_multiplicity_destination(
+        const std::string &multiplicity_destination);
+    std::string multiplicity_destination() const;
+
+    void set_label(const std::string &label);
+    std::string label() const;
+
+    void set_scope(scope_t scope) noexcept;
+    scope_t scope() const noexcept;
 
     friend bool operator==(
         const class_relationship &l, const class_relationship &r);
+
+private:
+    relationship_t type_{relationship_t::kAssociation};
+    std::string destination_;
+    std::string multiplicity_source_;
+    std::string multiplicity_destination_;
+    std::string label_;
+    scope_t scope_{scope_t::kNone};
 };
 
 struct class_template {

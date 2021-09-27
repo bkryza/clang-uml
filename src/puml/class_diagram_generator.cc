@@ -187,34 +187,34 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
     for (const auto &r : c.relationships()) {
-        if (!m_config.should_include_relationship(name(r.type)))
+        if (!m_config.should_include_relationship(name(r.type())))
             continue;
 
-        LOG_DBG("== Processing relationship {}", to_string(r.type));
+        LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
         std::string destination;
         try {
-            destination = r.destination;
+            destination = r.destination();
 
             LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
-            if (!r.multiplicity_source.empty())
-                puml_relation += "\"" + r.multiplicity_source + "\" ";
+            if (!r.multiplicity_source().empty())
+                puml_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            puml_relation += to_string(r.type, r.style());
+            puml_relation += to_string(r.type(), r.style());
 
-            if (!r.multiplicity_destination.empty())
-                puml_relation += " \"" + r.multiplicity_destination + "\"";
+            if (!r.multiplicity_destination().empty())
+                puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
             relstr << m_model.to_alias(ns_relative(uns, c.full_name())) << " "
                    << puml_relation << " "
                    << m_model.to_alias(ns_relative(uns, destination));
 
-            if (!r.label.empty()) {
-                relstr << " : " << to_string(r.scope) << r.label;
-                rendered_relations.emplace(r.label);
+            if (!r.label().empty()) {
+                relstr << " : " << to_string(r.scope()) << r.label();
+                rendered_relations.emplace(r.label());
             }
 
             if (unique_relations.count(relstr.str()) == 0) {
@@ -230,7 +230,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_ERROR("=== Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type), c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(), destination, e.what());
         }
     }
 
@@ -303,23 +303,23 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
     ostr << "}" << '\n';
 
     for (const auto &r : e.relationships()) {
-        if (!m_config.should_include_relationship(name(r.type)))
+        if (!m_config.should_include_relationship(name(r.type())))
             continue;
 
         std::string destination;
         std::stringstream relstr;
         try {
 
-            destination = r.destination;
+            destination = r.destination();
 
             relstr << m_model.to_alias(
                           ns_relative(m_config.using_namespace, e.name()))
-                   << " " << to_string(r.type) << " "
+                   << " " << to_string(r.type()) << " "
                    << m_model.to_alias(
                           ns_relative(m_config.using_namespace, destination));
 
-            if (!r.label.empty())
-                relstr << " : " << r.label;
+            if (!r.label().empty())
+                relstr << " : " << r.label();
 
             relstr << '\n';
 
@@ -328,7 +328,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
         catch (error::uml_alias_missing &ex) {
             LOG_ERROR("Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type), e.full_name(), destination, ex.what());
+                to_string(r.type()), e.full_name(), destination, ex.what());
         }
     }
 
