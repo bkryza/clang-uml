@@ -83,15 +83,35 @@ private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;
 };
 
-struct class_element : public decorated_element {
-    scope_t scope;
-    std::string name;
-    std::string type;
+class class_element : public decorated_element {
+public:
+    class_element(
+        scope_t scope, const std::string &name, const std::string &type);
+
+    scope_t scope() const;
+    std::string name() const;
+    std::string type() const;
+
+private:
+    scope_t scope_;
+    std::string name_;
+    std::string type_;
 };
 
-struct class_member : public class_element {
-    bool is_relationship{false};
-    bool is_static{false};
+class class_member : public class_element {
+public:
+    class_member(
+        scope_t scope, const std::string &name, const std::string &type);
+
+    bool is_relationship() const;
+    void set_is_relationship(bool is_relationship);
+
+    bool is_static() const;
+    void set_is_static(bool is_static);
+
+private:
+    bool is_relationship_{false};
+    bool is_static_{false};
 };
 
 struct method_parameter : public decorated_element {
@@ -103,13 +123,36 @@ struct method_parameter : public decorated_element {
         const std::vector<std::string> &using_namespaces) const;
 };
 
-struct class_method : public class_element {
-    std::vector<method_parameter> parameters;
-    bool is_pure_virtual{false};
-    bool is_virtual{false};
-    bool is_const{false};
-    bool is_defaulted{false};
-    bool is_static{false};
+class class_method : public class_element {
+public:
+    class_method(
+        scope_t scope, const std::string &name, const std::string &type);
+
+    bool is_pure_virtual() const;
+    void set_is_pure_virtual(bool is_pure_virtual);
+
+    bool is_virtual() const;
+    void set_is_virtual(bool is_virtual);
+
+    bool is_const() const;
+    void set_is_const(bool is_const);
+
+    bool is_defaulted() const;
+    void set_is_defaulted(bool is_defaulted);
+
+    bool is_static() const;
+    void set_is_static(bool is_static);
+
+    const std::vector<method_parameter> &parameters() const;
+    void add_parameter(method_parameter &&parameter);
+
+private:
+    std::vector<method_parameter> parameters_;
+    bool is_pure_virtual_{false};
+    bool is_virtual_{false};
+    bool is_const_{false};
+    bool is_defaulted_{false};
+    bool is_static_{false};
 };
 
 struct class_parent {

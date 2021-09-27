@@ -123,6 +123,43 @@ void decorated_element::add_decorators(
 }
 
 //
+// class_element
+//
+class_element::class_element(
+    scope_t scope, const std::string &name, const std::string &type)
+    : scope_{scope}
+    , name_{name}
+    , type_{type}
+{
+}
+
+scope_t class_element::scope() const { return scope_; }
+
+std::string class_element::name() const { return name_; }
+
+std::string class_element::type() const { return type_; }
+
+//
+// class_member
+//
+class_member::class_member(
+    scope_t scope, const std::string &name, const std::string &type)
+    : class_element{scope, name, type}
+{
+}
+
+bool class_member::is_relationship() const { return is_relationship_; }
+
+void class_member::set_is_relationship(bool is_relationship)
+{
+    is_relationship_ = is_relationship;
+}
+
+bool class_member::is_static() const { return is_static_; }
+
+void class_member::set_is_static(bool is_static) { is_static_ = is_static; }
+
+//
 // element
 //
 
@@ -181,6 +218,51 @@ std::string method_parameter::to_string(
         return fmt::format("{} {}", t, name);
 
     return fmt::format("{} {} = {}", t, name, default_value);
+}
+
+//
+// class_method
+//
+class_method::class_method(
+    scope_t scope, const std::string &name, const std::string &type)
+    : class_element{scope, name, type}
+{
+}
+
+bool class_method::is_pure_virtual() const { return is_pure_virtual_; }
+
+void class_method::set_is_pure_virtual(bool is_pure_virtual)
+{
+    is_pure_virtual_ = is_pure_virtual;
+}
+
+bool class_method::is_virtual() const { return is_virtual_; }
+
+void class_method::set_is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
+
+bool class_method::is_const() const { return is_const_; }
+
+void class_method::set_is_const(bool is_const) { is_const_ = is_const; }
+
+bool class_method::is_defaulted() const { return is_defaulted_; }
+
+void class_method::set_is_defaulted(bool is_defaulted)
+{
+    is_defaulted_ = is_defaulted;
+}
+
+bool class_method::is_static() const { return is_static_; }
+
+void class_method::set_is_static(bool is_static) { is_static_ = is_static; }
+
+const std::vector<method_parameter> &class_method::parameters() const
+{
+    return parameters_;
+}
+
+void class_method::add_parameter(method_parameter &&parameter)
+{
+    parameters_.emplace_back(std::move(parameter));
 }
 
 //
@@ -317,7 +399,7 @@ bool class_::is_abstract() const
     // TODO check if all base abstract methods are overriden
     // with non-abstract methods
     return std::any_of(methods_.begin(), methods_.end(),
-        [](const auto &method) { return method.is_pure_virtual; });
+        [](const auto &method) { return method.is_pure_virtual(); });
 }
 
 //

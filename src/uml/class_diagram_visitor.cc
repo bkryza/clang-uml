@@ -668,11 +668,8 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
 {
     bool template_instantiation_added_as_aggregation{false};
 
-    class_member m;
-    m.name = mv.name();
-    m.type = cppast::to_string(mv.type());
-    m.scope = detail::cpp_access_specifier_to_scope(as);
-    m.is_static = false;
+    class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
+        cppast::to_string(mv.type())};
 
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
@@ -686,7 +683,7 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
         tr.kind());
 
     if (tr.kind() == cppast::cpp_type_kind::builtin_t) {
-        LOG_DBG("Builtin type found for field: {}", m.name);
+        LOG_DBG("Builtin type found for field: {}", m.name());
     }
     else if (tr.kind() == cppast::cpp_type_kind::user_defined_t) {
         LOG_DBG("Processing user defined type field {} {}",
@@ -716,8 +713,8 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 class_relationship r;
                 r.destination = type;
                 r.type = relationship_type;
-                r.label = m.name;
-                r.scope = m.scope;
+                r.label = m.name();
+                r.scope = m.scope();
                 r.set_style(m.style_spec());
 
                 auto [decorator_rtype, decorator_rmult] = m.relationship();
@@ -747,11 +744,8 @@ void tu_visitor::process_anonymous_enum(
 {
     for (const auto &ev : en) {
         if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
-            class_member m;
-            m.name = ev.name();
-            m.type = "enum"; // TODO: Try to figure out real enum type
-            m.scope = detail::cpp_access_specifier_to_scope(as);
-            m.is_static = false;
+            class_member m{
+                detail::cpp_access_specifier_to_scope(as), ev.name(), "enum"};
             c.add_member(std::move(m));
         }
     }
@@ -760,11 +754,10 @@ void tu_visitor::process_anonymous_enum(
 void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_member m;
-    m.name = mv.name();
-    m.type = cppast::to_string(mv.type());
-    m.scope = detail::cpp_access_specifier_to_scope(as);
-    m.is_static = true;
+    class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
+        cppast::to_string(mv.type())};
+
+    m.set_is_static(true);
 
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
@@ -778,15 +771,13 @@ void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
 void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     class_ &c, cppast::cpp_access_specifier_kind as)
 {
-    class_method m;
-    m.name = util::trim(mf.name());
-    m.type = cppast::to_string(mf.return_type());
-    m.is_pure_virtual = cppast::is_pure(mf.virtual_info());
-    m.is_virtual = cppast::is_virtual(mf.virtual_info());
-    m.is_const = cppast::is_const(mf.cv_qualifier());
-    m.is_defaulted = false;
-    m.is_static = false;
-    m.scope = detail::cpp_access_specifier_to_scope(as);
+    class_method m{detail::cpp_access_specifier_to_scope(as),
+        util::trim(mf.name()), cppast::to_string(mf.return_type())};
+    m.set_is_pure_virtual(cppast::is_pure(mf.virtual_info()));
+    m.set_is_virtual(cppast::is_virtual(mf.virtual_info()));
+    m.set_is_const(cppast::is_const(mf.cv_qualifier()));
+    m.set_is_defaulted(false);
+    m.set_is_static(false);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -797,7 +788,7 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
     for (auto &param : mf.parameters())
         process_function_parameter(param, m, c);
 
-    LOG_DBG("Adding method: {}", m.name);
+    LOG_DBG("Adding method: {}", m.name());
 
     c.add_method(std::move(m));
 }
@@ -806,22 +797,23 @@ void tu_visitor::process_template_method(
     const cppast::cpp_function_template &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m;
-    m.name = util::trim(mf.name());
+    std::string type;
     if (mf.function().kind() == cppast::cpp_entity_kind::constructor_t)
-        m.type = "void";
+        type = "void";
     else
-        m.type = cppast::to_string(
+        type = cppast::to_string(
             static_cast<const cppast::cpp_member_function &>(mf.function())
                 .return_type());
-    m.is_pure_virtual = false;
-    m.is_virtual = false;
-    m.is_const = cppast::is_const(
+
+    class_method m{
+        detail::cpp_access_specifier_to_scope(as), util::trim(mf.name()), type};
+    m.set_is_pure_virtual(false);
+    m.set_is_virtual(false);
+    m.set_is_const(cppast::is_const(
         static_cast<const cppast::cpp_member_function &>(mf.function())
-            .cv_qualifier());
-    m.is_defaulted = false;
-    m.is_static = false;
-    m.scope = detail::cpp_access_specifier_to_scope(as);
+            .cv_qualifier()));
+    m.set_is_defaulted(false);
+    m.set_is_static(false);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -837,7 +829,7 @@ void tu_visitor::process_template_method(
     for (auto &param : mf.function().parameters())
         process_function_parameter(param, m, c, template_parameter_names);
 
-    LOG_DBG("Adding template method: {}", m.name);
+    LOG_DBG("Adding template method: {}", m.name());
 
     c.add_method(std::move(m));
 }
@@ -845,15 +837,13 @@ void tu_visitor::process_template_method(
 void tu_visitor::process_static_method(const cppast::cpp_function &mf,
     class_ &c, cppast::cpp_access_specifier_kind as)
 {
-    class_method m;
-    m.name = util::trim(mf.name());
-    m.type = cppast::to_string(mf.return_type());
-    m.is_pure_virtual = false;
-    m.is_virtual = false;
-    m.is_const = false;
-    m.is_defaulted = false;
-    m.is_static = true;
-    m.scope = detail::cpp_access_specifier_to_scope(as);
+    class_method m{detail::cpp_access_specifier_to_scope(as),
+        util::trim(mf.name()), cppast::to_string(mf.return_type())};
+    m.set_is_pure_virtual(false);
+    m.set_is_virtual(false);
+    m.set_is_const(false);
+    m.set_is_defaulted(false);
+    m.set_is_static(true);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -864,7 +854,7 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
     for (auto &param : mf.parameters())
         process_function_parameter(param, m, c);
 
-    LOG_DBG("Adding static method: {}", m.name);
+    LOG_DBG("Adding static method: {}", m.name());
 
     c.add_method(std::move(m));
 }
@@ -872,15 +862,13 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
 void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
     class_ &c, cppast::cpp_access_specifier_kind as)
 {
-    class_method m;
-    m.name = util::trim(mf.name());
-    m.type = "void";
-    m.is_pure_virtual = false;
-    m.is_virtual = false;
-    m.is_const = false;
-    m.is_defaulted = false;
-    m.is_static = false;
-    m.scope = detail::cpp_access_specifier_to_scope(as);
+    class_method m{detail::cpp_access_specifier_to_scope(as),
+        util::trim(mf.name()), "void"};
+    m.set_is_pure_virtual(false);
+    m.set_is_virtual(false);
+    m.set_is_const(false);
+    m.set_is_defaulted(false);
+    m.set_is_static(true);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -897,15 +885,13 @@ void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
 void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m;
-    m.name = util::trim(mf.name());
-    m.type = "void";
-    m.is_pure_virtual = false;
-    m.is_virtual = cppast::is_virtual(mf.virtual_info());
-    m.is_const = false;
-    m.is_defaulted = false;
-    m.is_static = false;
-    m.scope = detail::cpp_access_specifier_to_scope(as);
+    class_method m{detail::cpp_access_specifier_to_scope(as),
+        util::trim(mf.name()), "void"};
+    m.set_is_pure_virtual(false);
+    m.set_is_virtual(cppast::is_virtual(mf.virtual_info()));
+    m.set_is_const(false);
+    m.set_is_defaulted(false);
+    m.set_is_static(true);
 
     c.add_method(std::move(m));
 }
@@ -1056,7 +1042,7 @@ void tu_visitor::process_function_parameter(
         }
     }
 
-    m.parameters.emplace_back(std::move(mp));
+    m.add_parameter(std::move(mp));
 }
 
 void tu_visitor::process_template_type_parameter(

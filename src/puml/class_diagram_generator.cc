@@ -139,23 +139,23 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     // Process methods
     //
     for (const auto &m : c.methods()) {
-        if (!m_config.should_include(m.scope))
+        if (!m_config.should_include(m.scope()))
             continue;
 
-        if (m.is_pure_virtual)
+        if (m.is_pure_virtual())
             ostr << "{abstract} ";
 
-        if (m.is_static)
+        if (m.is_static())
             ostr << "{static} ";
 
-        std::string type{m.type};
+        std::string type{m.type()};
 
-        ostr << to_string(m.scope) << m.name;
+        ostr << to_string(m.scope()) << m.name();
 
         ostr << "(";
         if (true) { // TODO: add option to disable parameter generation
             std::vector<std::string> params;
-            std::transform(m.parameters.begin(), m.parameters.end(),
+            std::transform(m.parameters().cbegin(), m.parameters().cend(),
                 std::back_inserter(params), [this](const auto &mp) {
                     return mp.to_string(m_config.using_namespace);
                 });
@@ -163,15 +163,15 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         }
         ostr << ")";
 
-        if (m.is_const)
+        if (m.is_const())
             ostr << " const";
 
-        assert(!(m.is_pure_virtual && m.is_defaulted));
+        assert(!(m.is_pure_virtual() && m.is_defaulted()));
 
-        if (m.is_pure_virtual)
+        if (m.is_pure_virtual())
             ostr << " = 0";
 
-        if (m.is_defaulted)
+        if (m.is_defaulted())
             ostr << " = default";
 
         ostr << " : " << ns_relative(uns, type);
@@ -238,18 +238,18 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     // Process members
     //
     for (const auto &m : c.members()) {
-        if (!m_config.should_include(m.scope))
+        if (!m_config.should_include(m.scope()))
             continue;
 
         if (!m_config.include_relations_also_as_members &&
-            rendered_relations.find(m.name) != rendered_relations.end())
+            rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
 
-        if (m.is_static)
+        if (m.is_static())
             ostr << "{static} ";
 
-        ostr << to_string(m.scope) << m.name << " : "
-             << ns_relative(uns, m.type) << '\n';
+        ostr << to_string(m.scope()) << m.name() << " : "
+             << ns_relative(uns, m.type()) << '\n';
     }
 
     ostr << "}" << '\n';
