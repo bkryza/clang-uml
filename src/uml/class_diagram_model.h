@@ -104,10 +104,10 @@ public:
         scope_t scope, const std::string &name, const std::string &type);
 
     bool is_relationship() const;
-    void set_is_relationship(bool is_relationship);
+    void is_relationship(bool is_relationship);
 
     bool is_static() const;
-    void set_is_static(bool is_static);
+    void is_static(bool is_static);
 
 private:
     bool is_relationship_{false};
@@ -129,19 +129,19 @@ public:
         scope_t scope, const std::string &name, const std::string &type);
 
     bool is_pure_virtual() const;
-    void set_is_pure_virtual(bool is_pure_virtual);
+    void is_pure_virtual(bool is_pure_virtual);
 
     bool is_virtual() const;
-    void set_is_virtual(bool is_virtual);
+    void is_virtual(bool is_virtual);
 
     bool is_const() const;
-    void set_is_const(bool is_const);
+    void is_const(bool is_const);
 
     bool is_defaulted() const;
-    void set_is_defaulted(bool is_defaulted);
+    void is_defaulted(bool is_defaulted);
 
     bool is_static() const;
-    void set_is_static(bool is_static);
+    void is_static(bool is_static);
 
     const std::vector<method_parameter> &parameters() const;
     void add_parameter(method_parameter &&parameter);
@@ -231,13 +231,13 @@ public:
     class_(const std::vector<std::string> &using_namespaces);
 
     bool is_struct() const;
-    void set_is_struct(bool is_struct);
+    void is_struct(bool is_struct);
 
     bool is_template() const;
-    void set_is_template(bool is_template);
+    void is_template(bool is_template);
 
     bool is_template_instantiation() const;
-    void set_is_template_instantiation(bool is_template_instantiation);
+    void is_template_instantiation(bool is_template_instantiation);
 
     void add_member(class_member &&member);
     void add_method(class_method &&method);

@@ -324,7 +324,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
     class_ c{ctx.config.using_namespace};
-    c.set_is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
+    c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
     c.set_name(cx::util::full_name(ctx.namespace_, cls));
 
     if (cls.comment().has_value())
@@ -757,7 +757,7 @@ void tu_visitor::process_static_field(const cppast::cpp_variable &mv, class_ &c,
     class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
         cppast::to_string(mv.type())};
 
-    m.set_is_static(true);
+    m.is_static(true);
 
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
@@ -773,11 +773,11 @@ void tu_visitor::process_method(const cppast::cpp_member_function &mf,
 {
     class_method m{detail::cpp_access_specifier_to_scope(as),
         util::trim(mf.name()), cppast::to_string(mf.return_type())};
-    m.set_is_pure_virtual(cppast::is_pure(mf.virtual_info()));
-    m.set_is_virtual(cppast::is_virtual(mf.virtual_info()));
-    m.set_is_const(cppast::is_const(mf.cv_qualifier()));
-    m.set_is_defaulted(false);
-    m.set_is_static(false);
+    m.is_pure_virtual(cppast::is_pure(mf.virtual_info()));
+    m.is_virtual(cppast::is_virtual(mf.virtual_info()));
+    m.is_const(cppast::is_const(mf.cv_qualifier()));
+    m.is_defaulted(false);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -807,13 +807,13 @@ void tu_visitor::process_template_method(
 
     class_method m{
         detail::cpp_access_specifier_to_scope(as), util::trim(mf.name()), type};
-    m.set_is_pure_virtual(false);
-    m.set_is_virtual(false);
-    m.set_is_const(cppast::is_const(
+    m.is_pure_virtual(false);
+    m.is_virtual(false);
+    m.is_const(cppast::is_const(
         static_cast<const cppast::cpp_member_function &>(mf.function())
             .cv_qualifier()));
-    m.set_is_defaulted(false);
-    m.set_is_static(false);
+    m.is_defaulted(false);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -839,11 +839,11 @@ void tu_visitor::process_static_method(const cppast::cpp_function &mf,
 {
     class_method m{detail::cpp_access_specifier_to_scope(as),
         util::trim(mf.name()), cppast::to_string(mf.return_type())};
-    m.set_is_pure_virtual(false);
-    m.set_is_virtual(false);
-    m.set_is_const(false);
-    m.set_is_defaulted(false);
-    m.set_is_static(true);
+    m.is_pure_virtual(false);
+    m.is_virtual(false);
+    m.is_const(false);
+    m.is_defaulted(false);
+    m.is_static(true);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -864,11 +864,11 @@ void tu_visitor::process_constructor(const cppast::cpp_constructor &mf,
 {
     class_method m{detail::cpp_access_specifier_to_scope(as),
         util::trim(mf.name()), "void"};
-    m.set_is_pure_virtual(false);
-    m.set_is_virtual(false);
-    m.set_is_const(false);
-    m.set_is_defaulted(false);
-    m.set_is_static(true);
+    m.is_pure_virtual(false);
+    m.is_virtual(false);
+    m.is_const(false);
+    m.is_defaulted(false);
+    m.is_static(true);
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -887,11 +887,11 @@ void tu_visitor::process_destructor(const cppast::cpp_destructor &mf, class_ &c,
 {
     class_method m{detail::cpp_access_specifier_to_scope(as),
         util::trim(mf.name()), "void"};
-    m.set_is_pure_virtual(false);
-    m.set_is_virtual(cppast::is_virtual(mf.virtual_info()));
-    m.set_is_const(false);
-    m.set_is_defaulted(false);
-    m.set_is_static(true);
+    m.is_pure_virtual(false);
+    m.is_virtual(cppast::is_virtual(mf.virtual_info()));
+    m.is_const(false);
+    m.is_defaulted(false);
+    m.is_static(true);
 
     c.add_method(std::move(m));
 }
@@ -1399,7 +1399,7 @@ class_ tu_visitor::build_template_instantiation(
 
     tinst.set_name(ns + util::split(cppast::to_string(t), "<")[0]);
 
-    tinst.set_is_template_instantiation(true);
+    tinst.is_template_instantiation(true);
 
     if (tinst.full_name().substr(0, tinst.full_name().find('<')).find("::") ==
         std::string::npos) {

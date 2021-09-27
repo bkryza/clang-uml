@@ -150,14 +150,14 @@ class_member::class_member(
 
 bool class_member::is_relationship() const { return is_relationship_; }
 
-void class_member::set_is_relationship(bool is_relationship)
+void class_member::is_relationship(bool is_relationship)
 {
     is_relationship_ = is_relationship;
 }
 
 bool class_member::is_static() const { return is_static_; }
 
-void class_member::set_is_static(bool is_static) { is_static_ = is_static; }
+void class_member::is_static(bool is_static) { is_static_ = is_static; }
 
 //
 // element
@@ -231,29 +231,29 @@ class_method::class_method(
 
 bool class_method::is_pure_virtual() const { return is_pure_virtual_; }
 
-void class_method::set_is_pure_virtual(bool is_pure_virtual)
+void class_method::is_pure_virtual(bool is_pure_virtual)
 {
     is_pure_virtual_ = is_pure_virtual;
 }
 
 bool class_method::is_virtual() const { return is_virtual_; }
 
-void class_method::set_is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
+void class_method::is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
 
 bool class_method::is_const() const { return is_const_; }
 
-void class_method::set_is_const(bool is_const) { is_const_ = is_const; }
+void class_method::is_const(bool is_const) { is_const_ = is_const; }
 
 bool class_method::is_defaulted() const { return is_defaulted_; }
 
-void class_method::set_is_defaulted(bool is_defaulted)
+void class_method::is_defaulted(bool is_defaulted)
 {
     is_defaulted_ = is_defaulted;
 }
 
 bool class_method::is_static() const { return is_static_; }
 
-void class_method::set_is_static(bool is_static) { is_static_ = is_static; }
+void class_method::is_static(bool is_static) { is_static_ = is_static; }
 
 const std::vector<method_parameter> &class_method::parameters() const
 {
@@ -294,18 +294,18 @@ class_::class_(const std::vector<std::string> &using_namespaces)
 
 bool class_::is_struct() const { return is_struct_; }
 
-void class_::set_is_struct(bool is_struct) { is_struct_ = is_struct; }
+void class_::is_struct(bool is_struct) { is_struct_ = is_struct; }
 
 bool class_::is_template() const { return is_template_; }
 
-void class_::set_is_template(bool is_template) { is_template_ = is_template; }
+void class_::is_template(bool is_template) { is_template_ = is_template; }
 
 bool class_::is_template_instantiation() const
 {
     return is_template_instantiation_;
 }
 
-void class_::set_is_template_instantiation(bool is_template_instantiation)
+void class_::is_template_instantiation(bool is_template_instantiation)
 {
     is_template_instantiation_ = is_template_instantiation;
 }
