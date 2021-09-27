@@ -317,6 +317,20 @@ bool operator==(const class_template &l, const class_template &r)
 }
 
 //
+// type_alias
+//
+void type_alias::set_alias(const std::string &alias) { alias_ = alias; }
+
+std::string type_alias::alias() const { return alias_; }
+
+void type_alias::set_underlying_type(const std::string &type)
+{
+    underlying_type_ = type;
+}
+
+std::string type_alias::underlying_type() const { return underlying_type_; }
+
+//
 // class_
 //
 class_::class_(const std::vector<std::string> &using_namespaces)
@@ -387,8 +401,8 @@ bool operator==(const class_ &l, const class_ &r)
 
 void class_::add_type_alias(type_alias &&ta)
 {
-    LOG_DBG("Adding class alias: {} -> {}", ta.alias, ta.underlying_type);
-    type_aliases_[ta.alias] = std::move(ta);
+    LOG_DBG("Adding class alias: {} -> {}", ta.alias(), ta.underlying_type());
+    type_aliases_[ta.alias()] = std::move(ta);
 }
 
 std::string class_::full_name(bool relative) const
@@ -480,9 +494,9 @@ bool diagram::has_class(const class_ &c) const
 
 void diagram::add_type_alias(type_alias &&ta)
 {
-    LOG_DBG("Adding global alias: {} -> {}", ta.alias, ta.underlying_type);
+    LOG_DBG("Adding global alias: {} -> {}", ta.alias(), ta.underlying_type());
 
-    type_aliases_[ta.alias] = std::move(ta);
+    type_aliases_[ta.alias()] = std::move(ta);
 }
 
 void diagram::add_class(class_ &&c)

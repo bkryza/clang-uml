@@ -246,9 +246,9 @@ void tu_visitor::operator()(const cppast::cpp_entity &file)
 
                 auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
                 type_alias t;
-                t.alias = cx::util::full_name(ctx.namespace_, ta);
-                t.underlying_type = cx::util::full_name(ta.underlying_type(),
-                    ctx.entity_index, cx::util::is_inside_class(e));
+                t.set_alias(cx::util::full_name(ctx.namespace_, ta));
+                t.set_underlying_type(cx::util::full_name(ta.underlying_type(),
+                    ctx.entity_index, cx::util::is_inside_class(e)));
 
                 ctx.add_type_alias(cx::util::full_name(ctx.namespace_, ta),
                     type_safe::ref(ta.underlying_type()));

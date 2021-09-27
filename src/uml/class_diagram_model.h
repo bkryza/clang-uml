@@ -244,9 +244,17 @@ private:
     static std::atomic_uint64_t m_nextId;
 };
 
-struct type_alias {
-    std::string alias;
-    std::string underlying_type;
+class type_alias {
+public:
+    void set_alias(const std::string &alias);
+    std::string alias() const;
+
+    void set_underlying_type(const std::string &type);
+    std::string underlying_type() const;
+
+private:
+    std::string alias_;
+    std::string underlying_type_;
 };
 
 class class_ : public element, public stylable_element {
