@@ -114,13 +114,24 @@ private:
     bool is_static_{false};
 };
 
-struct method_parameter : public decorated_element {
-    std::string type;
-    std::string name;
-    std::string default_value;
+class method_parameter : public decorated_element {
+public:
+    void set_type(const std::string &type);
+    std::string type() const;
+
+    void set_name(const std::string &name);
+    std::string name() const;
+
+    void set_default_value(const std::string &value);
+    std::string default_value() const;
 
     std::string to_string(
         const std::vector<std::string> &using_namespaces) const;
+
+private:
+    std::string type_;
+    std::string name_;
+    std::string default_value_;
 };
 
 class class_method : public class_element {

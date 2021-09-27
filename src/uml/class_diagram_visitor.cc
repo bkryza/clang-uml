@@ -901,7 +901,7 @@ void tu_visitor::process_function_parameter(
     const std::set<std::string> &template_parameter_names)
 {
     method_parameter mp;
-    mp.name = param.name();
+    mp.set_name(param.name());
 
     if (param.comment().has_value())
         m.add_decorators(decorators::parse(param.comment().value()));
@@ -915,29 +915,29 @@ void tu_visitor::process_function_parameter(
         // TODO: Template instantiation parameters are not fully prefixed
         // so we have to deduce the correct namespace prefix of the
         // template which is being instantiated
-        mp.type = cppast::to_string(param.type());
+        mp.set_type(cppast::to_string(param.type()));
     }
     else {
-        mp.type = cppast::to_string(param.type());
+        mp.set_type(cppast::to_string(param.type()));
     }
 
     auto dv = param.default_value();
     if (dv) {
         switch (dv.value().kind()) {
         case cppast::cpp_expression_kind::literal_t:
-            mp.default_value =
+            mp.set_default_value(
                 static_cast<const cppast::cpp_literal_expression &>(dv.value())
-                    .value();
+                    .value());
             break;
         case cppast::cpp_expression_kind::unexposed_t:
-            mp.default_value =
+            mp.set_default_value(
                 static_cast<const cppast::cpp_unexposed_expression &>(
                     dv.value())
                     .expression()
-                    .as_string();
+                    .as_string());
             break;
         default:
-            mp.default_value = "{}";
+            mp.set_default_value("{}");
         }
     }
 

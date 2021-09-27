@@ -208,16 +208,30 @@ const std::vector<class_relationship> &element::relationships() const
 //
 // method_parameter
 //
+void method_parameter::set_type(const std::string &type) { type_ = type; }
+
+std::string method_parameter::type() const { return type_; }
+
+void method_parameter::set_name(const std::string &name) { name_ = name; }
+
+std::string method_parameter::name() const { return name_; }
+
+void method_parameter::set_default_value(const std::string &value)
+{
+    default_value_ = value;
+}
+
+std::string method_parameter::default_value() const { return default_value_; }
 
 std::string method_parameter::to_string(
     const std::vector<std::string> &using_namespaces) const
 {
     using namespace clanguml::util;
-    auto t = ns_relative(using_namespaces, type);
-    if (default_value.empty())
-        return fmt::format("{} {}", t, name);
+    auto t = ns_relative(using_namespaces, type());
+    if (default_value().empty())
+        return fmt::format("{} {}", t, name());
 
-    return fmt::format("{} {} = {}", t, name, default_value);
+    return fmt::format("{} {} = {}", t, name(), default_value());
 }
 
 //
