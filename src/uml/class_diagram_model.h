@@ -225,13 +225,30 @@ private:
     scope_t scope_{scope_t::kNone};
 };
 
-struct class_template {
-    std::string name;
-    std::string type;
-    std::string default_value;
-    bool is_variadic{false};
+class class_template {
+public:
+    class_template(const std::string &type = "", const std::string &name = "",
+        const std::string &default_value = "", bool is_variadic = false);
+
+    void set_type(const std::string &type);
+    std::string type() const;
+
+    void set_name(const std::string &name);
+    std::string name() const;
+
+    void set_default_value(const std::string &value);
+    std::string default_value() const;
+
+    void is_variadic(bool is_variadic) noexcept;
+    bool is_variadic() const noexcept;
 
     friend bool operator==(const class_template &l, const class_template &r);
+
+private:
+    std::string type_;
+    std::string name_;
+    std::string default_value_;
+    bool is_variadic_{false};
 };
 
 class element : public decorated_element {

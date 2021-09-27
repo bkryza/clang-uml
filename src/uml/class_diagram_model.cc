@@ -366,10 +366,42 @@ bool operator==(const class_relationship &l, const class_relationship &r)
 //
 // class_template
 //
+class_template::class_template(const std::string &type, const std::string &name,
+    const std::string &default_value, bool is_variadic)
+    : type_{type}
+    , name_{name}
+    , default_value_{default_value}
+    , is_variadic_{is_variadic}
+{
+    if (is_variadic)
+        name_ = name_ + "...";
+}
+
+void class_template::set_type(const std::string &type) { type_ = type; }
+
+std::string class_template::type() const { return type_; }
+
+void class_template::set_name(const std::string &name) { name_ = name; }
+
+std::string class_template::name() const { return name_; }
+
+void class_template::set_default_value(const std::string &value)
+{
+    default_value_ = value;
+}
+
+std::string class_template::default_value() const { return default_value_; }
+
+void class_template::is_variadic(bool is_variadic) noexcept
+{
+    is_variadic_ = is_variadic;
+}
+
+bool class_template::is_variadic() const noexcept { return is_variadic_; }
 
 bool operator==(const class_template &l, const class_template &r)
 {
-    return (l.name == r.name) && (l.type == r.type);
+    return (l.name() == r.name()) && (l.type() == r.type());
 }
 
 //
@@ -477,15 +509,17 @@ std::string class_::full_name(bool relative) const
             std::back_inserter(tnames), [this](const auto &tmplt) {
                 std::vector<std::string> res;
 
-                if (!tmplt.type.empty())
-                    res.push_back(ns_relative(using_namespaces(), tmplt.type));
+                if (!tmplt.type().empty())
+                    res.push_back(
+                        ns_relative(using_namespaces(), tmplt.type()));
 
-                if (!tmplt.name.empty())
-                    res.push_back(ns_relative(using_namespaces(), tmplt.name));
+                if (!tmplt.name().empty())
+                    res.push_back(
+                        ns_relative(using_namespaces(), tmplt.name()));
 
-                if (!tmplt.default_value.empty()) {
+                if (!tmplt.default_value().empty()) {
                     res.push_back("=");
-                    res.push_back(tmplt.default_value);
+                    res.push_back(tmplt.default_value());
                 }
 
                 return fmt::format("{}", fmt::join(res, " "));

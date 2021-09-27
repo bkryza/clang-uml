@@ -490,12 +490,7 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
                     // Naive parse of template arguments:
                     auto toks = util::split(ua, ",");
                     for (const auto &t : toks) {
-                        class_template ct;
-                        ct.type = t;
-                        ct.default_value = "";
-                        ct.is_variadic = false;
-                        ct.name = "";
-                        c.add_template(std::move(ct));
+                        c.add_template({t});
 
                         const auto &primary_template_ref =
                             static_cast<const cppast::cpp_class_template &>(
@@ -1026,37 +1021,20 @@ void tu_visitor::process_function_parameter(
 void tu_visitor::process_template_type_parameter(
     const cppast::cpp_template_type_parameter &t, class_ &parent)
 {
-    class_template ct;
-    ct.type = "";
-    ct.default_value = "";
-    ct.is_variadic = t.is_variadic();
-    ct.name = t.name();
-    if (ct.is_variadic)
-        ct.name += "...";
-    parent.add_template(std::move(ct));
+    parent.add_template({"", t.name(), "", t.is_variadic()});
 }
 
 void tu_visitor::process_template_nontype_parameter(
     const cppast::cpp_non_type_template_parameter &t, class_ &parent)
 {
-    class_template ct;
-    ct.type = cppast::to_string(t.type());
-    ct.name = t.name();
-    ct.default_value = "";
-    ct.is_variadic = t.is_variadic();
-    if (ct.is_variadic)
-        ct.name += "...";
-    parent.add_template(std::move(ct));
+    parent.add_template(
+        {cppast::to_string(t.type()), t.name(), "", t.is_variadic()});
 }
 
 void tu_visitor::process_template_template_parameter(
     const cppast::cpp_template_template_parameter &t, class_ &parent)
 {
-    class_template ct;
-    ct.type = "";
-    ct.name = t.name() + "<>";
-    ct.default_value = "";
-    parent.add_template(std::move(ct));
+    parent.add_template({"", t.name() + "<>"});
 }
 
 void tu_visitor::process_friend(const cppast::cpp_friend &f, class_ &parent)
@@ -1390,9 +1368,9 @@ class_ tu_visitor::build_template_instantiation(
         bool add_template_argument_as_base_class{false};
         class_template ct;
         if (targ.type()) {
-            ct.type = cppast::to_string(targ.type().value());
+            ct.set_type(cppast::to_string(targ.type().value()));
 
-            LOG_DBG("Template argument is a type {}", ct.type);
+            LOG_DBG("Template argument is a type {}", ct.type());
             auto fn = cx::util::full_name(
                 cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
                 ctx.entity_index, false);
@@ -1468,16 +1446,16 @@ class_ tu_visitor::build_template_instantiation(
         else if (targ.expression()) {
             const auto &exp = targ.expression().value();
             if (exp.kind() == cppast::cpp_expression_kind::literal_t)
-                ct.type =
+                ct.set_type(
                     static_cast<const cppast::cpp_literal_expression &>(exp)
-                        .value();
+                        .value());
             else if (exp.kind() == cppast::cpp_expression_kind::unexposed_t)
-                ct.type =
+                ct.set_type(
                     static_cast<const cppast::cpp_unexposed_expression &>(exp)
                         .expression()
-                        .as_string();
+                        .as_string());
 
-            LOG_DBG("Template argument is an expression {}", ct.type);
+            LOG_DBG("Template argument is an expression {}", ct.type());
         }
 
         // In case any of the template arguments are base classes, add
@@ -1495,17 +1473,18 @@ class_ tu_visitor::build_template_instantiation(
             }
 
             if (add_template_argument_as_base_class) {
-                LOG_DBG("Adding template argument '{}' as base class", ct.type);
+                LOG_DBG(
+                    "Adding template argument '{}' as base class", ct.type());
 
                 class_parent cp;
                 cp.set_access(class_parent::access_t::kPublic);
-                cp.set_name(ct.type);
+                cp.set_name(ct.type());
 
                 tinst.add_parent(std::move(cp));
             }
         }
 
-        LOG_DBG("Adding template argument '{}'", ct.type);
+        LOG_DBG("Adding template argument '{}'", ct.type());
 
         tinst.add_template(std::move(ct));
     }
