@@ -17,9 +17,9 @@
  */
 #pragma once
 
-#include "class_diagram_model.h"
 #include "config/config.h"
 #include "cx/cursor.h"
+#include "uml/class_diagram/model/diagram.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
@@ -43,7 +43,7 @@ namespace class_diagram {
 
 struct tu_context {
     tu_context(cppast::cpp_entity_index &idx,
-        clanguml::model::class_diagram::diagram &d_,
+        clanguml::class_diagram::model::diagram &d_,
         const clanguml::config::class_diagram &config_);
 
     bool has_type_alias(const std::string &full_name) const;
@@ -67,7 +67,7 @@ struct tu_context {
 
     std::vector<std::string> namespace_;
     cppast::cpp_entity_index &entity_index;
-    clanguml::model::class_diagram::diagram &d;
+    clanguml::class_diagram::model::diagram &d;
     const clanguml::config::class_diagram &config;
     std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
         alias_index;
@@ -76,19 +76,19 @@ struct tu_context {
 };
 
 template <typename T> struct element_visitor_context {
-    element_visitor_context(clanguml::model::class_diagram::diagram &d_, T &e);
+    element_visitor_context(clanguml::class_diagram::model::diagram &d_, T &e);
 
     tu_context *ctx;
 
     T &element;
-    clanguml::model::class_diagram::class_ *parent_class{};
-    clanguml::model::class_diagram::diagram &d;
+    clanguml::class_diagram::model::class_ *parent_class{};
+    clanguml::class_diagram::model::diagram &d;
 };
 
 class tu_visitor {
 public:
     tu_visitor(cppast::cpp_entity_index &idx_,
-        clanguml::model::class_diagram::diagram &d_,
+        clanguml::class_diagram::model::diagram &d_,
         const clanguml::config::class_diagram &config_);
 
     void operator()(const cppast::cpp_entity &file);
@@ -100,73 +100,73 @@ public:
     void process_enum_declaration(const cppast::cpp_enum &enm);
 
     void process_anonymous_enum(const cppast::cpp_enum &en,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_field(const cppast::cpp_member_variable &mv,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     bool process_field_with_template_instantiation(
         const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
-        clanguml::model::class_diagram::class_ &c,
-        clanguml::model::class_diagram::class_member &m,
+        clanguml::class_diagram::model::class_ &c,
+        clanguml::class_diagram::model::class_member &m,
         cppast::cpp_access_specifier_kind as);
 
     void process_static_field(const cppast::cpp_variable &mv,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_method(const cppast::cpp_member_function &mf,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_template_method(const cppast::cpp_function_template &mf,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_static_method(const cppast::cpp_function &mf,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_constructor(const cppast::cpp_constructor &mf,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_destructor(const cppast::cpp_destructor &mf,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_ &c,
         cppast::cpp_access_specifier_kind as);
 
     void process_function_parameter(const cppast::cpp_function_parameter &param,
-        clanguml::model::class_diagram::class_method &m,
-        clanguml::model::class_diagram::class_ &c,
+        clanguml::class_diagram::model::class_method &m,
+        clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names = {});
 
     bool find_relationships(const cppast::cpp_type &t,
         std::vector<std::pair<std::string,
-            clanguml::model::class_diagram::relationship_t>> &relationships,
-        clanguml::model::class_diagram::relationship_t relationship_hint =
-            clanguml::model::class_diagram::relationship_t::kNone);
+            clanguml::class_diagram::model::relationship_t>> &relationships,
+        clanguml::class_diagram::model::relationship_t relationship_hint =
+            clanguml::class_diagram::model::relationship_t::kNone);
 
     void process_template_type_parameter(
         const cppast::cpp_template_type_parameter &t,
-        clanguml::model::class_diagram::class_ &parent);
+        clanguml::class_diagram::model::class_ &parent);
 
     void process_template_nontype_parameter(
         const cppast::cpp_non_type_template_parameter &t,
-        clanguml::model::class_diagram::class_ &parent);
+        clanguml::class_diagram::model::class_ &parent);
 
     void process_template_template_parameter(
         const cppast::cpp_template_template_parameter &t,
-        clanguml::model::class_diagram::class_ &parent);
+        clanguml::class_diagram::model::class_ &parent);
 
     void process_friend(const cppast::cpp_friend &t,
-        clanguml::model::class_diagram::class_ &parent);
+        clanguml::class_diagram::model::class_ &parent);
 
 private:
-    clanguml::model::class_diagram::class_ build_template_instantiation(
+    clanguml::class_diagram::model::class_ build_template_instantiation(
         const cppast::cpp_template_instantiation_type &t,
-        std::optional<clanguml::model::class_diagram::class_ *> parent = {});
+        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
 

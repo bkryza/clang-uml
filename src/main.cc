@@ -22,7 +22,7 @@
 #include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
 #include "puml/sequence_diagram_generator.h"
-#include "uml/class_diagram_model.h"
+#include "uml/class_diagram/model/diagram.h"
 #include "uml/class_diagram_visitor.h"
 #include "uml/sequence_diagram_visitor.h"
 #include "util/util.h"

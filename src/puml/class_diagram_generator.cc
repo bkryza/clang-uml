@@ -18,6 +18,8 @@
 
 #include "class_diagram_generator.h"
 
+#include "util/error.h"
+
 namespace clanguml::generators::class_diagram {
 
 namespace puml {
@@ -414,12 +416,12 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 }
 } // namespace puml
 
-clanguml::model::class_diagram::diagram generate(
+clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram)
 {
     spdlog::info("Generating diagram {}.puml", name);
-    clanguml::model::class_diagram::diagram d;
+    clanguml::class_diagram::model::diagram d;
     d.set_name(name);
 
     // Get all translation units matching the glob from diagram

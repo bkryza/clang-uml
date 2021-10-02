@@ -89,7 +89,8 @@ bool diagram::should_include(const std::string &name_) const
     return false;
 }
 
-bool diagram::should_include(const model::class_diagram::scope_t scope) const
+bool diagram::should_include(
+    const clanguml::class_diagram::model::scope_t scope) const
 {
     for (const auto &s : exclude.scopes) {
         if (s == scope)
@@ -127,13 +128,13 @@ bool class_diagram::has_class(std::string clazz)
 }
 
 namespace YAML {
+using clanguml::class_diagram::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
-using clanguml::model::class_diagram::scope_t;
 template <> struct convert<scope_t> {
     static bool decode(const Node &node, scope_t &rhs)
     {

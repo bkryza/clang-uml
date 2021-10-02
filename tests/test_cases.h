@@ -23,7 +23,7 @@
 #include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
 #include "puml/sequence_diagram_generator.h"
-#include "uml/class_diagram_model.h"
+#include "uml/class_diagram/model/diagram.h"
 #include "uml/class_diagram_visitor.h"
 #include "uml/sequence_diagram_visitor.h"
 #include "util/util.h"
@@ -52,7 +52,7 @@ clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
     compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram);
 
-clanguml::model::class_diagram::diagram generate_class_diagram(
+clanguml::class_diagram::model::diagram generate_class_diagram(
     compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram);
 
@@ -62,7 +62,7 @@ std::string generate_sequence_puml(
 
 std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::model::class_diagram::diagram &model);
+    clanguml::class_diagram::model::diagram &model);
 
 void save_puml(const std::string &path, const std::string &puml);
 

@@ -51,7 +51,7 @@ clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
     return diagram_model;
 }
 
-clanguml::model::class_diagram::diagram generate_class_diagram(
+clanguml::class_diagram::model::diagram generate_class_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -78,7 +78,7 @@ std::string generate_sequence_puml(
 
 std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::model::class_diagram::diagram &model)
+    clanguml::class_diagram::model::diagram &model)
 {
     using namespace clanguml::generators::class_diagram::puml;
 

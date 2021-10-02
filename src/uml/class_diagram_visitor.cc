@@ -37,18 +37,19 @@ namespace clanguml {
 namespace visitor {
 namespace class_diagram {
 
-using clanguml::model::class_diagram::class_;
-using clanguml::model::class_diagram::class_member;
-using clanguml::model::class_diagram::class_method;
-using clanguml::model::class_diagram::class_parent;
-using clanguml::model::class_diagram::class_relationship;
-using clanguml::model::class_diagram::class_template;
-using clanguml::model::class_diagram::diagram;
-using clanguml::model::class_diagram::enum_;
-using clanguml::model::class_diagram::method_parameter;
-using clanguml::model::class_diagram::relationship_t;
-using clanguml::model::class_diagram::scope_t;
-using clanguml::model::class_diagram::type_alias;
+using clanguml::class_diagram::model::access_t;
+using clanguml::class_diagram::model::class_;
+using clanguml::class_diagram::model::class_member;
+using clanguml::class_diagram::model::class_method;
+using clanguml::class_diagram::model::class_parent;
+using clanguml::class_diagram::model::class_relationship;
+using clanguml::class_diagram::model::class_template;
+using clanguml::class_diagram::model::diagram;
+using clanguml::class_diagram::model::enum_;
+using clanguml::class_diagram::model::method_parameter;
+using clanguml::class_diagram::model::relationship_t;
+using clanguml::class_diagram::model::scope_t;
+using clanguml::class_diagram::model::type_alias;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
@@ -76,7 +77,7 @@ scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
 // tu_context
 //
 tu_context::tu_context(cppast::cpp_entity_index &idx,
-    clanguml::model::class_diagram::diagram &d_,
+    clanguml::class_diagram::model::diagram &d_,
     const clanguml::config::class_diagram &config_)
     : entity_index{idx}
     , d{d_}
@@ -152,7 +153,7 @@ tu_context::get_type_alias_template(const std::string &full_name) const
 //
 template <typename T>
 element_visitor_context<T>::element_visitor_context(
-    clanguml::model::class_diagram::diagram &d_, T &e)
+    clanguml::class_diagram::model::diagram &d_, T &e)
     : element(e)
     , d{d_}
 {
@@ -163,7 +164,7 @@ element_visitor_context<T>::element_visitor_context(
 //
 
 tu_visitor::tu_visitor(cppast::cpp_entity_index &idx_,
-    clanguml::model::class_diagram::diagram &d_,
+    clanguml::class_diagram::model::diagram &d_,
     const clanguml::config::class_diagram &config_)
     : ctx{idx_, d_, config_}
 {
@@ -421,16 +422,16 @@ void tu_visitor::process_class_declaration(const cppast::cpp_class &cls,
 
         switch (base.access_specifier()) {
         case cppast::cpp_access_specifier_kind::cpp_private:
-            cp.set_access(class_parent::access_t::kPrivate);
+            cp.set_access(access_t::kPrivate);
             break;
         case cppast::cpp_access_specifier_kind::cpp_public:
-            cp.set_access(class_parent::access_t::kPublic);
+            cp.set_access(access_t::kPublic);
             break;
         case cppast::cpp_access_specifier_kind::cpp_protected:
-            cp.set_access(class_parent::access_t::kProtected);
+            cp.set_access(access_t::kProtected);
             break;
         default:
-            cp.set_access(class_parent::access_t::kPublic);
+            cp.set_access(access_t::kPublic);
         }
 
         LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
@@ -631,8 +632,9 @@ bool tu_visitor::process_field_with_template_instantiation(
 
     if (ctx.config.should_include(tinst.name())) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
-            rr.destination(), model::class_diagram::to_string(rr.type()),
-            c.full_name(), rr.label());
+            rr.destination(),
+            clanguml::class_diagram::model::to_string(rr.type()), c.full_name(),
+            rr.label());
 
         c.add_relationship(std::move(rr));
 
@@ -708,7 +710,8 @@ void tu_visitor::process_field(const cppast::cpp_member_variable &mv, class_ &c,
                 }
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
-                    r.destination(), model::class_diagram::to_string(r.type()),
+                    r.destination(),
+                    clanguml::class_diagram::model::to_string(r.type()),
                     c.full_name(), r.label());
 
                 c.add_relationship(std::move(r));
@@ -932,7 +935,8 @@ void tu_visitor::process_function_parameter(
                 class_relationship r{relationship_t::kDependency, type};
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
-                    r.destination(), model::class_diagram::to_string(r.type()),
+                    r.destination(),
+                    clanguml::class_diagram::model::to_string(r.type()),
                     c.full_name(), r.label());
 
                 c.add_relationship(std::move(r));
@@ -988,7 +992,8 @@ void tu_visitor::process_function_parameter(
                                 "{} {} {} "
                                 ": {}",
                             rr.destination(),
-                            model::class_diagram::to_string(rr.type()),
+                            clanguml::class_diagram::model::to_string(
+                                rr.type()),
                             c.full_name(), rr.label());
                         c.add_relationship(std::move(rr));
                     }
@@ -1003,7 +1008,8 @@ void tu_visitor::process_function_parameter(
                         LOG_DBG("Adding field dependency relationship {} {} {} "
                                 ": {}",
                             rr.destination(),
-                            model::class_diagram::to_string(rr.type()),
+                            clanguml::class_diagram::model::to_string(
+                                rr.type()),
                             c.full_name(), rr.label());
 
                         c.add_relationship(std::move(rr));
@@ -1241,7 +1247,7 @@ bool tu_visitor::find_relationships(const cppast::cpp_type &t_,
 
 class_ tu_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
-    std::optional<clanguml::model::class_diagram::class_ *> parent)
+    std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
     class_ tinst{ctx.config.using_namespace};
     std::string full_template_name;
@@ -1477,7 +1483,7 @@ class_ tu_visitor::build_template_instantiation(
                     "Adding template argument '{}' as base class", ct.type());
 
                 class_parent cp;
-                cp.set_access(class_parent::access_t::kPublic);
+                cp.set_access(access_t::kPublic);
                 cp.set_name(ct.type());
 
                 tinst.add_parent(std::move(cp));

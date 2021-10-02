@@ -19,7 +19,10 @@
 
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "uml/class_diagram_model.h"
+#include "uml/class_diagram/model/class.h"
+#include "uml/class_diagram/model/class_relationship.h"
+#include "uml/class_diagram/model/diagram.h"
+#include "uml/class_diagram/model/enum.h"
 #include "uml/class_diagram_visitor.h"
 #include "util/util.h"
 
@@ -37,12 +40,12 @@ namespace generators {
 namespace class_diagram {
 namespace puml {
 
-using diagram_config = clanguml::config::class_diagram::diagram;
-using diagram_model = clanguml::model::class_diagram::diagram;
-using clanguml::model::class_diagram::class_;
-using clanguml::model::class_diagram::enum_;
-using clanguml::model::class_diagram::relationship_t;
-using clanguml::model::class_diagram::scope_t;
+using diagram_config = clanguml::class_diagram::model::diagram;
+using diagram_model = clanguml::class_diagram::model::diagram;
+using clanguml::class_diagram::model::class_;
+using clanguml::class_diagram::model::enum_;
+using clanguml::class_diagram::model::relationship_t;
+using clanguml::class_diagram::model::scope_t;
 using namespace clanguml::util;
 
 std::string relative_to(std::string n, std::string c);
@@ -76,7 +79,7 @@ private:
 
 }
 
-clanguml::model::class_diagram::diagram generate(
+clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram);
 
