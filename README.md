@@ -2,7 +2,7 @@
 
 ![linux build](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
 
-`clang-uml` is an automatic [PlantUML](https://plantuml.com) class and sequence
+`clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class and sequence
 diagram generator, driven by YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 existing project code. The configuration file or files for `clang-uml` define the
