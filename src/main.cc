@@ -18,12 +18,12 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
+#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "puml/class_diagram_generator.h"
-#include "puml/sequence_diagram_generator.h"
+#include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "sequence_diagram/visitor/translation_unit_context.h"
 #include "util/util.h"
 
@@ -98,18 +98,20 @@ int main(int argc, const char *argv[])
         ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
         if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
-            auto model = generators::class_diagram::generate(
-                db2, name, dynamic_cast<class_diagram &>(*diagram));
+            auto model =
+                clanguml::class_diagram::generators::plantuml::generate(
+                    db2, name, dynamic_cast<class_diagram &>(*diagram));
 
-            ofs << clanguml::generators::class_diagram::puml::generator(
+            ofs << clanguml::class_diagram::generators::plantuml::generator(
                 dynamic_cast<clanguml::config::class_diagram &>(*diagram),
                 model);
         }
         else if (std::dynamic_pointer_cast<sequence_diagram>(diagram)) {
-            auto model = generators::sequence_diagram::generate(
-                db, name, dynamic_cast<sequence_diagram &>(*diagram));
+            auto model =
+                clanguml::sequence_diagram::generators::plantuml::generate(
+                    db, name, dynamic_cast<sequence_diagram &>(*diagram));
 
-            ofs << clanguml::generators::sequence_diagram::puml::generator(
+            ofs << clanguml::sequence_diagram::generators::plantuml::generator(
                 dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
                 model);
         }

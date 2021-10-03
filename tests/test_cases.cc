@@ -45,7 +45,8 @@ clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
-        clanguml::generators::sequence_diagram::generate(db, diagram->name,
+        clanguml::sequence_diagram::generators::plantuml::generate(db,
+            diagram->name,
             dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
 
     return diagram_model;
@@ -56,7 +57,8 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
-        clanguml::generators::class_diagram::generate(db, diagram->name,
+        clanguml::class_diagram::generators::plantuml::generate(db,
+            diagram->name,
             dynamic_cast<clanguml::config::class_diagram &>(*diagram));
 
     return diagram_model;
@@ -66,7 +68,7 @@ std::string generate_sequence_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::sequence_diagram::model::diagram &model)
 {
-    using namespace clanguml::generators::sequence_diagram::puml;
+    using namespace clanguml::sequence_diagram::generators::plantuml;
 
     std::stringstream ss;
 
@@ -80,7 +82,7 @@ std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::class_diagram::model::diagram &model)
 {
-    using namespace clanguml::generators::class_diagram::puml;
+    using namespace clanguml::class_diagram::generators::plantuml;
 
     std::stringstream ss;
 

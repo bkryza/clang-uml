@@ -1,5 +1,5 @@
 /**
- * src/puml/class_diagram_generator.cc
+ * src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -20,9 +20,8 @@
 
 #include "util/error.h"
 
-namespace clanguml::generators::class_diagram {
+namespace clanguml::class_diagram::generators::plantuml {
 
-namespace puml {
 std::string relative_to(std::string n, std::string c)
 {
     if (c.rfind(n) == std::string::npos)
@@ -30,10 +29,6 @@ std::string relative_to(std::string n, std::string c)
 
     return c.substr(n.size() + 2);
 }
-
-//
-// generator
-//
 
 generator::generator(
     clanguml::config::class_diagram &config, diagram_model &model)
@@ -414,7 +409,6 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
     g.generate(os);
     return os;
 }
-} // namespace puml
 
 clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,

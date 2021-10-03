@@ -1,5 +1,5 @@
 /**
- * src/puml/sequence_diagram_generator.h
+ * src/sequence_diagram/generators/plantuml/sequence_diagram_generator.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,12 +16,11 @@
  * limitations under the License.
  */
 
-#include "puml/sequence_diagram_generator.h"
+#include "sequence_diagram_generator.h"
 
 #include "sequence_diagram/visitor/translation_unit_context.h"
 
-namespace clanguml::generators::sequence_diagram {
-namespace puml {
+namespace clanguml::sequence_diagram::generators::plantuml {
 
 using diagram_model = clanguml::sequence_diagram::model::diagram;
 using diagram_config = clanguml::config::sequence_diagram::diagram;
@@ -118,7 +117,6 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 {
     g.generate(os);
     return os;
-}
 }
 
 clanguml::sequence_diagram::model::diagram generate(

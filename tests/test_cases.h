@@ -19,12 +19,12 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
+#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "puml/class_diagram_generator.h"
-#include "puml/sequence_diagram_generator.h"
+#include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 

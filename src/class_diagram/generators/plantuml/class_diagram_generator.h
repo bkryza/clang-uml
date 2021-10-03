@@ -1,5 +1,5 @@
 /**
- * src/puml/class_diagram_generator.h
+ * src/class_diagram/generators/plantuml/class_diagram_generator.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -36,9 +36,9 @@
 #include <sstream>
 
 namespace clanguml {
-namespace generators {
 namespace class_diagram {
-namespace puml {
+namespace generators {
+namespace plantuml {
 
 using diagram_config = clanguml::class_diagram::model::diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
@@ -77,12 +77,11 @@ private:
     diagram_model &m_model;
 };
 
-}
-
 clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram);
 
+}
 }
 }
 }
