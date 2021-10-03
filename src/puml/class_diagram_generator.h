@@ -23,7 +23,7 @@
 #include "uml/class_diagram/model/class_relationship.h"
 #include "uml/class_diagram/model/diagram.h"
 #include "uml/class_diagram/model/enum.h"
-#include "uml/class_diagram_visitor.h"
+#include "uml/class_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #include <cppast/cpp_entity_index.hpp>

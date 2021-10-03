@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram_visitor.h
+ * src/uml/class_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -20,6 +20,7 @@
 #include "config/config.h"
 #include "cx/cursor.h"
 #include "uml/class_diagram/model/diagram.h"
+#include "uml/class_diagram/visitor/translation_unit_context.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
@@ -27,6 +28,7 @@
 #include <cppast/cpp_function_template.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
+#include <cppast/cpp_template.hpp>
 #include <cppast/cpp_template_parameter.hpp>
 #include <cppast/cpp_type.hpp>
 #include <cppast/visitor.hpp>
@@ -37,59 +39,13 @@
 #include <memory>
 #include <string>
 
-namespace clanguml {
-namespace visitor {
-namespace class_diagram {
+namespace clanguml::class_diagram::visitor {
 
-struct tu_context {
-    tu_context(cppast::cpp_entity_index &idx,
-        clanguml::class_diagram::model::diagram &d_,
-        const clanguml::config::class_diagram &config_);
-
-    bool has_type_alias(const std::string &full_name) const;
-
-    void add_type_alias(const std::string &full_name,
-        type_safe::object_ref<const cppast::cpp_type> &&ref);
-
-    type_safe::object_ref<const cppast::cpp_type> get_type_alias(
-        const std::string &full_name) const;
-
-    type_safe::object_ref<const cppast::cpp_type> get_type_alias_final(
-        const cppast::cpp_type &t) const;
-
-    bool has_type_alias_template(const std::string &full_name) const;
-
-    void add_type_alias_template(const std::string &full_name,
-        type_safe::object_ref<const cppast::cpp_type> &&ref);
-
-    type_safe::object_ref<const cppast::cpp_type> get_type_alias_template(
-        const std::string &full_name) const;
-
-    std::vector<std::string> namespace_;
-    cppast::cpp_entity_index &entity_index;
-    clanguml::class_diagram::model::diagram &d;
-    const clanguml::config::class_diagram &config;
-    std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
-        alias_index;
-    std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
-        alias_template_index;
-};
-
-template <typename T> struct element_visitor_context {
-    element_visitor_context(clanguml::class_diagram::model::diagram &d_, T &e);
-
-    tu_context *ctx;
-
-    T &element;
-    clanguml::class_diagram::model::class_ *parent_class{};
-    clanguml::class_diagram::model::diagram &d;
-};
-
-class tu_visitor {
+class translation_unit_visitor {
 public:
-    tu_visitor(cppast::cpp_entity_index &idx_,
-        clanguml::class_diagram::model::diagram &d_,
-        const clanguml::config::class_diagram &config_);
+    translation_unit_visitor(cppast::cpp_entity_index &idx,
+        clanguml::class_diagram::model::diagram &diagram,
+        const clanguml::config::class_diagram &config);
 
     void operator()(const cppast::cpp_entity &file);
 
@@ -168,10 +124,13 @@ private:
         const cppast::cpp_template_instantiation_type &t,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
+    /**
+     * Try to resolve a type instance into a type referenced through an alias.
+     * If t does not represent an alias, returns t.
+     */
     const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
 
-    tu_context ctx;
+    // ctx allows to track current visitor context, e.g. current namespace
+    translation_unit_context ctx;
 };
-}
-}
 }
