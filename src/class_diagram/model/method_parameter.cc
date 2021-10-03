@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/method_parameter.cc
+ * src/class_diagram/model/method_parameter.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

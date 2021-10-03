@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/element.h
+ * src/class_diagram/model/element.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

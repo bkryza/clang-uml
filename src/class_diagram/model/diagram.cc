@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/diagram.cc
+ * src/class_diagram/model/diagram.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/class_member.h
+ * src/class_diagram/model/class_member.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

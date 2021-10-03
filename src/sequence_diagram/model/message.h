@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram/model/message.h
+ * src/sequence_diagram/model/message.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

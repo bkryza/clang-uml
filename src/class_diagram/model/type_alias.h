@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/type_alias.h
+ * src/class_diagram/model/type_alias.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

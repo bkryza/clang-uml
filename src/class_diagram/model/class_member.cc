@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/class_member.cc
+ * src/class_diagram/model/class_member.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

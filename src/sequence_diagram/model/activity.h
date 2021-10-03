@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram/model/activity.h
+ * src/sequence_diagram/model/activity.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

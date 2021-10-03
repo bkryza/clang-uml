@@ -1,5 +1,5 @@
 /**
- * src/uml/decorators.cc
+ * src/decorators/decorators.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

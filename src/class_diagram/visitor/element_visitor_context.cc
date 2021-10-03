@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/model/visitor/element_visitor_context.cc
+ * src/class_diagram/model/visitor/element_visitor_context.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

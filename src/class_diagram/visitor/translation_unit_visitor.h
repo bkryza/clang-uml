@@ -1,5 +1,5 @@
 /**
- * src/uml/class_diagram/visitor/translation_unit_visitor.h
+ * src/class_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

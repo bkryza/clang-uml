@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram/visitor/translation_unit_context.cc
+ * src/sequence_diagram/visitor/translation_unit_context.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

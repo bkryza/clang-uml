@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram/model/enums.h
+ * src/sequence_diagram/model/enums.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *

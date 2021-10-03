@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram/model/diagram.cc
+ * src/sequence_diagram/model/diagram.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
