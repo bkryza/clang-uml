@@ -20,6 +20,8 @@
 
 .DEFAULT_GOAL := debug
 
+NUMPROC ?= $(shell nproc)
+
 .PHONY: clean
 clean:
 	rm -rf debug release
@@ -35,7 +37,8 @@ release/CMakeLists.txt:
 		-DCMAKE_BUILD_TYPE=Release
 
 debug: debug/CMakeLists.txt
-	make -C debug -j
+	echo "Using ${NUMPROC} cores"
+	make -C debug -j$(NUMPROC)
 
 release: release/CMakeLists.txt
 	make -C release -j

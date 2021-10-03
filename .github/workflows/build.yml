@@ -18,5 +18,5 @@ jobs:
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
     - name: Build and unit test
       run: |
-        make debug
+        NUMPROC=2 make debug
         make test
