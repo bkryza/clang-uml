@@ -19,8 +19,8 @@
 
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "uml/sequence_diagram_model.h"
-#include "uml/sequence_diagram_visitor.h"
+#include "uml/sequence_diagram/model/diagram.h"
+#include "uml/sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #include <glob/glob.hpp>
@@ -35,21 +35,21 @@ namespace generators {
 namespace sequence_diagram {
 namespace puml {
 
-using diagram_model = clanguml::model::sequence_diagram::diagram;
+using diagram_model = clanguml::sequence_diagram::model::diagram;
 
 class generator {
 public:
     generator(clanguml::config::sequence_diagram &config, diagram_model &model);
 
-    std::string to_string(clanguml::model::sequence_diagram::message_t r) const;
+    std::string to_string(clanguml::sequence_diagram::model::message_t r) const;
 
-    void generate_call(const clanguml::model::sequence_diagram::message &m,
+    void generate_call(const clanguml::sequence_diagram::model::message &m,
         std::ostream &ostr) const;
 
-    void generate_return(const clanguml::model::sequence_diagram::message &m,
+    void generate_return(const clanguml::sequence_diagram::model::message &m,
         std::ostream &ostr) const;
 
-    void generate_activity(const clanguml::model::sequence_diagram::activity &a,
+    void generate_activity(const clanguml::sequence_diagram::model::activity &a,
         std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;
@@ -58,12 +58,12 @@ public:
 
 private:
     clanguml::config::sequence_diagram &m_config;
-    clanguml::model::sequence_diagram::diagram &m_model;
+    clanguml::sequence_diagram::model::diagram &m_model;
 };
 
 }
 
-clanguml::model::sequence_diagram::diagram generate(
+clanguml::sequence_diagram::model::diagram generate(
     clanguml::cx::compilation_database &db, const std::string &name,
     clanguml::config::sequence_diagram &diagram);
 

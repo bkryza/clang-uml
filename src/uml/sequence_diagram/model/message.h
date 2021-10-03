@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram_model.h
+ * src/uml/sequence_diagram/model/message.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,20 +17,12 @@
  */
 #pragma once
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <spdlog/spdlog.h>
+#include "enums.h"
 
-#include <functional>
-#include <memory>
 #include <string>
 #include <vector>
 
-namespace clanguml {
-namespace model {
-namespace sequence_diagram {
-
-enum class message_t { kCall, kReturn };
+namespace clanguml::sequence_diagram::model {
 
 struct message {
     message_t type;
@@ -43,18 +35,4 @@ struct message {
     unsigned int line;
 };
 
-struct activity {
-    std::string usr;
-    std::string from;
-    std::vector<message> messages;
-};
-
-struct diagram {
-    bool started{false};
-    std::string name;
-
-    std::map<std::string, activity> sequences;
-};
-}
-}
 }

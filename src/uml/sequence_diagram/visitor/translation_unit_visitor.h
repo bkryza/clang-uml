@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram_visitor.h
+ * src/uml/sequence_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -19,33 +19,11 @@
 
 #include "config/config.h"
 #include "cx/cursor.h"
-#include "sequence_diagram_model.h"
+#include "uml/sequence_diagram/model/diagram.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <spdlog/spdlog.h>
-
-#include <functional>
-#include <memory>
-#include <string>
-
-namespace clanguml {
-namespace visitor {
-namespace sequence_diagram {
-
-struct tu_context {
-    tu_context(clanguml::model::sequence_diagram::diagram &d_,
-        const clanguml::config::sequence_diagram &config_);
-
-    std::vector<std::string> namespace_;
-    cx::cursor current_method;
-    clanguml::model::sequence_diagram::diagram &d;
-    const clanguml::config::sequence_diagram &config;
-};
+namespace clanguml::sequence_diagram::visitor {
 
 enum CXChildVisitResult translation_unit_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data);
 
-}
-}
 }

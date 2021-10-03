@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram_visitor.cc
+ * src/uml/sequence_diagram/visitor/translation_unit_visitor.cc
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,30 +16,21 @@
  * limitations under the License.
  */
 
-#include "sequence_diagram_visitor.h"
+#include "translation_unit_visitor.h"
 
-namespace clanguml::visitor::sequence_diagram {
+#include "translation_unit_context.h"
 
-//
-// tu_context
-//
-
-tu_context::tu_context(clanguml::model::sequence_diagram::diagram &d_,
-    const clanguml::config::sequence_diagram &config_)
-    : d{d_}
-    , config{config_}
-{
-}
+namespace clanguml::sequence_diagram::visitor {
 
 enum CXChildVisitResult translation_unit_visitor(
     CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
 {
-    using clanguml::model::sequence_diagram::activity;
-    using clanguml::model::sequence_diagram::diagram;
-    using clanguml::model::sequence_diagram::message;
-    using clanguml::model::sequence_diagram::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::diagram;
+    using clanguml::sequence_diagram::model::message;
+    using clanguml::sequence_diagram::model::message_t;
 
-    struct tu_context *ctx = (struct tu_context *)client_data;
+    auto *ctx = (struct translation_unit_context *)client_data;
 
     enum CXChildVisitResult ret = CXChildVisit_Break;
 
@@ -54,7 +45,7 @@ enum CXChildVisitResult translation_unit_visitor(
     case CXCursor_FunctionTemplate:
     case CXCursor_CXXMethod:
     case CXCursor_FunctionDecl:
-        ctx->current_method = cursor;
+        ctx->set_current_method(cursor);
         ret = CXChildVisit_Recurse;
         break;
     case CXCursor_CallExpr: {
@@ -74,25 +65,28 @@ enum CXChildVisitResult translation_unit_visitor(
         clang_getFileLocation(cursor.location(), &f, &line, &column, &offset);
         std::string file{clang_getCString(clang_getFileName(f))};
 
-        auto &d = ctx->d;
-        auto &config = ctx->config;
+        auto &d = ctx->diagram();
+        auto &config = ctx->config();
         if (referenced.kind() == CXCursor_CXXMethod) {
             if (config.should_include(sp_name)) {
                 // Get calling object
                 std::string caller{};
-                if (ctx->current_method.semantic_parent()
+                if (ctx->current_method()
+                        .semantic_parent()
                         .is_translation_unit() ||
-                    ctx->current_method.semantic_parent().is_namespace()) {
-                    caller = ctx->current_method.semantic_parent()
+                    ctx->current_method().semantic_parent().is_namespace()) {
+                    caller = ctx->current_method()
+                                 .semantic_parent()
                                  .fully_qualified() +
-                        "::" + ctx->current_method.spelling() + "()";
+                        "::" + ctx->current_method().spelling() + "()";
                 }
                 else {
-                    caller =
-                        ctx->current_method.semantic_parent().fully_qualified();
+                    caller = ctx->current_method()
+                                 .semantic_parent()
+                                 .fully_qualified();
                 }
 
-                auto caller_usr = ctx->current_method.usr();
+                auto caller_usr = ctx->current_method().usr();
                 // Get called object
                 auto callee = referenced.semantic_parent().fully_qualified();
                 auto callee_usr = referenced.semantic_parent().usr();
@@ -105,8 +99,8 @@ enum CXChildVisitResult translation_unit_visitor(
                               "\n\tCURRENT_METHOD: {}\n\tFROM: '{}'\n\tTO: "
                               "{}\n\tMESSAGE: {}\n\tFROM_USR: {}\n\tTO_USR: "
                               "{}\n\tRETURN_TYPE: {}",
-                    file, line, d.name, ctx->current_method.spelling(), caller,
-                    callee, called_message, caller_usr, callee_usr,
+                    file, line, d.name, ctx->current_method().spelling(),
+                    caller, callee, called_message, caller_usr, callee_usr,
                     referenced.type().result_type().spelling());
 
                 message m;
@@ -146,5 +140,4 @@ enum CXChildVisitResult translation_unit_visitor(
 
     return ret;
 }
-
 }

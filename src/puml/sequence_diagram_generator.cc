@@ -18,15 +18,18 @@
 
 #include "puml/sequence_diagram_generator.h"
 
+#include "uml/sequence_diagram/visitor/translation_unit_context.h"
+
 namespace clanguml::generators::sequence_diagram {
 namespace puml {
-using diagram_model = clanguml::model::sequence_diagram::diagram;
+
+using diagram_model = clanguml::sequence_diagram::model::diagram;
 using diagram_config = clanguml::config::sequence_diagram::diagram;
 using clanguml::config::source_location;
-using clanguml::model::sequence_diagram::activity;
-using clanguml::model::sequence_diagram::message;
-using clanguml::model::sequence_diagram::message_t;
-using clanguml::visitor::sequence_diagram::tu_context;
+using clanguml::sequence_diagram::model::activity;
+using clanguml::sequence_diagram::model::message;
+using clanguml::sequence_diagram::model::message_t;
+using clanguml::sequence_diagram::visitor::translation_unit_context;
 using namespace clanguml::util;
 
 //
@@ -118,12 +121,12 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 }
 }
 
-clanguml::model::sequence_diagram::diagram generate(
+clanguml::sequence_diagram::model::diagram generate(
     clanguml::cx::compilation_database &db, const std::string &name,
     clanguml::config::sequence_diagram &diagram)
 {
     spdlog::info("Generating diagram {}.puml", name);
-    clanguml::model::sequence_diagram::diagram d;
+    clanguml::sequence_diagram::model::diagram d;
     d.name = name;
 
     // Get all translation units matching the glob from diagram
@@ -154,9 +157,10 @@ clanguml::model::sequence_diagram::diagram generate(
         spdlog::debug("Cursor name: {}",
             clang_getCString(clang_getCursorDisplayName(cursor)));
 
-        clanguml::visitor::sequence_diagram::tu_context ctx(d, diagram);
+        clanguml::sequence_diagram::visitor::translation_unit_context ctx(
+            d, diagram);
         auto res = clang_visitChildren(cursor,
-            clanguml::visitor::sequence_diagram::translation_unit_visitor,
+            clanguml::sequence_diagram::visitor::translation_unit_visitor,
             &ctx);
 
         spdlog::debug("Processing result: {}", res);

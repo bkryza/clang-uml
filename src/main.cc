@@ -24,7 +24,7 @@
 #include "puml/sequence_diagram_generator.h"
 #include "uml/class_diagram/model/diagram.h"
 #include "uml/class_diagram/visitor/translation_unit_visitor.h"
-#include "uml/sequence_diagram_visitor.h"
+#include "uml/sequence_diagram/visitor/translation_unit_context.h"
 #include "util/util.h"
 
 #include <cli11/CLI11.hpp>

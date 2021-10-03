@@ -1,5 +1,5 @@
 /**
- * src/uml/sequence_diagram_model.cc
+ * src/uml/sequence_diagram/model/activity.h
  *
  * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,9 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "sequence_diagram_visitor.h"
+#include "message.h"
 
-namespace clanguml::model::sequence_diagram {
+#include <string>
+#include <vector>
+
+namespace clanguml::sequence_diagram::model {
+
+struct activity {
+    std::string usr;
+    std::string from;
+    std::vector<message> messages;
+};
 
 }

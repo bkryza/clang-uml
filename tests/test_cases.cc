@@ -40,7 +40,7 @@ std::pair<clanguml::config::config, compilation_database> load_config2(
     return std::make_pair(std::move(config), std::move(db));
 }
 
-clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
+clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -64,7 +64,7 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
 
 std::string generate_sequence_puml(
     std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::model::sequence_diagram::diagram &model)
+    clanguml::sequence_diagram::model::diagram &model)
 {
     using namespace clanguml::generators::sequence_diagram::puml;
 
