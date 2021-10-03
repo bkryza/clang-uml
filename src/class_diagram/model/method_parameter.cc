@@ -43,9 +43,9 @@ std::string method_parameter::to_string(
     using namespace clanguml::util;
     auto t = ns_relative(using_namespaces, type());
     if (default_value().empty())
-        return t + " " + name();
+        return fmt::format("{} {}", t, name());
 
-    return t + " " + name() + " = " + default_value();
+    return fmt::format("{} {} = {}", t, name(), default_value());
 }
 
 }

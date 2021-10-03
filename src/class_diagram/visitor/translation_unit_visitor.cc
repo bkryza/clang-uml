@@ -51,24 +51,25 @@ using clanguml::class_diagram::model::scope_t;
 using clanguml::class_diagram::model::type_alias;
 
 namespace detail {
-scope_t cpp_access_specifier_to_scope(cppast::cpp_access_specifier_kind as)
+scope_t cpp_access_specifier_to_scope(
+    cppast::cpp_access_specifier_kind access_specifier)
 {
-    scope_t res = scope_t::kPublic;
-    switch (as) {
+    scope_t scope = scope_t::kPublic;
+    switch (access_specifier) {
     case cppast::cpp_access_specifier_kind::cpp_public:
-        res = scope_t::kPublic;
+        scope = scope_t::kPublic;
         break;
     case cppast::cpp_access_specifier_kind::cpp_private:
-        res = scope_t::kPrivate;
+        scope = scope_t::kPrivate;
         break;
     case cppast::cpp_access_specifier_kind::cpp_protected:
-        res = scope_t::kProtected;
+        scope = scope_t::kProtected;
         break;
     default:
         break;
     }
 
-    return res;
+    return scope;
 }
 }
 
@@ -1440,15 +1441,16 @@ class_ translation_unit_visitor::build_template_instantiation(
 }
 
 const cppast::cpp_type &translation_unit_visitor::resolve_alias(
-    const cppast::cpp_type &t)
+    const cppast::cpp_type &type)
 {
-    const auto &tt = cppast::remove_cv(cx::util::unreferenced(t));
-    const auto fn = cx::util::full_name(tt, ctx.entity_index(), false);
-    if (ctx.has_type_alias(fn)) {
-        return ctx.get_type_alias_final(tt).get();
+    const auto &raw_type = cppast::remove_cv(cx::util::unreferenced(type));
+    const auto type_full_name =
+        cx::util::full_name(raw_type, ctx.entity_index(), false);
+    if (ctx.has_type_alias(type_full_name)) {
+        return ctx.get_type_alias_final(raw_type).get();
     }
 
-    return t;
+    return type;
 }
 
 }

@@ -64,11 +64,11 @@ translation_unit_context::get_type_alias(const std::string &full_name) const
 type_safe::object_ref<const cppast::cpp_type>
 translation_unit_context::get_type_alias_final(const cppast::cpp_type &t) const
 {
-    const auto fn =
+    const auto type_full_name =
         cx::util::full_name(cppast::remove_cv(t), entity_index_, false);
 
-    if (has_type_alias(fn)) {
-        return get_type_alias_final(alias_index_.at(fn).get());
+    if (has_type_alias(type_full_name)) {
+        return get_type_alias_final(alias_index_.at(type_full_name).get());
     }
 
     return type_safe::ref(t);
