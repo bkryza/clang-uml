@@ -40,23 +40,25 @@ std::pair<clanguml::config::config, compilation_database> load_config2(
     return std::make_pair(std::move(config), std::move(db));
 }
 
-clanguml::model::sequence_diagram::diagram generate_sequence_diagram(
+clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
-        clanguml::generators::sequence_diagram::generate(db, diagram->name,
+        clanguml::sequence_diagram::generators::plantuml::generate(db,
+            diagram->name,
             dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
 
     return diagram_model;
 }
 
-clanguml::model::class_diagram::diagram generate_class_diagram(
+clanguml::class_diagram::model::diagram generate_class_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =
-        clanguml::generators::class_diagram::generate(db, diagram->name,
+        clanguml::class_diagram::generators::plantuml::generate(db,
+            diagram->name,
             dynamic_cast<clanguml::config::class_diagram &>(*diagram));
 
     return diagram_model;
@@ -64,9 +66,9 @@ clanguml::model::class_diagram::diagram generate_class_diagram(
 
 std::string generate_sequence_puml(
     std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::model::sequence_diagram::diagram &model)
+    clanguml::sequence_diagram::model::diagram &model)
 {
-    using namespace clanguml::generators::sequence_diagram::puml;
+    using namespace clanguml::sequence_diagram::generators::plantuml;
 
     std::stringstream ss;
 
@@ -78,9 +80,9 @@ std::string generate_sequence_puml(
 
 std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::model::class_diagram::diagram &model)
+    clanguml::class_diagram::model::diagram &model)
 {
-    using namespace clanguml::generators::class_diagram::puml;
+    using namespace clanguml::class_diagram::generators::plantuml;
 
     std::stringstream ss;
 

@@ -17,7 +17,8 @@
  */
 #pragma once
 
-#include "uml/class_diagram_model.h"
+#include "class_diagram/model/diagram.h"
+#include "class_diagram/model/enums.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>
@@ -55,7 +56,7 @@ struct filter {
     // E.g.:
     //   - public
     //   - private
-    std::vector<model::class_diagram::scope_t> scopes;
+    std::vector<class_diagram::model::scope_t> scopes;
 };
 
 struct diagram {
@@ -76,7 +77,7 @@ struct diagram {
 
     bool should_include(const std::string &name_) const;
 
-    bool should_include(const model::class_diagram::scope_t scope) const;
+    bool should_include(const class_diagram::model::scope_t scope) const;
 };
 
 struct source_location {

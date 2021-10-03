@@ -22,7 +22,6 @@
 #include <spdlog/spdlog.h>
 
 #include "cx/util.h"
-#include "uml/class_diagram_model.h"
 #include "util/util.h"
 
 namespace clanguml {

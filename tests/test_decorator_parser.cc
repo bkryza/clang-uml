@@ -17,7 +17,7 @@
  */
 #define CATCH_CONFIG_MAIN
 
-#include "uml/decorators.h"
+#include "decorators/decorators.h"
 
 #include "catch.h"
 
