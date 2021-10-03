@@ -19,7 +19,7 @@
 
 #include "config/config.h"
 #include "cx/cursor.h"
-#include "uml/sequence_diagram/model/diagram.h"
+#include "sequence_diagram/model/diagram.h"
 
 namespace clanguml::sequence_diagram::visitor {
 

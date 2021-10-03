@@ -17,8 +17,8 @@
  */
 #pragma once
 
-#include "uml/class_diagram/model/class.h"
-#include "uml/class_diagram/model/diagram.h"
+#include "class_diagram/model/class.h"
+#include "class_diagram/model/diagram.h"
 
 namespace clanguml::class_diagram::visitor {
 

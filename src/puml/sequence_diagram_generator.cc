@@ -18,7 +18,7 @@
 
 #include "puml/sequence_diagram_generator.h"
 
-#include "uml/sequence_diagram/visitor/translation_unit_context.h"
+#include "sequence_diagram/visitor/translation_unit_context.h"
 
 namespace clanguml::generators::sequence_diagram {
 namespace puml {

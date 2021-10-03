@@ -17,13 +17,13 @@
  */
 #pragma once
 
+#include "class_diagram/model/class.h"
+#include "class_diagram/model/class_relationship.h"
+#include "class_diagram/model/diagram.h"
+#include "class_diagram/model/enum.h"
+#include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "uml/class_diagram/model/class.h"
-#include "uml/class_diagram/model/class_relationship.h"
-#include "uml/class_diagram/model/diagram.h"
-#include "uml/class_diagram/model/enum.h"
-#include "uml/class_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #include <cppast/cpp_entity_index.hpp>

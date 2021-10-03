@@ -19,7 +19,7 @@
 
 #include "enums.h"
 
-#include "uml/decorators.h"
+#include "decorators/decorators.h"
 
 #include <memory>
 #include <string>

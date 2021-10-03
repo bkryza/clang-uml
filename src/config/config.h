@@ -17,8 +17,8 @@
  */
 #pragma once
 
-#include "uml/class_diagram/model/diagram.h"
-#include "uml/class_diagram/model/enums.h"
+#include "class_diagram/model/diagram.h"
+#include "class_diagram/model/enums.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>

@@ -19,13 +19,13 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
+#include "class_diagram/model/diagram.h"
+#include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "puml/class_diagram_generator.h"
 #include "puml/sequence_diagram_generator.h"
-#include "uml/class_diagram/model/diagram.h"
-#include "uml/class_diagram/visitor/translation_unit_visitor.h"
-#include "uml/sequence_diagram/visitor/translation_unit_visitor.h"
+#include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #define CATCH_CONFIG_RUNNER

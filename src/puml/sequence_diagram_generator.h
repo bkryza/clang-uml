@@ -19,8 +19,8 @@
 
 #include "config/config.h"
 #include "cx/compilation_database.h"
-#include "uml/sequence_diagram/model/diagram.h"
-#include "uml/sequence_diagram/visitor/translation_unit_visitor.h"
+#include "sequence_diagram/model/diagram.h"
+#include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
 #include <glob/glob.hpp>
