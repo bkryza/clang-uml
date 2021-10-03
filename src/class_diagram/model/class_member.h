@@ -18,7 +18,6 @@
 #pragma once
 
 #include "class_element.h"
-#include "enums.h"
 
 #include <string>
 

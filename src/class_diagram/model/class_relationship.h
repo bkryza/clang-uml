@@ -18,7 +18,6 @@
 #pragma once
 
 #include "decorated_element.h"
-#include "enums.h"
 #include "stylable_element.h"
 
 #include <string>

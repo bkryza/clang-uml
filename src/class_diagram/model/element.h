@@ -19,7 +19,6 @@
 
 #include "class_relationship.h"
 #include "decorated_element.h"
-#include "enums.h"
 
 #include <atomic>
 #include <string>

@@ -20,8 +20,6 @@
 
 #include "util/util.h"
 
-#include <spdlog/spdlog.h>
-
 namespace clanguml::class_diagram::model {
 
 void method_parameter::set_type(const std::string &type) { type_ = type; }
@@ -45,9 +43,9 @@ std::string method_parameter::to_string(
     using namespace clanguml::util;
     auto t = ns_relative(using_namespaces, type());
     if (default_value().empty())
-        return fmt::format("{} {}", t, name());
+        return t + " " + name();
 
-    return fmt::format("{} {} = {}", t, name(), default_value());
+    return t + " " + name() + " = " + default_value();
 }
 
 }
