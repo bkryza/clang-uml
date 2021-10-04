@@ -1,4 +1,4 @@
-# clang-uml - UML diagram generator based on Clang and PlantUML
+# clang-uml - C++ UML diagram generator based on Clang and PlantUML
 
 ![linux build](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
 
@@ -164,7 +164,7 @@ The following decorators are currently supported:
 - [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
 
 ##### Doxygen integration
-`clang-uml` can be omitted completed in ![Doxygen](https://www.doxygen.nl/index.html), by adding the following
+`clang-uml` decorstors can be omitted completely in ![Doxygen](https://www.doxygen.nl/index.html), by adding the following
 lines to the Doxygen config file:
 
 ```
