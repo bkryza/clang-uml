@@ -96,6 +96,9 @@ test_cases:
     - name: t00033
       title: Nested template instantiation dependency test case
       description:
+    - name: t00034
+      title: Template metaprogramming type function test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram
