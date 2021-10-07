@@ -150,10 +150,15 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
         else {
             // This is a bug/feature in libclang, where canonical representation
             // of a template type with incomplete specialization doesn't have a
-            // full namespace. We have to extract it from te primary template
+            // full namespace. We have to extract it from the primary template
             const auto &primary_template =
                 static_cast<const cppast::cpp_template_instantiation_type &>(t)
                     .primary_template();
+            if (!primary_template.is_overloaded()) {
+                LOG_WARN(
+                    "Cannot establish namespace for ", cppast::to_string(t));
+                return "";
+            }
             return ns(primary_template.get(idx)[0].get());
         }
     }
