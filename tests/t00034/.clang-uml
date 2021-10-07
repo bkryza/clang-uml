@@ -10,3 +10,6 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00034
+    plantuml:
+      after:
+        - "@A(R) --> @A(A) : +la"

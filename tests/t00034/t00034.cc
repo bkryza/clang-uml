@@ -25,7 +25,8 @@ template <> struct lift_void<void> {
 // TODO: This is a shortcoming of libclang which parses the type of lift_void_t
 // alias as unexposed, i.e. no actual reference to T can be inferred without
 // manually parsing the string 'typename lift_void<T>::type'
-// For now, this test validates that the visitor does not crash
+// For now, this test validates that the visitor does not crash, the reference
+// between R and A has to be provided in the configuration file
 //
 template <typename T> using lift_void_t = typename lift_void<T>::type;
 
