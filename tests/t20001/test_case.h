@@ -18,7 +18,7 @@
 
 TEST_CASE("t20001", "[test-case][sequence]")
 {
-    auto [config, db] = load_config2("t20001");
+    auto [config, db] = load_config("t20001");
 
     auto diagram = config.diagrams["t20001_sequence"];
 
@@ -49,6 +49,7 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall("B", "A", "log_result"));
     REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
     REQUIRE_THAT(puml, HasCall("A", "add"));
+    REQUIRE_THAT(puml, !HasCall("A", "detail::C", "add"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

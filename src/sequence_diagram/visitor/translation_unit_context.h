@@ -21,6 +21,8 @@
 #include "cx/cursor.h"
 #include "sequence_diagram/model/diagram.h"
 
+#include <cppast/cpp_entity_index.hpp>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -29,7 +31,7 @@ namespace clanguml::sequence_diagram::visitor {
 
 class translation_unit_context {
 public:
-    translation_unit_context(
+    translation_unit_context(cppast::cpp_entity_index &idx,
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
@@ -50,10 +52,13 @@ public:
     cx::cursor &current_method();
 
 private:
-    std::vector<std::string> namespace_;
-    cx::cursor current_method_;
+    // Reference to the cppast entity index
+    cppast::cpp_entity_index &entity_index_;
     clanguml::sequence_diagram::model::diagram &diagram_;
     const clanguml::config::sequence_diagram &config_;
+
+    std::vector<std::string> namespace_;
+    cx::cursor current_method_;
 };
 
 }

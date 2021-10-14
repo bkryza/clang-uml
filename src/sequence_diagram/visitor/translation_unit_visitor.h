@@ -20,10 +20,24 @@
 #include "config/config.h"
 #include "cx/cursor.h"
 #include "sequence_diagram/model/diagram.h"
+#include "sequence_diagram/visitor/translation_unit_context.h"
+
+#include <cppast/cpp_function.hpp>
 
 namespace clanguml::sequence_diagram::visitor {
 
-enum CXChildVisitResult translation_unit_visitor(
-    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data);
+class translation_unit_visitor {
+public:
+    translation_unit_visitor(cppast::cpp_entity_index &idx,
+        clanguml::sequence_diagram::model::diagram &diagram,
+        const clanguml::config::sequence_diagram &config);
 
+    void operator()(const cppast::cpp_entity &file);
+
+private:
+    void process_activities(const cppast::cpp_function &e);
+
+    // ctx allows to track current visitor context, e.g. current namespace
+    translation_unit_context ctx;
+};
 }

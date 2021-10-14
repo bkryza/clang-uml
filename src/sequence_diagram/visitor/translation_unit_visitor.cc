@@ -20,124 +20,125 @@
 
 #include "translation_unit_context.h"
 
+#include <cppast/cpp_function.hpp>
+#include <cppast/cpp_member_function.hpp>
+#include <cppast/visitor.hpp>
+
 namespace clanguml::sequence_diagram::visitor {
 
-enum CXChildVisitResult translation_unit_visitor(
-    CXCursor cx_cursor, CXCursor cx_parent, CXClientData client_data)
+translation_unit_visitor::translation_unit_visitor(
+    cppast::cpp_entity_index &idx,
+    clanguml::sequence_diagram::model::diagram &diagram,
+    const clanguml::config::sequence_diagram &config)
+    : ctx{idx, diagram, config}
+{
+}
+
+void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
 {
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::diagram;
     using clanguml::sequence_diagram::model::message;
     using clanguml::sequence_diagram::model::message_t;
+    using cppast::cpp_entity;
+    using cppast::cpp_entity_kind;
+    using cppast::cpp_function;
+    using cppast::cpp_member_function;
+    using cppast::cpp_member_function_call;
+    using cppast::visitor_info;
 
-    auto *ctx = (struct translation_unit_context *)client_data;
+    for (const auto &function_call_ptr : e.function_calls()) {
+        const auto &function_call =
+            static_cast<const cpp_member_function_call &>(*function_call_ptr);
 
-    enum CXChildVisitResult ret = CXChildVisit_Break;
+        message m;
+        m.type = message_t::kCall;
 
-    cx::cursor cursor{std::move(cx_cursor)};
-    cx::cursor parent{std::move(cx_parent)};
+        if (!ctx.entity_index()
+                 .lookup_definition(function_call.get_caller_id())
+                 .has_value())
+            continue;
 
-    if (cursor.spelling().empty()) {
-        return CXChildVisit_Recurse;
-    }
+        if (!ctx.entity_index()
+                 .lookup_definition(function_call.get_caller_method_id())
+                 .has_value())
+            continue;
 
-    switch (cursor.kind()) {
-    case CXCursor_FunctionTemplate:
-    case CXCursor_CXXMethod:
-    case CXCursor_FunctionDecl:
-        ctx->set_current_method(cursor);
-        ret = CXChildVisit_Recurse;
-        break;
-    case CXCursor_CallExpr: {
-        auto referenced = cursor.referenced();
-        auto referenced_type = referenced.type();
-        auto referenced_cursor_name = referenced.display_name();
+        if (!ctx.entity_index()
+                 .lookup_definition(function_call.get_callee_id())
+                 .has_value())
+            continue;
 
-        auto semantic_parent = referenced.semantic_parent();
-        auto sp_name = semantic_parent.fully_qualified();
-        auto lexical_parent = cursor.lexical_parent();
-        auto lp_name = lexical_parent.spelling();
+        if (!ctx.entity_index()
+                 .lookup_definition(function_call.get_callee_method_id())
+                 .has_value())
+            continue;
 
-        CXFile f;
-        unsigned int line{};
-        unsigned int column{};
-        unsigned int offset{};
-        clang_getFileLocation(cursor.location(), &f, &line, &column, &offset);
-        std::string file{clang_getCString(clang_getFileName(f))};
+        const auto &caller =
+            ctx.entity_index()
+                .lookup_definition(function_call.get_caller_id())
+                .value();
+        m.from = cx::util::ns(caller) + "::" + caller.name();
 
-        auto &d = ctx->diagram();
-        auto &config = ctx->config();
-        if (referenced.kind() == CXCursor_CXXMethod) {
-            if (config.should_include(sp_name)) {
-                // Get calling object
-                std::string caller{};
-                if (ctx->current_method()
-                        .semantic_parent()
-                        .is_translation_unit() ||
-                    ctx->current_method().semantic_parent().is_namespace()) {
-                    caller = ctx->current_method()
-                                 .semantic_parent()
-                                 .fully_qualified() +
-                        "::" + ctx->current_method().spelling() + "()";
-                }
-                else {
-                    caller = ctx->current_method()
-                                 .semantic_parent()
-                                 .fully_qualified();
-                }
+        if (!ctx.config().should_include(m.from))
+            continue;
 
-                auto caller_usr = ctx->current_method().usr();
-                // Get called object
-                auto callee = referenced.semantic_parent().fully_qualified();
-                auto callee_usr = referenced.semantic_parent().usr();
+        if (caller.kind() == cpp_entity_kind::function_t)
+            m.from += "()";
 
-                // Get called method
-                auto called_message = cursor.spelling();
 
-                // Found method call: CXCursorKind () const
-                spdlog::debug("Adding method call at line {}:{} to diagram {}"
-                              "\n\tCURRENT_METHOD: {}\n\tFROM: '{}'\n\tTO: "
-                              "{}\n\tMESSAGE: {}\n\tFROM_USR: {}\n\tTO_USR: "
-                              "{}\n\tRETURN_TYPE: {}",
-                    file, line, d.name, ctx->current_method().spelling(),
-                    caller, callee, called_message, caller_usr, callee_usr,
-                    referenced.type().result_type().spelling());
+        m.from_usr = type_safe::get(function_call.get_caller_method_id());
 
-                message m;
-                m.type = message_t::kCall;
-                m.from = caller;
-                m.from_usr = caller_usr;
-                m.line = line;
-                m.to = callee;
-                m.to_usr = referenced.usr();
-                m.message = called_message;
-                m.return_type = referenced.type().result_type().spelling();
+        const auto &callee =
+            ctx.entity_index()
+                .lookup_definition(function_call.get_callee_id())
+                .value();
+        m.to = cx::util::ns(callee) + "::" + callee.name();
 
-                if (d.sequences.find(caller_usr) == d.sequences.end()) {
-                    activity a;
-                    a.usr = caller_usr;
-                    a.from = caller;
-                    d.sequences.insert({caller_usr, std::move(a)});
-                }
+        if (!ctx.config().should_include(m.to))
+            continue;
 
-                d.sequences[caller_usr].messages.emplace_back(std::move(m));
-            }
-        }
-        else if (referenced.kind() == CXCursor_FunctionDecl) {
-            // TODO
+        m.to_usr = type_safe::get(function_call.get_callee_method_id());
+
+        const auto &callee_method =
+            ctx.entity_index()
+                .lookup_definition(function_call.get_callee_method_id())
+                .value();
+
+        m.message = callee_method.name();
+
+        if (ctx.diagram().sequences.find(m.from_usr) ==
+            ctx.diagram().sequences.end()) {
+            activity a;
+            a.usr = m.from_usr;
+            a.from = m.from;
+            ctx.diagram().sequences.insert({m.from_usr, std::move(a)});
         }
 
-        ret = CXChildVisit_Recurse;
-        break;
-    }
-    case CXCursor_Namespace: {
-        ret = CXChildVisit_Recurse;
-        break;
-    }
-    default:
-        ret = CXChildVisit_Recurse;
-    }
+        LOG_DBG("Adding sequence {} -{}()-> {}", m.from, m.message, m.to);
 
-    return ret;
+        ctx.diagram().sequences[m.from_usr].messages.emplace_back(std::move(m));
+    }
+}
+
+void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
+{
+    using cppast::cpp_entity;
+    using cppast::cpp_entity_kind;
+    using cppast::cpp_function;
+    using cppast::cpp_member_function;
+    using cppast::cpp_member_function_call;
+    using cppast::visitor_info;
+
+    cppast::visit(file, [&, this](const cpp_entity &e, visitor_info info) {
+        if (e.kind() == cpp_entity_kind::function_t) {
+            const auto &function = static_cast<const cpp_function &>(e);
+            process_activities(function);
+        }
+        else if (e.kind() == cpp_entity_kind::member_function_t) {
+            const auto &member_function = static_cast<const cpp_function &>(e);
+            process_activities(member_function);
+        }
+    });
 }
 }

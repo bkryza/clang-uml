@@ -77,10 +77,7 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir);
 
-    auto db =
-        compilation_database::from_directory(config.compilation_database_dir);
-
-    cppast::libclang_compilation_database db2(config.compilation_database_dir);
+    cppast::libclang_compilation_database db(config.compilation_database_dir);
 
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
@@ -100,7 +97,7 @@ int main(int argc, const char *argv[])
         if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
             auto model =
                 clanguml::class_diagram::generators::plantuml::generate(
-                    db2, name, dynamic_cast<class_diagram &>(*diagram));
+                    db, name, dynamic_cast<class_diagram &>(*diagram));
 
             ofs << clanguml::class_diagram::generators::plantuml::generator(
                 dynamic_cast<clanguml::config::class_diagram &>(*diagram),

@@ -25,7 +25,7 @@
 namespace clanguml::sequence_diagram::model {
 
 struct activity {
-    std::string usr;
+    std::uint_least64_t usr;
     std::string from;
     std::vector<message> messages;
 };

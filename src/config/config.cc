@@ -151,21 +151,35 @@ template <> struct convert<scope_t> {
     }
 };
 
-template <> struct convert<std::vector<source_location::variant>> {
-    static bool decode(
-        const Node &node, std::vector<source_location::variant> &rhs)
+template <> struct convert<std::vector<source_location>> {
+    static bool decode(const Node &node, std::vector<source_location> &rhs)
     {
         for (auto it = node.begin(); it != node.end(); ++it) {
             const YAML::Node &n = *it;
             if (n["usr"]) {
-                rhs.emplace_back(n["usr"].as<source_location::usr>());
+                source_location loc;
+                loc.location_type = source_location::location_t::usr;
+                loc.location = n["usr"].as<std::string>();
+                rhs.emplace_back(std::move(loc));
             }
             else if (n["marker"]) {
-                rhs.emplace_back(n["marker"].as<source_location::marker>());
+                source_location loc;
+                loc.location_type = source_location::location_t::marker;
+                loc.location = n["marker"].as<std::string>();
+                rhs.emplace_back(std::move(loc));
             }
             else if (n["file"] && n["line"]) {
-                rhs.emplace_back(std::make_pair(
-                    n["file"].as<std::string>(), n["line"].as<int>()));
+                source_location loc;
+                loc.location_type = source_location::location_t::fileline;
+                loc.location = n["file"].as<std::string>() + ":" +
+                    n["line"].as<std::string>();
+                rhs.emplace_back(std::move(loc));
+            }
+            else if (n["function"]) {
+                source_location loc;
+                loc.location_type = source_location::location_t::function;
+                loc.location = n["function"].as<std::string>();
+                rhs.emplace_back(std::move(loc));
             }
             else {
                 return false;
@@ -261,7 +275,7 @@ template <> struct convert<sequence_diagram> {
             return false;
 
         if (node["start_from"])
-            rhs.start_from = node["start_from"].as<decltype(rhs.start_from)>();
+            rhs.start_from = node["start_from"].as<std::vector<source_location>>();
 
         return true;
     }

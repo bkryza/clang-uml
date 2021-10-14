@@ -41,7 +41,7 @@ std::pair<clanguml::config::config, compilation_database> load_config2(
 }
 
 clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
-    compilation_database &db,
+    cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     auto diagram_model =

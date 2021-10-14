@@ -20,6 +20,9 @@
 
 #include "sequence_diagram/visitor/translation_unit_context.h"
 
+#include <cppast/libclang_parser.hpp>
+#include <cppast/parser.hpp>
+
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using diagram_model = clanguml::sequence_diagram::model::diagram;
@@ -97,15 +100,20 @@ void generator::generate(std::ostream &ostr) const
         ostr << b << std::endl;
 
     for (const auto &sf : m_config.start_from) {
-        std::string start_from;
-        if (std::holds_alternative<source_location::usr>(sf)) {
-            start_from = std::get<source_location::usr>(sf);
+        if (sf.location_type == source_location::location_t::function) {
+            std::uint_least64_t start_from;
+            for (const auto &[k, v] : m_model.sequences) {
+                if (v.from == sf.location) {
+                    start_from = k;
+                    break;
+                }
+            }
+            generate_activity(m_model.sequences[start_from], ostr);
         }
         else {
             // TODO: Add support for other sequence start location types
             continue;
         }
-        generate_activity(m_model.sequences[start_from], ostr);
     }
     for (const auto &a : m_config.puml.after)
         ostr << a << std::endl;
@@ -120,51 +128,33 @@ std::ostream &operator<<(std::ostream &os, const generator &g)
 }
 
 clanguml::sequence_diagram::model::diagram generate(
-    clanguml::cx::compilation_database &db, const std::string &name,
+    cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::sequence_diagram &diagram)
 {
     spdlog::info("Generating diagram {}.puml", name);
     clanguml::sequence_diagram::model::diagram d;
     d.name = name;
 
+    cppast::cpp_entity_index idx;
+    cppast::simple_file_parser<cppast::libclang_parser> parser{
+        type_safe::ref(idx)};
+
+    clanguml::sequence_diagram::visitor::translation_unit_visitor visitor(
+        idx, d, diagram);
+
     // Get all translation units matching the glob from diagram
     // configuration
-    std::vector<std::filesystem::path> translation_units{};
+    std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
         spdlog::debug("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));
     }
+    cppast::parse_files(parser, translation_units, db);
 
-    // Process all matching translation units
-    for (const auto &tu_path : translation_units) {
-        spdlog::debug("Processing translation unit: {}",
-            std::filesystem::canonical(tu_path).c_str());
-
-        auto tu = db.parse_translation_unit(tu_path);
-
-        auto cursor = clang_getTranslationUnitCursor(tu);
-
-        if (clang_Cursor_isNull(cursor)) {
-            spdlog::debug("Cursor is NULL");
-        }
-
-        spdlog::debug("Cursor kind: {}",
-            clang_getCString(clang_getCursorKindSpelling(cursor.kind)));
-        spdlog::debug("Cursor name: {}",
-            clang_getCString(clang_getCursorDisplayName(cursor)));
-
-        clanguml::sequence_diagram::visitor::translation_unit_context ctx(
-            d, diagram);
-        auto res = clang_visitChildren(cursor,
-            clanguml::sequence_diagram::visitor::translation_unit_visitor,
-            &ctx);
-
-        spdlog::debug("Processing result: {}", res);
-
-        clang_suspendTranslationUnit(tu);
-    }
+    for (auto &file : parser.files())
+        visitor(file);
 
     return d;
 }

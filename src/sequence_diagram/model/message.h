@@ -27,9 +27,9 @@ namespace clanguml::sequence_diagram::model {
 struct message {
     message_t type;
     std::string from;
-    std::string from_usr;
+    std::uint_least64_t from_usr;
     std::string to;
-    std::string to_usr;
+    std::uint_least64_t to_usr;
     std::string message;
     std::string return_type;
     unsigned int line;

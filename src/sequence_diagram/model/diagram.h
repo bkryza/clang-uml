@@ -28,7 +28,7 @@ struct diagram {
     bool started{false};
     std::string name;
 
-    std::map<std::string, activity> sequences;
+    std::map<std::uint_least64_t, activity> sequences;
 };
 
 }

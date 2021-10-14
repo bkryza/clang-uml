@@ -81,13 +81,9 @@ struct diagram {
 };
 
 struct source_location {
-    using usr = std::string;
-    using marker = std::string;
-    using file = std::pair<std::string, int>;
-    // std::variant requires unique types, so we cannot add
-    // marker here, we need sth like boost::mp_unique
-    // type function
-    using variant = std::variant<usr, /* marker, */ file>;
+    enum class location_t { usr, marker, fileline, function };
+    location_t location_type;
+    std::string location;
 };
 
 struct class_diagram : public diagram {
@@ -102,7 +98,7 @@ struct class_diagram : public diagram {
 struct sequence_diagram : public diagram {
     virtual ~sequence_diagram() = default;
 
-    std::vector<source_location::variant> start_from;
+    std::vector<source_location> start_from;
 };
 
 struct config {

@@ -24,6 +24,7 @@
 #include "util/util.h"
 
 #include <glob/glob.hpp>
+#include <cppast/libclang_parser.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -62,7 +63,7 @@ private:
 };
 
 clanguml::sequence_diagram::model::diagram generate(
-    clanguml::cx::compilation_database &db, const std::string &name,
+    cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::sequence_diagram &diagram);
 
 }

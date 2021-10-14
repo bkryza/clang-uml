@@ -25,9 +25,11 @@
 namespace clanguml::sequence_diagram::visitor {
 
 translation_unit_context::translation_unit_context(
+    cppast::cpp_entity_index &idx,
     clanguml::sequence_diagram::model::diagram &diagram,
     const clanguml::config::sequence_diagram &config)
-    : diagram_{diagram}
+    : entity_index_{idx}
+    , diagram_{diagram}
     , config_{config}
 {
 }
@@ -53,6 +55,11 @@ translation_unit_context::config() const
 clanguml::sequence_diagram::model::diagram &translation_unit_context::diagram()
 {
     return diagram_;
+}
+
+const cppast::cpp_entity_index &translation_unit_context::entity_index() const
+{
+    return entity_index_;
 }
 
 void translation_unit_context::set_current_method(cx::cursor method)
