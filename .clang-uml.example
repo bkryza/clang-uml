@@ -24,7 +24,7 @@ diagrams:
     using_namespace:
       - ""
     start_from:
-      - usr: "c:@F@main#I#**1C#"
+      - function: "main()"
     include:
       namespaces:
         - clanguml
