@@ -23,8 +23,8 @@
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
-#include <glob/glob.hpp>
 #include <cppast/libclang_parser.hpp>
+#include <glob/glob.hpp>
 
 #include <filesystem>
 #include <fstream>

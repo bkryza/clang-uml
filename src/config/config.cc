@@ -275,7 +275,8 @@ template <> struct convert<sequence_diagram> {
             return false;
 
         if (node["start_from"])
-            rhs.start_from = node["start_from"].as<std::vector<source_location>>();
+            rhs.start_from =
+                node["start_from"].as<std::vector<source_location>>();
 
         return true;
     }

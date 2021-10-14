@@ -86,7 +86,6 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
         if (caller.kind() == cpp_entity_kind::function_t)
             m.from += "()";
 
-
         m.from_usr = type_safe::get(function_call.get_caller_method_id());
 
         const auto &callee =
