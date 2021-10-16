@@ -101,7 +101,10 @@ test_cases:
       description:
   Sequence diagrams:
     - name: t20001
-      title: Basic sequence diagram
+      title: Basic sequence diagram test case
+      description:
+    - name: t20002
+      title: Free function sequence diagram test case
       description:
   Configuration diagrams:
     - name: t90000

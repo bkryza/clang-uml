@@ -1,0 +1,14 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t20002_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t20002/t20002.cc
+    include:
+      namespaces:
+        - clanguml::t20002
+    using_namespace:
+      - clanguml::t20002
+    start_from:
+      - function: "clanguml::t20002::m1()"

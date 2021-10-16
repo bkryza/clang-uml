@@ -93,6 +93,8 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
                 .lookup_definition(function_call.get_callee_id())
                 .value();
         m.to = cx::util::ns(callee) + "::" + callee.name();
+        if (callee.kind() == cpp_entity_kind::function_t)
+            m.to += "()";
 
         if (!ctx.config().should_include(m.to))
             continue;

@@ -145,6 +145,7 @@ using namespace clanguml::test::matchers;
 // Sequence diagram tests
 //
 #include "t20001/test_case.h"
+#include "t20002/test_case.h"
 
 //
 // Other tests (e.g. configuration file)

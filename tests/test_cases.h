@@ -127,6 +127,15 @@ ContainsMatcher HasCall(std::string const &from, std::string const &message,
             caseSensitivity));
 }
 
+ContainsMatcher HasFunctionCall(std::string const &from,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("\"{}()\" -> \"{}()\" : {}()", from, message, message),
+        caseSensitivity));
+}
+
 ContainsMatcher HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
