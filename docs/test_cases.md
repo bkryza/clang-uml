@@ -34,6 +34,7 @@
  * [t00033](./test_cases/t00033.md) - Nested template instantiation dependency test case
  * [t00034](./test_cases/t00034.md) - Template metaprogramming type function test case
 ## Sequence diagrams
- * [t20001](./test_cases/t20001.md) - Basic sequence diagram
+ * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
+ * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test
