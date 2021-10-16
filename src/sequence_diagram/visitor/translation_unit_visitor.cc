@@ -100,11 +100,14 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
         m.to_usr = type_safe::get(function_call.get_callee_method_id());
 
         const auto &callee_method =
-            ctx.entity_index()
-                .lookup_definition(function_call.get_callee_method_id())
-                .value();
+            static_cast<const cppast::cpp_member_function &>(
+                ctx.entity_index()
+                    .lookup_definition(function_call.get_callee_method_id())
+                    .value());
 
         m.message = callee_method.name();
+
+        m.return_type = cppast::to_string(callee_method.return_type());
 
         if (ctx.diagram().sequences.find(m.from_usr) ==
             ctx.diagram().sequences.end()) {

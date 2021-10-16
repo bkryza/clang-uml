@@ -69,6 +69,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
+    // Add return activity only for messages between different actors and
+    // only if the return type is different than void
     if ((m.from != m.to) && (m.return_type != "void")) {
         const auto from = ns_relative(m_config.using_namespace, m.from);
         const auto to = ns_relative(m_config.using_namespace, m.to);
