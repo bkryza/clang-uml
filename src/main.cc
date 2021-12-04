@@ -58,7 +58,7 @@ int main(int argc, const char *argv[])
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
     app.add_option("-d,--compile-database", compilation_database_dir,
-        "Location of configuration file");
+        "Location of compilation database directory");
     app.add_option("-n,--diagram-name", diagram_names,
         "List of diagram names to generate");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
