@@ -28,8 +28,11 @@ void class_parent::is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
 
 bool class_parent::is_virtual() const { return is_virtual_; }
 
-void class_parent::set_access(access_t access) { access_ = access; }
+void class_parent::set_access(common::model::access_t access)
+{
+    access_ = access;
+}
 
-access_t class_parent::access() const { return access_; }
+common::model::access_t class_parent::access() const { return access_; }
 
 }

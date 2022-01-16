@@ -21,9 +21,9 @@
 #include "class_method.h"
 #include "class_parent.h"
 #include "class_template.h"
-#include "element.h"
-#include "enums.h"
-#include "stylable_element.h"
+#include "common/model/element.h"
+#include "common/model/enums.h"
+#include "common/model/stylable_element.h"
 #include "type_alias.h"
 
 #include <string>
@@ -31,7 +31,8 @@
 
 namespace clanguml::class_diagram::model {
 
-class class_ : public element, public stylable_element {
+class class_ : public common::model::element,
+               public common::model::stylable_element {
 public:
     class_(const std::vector<std::string> &using_namespaces);
 

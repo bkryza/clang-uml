@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_member.cc
+ * src/class_diagram/model/stylable_element.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,25 +16,12 @@
  * limitations under the License.
  */
 
-#include "class_member.h"
+#include "stylable_element.h"
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
-class_member::class_member(common::model::scope_t scope,
-    const std::string &name, const std::string &type)
-    : class_element{scope, name, type}
-{
-}
+void stylable_element::set_style(const std::string &style) { style_ = style; }
 
-bool class_member::is_relationship() const { return is_relationship_; }
-
-void class_member::is_relationship(bool is_relationship)
-{
-    is_relationship_ = is_relationship;
-}
-
-bool class_member::is_static() const { return is_static_; }
-
-void class_member::is_static(bool is_static) { is_static_ = is_static; }
+std::string stylable_element::style() const { return style_; }
 
 }

@@ -90,7 +90,7 @@ bool diagram::should_include(const std::string &name_) const
 }
 
 bool diagram::should_include(
-    const clanguml::class_diagram::model::scope_t scope) const
+    const clanguml::common::model::scope_t scope) const
 {
     for (const auto &s : exclude.scopes) {
         if (s == scope)
@@ -128,7 +128,7 @@ bool class_diagram::has_class(std::string clazz)
 }
 
 namespace YAML {
-using clanguml::class_diagram::model::scope_t;
+using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;

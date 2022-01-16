@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_relationship.h
+ * src/common/model/relationship.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,23 +17,24 @@
  */
 #pragma once
 
-#include "decorated_element.h"
-#include "stylable_element.h"
+#include "common/model/decorated_element.h"
+#include "common/model/stylable_element.h"
 
 #include <string>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 std::string to_string(relationship_t r);
 
-class class_relationship : public decorated_element, public stylable_element {
+class relationship : public common::model::decorated_element,
+                           public common::model::stylable_element {
 public:
-    class_relationship(relationship_t type, const std::string &destination,
+    relationship(relationship_t type, const std::string &destination,
         scope_t scope = scope_t::kNone, const std::string &label = "",
         const std::string &multiplicity_source = "",
         const std::string &multiplicity_destination = "");
 
-    virtual ~class_relationship() = default;
+    virtual ~relationship() = default;
 
     void set_type(relationship_t type) noexcept;
     relationship_t type() const noexcept;
@@ -55,7 +56,7 @@ public:
     scope_t scope() const noexcept;
 
     friend bool operator==(
-        const class_relationship &l, const class_relationship &r);
+        const relationship &l, const relationship &r);
 
 private:
     relationship_t type_{relationship_t::kAssociation};

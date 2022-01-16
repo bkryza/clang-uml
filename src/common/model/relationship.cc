@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_relationship.cc
+ * src/common/model/class_relationship.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-#include "class_relationship.h"
+#include "relationship.h"
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 std::string to_string(relationship_t r)
 {
@@ -48,7 +48,7 @@ std::string to_string(relationship_t r)
     }
 }
 
-class_relationship::class_relationship(relationship_t type,
+relationship::relationship(relationship_t type,
     const std::string &destination, scope_t scope, const std::string &label,
     const std::string &multiplicity_source,
     const std::string &multiplicity_destination)
@@ -61,51 +61,51 @@ class_relationship::class_relationship(relationship_t type,
 {
 }
 
-void class_relationship::set_type(relationship_t type) noexcept
+void relationship::set_type(relationship_t type) noexcept
 {
     type_ = type;
 }
 
-relationship_t class_relationship::type() const noexcept { return type_; }
+relationship_t relationship::type() const noexcept { return type_; }
 
-void class_relationship::set_destination(const std::string &destination)
+void relationship::set_destination(const std::string &destination)
 {
     destination_ = destination;
 }
 
-std::string class_relationship::destination() const { return destination_; }
+std::string relationship::destination() const { return destination_; }
 
-void class_relationship::set_multiplicity_source(
+void relationship::set_multiplicity_source(
     const std::string &multiplicity_source)
 {
     multiplicity_source_ = multiplicity_source;
 }
 
-std::string class_relationship::multiplicity_source() const
+std::string relationship::multiplicity_source() const
 {
     return multiplicity_source_;
 }
 
-void class_relationship::set_multiplicity_destination(
+void relationship::set_multiplicity_destination(
     const std::string &multiplicity_destination)
 {
     multiplicity_destination_ = multiplicity_destination;
 }
 
-std::string class_relationship::multiplicity_destination() const
+std::string relationship::multiplicity_destination() const
 {
     return multiplicity_destination_;
 }
 
-void class_relationship::set_label(const std::string &label) { label_ = label; }
+void relationship::set_label(const std::string &label) { label_ = label; }
 
-std::string class_relationship::label() const { return label_; }
+std::string relationship::label() const { return label_; }
 
-void class_relationship::set_scope(scope_t scope) noexcept { scope_ = scope; }
+void relationship::set_scope(scope_t scope) noexcept { scope_ = scope; }
 
-scope_t class_relationship::scope() const noexcept { return scope_; }
+scope_t relationship::scope() const noexcept { return scope_; }
 
-bool operator==(const class_relationship &l, const class_relationship &r)
+bool operator==(const relationship &l, const relationship &r)
 {
     return l.type() == r.type() && l.destination() == r.destination() &&
         l.label() == r.label();

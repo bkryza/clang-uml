@@ -18,7 +18,7 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
-#include "class_diagram/model/class_relationship.h"
+#include "common/model/relationship.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
@@ -44,8 +44,8 @@ using diagram_config = clanguml::class_diagram::model::diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::enum_;
-using clanguml::class_diagram::model::relationship_t;
-using clanguml::class_diagram::model::scope_t;
+using clanguml::common::model::relationship_t;
+using clanguml::common::model::scope_t;
 using namespace clanguml::util;
 
 std::string relative_to(std::string n, std::string c);

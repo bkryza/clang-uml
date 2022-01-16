@@ -18,7 +18,7 @@
 
 #include "decorated_element.h"
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 bool decorated_element::skip() const
 {
@@ -38,7 +38,7 @@ bool decorated_element::skip_relationship() const
     return false;
 }
 
-std::pair<relationship_t, std::string> decorated_element::relationship() const
+std::pair<relationship_t, std::string> decorated_element::get_relationship() const
 {
     for (auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::association>(d))

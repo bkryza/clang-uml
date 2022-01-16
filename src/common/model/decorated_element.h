@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/stylable_element.h
+ * src/class_diagram/model/decorated_element.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,17 +17,34 @@
  */
 #pragma once
 
+#include "enums.h"
+
+#include "decorators/decorators.h"
+
+#include <memory>
 #include <string>
+#include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
-class stylable_element {
+class decorated_element {
 public:
-    void set_style(const std::string &style);
-    std::string style() const;
+    bool skip() const;
+
+    bool skip_relationship() const;
+
+    std::pair<relationship_t, std::string> get_relationship() const;
+
+    std::string style_spec();
+
+    const std::vector<std::shared_ptr<decorators::decorator>> &
+    decorators() const;
+
+    void add_decorators(
+        const std::vector<std::shared_ptr<decorators::decorator>> &decorators);
 
 private:
-    std::string style_;
+    std::vector<std::shared_ptr<decorators::decorator>> decorators_;
 };
 
 }

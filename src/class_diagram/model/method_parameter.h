@@ -17,14 +17,14 @@
  */
 #pragma once
 
-#include "decorated_element.h"
+#include "common/model/decorated_element.h"
 
 #include <string>
 #include <vector>
 
 namespace clanguml::class_diagram::model {
 
-class method_parameter : public decorated_element {
+class method_parameter : public common::model::decorated_element {
 public:
     void set_type(const std::string &type);
     std::string type() const;

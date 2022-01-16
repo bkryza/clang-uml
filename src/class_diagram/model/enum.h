@@ -24,7 +24,8 @@
 
 namespace clanguml::class_diagram::model {
 
-class enum_ : public element, public stylable_element {
+class enum_ : public common::model::element,
+              public common::model::stylable_element {
 public:
     enum_(const std::vector<std::string> &using_namespaces);
 

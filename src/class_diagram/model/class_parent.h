@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "enums.h"
+#include "common/model/enums.h"
 
 #include <string>
 
@@ -31,12 +31,12 @@ public:
     void is_virtual(bool is_virtual);
     bool is_virtual() const;
 
-    void set_access(access_t access);
-    access_t access() const;
+    void set_access(common::model::access_t access);
+    common::model::access_t access() const;
 
 private:
     std::string name_;
     bool is_virtual_{false};
-    access_t access_;
+    common::model::access_t access_;
 };
 }

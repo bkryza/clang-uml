@@ -19,28 +19,19 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
-#include "class_diagram/model/diagram.h"
-#include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
-#include "sequence_diagram/visitor/translation_unit_context.h"
 #include "util/util.h"
 
 #include <cli11/CLI11.hpp>
 #include <cppast/libclang_parser.hpp>
-#include <glob/glob.hpp>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <limits.h>
-#include <malloc.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 using namespace clanguml;
 using config::config;
@@ -112,7 +103,6 @@ int main(int argc, const char *argv[])
                 dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
                 model);
         }
-
         ofs.close();
     }
 

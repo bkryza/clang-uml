@@ -20,7 +20,7 @@
 
 #include "util/util.h"
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 std::atomic_uint64_t element::m_nextId = 1;
 
@@ -32,7 +32,7 @@ element::element(const std::vector<std::string> &using_namespaces)
 
 std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
 
-void element::add_relationship(class_relationship &&cr)
+void element::add_relationship(relationship &&cr)
 {
     if (cr.destination().empty()) {
         LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty "
@@ -56,12 +56,12 @@ const std::vector<std::string> &element::using_namespaces() const
     return using_namespaces_;
 }
 
-std::vector<class_relationship> &element::relationships()
+std::vector<relationship> &element::relationships()
 {
     return relationships_;
 }
 
-const std::vector<class_relationship> &element::relationships() const
+const std::vector<relationship> &element::relationships() const
 {
     return relationships_;
 }
