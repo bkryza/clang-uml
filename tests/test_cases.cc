@@ -64,6 +64,18 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
     return diagram_model;
 }
 
+clanguml::package_diagram::model::diagram generate_package_diagram(
+    cppast::libclang_compilation_database &db,
+    std::shared_ptr<clanguml::config::diagram> diagram)
+{
+    auto diagram_model =
+        clanguml::package_diagram::generators::plantuml::generate(db,
+            diagram->name,
+            dynamic_cast<clanguml::config::package_diagram &>(*diagram));
+
+    return diagram_model;
+}
+
 std::string generate_sequence_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::sequence_diagram::model::diagram &model)
@@ -88,6 +100,20 @@ std::string generate_class_puml(
 
     ss << generator(
         dynamic_cast<clanguml::config::class_diagram &>(*config), model);
+
+    return ss.str();
+}
+
+std::string generate_package_puml(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::package_diagram::model::diagram &model)
+{
+    using namespace clanguml::package_diagram::generators::plantuml;
+
+    std::stringstream ss;
+
+    ss << generator(
+        dynamic_cast<clanguml::config::package_diagram &>(*config), model);
 
     return ss.str();
 }
@@ -146,6 +172,11 @@ using namespace clanguml::test::matchers;
 //
 #include "t20001/test_case.h"
 #include "t20002/test_case.h"
+
+//
+// Package diagram tests
+//
+#include "t30001/test_case.h"
 
 //
 // Other tests (e.g. configuration file)

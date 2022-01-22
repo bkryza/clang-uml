@@ -21,7 +21,9 @@
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
+#include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
+
 #include "util/util.h"
 
 #include <cli11/CLI11.hpp>
@@ -79,6 +81,7 @@ int main(int argc, const char *argv[])
             continue;
 
         using clanguml::config::class_diagram;
+        using clanguml::config::package_diagram;
         using clanguml::config::sequence_diagram;
 
         std::filesystem::path path{"puml/" + name + ".puml"};
@@ -101,6 +104,15 @@ int main(int argc, const char *argv[])
 
             ofs << clanguml::sequence_diagram::generators::plantuml::generator(
                 dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
+                model);
+        }
+        else if (std::dynamic_pointer_cast<package_diagram>(diagram)) {
+            auto model =
+                clanguml::package_diagram::generators::plantuml::generate(
+                    db, name, dynamic_cast<package_diagram &>(*diagram));
+
+            ofs << clanguml::package_diagram::generators::plantuml::generator(
+                dynamic_cast<clanguml::config::package_diagram &>(*diagram),
                 model);
         }
         ofs.close();

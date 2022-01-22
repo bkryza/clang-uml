@@ -24,6 +24,8 @@
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
+#include "package_diagram/generators/plantuml/package_diagram_generator.h"
+#include "package_diagram/visitor/translation_unit_visitor.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
@@ -32,6 +34,7 @@
 
 #include "catch.h"
 
+#include <algorithm>
 #include <complex>
 #include <filesystem>
 #include <string>
@@ -168,6 +171,8 @@ struct AliasMatcher {
         patterns.push_back("class \"" + name + "\" as ");
         patterns.push_back("abstract \"" + name + "\" as ");
         patterns.push_back("enum \"" + name + "\" as ");
+        patterns.push_back("component \"" + name + "\" as ");
+        patterns.push_back("component [" + name + "] as ");
 
         for (const auto &line : puml) {
             for (const auto &pattern : patterns) {
@@ -395,6 +400,13 @@ ContainsMatcher IsField(std::string const &name,
 
     return ContainsMatcher(
         CasedString(pattern + " : " + type, caseSensitivity));
+}
+
+ContainsMatcher IsPackage(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString("component [" + str + "]", caseSensitivity));
 }
 }
 }

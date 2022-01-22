@@ -414,7 +414,7 @@ clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram)
 {
-    spdlog::info("Generating diagram {}.puml", name);
+    LOG_DBG("Generating diagram {}.puml", name);
     clanguml::class_diagram::model::diagram d;
     d.set_name(name);
 
@@ -422,7 +422,7 @@ clanguml::class_diagram::model::diagram generate(
     // configuration
     std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
-        spdlog::debug("Processing glob: {}", g);
+        LOG_DBG("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));

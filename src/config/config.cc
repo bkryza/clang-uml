@@ -69,7 +69,7 @@ bool diagram::should_include(const std::string &name_) const
 
     for (const auto &ex : exclude.namespaces) {
         if (name.find(ex) == 0) {
-            spdlog::debug("Skipping from diagram: {}", name);
+            LOG_DBG("Skipping from diagram: {}", name);
             return false;
         }
     }
@@ -132,6 +132,7 @@ using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
+using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
@@ -283,6 +284,19 @@ template <> struct convert<sequence_diagram> {
 };
 
 //
+// class_diagram Yaml decoder
+//
+template <> struct convert<package_diagram> {
+    static bool decode(const Node &node, package_diagram &rhs)
+    {
+        if (!decode_diagram(node, rhs))
+            return false;
+
+        return true;
+    }
+};
+
+//
 // config Yaml decoder
 //
 template <> struct convert<config> {
@@ -313,8 +327,12 @@ template <> struct convert<config> {
                 rhs.diagrams[name] = std::make_shared<sequence_diagram>(
                     d.second.as<sequence_diagram>());
             }
+            else if (diagram_type == "package") {
+                rhs.diagrams[name] = std::make_shared<package_diagram>(
+                    d.second.as<package_diagram>());
+            }
             else {
-                spdlog::warn(
+                LOG_WARN(
                     "Diagrams of type {} are not supported at the moment... ",
                     diagram_type);
             }

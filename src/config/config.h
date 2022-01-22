@@ -101,6 +101,10 @@ struct sequence_diagram : public diagram {
     std::vector<source_location> start_from;
 };
 
+struct package_diagram : public diagram {
+    virtual ~package_diagram() = default;
+};
+
 struct config {
     // the glob list is additive and relative to the current
     // directory

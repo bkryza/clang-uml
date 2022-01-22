@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 #include "compilation_database.h"
+#include "util/util.h"
 
 #include <filesystem>
 #include <spdlog/fmt/fmt.h>
@@ -73,7 +74,7 @@ CXTranslationUnit compilation_database::parse_translation_unit(
         clang_CompileCommands_getCommand(compile_commands, 0);
 
     auto cc_filename = clang_CompileCommand_getFilename(compile_command);
-    spdlog::debug(
+    LOG_DBG(
         "Processing compile command file: {}", clang_getCString(cc_filename));
 
     auto num_args = clang_CompileCommand_getNumArgs(compile_command);
@@ -84,7 +85,7 @@ CXTranslationUnit compilation_database::parse_translation_unit(
         arguments = (char **)malloc(sizeof(char *) * num_args);
         for (j = 0; j < num_args; ++j) {
             CXString arg = clang_CompileCommand_getArg(compile_command, j);
-            spdlog::debug("Processing argument: {}", clang_getCString(arg));
+            LOG_DBG("Processing argument: {}", clang_getCString(arg));
             arguments[j] = strdup(clang_getCString(arg));
             clang_disposeString(arg);
         }

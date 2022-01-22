@@ -115,4 +115,34 @@ bool find_element_alias(
 bool replace_all(
     std::string &input, std::string pattern, std::string replace_with);
 }
+
+/**
+ * @brief Appends a vector to a vector.
+ *
+ * @tparam T
+ * @param l
+ * @param r
+ */
+template <typename T> void append(std::vector<T> &l, const std::vector<T> &r)
+{
+    l.insert(l.end(), r.begin(), r.end());
+}
+
+/**
+ * @brief Checks if vector starts with a prefix.
+ *
+ * @tparam T
+ * @param col
+ * @param prefix
+ * @return
+ */
+template <typename T>
+bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
+{
+    if(prefix.size() > col.size())
+        return false;
+
+    return std::vector<std::string>(prefix.begin(), prefix.end()) ==
+        std::vector<std::string>(col.begin(), col.begin() + prefix.size());
+}
 }

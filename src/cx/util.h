@@ -56,7 +56,6 @@ std::string ns(const cppast::cpp_entity &e);
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx);
 
 bool is_inside_class(const cppast::cpp_entity &e);
-
 } // namespace util
 } // namespace cx
 } // namespace clanguml
