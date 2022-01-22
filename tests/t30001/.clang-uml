@@ -17,4 +17,4 @@ diagrams:
       before:
         - "' t30001 test package diagram"
       after:
-        - "note left of @A(A::AA::AAA): A AAA note..."
+        - "note right of @A(A::AA::AAA): A AAA note..."
