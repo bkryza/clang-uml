@@ -19,6 +19,8 @@ Main features supported so far include:
     * Namespace based content filtering
 * Sequence diagram generation
     * Generation of sequence diagram from one code location to another
+* Package diagram generation
+    * Generation of package diagram based on C++ namespaces (currently uses component symbols for packages, but it can be adjusted using skinparams)
 
 ## Installation
 
@@ -256,6 +258,43 @@ int tmain()
 generates the following diagram (via PlantUML):
 
 ![sequence_diagram_example](docs/test_cases/t20001_sequence.png)
+
+### Package diagrams
+
+#### Example
+
+The following C++ code:
+
+```cpp
+namespace clanguml {
+namespace t30001 {
+namespace A {
+namespace AA {
+namespace AAA {
+} // namespace AAA
+namespace BBB {
+} // namespace BBB
+} // namespace AA
+namespace BB {
+} // namespace BB
+} // namespace A
+namespace B {
+namespace AA {
+namespace AAA {
+} // namespace AAA
+namespace BBB {
+} // namespace BBB
+} // namespace AA
+namespace BB {
+} // namespace BB
+} // namespace B
+} // namespace t30001
+} // namespace clanguml
+```
+
+generates the following diagram (via PlantUML):
+
+![package_diagram_example](docs/test_cases/t30001_package.png)
 
 ### Test cases
 

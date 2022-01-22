@@ -1,4 +1,3 @@
-
 namespace clanguml {
 namespace t30001 {
 namespace A {
@@ -21,5 +20,5 @@ namespace BBB {
 namespace BB {
 } // namespace BB
 } // namespace B
-}
-}
+} // namespace t30001
+} // namespace clanguml
