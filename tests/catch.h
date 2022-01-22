@@ -165,9 +165,10 @@ unsigned int rngSeed();
 //
 // Therefore, `CATCH_INTERNAL_IGNORE_BUT_WARN` is not implemented.
 #if !defined(__ibmxl__) && !defined(__CUDACC__)
-#define CATCH_INTERNAL_IGNORE_BUT_WARN(...)                                              \
-    (void)__builtin_constant_p(__VA_ARGS__) /* NOLINT(cppcoreguidelines-pro-type-vararg, \
-                                               hicpp-vararg) */
+#define CATCH_INTERNAL_IGNORE_BUT_WARN(...)                                    \
+    (void)__builtin_constant_p(                                                \
+        __VA_ARGS__) /* NOLINT(cppcoreguidelines-pro-type-vararg,              \
+                        hicpp-vararg) */
 #endif
 
 #define CATCH_INTERNAL_SUPPRESS_GLOBALS_WARNINGS                               \
@@ -4648,31 +4649,33 @@ auto makeMatchExpr(ArgT const &arg, MatcherT const &matcher,
     } while (false)
 
 ///////////////////////////////////////////////////////////////////////////////
-#define INTERNAL_CATCH_THROWS_MATCHES(                                                                      \
-    macroName, exceptionType, resultDisposition, matcher, ...)                                              \
-    do {                                                                                                    \
-        Catch::AssertionHandler catchAssertionHandler(macroName##_catch_sr,                                 \
-            CATCH_INTERNAL_LINEINFO,                                                                        \
-            CATCH_INTERNAL_STRINGIFY(__VA_ARGS__) ","                                                       \
-                                                  " " CATCH_INTERNAL_STRINGIFY(                             \
-                                                      exceptionType) ","                                    \
-                                                                     " " CATCH_INTERNAL_STRINGIFY(matcher), \
-            resultDisposition);                                                                             \
-        if (catchAssertionHandler.allowThrows())                                                            \
-            try {                                                                                           \
-                static_cast<void>(__VA_ARGS__);                                                             \
-                catchAssertionHandler.handleUnexpectedExceptionNotThrown();                                 \
-            }                                                                                               \
-            catch (exceptionType const &ex) {                                                               \
-                catchAssertionHandler.handleExpr(                                                           \
-                    Catch::makeMatchExpr(ex, matcher, #matcher##_catch_sr));                                \
-            }                                                                                               \
-            catch (...) {                                                                                   \
-                catchAssertionHandler.handleUnexpectedInflightException();                                  \
-            }                                                                                               \
-        else                                                                                                \
-            catchAssertionHandler.handleThrowingCallSkipped();                                              \
-        INTERNAL_CATCH_REACT(catchAssertionHandler)                                                         \
+#define INTERNAL_CATCH_THROWS_MATCHES(                                         \
+    macroName, exceptionType, resultDisposition, matcher, ...)                 \
+    do {                                                                       \
+        Catch::AssertionHandler catchAssertionHandler(macroName##_catch_sr,    \
+            CATCH_INTERNAL_LINEINFO,                                           \
+            CATCH_INTERNAL_STRINGIFY(                                          \
+                __VA_ARGS__) ","                                               \
+                             " " CATCH_INTERNAL_STRINGIFY(                     \
+                                 exceptionType) ","                            \
+                                                " " CATCH_INTERNAL_STRINGIFY(  \
+                                                    matcher),                  \
+            resultDisposition);                                                \
+        if (catchAssertionHandler.allowThrows())                               \
+            try {                                                              \
+                static_cast<void>(__VA_ARGS__);                                \
+                catchAssertionHandler.handleUnexpectedExceptionNotThrown();    \
+            }                                                                  \
+            catch (exceptionType const &ex) {                                  \
+                catchAssertionHandler.handleExpr(                              \
+                    Catch::makeMatchExpr(ex, matcher, #matcher##_catch_sr));   \
+            }                                                                  \
+            catch (...) {                                                      \
+                catchAssertionHandler.handleUnexpectedInflightException();     \
+            }                                                                  \
+        else                                                                   \
+            catchAssertionHandler.handleThrowingCallSkipped();                 \
+        INTERNAL_CATCH_REACT(catchAssertionHandler)                            \
     } while (false)
 
 // end catch_capture_matchers.h

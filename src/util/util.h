@@ -149,9 +149,9 @@ bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
 template <typename T>
 void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
 {
-    if(!starts_with(col, prefix))
+    if (!starts_with(col, prefix))
         return;
 
-    col = std::vector<T>(col.begin()+prefix.size(), col.end());
+    col = std::vector<T>(col.begin() + prefix.size(), col.end());
 }
 }

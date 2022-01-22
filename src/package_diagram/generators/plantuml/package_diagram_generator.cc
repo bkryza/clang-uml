@@ -79,8 +79,7 @@ std::string generator::name(relationship_t r) const
     }
 }
 
-void generator::generate(
-    const package &p, std::ostream &ostr) const
+void generator::generate(const package &p, std::ostream &ostr) const
 {
     const auto uns = m_config.using_namespace;
 
