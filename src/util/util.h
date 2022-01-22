@@ -145,4 +145,13 @@ bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
     return std::vector<std::string>(prefix.begin(), prefix.end()) ==
         std::vector<std::string>(col.begin(), col.begin() + prefix.size());
 }
+
+template <typename T>
+void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
+{
+    if(!starts_with(col, prefix))
+        return;
+
+    col = std::vector<T>(col.begin()+prefix.size(), col.end());
+}
 }

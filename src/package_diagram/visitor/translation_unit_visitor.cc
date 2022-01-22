@@ -90,12 +90,23 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     if (!ns_declaration.is_anonymous() &&
                         !ns_declaration.is_inline()) {
 
-                        auto p = std::make_unique<package>(
-                            ctx.config().using_namespace);
-                        p->set_name(e.name());
-                        p->set_namespace(ctx.get_namespace());
-                        ctx.diagram().add_package(
-                            ctx.get_namespace(), std::move(p));
+                        auto package_path = ctx.get_namespace();
+                        package_path.push_back(e.name());
+
+                        auto usn =
+                            util::split(ctx.config().using_namespace[0], "::");
+
+                        if (!starts_with(usn, package_path)) {
+                            auto p = std::make_unique<package>(
+                                ctx.config().using_namespace);
+                            remove_prefix(package_path, usn);
+                            package_path.pop_back();
+
+                            p->set_name(e.name());
+                            p->set_namespace(package_path);
+                            ctx.diagram().add_package(
+                                package_path, std::move(p));
+                        }
 
                         ctx.push_namespace(e.name());
                     }

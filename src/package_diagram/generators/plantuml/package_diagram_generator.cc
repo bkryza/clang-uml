@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/plantuml/class_diagram_generator.cc
+ * src/package_diagram/generators/plantuml/package_diagram_generator.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -79,7 +79,8 @@ std::string generator::name(relationship_t r) const
     }
 }
 
-void generator::generate(const package &p, std::ostream &ostr) const
+void generator::generate(
+    const package &p, std::ostream &ostr) const
 {
     const auto uns = m_config.using_namespace;
 
@@ -143,12 +144,8 @@ void generator::generate(std::ostream &ostr) const
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
-            auto full_name =
-                fmt::format("{}::{}", fmt::join(m_config.using_namespace, "::"),
-                    ns_relative(
-                        m_config.using_namespace, std::get<0>(alias_match)));
-
-            auto alias = m_model.to_alias(full_name);
+            auto alias = m_model.to_alias(ns_relative(
+                m_config.using_namespace, std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
