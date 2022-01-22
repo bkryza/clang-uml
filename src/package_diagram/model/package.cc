@@ -34,7 +34,7 @@ std::string package::full_name(bool relative) const
     auto ns = using_namespaces();
 
     if (relative && (fn.size() >= ns.size())) {
-        if(starts_with(fn, ns))
+        if (starts_with(fn, ns))
             fn = std::vector<std::string>(fn.begin() + ns.size(), fn.end());
     }
 

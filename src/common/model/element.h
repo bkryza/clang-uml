@@ -17,7 +17,6 @@
  */
 #pragma once
 
-#include "relationship.h"
 #include "decorated_element.h"
 #include "relationship.h"
 

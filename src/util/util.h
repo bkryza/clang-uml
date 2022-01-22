@@ -139,7 +139,7 @@ template <typename T> void append(std::vector<T> &l, const std::vector<T> &r)
 template <typename T>
 bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
 {
-    if(prefix.size() > col.size())
+    if (prefix.size() > col.size())
         return false;
 
     return std::vector<std::string>(prefix.begin(), prefix.end()) ==

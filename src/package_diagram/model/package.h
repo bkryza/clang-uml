@@ -17,9 +17,9 @@
  */
 #pragma once
 
-#include "util/util.h"
 #include "common/model/element.h"
 #include "common/model/stylable_element.h"
+#include "util/util.h"
 
 #include <spdlog/spdlog.h>
 #include <type_safe/optional_ref.hpp>

@@ -27,7 +27,7 @@ namespace clanguml::common::model {
 std::string to_string(relationship_t r);
 
 class relationship : public common::model::decorated_element,
-                           public common::model::stylable_element {
+                     public common::model::stylable_element {
 public:
     relationship(relationship_t type, const std::string &destination,
         scope_t scope = scope_t::kNone, const std::string &label = "",
@@ -55,8 +55,7 @@ public:
     void set_scope(scope_t scope) noexcept;
     scope_t scope() const noexcept;
 
-    friend bool operator==(
-        const relationship &l, const relationship &r);
+    friend bool operator==(const relationship &l, const relationship &r);
 
 private:
     relationship_t type_{relationship_t::kAssociation};

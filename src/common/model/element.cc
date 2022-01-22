@@ -56,10 +56,7 @@ const std::vector<std::string> &element::using_namespaces() const
     return using_namespaces_;
 }
 
-std::vector<relationship> &element::relationships()
-{
-    return relationships_;
-}
+std::vector<relationship> &element::relationships() { return relationships_; }
 
 const std::vector<relationship> &element::relationships() const
 {

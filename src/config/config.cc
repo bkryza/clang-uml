@@ -89,8 +89,7 @@ bool diagram::should_include(const std::string &name_) const
     return false;
 }
 
-bool diagram::should_include(
-    const clanguml::common::model::scope_t scope) const
+bool diagram::should_include(const clanguml::common::model::scope_t scope) const
 {
     for (const auto &s : exclude.scopes) {
         if (s == scope)

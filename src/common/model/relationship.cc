@@ -48,8 +48,8 @@ std::string to_string(relationship_t r)
     }
 }
 
-relationship::relationship(relationship_t type,
-    const std::string &destination, scope_t scope, const std::string &label,
+relationship::relationship(relationship_t type, const std::string &destination,
+    scope_t scope, const std::string &label,
     const std::string &multiplicity_source,
     const std::string &multiplicity_destination)
     : type_{type}
@@ -61,10 +61,7 @@ relationship::relationship(relationship_t type,
 {
 }
 
-void relationship::set_type(relationship_t type) noexcept
-{
-    type_ = type;
-}
+void relationship::set_type(relationship_t type) noexcept { type_ = type; }
 
 relationship_t relationship::type() const noexcept { return type_; }
 

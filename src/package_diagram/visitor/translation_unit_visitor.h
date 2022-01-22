@@ -17,10 +17,10 @@
  */
 #pragma once
 
-#include "package_diagram/model/diagram.h"
-#include "package_diagram/visitor/translation_unit_context.h"
 #include "config/config.h"
 #include "cx/cursor.h"
+#include "package_diagram/model/diagram.h"
+#include "package_diagram/visitor/translation_unit_context.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>

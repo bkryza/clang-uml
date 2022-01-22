@@ -18,10 +18,10 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
-#include "common/model/relationship.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
+#include "common/model/relationship.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "util/util.h"
