@@ -57,6 +57,7 @@ public:
     void process_field(const cppast::cpp_member_variable &mv,
         type_safe::optional_ref<model::package> p,
         cppast::cpp_access_specifier_kind as);
+
 private:
     /**
      * Try to resolve a type instance into a type referenced through an alias.

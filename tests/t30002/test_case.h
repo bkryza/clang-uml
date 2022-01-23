@@ -54,7 +54,7 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, Contains("component [BB]"));
     REQUIRE_THAT(puml, Contains("component [BBB]"));
 
-    //REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("AAA")));
+    // REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("AAA")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
