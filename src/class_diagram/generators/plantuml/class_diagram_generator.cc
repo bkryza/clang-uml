@@ -119,7 +119,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
 
-    const auto uns = m_config.using_namespace;
+    const auto& uns = m_config.using_namespace;
 
     std::string class_type{"class"};
     if (c.is_abstract())

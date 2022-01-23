@@ -133,4 +133,16 @@ clanguml::package_diagram::model::diagram &translation_unit_context::diagram()
     return diagram_;
 }
 
+void translation_unit_context::set_current_package(
+    type_safe::optional_ref<model::package> p)
+{
+    current_package_ = p;
+}
+
+type_safe::optional_ref<model::package>
+translation_unit_context::get_current_package() const
+{
+    return current_package_;
+}
+
 }

@@ -90,7 +90,9 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     if (!ns_declaration.is_anonymous() &&
                         !ns_declaration.is_inline()) {
 
-                        auto package_path = ctx.get_namespace();
+                        std::vector<std::string> package_parent =
+                            ctx.get_namespace();
+                        auto package_path = package_parent;
                         package_path.push_back(e.name());
 
                         auto usn =
@@ -100,12 +102,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             auto p = std::make_unique<package>(
                                 ctx.config().using_namespace);
                             remove_prefix(package_path, usn);
-                            package_path.pop_back();
+                            remove_prefix(package_parent, usn);
 
                             p->set_name(e.name());
-                            p->set_namespace(package_path);
+                            p->set_namespace(package_parent);
+
                             ctx.diagram().add_package(
-                                package_path, std::move(p));
+                                package_parent, std::move(p));
+                            ctx.set_current_package(
+                                ctx.diagram().get_package(package_path));
                         }
 
                         ctx.push_namespace(e.name());
@@ -155,20 +160,6 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         cx::util::fully_prefixed(ctx.get_namespace(), cls)))
                     process_class_declaration(cls);
             }
-            //            else if (e.kind() == cppast::cpp_entity_kind::enum_t)
-            //            {
-            //                LOG_DBG("========== Visiting '{}' - {}",
-            //                    cx::util::full_name(ctx.get_namespace(), e),
-            //                    cppast::to_string(e.kind()));
-            //
-            //                auto &enm = static_cast<const cppast::cpp_enum
-            //                &>(e);
-            //
-            //                if (ctx.config().should_include(
-            //                        cx::util::fully_prefixed(ctx.get_namespace(),
-            //                        enm)))
-            //                    process_enum_declaration(enm);
-            //            }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
                     cx::util::full_name(ctx.get_namespace(), e),
@@ -191,27 +182,6 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     cppast::to_string(e.kind()));
 
                 auto &at = static_cast<const cppast::cpp_alias_template &>(e);
-
-                //                if (at.type_alias().underlying_type().kind()
-                //                ==
-                //                    cppast::cpp_type_kind::unexposed_t) {
-                //                    LOG_WARN("Template alias has unexposed
-                //                    underlying type: {}",
-                //                        static_cast<const
-                //                        cppast::cpp_unexposed_type &>(
-                //                            at.type_alias().underlying_type())
-                //                            .name());
-                //                }
-                //                else {
-                //                    class_ tinst =
-                //                    build_template_instantiation(static_cast<
-                //                        const
-                //                        cppast::cpp_template_instantiation_type
-                //                        &>(
-                //                        at.type_alias().underlying_type()));
-                //
-                //                    ctx.diagram().add_class(std::move(tinst));
-                //                }
             }
         });
 }
@@ -220,38 +190,13 @@ void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
+    auto current_package = ctx.get_current_package();
 
-    return;
-    /*
-    class_ c{ctx.config().using_namespace};
-    c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
-    c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
-
-    if (cls.comment().has_value())
-        c.add_decorators(decorators::parse(cls.comment().value()));
+    if (!current_package)
+        return;
 
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
-
-    // Process class documentation comment
-    if (cppast::is_templated(cls)) {
-        if (cls.parent().value().comment().has_value())
-            c.add_decorators(
-                decorators::parse(cls.parent().value().comment().value()));
-    }
-    else {
-        if (cls.comment().has_value())
-            c.add_decorators(decorators::parse(cls.comment().value()));
-    }
-
-    if (c.skip())
-        return;
-
-    c.set_style(c.style_spec());
-
-    // Process class child entities
-    if (c.is_struct())
-        last_access_specifier = cppast::cpp_access_specifier_kind::cpp_public;
 
     for (auto &child : cls) {
         if (child.kind() == cppast::cpp_entity_kind::access_specifier_t) {
@@ -260,92 +205,46 @@ void translation_unit_visitor::process_class_declaration(
         }
         else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
             auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
-            process_field(mv, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
-            auto &mv = static_cast<const cppast::cpp_variable &>(child);
-            process_static_field(mv, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::member_function_t) {
-            auto &mf = static_cast<const cppast::cpp_member_function &>(child);
-            process_method(mf, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::function_t) {
-            auto &mf = static_cast<const cppast::cpp_function &>(child);
-            process_static_method(mf, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::function_template_t) {
-            auto &tm =
-                static_cast<const cppast::cpp_function_template &>(child);
-            process_template_method(tm, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
-            auto &mc = static_cast<const cppast::cpp_constructor &>(child);
-            process_constructor(mc, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
-            auto &mc = static_cast<const cppast::cpp_destructor &>(child);
-            process_destructor(mc, c, last_access_specifier);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::enum_t) {
-            auto &en = static_cast<const cppast::cpp_enum &>(child);
-            if (en.name().empty()) {
-                // Here we only want to handle anonymous enums, regular nested
-                // enums are handled in the file-level visitor
-                process_anonymous_enum(en, c, last_access_specifier);
-            }
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::friend_t) {
-            auto &fr = static_cast<const cppast::cpp_friend &>(child);
-
-            LOG_DBG("Found friend declaration: {}, {}", child.name(),
-                child.scope_name() ? child.scope_name().value().name()
-                                   : "<no-scope>");
-
-            process_friend(fr, c);
-        }
-        else if (cppast::is_friended(child)) {
-            auto &fr =
-                static_cast<const cppast::cpp_friend &>(child.parent().value());
-
-            LOG_DBG("Found friend template: {}", child.name());
-
-            process_friend(fr, c);
+            process_field(mv, current_package, last_access_specifier);
         }
         else {
             LOG_DBG("Found some other class child: {} ({})", child.name(),
                 cppast::to_string(child.kind()));
         }
     }
+}
 
-    // Process class bases
-    for (auto &base : cls.bases()) {
-        class_parent cp;
-        cp.set_name(
-            clanguml::cx::util::fully_prefixed(ctx.get_namespace(), base));
-        cp.is_virtual(base.is_virtual());
+void translation_unit_visitor::process_field(
+    const cppast::cpp_member_variable &mv,
+    type_safe::optional_ref<model::package> p,
+    cppast::cpp_access_specifier_kind as)
+{
+    auto &type = cx::util::unreferenced(cppast::remove_cv(mv.type()));
+    auto type_ns =
+        util::split(cx::util::full_name(type, ctx.entity_index(), false), "::");
+    type_ns.pop_back();
 
-        switch (base.access_specifier()) {
-        case cppast::cpp_access_specifier_kind::cpp_private:
-            cp.set_access(access_t::kPrivate);
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_public:
-            cp.set_access(access_t::kPublic);
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_protected:
-            cp.set_access(access_t::kProtected);
-            break;
-        default:
-            cp.set_access(access_t::kPublic);
+    if (type.kind() == cppast::cpp_type_kind::user_defined_t) {
+        LOG_DBG("Processing user defined type field {} {}",
+            cppast::to_string(type), mv.name());
+
+        if (!starts_with(ctx.get_namespace(), type_ns) &&
+            !starts_with(type_ns, ctx.get_namespace())) {
+            relationship r{relationship_t::kDependency,
+                fmt::format("{}", fmt::join(type_ns, "::"))};
+            p.value().add_relationship(std::move(r));
         }
-
-        LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
-
-        c.add_parent(std::move(cp));
     }
-
-    ctx.diagram().add_class(std::move(c));
-     */
+    else if (type.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        //        template_instantiation_added_as_aggregation =
+        //            process_field_with_template_instantiation(
+        //                mv, resolve_alias(type), c, m, as);
+        LOG_DBG("Processing template instantiation type {} {}",
+            cppast::to_string(type), mv.name());
+    }
+    else {
+        LOG_DBG("Skipping field type: {}", cppast::to_string(type));
+    }
 }
 
 const cppast::cpp_type &translation_unit_visitor::resolve_alias(

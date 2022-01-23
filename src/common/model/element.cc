@@ -41,6 +41,9 @@ void element::add_relationship(relationship &&cr)
         return;
     }
 
+    LOG_DBG("Adding relationship: '{}' - {} - '{}'", cr.destination(),
+        to_string(cr.type()), full_name(true));
+
     auto it = std::find(relationships_.begin(), relationships_.end(), cr);
     if (it == relationships_.end())
         relationships_.emplace_back(std::move(cr));

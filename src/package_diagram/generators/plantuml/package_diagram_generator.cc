@@ -79,6 +79,37 @@ std::string generator::name(relationship_t r) const
     }
 }
 
+void generator::generate_relationships(
+    const package &p, std::ostream &ostr) const
+{
+    const auto &uns = m_config.using_namespace;
+
+    // Generate this packages relationship
+    if (m_config.should_include_relationship("dependency")) {
+        LOG_DBG("LOOKING FOR RELATIONSHIPS IN PACKAGE: {}", p.full_name(false));
+        for (const auto &r : p.relationships()) {
+            std::stringstream relstr;
+            try {
+                relstr << m_model.to_alias(ns_relative(uns, r.destination()))
+                       << " <.. "
+                       << m_model.to_alias(ns_relative(uns, p.full_name(false)))
+                       << '\n';
+                ostr << relstr.str();
+            }
+            catch (error::uml_alias_missing &e) {
+                LOG_ERROR("=== Skipping dependency relation from {} to {} due "
+                          "to: {}",
+                    p.full_name(false), r.destination(), e.what());
+            }
+        }
+    }
+
+    // Process it's subpackages relationships
+    for (auto subpackage = p.cbegin(); subpackage != p.cend(); subpackage++) {
+        generate_relationships(**subpackage, ostr);
+    }
+}
+
 void generator::generate(const package &p, std::ostream &ostr) const
 {
     const auto uns = m_config.using_namespace;
@@ -109,9 +140,6 @@ void generator::generate(const package &p, std::ostream &ostr) const
                  << "end note\n";
         }
     }
-    //
-    //    // Print relationships
-    //    ostr << all_relations_str.str();
 }
 
 void generator::generate(std::ostream &ostr) const
@@ -136,6 +164,12 @@ void generator::generate(std::ostream &ostr) const
             generate(*p, ostr);
             ostr << '\n';
         }
+    }
+
+    // Process package relationships
+    for (const auto &p : m_model) {
+        generate_relationships(*p, ostr);
+        ostr << '\n';
     }
 
     // Process aliases in any of the puml directives

@@ -58,6 +58,8 @@ public:
 
     void generate_alias(const package &c, std::ostream &ostr) const;
 
+    void generate_relationships(const package &p, std::ostream &ostr) const;
+
     void generate(const package &e, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;

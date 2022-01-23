@@ -24,6 +24,7 @@
 #include <spdlog/spdlog.h>
 #include <type_safe/optional_ref.hpp>
 
+#include <set>
 #include <string>
 #include <vector>
 

@@ -37,6 +37,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <package_diagram/model/package.h>
 #include <string>
 
 namespace clanguml::package_diagram::visitor {
@@ -53,6 +54,9 @@ public:
         type_safe::optional_ref<const cppast::cpp_template_specialization>
             tspec = nullptr);
 
+    void process_field(const cppast::cpp_member_variable &mv,
+        type_safe::optional_ref<model::package> p,
+        cppast::cpp_access_specifier_kind as);
 private:
     /**
      * Try to resolve a type instance into a type referenced through an alias.
