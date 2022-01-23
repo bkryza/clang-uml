@@ -38,5 +38,6 @@
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
+ * [t30002](./test_cases/t30002.md) - Package dependency test case
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test
