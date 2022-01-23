@@ -41,6 +41,7 @@
 
 using Catch::Matchers::Contains;
 using Catch::Matchers::EndsWith;
+using Catch::Matchers::Equals;
 using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
 using clanguml::cx::compilation_database;
