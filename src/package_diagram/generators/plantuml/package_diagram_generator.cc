@@ -114,7 +114,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
 {
     const auto uns = m_config.using_namespace;
 
-    ostr << "component [" << p.name() << "] as " << p.alias();
+    ostr << "package [" << p.name() << "] as " << p.alias();
 
     if (!p.style().empty())
         ostr << " " << p.style();

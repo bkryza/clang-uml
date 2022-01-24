@@ -46,19 +46,18 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, Contains("component [A1]"));
-    REQUIRE_THAT(puml, Contains("component [A2]"));
-    REQUIRE_THAT(puml, Contains("component [A3]"));
-    REQUIRE_THAT(puml, Contains("component [A4]"));
-    REQUIRE_THAT(puml, Contains("component [A5]"));
-    REQUIRE_THAT(puml, Contains("component [A6]"));
-    REQUIRE_THAT(puml, Contains("component [A7]"));
-    REQUIRE_THAT(puml, Contains("component [A8]"));
-    REQUIRE_THAT(puml, Contains("component [A9]"));
-    REQUIRE_THAT(puml, Contains("component [A10]"));
-    REQUIRE_THAT(puml, Contains("component [A11]"));
-    REQUIRE_THAT(puml, Contains("component [A12]"));
-    REQUIRE_THAT(puml, Contains("component [A13]"));
+    REQUIRE_THAT(puml, IsPackage("A1"));
+    REQUIRE_THAT(puml, IsPackage("A2"));
+    REQUIRE_THAT(puml, IsPackage("A3"));
+    REQUIRE_THAT(puml, IsPackage("A4"));
+    REQUIRE_THAT(puml, IsPackage("A5"));
+    REQUIRE_THAT(puml, IsPackage("A6"));
+    REQUIRE_THAT(puml, IsPackage("A7"));
+    REQUIRE_THAT(puml, IsPackage("A8"));
+    REQUIRE_THAT(puml, IsPackage("A9"));
+    REQUIRE_THAT(puml, IsPackage("A11"));
+    REQUIRE_THAT(puml, IsPackage("A12"));
+    REQUIRE_THAT(puml, IsPackage("A13"));
 
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A1")));
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A2")));

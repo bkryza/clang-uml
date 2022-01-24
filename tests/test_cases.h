@@ -179,9 +179,9 @@ struct AliasMatcher {
         patterns.push_back(
             std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
-            std::regex{"component\\s\"" + name + "\"\\sas\\s" + alias_regex});
+            std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
-            std::regex{"component\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 
@@ -419,7 +419,7 @@ ContainsMatcher IsPackage(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
-        CasedString("component [" + str + "]", caseSensitivity));
+        CasedString("package [" + str + "]", caseSensitivity));
 }
 }
 }

@@ -46,9 +46,9 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, Contains("component [A]"));
-    REQUIRE_THAT(puml, Contains("component [AA]"));
-    REQUIRE_THAT(puml, Contains("component [AAA]"));
+    REQUIRE_THAT(puml, IsPackage("A"));
+    REQUIRE_THAT(puml, IsPackage("AAA"));
+    REQUIRE_THAT(puml, IsPackage("AAA"));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
