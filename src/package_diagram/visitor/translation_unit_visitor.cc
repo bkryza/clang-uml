@@ -23,7 +23,6 @@
 #include <cppast/cpp_class_template.hpp>
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_enum.hpp>
-#include <cppast/cpp_friend.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_namespace.hpp>
@@ -156,9 +155,27 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     }
                 }
 
-                if (ctx.config().should_include(
-                        cx::util::fully_prefixed(ctx.get_namespace(), cls)))
-                    process_class_declaration(cls);
+                process_class_declaration(cls);
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::function_t) {
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.get_namespace(), e),
+                    cppast::to_string(e.kind()));
+
+                auto &f = static_cast<const cppast::cpp_function &>(e);
+
+                process_function(f);
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::function_template_t) {
+                LOG_DBG("========== Visiting '{}' - {}",
+                    cx::util::full_name(ctx.get_namespace(), e),
+                    cppast::to_string(e.kind()));
+
+                auto &f = static_cast<const cppast::cpp_function &>(
+                    static_cast<const cppast::cpp_function_template &>(e)
+                        .function());
+
+                process_function(f);
             }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
@@ -198,6 +215,9 @@ void translation_unit_visitor::process_class_declaration(
     cppast::cpp_access_specifier_kind last_access_specifier =
         cppast::cpp_access_specifier_kind::cpp_private;
 
+    std::vector<std::pair<std::string, relationship_t>> relationships;
+
+    // Process class elements
     for (auto &child : cls) {
         if (child.kind() == cppast::cpp_entity_kind::access_specifier_t) {
             auto &as = static_cast<const cppast::cpp_access_specifier &>(child);
@@ -205,46 +225,232 @@ void translation_unit_visitor::process_class_declaration(
         }
         else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
             auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
-            process_field(mv, current_package, last_access_specifier);
+            find_relationships(
+                mv.type(), relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
+            auto &mv = static_cast<const cppast::cpp_variable &>(child);
+            find_relationships(
+                mv.type(), relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::member_function_t) {
+            auto &mf = static_cast<const cppast::cpp_member_function &>(child);
+            for (const auto &param : mf.parameters())
+                find_relationships(
+                    param.type(), relationships, relationship_t::kDependency);
+
+            find_relationships(
+                mf.return_type(), relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::function_t) {
+            auto &mf = static_cast<const cppast::cpp_function &>(child);
+            for (const auto &param : mf.parameters())
+                find_relationships(
+                    param.type(), relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::function_template_t) {
+            auto &tm = static_cast<const cppast::cpp_function_template &>(child)
+                           .function();
+            for (const auto &param : tm.parameters())
+                find_relationships(
+                    param.type(), relationships, relationship_t::kDependency);
+
+            if (tm.kind() == cppast::cpp_entity_kind::member_function_t)
+                find_relationships(
+                    static_cast<const cppast::cpp_member_function &>(tm)
+                        .return_type(),
+                    relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
+            auto &mc = static_cast<const cppast::cpp_constructor &>(child);
+            for (const auto &param : mc.parameters())
+                find_relationships(
+                    param.type(), relationships, relationship_t::kDependency);
         }
         else {
             LOG_DBG("Found some other class child: {} ({})", child.name(),
                 cppast::to_string(child.kind()));
         }
     }
-}
 
-void translation_unit_visitor::process_field(
-    const cppast::cpp_member_variable &mv,
-    type_safe::optional_ref<model::package> p,
-    cppast::cpp_access_specifier_kind as)
-{
-    auto &type = cx::util::unreferenced(cppast::remove_cv(mv.type()));
-    auto type_ns =
-        util::split(cx::util::full_name(type, ctx.entity_index(), false), "::");
-    type_ns.pop_back();
+    // Process class bases
+    for (auto &base : cls.bases()) {
+        find_relationships(
+            base.type(), relationships, relationship_t::kDependency);
 
-    if (type.kind() == cppast::cpp_type_kind::user_defined_t) {
-        LOG_DBG("Processing user defined type field {} {}",
-            cppast::to_string(type), mv.name());
+        clanguml::cx::util::fully_prefixed(ctx.get_namespace(), base);
+    }
+
+    for (const auto &dependency : relationships) {
+        auto type_ns = util::split(std::get<0>(dependency), "::");
+        type_ns.pop_back();
+
+        relationship r{relationship_t::kDependency,
+            fmt::format("{}", fmt::join(type_ns, "::"))};
 
         if (!starts_with(ctx.get_namespace(), type_ns) &&
             !starts_with(type_ns, ctx.get_namespace())) {
             relationship r{relationship_t::kDependency,
                 fmt::format("{}", fmt::join(type_ns, "::"))};
-            p.value().add_relationship(std::move(r));
+            current_package.value().add_relationship(std::move(r));
         }
     }
-    else if (type.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        //        template_instantiation_added_as_aggregation =
-        //            process_field_with_template_instantiation(
-        //                mv, resolve_alias(type), c, m, as);
-        LOG_DBG("Processing template instantiation type {} {}",
-            cppast::to_string(type), mv.name());
+}
+
+void translation_unit_visitor::process_function(const cppast::cpp_function &f)
+{
+    std::vector<std::pair<std::string, relationship_t>> relationships;
+    auto current_package = ctx.get_current_package();
+
+    if (!current_package)
+        return;
+
+    for (const auto &param : f.parameters())
+        find_relationships(
+            param.type(), relationships, relationship_t::kDependency);
+
+    find_relationships(
+        f.return_type(), relationships, relationship_t::kDependency);
+
+    for (const auto &dependency : relationships) {
+        auto type_ns = util::split(std::get<0>(dependency), "::");
+        type_ns.pop_back();
+
+        relationship r{relationship_t::kDependency,
+            fmt::format("{}", fmt::join(type_ns, "::"))};
+
+        if (!starts_with(ctx.get_namespace(), type_ns) &&
+            !starts_with(type_ns, ctx.get_namespace())) {
+            relationship r{relationship_t::kDependency,
+                fmt::format("{}", fmt::join(type_ns, "::"))};
+            current_package.value().add_relationship(std::move(r));
+        }
     }
-    else {
-        LOG_DBG("Skipping field type: {}", cppast::to_string(type));
+}
+
+bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
+    std::vector<std::pair<std::string, common::model::relationship_t>>
+        &relationships,
+    relationship_t relationship_hint)
+{
+    bool found{false};
+
+    const auto fn =
+        cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index(), false);
+
+    LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
+        t_.kind(), fn);
+
+    relationship_t relationship_type = relationship_hint;
+    const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
+
+    if (t.kind() == cppast::cpp_type_kind::array_t) {
+        auto &a = static_cast<const cppast::cpp_array_type &>(t);
+        found = find_relationships(
+            a.value_type(), relationships, relationship_t::kDependency);
+        return found;
     }
+
+    auto name = cppast::to_string(t);
+
+    if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
+        auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
+        auto rt = relationship_t::kAssociation;
+        if (relationship_hint == relationship_t::kDependency)
+            rt = relationship_hint;
+        found = find_relationships(p.pointee(), relationships, rt);
+    }
+    else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
+        auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
+        auto rt = relationship_t::kAssociation;
+        if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
+            rt = relationship_t::kAggregation;
+        }
+        if (relationship_hint == relationship_t::kDependency)
+            rt = relationship_hint;
+        found = find_relationships(r.referee(), relationships, rt);
+    }
+    if (cppast::remove_cv(t_).kind() == cppast::cpp_type_kind::user_defined_t) {
+        LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
+            cppast::to_string(t_.canonical()));
+
+        if (relationship_type != relationship_t::kNone)
+            relationships.emplace_back(cppast::to_string(t), relationship_type);
+        else
+            relationships.emplace_back(
+                cppast::to_string(t), relationship_t::kDependency);
+
+        // Check if t_ has an alias in the alias index
+        if (ctx.has_type_alias(fn)) {
+            LOG_DBG("Find relationship in alias of {} | {}", fn,
+                cppast::to_string(ctx.get_type_alias(fn).get()));
+            found = find_relationships(
+                ctx.get_type_alias(fn).get(), relationships, relationship_type);
+            if (found)
+                return found;
+        }
+    }
+    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        auto &tinst =
+            static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
+        if (!tinst.arguments_exposed()) {
+            LOG_DBG("Template instantiation {} has no exposed arguments", name);
+
+            return found;
+        }
+
+        const auto &args = tinst.arguments().value();
+
+        // Try to match common containers
+        // TODO: Refactor to a separate class with configurable
+        //       container list
+        if (name.find("std::unique_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kDependency);
+        }
+        else if (name.find("std::shared_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kDependency);
+        }
+        else if (name.find("std::weak_ptr") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kDependency);
+        }
+        else if (name.find("std::vector") == 0) {
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kDependency);
+        }
+        else if (ctx.config().should_include(fn)) {
+            LOG_DBG("User defined template instantiation: {} | {}",
+                cppast::to_string(t_), cppast::to_string(t_.canonical()));
+
+            relationships.emplace_back(
+                cppast::to_string(t), relationship_t::kDependency);
+
+            // Check if t_ has an alias in the alias index
+            if (ctx.has_type_alias(fn)) {
+                LOG_DBG("Find relationship in alias of {} | {}", fn,
+                    cppast::to_string(ctx.get_type_alias(fn).get()));
+                found = find_relationships(ctx.get_type_alias(fn).get(),
+                    relationships, relationship_type);
+                if (found)
+                    return found;
+            }
+
+            return found;
+        }
+        else {
+            for (const auto &arg : args) {
+                if (arg.type()) {
+                    found = find_relationships(
+                        arg.type().value(), relationships, relationship_type);
+                }
+            }
+        }
+    }
+
+    return found;
 }
 
 const cppast::cpp_type &translation_unit_visitor::resolve_alias(

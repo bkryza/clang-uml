@@ -46,13 +46,10 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, Contains("component [A]"));
-    REQUIRE_THAT(puml, Contains("component [AA]"));
-    REQUIRE_THAT(puml, Contains("component [AAA]"));
-
-    REQUIRE_THAT(puml, Contains("component [B]"));
-    REQUIRE_THAT(puml, Contains("component [BB]"));
-    REQUIRE_THAT(puml, Contains("component [BBB]"));
+    REQUIRE_THAT(puml, Contains("component [A1]"));
+    REQUIRE_THAT(puml, Contains("component [A2]"));
+    REQUIRE_THAT(puml, Contains("component [A3]"));
+    REQUIRE_THAT(puml, Contains("component [A12]"));
 
     // REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("AAA")));
 

@@ -34,6 +34,7 @@
 #include <cppast/visitor.hpp>
 #include <type_safe/reference.hpp>
 
+#include <common/model/enums.h>
 #include <functional>
 #include <map>
 #include <memory>
@@ -54,9 +55,12 @@ public:
         type_safe::optional_ref<const cppast::cpp_template_specialization>
             tspec = nullptr);
 
-    void process_field(const cppast::cpp_member_variable &mv,
-        type_safe::optional_ref<model::package> p,
-        cppast::cpp_access_specifier_kind as);
+    void process_function(const cppast::cpp_function &f);
+
+    bool find_relationships(const cppast::cpp_type &t_,
+        std::vector<std::pair<std::string, common::model::relationship_t>>
+            &relationships,
+        common::model::relationship_t relationship_hint);
 
 private:
     /**
