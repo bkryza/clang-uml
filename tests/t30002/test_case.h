@@ -49,9 +49,30 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, Contains("component [A1]"));
     REQUIRE_THAT(puml, Contains("component [A2]"));
     REQUIRE_THAT(puml, Contains("component [A3]"));
+    REQUIRE_THAT(puml, Contains("component [A4]"));
+    REQUIRE_THAT(puml, Contains("component [A5]"));
+    REQUIRE_THAT(puml, Contains("component [A6]"));
+    REQUIRE_THAT(puml, Contains("component [A7]"));
+    REQUIRE_THAT(puml, Contains("component [A8]"));
+    REQUIRE_THAT(puml, Contains("component [A9]"));
+    REQUIRE_THAT(puml, Contains("component [A10]"));
+    REQUIRE_THAT(puml, Contains("component [A11]"));
     REQUIRE_THAT(puml, Contains("component [A12]"));
+    REQUIRE_THAT(puml, Contains("component [A13]"));
 
-    // REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("AAA")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A1")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A2")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A3")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A4")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A5")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A6")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A7")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A8")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A9")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A10")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A11")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A12")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A13")));
 
     save_puml(
         "./" + config.output_directory + "/" + diagram->name + ".puml", puml);

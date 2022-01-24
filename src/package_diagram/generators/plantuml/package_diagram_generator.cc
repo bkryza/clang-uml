@@ -90,9 +90,9 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(ns_relative(uns, r.destination()))
-                       << " <.. "
-                       << m_model.to_alias(ns_relative(uns, p.full_name(false)))
+                relstr << m_model.to_alias(ns_relative(uns, p.full_name(false)))
+                       << " ..> "
+                       << m_model.to_alias(ns_relative(uns, r.destination()))
                        << '\n';
                 ostr << relstr.str();
             }
