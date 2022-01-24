@@ -20,7 +20,7 @@ Main features supported so far include:
 * Sequence diagram generation
     * Generation of sequence diagram from one code location to another
 * Package diagram generation
-    * Generation of package diagram based on C++ namespaces (currently uses component symbols for packages, but it can be adjusted using skinparams)
+    * Generation of package diagram based on C++ namespaces
 
 ## Installation
 
