@@ -113,6 +113,9 @@ test_cases:
     - name: t30002
       title: Package dependency test case
       description:
+    - name: t30003
+      title: Package deprecated attribute test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test
