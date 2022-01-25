@@ -421,6 +421,13 @@ ContainsMatcher IsPackage(std::string const &str,
     return ContainsMatcher(
         CasedString("package [" + str + "]", caseSensitivity));
 }
+
+ContainsMatcher IsDeprecated(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(str+" <<deprecated>> ", caseSensitivity));
+}
 }
 }
 }

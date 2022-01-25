@@ -106,6 +106,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
 
+                            for (const auto &attr :
+                                ns_declaration.attributes()) {
+                                if (attr.kind() ==
+                                    cppast::cpp_attribute_kind::deprecated) {
+                                    p->set_deprecated(true);
+                                    break;
+                                }
+                            }
+
                             ctx.diagram().add_package(
                                 package_parent, std::move(p));
                             ctx.set_current_package(

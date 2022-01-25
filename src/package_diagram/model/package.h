@@ -118,5 +118,11 @@ public:
     std::string full_name(bool relative) const override;
 
     friend bool operator==(const package &l, const package &r);
+
+    bool is_deprecated() const;
+
+    void set_deprecated(bool deprecated);
+private:
+    bool is_deprecated_{false};
 };
 }

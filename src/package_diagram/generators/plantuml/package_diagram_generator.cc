@@ -114,7 +114,11 @@ void generator::generate(const package &p, std::ostream &ostr) const
 {
     const auto uns = m_config.using_namespace;
 
-    ostr << "package [" << p.name() << "] as " << p.alias();
+    ostr << "package [" << p.name() << "] ";
+    ostr << "as " << p.alias();
+
+    if (p.is_deprecated())
+        ostr << " <<deprecated>>";
 
     if (!p.style().empty())
         ostr << " " << p.style();

@@ -178,6 +178,7 @@ using namespace clanguml::test::matchers;
 //
 #include "t30001/test_case.h"
 #include "t30002/test_case.h"
+#include "t30003/test_case.h"
 
 //
 // Other tests (e.g. configuration file)

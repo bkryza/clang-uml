@@ -47,4 +47,8 @@ bool operator==(const package &l, const package &r)
 {
     return l.full_name(false) == r.full_name(false);
 }
+
+bool package::is_deprecated() const { return is_deprecated_; }
+
+void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
 }
