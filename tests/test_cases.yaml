@@ -116,6 +116,9 @@ test_cases:
     - name: t30003
       title: Package deprecated attribute test case
       description:
+    - name: t30004
+      title: PlantUML package decorators test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test
