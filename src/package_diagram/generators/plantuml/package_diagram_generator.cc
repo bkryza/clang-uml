@@ -86,7 +86,6 @@ void generator::generate_relationships(
 
     // Generate this packages relationship
     if (m_config.should_include_relationship("dependency")) {
-        LOG_DBG("LOOKING FOR RELATIONSHIPS IN PACKAGE: {}", p.full_name(false));
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {

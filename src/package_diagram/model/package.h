@@ -122,6 +122,7 @@ public:
     bool is_deprecated() const;
 
     void set_deprecated(bool deprecated);
+
 private:
     bool is_deprecated_{false};
 };

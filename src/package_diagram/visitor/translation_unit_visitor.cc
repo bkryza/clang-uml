@@ -106,6 +106,12 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
 
+                            if (ns_declaration.comment().has_value())
+                                p->add_decorators(decorators::parse(
+                                    ns_declaration.comment().value()));
+
+                            p->set_style(p->style_spec());
+
                             for (const auto &attr :
                                 ns_declaration.attributes()) {
                                 if (attr.kind() ==
@@ -115,10 +121,12 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                                 }
                             }
 
-                            ctx.diagram().add_package(
-                                package_parent, std::move(p));
-                            ctx.set_current_package(
-                                ctx.diagram().get_package(package_path));
+                            if (!p->skip()) {
+                                ctx.diagram().add_package(
+                                    package_parent, std::move(p));
+                                ctx.set_current_package(
+                                    ctx.diagram().get_package(package_path));
+                            }
                         }
 
                         ctx.push_namespace(e.name());

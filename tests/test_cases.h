@@ -426,7 +426,7 @@ ContainsMatcher IsDeprecated(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
-        CasedString(str+" <<deprecated>> ", caseSensitivity));
+        CasedString(str + " <<deprecated>> ", caseSensitivity));
 }
 }
 }
