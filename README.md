@@ -267,34 +267,42 @@ The following C++ code:
 
 ```cpp
 namespace clanguml {
-namespace t30001 {
-namespace A {
-namespace AA {
-namespace AAA {
-} // namespace AAA
-namespace BBB {
-} // namespace BBB
-} // namespace AA
-namespace BB {
-} // namespace BB
-} // namespace A
-namespace B {
-namespace AA {
-namespace AAA {
-} // namespace AAA
-namespace BBB {
-} // namespace BBB
-} // namespace AA
-namespace BB {
-} // namespace BB
-} // namespace B
-} // namespace t30001
-} // namespace clanguml
+namespace t30003 {
+
+namespace ns1 {
+namespace ns2_v1_0_0 {
+class A {
+};
+}
+
+namespace [[deprecated]] ns2_v0_9_0 {
+class A {
+};
+}
+
+namespace {
+class Anon final {
+};
+}
+}
+
+namespace [[deprecated]] ns3 {
+
+namespace ns1::ns2 {
+class Anon : public t30003::ns1::ns2_v1_0_0::A {
+};
+}
+
+class B : public ns1::ns2::Anon {
+};
+}
+}
+}
 ```
 
 generates the following diagram (via PlantUML):
 
-![package_diagram_example](docs/test_cases/t30001_package.png)
+![package_diagram_example](docs/test_cases/t30003_package.png)
 
 ### Test cases
 
