@@ -41,5 +41,6 @@
  * [t30002](./test_cases/t30002.md) - Package dependency test case
  * [t30003](./test_cases/t30003.md) - Package deprecated attribute test case
  * [t30004](./test_cases/t30004.md) - PlantUML package decorators test case
+ * [t30005](./test_cases/t30005.md) - Package namespace alias test case
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test
