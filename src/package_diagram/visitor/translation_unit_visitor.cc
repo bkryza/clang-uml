@@ -143,6 +143,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         ctx.pop_namespace();
                 }
             }
+            else if (e.kind() == cppast::cpp_entity_kind::namespace_alias_t) {
+                auto &na = static_cast<const cppast::cpp_namespace_alias &>(e);
+
+                for (const auto &alias_target :
+                    na.target().get(ctx.entity_index())) {
+                    auto full_ns = cx::util::full_name(ctx.get_namespace(), na);
+                    ctx.add_namespace_alias(full_ns, alias_target);
+                }
+            }
             else if (e.kind() ==
                 cppast::cpp_entity_kind::class_template_specialization_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
@@ -207,8 +216,6 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 ctx.add_type_alias(cx::util::full_name(ctx.get_namespace(), ta),
                     type_safe::ref(ta.underlying_type()));
-
-                // ctx.diagram().add_type_alias(std::move(t));
             }
             else if (e.kind() == cppast::cpp_entity_kind::alias_template_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
@@ -294,21 +301,15 @@ void translation_unit_visitor::process_class_declaration(
     for (auto &base : cls.bases()) {
         find_relationships(
             base.type(), relationships, relationship_t::kDependency);
-
-        clanguml::cx::util::fully_prefixed(ctx.get_namespace(), base);
     }
 
     for (const auto &dependency : relationships) {
-        auto type_ns = util::split(std::get<0>(dependency), "::");
-        type_ns.pop_back();
+        auto destination = util::split(std::get<0>(dependency), "::");
 
-        relationship r{relationship_t::kDependency,
-            fmt::format("{}", fmt::join(type_ns, "::"))};
-
-        if (!starts_with(ctx.get_namespace(), type_ns) &&
-            !starts_with(type_ns, ctx.get_namespace())) {
-            relationship r{relationship_t::kDependency,
-                fmt::format("{}", fmt::join(type_ns, "::"))};
+        if (!starts_with(ctx.get_namespace(), destination) &&
+            !starts_with(destination, ctx.get_namespace())) {
+            relationship r{
+                relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));
         }
     }
@@ -330,16 +331,12 @@ void translation_unit_visitor::process_function(const cppast::cpp_function &f)
         f.return_type(), relationships, relationship_t::kDependency);
 
     for (const auto &dependency : relationships) {
-        auto type_ns = util::split(std::get<0>(dependency), "::");
-        type_ns.pop_back();
+        auto destination = util::split(std::get<0>(dependency), "::");
 
-        relationship r{relationship_t::kDependency,
-            fmt::format("{}", fmt::join(type_ns, "::"))};
-
-        if (!starts_with(ctx.get_namespace(), type_ns) &&
-            !starts_with(type_ns, ctx.get_namespace())) {
-            relationship r{relationship_t::kDependency,
-                fmt::format("{}", fmt::join(type_ns, "::"))};
+        if (!starts_with(ctx.get_namespace(), destination) &&
+            !starts_with(destination, ctx.get_namespace())) {
+            relationship r{
+                relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));
         }
     }
@@ -352,8 +349,37 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 {
     bool found{false};
 
-    const auto fn =
-        cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index(), false);
+    const auto fn = cx::util::full_name(
+        resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
+    auto t_ns = util::split(fn, "::");
+    t_ns.pop_back();
+
+    const auto &t_raw = resolve_alias(cppast::remove_cv(t_));
+
+    if (t_raw.kind() == cppast::cpp_type_kind::user_defined_t) {
+
+        auto t_raw_ns = cx::util::ns(t_raw, ctx.entity_index());
+
+        const auto &type_entities =
+            static_cast<const cppast::cpp_user_defined_type &>(t_raw)
+                .entity()
+                .get(ctx.entity_index());
+        if (type_entities.size() > 0) {
+            const auto &type_entity = type_entities[0];
+
+            const auto &t_raw_ns = cx::util::entity_ns(type_entity.get());
+
+            const auto &t_raw_ns_final = cx::util::ns(t_raw_ns.value()) +
+                "::" + cx::util::full_name({}, t_raw_ns.value());
+            t_ns = util::split(t_raw_ns_final, "::");
+        }
+    }
+
+    std::vector<std::string> possible_matches;
+
+    possible_matches.push_back(util::join(t_ns, "::"));
+
+    const auto fn_ns = cx::util::ns(cppast::remove_cv(t_), ctx.entity_index());
 
     LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
         t_.kind(), fn);
@@ -391,20 +417,18 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
         LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
             cppast::to_string(t_.canonical()));
 
-        if (relationship_type != relationship_t::kNone)
-            relationships.emplace_back(cppast::to_string(t), relationship_type);
-        else
-            relationships.emplace_back(
-                cppast::to_string(t), relationship_t::kDependency);
-
         // Check if t_ has an alias in the alias index
         if (ctx.has_type_alias(fn)) {
-            LOG_DBG("Find relationship in alias of {} | {}", fn,
+            LOG_DBG("Found relationship in alias of {} | {}", fn,
                 cppast::to_string(ctx.get_type_alias(fn).get()));
             found = find_relationships(
                 ctx.get_type_alias(fn).get(), relationships, relationship_type);
             if (found)
                 return found;
+        }
+
+        for (const auto &pm : possible_matches) {
+            relationships.emplace_back(pm, relationship_t::kDependency);
         }
     }
     else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {

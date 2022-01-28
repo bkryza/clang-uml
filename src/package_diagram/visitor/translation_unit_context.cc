@@ -32,6 +32,52 @@ translation_unit_context::translation_unit_context(
 {
 }
 
+bool translation_unit_context::has_namespace_alias(
+    const std::string &full_name) const
+{
+    bool res =
+        namespace_alias_index_.find(full_name) != namespace_alias_index_.end();
+
+    LOG_DBG("Alias {} {} found in index", full_name, res ? "" : "not");
+
+    return res;
+}
+
+void translation_unit_context::add_namespace_alias(const std::string &full_name,
+    type_safe::object_ref<const cppast::cpp_namespace> ref)
+{
+    if (!has_namespace_alias(full_name)) {
+        LOG_DBG("Stored type alias: {} -> {} ", full_name, ref.get().name());
+
+        namespace_alias_index_.emplace(full_name, std::move(ref));
+    }
+}
+
+type_safe::object_ref<const cppast::cpp_namespace>
+translation_unit_context::get_namespace_alias(
+    const std::string &full_name) const
+{
+    assert(has_namespace_alias(full_name));
+
+    return namespace_alias_index_.at(full_name);
+}
+
+type_safe::object_ref<const cppast::cpp_namespace>
+translation_unit_context::get_namespace_alias_final(
+    const cppast::cpp_namespace &ns) const
+{
+    auto ns_full_name = cx::util::full_name({}, ns);
+
+    ns_full_name = cx::util::ns(ns) + "::" + ns_full_name;
+
+    if (has_namespace_alias(ns_full_name)) {
+        return get_namespace_alias_final(
+            namespace_alias_index_.at(ns_full_name).get());
+    }
+
+    return type_safe::ref(ns);
+}
+
 bool translation_unit_context::has_type_alias(
     const std::string &full_name) const
 {

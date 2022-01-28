@@ -21,6 +21,7 @@
 #include "package_diagram/model/diagram.h"
 
 #include <cppast/cpp_entity_index.hpp>
+#include <cppast/cpp_namespace.hpp>
 #include <cppast/cpp_type.hpp>
 #include <type_safe/reference.hpp>
 
@@ -31,6 +32,17 @@ public:
     translation_unit_context(cppast::cpp_entity_index &idx,
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
+
+    bool has_namespace_alias(const std::string &full_name) const;
+
+    void add_namespace_alias(const std::string &full_name,
+        type_safe::object_ref<const cppast::cpp_namespace> ref);
+
+    type_safe::object_ref<const cppast::cpp_namespace> get_namespace_alias(
+        const std::string &full_name) const;
+
+    type_safe::object_ref<const cppast::cpp_namespace>
+    get_namespace_alias_final(const cppast::cpp_namespace &t) const;
 
     bool has_type_alias(const std::string &full_name) const;
 
@@ -80,7 +92,11 @@ private:
     // Reference to class diagram config
     const clanguml::config::package_diagram &config_;
 
-    // Map of discovered aliases (declared with 'using' keyword)
+    // Map of discovered aliases (declared with 'namespace' keyword)
+    std::map<std::string, type_safe::object_ref<const cppast::cpp_namespace>>
+        namespace_alias_index_;
+
+    // Map of discovered type aliases (declared with 'using' keyword)
     std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
         alias_index_;
 

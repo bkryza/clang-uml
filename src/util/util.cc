@@ -64,6 +64,11 @@ std::vector<std::string> split(std::string str, std::string delimiter)
     return result;
 }
 
+std::string join(const std::vector<std::string> &toks, std::string delimiter)
+{
+    return fmt::format("{}", fmt::join(toks, delimiter));
+}
+
 std::string ns_relative(
     const std::vector<std::string> &namespaces, const std::string &n)
 {

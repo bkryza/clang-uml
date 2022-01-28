@@ -21,6 +21,7 @@
 
 #include <cppast/cpp_class.hpp>
 #include <cppast/cpp_entity_kind.hpp>
+#include <cppast/cpp_namespace.hpp>
 #include <cppast/cpp_template.hpp>
 #include <spdlog/spdlog.h>
 
@@ -90,6 +91,27 @@ std::string ns(const cppast::cpp_entity &e)
     std::reverse(res.begin(), res.end());
 
     return fmt::format("{}", fmt::join(res, "::"));
+}
+
+type_safe::optional_ref<const cppast::cpp_namespace> entity_ns(
+    const cppast::cpp_entity &e)
+{
+    std::vector<std::string> res{};
+
+    if (e.kind() == cppast::cpp_entity_kind::namespace_t)
+        return type_safe::optional_ref<const cppast::cpp_namespace>(
+            static_cast<const cppast::cpp_namespace &>(e));
+
+    auto it = e.parent();
+    while (it) {
+        if (it.value().kind() == cppast::cpp_entity_kind::namespace_t) {
+            return type_safe::optional_ref<const cppast::cpp_namespace>(
+                static_cast<const cppast::cpp_namespace &>(it.value()));
+        }
+        it = it.value().parent();
+    }
+
+    return {};
 }
 
 bool is_inside_class(const cppast::cpp_entity &e)

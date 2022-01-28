@@ -64,6 +64,8 @@ std::string trim(const std::string &s);
  */
 std::vector<std::string> split(std::string str, std::string delimiter);
 
+std::string join(const std::vector<std::string> &toks, std::string delimiter);
+
 /**
  * @brief Get name of the identifier relative to a set of namespaces
  *
