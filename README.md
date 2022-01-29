@@ -89,8 +89,8 @@ diagrams:
   myproject_class:
     type: class
     glob:
-      - src/**.h
-      - src/**.cc
+      - src/*.h
+      - src/*.cc
     using_namespace:
       - myproject
     include:
@@ -105,6 +105,18 @@ diagrams:
 ```
 
 See ![here](docs/configuration_file.md) for detailed configuration file reference guide.
+
+### Examples
+To see what `clang-uml` can do, checkout the test cases documentation [here](./docs/test_cases.md).
+
+In order to see diagrams for the `clang-uml` itself, based on its own [config](.clang-uml) run
+the following:
+
+```bash
+make clanguml_diagrams
+```
+
+and checkout the PNG diagrams in `docs/diagrams` folder.
 
 ### Class diagrams
 
