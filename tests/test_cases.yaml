@@ -122,6 +122,9 @@ test_cases:
     - name: t30005
       title: Package namespace alias test case
       description:
+    - name: t30006
+      title: Package split namespace test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test
