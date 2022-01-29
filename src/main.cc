@@ -41,11 +41,12 @@ using cx::compilation_database;
 
 int main(int argc, const char *argv[])
 {
-    CLI::App app{"Clang-based PlantUML generator from C++ sources"};
+    CLI::App app{"Clang-based PlantUML diagram generator for C++"};
 
     std::string config_path{".clang-uml"};
     std::string compilation_database_dir{'.'};
     std::vector<std::string> diagram_names{};
+    std::optional<std::string> output_directory;
     bool verbose{false};
 
     app.add_option(
@@ -54,6 +55,8 @@ int main(int argc, const char *argv[])
         "Location of compilation database directory");
     app.add_option("-n,--diagram-name", diagram_names,
         "List of diagram names to generate");
+    app.add_option("-o,--output-directory", output_directory,
+        "Override output directory specified in config file");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
 
     CLI11_PARSE(app, argc, argv);
@@ -72,6 +75,10 @@ int main(int argc, const char *argv[])
 
     cppast::libclang_compilation_database db(config.compilation_database_dir);
 
+    std::string od = config.output_directory;
+    if (output_directory)
+        od = output_directory.value();
+
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
         // and this diagram is not in that list - skip it
@@ -84,7 +91,7 @@ int main(int argc, const char *argv[])
         using clanguml::config::package_diagram;
         using clanguml::config::sequence_diagram;
 
-        std::filesystem::path path{"puml/" + name + ".puml"};
+        auto path = std::filesystem::path{od} / fmt::format("{}.puml", name);
         std::ofstream ofs;
         ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
@@ -115,6 +122,9 @@ int main(int argc, const char *argv[])
                 dynamic_cast<clanguml::config::package_diagram &>(*diagram),
                 model);
         }
+
+        LOG_INFO("Written {} diagram to {}", name, path.string());
+
         ofs.close();
     }
 
