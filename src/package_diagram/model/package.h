@@ -37,7 +37,8 @@ class package_trait {
 public:
     void add_package(std::unique_ptr<T> p)
     {
-        packages_.emplace_back(std::move(p));
+        if (!contains(packages_, p.get()))
+            packages_.emplace_back(std::move(p));
     }
 
     void add_package(std::vector<std::string> path, std::unique_ptr<T> p)

@@ -156,4 +156,19 @@ void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
 
     col = std::vector<T>(col.begin() + prefix.size(), col.end());
 }
+
+template <typename T, typename E>
+bool contains(const T &container, const E &element)
+{
+    if constexpr (std::is_pointer_v<E>) {
+        return std::find_if(container.begin(), container.end(),
+                   [&element](const auto &e) {
+                       return *e == *element;
+                   }) != container.end();
+    }
+    else {
+        return std::find(container.cbegin(), container.cend(), element) !=
+            container.cend();
+    }
+}
 }
