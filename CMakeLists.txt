@@ -63,6 +63,7 @@ add_library(clang-umllib OBJECT ${SOURCES})
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
 install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
 target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog cppast clang-umllib)
+target_compile_features(clang-uml PRIVATE cxx_std_17)
 
 install(
         FILES

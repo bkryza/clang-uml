@@ -116,7 +116,6 @@ bool find_element_alias(
  */
 bool replace_all(
     std::string &input, std::string pattern, std::string replace_with);
-}
 
 /**
  * @brief Appends a vector to a vector.
@@ -148,6 +147,13 @@ bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
         std::vector<std::string>(col.begin(), col.begin() + prefix.size());
 }
 
+/**
+ * @brief Removes prefix sequence of elements from the beggining of col.
+ *
+ * @tparam T
+ * @param col
+ * @param prefix
+ */
 template <typename T>
 void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
 {
@@ -157,18 +163,27 @@ void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
     col = std::vector<T>(col.begin() + prefix.size(), col.end());
 }
 
+/**
+ * Returns true if element exists in container.
+ *
+ * @tparam T
+ * @tparam E
+ * @param container
+ * @param element
+ * @return
+ */
 template <typename T, typename E>
 bool contains(const T &container, const E &element)
 {
     if constexpr (std::is_pointer_v<E>) {
         return std::find_if(container.begin(), container.end(),
-                   [&element](const auto &e) {
-                       return *e == *element;
-                   }) != container.end();
+                   [&element](const auto &e) { return *e == *element; }) !=
+            container.end();
     }
     else {
         return std::find(container.cbegin(), container.cend(), element) !=
             container.cend();
     }
 }
-}
+} // namespace util
+} // namespace clanguml

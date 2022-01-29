@@ -97,11 +97,11 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         auto usn =
                             util::split(ctx.config().using_namespace[0], "::");
 
-                        if (!starts_with(usn, package_path)) {
+                        if (!util::starts_with(usn, package_path)) {
                             auto p = std::make_unique<package>(
                                 ctx.config().using_namespace);
-                            remove_prefix(package_path, usn);
-                            remove_prefix(package_parent, usn);
+                            util::remove_prefix(package_path, usn);
+                            util::remove_prefix(package_parent, usn);
 
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
@@ -306,8 +306,8 @@ void translation_unit_visitor::process_class_declaration(
     for (const auto &dependency : relationships) {
         auto destination = util::split(std::get<0>(dependency), "::");
 
-        if (!starts_with(ctx.get_namespace(), destination) &&
-            !starts_with(destination, ctx.get_namespace())) {
+        if (!util::starts_with(ctx.get_namespace(), destination) &&
+            !util::starts_with(destination, ctx.get_namespace())) {
             relationship r{
                 relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));
@@ -333,8 +333,8 @@ void translation_unit_visitor::process_function(const cppast::cpp_function &f)
     for (const auto &dependency : relationships) {
         auto destination = util::split(std::get<0>(dependency), "::");
 
-        if (!starts_with(ctx.get_namespace(), destination) &&
-            !starts_with(destination, ctx.get_namespace())) {
+        if (!util::starts_with(ctx.get_namespace(), destination) &&
+            !util::starts_with(destination, ctx.get_namespace())) {
             relationship r{
                 relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));

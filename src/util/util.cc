@@ -146,5 +146,6 @@ bool replace_all(
 
     return replaced;
 }
+
 }
 }

@@ -82,9 +82,7 @@ int main(int argc, const char *argv[])
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
         // and this diagram is not in that list - skip it
-        if (!diagram_names.empty() &&
-            std::find(diagram_names.begin(), diagram_names.end(), name) ==
-                diagram_names.end())
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
         using clanguml::config::class_diagram;
