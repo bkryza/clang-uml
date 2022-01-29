@@ -14,3 +14,16 @@ diagrams:
     plantuml:
       before:
         - 'title clang-uml namespaces'
+  config_class:
+    type: class
+    glob:
+      - src/config/config.h
+      - src/config/config.cc
+    include:
+      namespaces:
+        - clanguml::config
+    using_namespace:
+      - clanguml::config
+    plantuml:
+      before:
+        - 'title clang-uml configuration model'
