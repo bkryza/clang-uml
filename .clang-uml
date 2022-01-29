@@ -27,3 +27,16 @@ diagrams:
     plantuml:
       before:
         - 'title clang-uml configuration model'
+  decorators_class:
+    type: class
+    glob:
+      - src/decorators/decorators.h
+      - src/decorators/decorators.cc
+    include:
+      namespaces:
+        - clanguml::decorators
+    using_namespace:
+      - clanguml::decorators
+    plantuml:
+      before:
+        - 'title clang-uml decorators model'
