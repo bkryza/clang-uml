@@ -80,4 +80,11 @@ void decorated_element::add_decorators(
         decorators_.push_back(d);
     }
 }
+
+void decorated_element::append(const decorated_element &de)
+{
+    for (auto d : de.decorators()) {
+        decorators_.push_back(d);
+    }
+}
 }

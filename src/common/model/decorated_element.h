@@ -43,6 +43,8 @@ public:
     void add_decorators(
         const std::vector<std::shared_ptr<decorators::decorator>> &decorators);
 
+    void append(const decorated_element &de);
+
 private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;
 };

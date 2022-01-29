@@ -64,4 +64,6 @@ const std::vector<relationship> &element::relationships() const
 {
     return relationships_;
 }
+
+void element::append(const element &e) { decorated_element::append(e); }
 }

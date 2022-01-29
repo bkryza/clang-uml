@@ -26,6 +26,10 @@ namespace DDD {
 /// \uml{note[top] We skipped DDD.}
 namespace EEE {
 }
+
+/// \uml{note[top] Another CCC note.}
+namespace CCC {
+}
 }
 }
 }

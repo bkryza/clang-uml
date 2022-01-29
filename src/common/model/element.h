@@ -52,6 +52,8 @@ public:
 
     void add_relationship(relationship &&cr);
 
+    void append(const element &e);
+
 protected:
     const uint64_t m_id{0};
 
