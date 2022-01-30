@@ -1,7 +1,7 @@
 /**
  * tests/test_cases.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
+#include "package_diagram/generators/plantuml/package_diagram_generator.h"
+#include "package_diagram/visitor/translation_unit_visitor.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
@@ -32,12 +34,14 @@
 
 #include "catch.h"
 
+#include <algorithm>
 #include <complex>
 #include <filesystem>
 #include <string>
 
 using Catch::Matchers::Contains;
 using Catch::Matchers::EndsWith;
+using Catch::Matchers::Equals;
 using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
 using clanguml::cx::compilation_database;
@@ -164,17 +168,31 @@ struct AliasMatcher {
 
     std::string operator()(const std::string &name)
     {
-        std::vector<std::string> patterns;
-        patterns.push_back("class \"" + name + "\" as ");
-        patterns.push_back("abstract \"" + name + "\" as ");
-        patterns.push_back("enum \"" + name + "\" as ");
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        patterns.push_back(
+            std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"abstract\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+
+        std::smatch base_match;
 
         for (const auto &line : puml) {
             for (const auto &pattern : patterns) {
-                const auto idx = line.find(pattern);
-                if (idx != std::string::npos) {
-                    std::string res = line.substr(idx + pattern.size());
-                    return trim(res);
+                if (std::regex_search(line, base_match, pattern)) {
+                    if (base_match.size() == 2) {
+                        std::ssub_match base_sub_match = base_match[1];
+                        std::string alias = base_sub_match.str();
+                        return trim(alias);
+                    }
                 }
             }
         }
@@ -395,6 +413,20 @@ ContainsMatcher IsField(std::string const &name,
 
     return ContainsMatcher(
         CasedString(pattern + " : " + type, caseSensitivity));
+}
+
+ContainsMatcher IsPackage(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString("package [" + str + "]", caseSensitivity));
+}
+
+ContainsMatcher IsDeprecated(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(str + " <<deprecated>> ", caseSensitivity));
 }
 }
 }

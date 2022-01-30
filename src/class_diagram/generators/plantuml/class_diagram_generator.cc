@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
 
-    const auto uns = m_config.using_namespace;
+    const auto &uns = m_config.using_namespace;
 
     std::string class_type{"class"};
     if (c.is_abstract())
@@ -360,8 +360,7 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation() &&
-                !m_config.should_include(c.name()))
+            if (!m_config.should_include(c.name()))
                 continue;
             generate_alias(c, ostr);
             ostr << '\n';
@@ -375,8 +374,7 @@ void generator::generate(std::ostream &ostr) const
         }
 
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation() &&
-                !m_config.should_include(c.name()))
+            if (!m_config.should_include(c.name()))
                 continue;
             generate(c, ostr);
             ostr << '\n';
@@ -414,7 +412,7 @@ clanguml::class_diagram::model::diagram generate(
     cppast::libclang_compilation_database &db, const std::string &name,
     clanguml::config::class_diagram &diagram)
 {
-    spdlog::info("Generating diagram {}.puml", name);
+    LOG_DBG("Generating diagram {}.puml", name);
     clanguml::class_diagram::model::diagram d;
     d.set_name(name);
 
@@ -422,7 +420,7 @@ clanguml::class_diagram::model::diagram generate(
     // configuration
     std::vector<std::string> translation_units{};
     for (const auto &g : diagram.glob) {
-        spdlog::debug("Processing glob: {}", g);
+        LOG_DBG("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));

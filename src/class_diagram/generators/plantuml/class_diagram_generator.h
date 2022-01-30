@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/generators/plantuml/class_diagram_generator.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
-#include "class_diagram/model/class_relationship.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
+#include "common/model/relationship.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "util/util.h"
@@ -44,8 +44,8 @@ using diagram_config = clanguml::class_diagram::model::diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::enum_;
-using clanguml::class_diagram::model::relationship_t;
-using clanguml::class_diagram::model::scope_t;
+using clanguml::common::model::relationship_t;
+using clanguml::common::model::scope_t;
 using namespace clanguml::util;
 
 std::string relative_to(std::string n, std::string c);

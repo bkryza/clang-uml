@@ -1,7 +1,7 @@
 /**
  * src/cx/util.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,12 @@ const cppast::cpp_type &unreferenced(const cppast::cpp_type &t);
 
 std::string ns(const cppast::cpp_entity &e);
 
+type_safe::optional_ref<const cppast::cpp_namespace> entity_ns(
+    const cppast::cpp_entity &e);
+
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx);
 
 bool is_inside_class(const cppast::cpp_entity &e);
-
 } // namespace util
 } // namespace cx
 } // namespace clanguml

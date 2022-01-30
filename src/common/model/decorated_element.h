@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/decorated_element.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 class decorated_element {
 public:
@@ -33,7 +33,7 @@ public:
 
     bool skip_relationship() const;
 
-    std::pair<relationship_t, std::string> relationship() const;
+    std::pair<relationship_t, std::string> get_relationship() const;
 
     std::string style_spec();
 
@@ -42,6 +42,8 @@ public:
 
     void add_decorators(
         const std::vector<std::shared_ptr<decorators::decorator>> &decorators);
+
+    void append(const decorated_element &de);
 
 private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;

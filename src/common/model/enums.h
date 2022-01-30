@@ -1,7 +1,7 @@
 /**
- * src/class_diagram/model/stylable_element.cc
+ * src/class_diagram/model/enums.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "stylable_element.h"
+namespace clanguml::common::model {
 
-namespace clanguml::class_diagram::model {
+enum class access_t { kPublic, kProtected, kPrivate };
 
-void stylable_element::set_style(const std::string &style) { style_ = style; }
+enum class scope_t { kPublic, kProtected, kPrivate, kNone };
 
-std::string stylable_element::style() const { return style_; }
+enum class relationship_t {
+    kNone,
+    kExtension,
+    kComposition,
+    kAggregation,
+    kContainment,
+    kOwnership,
+    kAssociation,
+    kInstantiation,
+    kFriendship,
+    kDependency
+};
 
 }

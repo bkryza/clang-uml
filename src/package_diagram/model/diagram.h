@@ -1,7 +1,7 @@
 /**
- * src/class_diagram/model/stylable_element.h
+ * src/package_diagram/model/diagram.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,26 @@
  */
 #pragma once
 
+#include "package.h"
+
+#include <type_safe/optional_ref.hpp>
+
 #include <string>
+#include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::package_diagram::model {
 
-class stylable_element {
+class diagram : public detail::package_trait<package, std::vector> {
 public:
-    void set_style(const std::string &style);
-    std::string style() const;
+    std::string name() const;
+
+    void set_name(const std::string &name);
+
+    std::string to_alias(const std::string &full_name) const;
 
 private:
-    std::string style_;
-};
+    std::string name_;
 
+    std::vector<std::unique_ptr<package>> packages_;
+};
 }

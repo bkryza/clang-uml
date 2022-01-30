@@ -1,7 +1,7 @@
 /**
  * src/config/config.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #pragma once
 
 #include "class_diagram/model/diagram.h"
-#include "class_diagram/model/enums.h"
+#include "common/model/enums.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>
@@ -56,7 +56,7 @@ struct filter {
     // E.g.:
     //   - public
     //   - private
-    std::vector<class_diagram::model::scope_t> scopes;
+    std::vector<common::model::scope_t> scopes;
 };
 
 struct diagram {
@@ -77,7 +77,7 @@ struct diagram {
 
     bool should_include(const std::string &name_) const;
 
-    bool should_include(const class_diagram::model::scope_t scope) const;
+    bool should_include(const common::model::scope_t scope) const;
 };
 
 struct source_location {
@@ -99,6 +99,10 @@ struct sequence_diagram : public diagram {
     virtual ~sequence_diagram() = default;
 
     std::vector<source_location> start_from;
+};
+
+struct package_diagram : public diagram {
+    virtual ~package_diagram() = default;
 };
 
 struct config {

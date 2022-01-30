@@ -106,6 +106,25 @@ test_cases:
     - name: t20002
       title: Free function sequence diagram test case
       description:
+  Package diagrams:
+    - name: t30001
+      title: Basic package diagram test case
+      description:
+    - name: t30002
+      title: Package dependency test case
+      description:
+    - name: t30003
+      title: Package deprecated attribute test case
+      description:
+    - name: t30004
+      title: PlantUML package decorators test case
+      description:
+    - name: t30005
+      title: Package namespace alias test case
+      description:
+    - name: t30006
+      title: Package split namespace test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test

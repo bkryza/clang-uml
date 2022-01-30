@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/element.cc
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #include "util/util.h"
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 std::atomic_uint64_t element::m_nextId = 1;
 
@@ -32,7 +32,7 @@ element::element(const std::vector<std::string> &using_namespaces)
 
 std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
 
-void element::add_relationship(class_relationship &&cr)
+void element::add_relationship(relationship &&cr)
 {
     if (cr.destination().empty()) {
         LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty "
@@ -41,8 +41,10 @@ void element::add_relationship(class_relationship &&cr)
         return;
     }
 
-    auto it = std::find(relationships_.begin(), relationships_.end(), cr);
-    if (it == relationships_.end())
+    LOG_DBG("Adding relationship: '{}' - {} - '{}'", cr.destination(),
+        to_string(cr.type()), full_name(true));
+
+    if (!util::contains(relationships_, cr))
         relationships_.emplace_back(std::move(cr));
 }
 
@@ -56,13 +58,12 @@ const std::vector<std::string> &element::using_namespaces() const
     return using_namespaces_;
 }
 
-std::vector<class_relationship> &element::relationships()
+std::vector<relationship> &element::relationships() { return relationships_; }
+
+const std::vector<relationship> &element::relationships() const
 {
     return relationships_;
 }
 
-const std::vector<class_relationship> &element::relationships() const
-{
-    return relationships_;
-}
+void element::append(const element &e) { decorated_element::append(e); }
 }

@@ -1,7 +1,7 @@
 /**
  * src/util/util.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,8 @@ std::string trim(const std::string &s);
  */
 std::vector<std::string> split(std::string str, std::string delimiter);
 
+std::string join(const std::vector<std::string> &toks, std::string delimiter);
+
 /**
  * @brief Get name of the identifier relative to a set of namespaces
  *
@@ -114,5 +116,74 @@ bool find_element_alias(
  */
 bool replace_all(
     std::string &input, std::string pattern, std::string replace_with);
+
+/**
+ * @brief Appends a vector to a vector.
+ *
+ * @tparam T
+ * @param l
+ * @param r
+ */
+template <typename T> void append(std::vector<T> &l, const std::vector<T> &r)
+{
+    l.insert(l.end(), r.begin(), r.end());
 }
+
+/**
+ * @brief Checks if vector starts with a prefix.
+ *
+ * @tparam T
+ * @param col
+ * @param prefix
+ * @return
+ */
+template <typename T>
+bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
+{
+    if (prefix.size() > col.size())
+        return false;
+
+    return std::vector<std::string>(prefix.begin(), prefix.end()) ==
+        std::vector<std::string>(col.begin(), col.begin() + prefix.size());
 }
+
+/**
+ * @brief Removes prefix sequence of elements from the beggining of col.
+ *
+ * @tparam T
+ * @param col
+ * @param prefix
+ */
+template <typename T>
+void remove_prefix(std::vector<T> &col, const std::vector<T> &prefix)
+{
+    if (!starts_with(col, prefix))
+        return;
+
+    col = std::vector<T>(col.begin() + prefix.size(), col.end());
+}
+
+/**
+ * Returns true if element exists in container.
+ *
+ * @tparam T
+ * @tparam E
+ * @param container
+ * @param element
+ * @return
+ */
+template <typename T, typename E>
+bool contains(const T &container, const E &element)
+{
+    if constexpr (std::is_pointer_v<E>) {
+        return std::find_if(container.begin(), container.end(),
+                   [&element](const auto &e) { return *e == *element; }) !=
+            container.end();
+    }
+    else {
+        return std::find(container.cbegin(), container.cend(), element) !=
+            container.cend();
+    }
+}
+} // namespace util
+} // namespace clanguml

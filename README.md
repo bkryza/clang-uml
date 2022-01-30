@@ -19,6 +19,8 @@ Main features supported so far include:
     * Namespace based content filtering
 * Sequence diagram generation
     * Generation of sequence diagram from one code location to another
+* Package diagram generation
+    * Generation of package diagram based on C++ namespaces
 
 ## Installation
 
@@ -87,8 +89,8 @@ diagrams:
   myproject_class:
     type: class
     glob:
-      - src/**.h
-      - src/**.cc
+      - src/*.h
+      - src/*.cc
     using_namespace:
       - myproject
     include:
@@ -103,6 +105,18 @@ diagrams:
 ```
 
 See ![here](docs/configuration_file.md) for detailed configuration file reference guide.
+
+### Examples
+To see what `clang-uml` can do, checkout the test cases documentation [here](./docs/test_cases.md).
+
+In order to see diagrams for the `clang-uml` itself, based on its own [config](.clang-uml) run
+the following:
+
+```bash
+make clanguml_diagrams
+```
+
+and checkout the PNG diagrams in `docs/diagrams` folder.
 
 ### Class diagrams
 
@@ -256,6 +270,51 @@ int tmain()
 generates the following diagram (via PlantUML):
 
 ![sequence_diagram_example](docs/test_cases/t20001_sequence.png)
+
+### Package diagrams
+
+#### Example
+
+The following C++ code:
+
+```cpp
+namespace clanguml {
+namespace t30003 {
+
+namespace ns1 {
+namespace ns2_v1_0_0 {
+class A {
+};
+}
+
+namespace [[deprecated]] ns2_v0_9_0 {
+class A {
+};
+}
+
+namespace {
+class Anon final {
+};
+}
+}
+
+namespace [[deprecated]] ns3 {
+
+namespace ns1::ns2 {
+class Anon : public t30003::ns1::ns2_v1_0_0::A {
+};
+}
+
+class B : public ns1::ns2::Anon {
+};
+}
+}
+}
+```
+
+generates the following diagram (via PlantUML):
+
+![package_diagram_example](docs/test_cases/t30003_package.png)
 
 ### Test cases
 

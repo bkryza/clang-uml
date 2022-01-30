@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/enum.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@
 
 namespace clanguml::class_diagram::model {
 
-class enum_ : public element, public stylable_element {
+class enum_ : public common::model::element,
+              public common::model::stylable_element {
 public:
     enum_(const std::vector<std::string> &using_namespaces);
 

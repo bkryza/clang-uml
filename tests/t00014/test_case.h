@@ -1,7 +1,7 @@
 /**
  * tests/t00014/test_case.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
+    REQUIRE_THAT(
+        puml, !IsClassTemplate("std::std::function", "void(T...,int),int)"));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(

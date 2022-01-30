@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,9 +100,9 @@ public:
 
     bool find_relationships(const cppast::cpp_type &t,
         std::vector<std::pair<std::string,
-            clanguml::class_diagram::model::relationship_t>> &relationships,
-        clanguml::class_diagram::model::relationship_t relationship_hint =
-            clanguml::class_diagram::model::relationship_t::kNone);
+            clanguml::common::model::relationship_t>> &relationships,
+        clanguml::common::model::relationship_t relationship_hint =
+            clanguml::common::model::relationship_t::kNone);
 
     void process_template_type_parameter(
         const cppast::cpp_template_type_parameter &t,

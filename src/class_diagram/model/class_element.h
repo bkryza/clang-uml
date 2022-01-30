@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class_element.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,23 @@
  */
 #pragma once
 
-#include "decorated_element.h"
+#include "common/model/decorated_element.h"
 
 #include <string>
 
 namespace clanguml::class_diagram::model {
 
-class class_element : public decorated_element {
+class class_element : public common::model::decorated_element {
 public:
-    class_element(
-        scope_t scope, const std::string &name, const std::string &type);
+    class_element(common::model::scope_t scope, const std::string &name,
+        const std::string &type);
 
-    scope_t scope() const;
+    common::model::scope_t scope() const;
     std::string name() const;
     std::string type() const;
 
 private:
-    scope_t scope_;
+    common::model::scope_t scope_;
     std::string name_;
     std::string type_;
 };

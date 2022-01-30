@@ -1,6 +1,6 @@
 # Makefile
 #
-# Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+# Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,6 +51,11 @@ test_plantuml: test
 
 document_test_cases: test_plantuml
 	python3 util/generate_test_cases_docs.py
+
+clanguml_diagrams: debug
+	mkdir -p docs/diagrams
+	debug/clang-uml
+	plantuml docs/diagrams/*.puml
 
 .PHONY: submodules
 submodules:

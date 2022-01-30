@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/element.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
  */
 #pragma once
 
-#include "class_relationship.h"
 #include "decorated_element.h"
+#include "relationship.h"
 
 #include <atomic>
 #include <string>
 #include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 class element : public decorated_element {
 public:
@@ -46,11 +46,13 @@ public:
 
     const std::vector<std::string> &using_namespaces() const;
 
-    std::vector<class_relationship> &relationships();
+    std::vector<relationship> &relationships();
 
-    const std::vector<class_relationship> &relationships() const;
+    const std::vector<relationship> &relationships() const;
 
-    void add_relationship(class_relationship &&cr);
+    void add_relationship(relationship &&cr);
+
+    void append(const element &e);
 
 protected:
     const uint64_t m_id{0};
@@ -59,7 +61,7 @@ private:
     std::string name_;
     std::vector<std::string> namespace_;
     std::vector<std::string> using_namespaces_;
-    std::vector<class_relationship> relationships_;
+    std::vector<relationship> relationships_;
 
     static std::atomic_uint64_t m_nextId;
 };

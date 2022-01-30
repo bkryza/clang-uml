@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/method_parameter.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
  */
 #pragma once
 
-#include "decorated_element.h"
+#include "common/model/decorated_element.h"
 
 #include <string>
 #include <vector>
 
 namespace clanguml::class_diagram::model {
 
-class method_parameter : public decorated_element {
+class method_parameter : public common::model::decorated_element {
 public:
     void set_type(const std::string &type);
     std::string type() const;

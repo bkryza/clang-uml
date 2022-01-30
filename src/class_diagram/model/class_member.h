@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class_member.h
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ namespace clanguml::class_diagram::model {
 
 class class_member : public class_element {
 public:
-    class_member(
-        scope_t scope, const std::string &name, const std::string &type);
+    class_member(common::model::scope_t scope, const std::string &name,
+        const std::string &type);
 
     bool is_relationship() const;
     void is_relationship(bool is_relationship);

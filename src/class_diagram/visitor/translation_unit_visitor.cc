@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,19 +36,19 @@
 
 namespace clanguml::class_diagram::visitor {
 
-using clanguml::class_diagram::model::access_t;
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::class_parent;
-using clanguml::class_diagram::model::class_relationship;
 using clanguml::class_diagram::model::class_template;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
-using clanguml::class_diagram::model::relationship_t;
-using clanguml::class_diagram::model::scope_t;
 using clanguml::class_diagram::model::type_alias;
+using clanguml::common::model::access_t;
+using clanguml::common::model::relationship;
+using clanguml::common::model::relationship_t;
+using clanguml::common::model::scope_t;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(
@@ -551,12 +551,12 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     else
         relationship_type = relationship_t::kAggregation;
 
-    class_relationship rr{relationship_type, tinst.full_name(),
+    relationship rr{relationship_type, tinst.full_name(),
         detail::cpp_access_specifier_to_scope(as), mv.name()};
     rr.set_style(m.style_spec());
 
     // Process field decorators
-    auto [decorator_rtype, decorator_rmult] = m.relationship();
+    auto [decorator_rtype, decorator_rmult] = m.get_relationship();
     if (decorator_rtype != relationship_t::kNone) {
         rr.set_type(decorator_rtype);
         auto mult = util::split(decorator_rmult, ":");
@@ -568,9 +568,8 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
     if (ctx.config().should_include(tinst.name())) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
-            rr.destination(),
-            clanguml::class_diagram::model::to_string(rr.type()), c.full_name(),
-            rr.label());
+            rr.destination(), clanguml::common::model::to_string(rr.type()),
+            c.full_name(), rr.label());
 
         c.add_relationship(std::move(rr));
 
@@ -632,11 +631,10 @@ void translation_unit_visitor::process_field(
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
-                class_relationship r{
-                    relationship_type, type, m.scope(), m.name()};
+                relationship r{relationship_type, type, m.scope(), m.name()};
                 r.set_style(m.style_spec());
 
-                auto [decorator_rtype, decorator_rmult] = m.relationship();
+                auto [decorator_rtype, decorator_rmult] = m.get_relationship();
                 if (decorator_rtype != relationship_t::kNone) {
                     r.set_type(decorator_rtype);
                     auto mult = util::split(decorator_rmult, ":");
@@ -648,8 +646,8 @@ void translation_unit_visitor::process_field(
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
                     r.destination(),
-                    clanguml::class_diagram::model::to_string(r.type()),
-                    c.full_name(), r.label());
+                    clanguml::common::model::to_string(r.type()), c.full_name(),
+                    r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -874,12 +872,12 @@ void translation_unit_visitor::process_function_parameter(
         for (const auto &[type, relationship_type] : relationships) {
             if ((relationship_type != relationship_t::kNone) &&
                 (type != c.name())) {
-                class_relationship r{relationship_t::kDependency, type};
+                relationship r{relationship_t::kDependency, type};
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
                     r.destination(),
-                    clanguml::class_diagram::model::to_string(r.type()),
-                    c.full_name(), r.label());
+                    clanguml::common::model::to_string(r.type()), c.full_name(),
+                    r.label());
 
                 c.add_relationship(std::move(r));
             }
@@ -940,15 +938,14 @@ void translation_unit_visitor::process_function_parameter(
                                 "only adding reference to template {}",
                             cx::util::full_name(cppast::remove_cv(t),
                                 ctx.entity_index(), false));
-                        class_relationship rr{relationship_t::kDependency,
+                        relationship rr{relationship_t::kDependency,
                             cx::util::full_name(cppast::remove_cv(t),
                                 ctx.entity_index(), false)};
                         LOG_DBG("Adding field template dependency relationship "
                                 "{} {} {} "
                                 ": {}",
                             rr.destination(),
-                            clanguml::class_diagram::model::to_string(
-                                rr.type()),
+                            clanguml::common::model::to_string(rr.type()),
                             c.full_name(), rr.label());
                         c.add_relationship(std::move(rr));
                     }
@@ -957,14 +954,13 @@ void translation_unit_visitor::process_function_parameter(
                         class_ tinst = build_template_instantiation(
                             template_instantiation_type);
 
-                        class_relationship rr{
+                        relationship rr{
                             relationship_t::kDependency, tinst.full_name()};
 
                         LOG_DBG("Adding field dependency relationship {} {} {} "
                                 ": {}",
                             rr.destination(),
-                            clanguml::class_diagram::model::to_string(
-                                rr.type()),
+                            clanguml::common::model::to_string(rr.type()),
                             c.full_name(), rr.label());
 
                         c.add_relationship(std::move(rr));
@@ -1008,7 +1004,7 @@ void translation_unit_visitor::process_friend(
                 cppast::cpp_entity_kind::class_template_t))
         return;
 
-    class_relationship r{
+    relationship r{
         relationship_t::kFriendship, "", scope_t::kNone, "<<friend>>"};
 
     if (f.comment().has_value())
@@ -1355,7 +1351,7 @@ class_ translation_unit_visitor::build_template_instantiation(
                                 ? std::make_optional(&tinst)
                                 : parent);
 
-                    class_relationship tinst_dependency{
+                    relationship tinst_dependency{
                         relationship_t::kDependency, nested_tinst.full_name()};
 
                     auto nested_tinst_full_name = nested_tinst.full_name();
@@ -1392,8 +1388,7 @@ class_ translation_unit_visitor::build_template_instantiation(
                 }
                 else if (targ.type().value().kind() ==
                     cppast::cpp_type_kind::user_defined_t) {
-                    class_relationship tinst_dependency{
-                        relationship_t::kDependency,
+                    relationship tinst_dependency{relationship_t::kDependency,
                         cx::util::full_name(
                             cppast::remove_cv(
                                 cx::util::unreferenced(targ.type().value())),
@@ -1478,7 +1473,7 @@ class_ translation_unit_visitor::build_template_instantiation(
         // Otherwise point to the base template
         destination = tinst.base_template();
     }
-    class_relationship r{relationship_t::kInstantiation, destination};
+    relationship r{relationship_t::kInstantiation, destination};
     tinst.add_relationship(std::move(r));
 
     return tinst;

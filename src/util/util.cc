@@ -1,7 +1,7 @@
 /**
  * src/util/util.cc
  *
- * Copyright (c) 2021 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,11 @@ std::vector<std::string> split(std::string str, std::string delimiter)
         result.push_back(str);
 
     return result;
+}
+
+std::string join(const std::vector<std::string> &toks, std::string delimiter)
+{
+    return fmt::format("{}", fmt::join(toks, delimiter));
 }
 
 std::string ns_relative(
@@ -141,5 +146,6 @@ bool replace_all(
 
     return replaced;
 }
+
 }
 }
