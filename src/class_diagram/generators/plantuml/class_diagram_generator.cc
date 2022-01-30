@@ -360,8 +360,7 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation() &&
-                !m_config.should_include(c.name()))
+            if (!m_config.should_include(c.name()))
                 continue;
             generate_alias(c, ostr);
             ostr << '\n';
@@ -375,8 +374,7 @@ void generator::generate(std::ostream &ostr) const
         }
 
         for (const auto &c : m_model.classes()) {
-            if (!c.is_template_instantiation() &&
-                !m_config.should_include(c.name()))
+            if (!m_config.should_include(c.name()))
                 continue;
             generate(c, ostr);
             ostr << '\n';

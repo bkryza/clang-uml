@@ -44,6 +44,8 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
+    REQUIRE_THAT(
+        puml, !IsClassTemplate("std::std::function", "void(T...,int),int)"));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(
