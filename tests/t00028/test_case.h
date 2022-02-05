@@ -24,12 +24,6 @@ TEST_CASE("t00028", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00028_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00028"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00028::A"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -63,5 +57,5 @@ note.)";
     REQUIRE_THAT(puml, HasNote(_A("R"), "right", "R class note."));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

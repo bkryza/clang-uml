@@ -24,12 +24,6 @@ TEST_CASE("t00019", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00019_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00019"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00019::Layer1"));
     REQUIRE(diagram->should_include("clanguml::t00019::Layer2"));
     REQUIRE(diagram->should_include("clanguml::t00019::Layer3"));
@@ -56,5 +50,5 @@ TEST_CASE("t00019", "[test-case][class]")
             _A("Layer2<Layer3<Base>>"), _A("Layer1<Layer2<Layer3<Base>>>")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

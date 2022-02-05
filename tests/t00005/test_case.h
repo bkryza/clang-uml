@@ -24,12 +24,6 @@ TEST_CASE("t00005", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00005_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00005"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00005::A"));
     REQUIRE(diagram->should_include("clanguml::t00005::B"));
     REQUIRE(diagram->should_include("clanguml::t00005::C"));
@@ -74,5 +68,5 @@ TEST_CASE("t00005", "[test-case][class]")
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "+k"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

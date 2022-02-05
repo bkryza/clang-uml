@@ -22,14 +22,6 @@ TEST_CASE("t30002", "[test-case][package]")
 
     auto diagram = config.diagrams["t30002_package"];
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t30002"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->exclude.namespaces,
-        VectorContains(std::string{"clanguml::t30002::detail"}));
-
     REQUIRE(diagram->should_include("clanguml::t30002::A"));
     REQUIRE(!diagram->should_include("clanguml::t30002::detail::C"));
     REQUIRE(!diagram->should_include("std::vector"));
@@ -74,5 +66,5 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A13")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

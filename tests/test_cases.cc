@@ -24,7 +24,7 @@ load_config(const std::string &test_name)
 {
     auto config = clanguml::config::load(test_name + "/.clang-uml");
 
-    cppast::libclang_compilation_database db(config.compilation_database_dir);
+    cppast::libclang_compilation_database db(config.compilation_database_dir());
 
     return std::make_pair(std::move(config), std::move(db));
 }
@@ -35,7 +35,7 @@ std::pair<clanguml::config::config, compilation_database> load_config2(
     auto config = clanguml::config::load(test_name + "/.clang-uml");
 
     auto db = clanguml::cx::compilation_database::from_directory(
-        config.compilation_database_dir);
+        config.compilation_database_dir());
 
     return std::make_pair(std::move(config), std::move(db));
 }

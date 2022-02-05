@@ -24,12 +24,6 @@ TEST_CASE("t00008", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00008_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00008"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00008::A"));
     REQUIRE(diagram->should_include("clanguml::t00008::B"));
 
@@ -58,5 +52,5 @@ TEST_CASE("t00008", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Public>("comparator", "CMP")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

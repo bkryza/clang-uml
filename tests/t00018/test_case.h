@@ -24,12 +24,6 @@ TEST_CASE("t00018", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00018_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00018"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00018::widget"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -49,5 +43,5 @@ TEST_CASE("t00018", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("impl::widget"), _A("widget")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

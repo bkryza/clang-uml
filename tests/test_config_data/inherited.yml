@@ -1,0 +1,24 @@
+compilation_database_dir: debug
+output_directory: output
+include_relations_also_as_members: false
+using_namespace:
+  - clanguml
+include:
+  namespaces:
+    - clanguml
+    - ABCD
+glob:
+  - src/**/*.cc
+  - src/**/*.h
+
+diagrams:
+  class_default:
+    type: class
+  class_custom:
+    type: class
+    using_namespace:
+      - clanguml::ns1
+    include_relations_also_as_members: true
+    glob:
+      - src/main.cc
+

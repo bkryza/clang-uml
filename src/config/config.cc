@@ -53,15 +53,15 @@ std::string to_string(const diagram_type t)
 
 bool diagram::should_include_entities(const std::string &ent)
 {
-    for (const auto &ex : exclude.entity_types) {
+    for (const auto &ex : exclude().entity_types) {
         if (ent == ex)
             return false;
     }
 
-    if (include.entity_types.empty())
+    if (include().entity_types.empty())
         return true;
 
-    for (const auto &in : include.entity_types) {
+    for (const auto &in : include().entity_types) {
         if (ent == in)
             return true;
     }
@@ -71,15 +71,15 @@ bool diagram::should_include_entities(const std::string &ent)
 
 bool diagram::should_include_relationship(const std::string &rel)
 {
-    for (const auto &ex : exclude.relationships) {
+    for (const auto &ex : exclude().relationships) {
         if (rel == ex)
             return false;
     }
 
-    if (include.relationships.empty())
+    if (include().relationships.empty())
         return true;
 
-    for (const auto &in : include.relationships) {
+    for (const auto &in : include().relationships) {
         if (rel == in)
             return true;
     }
@@ -91,7 +91,7 @@ bool diagram::should_include(const std::string &name_) const
 {
     auto name = clanguml::util::unqualify(name_);
 
-    for (const auto &ex : exclude.namespaces) {
+    for (const auto &ex : exclude().namespaces) {
         if (name.find(ex) == 0) {
             LOG_DBG("Skipping from diagram: {}", name);
             return false;
@@ -100,10 +100,10 @@ bool diagram::should_include(const std::string &name_) const
 
     // If no inclusive namespaces are provided,
     // allow all
-    if (include.namespaces.empty())
+    if (include().namespaces.empty())
         return true;
 
-    for (const auto &in : include.namespaces) {
+    for (const auto &in : include().namespaces) {
         if (name.find(in) == 0)
             return true;
     }
@@ -115,15 +115,15 @@ bool diagram::should_include(const std::string &name_) const
 
 bool diagram::should_include(const clanguml::common::model::scope_t scope) const
 {
-    for (const auto &s : exclude.scopes) {
+    for (const auto &s : exclude().scopes) {
         if (s == scope)
             return false;
     }
 
-    if (include.scopes.empty())
+    if (include().scopes.empty())
         return true;
 
-    for (const auto &s : include.scopes) {
+    for (const auto &s : include().scopes) {
         if (s == scope)
             return true;
     }
@@ -135,8 +135,8 @@ diagram_type class_diagram::type() const { return diagram_type::class_diagram; }
 
 bool class_diagram::has_class(std::string clazz)
 {
-    for (const auto &c : classes) {
-        for (const auto &ns : using_namespace) {
+    for (const auto &c : classes()) {
+        for (const auto &ns : using_namespace()) {
             std::string prefix{};
             if (!ns.empty()) {
                 prefix = ns + "::";
@@ -159,6 +159,16 @@ diagram_type package_diagram::type() const
     return diagram_type::package_diagram;
 }
 
+template <>
+void append_value<std::vector<std::string>>(
+    std::vector<std::string> &l, const std::vector<std::string> &r)
+{
+    l.insert(l.end(), r.begin(), r.end());
+}
+template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
+{
+    l.append(r);
+}
 }
 }
 
@@ -171,6 +181,42 @@ using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
+
+inline bool has_key(const YAML::Node &n, const std::string &key)
+{
+    assert(n.Type() == NodeType::Map);
+
+    return std::count_if(n.begin(), n.end(), [&key](auto &&n) {
+        return n.first.template as<std::string>() == key;
+    }) > 0;
+}
+
+template <typename T>
+void get_option(const Node &node, clanguml::config::option<T> &option)
+{
+    if (node[option.name])
+        option.append(node[option.name].template as<T>());
+}
+
+std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
+{
+    const auto diagram_type = d["type"].as<std::string>();
+
+    if (diagram_type == "class") {
+        return std::make_shared<class_diagram>(d.as<class_diagram>());
+    }
+    else if (diagram_type == "sequence") {
+        return std::make_shared<sequence_diagram>(d.as<sequence_diagram>());
+    }
+    else if (diagram_type == "package") {
+        return std::make_shared<package_diagram>(d.as<package_diagram>());
+    }
+
+    LOG_WARN("Diagrams of type {} are not supported... ", diagram_type);
+
+    return {};
+}
+
 template <> struct convert<scope_t> {
     static bool decode(const Node &node, scope_t &rhs)
     {
@@ -264,21 +310,11 @@ template <> struct convert<filter> {
 
 template <typename T> bool decode_diagram(const Node &node, T &rhs)
 {
-    if (node["using_namespace"])
-        rhs.using_namespace =
-            node["using_namespace"].as<std::vector<std::string>>();
-
-    if (node["glob"])
-        rhs.glob = node["glob"].as<std::vector<std::string>>();
-
-    if (node["include"])
-        rhs.include = node["include"].as<decltype(rhs.include)>();
-
-    if (node["exclude"])
-        rhs.exclude = node["exclude"].as<decltype(rhs.exclude)>();
-
-    if (node["plantuml"])
-        rhs.puml = node["plantuml"].as<plantuml>();
+    get_option(node, rhs.glob);
+    get_option(node, rhs.using_namespace);
+    get_option(node, rhs.include);
+    get_option(node, rhs.exclude);
+    get_option(node, rhs.puml);
 
     return true;
 }
@@ -292,10 +328,8 @@ template <> struct convert<class_diagram> {
         if (!decode_diagram(node, rhs))
             return false;
 
-        if (node["include_relations_also_as_members"])
-            rhs.include_relations_also_as_members =
-                node["include_relations_also_as_members"]
-                    .as<decltype(rhs.include_relations_also_as_members)>();
+        get_option(node, rhs.classes);
+        get_option(node, rhs.include_relations_also_as_members);
 
         return true;
     }
@@ -310,9 +344,7 @@ template <> struct convert<sequence_diagram> {
         if (!decode_diagram(node, rhs))
             return false;
 
-        if (node["start_from"])
-            rhs.start_from =
-                node["start_from"].as<std::vector<source_location>>();
+        get_option(node, rhs.start_from);
 
         return true;
     }
@@ -331,49 +363,19 @@ template <> struct convert<package_diagram> {
     }
 };
 
-std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
-{
-    const auto diagram_type = d["type"].as<std::string>();
-
-    if (diagram_type == "class") {
-        return std::make_shared<class_diagram>(d.as<class_diagram>());
-    }
-    else if (diagram_type == "sequence") {
-        return std::make_shared<sequence_diagram>(d.as<sequence_diagram>());
-    }
-    else if (diagram_type == "package") {
-        return std::make_shared<package_diagram>(d.as<package_diagram>());
-    }
-
-    LOG_WARN("Diagrams of type {} are not supported... ", diagram_type);
-
-    return {};
-}
-
-inline bool has_key(const YAML::Node &n, const std::string &key)
-{
-    assert(n.Type() == NodeType::Map);
-
-    return std::count_if(n.begin(), n.end(), [&key](auto &&n) {
-        return n.first.template as<std::string>() == key;
-    }) > 0;
-}
-
 //
 // config Yaml decoder
 //
 template <> struct convert<config> {
+
     static bool decode(const Node &node, config &rhs)
     {
-        if (node["glob"])
-            rhs.glob = node["glob"].as<std::vector<std::string>>();
-
-        if (node["output_directory"])
-            rhs.output_directory = node["output_directory"].as<std::string>();
-
-        if (node["compilation_database_dir"])
-            rhs.compilation_database_dir =
-                node["compilation_database_dir"].as<std::string>();
+        get_option(node, rhs.glob);
+        get_option(node, rhs.using_namespace);
+        get_option(node, rhs.output_directory);
+        get_option(node, rhs.compilation_database_dir);
+        get_option(node, rhs.include_relations_also_as_members);
+        get_option(node, rhs.puml);
 
         auto diagrams = node["diagrams"];
 
@@ -381,7 +383,7 @@ template <> struct convert<config> {
 
         for (const auto &d : diagrams) {
             auto name = d.first.as<std::string>();
-            std::shared_ptr<clanguml::config::diagram> diagram_config;
+            std::shared_ptr<clanguml::config::diagram> diagram_config{};
 
             if (has_key(d.second, "include!")) {
                 YAML::Node node =
@@ -395,6 +397,7 @@ template <> struct convert<config> {
 
             if (diagram_config) {
                 diagram_config->name = name;
+                diagram_config->inherit(rhs);
                 rhs.diagrams[name] = diagram_config;
             }
         }

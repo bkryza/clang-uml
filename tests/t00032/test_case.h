@@ -24,12 +24,6 @@ TEST_CASE("t00032", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00032_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00032"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00032::A"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -59,5 +53,5 @@ TEST_CASE("t00032", "[test-case][class]")
     REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

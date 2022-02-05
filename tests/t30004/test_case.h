@@ -22,10 +22,6 @@ TEST_CASE("t30004", "[test-case][package]")
 
     auto diagram = config.diagrams["t30004_package"];
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t30004"}));
-
     REQUIRE(diagram->should_include("clanguml::t30004::A"));
     REQUIRE(diagram->should_include("clanguml::t30004::C"));
     REQUIRE(!diagram->should_include("std::vector"));
@@ -49,5 +45,5 @@ TEST_CASE("t30004", "[test-case][package]")
     REQUIRE_THAT(puml, IsPackage("EEE"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -22,10 +22,6 @@ TEST_CASE("t20002", "[test-case][sequence]")
 
     auto diagram = config.diagrams["t20002_sequence"];
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t20002"}));
-
     REQUIRE(diagram->name == "t20002_sequence");
 
     auto model = generate_sequence_diagram(db, diagram);
@@ -42,5 +38,5 @@ TEST_CASE("t20002", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasFunctionCall("m3", "m4"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

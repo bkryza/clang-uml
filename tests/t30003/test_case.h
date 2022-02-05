@@ -22,10 +22,6 @@ TEST_CASE("t30003", "[test-case][package]")
 
     auto diagram = config.diagrams["t30003_package"];
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t30003"}));
-
     REQUIRE(diagram->should_include("clanguml::t30003::A"));
     REQUIRE(diagram->should_include("clanguml::t30003::C"));
     REQUIRE(!diagram->should_include("std::vector"));
@@ -52,5 +48,5 @@ TEST_CASE("t30003", "[test-case][package]")
     REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

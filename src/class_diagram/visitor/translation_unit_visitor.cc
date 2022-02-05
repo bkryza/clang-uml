@@ -202,7 +202,7 @@ void translation_unit_visitor::process_enum_declaration(
         return;
     }
 
-    enum_ e{ctx.config().using_namespace};
+    enum_ e{ctx.config().using_namespace()};
     e.set_name(cx::util::full_name(ctx.get_namespace(), enm));
 
     if (enm.comment().has_value())
@@ -242,7 +242,7 @@ void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
-    class_ c{ctx.config().using_namespace};
+    class_ c{ctx.config().using_namespace()};
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
     c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
 
@@ -1201,7 +1201,7 @@ class_ translation_unit_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
-    class_ tinst{ctx.config().using_namespace};
+    class_ tinst{ctx.config().using_namespace()};
     std::string full_template_name;
 
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};

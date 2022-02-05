@@ -24,11 +24,6 @@ TEST_CASE("t00014", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00014_class");
 
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00014"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 2);
-
     REQUIRE(diagram->should_include("clanguml::t00014::S"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -58,5 +53,5 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+bs2"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

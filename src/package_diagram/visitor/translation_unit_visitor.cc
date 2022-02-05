@@ -94,12 +94,12 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         auto package_path = package_parent;
                         package_path.push_back(e.name());
 
-                        auto usn =
-                            util::split(ctx.config().using_namespace[0], "::");
+                        auto usn = util::split(
+                            ctx.config().using_namespace()[0], "::");
 
                         if (!util::starts_with(usn, package_path)) {
                             auto p = std::make_unique<package>(
-                                ctx.config().using_namespace);
+                                ctx.config().using_namespace());
                             util::remove_prefix(package_path, usn);
                             util::remove_prefix(package_parent, usn);
 

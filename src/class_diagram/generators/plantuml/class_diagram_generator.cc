@@ -119,7 +119,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
 
-    const auto &uns = m_config.using_namespace;
+    const auto &uns = m_config.using_namespace();
 
     std::string class_type{"class"};
     if (c.is_abstract())
@@ -154,7 +154,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             std::vector<std::string> params;
             std::transform(m.parameters().cbegin(), m.parameters().cend(),
                 std::back_inserter(params), [this](const auto &mp) {
-                    return mp.to_string(m_config.using_namespace);
+                    return mp.to_string(m_config.using_namespace());
                 });
             ostr << fmt::format("{}", fmt::join(params, ", "));
         }
@@ -238,7 +238,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_config.should_include(m.scope()))
             continue;
 
-        if (!m_config.include_relations_also_as_members &&
+        if (!m_config.include_relations_also_as_members() &&
             rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
 
@@ -310,10 +310,10 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
             destination = r.destination();
 
             relstr << m_model.to_alias(
-                          ns_relative(m_config.using_namespace, e.name()))
+                          ns_relative(m_config.using_namespace(), e.name()))
                    << " " << to_string(r.type()) << " "
                    << m_model.to_alias(
-                          ns_relative(m_config.using_namespace, destination));
+                          ns_relative(m_config.using_namespace(), destination));
 
             if (!r.label().empty())
                 relstr << " : " << r.label();
@@ -346,12 +346,12 @@ void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
-    for (const auto &b : m_config.puml.before) {
+    for (const auto &b : m_config.puml().before) {
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
             auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace, std::get<0>(alias_match)));
+                m_config.using_namespace(), std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
@@ -388,12 +388,12 @@ void generator::generate(std::ostream &ostr) const
         }
 
     // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml.after) {
+    for (const auto &b : m_config.puml().after) {
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
             auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace, std::get<0>(alias_match)));
+                m_config.using_namespace(), std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
@@ -419,7 +419,7 @@ clanguml::class_diagram::model::diagram generate(
     // Get all translation units matching the glob from diagram
     // configuration
     std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob) {
+    for (const auto &g : diagram.glob()) {
         LOG_DBG("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),

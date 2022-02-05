@@ -89,11 +89,11 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loaded clang-uml config from {}", config_path);
 
     LOG_INFO("Loading compilation database from {} directory",
-        config.compilation_database_dir);
+        config.compilation_database_dir());
 
-    cppast::libclang_compilation_database db(config.compilation_database_dir);
+    cppast::libclang_compilation_database db(config.compilation_database_dir());
 
-    std::string od = config.output_directory;
+    auto od = config.output_directory();
     if (output_directory)
         od = output_directory.value();
 

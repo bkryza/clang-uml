@@ -24,12 +24,6 @@ TEST_CASE("t00026", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00026_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00026"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00026::A"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -50,5 +44,5 @@ TEST_CASE("t00026", "[test-case][class]")
         IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

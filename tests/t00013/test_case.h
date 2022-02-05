@@ -24,11 +24,6 @@ TEST_CASE("t00013", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00013_class");
 
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00013"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00013::A"));
     REQUIRE(diagram->should_include("clanguml::t00013::B"));
     REQUIRE(diagram->should_include("ABCD::F"));
@@ -63,5 +58,5 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("F<int>")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

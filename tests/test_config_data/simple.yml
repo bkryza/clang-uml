@@ -1,0 +1,14 @@
+compilation_database_dir: debug
+output_directory: output
+diagrams:
+  class_main:
+    type: class
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    using_namespace:
+      - clanguml
+    include:
+      namespaces:
+        - clanguml
+        - ABCD

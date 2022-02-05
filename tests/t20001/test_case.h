@@ -22,14 +22,6 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
     auto diagram = config.diagrams["t20001_sequence"];
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t20001"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->exclude.namespaces,
-        VectorContains(std::string{"clanguml::t20001::detail"}));
-
     REQUIRE(diagram->should_include("clanguml::t20001::A"));
     REQUIRE(!diagram->should_include("clanguml::t20001::detail::C"));
     REQUIRE(!diagram->should_include("std::vector"));
@@ -52,5 +44,5 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE_THAT(puml, !HasCall("A", "detail::C", "add"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

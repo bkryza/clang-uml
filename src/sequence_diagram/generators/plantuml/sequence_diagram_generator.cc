@@ -59,8 +59,8 @@ std::string generator::to_string(message_t r) const
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto from = ns_relative(m_config.using_namespace, m.from);
-    const auto to = ns_relative(m_config.using_namespace, m.to);
+    const auto from = ns_relative(m_config.using_namespace(), m.from);
+    const auto to = ns_relative(m_config.using_namespace(), m.to);
 
     ostr << '"' << from << "\" "
          << "->"
@@ -72,8 +72,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
     if ((m.from != m.to) && (m.return_type != "void")) {
-        const auto from = ns_relative(m_config.using_namespace, m.from);
-        const auto to = ns_relative(m_config.using_namespace, m.to);
+        const auto from = ns_relative(m_config.using_namespace(), m.from);
+        const auto to = ns_relative(m_config.using_namespace(), m.to);
 
         ostr << '"' << to << "\" "
              << "-->"
@@ -84,7 +84,7 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 void generator::generate_activity(const activity &a, std::ostream &ostr) const
 {
     for (const auto &m : a.messages) {
-        const auto to = ns_relative(m_config.using_namespace, m.to);
+        const auto to = ns_relative(m_config.using_namespace(), m.to);
         generate_call(m, ostr);
         ostr << "activate " << '"' << to << '"' << std::endl;
         if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())
@@ -98,10 +98,10 @@ void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << std::endl;
 
-    for (const auto &b : m_config.puml.before)
+    for (const auto &b : m_config.puml().before)
         ostr << b << std::endl;
 
-    for (const auto &sf : m_config.start_from) {
+    for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
             std::uint_least64_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
@@ -117,7 +117,7 @@ void generator::generate(std::ostream &ostr) const
             continue;
         }
     }
-    for (const auto &a : m_config.puml.after)
+    for (const auto &a : m_config.puml().after)
         ostr << a << std::endl;
 
     ostr << "@enduml" << std::endl;
@@ -147,7 +147,7 @@ clanguml::sequence_diagram::model::diagram generate(
     // Get all translation units matching the glob from diagram
     // configuration
     std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob) {
+    for (const auto &g : diagram.glob()) {
         spdlog::debug("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),

@@ -24,11 +24,11 @@ TEST_CASE("t00003", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00003_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
+    REQUIRE(diagram->include().namespaces.size() == 1);
+    REQUIRE_THAT(diagram->include().namespaces,
         VectorContains(std::string{"clanguml::t00003"}));
 
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
+    REQUIRE(diagram->exclude().namespaces.size() == 0);
 
     REQUIRE(diagram->should_include("clanguml::t00003::A"));
 
@@ -64,5 +64,5 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Private>("c", "int")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

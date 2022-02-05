@@ -24,12 +24,6 @@ TEST_CASE("t00034", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00034_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00034"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00034::A"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -54,5 +48,5 @@ TEST_CASE("t00034", "[test-case][class]")
         puml, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -24,12 +24,6 @@ TEST_CASE("t00031", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00031_class");
 
-    REQUIRE(diagram->include.namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include.namespaces,
-        VectorContains(std::string{"clanguml::t00031"}));
-
-    REQUIRE(diagram->exclude.namespaces.size() == 0);
-
     REQUIRE(diagram->should_include("clanguml::t00031::A"));
 
     auto model = generate_class_diagram(db, diagram);
@@ -61,5 +55,5 @@ TEST_CASE("t00031", "[test-case][class]")
             _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
 
     save_puml(
-        "./" + config.output_directory + "/" + diagram->name + ".puml", puml);
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

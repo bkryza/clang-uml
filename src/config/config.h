@@ -37,6 +37,12 @@ namespace config {
 struct plantuml {
     std::vector<std::string> before;
     std::vector<std::string> after;
+
+    void append(const plantuml &r)
+    {
+        before.insert(before.end(), r.before.begin(), r.before.end());
+        after.insert(after.end(), r.after.begin(), r.after.end());
+    }
 };
 
 struct filter {
@@ -63,19 +69,84 @@ enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
 
 std::string to_string(const diagram_type t);
 
-struct diagram {
+template <typename T> void append_value(T &l, const T &r) { l = r; }
+// template<> void append_value<bool>(bool &l, const bool&r) {l = r;}
+
+template <typename T> struct option {
+    option(const std::string &name_)
+        : name{name_}
+    {
+    }
+
+    option(const std::string &name_, const T &initial_value)
+        : name{name_}
+        , value{initial_value}
+        , has_value{true}
+    {
+    }
+
+    std::string name;
+
+    T value;
+    bool has_value{false};
+
+    void append(const T &r)
+    {
+        append_value(value, r);
+        has_value = true;
+    }
+
+    option<T> &operator+=(const T &r)
+    {
+        append_value(value, r);
+        has_value = true;
+        return *this;
+    }
+
+    T &operator()() { return value; }
+
+    const T &operator()() const { return value; }
+};
+
+struct inheritable_diagram_options {
+    option<std::vector<std::string>> glob{"glob"};
+    option<std::vector<std::string>> using_namespace{"using_namespace"};
+    option<bool> include_relations_also_as_members{
+        "include_relations_also_as_members", true};
+    option<filter> include{"include"};
+    option<filter> exclude{"exclude"};
+    option<plantuml> puml{"plantuml"};
+
+    void inherit(const inheritable_diagram_options &parent)
+    {
+        if (!glob.has_value && parent.glob.has_value)
+            glob.append(parent.glob());
+
+        if (!using_namespace.has_value && parent.using_namespace.has_value)
+            using_namespace.append(parent.using_namespace());
+
+        if (!include_relations_also_as_members.has_value &&
+            parent.include_relations_also_as_members.has_value)
+            include_relations_also_as_members.append(
+                parent.include_relations_also_as_members());
+
+        if (!include.has_value && parent.include.has_value)
+            include.append(parent.include());
+
+        if (!exclude.has_value && parent.exclude.has_value)
+            exclude.append(parent.exclude());
+
+        if (!puml.has_value && parent.puml.has_value)
+            puml.append(parent.puml());
+    }
+};
+
+struct diagram : public inheritable_diagram_options {
     virtual ~diagram() = default;
 
     virtual diagram_type type() const = 0;
 
     std::string name;
-    std::vector<std::string> glob;
-    std::vector<std::string> using_namespace;
-
-    filter include;
-    filter exclude;
-
-    plantuml puml;
 
     bool should_include_entities(const std::string &ent);
 
@@ -97,8 +168,7 @@ struct class_diagram : public diagram {
 
     diagram_type type() const override;
 
-    std::vector<std::string> classes;
-    bool include_relations_also_as_members{true};
+    option<std::vector<std::string>> classes{"classes"};
 
     bool has_class(std::string clazz);
 };
@@ -108,7 +178,7 @@ struct sequence_diagram : public diagram {
 
     diagram_type type() const override;
 
-    std::vector<source_location> start_from;
+    option<std::vector<source_location>> start_from{"start_from"};
 };
 
 struct package_diagram : public diagram {
@@ -117,12 +187,13 @@ struct package_diagram : public diagram {
     diagram_type type() const override;
 };
 
-struct config {
+struct config : public inheritable_diagram_options {
     // the glob list is additive and relative to the current
     // directory
-    std::vector<std::string> glob;
-    std::string compilation_database_dir{"."};
-    std::string output_directory{};
+    option<std::string> compilation_database_dir{
+        "compilation_database_dir", "."};
+    option<std::string> output_directory{"output_directory"};
+
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
 };
 

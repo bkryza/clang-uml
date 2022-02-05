@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
+file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 
 set(CLANG_UML_TEST_UTIL_SRC
     test_util.cc
@@ -31,6 +32,14 @@ set(CLANG_UML_TEST_DECORATOR_PARSER_HEADER
     catch.h
 )
 
+set(CLANG_UML_TEST_CONFIG_SRC
+        test_config.cc
+        ${TEST_UTIL_SOURCES}
+        )
+set(CLANG_UML_TEST_CONFIG_HEADER
+        catch.h
+        )
+
 add_executable(test_util
     ${CLANG_UML_TEST_UTIL_SRC}
     ${CLANG_UML_TEST_UTIL_HEADER})
@@ -50,6 +59,16 @@ target_link_libraries(test_decorator_parser
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
     spdlog::spdlog clang-umllib cppast)
+
+add_executable(test_config
+        ${CLANG_UML_TEST_CONFIG_SRC}
+        ${CLANG_UML_TEST_CONFIG_HEADER})
+
+target_link_libraries(test_config
+        PRIVATE
+        ${LIBCLANG_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        spdlog::spdlog clang-umllib cppast)
 
 add_executable(test_cases
     ${CLANG_UML_TEST_CASES_SRC}
@@ -73,6 +92,19 @@ foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
         COPYONLY)
 endforeach()
 
+foreach(TEST_CONFIG_YML ${TEST_CONFIG_YMLS})
+    file(RELATIVE_PATH
+            TEST_CONFIG_YML_RELATIVE
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${TEST_CONFIG_YML})
+    message(${TEST_CONFIG_YML_RELATIVE})
+    configure_file(
+            ${TEST_CONFIG_YML_RELATIVE}
+            ${TEST_CONFIG_YML_RELATIVE}
+            COPYONLY)
+endforeach()
+
 add_test(NAME test_util COMMAND test_util)
 add_test(NAME test_decorator_parser COMMAND test_decorator_parser)
+add_test(NAME test_config COMMAND test_config)
 add_test(NAME test_cases COMMAND test_cases)

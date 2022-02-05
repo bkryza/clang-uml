@@ -82,7 +82,7 @@ std::string generator::name(relationship_t r) const
 void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
-    const auto &uns = m_config.using_namespace;
+    const auto &uns = m_config.using_namespace();
 
     // Generate this packages relationship
     if (m_config.should_include_relationship("dependency")) {
@@ -111,7 +111,7 @@ void generator::generate_relationships(
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
-    const auto uns = m_config.using_namespace;
+    const auto &uns = m_config.using_namespace();
 
     ostr << "package [" << p.name() << "] ";
     ostr << "as " << p.alias();
@@ -150,12 +150,12 @@ void generator::generate(std::ostream &ostr) const
     ostr << "@startuml" << '\n';
 
     // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml.before) {
+    for (const auto &b : m_config.puml().before) {
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
             auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace, std::get<0>(alias_match)));
+                m_config.using_namespace(), std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
@@ -176,12 +176,12 @@ void generator::generate(std::ostream &ostr) const
     }
 
     // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml.after) {
+    for (const auto &b : m_config.puml().after) {
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
             auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace, std::get<0>(alias_match)));
+                m_config.using_namespace(), std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
@@ -208,7 +208,7 @@ clanguml::package_diagram::model::diagram generate(
     // Get all translation units matching the glob from diagram
     // configuration
     std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob) {
+    for (const auto &g : diagram.glob()) {
         LOG_DBG("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
