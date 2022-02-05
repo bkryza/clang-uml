@@ -38,11 +38,7 @@ struct plantuml {
     std::vector<std::string> before;
     std::vector<std::string> after;
 
-    void append(const plantuml &r)
-    {
-        before.insert(before.end(), r.before.begin(), r.before.end());
-        after.insert(after.end(), r.after.begin(), r.after.end());
-    }
+    void append(const plantuml &r);
 };
 
 struct filter {
@@ -70,25 +66,18 @@ enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
 std::string to_string(const diagram_type t);
 
 template <typename T> void append_value(T &l, const T &r) { l = r; }
-// template<> void append_value<bool>(bool &l, const bool&r) {l = r;}
 
 template <typename T> struct option {
     option(const std::string &name_)
         : name{name_}
     {
     }
-
     option(const std::string &name_, const T &initial_value)
         : name{name_}
         , value{initial_value}
         , has_value{true}
     {
     }
-
-    std::string name;
-
-    T value;
-    bool has_value{false};
 
     void append(const T &r)
     {
@@ -106,6 +95,10 @@ template <typename T> struct option {
     T &operator()() { return value; }
 
     const T &operator()() const { return value; }
+
+    std::string name;
+    T value;
+    bool has_value{false};
 };
 
 struct inheritable_diagram_options {
@@ -117,28 +110,7 @@ struct inheritable_diagram_options {
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml"};
 
-    void inherit(const inheritable_diagram_options &parent)
-    {
-        if (!glob.has_value && parent.glob.has_value)
-            glob.append(parent.glob());
-
-        if (!using_namespace.has_value && parent.using_namespace.has_value)
-            using_namespace.append(parent.using_namespace());
-
-        if (!include_relations_also_as_members.has_value &&
-            parent.include_relations_also_as_members.has_value)
-            include_relations_also_as_members.append(
-                parent.include_relations_also_as_members());
-
-        if (!include.has_value && parent.include.has_value)
-            include.append(parent.include());
-
-        if (!exclude.has_value && parent.exclude.has_value)
-            exclude.append(parent.exclude());
-
-        if (!puml.has_value && parent.puml.has_value)
-            puml.append(parent.puml());
-    }
+    void inherit(const inheritable_diagram_options &parent);
 };
 
 struct diagram : public inheritable_diagram_options {

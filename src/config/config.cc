@@ -51,6 +51,36 @@ std::string to_string(const diagram_type t)
     }
 }
 
+void plantuml::append(const plantuml &r)
+{
+    before.insert(before.end(), r.before.begin(), r.before.end());
+    after.insert(after.end(), r.after.begin(), r.after.end());
+}
+
+void inheritable_diagram_options::inherit(
+    const inheritable_diagram_options &parent)
+{
+    if (!glob.has_value && parent.glob.has_value)
+        glob.append(parent.glob());
+
+    if (!using_namespace.has_value && parent.using_namespace.has_value)
+        using_namespace.append(parent.using_namespace());
+
+    if (!include_relations_also_as_members.has_value &&
+        parent.include_relations_also_as_members.has_value)
+        include_relations_also_as_members.append(
+            parent.include_relations_also_as_members());
+
+    if (!include.has_value && parent.include.has_value)
+        include.append(parent.include());
+
+    if (!exclude.has_value && parent.exclude.has_value)
+        exclude.append(parent.exclude());
+
+    if (!puml.has_value && parent.puml.has_value)
+        puml.append(parent.puml());
+}
+
 bool diagram::should_include_entities(const std::string &ent)
 {
     for (const auto &ex : exclude().entity_types) {
