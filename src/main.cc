@@ -24,6 +24,7 @@
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 
+#include "config/config.h"
 #include "util/util.h"
 
 #include <cli11/CLI11.hpp>
@@ -39,6 +40,8 @@ using namespace clanguml;
 using config::config;
 using cx::compilation_database;
 
+void print_diagrams_list(const clanguml::config::config &cfg);
+
 int main(int argc, const char *argv[])
 {
     CLI::App app{"Clang-based PlantUML diagram generator for C++"};
@@ -48,6 +51,7 @@ int main(int argc, const char *argv[])
     std::vector<std::string> diagram_names{};
     std::optional<std::string> output_directory;
     bool verbose{false};
+    bool list_diagrams{false};
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -58,6 +62,8 @@ int main(int argc, const char *argv[])
     app.add_option("-o,--output-directory", output_directory,
         "Override output directory specified in config file");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
+    app.add_flag("-l,--list-diagrams", list_diagrams,
+        "Print list of diagrams defined in the config file");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -69,6 +75,11 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loading clang-uml config from {}", config_path);
 
     auto config = clanguml::config::load(config_path);
+
+    if (list_diagrams) {
+        print_diagrams_list(config);
+        return 0;
+    }
 
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir);
@@ -86,6 +97,7 @@ int main(int argc, const char *argv[])
             continue;
 
         using clanguml::config::class_diagram;
+        using clanguml::config::diagram_type;
         using clanguml::config::package_diagram;
         using clanguml::config::sequence_diagram;
 
@@ -93,7 +105,7 @@ int main(int argc, const char *argv[])
         std::ofstream ofs;
         ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
-        if (std::dynamic_pointer_cast<class_diagram>(diagram)) {
+        if (diagram->type() == diagram_type::class_diagram) {
             auto model =
                 clanguml::class_diagram::generators::plantuml::generate(
                     db, name, dynamic_cast<class_diagram &>(*diagram));
@@ -102,7 +114,7 @@ int main(int argc, const char *argv[])
                 dynamic_cast<clanguml::config::class_diagram &>(*diagram),
                 model);
         }
-        else if (std::dynamic_pointer_cast<sequence_diagram>(diagram)) {
+        else if (diagram->type() == diagram_type::sequence_diagram) {
             auto model =
                 clanguml::sequence_diagram::generators::plantuml::generate(
                     db, name, dynamic_cast<sequence_diagram &>(*diagram));
@@ -111,7 +123,7 @@ int main(int argc, const char *argv[])
                 dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
                 model);
         }
-        else if (std::dynamic_pointer_cast<package_diagram>(diagram)) {
+        else if (diagram->type() == diagram_type::package_diagram) {
             auto model =
                 clanguml::package_diagram::generators::plantuml::generate(
                     db, name, dynamic_cast<package_diagram &>(*diagram));
@@ -127,4 +139,15 @@ int main(int argc, const char *argv[])
     }
 
     return 0;
+}
+
+void print_diagrams_list(const clanguml::config::config &cfg)
+{
+    using std::cout;
+
+    cout << "The following diagrams are defined in the config file:\n";
+    for (const auto &[name, diagram] : cfg.diagrams) {
+        cout << "  - " << name << " [" << to_string(diagram->type()) << "]";
+        cout << '\n';
+    }
 }

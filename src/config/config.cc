@@ -27,6 +27,20 @@ config load(const std::string &config_file)
     return doc.as<config>();
 }
 
+std::string to_string(const diagram_type t)
+{
+    switch (t) {
+    case diagram_type::class_diagram:
+        return "class";
+    case diagram_type::sequence_diagram:
+        return "sequence";
+    case diagram_type::package_diagram:
+        return "package";
+    default:
+        assert(false);
+    }
+}
+
 bool diagram::should_include_entities(const std::string &ent)
 {
     for (const auto &ex : exclude.entity_types) {
@@ -107,6 +121,8 @@ bool diagram::should_include(const clanguml::common::model::scope_t scope) const
     return false;
 }
 
+diagram_type class_diagram::type() const { return diagram_type::class_diagram; }
+
 bool class_diagram::has_class(std::string clazz)
 {
     for (const auto &c : classes) {
@@ -121,6 +137,16 @@ bool class_diagram::has_class(std::string clazz)
     }
 
     return false;
+}
+
+diagram_type sequence_diagram::type() const
+{
+    return diagram_type::sequence_diagram;
+}
+
+diagram_type package_diagram::type() const
+{
+    return diagram_type::package_diagram;
 }
 
 }

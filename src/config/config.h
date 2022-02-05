@@ -59,8 +59,14 @@ struct filter {
     std::vector<common::model::scope_t> scopes;
 };
 
+enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
+
+std::string to_string(const diagram_type t);
+
 struct diagram {
     virtual ~diagram() = default;
+
+    virtual diagram_type type() const = 0;
 
     std::string name;
     std::vector<std::string> glob;
@@ -89,6 +95,8 @@ struct source_location {
 struct class_diagram : public diagram {
     virtual ~class_diagram() = default;
 
+    diagram_type type() const override;
+
     std::vector<std::string> classes;
     bool include_relations_also_as_members{true};
 
@@ -98,11 +106,15 @@ struct class_diagram : public diagram {
 struct sequence_diagram : public diagram {
     virtual ~sequence_diagram() = default;
 
+    diagram_type type() const override;
+
     std::vector<source_location> start_from;
 };
 
 struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
+
+    diagram_type type() const override;
 };
 
 struct config {
