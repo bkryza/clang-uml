@@ -71,3 +71,9 @@ init_compile_commands: debug
 .PHONY: clang-format
 clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
+
+.PHONY: iwyu_fixes
+iwyu_fixes: debug
+	python3 $(shell which iwyu_tool.py) -p debug > debug/iwyu.out
+	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/src/.*" < debug/iwyu.out
+	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/tests/.*" < debug/iwyu.out
