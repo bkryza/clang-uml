@@ -22,9 +22,19 @@ namespace config {
 
 config load(const std::string &config_file)
 {
-    YAML::Node doc = YAML::LoadFile(config_file);
+    try {
+        YAML::Node doc = YAML::LoadFile(config_file);
 
-    return doc.as<config>();
+        return doc.as<config>();
+    }
+    catch (YAML::BadFile &e) {
+        throw std::runtime_error(fmt::format(
+            "Could not open config file {}: {}", config_file, e.what()));
+    }
+    catch (YAML::Exception &e) {
+        throw std::runtime_error(fmt::format(
+            "Cannot parse YAML file {}: {}", config_file, e.what()));
+    }
 }
 
 std::string to_string(const diagram_type t)
@@ -321,6 +331,34 @@ template <> struct convert<package_diagram> {
     }
 };
 
+std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
+{
+    const auto diagram_type = d["type"].as<std::string>();
+
+    if (diagram_type == "class") {
+        return std::make_shared<class_diagram>(d.as<class_diagram>());
+    }
+    else if (diagram_type == "sequence") {
+        return std::make_shared<sequence_diagram>(d.as<sequence_diagram>());
+    }
+    else if (diagram_type == "package") {
+        return std::make_shared<package_diagram>(d.as<package_diagram>());
+    }
+
+    LOG_WARN("Diagrams of type {} are not supported... ", diagram_type);
+
+    return {};
+}
+
+inline bool has_key(const YAML::Node &n, const std::string &key)
+{
+    assert(n.Type() == NodeType::Map);
+
+    return std::count_if(n.begin(), n.end(), [&key](auto &&n) {
+        return n.first.template as<std::string>() == key;
+    }) > 0;
+}
+
 //
 // config Yaml decoder
 //
@@ -342,26 +380,23 @@ template <> struct convert<config> {
         assert(diagrams.Type() == NodeType::Map);
 
         for (const auto &d : diagrams) {
-            const auto diagram_type = d.second["type"].as<std::string>();
             auto name = d.first.as<std::string>();
-            if (diagram_type == "class") {
-                rhs.diagrams[name] = std::make_shared<class_diagram>(
-                    d.second.as<class_diagram>());
-            }
-            else if (diagram_type == "sequence") {
-                rhs.diagrams[name] = std::make_shared<sequence_diagram>(
-                    d.second.as<sequence_diagram>());
-            }
-            else if (diagram_type == "package") {
-                rhs.diagrams[name] = std::make_shared<package_diagram>(
-                    d.second.as<package_diagram>());
+            std::shared_ptr<clanguml::config::diagram> diagram_config;
+
+            if (has_key(d.second, "include!")) {
+                YAML::Node node =
+                    YAML::LoadFile(d.second["include!"].as<std::string>());
+
+                diagram_config = parse_diagram_config(node);
             }
             else {
-                LOG_WARN(
-                    "Diagrams of type {} are not supported at the moment... ",
-                    diagram_type);
+                diagram_config = parse_diagram_config(d.second);
             }
-            rhs.diagrams[name]->name = name;
+
+            if (diagram_config) {
+                diagram_config->name = name;
+                rhs.diagrams[name] = diagram_config;
+            }
         }
 
         return true;

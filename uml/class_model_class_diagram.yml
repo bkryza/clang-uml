@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: false
+glob:
+  - src/class_diagram/model/*.h
+  - src/class_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml::class_diagram::model
+using_namespace:
+  - clanguml::class_diagram::model
+plantuml:
+  before:
+    - 'title clang-uml class diagram model'

@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: false
+glob:
+  - src/sequence_diagram/model/*.h
+  - src/sequence_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml::sequence_diagram::model
+using_namespace:
+  - clanguml::sequence_diagram::model
+plantuml:
+  before:
+    - 'title clang-uml sequence diagram model'

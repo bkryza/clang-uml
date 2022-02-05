@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: false
+glob:
+  - src/package_diagram/model/*.h
+  - src/package_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml::package_diagram::model
+using_namespace:
+  - clanguml::package_diagram::model
+plantuml:
+  before:
+    - 'title clang-uml package diagram model'

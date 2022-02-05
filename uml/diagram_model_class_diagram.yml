@@ -1,0 +1,22 @@
+type: class
+include_relations_also_as_members: false
+glob:
+  - src/common/model/*.h
+  - src/common/model/*.cc
+  - src/class_diagram/model/*.h
+  - src/class_diagram/model/*.cc
+  - src/sequence_diagram/model/*.h
+  - src/sequence_diagram/model/*.cc
+  - src/package_diagram/model/*.h
+  - src/package_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml::common::model
+    - clanguml::class_diagram::model
+    - clanguml::sequence_diagram::model
+    - clanguml::package_diagram::model
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clang-uml diagram model'

@@ -181,9 +181,10 @@ bool contains(const T &container, const E &element)
             container.end();
     }
     else {
-        return std::find(container.cbegin(), container.cend(), element) !=
-            container.cend();
+        return std::find(container.begin(), container.end(), element) !=
+            container.end();
     }
 }
+
 } // namespace util
 } // namespace clanguml

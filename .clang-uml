@@ -2,122 +2,18 @@ compilation_database_dir: debug
 output_directory: docs/diagrams
 diagrams:
   main_package:
-    type: package
-    glob:
-      - src/**/*.h
-      - src/**/*.cc
-    include:
-      namespaces:
-        - clanguml
-    using_namespace:
-      - clanguml
-    plantuml:
-      before:
-        - 'title clang-uml namespaces'
+    include!: uml/main_package_diagram.yml
   config_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/config/config.h
-      - src/config/config.cc
-    include:
-      namespaces:
-        - clanguml::config
-    using_namespace:
-      - clanguml::config
-    plantuml:
-      before:
-        - 'title clang-uml configuration model'
+    include!: uml/config_class_diagram.yml
   decorators_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/decorators/decorators.h
-      - src/decorators/decorators.cc
-    include:
-      namespaces:
-        - clanguml::decorators
-    using_namespace:
-      - clanguml::decorators
-    plantuml:
-      before:
-        - 'title clang-uml decorators model'
+    include!: uml/decorators_class_diagram.yml
   common_model_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/common/model/*.h
-      - src/common/model/*.cc
-    include:
-      namespaces:
-        - clanguml::common::model
-    using_namespace:
-      - clanguml::common::model
-    plantuml:
-      before:
-        - 'title clang-uml common diagram model'
+    include!: uml/common_model_class_diagram.yml
   class_model_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/class_diagram/model/*.h
-      - src/class_diagram/model/*.cc
-    include:
-      namespaces:
-        - clanguml::class_diagram::model
-    using_namespace:
-      - clanguml::class_diagram::model
-    plantuml:
-      before:
-        - 'title clang-uml class diagram model'
+    include!: uml/class_model_class_diagram.yml
   sequence_model_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/sequence_diagram/model/*.h
-      - src/sequence_diagram/model/*.cc
-    include:
-      namespaces:
-        - clanguml::sequence_diagram::model
-    using_namespace:
-      - clanguml::sequence_diagram::model
-    plantuml:
-      before:
-        - 'title clang-uml sequence diagram model'
+    include!: uml/sequence_model_class_diagram.yml
   package_model_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/package_diagram/model/*.h
-      - src/package_diagram/model/*.cc
-    include:
-      namespaces:
-        - clanguml::package_diagram::model
-    using_namespace:
-      - clanguml::package_diagram::model
-    plantuml:
-      before:
-        - 'title clang-uml package diagram model'
+    include!: uml/package_model_class_diagram.yml
   diagram_model_class:
-    type: class
-    include_relations_also_as_members: false
-    glob:
-      - src/common/model/*.h
-      - src/common/model/*.cc
-      - src/class_diagram/model/*.h
-      - src/class_diagram/model/*.cc
-      - src/sequence_diagram/model/*.h
-      - src/sequence_diagram/model/*.cc
-      - src/package_diagram/model/*.h
-      - src/package_diagram/model/*.cc
-    include:
-      namespaces:
-        - clanguml::common::model
-        - clanguml::class_diagram::model
-        - clanguml::sequence_diagram::model
-        - clanguml::package_diagram::model
-    using_namespace:
-      - clanguml
-    plantuml:
-      before:
-        - 'title clang-uml diagram model'
+    include!: uml/diagram_model_class_diagram.yml

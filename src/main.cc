@@ -74,7 +74,14 @@ int main(int argc, const char *argv[])
 
     LOG_INFO("Loading clang-uml config from {}", config_path);
 
-    auto config = clanguml::config::load(config_path);
+    clanguml::config::config config;
+    try {
+        config = clanguml::config::load(config_path);
+    }
+    catch (std::runtime_error &e) {
+        LOG_ERROR(e.what());
+        return 1;
+    }
 
     if (list_diagrams) {
         print_diagrams_list(config);

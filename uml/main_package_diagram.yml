@@ -1,0 +1,12 @@
+type: package
+glob:
+  - src/**/*.h
+  - src/**/*.cc
+include:
+  namespaces:
+    - clanguml
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clang-uml namespaces'
