@@ -72,8 +72,6 @@ int main(int argc, const char *argv[])
         spdlog::default_logger_raw()->set_pattern("[%l] %v");
     }
 
-    LOG_INFO("Loading clang-uml config from {}", config_path);
-
     clanguml::config::config config;
     try {
         config = clanguml::config::load(config_path);
@@ -87,6 +85,8 @@ int main(int argc, const char *argv[])
         print_diagrams_list(config);
         return 0;
     }
+
+    LOG_INFO("Loaded clang-uml config from {}", config_path);
 
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir);
