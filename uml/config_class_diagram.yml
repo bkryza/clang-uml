@@ -1,6 +1,7 @@
 type: class
 include_relations_also_as_members: false
 glob:
+  - src/config/option.h
   - src/config/config.h
   - src/config/config.cc
 include:
