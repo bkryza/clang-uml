@@ -95,6 +95,16 @@ std::string ns_relative(
 std::string unqualify(const std::string &s);
 
 /**
+ * @brief Abbreviate string to max_length, and replace last 3 characters
+ *        with ellipsis.
+ *
+ * @param s Input string
+ * @param max_length Maximum length
+ * @return Abbreviated string
+ */
+std::string abbreviate(const std::string &s, const unsigned int max_length);
+
+/**
  * @brief Find element alias in Puml note
  *
  * Finds aliases of the form @A(entity_name) in the Puml notes

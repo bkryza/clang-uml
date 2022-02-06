@@ -150,13 +150,19 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         ostr << to_string(m.scope()) << m.name();
 
         ostr << "(";
-        if (true) { // TODO: add option to disable parameter generation
+        if (m_config.generate_method_arguments() !=
+            config::method_arguments::none) {
             std::vector<std::string> params;
             std::transform(m.parameters().cbegin(), m.parameters().cend(),
                 std::back_inserter(params), [this](const auto &mp) {
                     return mp.to_string(m_config.using_namespace());
                 });
-            ostr << fmt::format("{}", fmt::join(params, ", "));
+            auto args_string = fmt::format("{}", fmt::join(params, ", "));
+            if (m_config.generate_method_arguments() !=
+                config::method_arguments::abbreviated) {
+                args_string = clanguml::util::abbreviate(args_string, 10);
+            }
+            ostr << args_string;
         }
         ostr << ")";
 

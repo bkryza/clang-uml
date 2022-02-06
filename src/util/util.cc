@@ -109,6 +109,22 @@ std::string unqualify(const std::string &s)
     return fmt::format("{}", fmt::join(toks, " "));
 }
 
+std::string abbreviate(const std::string &s, const unsigned int max_length)
+{
+    if (s.size() <= max_length)
+        return s;
+
+    auto res = s;
+
+    res.resize(max_length);
+
+    if (res.size() > 3) {
+        res.replace(res.size() - 3, 3, 3, '.');
+    }
+
+    return res;
+}
+
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result)
 {

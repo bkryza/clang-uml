@@ -47,6 +47,16 @@ TEST_CASE("Test ns_relative", "[unit-test]")
     CHECK(ns_relative({"clanguml::t0"}, "clanguml::t0") == "t0");
 }
 
+TEST_CASE("Test abbreviate", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    CHECK(abbreviate("", 10) == "");
+    CHECK(abbreviate("abcd", 10) == "abcd");
+    CHECK(abbreviate("abcd", 2) == "ab");
+    CHECK(abbreviate("abcdefg", 5) == "ab...");
+}
+
 TEST_CASE("Test replace_all", "[unit-test]")
 {
     using namespace clanguml::util;
