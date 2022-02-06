@@ -8,6 +8,7 @@ diagrams:
       - src/**/*.h
     using_namespace:
       - clanguml
+    generate_method_arguments: full
     include:
       namespaces:
         - clanguml

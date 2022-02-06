@@ -31,6 +31,8 @@ TEST_CASE("Test config simple", "[unit-test]")
     CHECK(diagram.type() == clanguml::config::diagram_type::class_diagram);
     CHECK(diagram.glob().size() == 2);
     CHECK(clanguml::util::contains(diagram.using_namespace(), "clanguml"));
+    CHECK(diagram.generate_method_arguments() ==
+        clanguml::config::method_arguments::full);
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")
@@ -64,6 +66,8 @@ TEST_CASE("Test config includes", "[unit-test]")
     CHECK(def.glob()[0] == "src/**/*.cc");
     CHECK(def.glob()[1] == "src/**/*.h");
     CHECK(clanguml::util::contains(def.using_namespace(), "clanguml"));
+    CHECK(def.generate_method_arguments() ==
+        clanguml::config::method_arguments::none);
 
     auto &cus = *cfg.diagrams["class_2"];
     CHECK(cus.type() == clanguml::config::diagram_type::class_diagram);
@@ -71,4 +75,6 @@ TEST_CASE("Test config includes", "[unit-test]")
     CHECK(cus.glob()[0] == "src/main.cc");
     CHECK(clanguml::util::contains(cus.using_namespace(), "clanguml::ns1"));
     CHECK(cus.include_relations_also_as_members());
+    CHECK(cus.generate_method_arguments() ==
+        clanguml::config::method_arguments::none);
 }

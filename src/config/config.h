@@ -34,6 +34,9 @@
 namespace clanguml {
 namespace config {
 
+enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
+enum class method_arguments { full, abbreviated, none };
+
 struct plantuml {
     std::vector<std::string> before;
     std::vector<std::string> after;
@@ -61,35 +64,42 @@ struct filter {
     std::vector<common::model::scope_t> scopes;
 };
 
-enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
-
 std::string to_string(const diagram_type t);
 
 template <typename T> void append_value(T &l, const T &r) { l = r; }
 
+enum class option_inherit_mode { override, append };
+
 template <typename T> struct option {
-    option(const std::string &name_)
+    option(const std::string &name_,
+        option_inherit_mode im = option_inherit_mode::override)
         : name{name_}
+        , value{{}}
     {
     }
-    option(const std::string &name_, const T &initial_value)
+    option(const std::string &name_, const T &initial_value,
+        option_inherit_mode im = option_inherit_mode::override)
         : name{name_}
         , value{initial_value}
-        , has_value{true}
     {
     }
 
-    void append(const T &r)
+    void set(const T &v)
     {
-        append_value(value, r);
-        has_value = true;
+        value = v;
+        is_declared = true;
     }
 
-    option<T> &operator+=(const T &r)
+    void override(const option<T> &o)
     {
-        append_value(value, r);
-        has_value = true;
-        return *this;
+        if (!is_declared && o.is_declared) {
+            if (inheritance_mode == option_inherit_mode::append)
+                append_value(value, o.value);
+            else
+                value = o.value;
+
+            is_declared = true;
+        }
     }
 
     T &operator()() { return value; }
@@ -98,7 +108,8 @@ template <typename T> struct option {
 
     std::string name;
     T value;
-    bool has_value{false};
+    bool is_declared{false};
+    option_inherit_mode inheritance_mode;
 };
 
 struct inheritable_diagram_options {
@@ -108,7 +119,9 @@ struct inheritable_diagram_options {
         "include_relations_also_as_members", true};
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
-    option<plantuml> puml{"plantuml"};
+    option<plantuml> puml{"plantuml", option_inherit_mode::append};
+    option<method_arguments> generate_method_arguments{
+        "generate_method_arguments", method_arguments::full};
 
     void inherit(const inheritable_diagram_options &parent);
 };

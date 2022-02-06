@@ -67,25 +67,14 @@ void plantuml::append(const plantuml &r)
 void inheritable_diagram_options::inherit(
     const inheritable_diagram_options &parent)
 {
-    if (!glob.has_value && parent.glob.has_value)
-        glob.append(parent.glob());
-
-    if (!using_namespace.has_value && parent.using_namespace.has_value)
-        using_namespace.append(parent.using_namespace());
-
-    if (!include_relations_also_as_members.has_value &&
-        parent.include_relations_also_as_members.has_value)
-        include_relations_also_as_members.append(
-            parent.include_relations_also_as_members());
-
-    if (!include.has_value && parent.include.has_value)
-        include.append(parent.include());
-
-    if (!exclude.has_value && parent.exclude.has_value)
-        exclude.append(parent.exclude());
-
-    if (!puml.has_value && parent.puml.has_value)
-        puml.append(parent.puml());
+    glob.override(parent.glob);
+    using_namespace.override(parent.using_namespace);
+    include_relations_also_as_members.override(
+        parent.include_relations_also_as_members);
+    include.override(parent.include);
+    exclude.override(parent.exclude);
+    puml.override(parent.puml);
+    generate_method_arguments.override(parent.generate_method_arguments);
 }
 
 bool diagram::should_include_entities(const std::string &ent)
@@ -202,6 +191,7 @@ void append_value<std::vector<std::string>>(
 {
     l.insert(l.end(), r.begin(), r.end());
 }
+
 template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
@@ -214,6 +204,7 @@ using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
+using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
@@ -232,7 +223,25 @@ template <typename T>
 void get_option(const Node &node, clanguml::config::option<T> &option)
 {
     if (node[option.name])
-        option.append(node[option.name].template as<T>());
+        option.set(node[option.name].template as<T>());
+}
+
+template <>
+void get_option<method_arguments>(
+    const Node &node, clanguml::config::option<method_arguments> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "full")
+            option.set(method_arguments::full);
+        else if (val == "abbreviated")
+            option.set(method_arguments::abbreviated);
+        else if (val == "none")
+            option.set(method_arguments::none);
+        else
+            throw std::runtime_error(
+                "Invalid generate_method_arguments value: " + val);
+    }
 }
 
 std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
@@ -367,6 +376,7 @@ template <> struct convert<class_diagram> {
 
         get_option(node, rhs.classes);
         get_option(node, rhs.include_relations_also_as_members);
+        get_option(node, rhs.generate_method_arguments);
 
         return true;
     }
@@ -413,6 +423,7 @@ template <> struct convert<config> {
         get_option(node, rhs.compilation_database_dir);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
+        get_option(node, rhs.generate_method_arguments);
 
         auto diagrams = node["diagrams"];
 

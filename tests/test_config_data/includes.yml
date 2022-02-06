@@ -1,6 +1,7 @@
 compilation_database_dir: debug
 output_directory: output
 include_relations_also_as_members: false
+generate_method_arguments: none
 using_namespace:
   - clanguml
 include:
