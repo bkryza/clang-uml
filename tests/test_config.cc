@@ -52,3 +52,23 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(clanguml::util::contains(cus.using_namespace(), "clanguml::ns1"));
     CHECK(cus.include_relations_also_as_members());
 }
+
+TEST_CASE("Test config includes", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/includes.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class_1"];
+    CHECK(def.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(def.glob().size() == 2);
+    CHECK(def.glob()[0] == "src/**/*.cc");
+    CHECK(def.glob()[1] == "src/**/*.h");
+    CHECK(clanguml::util::contains(def.using_namespace(), "clanguml"));
+
+    auto &cus = *cfg.diagrams["class_2"];
+    CHECK(cus.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(cus.glob().size() == 1);
+    CHECK(cus.glob()[0] == "src/main.cc");
+    CHECK(clanguml::util::contains(cus.using_namespace(), "clanguml::ns1"));
+    CHECK(cus.include_relations_also_as_members());
+}

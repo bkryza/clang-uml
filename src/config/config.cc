@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 #include "config.h"
+#include <filesystem>
 
 namespace clanguml {
 namespace config {
@@ -24,6 +25,12 @@ config load(const std::string &config_file)
 {
     try {
         YAML::Node doc = YAML::LoadFile(config_file);
+
+        // Store the parent path of the config_file to properly resolve
+        // the include files paths
+        auto config_file_path = std::filesystem::path{config_file};
+        doc.force_insert(
+            "__parent_path", config_file_path.parent_path().string());
 
         return doc.as<config>();
     }
@@ -416,8 +423,11 @@ template <> struct convert<config> {
             std::shared_ptr<clanguml::config::diagram> diagram_config{};
 
             if (has_key(d.second, "include!")) {
-                YAML::Node node =
-                    YAML::LoadFile(d.second["include!"].as<std::string>());
+                auto parent_path = node["__parent_path"].as<std::string>();
+                auto include_path = std::filesystem::path{parent_path};
+                include_path /= d.second["include!"].as<std::string>();
+
+                YAML::Node node = YAML::LoadFile(include_path.string());
 
                 diagram_config = parse_diagram_config(node);
             }

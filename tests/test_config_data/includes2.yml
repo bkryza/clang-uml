@@ -1,0 +1,6 @@
+type: class
+using_namespace:
+  - clanguml::ns1
+include_relations_also_as_members: true
+glob:
+  - src/main.cc
