@@ -78,3 +78,27 @@ TEST_CASE("Test config includes", "[unit-test]")
     CHECK(cus.generate_method_arguments() ==
         clanguml::config::method_arguments::none);
 }
+
+TEST_CASE("Test config layout", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/layout.yml");
+
+    CHECK(cfg.diagrams.size() == 1);
+    auto &def = static_cast<clanguml::config::class_diagram &>(
+        *cfg.diagrams["class_main"]);
+    CHECK(def.type() == clanguml::config::diagram_type::class_diagram);
+
+    CHECK(def.layout().at("ABCD").size() == 2);
+    CHECK(def.layout().at("ABCD")[0].hint == clanguml::config::hint_t::up);
+    CHECK(def.layout().at("ABCD")[0].entity == "ABCD_SUBCLASS");
+    CHECK(def.layout().at("ABCD")[1].hint == clanguml::config::hint_t::left);
+    CHECK(def.layout().at("ABCD")[1].entity == "ABCD_SIBLING");
+
+    CHECK(def.layout().at("ABCD_SIBLING").size() == 2);
+    CHECK(def.layout().at("ABCD_SIBLING")[0].hint ==
+        clanguml::config::hint_t::right);
+    CHECK(def.layout().at("ABCD_SIBLING")[0].entity == "ABCD_OTHER_SIBLING");
+    CHECK(def.layout().at("ABCD_SIBLING")[1].hint ==
+        clanguml::config::hint_t::down);
+    CHECK(def.layout().at("ABCD_SIBLING")[1].entity == "ABCD_SIBLING_SIBLING");
+}

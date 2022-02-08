@@ -1,0 +1,22 @@
+compilation_database_dir: debug
+output_directory: output
+diagrams:
+  class_main:
+    type: class
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    using_namespace:
+      - clanguml
+    generate_method_arguments: full
+    layout:
+      ABCD:
+        - up: ABCD_SUBCLASS
+        - left: ABCD_SIBLING
+      ABCD_SIBLING:
+        - right: ABCD_OTHER_SIBLING
+        - down: ABCD_SIBLING_SIBLING
+    include:
+      namespaces:
+        - clanguml
+        - ABCD
