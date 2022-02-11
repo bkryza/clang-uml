@@ -31,7 +31,7 @@
 namespace clanguml::package_diagram::model {
 
 namespace detail {
-template <typename T, template <typename> class Container,
+template <typename T, template <typename, typename> class Container,
     typename Ptr = std::unique_ptr<T>>
 class package_trait {
 public:
@@ -104,8 +104,9 @@ public:
             packages_.end();
     }
 
-    typedef typename Container<Ptr>::iterator iterator;
-    typedef typename Container<Ptr>::const_iterator const_iterator;
+    typedef typename Container<Ptr, std::allocator<Ptr>>::iterator iterator;
+    typedef typename Container<Ptr, std::allocator<Ptr>>::const_iterator
+        const_iterator;
 
     inline iterator begin() noexcept { return packages_.begin(); }
     inline const_iterator cbegin() const noexcept { return packages_.cbegin(); }
@@ -113,7 +114,7 @@ public:
     inline const_iterator cend() const noexcept { return packages_.cend(); }
 
 protected:
-    Container<std::unique_ptr<T>> packages_;
+    Container<Ptr, std::allocator<Ptr>> packages_;
 };
 }
 
