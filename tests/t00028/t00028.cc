@@ -39,6 +39,11 @@ enum class F { one, two, three };
 
 /// \uml{note[right] R class note.}
 class R {
+    explicit R(C &c)
+        : ccc(c)
+    {
+    }
+
     A aaa;
 
     B *bbb;

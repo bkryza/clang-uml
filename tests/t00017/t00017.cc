@@ -1,3 +1,5 @@
+#include <utility>
+
 namespace clanguml {
 namespace t00017 {
 class A {
@@ -34,6 +36,15 @@ class K {
 };
 
 class R {
+    explicit R(int &some_int, C &cc, const E &ee, F &&ff, I *&ii)
+        : some_int_reference{some_int}
+        , c{cc}
+        , e{ee}
+        , f{std::move(ff)}
+        , i{ii}
+    {
+    }
+
 private:
     int some_int;
     int *some_int_pointer;
@@ -43,7 +54,7 @@ private:
     B *b;
     C &c;
     const D *d;
-    const E &e{};
+    const E &e;
     F &&f;
     G **g;
     H ***h;

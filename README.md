@@ -26,10 +26,14 @@ Main features supported so far include:
 
 ### Building from source
 Currently the only method to install `clang-uml` is from source. First make sure
-that you have the following dependencies installed (example for Ubuntu):
+that you have the following dependencies installed:
 
 ```bash
+# Ubuntu
 apt install ccache cmake libyaml-cpp-dev libfmt-dev libspdlog-dev clang-12 libclang-12-dev libclang-cpp12-dev
+
+# macos
+brew install ccache cmake llvm fmt spdlog yaml-cpp
 ```
 
 Then proceed with building the sources:
@@ -41,6 +45,9 @@ make submodules
 # Please note that top level Makefile is just a convenience wrapper for CMake
 make release
 release/clang-uml --help
+
+# To build using a specific installed version of LLVM use:
+LLVM_CONFIG_PATH=/usr/bin/llvm-config-13 make release
 
 # Optionally
 make install
