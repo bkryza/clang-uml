@@ -38,7 +38,7 @@ release/CMakeLists.txt:
 
 debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
-	make -C debug -j$(NUMPROC)
+	make -C debug -j$(NUMPROC) VERBOSE=1
 
 release: release/CMakeLists.txt
 	make -C release -j
