@@ -42,6 +42,9 @@ make submodules
 make release
 release/clang-uml --help
 
+# To build using a specific installed version of LLVM use:
+LLVM_CONFIG_PATH=/usr/bin/llvm-config-13 make release
+
 # Optionally
 make install
 # or

@@ -15,10 +15,23 @@ set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 
+option(LLVM_CONFIG_PATH "Path to custom llvm-config executable")
+
+if(LLVM_CONFIG_PATH)
+    set(LIBCLANG_LLVM_CONFIG_EXECUTABLE ${LLVM_CONFIG_PATH})
+endif(LLVM_CONFIG_PATH)
+
+message(STATUS "Checking for fmt...")
+find_package(fmt REQUIRED)
 
 message(STATUS "Checking for spdlog...")
 find_package(spdlog REQUIRED)
-get_target_property(SPDLOG_INCLUDE_DIRS spdlog::spdlog_header_only INTERFACE_INCLUDE_DIRECTORIES)
+if(APPLE)
+    get_target_property(SPDLOG_INCLUDE_DIRS spdlog::spdlog_header_only INTERFACE_INCLUDE_DIRECTORIES)
+else(APPLE)
+    get_target_property(SPDLOG_INCLUDE_DIRS spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
+endif(APPLE)
+
 add_definitions(-DSPDLOG_FMT_EXTERNAL)
 
 message(STATUS "Checking for yaml-cpp...")
@@ -26,7 +39,9 @@ find_package(yaml-cpp REQUIRED)
 
 message(STATUS "Checking for libclang...")
 set(LLVM_PREFERRED_VERSION 12.0.0)
-set(LIBCLANG_LLVM_CONFIG_EXECUTABLE "/usr/local/opt/llvm@12/bin/llvm-config")
+# Add
+#   -DLLVM_CONFIG_PATH=/path/to/llvm-config
+# to use custom LLVM version
 find_package(LibClang REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${LIBCLANG_CXXFLAGS}")
@@ -65,7 +80,13 @@ add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
 install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} spdlog::spdlog_header_only cppast clang-umllib)
+target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} fmt::fmt cppast clang-umllib)
+if(APPLE)
+    target_link_libraries(clang-uml spdlog::spdlog_header_only)
+else(APPLE)
+    target_link_libraries(clang-uml spdlog::spdlog)
+endif(APPLE)
+
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
 install(

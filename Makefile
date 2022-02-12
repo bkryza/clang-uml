@@ -22,6 +22,8 @@
 
 NUMPROC ?= $(shell nproc)
 
+LLVM_CONFIG_PATH ?=
+
 .PHONY: clean
 clean:
 	rm -rf debug release
@@ -29,16 +31,18 @@ clean:
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-		-DCMAKE_BUILD_TYPE=Debug
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DLLVM_CONFIG_PATH=$(LLVM_CONFIG_PATH)
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-		-DCMAKE_BUILD_TYPE=Release
+		-DCMAKE_BUILD_TYPE=Release \
+		-DLLVM_CONFIG_PATH=$(LLVM_CONFIG_PATH)
 
 debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
-	make -C debug -j$(NUMPROC) VERBOSE=1
+	make -C debug -j$(NUMPROC)
 
 release: release/CMakeLists.txt
 	make -C release -j
