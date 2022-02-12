@@ -30,9 +30,9 @@ if(APPLE)
     get_target_property(SPDLOG_INCLUDE_DIRS spdlog::spdlog_header_only INTERFACE_INCLUDE_DIRECTORIES)
 else(APPLE)
     get_target_property(SPDLOG_INCLUDE_DIRS spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
+    add_definitions(-DSPDLOG_FMT_EXTERNAL)
 endif(APPLE)
 
-add_definitions(-DSPDLOG_FMT_EXTERNAL)
 
 message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp REQUIRED)
