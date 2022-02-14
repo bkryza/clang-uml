@@ -135,6 +135,8 @@ struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
 
     diagram_type type() const override;
+
+    option<layout_hints> layout{"layout"};
 };
 
 struct config : public inheritable_diagram_options {

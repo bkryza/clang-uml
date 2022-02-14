@@ -20,3 +20,18 @@ diagrams:
       namespaces:
         - clanguml
         - ABCD
+  package_main:
+    type: package
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    using_namespace:
+      - clanguml
+    generate_method_arguments: full
+    layout:
+      ABCD:
+        - up: ABCD_SUBCLASS
+        - left: ABCD_SIBLING
+      ABCD_SIBLING:
+        - right: ABCD_OTHER_SIBLING
+        - down: ABCD_SIBLING_SIBLING

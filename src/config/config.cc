@@ -409,6 +409,8 @@ template <> struct convert<package_diagram> {
         if (!decode_diagram(node, rhs))
             return false;
 
+        get_option(node, rhs.layout);
+
         return true;
     }
 };
