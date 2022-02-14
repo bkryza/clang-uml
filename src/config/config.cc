@@ -58,6 +58,22 @@ std::string to_string(const diagram_type t)
     }
 }
 
+std::string to_string(const hint_t t)
+{
+    switch (t) {
+    case hint_t::up:
+        return "up";
+    case hint_t::down:
+        return "down";
+    case hint_t::left:
+        return "left";
+    case hint_t::right:
+        return "right";
+    default:
+        assert(false);
+    }
+}
+
 void plantuml::append(const plantuml &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());
@@ -438,10 +454,6 @@ template <> struct convert<layout_hint> {
         else if (node["right"]) {
             rhs.hint = hint_t::right;
             rhs.entity = node["right"].as<std::string>();
-        }
-        else if (node["hidden"]) {
-            rhs.hint = hint_t::hidden;
-            rhs.entity = node["hidden"].as<std::string>();
         }
         else
             return false;

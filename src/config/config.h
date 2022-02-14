@@ -65,7 +65,7 @@ struct filter {
     std::vector<common::model::scope_t> scopes;
 };
 
-enum class hint_t { up, down, left, right, hidden };
+enum class hint_t { up, down, left, right };
 
 struct layout_hint {
     hint_t hint;
@@ -75,6 +75,7 @@ struct layout_hint {
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
 
 std::string to_string(const diagram_type t);
+std::string to_string(const hint_t t);
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};

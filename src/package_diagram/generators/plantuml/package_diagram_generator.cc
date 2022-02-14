@@ -109,6 +109,31 @@ void generator::generate_relationships(
     }
 }
 
+void generator::generate_config_layout_hints(std::ostream &ostr) const
+{
+    const auto &uns = m_config.using_namespace();
+
+    // Generate layout hints
+    for (const auto &[entity, hints] : m_config.layout()) {
+        for (const auto &hint : hints) {
+            std::stringstream hint_str;
+            try {
+                hint_str << m_model.to_alias(ns_relative(uns, entity))
+                         << " -[hidden]"
+                         << clanguml::config::to_string(hint.hint) << "- "
+                         << m_model.to_alias(ns_relative(uns, hint.entity))
+                         << '\n';
+                ostr << hint_str.str();
+            }
+            catch (error::uml_alias_missing &e) {
+                LOG_ERROR("=== Skipping layout hint from {} to {} due "
+                          "to: {}",
+                    entity, hint.entity, e.what());
+            }
+        }
+    }
+}
+
 void generator::generate(const package &p, std::ostream &ostr) const
 {
     const auto &uns = m_config.using_namespace();
@@ -174,6 +199,8 @@ void generator::generate(std::ostream &ostr) const
         generate_relationships(*p, ostr);
         ostr << '\n';
     }
+
+    generate_config_layout_hints(ostr);
 
     // Process aliases in any of the puml directives
     for (const auto &b : m_config.puml().after) {

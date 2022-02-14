@@ -60,6 +60,8 @@ public:
 
     void generate_relationships(const package &p, std::ostream &ostr) const;
 
+    void generate_config_layout_hints(std::ostream &ostr) const;
+
     void generate(const package &e, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;
