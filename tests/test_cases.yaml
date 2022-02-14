@@ -125,6 +125,9 @@ test_cases:
     - name: t30006
       title: Package split namespace test case
       description:
+    - name: t30007
+      title: Package diagram layout hints test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test
