@@ -67,8 +67,6 @@ public:
     void generate(const enum_ &e, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const override;
-
-    friend std::ostream &operator<<(std::ostream &os, const generator &g);
 };
 
 clanguml::class_diagram::model::diagram generate(

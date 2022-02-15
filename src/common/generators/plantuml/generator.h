@@ -45,6 +45,9 @@ public:
 
     virtual void generate(std::ostream &ostr) const = 0;
 
+    template <typename C, typename D>
+    friend std::ostream &operator<<(std::ostream &os, const generator<C, D> &g);
+
     void generate_config_layout_hints(std::ostream &ostr) const;
 
     void generate_plantuml_directives(
@@ -57,6 +60,13 @@ protected:
     ConfigType &m_config;
     DiagramType &m_model;
 };
+
+template <typename C, typename D>
+std::ostream &operator<<(std::ostream &os, const generator<C, D> &g)
+{
+    g.generate(os);
+    return os;
+}
 
 template <typename C, typename D>
 void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const

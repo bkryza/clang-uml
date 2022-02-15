@@ -22,8 +22,7 @@
 
 namespace clanguml::class_diagram::generators::plantuml {
 
-generator::generator(
-    clanguml::config::class_diagram &config, diagram_model &model)
+generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
 {
 }
@@ -310,12 +309,6 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << '\n';
-}
-
-std::ostream &operator<<(std::ostream &os, const generator &g)
-{
-    g.generate(os);
-    return os;
 }
 
 clanguml::class_diagram::model::diagram generate(
