@@ -33,6 +33,7 @@
  * [t00032](./test_cases/t00032.md) - Class template with template base classes test case
  * [t00033](./test_cases/t00033.md) - Nested template instantiation dependency test case
  * [t00034](./test_cases/t00034.md) - Template metaprogramming type function test case
+ * [t00035](./test_cases/t00035.md) - PlantUML class diagram layout hints test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
