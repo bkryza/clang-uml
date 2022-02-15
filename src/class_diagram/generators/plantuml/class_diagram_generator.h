@@ -64,6 +64,8 @@ public:
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const;
 
+    void generate_config_layout_hints(std::ostream &ostr) const;
+
     void generate(const class_ &c, std::ostream &ostr) const;
 
     void generate(const enum_ &e, std::ostream &ostr) const;
