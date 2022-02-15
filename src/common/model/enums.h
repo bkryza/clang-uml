@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include <string>
+
 namespace clanguml::common::model {
 
 enum class access_t { kPublic, kProtected, kPrivate };
@@ -36,4 +38,9 @@ enum class relationship_t {
     kDependency
 };
 
+std::string to_string(relationship_t r);
+
+std::string to_string(scope_t r);
+
+std::string to_string(access_t r);
 }

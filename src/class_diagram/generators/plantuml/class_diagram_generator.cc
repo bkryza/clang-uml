@@ -22,79 +22,10 @@
 
 namespace clanguml::class_diagram::generators::plantuml {
 
-std::string relative_to(std::string n, std::string c)
-{
-    if (c.rfind(n) == std::string::npos)
-        return c;
-
-    return c.substr(n.size() + 2);
-}
-
 generator::generator(
     clanguml::config::class_diagram &config, diagram_model &model)
-    : m_config(config)
-    , m_model(model)
+    : common_generator<diagram_config, diagram_model>{config, model}
 {
-}
-
-std::string generator::to_string(scope_t scope) const
-{
-    switch (scope) {
-    case scope_t::kPublic:
-        return "+";
-    case scope_t::kProtected:
-        return "#";
-    case scope_t::kPrivate:
-        return "-";
-    default:
-        return "";
-    }
-}
-
-std::string generator::to_string(relationship_t r, std::string style) const
-{
-    switch (r) {
-    case relationship_t::kOwnership:
-    case relationship_t::kComposition:
-        return style.empty() ? "*--" : fmt::format("*-[{}]-", style);
-    case relationship_t::kAggregation:
-        return style.empty() ? "o--" : fmt::format("o-[{}]-", style);
-    case relationship_t::kContainment:
-        return style.empty() ? "--+" : fmt::format("-[{}]-+", style);
-    case relationship_t::kAssociation:
-        return style.empty() ? "-->" : fmt::format("-[{}]->", style);
-    case relationship_t::kInstantiation:
-        return style.empty() ? "..|>" : fmt::format(".[{}].|>", style);
-    case relationship_t::kFriendship:
-        return style.empty() ? "<.." : fmt::format("<.[{}].", style);
-    case relationship_t::kDependency:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
-    default:
-        return "";
-    }
-}
-
-std::string generator::name(relationship_t r) const
-{
-    switch (r) {
-    case relationship_t::kOwnership:
-    case relationship_t::kComposition:
-        return "composition";
-    case relationship_t::kAggregation:
-        return "aggregation";
-    case relationship_t::kContainment:
-        return "containment";
-    case relationship_t::kAssociation:
-        return "association";
-    case relationship_t::kInstantiation:
-        return "instantiation";
-    case relationship_t::kFriendship:
-        return "friendship";
-    case relationship_t::kDependency:
-        return "dependency";
-    default:
-        return "unknown";
-    }
 }
 
 void generator::generate_alias(const class_ &c, std::ostream &ostr) const
@@ -118,6 +49,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
+    namespace plantuml_common = clanguml::common::generators::plantuml;
 
     const auto &uns = m_config.using_namespace();
 
@@ -147,7 +79,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         std::string type{m.type()};
 
-        ostr << to_string(m.scope()) << m.name();
+        ostr << plantuml_common::to_plantuml(m.scope()) << m.name();
 
         ostr << "(";
         if (m_config.generate_method_arguments() !=
@@ -190,10 +122,12 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
     for (const auto &r : c.relationships()) {
-        if (!m_config.should_include_relationship(name(r.type())))
+        if (!m_config.should_include_relationship(
+                common::model::to_string(r.type())))
             continue;
 
-        LOG_DBG("== Processing relationship {}", to_string(r.type()));
+        LOG_DBG("== Processing relationship {}",
+            plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::stringstream relstr;
         std::string destination;
@@ -206,7 +140,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             if (!r.multiplicity_source().empty())
                 puml_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            puml_relation += to_string(r.type(), r.style());
+            puml_relation += plantuml_common::to_plantuml(r.type(), r.style());
 
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -216,7 +150,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
                    << m_model.to_alias(ns_relative(uns, destination));
 
             if (!r.label().empty()) {
-                relstr << " : " << to_string(r.scope()) << r.label();
+                relstr << " : " << plantuml_common::to_plantuml(r.scope())
+                       << r.label();
                 rendered_relations.emplace(r.label());
             }
 
@@ -233,7 +168,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_ERROR("=== Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type()), c.full_name(), destination, e.what());
+                plantuml_common::to_plantuml(r.type(), r.style()),
+                c.full_name(), destination, e.what());
         }
     }
 
@@ -251,13 +187,13 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (m.is_static())
             ostr << "{static} ";
 
-        ostr << to_string(m.scope()) << m.name() << " : "
+        ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
              << ns_relative(uns, m.type()) << '\n';
     }
 
     ostr << "}" << '\n';
 
-    if (m_config.should_include_relationship("inheritance"))
+    if (m_config.should_include_relationship("inheritance")) {
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
@@ -273,18 +209,9 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
                     b.name(), c.name(), e.what());
             }
         }
-
-    //
-    // Process notes
-    //
-    for (auto decorator : c.decorators()) {
-        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-        if (note && note->applies_to_diagram(m_config.name)) {
-            ostr << "note " << note->position << " of " << c.alias() << '\n'
-                 << note->text << '\n'
-                 << "end note\n";
-        }
     }
+
+    generate_notes(ostr, c);
 
     // Print relationships
     ostr << all_relations_str.str();
@@ -306,18 +233,21 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
     ostr << "}" << '\n';
 
     for (const auto &r : e.relationships()) {
-        if (!m_config.should_include_relationship(name(r.type())))
+        if (!m_config.should_include_relationship(
+                common::model::to_string(r.type())))
             continue;
 
         std::string destination;
         std::stringstream relstr;
         try {
-
             destination = r.destination();
 
             relstr << m_model.to_alias(
                           ns_relative(m_config.using_namespace(), e.name()))
-                   << " " << to_string(r.type()) << " "
+                   << " "
+                   << clanguml::common::generators::plantuml::to_plantuml(
+                          r.type(), r.style())
+                   << " "
                    << m_model.to_alias(
                           ns_relative(m_config.using_namespace(), destination));
 
@@ -331,63 +261,20 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
         catch (error::uml_alias_missing &ex) {
             LOG_ERROR("Skipping {} relation from {} to {} due "
                       "to: {}",
-                to_string(r.type()), e.full_name(), destination, ex.what());
+                clanguml::common::generators::plantuml::to_plantuml(
+                    r.type(), r.style()),
+                e.full_name(), destination, ex.what());
         }
     }
 
-    //
-    // Process notes
-    //
-    for (auto decorator : e.decorators()) {
-        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-        if (note && note->applies_to_diagram(m_config.name)) {
-            ostr << "note " << note->position << " of " << e.alias() << '\n'
-                 << note->text << '\n'
-                 << "end note\n";
-        }
-    }
-}
-
-void generator::generate_config_layout_hints(std::ostream &ostr) const
-{
-    const auto &uns = m_config.using_namespace();
-
-    // Generate layout hints
-    for (const auto &[entity, hints] : m_config.layout()) {
-        for (const auto &hint : hints) {
-            std::stringstream hint_str;
-            try {
-                hint_str << m_model.to_alias(ns_relative(uns, entity))
-                         << " -[hidden]"
-                         << clanguml::config::to_string(hint.hint) << "- "
-                         << m_model.to_alias(ns_relative(uns, hint.entity))
-                         << '\n';
-                ostr << hint_str.str();
-            }
-            catch (error::uml_alias_missing &e) {
-                LOG_ERROR("=== Skipping layout hint from {} to {} due "
-                          "to: {}",
-                    entity, hint.entity, e.what());
-            }
-        }
-    }
+    generate_notes(ostr, e);
 }
 
 void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
-    for (const auto &b : m_config.puml().before) {
-        std::string note{b};
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace(), std::get<0>(alias_match)));
-            note.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
-        }
-        ostr << note << '\n';
-    }
+    generate_plantuml_directives(ostr, m_config.puml().before);
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
@@ -420,21 +307,11 @@ void generator::generate(std::ostream &ostr) const
 
     generate_config_layout_hints(ostr);
 
-    // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml().after) {
-        std::string note{b};
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace(), std::get<0>(alias_match)));
-            note.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
-        }
-        ostr << note << '\n';
-    }
+    generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << '\n';
 }
+
 std::ostream &operator<<(std::ostream &os, const generator &g)
 {
     g.generate(os);
