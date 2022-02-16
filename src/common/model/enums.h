@@ -38,9 +38,14 @@ enum class relationship_t {
     kDependency
 };
 
+enum class message_t { kCall, kReturn };
+
 std::string to_string(relationship_t r);
 
 std::string to_string(scope_t r);
 
 std::string to_string(access_t r);
+
+std::string to_string(message_t r);
+
 }

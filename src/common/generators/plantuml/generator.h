@@ -18,7 +18,6 @@
 #pragma once
 
 #include "config/config.h"
-#include "generator.h"
 #include "util/error.h"
 #include "util/util.h"
 
@@ -26,12 +25,13 @@
 
 namespace clanguml::common::generators::plantuml {
 
+using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 
 std::string to_plantuml(relationship_t r, std::string style);
-
 std::string to_plantuml(scope_t scope);
+std::string to_plantuml(message_t r);
 
 template <typename ConfigType, typename DiagramType> class generator {
 public:

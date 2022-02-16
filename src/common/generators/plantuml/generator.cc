@@ -56,4 +56,16 @@ std::string to_plantuml(scope_t scope)
     }
 }
 
+std::string to_plantuml(message_t r)
+{
+    switch (r) {
+    case message_t::kCall:
+        return "->";
+    case message_t::kReturn:
+        return "-->";
+    default:
+        return "";
+    }
+}
+
 }

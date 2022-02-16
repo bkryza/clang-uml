@@ -36,10 +36,10 @@ translation_unit_visitor::translation_unit_visitor(
 
 void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
 {
+    using clanguml::common::model::message_t;
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::diagram;
     using clanguml::sequence_diagram::model::message;
-    using clanguml::sequence_diagram::model::message_t;
     using cppast::cpp_entity;
     using cppast::cpp_entity_kind;
     using cppast::cpp_function;

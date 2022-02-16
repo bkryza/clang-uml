@@ -78,4 +78,16 @@ std::string to_string(access_t a)
         assert(false);
     }
 }
+
+std::string to_string(message_t r)
+{
+    switch (r) {
+    case message_t::kCall:
+        return "call";
+    case message_t::kReturn:
+        return "return";
+    default:
+        assert(false);
+    }
+}
 }
