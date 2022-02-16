@@ -107,35 +107,4 @@ void generator::generate(std::ostream &ostr) const
     ostr << "@enduml" << std::endl;
 }
 
-clanguml::sequence_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::sequence_diagram &diagram)
-{
-    spdlog::info("Generating diagram {}.puml", name);
-    clanguml::sequence_diagram::model::diagram d;
-    d.name = name;
-
-    cppast::cpp_entity_index idx;
-    cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx)};
-
-    clanguml::sequence_diagram::visitor::translation_unit_visitor visitor(
-        idx, d, diagram);
-
-    // Get all translation units matching the glob from diagram
-    // configuration
-    std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob()) {
-        spdlog::debug("Processing glob: {}", g);
-        const auto matches = glob::rglob(g);
-        std::copy(matches.begin(), matches.end(),
-            std::back_inserter(translation_units));
-    }
-    cppast::parse_files(parser, translation_units, db);
-
-    for (auto &file : parser.files())
-        visitor(file);
-
-    return d;
-}
 }

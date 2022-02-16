@@ -69,10 +69,6 @@ public:
     void generate(std::ostream &ostr) const override;
 };
 
-clanguml::class_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::class_diagram &diagram);
-
 }
 }
 }

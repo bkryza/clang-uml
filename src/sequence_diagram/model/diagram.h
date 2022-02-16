@@ -25,12 +25,18 @@
 namespace clanguml::sequence_diagram::model {
 
 struct diagram {
+    std::string name() const;
+
+    void set_name(const std::string &name);
+
     std::string to_alias(const std::string &full_name) const;
 
     bool started{false};
-    std::string name;
 
     std::map<std::uint_least64_t, activity> sequences;
+
+private:
+    std::string name_;
 };
 
 }

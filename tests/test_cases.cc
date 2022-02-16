@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 #include "test_cases.h"
+#include "common/generators/plantuml/generator.h"
 
 #include <spdlog/spdlog.h>
 
@@ -44,36 +45,48 @@ clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    auto diagram_model =
-        clanguml::sequence_diagram::generators::plantuml::generate(db,
-            diagram->name,
-            dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
+    using diagram_config = clanguml::config::sequence_diagram;
+    using diagram_model = clanguml::sequence_diagram::model::diagram;
+    using diagram_visitor =
+        clanguml::sequence_diagram::visitor::translation_unit_visitor;
 
-    return diagram_model;
+    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+        diagram_config, diagram_visitor>(db, diagram->name,
+        dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
+
+    return model;
 }
 
 clanguml::class_diagram::model::diagram generate_class_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    auto diagram_model =
-        clanguml::class_diagram::generators::plantuml::generate(db,
-            diagram->name,
-            dynamic_cast<clanguml::config::class_diagram &>(*diagram));
+    using diagram_config = clanguml::config::class_diagram;
+    using diagram_model = clanguml::class_diagram::model::diagram;
+    using diagram_visitor =
+        clanguml::class_diagram::visitor::translation_unit_visitor;
 
-    return diagram_model;
+    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+        diagram_config, diagram_visitor>(
+        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+
+    return model;
 }
 
 clanguml::package_diagram::model::diagram generate_package_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    auto diagram_model =
-        clanguml::package_diagram::generators::plantuml::generate(db,
-            diagram->name,
-            dynamic_cast<clanguml::config::package_diagram &>(*diagram));
+    using diagram_config = clanguml::config::package_diagram;
+    using diagram_model = clanguml::package_diagram::model::diagram;
+    using diagram_visitor =
+        clanguml::package_diagram::visitor::translation_unit_visitor;
 
-    return diagram_model;
+    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+        diagram_config, diagram_visitor>(
+        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+
+    return model;
 }
 
 std::string generate_sequence_puml(

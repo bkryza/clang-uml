@@ -21,6 +21,9 @@
 #include "util/error.h"
 #include "util/util.h"
 
+#include <cppast/libclang_parser.hpp>
+#include <glob/glob.hpp>
+
 #include <ostream>
 
 namespace clanguml::common::generators::plantuml {
@@ -125,6 +128,38 @@ void generator<C, D>::generate_notes(
                  << "end note\n";
         }
     }
+}
+
+template <typename DiagramModel, typename DiagramConfig,
+    typename DiagramVisitor>
+DiagramModel generate(cppast::libclang_compilation_database &db,
+    const std::string &name, DiagramConfig &diagram)
+{
+    LOG_INFO("Generating diagram {}.puml", name);
+    DiagramModel d;
+    d.set_name(name);
+
+    // Get all translation units matching the glob from diagram
+    // configuration
+    std::vector<std::string> translation_units{};
+    for (const auto &g : diagram.glob()) {
+        LOG_DBG("Processing glob: {}", g);
+        const auto matches = glob::rglob(g);
+        std::copy(matches.begin(), matches.end(),
+            std::back_inserter(translation_units));
+    }
+
+    cppast::cpp_entity_index idx;
+    cppast::simple_file_parser<cppast::libclang_parser> parser{
+        type_safe::ref(idx)};
+
+    // Process all matching translation units
+    DiagramVisitor ctx(idx, d, diagram);
+    cppast::parse_files(parser, translation_units, db);
+    for (auto &file : parser.files())
+        ctx(file);
+
+    return d;
 }
 
 }

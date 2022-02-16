@@ -28,7 +28,6 @@
 
 #include <cppast/cpp_entity_index.hpp>
 #include <cppast/libclang_parser.hpp>
-#include <glob/glob.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -64,10 +63,6 @@ public:
 
     void generate(std::ostream &ostr) const;
 };
-
-clanguml::package_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::package_diagram &diagram);
 
 }
 }

@@ -60,10 +60,6 @@ public:
     void generate(std::ostream &ostr) const;
 };
 
-clanguml::sequence_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::sequence_diagram &diagram);
-
 }
 }
 }
