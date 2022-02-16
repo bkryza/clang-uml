@@ -7,7 +7,7 @@
              the key of the diagram YAML node
 
 ### Diagram options
-* `type` - type of diagram, one of [`class`, `sequence`]
+* `type` - type of diagram, one of [`class`, `sequence`, `package`]
 * `glob` - list of glob patterns to match source code files for analysis
 * `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `generate_method_arguments` - determines whether the class diagrams methods contain full arguments (`full`), are abbreviated (`abbreviated`) or skipped (`none`)
@@ -22,6 +22,7 @@
     * `relationships` - list of relationships to exclude
     * `entity_types` - list of entity types to exclude (e.g. `class`, `enum`)
     * `scopes` - list of visibility scopes to exclude (e.g. `private`)
+* `layout` - add layout hints for entities (classes, packages)
 * `plantuml` - verbatim PlantUML directives which should be added to a diagram
     * `before` - list of directives which will be added before the generated diagram
     * `after` - list of directives which will be added after the generated diagram
@@ -61,6 +62,11 @@ diagrams:
       # Do not include private members and methods in the diagram
       scopes:
         - private
+    layout:
+      # Add layout hints for PlantUML
+      ClassA:
+        - up: ClassB
+        - left: ClassC
     # Entities from this namespace will be shortened
     # (can only contain one element at the moment)
     using_namespace:
