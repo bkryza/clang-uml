@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/model/diagram.h"
 #include "package.h"
 
 #include <type_safe/optional_ref.hpp>
@@ -26,17 +27,12 @@
 
 namespace clanguml::package_diagram::model {
 
-class diagram : public detail::package_trait<package, std::vector> {
+class diagram : public clanguml::common::model::diagram,
+                public detail::package_trait<package, std::vector> {
 public:
-    std::string name() const;
-
-    void set_name(const std::string &name);
-
     std::string to_alias(const std::string &full_name) const;
 
 private:
-    std::string name_;
-
     std::vector<std::unique_ptr<package>> packages_;
 };
 }

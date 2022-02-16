@@ -18,25 +18,20 @@
 #pragma once
 
 #include "activity.h"
+#include "common/model/diagram.h"
 
 #include <map>
 #include <string>
 
 namespace clanguml::sequence_diagram::model {
 
-struct diagram {
-    std::string name() const;
-
-    void set_name(const std::string &name);
-
+class diagram : public clanguml::common::model::diagram {
+public:
     std::string to_alias(const std::string &full_name) const;
 
     bool started{false};
 
     std::map<std::uint_least64_t, activity> sequences;
-
-private:
-    std::string name_;
 };
 
 }

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/diagram.h
+ * src/common/model/diagram.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,35 +17,18 @@
  */
 #pragma once
 
-#include "class.h"
-#include "common/model/diagram.h"
-#include "enum.h"
-#include "type_alias.h"
-
 #include <string>
-#include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
-class diagram : public clanguml::common::model::diagram {
+class diagram {
 public:
-    const std::vector<class_> classes() const;
+    std::string name() const;
 
-    const std::vector<enum_> enums() const;
-
-    bool has_class(const class_ &c) const;
-
-    void add_type_alias(type_alias &&ta);
-
-    void add_class(class_ &&c);
-
-    void add_enum(enum_ &&e);
-
-    std::string to_alias(const std::string &full_name) const;
+    void set_name(const std::string &name);
 
 private:
-    std::vector<class_> classes_;
-    std::vector<enum_> enums_;
-    std::map<std::string, type_alias> type_aliases_;
+    std::string name_;
 };
+
 }

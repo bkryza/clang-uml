@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/diagram.cc
+ * src/common/model/diagram.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -18,27 +18,10 @@
 
 #include "diagram.h"
 
-#include "util/error.h"
-#include "util/util.h"
+namespace clanguml::common::model {
 
-namespace clanguml::package_diagram::model {
+std::string diagram::name() const { return name_; }
 
-std::string diagram::to_alias(const std::string &full_name) const
-{
-    LOG_DBG("Looking for alias for {}", full_name);
+void diagram::set_name(const std::string &name) { name_ = name; }
 
-    auto fn = util::split(full_name, "::");
-
-    if (fn.empty())
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", full_name));
-
-    auto package = get_package(fn);
-
-    if (!package)
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", full_name));
-
-    return package.value().alias();
-}
 }

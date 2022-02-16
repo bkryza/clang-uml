@@ -29,10 +29,6 @@
 
 namespace clanguml::sequence_diagram::model {
 
-std::string diagram::name() const { return name_; }
-
-void diagram::set_name(const std::string &name) { name_ = name; }
-
 std::string diagram::to_alias(const std::string &full_name) const
 {
     return full_name;
