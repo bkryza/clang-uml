@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "enums.h"
+#include "common/model/enums.h"
 
 #include <string>
 #include <vector>
@@ -25,7 +25,7 @@
 namespace clanguml::sequence_diagram::model {
 
 struct message {
-    message_t type;
+    common::model::message_t type;
     std::string from;
     std::uint_least64_t from_usr;
     std::string to;

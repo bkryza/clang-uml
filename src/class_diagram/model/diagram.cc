@@ -23,10 +23,6 @@
 
 namespace clanguml::class_diagram::model {
 
-std::string diagram::name() const { return name_; }
-
-void diagram::set_name(const std::string &name) { name_ = name; }
-
 const std::vector<class_> diagram::classes() const { return classes_; }
 
 const std::vector<enum_> diagram::enums() const { return enums_; }

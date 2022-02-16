@@ -58,6 +58,22 @@ std::string to_string(const diagram_type t)
     }
 }
 
+std::string to_string(const hint_t t)
+{
+    switch (t) {
+    case hint_t::up:
+        return "up";
+    case hint_t::down:
+        return "down";
+    case hint_t::left:
+        return "left";
+    case hint_t::right:
+        return "right";
+    default:
+        assert(false);
+    }
+}
+
 void plantuml::append(const plantuml &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());
@@ -204,6 +220,8 @@ using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
+using clanguml::config::hint_t;
+using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
@@ -375,6 +393,7 @@ template <> struct convert<class_diagram> {
             return false;
 
         get_option(node, rhs.classes);
+        get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
 
@@ -404,6 +423,39 @@ template <> struct convert<package_diagram> {
     static bool decode(const Node &node, package_diagram &rhs)
     {
         if (!decode_diagram(node, rhs))
+            return false;
+
+        get_option(node, rhs.layout);
+
+        return true;
+    }
+};
+
+//
+// layout_hint Yaml decoder
+//
+template <> struct convert<layout_hint> {
+    static bool decode(const Node &node, layout_hint &rhs)
+    {
+        assert(node.Type() == NodeType::Map);
+
+        if (node["up"]) {
+            rhs.hint = hint_t::up;
+            rhs.entity = node["up"].as<std::string>();
+        }
+        else if (node["down"]) {
+            rhs.hint = hint_t::down;
+            rhs.entity = node["down"].as<std::string>();
+        }
+        else if (node["left"]) {
+            rhs.hint = hint_t::left;
+            rhs.entity = node["left"].as<std::string>();
+        }
+        else if (node["right"]) {
+            rhs.hint = hint_t::right;
+            rhs.entity = node["right"].as<std::string>();
+        }
+        else
             return false;
 
         return true;

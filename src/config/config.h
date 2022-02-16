@@ -65,7 +65,17 @@ struct filter {
     std::vector<common::model::scope_t> scopes;
 };
 
+enum class hint_t { up, down, left, right };
+
+struct layout_hint {
+    hint_t hint;
+    std::string entity;
+};
+
+using layout_hints = std::map<std::string, std::vector<layout_hint>>;
+
 std::string to_string(const diagram_type t);
+std::string to_string(const hint_t t);
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};
@@ -109,6 +119,7 @@ struct class_diagram : public diagram {
     diagram_type type() const override;
 
     option<std::vector<std::string>> classes{"classes"};
+    option<layout_hints> layout{"layout"};
 
     bool has_class(std::string clazz);
 };
@@ -125,6 +136,8 @@ struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
 
     diagram_type type() const override;
+
+    option<layout_hints> layout{"layout"};
 };
 
 struct config : public inheritable_diagram_options {

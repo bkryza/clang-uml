@@ -351,6 +351,14 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
 }
 
+ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,
+    std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} -[hidden]{}- {}", from, hint, to), caseSensitivity));
+}
+
 ContainsMatcher HasNote(std::string const &cls, std::string const &position,
     std::string const &note,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)

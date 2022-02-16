@@ -22,61 +22,9 @@
 
 namespace clanguml::package_diagram::generators::plantuml {
 
-std::string relative_to(std::string n, std::string c)
+generator::generator(diagram_config &config, diagram_model &model)
+    : common_generator<diagram_config, diagram_model>{config, model}
 {
-    if (c.rfind(n) == std::string::npos)
-        return c;
-
-    return c.substr(n.size() + 2);
-}
-
-generator::generator(
-    clanguml::config::package_diagram &config, diagram_model &model)
-    : m_config(config)
-    , m_model(model)
-{
-}
-
-std::string generator::to_string(relationship_t r, std::string style) const
-{
-    switch (r) {
-    case relationship_t::kOwnership:
-    case relationship_t::kComposition:
-        return style.empty() ? "*--" : fmt::format("*-[{}]-", style);
-    case relationship_t::kAggregation:
-        return style.empty() ? "o--" : fmt::format("o-[{}]-", style);
-    case relationship_t::kContainment:
-        return style.empty() ? "--+" : fmt::format("-[{}]-+", style);
-    case relationship_t::kAssociation:
-        return style.empty() ? "-->" : fmt::format("-[{}]->", style);
-    case relationship_t::kInstantiation:
-        return style.empty() ? "..|>" : fmt::format(".[{}].|>", style);
-    case relationship_t::kFriendship:
-        return style.empty() ? "<.." : fmt::format("<.[{}].", style);
-    case relationship_t::kDependency:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
-    default:
-        return "";
-    }
-}
-
-std::string generator::name(relationship_t r) const
-{
-    switch (r) {
-    case relationship_t::kOwnership:
-    case relationship_t::kComposition:
-        return "composition";
-    case relationship_t::kAggregation:
-        return "aggregation";
-    case relationship_t::kContainment:
-        return "containment";
-    case relationship_t::kAssociation:
-        return "association";
-    case relationship_t::kDependency:
-        return "dependency";
-    default:
-        return "unknown";
-    }
 }
 
 void generator::generate_relationships(
@@ -132,35 +80,14 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     ostr << "}" << '\n';
 
-    //
-    // Process notes
-    //
-    for (auto decorator : p.decorators()) {
-        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-        if (note && note->applies_to_diagram(m_config.name)) {
-            ostr << "note " << note->position << " of " << p.alias() << '\n'
-                 << note->text << '\n'
-                 << "end note\n";
-        }
-    }
+    generate_notes(ostr, p);
 }
 
 void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
-    // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml().before) {
-        std::string note{b};
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace(), std::get<0>(alias_match)));
-            note.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
-        }
-        ostr << note << '\n';
-    }
+    generate_plantuml_directives(ostr, m_config.puml().before);
 
     if (m_config.should_include_entities("packages")) {
         for (const auto &p : m_model) {
@@ -175,58 +102,11 @@ void generator::generate(std::ostream &ostr) const
         ostr << '\n';
     }
 
-    // Process aliases in any of the puml directives
-    for (const auto &b : m_config.puml().after) {
-        std::string note{b};
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(ns_relative(
-                m_config.using_namespace(), std::get<0>(alias_match)));
-            note.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
-        }
-        ostr << note << '\n';
-    }
+    generate_config_layout_hints(ostr);
+
+    generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << '\n';
-}
-
-std::ostream &operator<<(std::ostream &os, const generator &g)
-{
-    g.generate(os);
-    return os;
-}
-
-clanguml::package_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::package_diagram &diagram)
-{
-    LOG_INFO("Generating package diagram {}.puml", name);
-    clanguml::package_diagram::model::diagram d;
-    d.set_name(name);
-
-    // Get all translation units matching the glob from diagram
-    // configuration
-    std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob()) {
-        LOG_DBG("Processing glob: {}", g);
-        const auto matches = glob::rglob(g);
-        std::copy(matches.begin(), matches.end(),
-            std::back_inserter(translation_units));
-    }
-
-    cppast::cpp_entity_index idx;
-    cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx)};
-
-    // Process all matching translation units
-    clanguml::package_diagram::visitor::translation_unit_visitor ctx(
-        idx, d, diagram);
-    cppast::parse_files(parser, translation_units, db);
-    for (auto &file : parser.files())
-        ctx(file);
-
-    return d;
 }
 
 }

@@ -113,31 +113,47 @@ int main(int argc, const char *argv[])
         ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
         if (diagram->type() == diagram_type::class_diagram) {
+            using diagram_config = clanguml::config::class_diagram;
+            using diagram_model = clanguml::class_diagram::model::diagram;
+            using diagram_visitor =
+                clanguml::class_diagram::visitor::translation_unit_visitor;
+
             auto model =
-                clanguml::class_diagram::generators::plantuml::generate(
-                    db, name, dynamic_cast<class_diagram &>(*diagram));
+                clanguml::common::generators::plantuml::generate<diagram_model,
+                    diagram_config, diagram_visitor>(db, diagram->name,
+                    dynamic_cast<diagram_config &>(*diagram));
 
             ofs << clanguml::class_diagram::generators::plantuml::generator(
-                dynamic_cast<clanguml::config::class_diagram &>(*diagram),
-                model);
+                dynamic_cast<diagram_config &>(*diagram), model);
         }
         else if (diagram->type() == diagram_type::sequence_diagram) {
+            using diagram_config = clanguml::config::sequence_diagram;
+            using diagram_model = clanguml::sequence_diagram::model::diagram;
+            using diagram_visitor =
+                clanguml::sequence_diagram::visitor::translation_unit_visitor;
+
             auto model =
-                clanguml::sequence_diagram::generators::plantuml::generate(
-                    db, name, dynamic_cast<sequence_diagram &>(*diagram));
+                clanguml::common::generators::plantuml::generate<diagram_model,
+                    diagram_config, diagram_visitor>(db, diagram->name,
+                    dynamic_cast<diagram_config &>(*diagram));
 
             ofs << clanguml::sequence_diagram::generators::plantuml::generator(
                 dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
                 model);
         }
         else if (diagram->type() == diagram_type::package_diagram) {
+            using diagram_config = clanguml::config::package_diagram;
+            using diagram_model = clanguml::package_diagram::model::diagram;
+            using diagram_visitor =
+                clanguml::package_diagram::visitor::translation_unit_visitor;
+
             auto model =
-                clanguml::package_diagram::generators::plantuml::generate(
-                    db, name, dynamic_cast<package_diagram &>(*diagram));
+                clanguml::common::generators::plantuml::generate<diagram_model,
+                    diagram_config, diagram_visitor>(db, diagram->name,
+                    dynamic_cast<diagram_config &>(*diagram));
 
             ofs << clanguml::package_diagram::generators::plantuml::generator(
-                dynamic_cast<clanguml::config::package_diagram &>(*diagram),
-                model);
+                dynamic_cast<diagram_config &>(*diagram), model);
         }
 
         LOG_INFO("Written {} diagram to {}", name, path.string());

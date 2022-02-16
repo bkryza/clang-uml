@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/generators/plantuml/generator.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
@@ -27,7 +28,6 @@
 
 #include <cppast/cpp_entity_index.hpp>
 #include <cppast/libclang_parser.hpp>
-#include <glob/glob.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -39,22 +39,21 @@ namespace package_diagram {
 namespace generators {
 namespace plantuml {
 
-using diagram_config = clanguml::package_diagram::model::diagram;
+using diagram_config = clanguml::config::package_diagram;
 using diagram_model = clanguml::package_diagram::model::diagram;
+
+template <typename C, typename D>
+using common_generator =
+    clanguml::common::generators::plantuml::generator<C, D>;
+
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::package;
 using namespace clanguml::util;
 
-std::string relative_to(std::string n, std::string c);
-
-class generator {
+class generator : public common_generator<diagram_config, diagram_model> {
 public:
-    generator(clanguml::config::package_diagram &config, diagram_model &model);
-
-    std::string to_string(relationship_t r, std::string style = "") const;
-
-    std::string name(relationship_t r) const;
+    generator(diagram_config &config, diagram_model &model);
 
     void generate_alias(const package &c, std::ostream &ostr) const;
 
@@ -63,17 +62,7 @@ public:
     void generate(const package &e, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;
-
-    friend std::ostream &operator<<(std::ostream &os, const generator &g);
-
-private:
-    clanguml::config::package_diagram &m_config;
-    diagram_model &m_model;
 };
-
-clanguml::package_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::package_diagram &diagram);
 
 }
 }

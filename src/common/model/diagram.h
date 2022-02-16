@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/enums.h
+ * src/common/model/diagram.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -21,31 +21,14 @@
 
 namespace clanguml::common::model {
 
-enum class access_t { kPublic, kProtected, kPrivate };
+class diagram {
+public:
+    std::string name() const;
 
-enum class scope_t { kPublic, kProtected, kPrivate, kNone };
+    void set_name(const std::string &name);
 
-enum class relationship_t {
-    kNone,
-    kExtension,
-    kComposition,
-    kAggregation,
-    kContainment,
-    kOwnership,
-    kAssociation,
-    kInstantiation,
-    kFriendship,
-    kDependency
+private:
+    std::string name_;
 };
-
-enum class message_t { kCall, kReturn };
-
-std::string to_string(relationship_t r);
-
-std::string to_string(scope_t r);
-
-std::string to_string(access_t r);
-
-std::string to_string(message_t r);
 
 }

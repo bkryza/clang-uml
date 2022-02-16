@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/enums.h
+ * src/common/model/diagram.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,10 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-namespace clanguml::sequence_diagram::model {
+#include "diagram.h"
 
-enum class message_t { kCall, kReturn };
+namespace clanguml::common::model {
+
+std::string diagram::name() const { return name_; }
+
+void diagram::set_name(const std::string &name) { name_ = name; }
 
 }

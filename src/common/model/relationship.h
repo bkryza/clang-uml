@@ -24,8 +24,6 @@
 
 namespace clanguml::common::model {
 
-std::string to_string(relationship_t r);
-
 class relationship : public common::model::decorated_element,
                      public common::model::stylable_element {
 public:

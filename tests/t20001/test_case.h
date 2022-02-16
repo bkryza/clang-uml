@@ -30,7 +30,7 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
     auto model = generate_sequence_diagram(db, diagram);
 
-    REQUIRE(model.name == "t20001_sequence");
+    REQUIRE(model.name() == "t20001_sequence");
 
     auto puml = generate_sequence_puml(diagram, model);
 

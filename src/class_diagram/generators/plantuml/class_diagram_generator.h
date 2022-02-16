@@ -21,6 +21,7 @@
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
+#include "common/generators/plantuml/generator.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
@@ -40,25 +41,22 @@ namespace class_diagram {
 namespace generators {
 namespace plantuml {
 
-using diagram_config = clanguml::class_diagram::model::diagram;
+using diagram_config = clanguml::config::class_diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
+template <typename C, typename D>
+using common_generator =
+    clanguml::common::generators::plantuml::generator<C, D>;
+
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::enum_;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
+
 using namespace clanguml::util;
 
-std::string relative_to(std::string n, std::string c);
-
-class generator {
+class generator : public common_generator<diagram_config, diagram_model> {
 public:
-    generator(clanguml::config::class_diagram &config, diagram_model &model);
-
-    std::string to_string(scope_t scope) const;
-
-    std::string to_string(relationship_t r, std::string style = "") const;
-
-    std::string name(relationship_t r) const;
+    generator(diagram_config &config, diagram_model &model);
 
     void generate_alias(const class_ &c, std::ostream &ostr) const;
 
@@ -68,18 +66,8 @@ public:
 
     void generate(const enum_ &e, std::ostream &ostr) const;
 
-    void generate(std::ostream &ostr) const;
-
-    friend std::ostream &operator<<(std::ostream &os, const generator &g);
-
-private:
-    clanguml::config::class_diagram &m_config;
-    diagram_model &m_model;
+    void generate(std::ostream &ostr) const override;
 };
-
-clanguml::class_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::class_diagram &diagram);
 
 }
 }

@@ -25,12 +25,10 @@
 
 namespace clanguml::sequence_diagram::generators::plantuml {
 
-using diagram_model = clanguml::sequence_diagram::model::diagram;
-using diagram_config = clanguml::config::sequence_diagram::diagram;
+using clanguml::common::model::message_t;
 using clanguml::config::source_location;
 using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
-using clanguml::sequence_diagram::model::message_t;
 using clanguml::sequence_diagram::visitor::translation_unit_context;
 using namespace clanguml::util;
 
@@ -40,21 +38,8 @@ using namespace clanguml::util;
 
 generator::generator(
     clanguml::config::sequence_diagram &config, diagram_model &model)
-    : m_config(config)
-    , m_model(model)
+    : common_generator<diagram_config, diagram_model>{config, model}
 {
-}
-
-std::string generator::to_string(message_t r) const
-{
-    switch (r) {
-    case message_t::kCall:
-        return "->";
-    case message_t::kReturn:
-        return "<--";
-    default:
-        return "";
-    }
 }
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
@@ -63,8 +48,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const auto to = ns_relative(m_config.using_namespace(), m.to);
 
     ostr << '"' << from << "\" "
-         << "->"
-         << " \"" << to << "\" : " << m.message << "()" << std::endl;
+         << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
+         << to << "\" : " << m.message << "()" << std::endl;
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
@@ -76,7 +61,7 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
         const auto to = ns_relative(m_config.using_namespace(), m.to);
 
         ostr << '"' << to << "\" "
-             << "-->"
+             << common::generators::plantuml::to_plantuml(message_t::kReturn)
              << " \"" << from << "\"" << std::endl;
     }
 }
@@ -98,8 +83,7 @@ void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << std::endl;
 
-    for (const auto &b : m_config.puml().before)
-        ostr << b << std::endl;
+    generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
@@ -117,47 +101,10 @@ void generator::generate(std::ostream &ostr) const
             continue;
         }
     }
-    for (const auto &a : m_config.puml().after)
-        ostr << a << std::endl;
+
+    generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << std::endl;
 }
 
-std::ostream &operator<<(std::ostream &os, const generator &g)
-{
-    g.generate(os);
-    return os;
-}
-
-clanguml::sequence_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::sequence_diagram &diagram)
-{
-    spdlog::info("Generating diagram {}.puml", name);
-    clanguml::sequence_diagram::model::diagram d;
-    d.name = name;
-
-    cppast::cpp_entity_index idx;
-    cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx)};
-
-    clanguml::sequence_diagram::visitor::translation_unit_visitor visitor(
-        idx, d, diagram);
-
-    // Get all translation units matching the glob from diagram
-    // configuration
-    std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob()) {
-        spdlog::debug("Processing glob: {}", g);
-        const auto matches = glob::rglob(g);
-        std::copy(matches.begin(), matches.end(),
-            std::back_inserter(translation_units));
-    }
-    cppast::parse_files(parser, translation_units, db);
-
-    for (auto &file : parser.files())
-        visitor(file);
-
-    return d;
-}
 }

@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/generators/plantuml/generator.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "sequence_diagram/model/diagram.h"
@@ -36,13 +37,16 @@ namespace sequence_diagram {
 namespace generators {
 namespace plantuml {
 
+using diagram_config = clanguml::config::sequence_diagram;
 using diagram_model = clanguml::sequence_diagram::model::diagram;
 
-class generator {
-public:
-    generator(clanguml::config::sequence_diagram &config, diagram_model &model);
+template <typename C, typename D>
+using common_generator =
+    clanguml::common::generators::plantuml::generator<C, D>;
 
-    std::string to_string(clanguml::sequence_diagram::model::message_t r) const;
+class generator : public common_generator<diagram_config, diagram_model> {
+public:
+    generator(diagram_config &config, diagram_model &model);
 
     void generate_call(const clanguml::sequence_diagram::model::message &m,
         std::ostream &ostr) const;
@@ -54,17 +58,7 @@ public:
         std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;
-
-    friend std::ostream &operator<<(std::ostream &os, const generator &g);
-
-private:
-    clanguml::config::sequence_diagram &m_config;
-    clanguml::sequence_diagram::model::diagram &m_model;
 };
-
-clanguml::sequence_diagram::model::diagram generate(
-    cppast::libclang_compilation_database &db, const std::string &name,
-    clanguml::config::sequence_diagram &diagram);
 
 }
 }
