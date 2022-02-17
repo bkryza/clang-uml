@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-namespace clanguml::package_diagram::model {
+namespace clanguml::common::model {
 
 class package : public common::model::element,
                 public common::model::stylable_element,

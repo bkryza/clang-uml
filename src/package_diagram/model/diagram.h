@@ -18,7 +18,7 @@
 #pragma once
 
 #include "common/model/diagram.h"
-#include "package.h"
+#include "common/model/package.h"
 
 #include <type_safe/optional_ref.hpp>
 
@@ -28,7 +28,8 @@
 namespace clanguml::package_diagram::model {
 
 class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::nested_trait<package> {
+                public clanguml::common::model::nested_trait<
+                    clanguml::common::model::package> {
 public:
     diagram() = default;
 

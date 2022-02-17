@@ -18,11 +18,11 @@
 #pragma once
 
 #include "common/generators/plantuml/generator.h"
+#include "common/model/package.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "package_diagram/model/diagram.h"
-#include "package_diagram/model/package.h"
 #include "package_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
@@ -48,7 +48,7 @@ using common_generator =
 
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
-using clanguml::package_diagram::model::package;
+using clanguml::common::model::package;
 using namespace clanguml::util;
 
 class generator : public common_generator<diagram_config, diagram_model> {

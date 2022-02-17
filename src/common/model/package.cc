@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/class.h
+ * src/common/model/class.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-namespace clanguml::package_diagram::model {
+namespace clanguml::common::model {
 package::package(const std::vector<std::string> &using_namespaces)
     : element{using_namespaces}
 {

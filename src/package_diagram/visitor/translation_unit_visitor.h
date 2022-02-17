@@ -35,10 +35,10 @@
 #include <type_safe/reference.hpp>
 
 #include <common/model/enums.h>
+#include <common/model/package.h>
 #include <functional>
 #include <map>
 #include <memory>
-#include <package_diagram/model/package.h>
 #include <string>
 
 namespace clanguml::package_diagram::visitor {

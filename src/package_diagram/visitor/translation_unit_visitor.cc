@@ -41,7 +41,7 @@ using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::diagram;
-using clanguml::package_diagram::model::package;
+using clanguml::common::model::package;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(
