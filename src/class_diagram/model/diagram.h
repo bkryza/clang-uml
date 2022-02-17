@@ -29,6 +29,13 @@ namespace clanguml::class_diagram::model {
 
 class diagram : public clanguml::common::model::diagram {
 public:
+    diagram() = default;
+
+    diagram(const diagram &) = delete;
+    diagram(diagram &&) = default;
+    diagram &operator=(const diagram &) = delete;
+    diagram &operator=(diagram &&) = default;
+
     const std::vector<class_> classes() const;
 
     const std::vector<enum_> enums() const;

@@ -39,8 +39,8 @@ public:
 
     package(const package &) = delete;
     package(package &&) = default;
-
     package &operator=(const package &) = delete;
+    package &operator=(package &&) = default;
 
     std::string full_name(bool relative) const override;
 

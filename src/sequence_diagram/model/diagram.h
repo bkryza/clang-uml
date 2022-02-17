@@ -27,6 +27,13 @@ namespace clanguml::sequence_diagram::model {
 
 class diagram : public clanguml::common::model::diagram {
 public:
+    diagram() = default;
+
+    diagram(const diagram &) = delete;
+    diagram(diagram &&) = default;
+    diagram &operator=(const diagram &) = delete;
+    diagram &operator=(diagram &&) = default;
+
     std::string to_alias(const std::string &full_name) const;
 
     bool started{false};

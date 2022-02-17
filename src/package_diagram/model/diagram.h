@@ -34,7 +34,6 @@ public:
 
     diagram(const diagram &) = delete;
     diagram(diagram &&) = default;
-
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
