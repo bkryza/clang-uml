@@ -66,4 +66,9 @@ const std::vector<relationship> &element::relationships() const
 }
 
 void element::append(const element &e) { decorated_element::append(e); }
+
+bool operator==(const element &l, const element &r)
+{
+    return l.full_name(false) == r.full_name(false);
+}
 }

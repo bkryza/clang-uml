@@ -29,7 +29,7 @@ namespace clanguml::package_diagram::model {
 
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::nested_trait<
-                    clanguml::common::model::package> {
+                    clanguml::common::model::element> {
 public:
     diagram() = default;
 

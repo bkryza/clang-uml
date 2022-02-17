@@ -30,6 +30,8 @@ class element : public decorated_element {
 public:
     element(const std::vector<std::string> &using_namespaces);
 
+    virtual ~element() = default;
+
     std::string alias() const;
 
     void set_name(const std::string &name) { name_ = name; }
@@ -53,6 +55,8 @@ public:
     void add_relationship(relationship &&cr);
 
     void append(const element &e);
+
+    friend bool operator==(const element &l, const element &r);
 
 protected:
     const uint64_t m_id{0};

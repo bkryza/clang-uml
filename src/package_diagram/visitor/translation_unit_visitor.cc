@@ -37,11 +37,11 @@ namespace clanguml::package_diagram::visitor {
 
 using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
+using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::diagram;
-using clanguml::common::model::package;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(
@@ -125,7 +125,8 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                                 ctx.diagram().add_element(
                                     package_parent, std::move(p));
                                 ctx.set_current_package(
-                                    ctx.diagram().get_element(package_path));
+                                    ctx.diagram().get_element<package>(
+                                        package_path));
                             }
                         }
 

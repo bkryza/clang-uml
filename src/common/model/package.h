@@ -31,9 +31,9 @@
 
 namespace clanguml::common::model {
 
-class package : public common::model::element,
-                public common::model::stylable_element,
-                public common::model::nested_trait<package> {
+class package : public element,
+                public stylable_element,
+                public nested_trait<element> {
 public:
     package(const std::vector<std::string> &using_namespaces);
 
@@ -43,8 +43,6 @@ public:
     package &operator=(package &&) = default;
 
     std::string full_name(bool relative) const override;
-
-    friend bool operator==(const package &l, const package &r);
 
     bool is_deprecated() const;
 

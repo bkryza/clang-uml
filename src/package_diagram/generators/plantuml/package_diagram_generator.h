@@ -46,9 +46,9 @@ template <typename C, typename D>
 using common_generator =
     clanguml::common::generators::plantuml::generator<C, D>;
 
+using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
-using clanguml::common::model::package;
 using namespace clanguml::util;
 
 class generator : public common_generator<diagram_config, diagram_model> {
