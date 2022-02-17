@@ -159,7 +159,7 @@ DiagramModel generate(cppast::libclang_compilation_database &db,
     for (auto &file : parser.files())
         ctx(file);
 
-    return d;
+    return std::move(d);
 }
 
 }

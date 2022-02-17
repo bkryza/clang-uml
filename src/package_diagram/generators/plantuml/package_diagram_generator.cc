@@ -30,6 +30,8 @@ generator::generator(diagram_config &config, diagram_model &model)
 void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
+    LOG_DBG("Generating relationships for package {}", p.full_name(true));
+
     const auto &uns = m_config.using_namespace();
 
     // Generate this packages relationship
@@ -52,13 +54,15 @@ void generator::generate_relationships(
     }
 
     // Process it's subpackages relationships
-    for (auto subpackage = p.cbegin(); subpackage != p.cend(); subpackage++) {
-        generate_relationships(**subpackage, ostr);
+    for (const std::unique_ptr<package> &subpackage : p) {
+        generate_relationships(*subpackage, ostr);
     }
 }
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
+    LOG_DBG("Generating package {}", p.name());
+
     const auto &uns = m_config.using_namespace();
 
     ostr << "package [" << p.name() << "] ";
@@ -72,10 +76,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     ostr << " {" << '\n';
 
-    // C++17 cannot figure out to use cbegin/cend in a for-range loop on const
-    // collection...  ¯\_(ツ)_/¯
-    for (auto subpackage = p.cbegin(); subpackage != p.cend(); subpackage++) {
-        generate(**subpackage, ostr);
+    for (const auto &subpackage : p) {
+        generate(*subpackage, ostr);
     }
 
     ostr << "}" << '\n';
@@ -108,5 +110,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-
 }

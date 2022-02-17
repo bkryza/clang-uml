@@ -82,11 +82,9 @@ clanguml::package_diagram::model::diagram generate_package_diagram(
     using diagram_visitor =
         clanguml::package_diagram::visitor::translation_unit_visitor;
 
-    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+    return clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(
         db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
-
-    return model;
 }
 
 std::string generate_sequence_puml(

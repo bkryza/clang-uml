@@ -31,10 +31,18 @@
 namespace clanguml::package_diagram::model {
 
 namespace detail {
-template <typename T, template <typename, typename> class Container,
-    typename Ptr = std::unique_ptr<T>>
-class package_trait {
+template <typename T> class package_trait {
 public:
+    package_trait() = default;
+
+    package_trait(const package_trait &) = delete;
+    package_trait(package_trait &&) = default;
+
+    package_trait &operator=(const package_trait &) = delete;
+    package_trait &operator=(package_trait &&) = default;
+
+    virtual ~package_trait() = default;
+
     void add_package(std::unique_ptr<T> p)
     {
         auto it = std::find_if(packages_.begin(), packages_.end(),
@@ -73,8 +81,11 @@ public:
     {
         LOG_DBG("Getting package at path: {}", fmt::join(path, "::"));
 
-        if (path.empty() || !has_package(path.at(0)))
+        if (path.empty() || !has_package(path.at(0))) {
+            LOG_WARN(
+                "Sub package {} not found in package", fmt::join(path, "::"));
             return {};
+        }
 
         auto p = get_package(path.at(0));
         if (path.size() == 1)
@@ -104,25 +115,30 @@ public:
             packages_.end();
     }
 
-    typedef typename Container<Ptr, std::allocator<Ptr>>::iterator iterator;
-    typedef typename Container<Ptr, std::allocator<Ptr>>::const_iterator
-        const_iterator;
+    auto begin() { return packages_.begin(); }
+    auto end() { return packages_.end(); }
 
-    inline iterator begin() noexcept { return packages_.begin(); }
-    inline const_iterator cbegin() const noexcept { return packages_.cbegin(); }
-    inline iterator end() noexcept { return packages_.end(); }
-    inline const_iterator cend() const noexcept { return packages_.cend(); }
+    auto cbegin() const { return packages_.cbegin(); }
+    auto cend() const { return packages_.cend(); }
 
-protected:
-    Container<Ptr, std::allocator<Ptr>> packages_;
+    auto begin() const { return packages_.begin(); }
+    auto end() const { return packages_.end(); }
+
+private:
+    std::vector<std::unique_ptr<T>> packages_;
 };
 }
 
 class package : public common::model::element,
                 public common::model::stylable_element,
-                public detail::package_trait<package, std::vector> {
+                public detail::package_trait<package> {
 public:
     package(const std::vector<std::string> &using_namespaces);
+
+    package(const package &) = delete;
+    package(package &&) = default;
+
+    package &operator=(const package &) = delete;
 
     std::string full_name(bool relative) const override;
 

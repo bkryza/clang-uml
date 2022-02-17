@@ -28,11 +28,16 @@
 namespace clanguml::package_diagram::model {
 
 class diagram : public clanguml::common::model::diagram,
-                public detail::package_trait<package, std::vector> {
+                public detail::package_trait<package> {
 public:
-    std::string to_alias(const std::string &full_name) const;
+    diagram() = default;
 
-private:
-    std::vector<std::unique_ptr<package>> packages_;
+    diagram(const diagram &) = delete;
+    diagram(diagram &&) = default;
+
+    diagram &operator=(const diagram &) = delete;
+    diagram &operator=(diagram &&) = default;
+
+    std::string to_alias(const std::string &full_name) const;
 };
 }
