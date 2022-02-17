@@ -122,10 +122,10 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             }
 
                             if (!p->skip()) {
-                                ctx.diagram().add_package(
+                                ctx.diagram().add_element(
                                     package_parent, std::move(p));
                                 ctx.set_current_package(
-                                    ctx.diagram().get_package(package_path));
+                                    ctx.diagram().get_element(package_path));
                             }
                         }
 

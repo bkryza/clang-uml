@@ -33,7 +33,7 @@ std::string diagram::to_alias(const std::string &full_name) const
         throw error::uml_alias_missing(
             fmt::format("Missing alias for '{}'", full_name));
 
-    auto package = get_package(fn);
+    auto package = get_element(fn);
 
     if (!package)
         throw error::uml_alias_missing(
