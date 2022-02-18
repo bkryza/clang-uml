@@ -120,7 +120,8 @@ public:
         clanguml::class_diagram::model::class_ &parent);
 
 private:
-    clanguml::class_diagram::model::class_ build_template_instantiation(
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    build_template_instantiation(
         const cppast::cpp_template_instantiation_type &t,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 

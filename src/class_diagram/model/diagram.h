@@ -19,6 +19,8 @@
 
 #include "class.h"
 #include "common/model/diagram.h"
+#include "common/model/nested_trait.h"
+#include "common/model/package.h"
 #include "enum.h"
 #include "type_alias.h"
 
@@ -27,7 +29,9 @@
 
 namespace clanguml::class_diagram::model {
 
-class diagram : public clanguml::common::model::diagram {
+class diagram : public clanguml::common::model::diagram,
+                public clanguml::common::model::nested_trait<
+                    clanguml::common::model::element> {
 public:
     diagram() = default;
 
@@ -36,23 +40,27 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
-    const std::vector<class_> classes() const;
+    const std::vector<type_safe::object_ref<class_>> classes() const;
 
-    const std::vector<enum_> enums() const;
+    const std::vector<type_safe::object_ref<enum_>> enums() const;
 
     bool has_class(const class_ &c) const;
 
-    void add_type_alias(type_alias &&ta);
+    bool has_enum(const enum_ &e) const;
 
-    void add_class(class_ &&c);
+    void add_type_alias(std::unique_ptr<type_alias> &&ta);
 
-    void add_enum(enum_ &&e);
+    void add_class(std::unique_ptr<class_> &&c);
+
+    void add_enum(std::unique_ptr<enum_> &&e);
+
+    void add_package(std::unique_ptr<common::model::package> &&p);
 
     std::string to_alias(const std::string &full_name) const;
 
 private:
-    std::vector<class_> classes_;
-    std::vector<enum_> enums_;
-    std::map<std::string, type_alias> type_aliases_;
+    std::vector<type_safe::object_ref<class_>> classes_;
+    std::vector<type_safe::object_ref<enum_>> enums_;
+    std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
 }

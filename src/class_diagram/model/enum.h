@@ -29,6 +29,12 @@ class enum_ : public common::model::element,
 public:
     enum_(const std::vector<std::string> &using_namespaces);
 
+    enum_(const enum_ &) = delete;
+    enum_(enum_ &&) = default;
+    enum_ &operator=(const enum_ &) = delete;
+    enum_ &operator=(enum_ &&) = default;
+
+    // TODO: Do we need this?
     friend bool operator==(const enum_ &l, const enum_ &r);
 
     std::string full_name(bool relative = true) const override;

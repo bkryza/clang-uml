@@ -36,6 +36,11 @@ class class_ : public common::model::element,
 public:
     class_(const std::vector<std::string> &using_namespaces);
 
+    class_(const class_ &) = delete;
+    class_(class_ &&) = default;
+    class_ &operator=(const class_ &) = delete;
+    class_ &operator=(class_ &&) = default;
+
     bool is_struct() const;
     void is_struct(bool is_struct);
 

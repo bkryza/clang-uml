@@ -277,30 +277,30 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.name()))
+            if (!m_config.should_include(c.get().name()))
                 continue;
-            generate_alias(c, ostr);
+            generate_alias(*c, ostr);
             ostr << '\n';
         }
 
         for (const auto &e : m_model.enums()) {
-            if (!m_config.should_include(e.name()))
+            if (!m_config.should_include(e.get().name()))
                 continue;
-            generate_alias(e, ostr);
+            generate_alias(*e, ostr);
             ostr << '\n';
         }
 
         for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.name()))
+            if (!m_config.should_include(c.get().name()))
                 continue;
-            generate(c, ostr);
+            generate(*c, ostr);
             ostr << '\n';
         }
     }
 
     if (m_config.should_include_entities("enums"))
         for (const auto &e : m_model.enums()) {
-            generate(e, ostr);
+            generate(*e, ostr);
             ostr << '\n';
         }
 

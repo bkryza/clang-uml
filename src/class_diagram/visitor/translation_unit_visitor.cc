@@ -94,8 +94,51 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     const auto &ns_declaration =
                         static_cast<const cppast::cpp_namespace &>(e);
                     if (!ns_declaration.is_anonymous() &&
-                        !ns_declaration.is_inline())
+                        !ns_declaration.is_inline()) {
+
+                        std::vector<std::string> package_parent =
+                            ctx.get_namespace();
+                        auto package_path = package_parent;
+                        package_path.push_back(e.name());
+
+                        auto usn = util::split(
+                            ctx.config().using_namespace()[0], "::");
+
+                        if (!util::starts_with(usn, package_path)) {
+                            auto p = std::make_unique<common::model::package>(
+                                ctx.config().using_namespace());
+                            util::remove_prefix(package_path, usn);
+                            util::remove_prefix(package_parent, usn);
+
+                            p->set_name(e.name());
+                            p->set_namespace(package_parent);
+
+                            if (ns_declaration.comment().has_value())
+                                p->add_decorators(decorators::parse(
+                                    ns_declaration.comment().value()));
+
+                            p->set_style(p->style_spec());
+
+                            for (const auto &attr :
+                                ns_declaration.attributes()) {
+                                if (attr.kind() ==
+                                    cppast::cpp_attribute_kind::deprecated) {
+                                    p->set_deprecated(true);
+                                    break;
+                                }
+                            }
+
+                            if (!p->skip()) {
+                                ctx.diagram().add_element(
+                                    package_parent, std::move(p));
+                                ctx.set_current_package(
+                                    ctx.diagram()
+                                        .get_element<common::model::package>(
+                                            package_path));
+                            }
+                        }
                         ctx.push_namespace(e.name());
+                    }
                 }
                 else {
                     LOG_DBG("========== Leaving '{}' - {}", e.name(),
@@ -106,6 +149,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     if (!ns_declaration.is_anonymous() &&
                         !ns_declaration.is_inline())
                         ctx.pop_namespace();
+                }
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::namespace_alias_t) {
+                auto &na = static_cast<const cppast::cpp_namespace_alias &>(e);
+
+                for (const auto &alias_target :
+                    na.target().get(ctx.entity_index())) {
+                    auto full_ns = cx::util::full_name(ctx.get_namespace(), na);
+                    ctx.add_namespace_alias(full_ns, alias_target);
                 }
             }
             else if (e.kind() ==
@@ -158,9 +210,9 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     cppast::to_string(e.kind()));
 
                 auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
-                type_alias t;
-                t.set_alias(cx::util::full_name(ctx.get_namespace(), ta));
-                t.set_underlying_type(cx::util::full_name(ta.underlying_type(),
+                std::unique_ptr<type_alias> t;
+                t->set_alias(cx::util::full_name(ctx.get_namespace(), ta));
+                t->set_underlying_type(cx::util::full_name(ta.underlying_type(),
                     ctx.entity_index(), cx::util::is_inside_class(e)));
 
                 ctx.add_type_alias(cx::util::full_name(ctx.get_namespace(), ta),
@@ -183,7 +235,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             .name());
                 }
                 else {
-                    class_ tinst = build_template_instantiation(static_cast<
+                    auto tinst = build_template_instantiation(static_cast<
                         const cppast::cpp_template_instantiation_type &>(
                         at.type_alias().underlying_type()));
 
@@ -202,8 +254,10 @@ void translation_unit_visitor::process_enum_declaration(
         return;
     }
 
-    enum_ e{ctx.config().using_namespace()};
+    auto e_ptr = std::make_unique<enum_>(ctx.config().using_namespace());
+    auto &e = *e_ptr;
     e.set_name(cx::util::full_name(ctx.get_namespace(), enm));
+    e.set_namespace(ctx.get_namespace());
 
     if (enm.comment().has_value())
         e.add_decorators(decorators::parse(enm.comment().value()));
@@ -235,16 +289,18 @@ void translation_unit_visitor::process_enum_declaration(
         }
     }
 
-    ctx.diagram().add_enum(std::move(e));
+    ctx.diagram().add_enum(std::move(e_ptr));
 }
 
 void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
-    class_ c{ctx.config().using_namespace()};
+    auto c_ptr = std::make_unique<class_>(ctx.config().using_namespace());
+    auto &c = *c_ptr;
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
     c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
+    c.set_namespace(ctx.get_namespace());
 
     if (cls.comment().has_value())
         c.add_decorators(decorators::parse(cls.comment().value()));
@@ -520,7 +576,7 @@ void translation_unit_visitor::process_class_declaration(
         static_cast<const char *>(cls.user_data()),
         fmt::ptr(reinterpret_cast<const void *>(&cls)));
 
-    ctx.diagram().add_class(std::move(c));
+    ctx.diagram().add_class(std::move(c_ptr));
 }
 
 bool translation_unit_visitor::process_field_with_template_instantiation(
@@ -539,7 +595,8 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         static_cast<const cppast::cpp_template_instantiation_type &>(
             resolve_alias(template_instantiation_type));
 
-    class_ tinst = build_template_instantiation(unaliased);
+    auto tinst_ptr = build_template_instantiation(unaliased);
+    auto &tinst = *tinst_ptr;
 
     // Infer the relationship of this field to the template
     // instantiation
@@ -577,7 +634,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
         LOG_DBG("Created template instantiation: {}", tinst.full_name());
 
-        ctx.diagram().add_class(std::move(tinst));
+        ctx.diagram().add_class(std::move(tinst_ptr));
     }
 
     return res;
@@ -953,9 +1010,9 @@ void translation_unit_visitor::process_function_parameter(
                     }
                     else {
                         // First check if tinst already exists
-                        class_ tinst = build_template_instantiation(
+                        auto tinst_ptr = build_template_instantiation(
                             template_instantiation_type);
-
+                        auto &tinst = *tinst_ptr;
                         relationship rr{
                             relationship_t::kDependency, tinst.full_name()};
 
@@ -967,7 +1024,7 @@ void translation_unit_visitor::process_function_parameter(
 
                         c.add_relationship(std::move(rr));
 
-                        ctx.diagram().add_class(std::move(tinst));
+                        ctx.diagram().add_class(std::move(tinst_ptr));
                     }
                 }
             }
@@ -1201,14 +1258,17 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
     return found;
 }
 
-class_ translation_unit_visitor::build_template_instantiation(
+std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
-    class_ tinst{ctx.config().using_namespace()};
+    auto tinst_ptr = std::make_unique<class_>(ctx.config().using_namespace());
+    auto &tinst = *tinst_ptr;
     std::string full_template_name;
 
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};
+
+    tinst.set_namespace(ctx.get_namespace());
 
     if (t.primary_template().get(ctx.entity_index()).size()) {
         const auto &primary_template_ref =
@@ -1349,16 +1409,16 @@ class_ translation_unit_visitor::build_template_instantiation(
                     if (parent)
                         nnn = (*parent)->name();
 
-                    class_ nested_tinst =
+                    auto nested_tinst =
                         build_template_instantiation(nested_template_parameter,
                             ctx.config().should_include(tinst.full_name(false))
                                 ? std::make_optional(&tinst)
                                 : parent);
 
                     relationship tinst_dependency{
-                        relationship_t::kDependency, nested_tinst.full_name()};
+                        relationship_t::kDependency, nested_tinst->full_name()};
 
-                    auto nested_tinst_full_name = nested_tinst.full_name();
+                    auto nested_tinst_full_name = nested_tinst->full_name();
 
                     if (ctx.config().should_include(fn)) {
                         ctx.diagram().add_class(std::move(nested_tinst));
@@ -1480,7 +1540,7 @@ class_ translation_unit_visitor::build_template_instantiation(
     relationship r{relationship_t::kInstantiation, destination};
     tinst.add_relationship(std::move(r));
 
-    return tinst;
+    return tinst_ptr;
 }
 
 const cppast::cpp_type &translation_unit_visitor::resolve_alias(
