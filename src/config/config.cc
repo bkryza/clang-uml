@@ -396,6 +396,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_packages);
 
         return true;
     }
@@ -476,6 +477,7 @@ template <> struct convert<config> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_packages);
 
         auto diagrams = node["diagrams"];
 

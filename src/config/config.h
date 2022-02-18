@@ -87,6 +87,8 @@ struct inheritable_diagram_options {
     option<plantuml> puml{"plantuml", option_inherit_mode::append};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> generate_packages{
+        "generate_packages", false};
 
     void inherit(const inheritable_diagram_options &parent);
 };

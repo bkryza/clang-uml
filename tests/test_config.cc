@@ -33,6 +33,7 @@ TEST_CASE("Test config simple", "[unit-test]")
     CHECK(clanguml::util::contains(diagram.using_namespace(), "clanguml"));
     CHECK(diagram.generate_method_arguments() ==
         clanguml::config::method_arguments::full);
+    CHECK(diagram.generate_packages() == true);
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")

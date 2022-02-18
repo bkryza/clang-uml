@@ -56,6 +56,8 @@ template <typename T> struct option {
         }
     }
 
+    void operator()(const T &v) { set(v); }
+
     T &operator()() { return value; }
 
     const T &operator()() const { return value; }
