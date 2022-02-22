@@ -89,7 +89,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
                     return mp.to_string(m_config.using_namespace());
                 });
             auto args_string = fmt::format("{}", fmt::join(params, ", "));
-            if (m_config.generate_method_arguments() !=
+            if (m_config.generate_method_arguments() ==
                 config::method_arguments::abbreviated) {
                 args_string = clanguml::util::abbreviate(args_string, 10);
             }
@@ -277,21 +277,21 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("classes")) {
         for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.get().name()))
+            if (!m_config.should_include(c->get_namespace(), c->name()))
                 continue;
             generate_alias(*c, ostr);
             ostr << '\n';
         }
 
         for (const auto &e : m_model.enums()) {
-            if (!m_config.should_include(e.get().name()))
+            if (!m_config.should_include(e->get_namespace(), e->name()))
                 continue;
             generate_alias(*e, ostr);
             ostr << '\n';
         }
 
         for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.get().name()))
+            if (!m_config.should_include(c->get_namespace(), c->name()))
                 continue;
             generate(*c, ostr);
             ostr << '\n';

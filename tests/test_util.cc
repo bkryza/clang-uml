@@ -32,6 +32,8 @@ TEST_CASE("Test split", "[unit-test]")
     CHECK(split("ABCD", " ") == C{"ABCD"});
 
     CHECK(split("std::vector::detail", "::") == C{"std", "vector", "detail"});
+
+    CHECK(split("std::vector::detail::", "::") == C{"std", "vector", "detail"});
 }
 
 TEST_CASE("Test ns_relative", "[unit-test]")

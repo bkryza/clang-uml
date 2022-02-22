@@ -21,6 +21,7 @@
 
 #include <type_safe/optional_ref.hpp>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -55,7 +56,7 @@ public:
     {
         assert(p);
 
-        LOG_DBG("Adding nested element {} at path '{}'", p->name(),
+        LOG_DBG("Adding nested element {} at path {}", p->name(),
             fmt::join(path, "::"));
 
         if (path.empty()) {
@@ -68,9 +69,11 @@ public:
         if (parent && dynamic_cast<nested_trait<T> *>(&parent.value()))
             dynamic_cast<nested_trait<T> &>(parent.value())
                 .template add_element<V>(std::move(p));
-        else
+        else {
             spdlog::error(
                 "No parent element found at: {}", fmt::join(path, "::"));
+            throw std::runtime_error("No parent element found");
+        }
     }
 
     template <typename V = T>
@@ -105,7 +108,7 @@ public:
             [&](const auto &p) { return name == p->name(); });
 
         if (it == elements_.end())
-            return type_safe::optional_ref<V>{};
+            return type_safe::optional_ref<V>{type_safe::nullopt};
 
         assert(it->get() != nullptr);
 
@@ -113,7 +116,7 @@ public:
             return type_safe::optional_ref<V>{
                 type_safe::ref<V>(dynamic_cast<V &>(*it->get()))};
 
-        return type_safe::optional_ref<V>{};
+        return type_safe::optional_ref<V>{type_safe::nullopt};
     }
 
     bool has_element(const std::string &name) const
@@ -131,6 +134,24 @@ public:
 
     auto begin() const { return elements_.begin(); }
     auto end() const { return elements_.end(); }
+
+    void print_tree(const int level)
+    {
+        const auto &d = *this;
+
+        if (level == 0) {
+            std::cout << "--- Printing tree:\n";
+        }
+        for (const auto &e : d) {
+            if (dynamic_cast<nested_trait<T> *>(e.get())) {
+                std::cout << std::string(level, ' ') << "[" << *e << "]\n";
+                dynamic_cast<nested_trait<T> *>(e.get())->print_tree(level + 1);
+            }
+            else {
+                std::cout << std::string(level, ' ') << "- " << *e << "]\n";
+            }
+        }
+    }
 
 private:
     std::vector<std::unique_ptr<T>> elements_;

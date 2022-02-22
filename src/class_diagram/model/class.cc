@@ -101,10 +101,10 @@ std::string class_::full_name(bool relative) const
     using namespace clanguml::util;
 
     std::ostringstream ostr;
-    if (relative)
+    if (relative && starts_with(get_namespace(), using_namespaces()))
         ostr << ns_relative(using_namespaces(), name());
     else
-        ostr << name();
+        ostr << name_and_ns();
 
     if (!templates_.empty()) {
         std::vector<std::string> tnames;

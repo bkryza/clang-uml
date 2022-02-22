@@ -30,8 +30,8 @@ TEST_CASE("t00002", "[test-case][class]")
 
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    REQUIRE(diagram->should_include("clanguml::t00002::A"));
-    REQUIRE(!diagram->should_include("std::vector"));
+    REQUIRE(diagram->should_include({"clanguml", "t00002"}, "A"));
+    REQUIRE(!diagram->should_include({"std"}, "vector"));
 
     auto model = generate_class_diagram(db, diagram);
 

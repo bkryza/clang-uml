@@ -130,6 +130,8 @@ private:
      * If t does not represent an alias, returns t.
      */
     const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
+    const cppast::cpp_type &resolve_alias_template(
+        const cppast::cpp_type &type);
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;

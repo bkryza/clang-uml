@@ -19,8 +19,10 @@
 
 #include "decorated_element.h"
 #include "relationship.h"
+#include "util/util.h"
 
 #include <atomic>
+#include <exception>
 #include <string>
 #include <vector>
 
@@ -38,9 +40,23 @@ public:
 
     std::string name() const { return name_; }
 
+    std::string name_and_ns() const
+    {
+        auto ns = namespace_;
+        ns.push_back(name());
+        return util::join(ns, "::");
+    }
+
     void set_namespace(const std::vector<std::string> &ns) { namespace_ = ns; }
 
     std::vector<std::string> get_namespace() const { return namespace_; }
+
+    std::vector<std::string> get_relative_namespace() const
+    {
+        auto relative_ns = namespace_;
+        util::remove_prefix(relative_ns, using_namespaces_);
+        return relative_ns;
+    }
 
     virtual std::string full_name(bool relative) const { return name(); }
 
@@ -57,6 +73,8 @@ public:
     void append(const element &e);
 
     friend bool operator==(const element &l, const element &r);
+
+    friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
 protected:
     const uint64_t m_id{0};

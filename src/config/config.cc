@@ -129,6 +129,20 @@ bool diagram::should_include_relationship(const std::string &rel)
     return false;
 }
 
+bool diagram::should_include(
+    const std::pair<std::vector<std::string>, std::string> &name) const
+{
+    return should_include(std::get<0>(name), std::get<1>(name));
+}
+
+bool diagram::should_include(
+    const std::vector<std::string> &ns, const std::string &name) const
+{
+    auto ns_and_name = ns;
+    ns_and_name.push_back(name);
+    return should_include(util::join(ns_and_name, "::"));
+}
+
 bool diagram::should_include(const std::string &name_) const
 {
     auto name = clanguml::util::unqualify(name_);

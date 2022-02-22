@@ -40,9 +40,9 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
-    const std::vector<type_safe::object_ref<class_>> classes() const;
+    const std::vector<type_safe::object_ref<const class_>> classes() const;
 
-    const std::vector<type_safe::object_ref<enum_>> enums() const;
+    const std::vector<type_safe::object_ref<const enum_>> enums() const;
 
     bool has_class(const class_ &c) const;
 
@@ -58,9 +58,11 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
+    friend void print_diagram_tree(const diagram &d, const int level);
+
 private:
-    std::vector<type_safe::object_ref<class_>> classes_;
-    std::vector<type_safe::object_ref<enum_>> enums_;
+    std::vector<type_safe::object_ref<const class_, false>> classes_;
+    std::vector<type_safe::object_ref<const enum_, false>> enums_;
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
 }

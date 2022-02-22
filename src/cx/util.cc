@@ -126,6 +126,16 @@ bool is_inside_class(const cppast::cpp_entity &e)
     return false;
 }
 
+std::pair<std::vector<std::string>, std::string> split_ns(
+    const std::string &full_name)
+{
+    auto name_before_template = ::clanguml::util::split(full_name, "<")[0];
+    auto ns = ::clanguml::util::split(name_before_template, "::");
+    auto name = ns.back();
+    ns.pop_back();
+    return {ns, name};
+}
+
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
 {
     if (t.kind() == cppast::cpp_type_kind::user_defined_t &&

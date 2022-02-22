@@ -353,6 +353,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
     const auto fn = cx::util::full_name(
         resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
     auto t_ns = util::split(fn, "::");
+    auto t_name = t_ns.back();
     t_ns.pop_back();
 
     const auto &t_raw = resolve_alias(cppast::remove_cv(t_));
@@ -465,7 +466,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kDependency);
         }
-        else if (ctx.config().should_include(fn)) {
+        else if (ctx.config().should_include(t_ns, t_name)) {
             LOG_DBG("User defined template instantiation: {} | {}",
                 cppast::to_string(t_), cppast::to_string(t_.canonical()));
 

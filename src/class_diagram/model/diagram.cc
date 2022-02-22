@@ -21,14 +21,17 @@
 #include "util/error.h"
 #include "util/util.h"
 
+#include <cassert>
+#include <iostream>
+
 namespace clanguml::class_diagram::model {
 
-const std::vector<type_safe::object_ref<class_>> diagram::classes() const
+const std::vector<type_safe::object_ref<const class_>> diagram::classes() const
 {
     return classes_;
 }
 
-const std::vector<type_safe::object_ref<enum_>> diagram::enums() const
+const std::vector<type_safe::object_ref<const enum_>> diagram::enums() const
 {
     return enums_;
 }
@@ -57,16 +60,32 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
 
-    add_element(p->get_namespace(), std::move(p));
+    auto ns = p->get_namespace();
+    add_element(ns, std::move(p));
 }
 
 void diagram::add_class(std::unique_ptr<class_> &&c)
 {
     LOG_DBG("Adding class: {}, {}", c->name(), c->full_name());
 
+    if (util::contains(c->name(), "::"))
+        throw std::runtime_error("Name cannot contain namespace: " + c->name());
+
+    if (util::contains(c->name(), "<"))
+        throw std::runtime_error("Name cannot contain <: " + c->name());
+
+    if (util::contains(c->name(), "*"))
+        throw std::runtime_error("Name cannot contain *: " + c->name());
+
     if (!has_class(*c)) {
+        LOG_DBG("### ADDED CLASS WITH ADDRESS: {}", (void *)c.get());
         classes_.emplace_back(*c);
-        add_element(c->get_namespace(), std::move(c));
+        auto ns = c->get_relative_namespace();
+        auto name = c->name();
+        add_element(ns, std::move(c));
+        ns.push_back(name);
+        const auto ccc = get_element<class_>(ns);
+        assert(ccc.value().name() == name);
     }
     else
         LOG_DBG(
@@ -77,9 +96,12 @@ void diagram::add_enum(std::unique_ptr<enum_> &&e)
 {
     LOG_DBG("Adding enum: {}", e->name());
 
+    assert(!util::contains(e->name(), "::"));
+
     if (!has_enum(*e)) {
         enums_.emplace_back(*e);
-        add_element(e->get_namespace(), std::move(e));
+        auto ns = e->get_relative_namespace();
+        add_element(ns, std::move(e));
     }
     else
         LOG_DBG("Enum {} already in the model", e->name());
@@ -90,13 +112,14 @@ std::string diagram::to_alias(const std::string &full_name) const
     LOG_DBG("Looking for alias for {}", full_name);
 
     for (const auto &c : classes_) {
-        if (c->full_name() == full_name) {
+        const auto &cc = c.get();
+        if (cc.full_name() == full_name) {
             return c->alias();
         }
     }
 
     for (const auto &e : enums_) {
-        if (e->full_name() == full_name) {
+        if (e.get().full_name() == full_name) {
             return e->alias();
         }
     }
@@ -104,4 +127,5 @@ std::string diagram::to_alias(const std::string &full_name) const
     throw error::uml_alias_missing(
         fmt::format("Missing alias for {}", full_name));
 }
+
 }

@@ -44,22 +44,21 @@ std::vector<std::string> split(std::string str, std::string delimiter)
 {
     std::vector<std::string> result;
 
-    while (str.size()) {
-        int index = str.find(delimiter);
-        if (index != std::string::npos) {
-            result.push_back(str.substr(0, index));
-            str = str.substr(index + delimiter.size());
-            if (str.size() == 0)
-                result.push_back(str);
-        }
-        else {
-            result.push_back(str);
-            str = "";
-        }
-    }
-
-    if (result.empty())
+    if (!contains(str, delimiter))
         result.push_back(str);
+    else
+        while (str.size()) {
+            int index = str.find(delimiter);
+            if (index != std::string::npos) {
+                result.push_back(str.substr(0, index));
+                str = str.substr(index + delimiter.size());
+            }
+            else {
+                if (!str.empty())
+                    result.push_back(str);
+                str = "";
+            }
+        }
 
     return result;
 }

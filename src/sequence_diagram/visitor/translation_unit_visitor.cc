@@ -80,7 +80,8 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
                 .value();
         m.from = cx::util::ns(caller) + "::" + caller.name();
 
-        if (!ctx.config().should_include(m.from))
+        if (!ctx.config().should_include(
+                util::split(cx::util::ns(caller), "::"), caller.name()))
             continue;
 
         if (caller.kind() == cpp_entity_kind::function_t)
@@ -96,7 +97,8 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
         if (callee.kind() == cpp_entity_kind::function_t)
             m.to += "()";
 
-        if (!ctx.config().should_include(m.to))
+        if (!ctx.config().should_include(
+                util::split(cx::util::ns(callee), "::"), callee.name()))
             continue;
 
         m.to_usr = type_safe::get(function_call.get_callee_method_id());

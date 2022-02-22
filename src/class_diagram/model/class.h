@@ -37,9 +37,9 @@ public:
     class_(const std::vector<std::string> &using_namespaces);
 
     class_(const class_ &) = delete;
-    class_(class_ &&) = default;
+    class_(class_ &&) noexcept = delete;
     class_ &operator=(const class_ &) = delete;
-    class_ &operator=(class_ &&) = default;
+    class_ &operator=(class_ &&) = delete;
 
     bool is_struct() const;
     void is_struct(bool is_struct);
