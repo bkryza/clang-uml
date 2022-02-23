@@ -34,6 +34,7 @@
 #include <cppast/visitor.hpp>
 #include <type_safe/reference.hpp>
 
+#include <common/model/enums.h>
 #include <cppast/cpp_alias_template.hpp>
 #include <cppast/cpp_type_alias.hpp>
 #include <functional>
@@ -42,6 +43,9 @@
 #include <string>
 
 namespace clanguml::class_diagram::visitor {
+
+using found_relationships_t =
+    std::vector<std::pair<std::string, common::model::relationship_t>>;
 
 class translation_unit_visitor {
 public:
@@ -101,8 +105,7 @@ public:
         const std::set<std::string> &template_parameter_names = {});
 
     bool find_relationships(const cppast::cpp_type &t,
-        std::vector<std::pair<std::string,
-            clanguml::common::model::relationship_t>> &relationships,
+        found_relationships_t &relationships,
         clanguml::common::model::relationship_t relationship_hint =
             clanguml::common::model::relationship_t::kNone);
 
@@ -133,12 +136,12 @@ public:
     void process_class_bases(
         const cppast::cpp_class &cls, model::class_ &c) const;
 
-    void process_unexposed_template_specialization_arguments(
+    void process_unexposed_template_specialization_parameters(
         const type_safe::optional_ref<const cppast::cpp_template_specialization>
             &tspec,
         model::class_ &c) const;
 
-    void process_exposed_template_specialization_arguments(
+    void process_exposed_template_specialization_parameters(
         const type_safe::optional_ref<const cppast::cpp_template_specialization>
             &tspec,
         model::class_ &c);
@@ -165,8 +168,29 @@ private:
      * If t does not represent an alias, returns t.
      */
     const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
+
     const cppast::cpp_type &resolve_alias_template(
         const cppast::cpp_type &type);
+
+    bool find_relationships_in_array(
+        found_relationships_t &relationships, const cppast::cpp_type &t);
+
+    bool find_relationships_in_pointer(const cppast::cpp_type &t_,
+        found_relationships_t &relationships,
+        const common::model::relationship_t &relationship_hint);
+
+    bool find_relationships_in_reference(const cppast::cpp_type &t_,
+        found_relationships_t &relationships,
+        const common::model::relationship_t &relationship_hint);
+
+    bool find_relationships_in_user_defined_type(const cppast::cpp_type &t_,
+        found_relationships_t &relationships, const std::string &fn,
+        common::model::relationship_t &relationship_type,
+        const cppast::cpp_type &t);
+
+    bool find_relationships_in_template_instantiation(const cppast::cpp_type &t,
+        const std::string &fn, found_relationships_t &relationships,
+        common::model::relationship_t relationship_type);
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
