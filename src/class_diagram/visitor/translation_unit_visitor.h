@@ -34,9 +34,11 @@
 #include <cppast/visitor.hpp>
 #include <type_safe/reference.hpp>
 
+#include <class_diagram/model/class.h>
 #include <common/model/enums.h>
 #include <cppast/cpp_alias_template.hpp>
 #include <cppast/cpp_type_alias.hpp>
+#include <deque>
 #include <functional>
 #include <map>
 #include <memory>
@@ -191,6 +193,27 @@ private:
     bool find_relationships_in_template_instantiation(const cppast::cpp_type &t,
         const std::string &fn, found_relationships_t &relationships,
         common::model::relationship_t relationship_type);
+
+    void build_template_instantiation_primary_template(
+        const cppast::cpp_template_instantiation_type &t,
+        clanguml::class_diagram::model::class_ &tinst,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::string &full_template_name) const;
+
+    void build_template_instantiation_process_type_argument(
+        const std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        model::class_ &tinst, const cppast::cpp_template_argument &targ,
+        model::class_template &ct);
+
+    void build_template_instantiation_process_expression_argument(
+        const cppast::cpp_template_argument &targ,
+        model::class_template &ct) const;
+
+    bool build_template_instantiation_add_base_classes(model::class_ &tinst,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        int arg_index, bool variadic_params,
+        const model::class_template &ct) const;
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
