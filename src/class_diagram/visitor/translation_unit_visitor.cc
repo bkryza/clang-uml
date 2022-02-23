@@ -229,8 +229,7 @@ void translation_unit_visitor::process_namespace(
     auto usn = util::split(ctx.config().using_namespace()[0], "::");
 
     if (!util::starts_with(usn, package_path)) {
-        auto p = std::make_unique<common::model::package>(
-            util::split(ctx.config().using_namespace()[0], "::"));
+        auto p = std::make_unique<common::model::package>(usn);
         util::remove_prefix(package_path, usn);
 
         p->set_name(e.name());

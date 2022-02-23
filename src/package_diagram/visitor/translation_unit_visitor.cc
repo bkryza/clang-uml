@@ -98,10 +98,8 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             ctx.config().using_namespace()[0], "::");
 
                         if (!util::starts_with(usn, package_path)) {
-                            auto p = std::make_unique<package>(
-                                ctx.config().using_namespace());
+                            auto p = std::make_unique<package>(usn);
                             util::remove_prefix(package_path, usn);
-                            util::remove_prefix(package_parent, usn);
 
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
@@ -122,8 +120,8 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             }
 
                             if (!p->skip()) {
-                                ctx.diagram().add_element(
-                                    package_parent, std::move(p));
+                                auto rns = p->get_relative_namespace();
+                                ctx.diagram().add_element(rns, std::move(p));
                                 ctx.set_current_package(
                                     ctx.diagram().get_element<package>(
                                         package_path));
