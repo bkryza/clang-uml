@@ -2,11 +2,11 @@
 
 ![linux build](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
 
-`clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class and sequence
-diagram generator, driven by YAML configuration files. The main idea behind the
+`clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
+and package diagram generator, driven by YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 existing project code. The configuration file or files for `clang-uml` define the
-type and contents of each diagram.
+type and contents of each generated diagram.
 
 ## Features
 Main features supported so far include:
@@ -17,10 +17,13 @@ Main features supported so far include:
     * Template instantiation relationships
     * Relationship inference from C++ containers and smart pointers
     * Namespace based content filtering
+    * Optional package generation from namespaces
 * Sequence diagram generation
-    * Generation of sequence diagram from one code location to another
+    * Generation of sequence diagram from one code location to another (currently only for non-template code)
 * Package diagram generation
     * Generation of package diagram based on C++ namespaces
+
+To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md).
 
 ## Installation
 
