@@ -34,6 +34,8 @@
 #include <cppast/visitor.hpp>
 #include <type_safe/reference.hpp>
 
+#include <cppast/cpp_alias_template.hpp>
+#include <cppast/cpp_type_alias.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -118,6 +120,39 @@ public:
 
     void process_friend(const cppast::cpp_friend &t,
         clanguml::class_diagram::model::class_ &parent);
+
+    void process_namespace(const cppast::cpp_entity &e,
+        const cppast::cpp_namespace &ns_declaration);
+
+    void process_type_alias(const cppast::cpp_type_alias &ta);
+
+    void process_type_alias_template(const cppast::cpp_alias_template &at);
+
+    void process_class_children(const cppast::cpp_class &cls, model::class_ &c);
+
+    void process_class_bases(
+        const cppast::cpp_class &cls, model::class_ &c) const;
+
+    void process_unexposed_template_specialization_arguments(
+        const type_safe::optional_ref<const cppast::cpp_template_specialization>
+            &tspec,
+        model::class_ &c) const;
+
+    void process_exposed_template_specialization_arguments(
+        const type_safe::optional_ref<const cppast::cpp_template_specialization>
+            &tspec,
+        model::class_ &c);
+
+    void process_scope_template_parameters(
+        model::class_ &c, const cppast::cpp_scope_name &scope);
+
+    bool process_template_parameters(const cppast::cpp_class &cls,
+        model::class_ &c,
+        const type_safe::optional_ref<const cppast::cpp_template_specialization>
+            &tspec);
+
+    void process_class_containment(
+        const cppast::cpp_class &cls, model::class_ &c) const;
 
 private:
     std::unique_ptr<clanguml::class_diagram::model::class_>

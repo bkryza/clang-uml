@@ -102,7 +102,7 @@ std::string class_::full_name(bool relative) const
 
     std::ostringstream ostr;
     if (relative && starts_with(get_namespace(), using_namespaces()))
-        ostr << ns_relative(using_namespaces(), name());
+        ostr << ns_relative(using_namespaces(), name_and_ns());
     else
         ostr << name_and_ns();
 

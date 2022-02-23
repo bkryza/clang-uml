@@ -60,7 +60,7 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
 
-    auto ns = p->get_namespace();
+    auto ns = p->get_relative_namespace();
     add_element(ns, std::move(p));
 }
 
