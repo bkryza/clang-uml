@@ -78,7 +78,6 @@ void diagram::add_class(std::unique_ptr<class_> &&c)
         throw std::runtime_error("Name cannot contain *: " + c->name());
 
     if (!has_class(*c)) {
-        LOG_DBG("### ADDED CLASS WITH ADDRESS: {}", (void *)c.get());
         classes_.emplace_back(*c);
         auto ns = c->get_relative_namespace();
         auto name = c->name();

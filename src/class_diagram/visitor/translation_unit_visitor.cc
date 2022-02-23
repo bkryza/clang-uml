@@ -1592,9 +1592,11 @@ void translation_unit_visitor::
             ctx.diagram().add_class(std::move(nested_tinst));
         }
 
-        if (ctx.config().should_include(tinst_ns, tinst_name) &&
-            ctx.config().should_include(
-                cx::util::split_ns(tinst_dependency.destination()))) {
+        if (ctx.config().should_include(tinst_ns, tinst_name)
+            // TODO: check why this breaks t00033:
+            //    && ctx.config().should_include(
+            //       cx::util::split_ns(tinst_dependency.destination()))
+        ) {
             LOG_DBG("Creating nested template dependency to template "
                     "instantiation {}, {} -> {}",
                 fn, tinst.full_name(), tinst_dependency.destination());

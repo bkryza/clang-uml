@@ -164,7 +164,7 @@ bool diagram::should_include(const std::string &name_) const
             return true;
     }
 
-    spdlog::debug("Skipping from diagram: {}", name);
+    LOG_DBG("Skipping from diagram: {}", name);
 
     return false;
 }
