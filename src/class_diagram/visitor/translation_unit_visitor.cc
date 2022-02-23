@@ -999,10 +999,11 @@ void translation_unit_visitor::process_function_parameter(
     if (!mp.skip_relationship()) {
         // find relationship for the type
         std::vector<std::pair<std::string, relationship_t>> relationships;
+
         find_relationships(cppast::remove_cv(param.type()), relationships,
             relationship_t::kDependency);
-        for (const auto &[type, relationship_type] : relationships) {
 
+        for (const auto &[type, relationship_type] : relationships) {
             if (ctx.config().should_include(cx::util::split_ns(type)) &&
                 (relationship_type != relationship_t::kNone) &&
                 (type != c.name_and_ns())) {
@@ -1017,101 +1018,97 @@ void translation_unit_visitor::process_function_parameter(
             }
         }
 
-        // Also consider the container itself if it is user defined type
+        // Also consider the container itself if it is a template instantiation
+        // it's arguments could count as reference to relevant types
         const auto &t = cppast::remove_cv(cx::util::unreferenced(param.type()));
         if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-            auto &template_instantiation_type =
-                static_cast<const cppast::cpp_template_instantiation_type &>(t);
-
-            if (template_instantiation_type.primary_template()
-                    .get(ctx.entity_index())
-                    .size()) {
-
-                // Here we need the name of the primary template with full
-                // namespace prefix to apply config inclusion filters
-                //                auto primary_template_name =
-                //                    cx::util::full_name(ctx.get_namespace(),
-                //                        template_instantiation_type.primary_template()
-                //                            .get(ctx.entity_index())[0]
-                //                            .get());
-                // Now check if the template arguments of this function param
-                // are a subset of the method template params - if yes this is
-                // not an instantiation but just a reference to an existing
-                // template
-                bool template_is_not_instantiation{false};
-                if (template_instantiation_type.arguments_exposed()) {
-                    LOG_DBG("Processing template method argument exposed "
-                            "parameters...");
-
-                    for (const auto &template_argument :
-                        template_instantiation_type.arguments().value()) {
-                        const auto template_argument_name =
-                            cppast::to_string(template_argument.type().value());
-                        if (template_parameter_names.count(
-                                template_argument_name) > 0) {
-                            template_is_not_instantiation = true;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    LOG_DBG("Processing template method argument unexposed "
-                            "parameters: ",
-                        template_instantiation_type.unexposed_arguments());
-                    // TODO: Process unexposed arguments by manually parsing the
-                    // arguments string
-                }
-
-                //                LOG_DBG("Maybe building instantiation for:
-                //                {}",
-                //                    primary_template_name);
-
-                if (ctx.config().should_include(ctx.get_namespace(),
-                        template_instantiation_type.primary_template()
-                            .get(ctx.entity_index())[0]
-                            .get()
-                            .name())) {
-
-                    if (template_is_not_instantiation) {
-                        LOG_DBG("Template is not an instantiation - "
-                                "only adding reference to template {}",
-                            cx::util::full_name(cppast::remove_cv(t),
-                                ctx.entity_index(), false));
-                        relationship rr{relationship_t::kDependency,
-                            cx::util::full_name(cppast::remove_cv(t),
-                                ctx.entity_index(), false)};
-                        LOG_DBG("Adding field template dependency relationship "
-                                "{} {} {} "
-                                ": {}",
-                            rr.destination(),
-                            clanguml::common::model::to_string(rr.type()),
-                            c.full_name(), rr.label());
-                        c.add_relationship(std::move(rr));
-                    }
-                    else {
-                        // First check if tinst already exists
-                        auto tinst_ptr = build_template_instantiation(
-                            template_instantiation_type);
-                        auto &tinst = *tinst_ptr;
-                        relationship rr{
-                            relationship_t::kDependency, tinst.full_name()};
-
-                        LOG_DBG("Adding field dependency relationship {} {} {} "
-                                ": {}",
-                            rr.destination(),
-                            clanguml::common::model::to_string(rr.type()),
-                            c.full_name(), rr.label());
-
-                        c.add_relationship(std::move(rr));
-
-                        ctx.diagram().add_class(std::move(tinst_ptr));
-                    }
-                }
-            }
+            process_function_parameter_find_relationships_in_template(
+                c, template_parameter_names, t);
         }
     }
 
     m.add_parameter(std::move(mp));
+}
+
+void translation_unit_visitor::
+    process_function_parameter_find_relationships_in_template(class_ &c,
+        const std::set<std::string> &template_parameter_names,
+        const cppast::cpp_type &t)
+{
+    auto &template_instantiation_type =
+        static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
+    if (template_instantiation_type.primary_template()
+            .get(ctx.entity_index())
+            .size()) {
+        // Check if the template arguments of this function param
+        // are a subset of the method template params - if yes this is
+        // not an instantiation but just a reference to an existing
+        // template
+        bool template_is_not_instantiation{false};
+        if (template_instantiation_type.arguments_exposed()) {
+            LOG_DBG("Processing template method argument exposed "
+                    "parameters...");
+
+            for (const auto &template_argument :
+                template_instantiation_type.arguments().value()) {
+                const auto template_argument_name =
+                    cppast::to_string(template_argument.type().value());
+                if (template_parameter_names.count(template_argument_name) >
+                    0) {
+                    template_is_not_instantiation = true;
+                    break;
+                }
+            }
+        }
+        else {
+            LOG_DBG("Processing template method argument unexposed "
+                    "parameters: ",
+                template_instantiation_type.unexposed_arguments());
+            // TODO: Process unexposed arguments by manually parsing the
+            // arguments string
+        }
+
+        if (!ctx.config().should_include(ctx.get_namespace(),
+                template_instantiation_type.primary_template()
+                    .get(ctx.entity_index())[0]
+                    .get()
+                    .name())) {
+            return;
+        }
+
+        if (template_is_not_instantiation) {
+            LOG_DBG("Template is not an instantiation - "
+                    "only adding reference to template {}",
+                cx::util::full_name(
+                    cppast::remove_cv(t), ctx.entity_index(), false));
+            relationship rr{relationship_t::kDependency,
+                cx::util::full_name(
+                    cppast::remove_cv(t), ctx.entity_index(), false)};
+            LOG_DBG("Adding field template dependency relationship "
+                    "{} {} {} "
+                    ": {}",
+                rr.destination(), common::model::to_string(rr.type()),
+                c.full_name(), rr.label());
+            c.add_relationship(std::move(rr));
+        }
+        else {
+            // First check if tinst already exists
+            auto tinst_ptr =
+                build_template_instantiation(template_instantiation_type);
+            auto &tinst = *tinst_ptr;
+            relationship rr{relationship_t::kDependency, tinst.full_name()};
+
+            LOG_DBG("Adding field dependency relationship {} {} {} "
+                    ": {}",
+                rr.destination(), common::model::to_string(rr.type()),
+                c.full_name(), rr.label());
+
+            c.add_relationship(std::move(rr));
+
+            ctx.diagram().add_class(std::move(tinst_ptr));
+        }
+    }
 }
 
 void translation_unit_visitor::process_template_type_parameter(

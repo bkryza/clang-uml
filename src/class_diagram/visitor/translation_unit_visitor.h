@@ -215,6 +215,10 @@ private:
         int arg_index, bool variadic_params,
         const model::class_template &ct) const;
 
+    void process_function_parameter_find_relationships_in_template(
+        model::class_ &c, const std::set<std::string> &template_parameter_names,
+        const cppast::cpp_type &t);
+
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
 };
