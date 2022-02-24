@@ -102,6 +102,9 @@ test_cases:
     - name: t00035
       title: PlantUML class diagram layout hints test case
       description:
+    - name: t00036
+      title: Class diagram with namespaces generated as packages
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
