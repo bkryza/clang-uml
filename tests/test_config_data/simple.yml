@@ -9,6 +9,7 @@ diagrams:
     using_namespace:
       - clanguml
     generate_method_arguments: full
+    generate_packages: true
     include:
       namespaces:
         - clanguml

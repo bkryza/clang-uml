@@ -32,8 +32,6 @@
 #include <cppast/cpp_variable.hpp>
 #include <spdlog/spdlog.h>
 
-#include <deque>
-
 namespace clanguml::class_diagram::visitor {
 
 using clanguml::class_diagram::model::class_;
@@ -94,8 +92,10 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     const auto &ns_declaration =
                         static_cast<const cppast::cpp_namespace &>(e);
                     if (!ns_declaration.is_anonymous() &&
-                        !ns_declaration.is_inline())
-                        ctx.push_namespace(e.name());
+                        !ns_declaration.is_inline()) {
+
+                        process_namespace(e, ns_declaration);
+                    }
                 }
                 else {
                     LOG_DBG("========== Leaving '{}' - {}", e.name(),
@@ -106,6 +106,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     if (!ns_declaration.is_anonymous() &&
                         !ns_declaration.is_inline())
                         ctx.pop_namespace();
+                }
+            }
+            else if (e.kind() == cppast::cpp_entity_kind::namespace_alias_t) {
+                auto &na = static_cast<const cppast::cpp_namespace_alias &>(e);
+
+                for (const auto &alias_target :
+                    na.target().get(ctx.entity_index())) {
+                    auto full_ns = cx::util::full_name(ctx.get_namespace(), na);
+                    ctx.add_namespace_alias(full_ns, alias_target);
                 }
             }
             else if (e.kind() ==
@@ -138,7 +147,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                 }
 
                 if (ctx.config().should_include(
-                        cx::util::fully_prefixed(ctx.get_namespace(), cls)))
+                        ctx.get_namespace(), cls.name()))
                     process_class_declaration(cls);
             }
             else if (e.kind() == cppast::cpp_entity_kind::enum_t) {
@@ -149,7 +158,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
                 if (ctx.config().should_include(
-                        cx::util::fully_prefixed(ctx.get_namespace(), enm)))
+                        ctx.get_namespace(), enm.name()))
                     process_enum_declaration(enm);
             }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
@@ -158,15 +167,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     cppast::to_string(e.kind()));
 
                 auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
-                type_alias t;
-                t.set_alias(cx::util::full_name(ctx.get_namespace(), ta));
-                t.set_underlying_type(cx::util::full_name(ta.underlying_type(),
-                    ctx.entity_index(), cx::util::is_inside_class(e)));
-
-                ctx.add_type_alias(cx::util::full_name(ctx.get_namespace(), ta),
-                    type_safe::ref(ta.underlying_type()));
-
-                ctx.diagram().add_type_alias(std::move(t));
+                process_type_alias(ta);
             }
             else if (e.kind() == cppast::cpp_entity_kind::alias_template_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
@@ -175,22 +176,86 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 auto &at = static_cast<const cppast::cpp_alias_template &>(e);
 
-                if (at.type_alias().underlying_type().kind() ==
-                    cppast::cpp_type_kind::unexposed_t) {
-                    LOG_WARN("Template alias has unexposed underlying type: {}",
-                        static_cast<const cppast::cpp_unexposed_type &>(
-                            at.type_alias().underlying_type())
-                            .name());
-                }
-                else {
-                    class_ tinst = build_template_instantiation(static_cast<
-                        const cppast::cpp_template_instantiation_type &>(
-                        at.type_alias().underlying_type()));
-
-                    ctx.diagram().add_class(std::move(tinst));
-                }
+                process_type_alias_template(at);
             }
         });
+}
+
+void translation_unit_visitor::process_type_alias_template(
+    const cppast::cpp_alias_template &at)
+{
+    if (at.type_alias().underlying_type().kind() ==
+        cppast::cpp_type_kind::unexposed_t) {
+        LOG_WARN("Template alias has unexposed underlying type: {}",
+            static_cast<const cppast::cpp_unexposed_type &>(
+                at.type_alias().underlying_type())
+                .name());
+    }
+    else {
+        auto tinst = build_template_instantiation(
+            static_cast<const cppast::cpp_template_instantiation_type &>(
+                resolve_alias(at.type_alias().underlying_type())));
+
+        ctx.add_type_alias_template(
+            cx::util::full_name(ctx.get_namespace(), at),
+            type_safe::ref(at.type_alias().underlying_type()));
+
+        if (ctx.config().should_include(tinst->get_namespace(), tinst->name()))
+            ctx.diagram().add_class(std::move(tinst));
+    }
+}
+
+void translation_unit_visitor::process_type_alias(
+    const cppast::cpp_type_alias &ta)
+{
+    auto t = std::make_unique<type_alias>();
+    t->set_alias(cx::util::full_name(ctx.get_namespace(), ta));
+    t->set_underlying_type(cx::util::full_name(ta.underlying_type(),
+        ctx.entity_index(), cx::util::is_inside_class(ta)));
+
+    ctx.add_type_alias(cx::util::full_name(ctx.get_namespace(), ta),
+        type_safe::ref(ta.underlying_type()));
+
+    ctx.diagram().add_type_alias(std::move(t));
+}
+
+void translation_unit_visitor::process_namespace(
+    const cppast::cpp_entity &e, const cppast::cpp_namespace &ns_declaration)
+{
+    std::vector<std::string> package_parent = ctx.get_namespace();
+    auto package_path = package_parent;
+    package_path.push_back(e.name());
+
+    auto usn = util::split(ctx.config().using_namespace()[0], "::");
+
+    if (!util::starts_with(usn, package_path)) {
+        auto p = std::make_unique<common::model::package>(usn);
+        util::remove_prefix(package_path, usn);
+
+        p->set_name(e.name());
+        p->set_namespace(package_parent);
+
+        if (ns_declaration.comment().has_value())
+            p->add_decorators(
+                decorators::parse(ns_declaration.comment().value()));
+
+        p->set_style(p->style_spec());
+
+        for (const auto &attr : ns_declaration.attributes()) {
+            if (attr.kind() == cppast::cpp_attribute_kind::deprecated) {
+                p->set_deprecated(true);
+                break;
+            }
+        }
+
+        if (!p->skip()) {
+            ctx.diagram().add_package(std::move(p));
+            ctx.set_current_package(
+                ctx.diagram().get_element<common::model::package>(
+                    package_path));
+        }
+    }
+    ctx.push_namespace(e.name());
 }
 
 void translation_unit_visitor::process_enum_declaration(
@@ -202,8 +267,11 @@ void translation_unit_visitor::process_enum_declaration(
         return;
     }
 
-    enum_ e{ctx.config().using_namespace()};
-    e.set_name(cx::util::full_name(ctx.get_namespace(), enm));
+    auto e_ptr = std::make_unique<enum_>(
+        util::split(ctx.config().using_namespace()[0], "::"));
+    auto &e = *e_ptr;
+    e.set_name(enm.name());
+    e.set_namespace(ctx.get_namespace());
 
     if (enm.comment().has_value())
         e.add_decorators(decorators::parse(enm.comment().value()));
@@ -230,27 +298,30 @@ void translation_unit_visitor::process_enum_declaration(
             e.add_relationship({relationship_t::kContainment,
                 cx::util::full_name(ctx.get_namespace(), cur.value())});
 
-            LOG_DBG("Added containment relationship {} +-- {}", e.name());
+            LOG_DBG("Added containment relationship {} +-- {}",
+                cx::util::full_name(ctx.get_namespace(), cur.value()),
+                e.name());
             break;
         }
     }
 
-    ctx.diagram().add_enum(std::move(e));
+    ctx.diagram().add_enum(std::move(e_ptr));
 }
 
 void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
-    class_ c{ctx.config().using_namespace()};
+    auto c_ptr = std::make_unique<class_>(
+        util::split(ctx.config().using_namespace()[0], "::"));
+    auto &c = *c_ptr;
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
-    c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
+    // c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
+    c.set_name(cls.name());
+    c.set_namespace(ctx.get_namespace());
 
     if (cls.comment().has_value())
         c.add_decorators(decorators::parse(cls.comment().value()));
-
-    cppast::cpp_access_specifier_kind last_access_specifier =
-        cppast::cpp_access_specifier_kind::cpp_private;
 
     // Process class documentation comment
     if (cppast::is_templated(cls)) {
@@ -269,6 +340,229 @@ void translation_unit_visitor::process_class_declaration(
     c.set_style(c.style_spec());
 
     // Process class child entities
+    process_class_children(cls, c);
+
+    // Process class bases
+    process_class_bases(cls, c);
+
+    // Process class template arguments
+    if (cppast::is_templated(cls)) {
+        bool skip = process_template_parameters(cls, c, tspec);
+        if (skip)
+            return;
+    }
+
+    // Find if class is contained in another class
+    process_class_containment(cls, c);
+
+    cls.set_user_data(strdup(c.full_name().c_str()));
+
+    LOG_DBG("Setting user data for class {}, {}",
+        static_cast<const char *>(cls.user_data()),
+        fmt::ptr(reinterpret_cast<const void *>(&cls)));
+
+    assert(c_ptr);
+    ctx.diagram().add_class(std::move(c_ptr));
+}
+
+void translation_unit_visitor::process_class_containment(
+    const cppast::cpp_class &cls, class_ &c) const
+{
+    for (auto cur = cls.parent(); cur; cur = cur.value().parent()) {
+        // find nearest parent class, if any
+        if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
+            c.add_relationship({relationship_t::kContainment,
+                cx::util::full_name(ctx.get_namespace(), cur.value())});
+
+            LOG_DBG("Added containment relationship {}", c.full_name());
+
+            break;
+        }
+    }
+}
+
+bool translation_unit_visitor::process_template_parameters(
+    const cppast::cpp_class &cls, class_ &c,
+    const type_safe::optional_ref<const cppast::cpp_template_specialization>
+        &tspec)
+{
+    LOG_DBG("Processing class {} template parameters...", cls.name());
+
+    auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
+    // Even if this is a template the scope.is_templated() returns
+    // false when the template parameter list is empty
+    if (scope.is_templated()) {
+        process_scope_template_parameters(c, scope);
+    }
+    else {
+        LOG_WARN("Class {} is templated but it's scope {} is not - "
+                 "probably this is a specialization",
+            cls.name(), scope.name());
+
+        // Add specialization arguments
+        if (tspec) {
+            if (!tspec.value().arguments_exposed()) {
+                process_unexposed_template_specialization_parameters(tspec, c);
+            }
+            else {
+                process_exposed_template_specialization_parameters(tspec, c);
+            }
+        }
+        else {
+            LOG_DBG("Skipping template class declaration which has only "
+                    "unexposed arguments but no tspec provided");
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void translation_unit_visitor::process_scope_template_parameters(
+    class_ &c, const cppast::cpp_scope_name &scope)
+{
+    for (const auto &tp : scope.template_parameters()) {
+        if (tp.kind() == cppast::cpp_entity_kind::template_type_parameter_t) {
+            LOG_DBG("Processing template type parameter {}", tp.name());
+            process_template_type_parameter(
+                static_cast<const cppast::cpp_template_type_parameter &>(tp),
+                c);
+        }
+        else if (tp.kind() ==
+            cppast::cpp_entity_kind::non_type_template_parameter_t) {
+            LOG_DBG("Processing template nontype parameter {}", tp.name());
+            process_template_nontype_parameter(
+                static_cast<const cppast::cpp_non_type_template_parameter &>(
+                    tp),
+                c);
+        }
+        else if (tp.kind() ==
+            cppast::cpp_entity_kind::template_template_parameter_t) {
+            LOG_DBG("Processing template template parameter {}", tp.name());
+            process_template_template_parameter(
+                static_cast<const cppast::cpp_template_template_parameter &>(
+                    tp),
+                c);
+        }
+    }
+}
+
+void translation_unit_visitor::
+    process_exposed_template_specialization_parameters(
+        const type_safe::optional_ref<const cppast::cpp_template_specialization>
+            &tspec,
+        class_ &c)
+{
+    for (auto &tp : tspec.value().parameters()) {
+        switch (tp.kind()) {
+        case cppast::cpp_entity_kind::template_type_parameter_t: {
+            LOG_DBG("Processing template type parameter {}", tp.name());
+            process_template_type_parameter(
+                static_cast<const cppast::cpp_template_type_parameter &>(tp),
+                c);
+        } break;
+        case cppast::cpp_entity_kind::non_type_template_parameter_t: {
+            LOG_DBG("Processing template nontype parameter {}", tp.name());
+            process_template_nontype_parameter(
+                static_cast<const cppast::cpp_non_type_template_parameter &>(
+                    tp),
+                c);
+        } break;
+        case cppast::cpp_entity_kind::template_template_parameter_t: {
+            LOG_DBG("Processing template template parameter {}", tp.name());
+            process_template_template_parameter(
+                static_cast<const cppast::cpp_template_template_parameter &>(
+                    tp),
+                c);
+        } break;
+        default:
+            LOG_DBG("Unhandled template parameter "
+                    "type {}",
+                cppast::to_string(tp.kind()));
+            break;
+        }
+    }
+}
+
+void translation_unit_visitor::
+    process_unexposed_template_specialization_parameters(
+        const type_safe::optional_ref<const cppast::cpp_template_specialization>
+            &tspec,
+        class_ &c) const
+{
+    auto ua = tspec.value().unexposed_arguments().as_string();
+
+    // Naive parse of template arguments:
+    auto toks = util::split(ua, ",");
+    for (const auto &t : toks) {
+        c.add_template({t});
+
+        if (!tspec.value().primary_template().is_overloaded()) {
+            if (tspec.value()
+                    .primary_template()
+                    .get(ctx.entity_index())
+                    .size() == 0) {
+                LOG_WARN("Template {} has no exposed parameters",
+                    tspec.value().name());
+
+                continue;
+            }
+        }
+
+        const auto &primary_template_ref = static_cast<
+            const cppast::cpp_class_template &>(
+            tspec.value().primary_template().get(ctx.entity_index())[0].get())
+                                               .class_();
+
+        if (primary_template_ref.user_data()) {
+            auto base_template_full_name =
+                static_cast<const char *>(primary_template_ref.user_data());
+            LOG_DBG("Primary template ref set to: {}", base_template_full_name);
+            // Add template specialization/instantiation
+            // relationship
+            c.add_relationship(
+                {relationship_t::kInstantiation, base_template_full_name});
+        }
+        else {
+            LOG_WARN("No user data for base template {}",
+                primary_template_ref.name());
+        }
+    }
+}
+void translation_unit_visitor::process_class_bases(
+    const cppast::cpp_class &cls, class_ &c) const
+{
+    for (auto &base : cls.bases()) {
+        class_parent cp;
+        cp.set_name(cx::util::fully_prefixed(ctx.get_namespace(), base));
+        cp.is_virtual(base.is_virtual());
+
+        switch (base.access_specifier()) {
+        case cppast::cpp_private:
+            cp.set_access(access_t::kPrivate);
+            break;
+        case cppast::cpp_public:
+            cp.set_access(access_t::kPublic);
+            break;
+        case cppast::cpp_protected:
+            cp.set_access(access_t::kProtected);
+            break;
+        default:
+            cp.set_access(access_t::kPublic);
+        }
+
+        LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
+
+        c.add_parent(std::move(cp));
+    }
+}
+
+void translation_unit_visitor::process_class_children(
+    const cppast::cpp_class &cls, class_ &c)
+{
+    cppast::cpp_access_specifier_kind last_access_specifier =
+        cppast::cpp_access_specifier_kind::cpp_private;
+
     if (c.is_struct())
         last_access_specifier = cppast::cpp_access_specifier_kind::cpp_public;
 
@@ -336,191 +630,6 @@ void translation_unit_visitor::process_class_declaration(
                 cppast::to_string(child.kind()));
         }
     }
-
-    // Process class bases
-    for (auto &base : cls.bases()) {
-        class_parent cp;
-        cp.set_name(
-            clanguml::cx::util::fully_prefixed(ctx.get_namespace(), base));
-        cp.is_virtual(base.is_virtual());
-
-        switch (base.access_specifier()) {
-        case cppast::cpp_access_specifier_kind::cpp_private:
-            cp.set_access(access_t::kPrivate);
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_public:
-            cp.set_access(access_t::kPublic);
-            break;
-        case cppast::cpp_access_specifier_kind::cpp_protected:
-            cp.set_access(access_t::kProtected);
-            break;
-        default:
-            cp.set_access(access_t::kPublic);
-        }
-
-        LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
-
-        c.add_parent(std::move(cp));
-    }
-
-    // Process class template arguments
-    if (cppast::is_templated(cls)) {
-        LOG_DBG("Processing class template parameters...");
-        auto scope = cppast::cpp_scope_name(type_safe::ref(cls));
-        // Even if this is a template the scope.is_templated() returns
-        // false when the template parameter list is empty
-        if (scope.is_templated()) {
-            for (const auto &tp : scope.template_parameters()) {
-                if (tp.kind() ==
-                    cppast::cpp_entity_kind::template_type_parameter_t) {
-                    LOG_DBG("Processing template type parameter {}", tp.name());
-                    process_template_type_parameter(
-                        static_cast<
-                            const cppast::cpp_template_type_parameter &>(tp),
-                        c);
-                }
-                else if (tp.kind() ==
-                    cppast::cpp_entity_kind::non_type_template_parameter_t) {
-                    LOG_DBG(
-                        "Processing template nontype parameter {}", tp.name());
-                    process_template_nontype_parameter(
-                        static_cast<
-                            const cppast::cpp_non_type_template_parameter &>(
-                            tp),
-                        c);
-                }
-                else if (tp.kind() ==
-                    cppast::cpp_entity_kind::template_template_parameter_t) {
-                    LOG_DBG(
-                        "Processing template template parameter {}", tp.name());
-                    process_template_template_parameter(
-                        static_cast<
-                            const cppast::cpp_template_template_parameter &>(
-                            tp),
-                        c);
-                }
-            }
-        }
-        else {
-            LOG_WARN("Class {} is templated but it's scope {} is not - "
-                     "probably this is a specialization",
-                cls.name(), scope.name());
-
-            // Add specialization arguments
-            if (tspec) {
-                if (!tspec.value().arguments_exposed()) {
-                    // Create template specialization with unexposed arguments
-                    auto ua = tspec.value().unexposed_arguments().as_string();
-
-                    // Naive parse of template arguments:
-                    auto toks = util::split(ua, ",");
-                    for (const auto &t : toks) {
-                        c.add_template({t});
-
-                        if (!tspec.value().primary_template().is_overloaded()) {
-                            if (tspec.value()
-                                    .primary_template()
-                                    .get(ctx.entity_index())
-                                    .size() == 0) {
-                                LOG_WARN("Template {} has no exposed arguments",
-                                    tspec.value().name());
-
-                                continue;
-                            }
-                        }
-
-                        const auto &primary_template_ref =
-                            static_cast<const cppast::cpp_class_template &>(
-                                tspec.value()
-                                    .primary_template()
-                                    .get(ctx.entity_index())[0]
-                                    .get())
-                                .class_();
-
-                        if (primary_template_ref.user_data()) {
-                            auto base_template_full_name =
-                                static_cast<const char *>(
-                                    primary_template_ref.user_data());
-                            LOG_DBG("Primary template ref set to: {}",
-                                base_template_full_name);
-                            // Add template specialization/instantiation
-                            // relationship
-                            c.add_relationship({relationship_t::kInstantiation,
-                                base_template_full_name});
-                        }
-                        else {
-                            LOG_WARN("No user data for base template {}",
-                                primary_template_ref.name());
-                        }
-                    }
-                }
-                else {
-                    for (auto &tp : tspec.value().parameters()) {
-                        switch (tp.kind()) {
-                        case cppast::cpp_entity_kind::
-                            template_type_parameter_t: {
-                            LOG_DBG("Processing template type parameter {}",
-                                tp.name());
-                            process_template_type_parameter(
-                                static_cast<const cppast::
-                                        cpp_template_type_parameter &>(tp),
-                                c);
-                        } break;
-                        case cppast::cpp_entity_kind::
-                            non_type_template_parameter_t: {
-                            LOG_DBG("Processing template nontype parameter {}",
-                                tp.name());
-                            process_template_nontype_parameter(
-                                static_cast<const cppast::
-                                        cpp_non_type_template_parameter &>(tp),
-                                c);
-                        } break;
-                        case cppast::cpp_entity_kind::
-                            template_template_parameter_t: {
-                            LOG_DBG("Processing template template parameter {}",
-                                tp.name());
-                            process_template_template_parameter(
-                                static_cast<const cppast::
-                                        cpp_template_template_parameter &>(tp),
-                                c);
-                        } break;
-                        default:
-                            LOG_DBG("Unhandled template parameter "
-                                    "type {}",
-                                cppast::to_string(tp.kind()));
-                            break;
-                        }
-                    }
-                }
-            }
-            else {
-                LOG_DBG("Skipping template class declaration which has only "
-                        "unexposed arguments but no tspec provided");
-                return;
-            }
-        }
-    }
-
-    // Find if class is contained in another class
-    for (auto cur = cls.parent(); cur; cur = cur.value().parent()) {
-        // find nearest parent class, if any
-        if (cur.value().kind() == cppast::cpp_entity_kind::class_t) {
-            c.add_relationship({relationship_t::kContainment,
-                cx::util::full_name(ctx.get_namespace(), cur.value())});
-
-            LOG_DBG("Added containment relationship {}", c.full_name());
-
-            break;
-        }
-    }
-
-    cls.set_user_data(strdup(c.full_name().c_str()));
-
-    LOG_DBG("Setting user data for class {}, {}",
-        static_cast<const char *>(cls.user_data()),
-        fmt::ptr(reinterpret_cast<const void *>(&cls)));
-
-    ctx.diagram().add_class(std::move(c));
 }
 
 bool translation_unit_visitor::process_field_with_template_instantiation(
@@ -532,6 +641,8 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
     bool res = false;
 
+    auto tr_declaration = cppast::to_string(tr);
+
     const auto &template_instantiation_type =
         static_cast<const cppast::cpp_template_instantiation_type &>(tr);
 
@@ -539,7 +650,15 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         static_cast<const cppast::cpp_template_instantiation_type &>(
             resolve_alias(template_instantiation_type));
 
-    class_ tinst = build_template_instantiation(unaliased);
+    auto tr_unaliased_declaration = cppast::to_string(unaliased);
+
+    std::unique_ptr<class_> tinst_ptr;
+    if (util::contains(tr_declaration, "<"))
+        tinst_ptr = build_template_instantiation(template_instantiation_type);
+    else
+        tinst_ptr = build_template_instantiation(unaliased);
+
+    auto &tinst = *tinst_ptr;
 
     // Infer the relationship of this field to the template
     // instantiation
@@ -547,7 +666,6 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
         mv.type().kind() == cppast::cpp_type_kind::reference_t)
         relationship_type = relationship_t::kAssociation;
-
     else
         relationship_type = relationship_t::kAggregation;
 
@@ -566,18 +684,24 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         }
     }
 
-    if (ctx.config().should_include(tinst.name())) {
+    if (ctx.config().should_include(tinst.get_namespace(), tinst.name())) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
             rr.destination(), clanguml::common::model::to_string(rr.type()),
             c.full_name(), rr.label());
 
         c.add_relationship(std::move(rr));
 
+        if (tr_declaration != tr_unaliased_declaration) {
+            // Add template instantiation/specialization relationship;
+            tinst.add_relationship(
+                {relationship_t::kInstantiation, tr_unaliased_declaration});
+        }
+
         res = true;
 
         LOG_DBG("Created template instantiation: {}", tinst.full_name());
 
-        ctx.diagram().add_class(std::move(tinst));
+        ctx.diagram().add_class(std::move(tinst_ptr));
     }
 
     return res;
@@ -611,17 +735,22 @@ void translation_unit_visitor::process_field(
     else if (tr.kind() == cppast::cpp_type_kind::user_defined_t) {
         LOG_DBG("Processing user defined type field {} {}",
             cppast::to_string(tr), mv.name());
+        if (resolve_alias(tr).kind() ==
+            cppast::cpp_type_kind::template_instantiation_t)
+            template_instantiation_added_as_aggregation =
+                process_field_with_template_instantiation(mv, tr, c, m, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
         template_instantiation_added_as_aggregation =
-            process_field_with_template_instantiation(
-                mv, resolve_alias(tr), c, m, as);
+            process_field_with_template_instantiation(mv, tr, c, m, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::unexposed_t) {
         LOG_DBG(
             "Processing field with unexposed type {}", cppast::to_string(tr));
         // TODO
     }
+
+    auto tr_declaration = cppast::to_string(tr);
 
     if (!m.skip_relationship() &&
         !template_instantiation_added_as_aggregation &&
@@ -869,11 +998,14 @@ void translation_unit_visitor::process_function_parameter(
     if (!mp.skip_relationship()) {
         // find relationship for the type
         std::vector<std::pair<std::string, relationship_t>> relationships;
+
         find_relationships(cppast::remove_cv(param.type()), relationships,
             relationship_t::kDependency);
+
         for (const auto &[type, relationship_type] : relationships) {
-            if ((relationship_type != relationship_t::kNone) &&
-                (type != c.name())) {
+            if (ctx.config().should_include(cx::util::split_ns(type)) &&
+                (relationship_type != relationship_t::kNone) &&
+                (type != c.name_and_ns())) {
                 relationship r{relationship_t::kDependency, type};
 
                 LOG_DBG("Adding field relationship {} {} {} : {}",
@@ -885,96 +1017,97 @@ void translation_unit_visitor::process_function_parameter(
             }
         }
 
-        // Also consider the container itself if it is user defined type
+        // Also consider the container itself if it is a template instantiation
+        // it's arguments could count as reference to relevant types
         const auto &t = cppast::remove_cv(cx::util::unreferenced(param.type()));
         if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-            auto &template_instantiation_type =
-                static_cast<const cppast::cpp_template_instantiation_type &>(t);
-
-            if (template_instantiation_type.primary_template()
-                    .get(ctx.entity_index())
-                    .size()) {
-
-                // Here we need the name of the primary template with full
-                // namespace prefix to apply config inclusion filters
-                auto primary_template_name =
-                    cx::util::full_name(ctx.get_namespace(),
-                        template_instantiation_type.primary_template()
-                            .get(ctx.entity_index())[0]
-                            .get());
-                // Now check if the template arguments of this function param
-                // are a subset of the method template params - if yes this is
-                // not an instantiation but just a reference to an existing
-                // template
-                bool template_is_not_instantiation{false};
-                if (template_instantiation_type.arguments_exposed()) {
-                    LOG_DBG("Processing template method argument exposed "
-                            "parameters...");
-
-                    for (const auto &template_argument :
-                        template_instantiation_type.arguments().value()) {
-                        const auto template_argument_name =
-                            cppast::to_string(template_argument.type().value());
-                        if (template_parameter_names.count(
-                                template_argument_name) > 0) {
-                            template_is_not_instantiation = true;
-                            break;
-                        }
-                    }
-                }
-                else {
-                    LOG_DBG("Processing template method argument unexposed "
-                            "parameters: ",
-                        template_instantiation_type.unexposed_arguments());
-                    // TODO: Process unexposed arguments by manually parsing the
-                    // arguments string
-                }
-
-                LOG_DBG("Maybe building instantiation for: {}",
-                    primary_template_name);
-
-                if (ctx.config().should_include(primary_template_name)) {
-
-                    if (template_is_not_instantiation) {
-                        LOG_DBG("Template is not an instantiation - "
-                                "only adding reference to template {}",
-                            cx::util::full_name(cppast::remove_cv(t),
-                                ctx.entity_index(), false));
-                        relationship rr{relationship_t::kDependency,
-                            cx::util::full_name(cppast::remove_cv(t),
-                                ctx.entity_index(), false)};
-                        LOG_DBG("Adding field template dependency relationship "
-                                "{} {} {} "
-                                ": {}",
-                            rr.destination(),
-                            clanguml::common::model::to_string(rr.type()),
-                            c.full_name(), rr.label());
-                        c.add_relationship(std::move(rr));
-                    }
-                    else {
-                        // First check if tinst already exists
-                        class_ tinst = build_template_instantiation(
-                            template_instantiation_type);
-
-                        relationship rr{
-                            relationship_t::kDependency, tinst.full_name()};
-
-                        LOG_DBG("Adding field dependency relationship {} {} {} "
-                                ": {}",
-                            rr.destination(),
-                            clanguml::common::model::to_string(rr.type()),
-                            c.full_name(), rr.label());
-
-                        c.add_relationship(std::move(rr));
-
-                        ctx.diagram().add_class(std::move(tinst));
-                    }
-                }
-            }
+            process_function_parameter_find_relationships_in_template(
+                c, template_parameter_names, t);
         }
     }
 
     m.add_parameter(std::move(mp));
+}
+
+void translation_unit_visitor::
+    process_function_parameter_find_relationships_in_template(class_ &c,
+        const std::set<std::string> &template_parameter_names,
+        const cppast::cpp_type &t)
+{
+    auto &template_instantiation_type =
+        static_cast<const cppast::cpp_template_instantiation_type &>(t);
+
+    if (template_instantiation_type.primary_template()
+            .get(ctx.entity_index())
+            .size()) {
+        // Check if the template arguments of this function param
+        // are a subset of the method template params - if yes this is
+        // not an instantiation but just a reference to an existing
+        // template
+        bool template_is_not_instantiation{false};
+        if (template_instantiation_type.arguments_exposed()) {
+            LOG_DBG("Processing template method argument exposed "
+                    "parameters...");
+
+            for (const auto &template_argument :
+                template_instantiation_type.arguments().value()) {
+                const auto template_argument_name =
+                    cppast::to_string(template_argument.type().value());
+                if (template_parameter_names.count(template_argument_name) >
+                    0) {
+                    template_is_not_instantiation = true;
+                    break;
+                }
+            }
+        }
+        else {
+            LOG_DBG("Processing template method argument unexposed "
+                    "parameters: ",
+                template_instantiation_type.unexposed_arguments());
+            // TODO: Process unexposed arguments by manually parsing the
+            // arguments string
+        }
+
+        if (!ctx.config().should_include(ctx.get_namespace(),
+                template_instantiation_type.primary_template()
+                    .get(ctx.entity_index())[0]
+                    .get()
+                    .name())) {
+            return;
+        }
+
+        if (template_is_not_instantiation) {
+            LOG_DBG("Template is not an instantiation - "
+                    "only adding reference to template {}",
+                cx::util::full_name(
+                    cppast::remove_cv(t), ctx.entity_index(), false));
+            relationship rr{relationship_t::kDependency,
+                cx::util::full_name(
+                    cppast::remove_cv(t), ctx.entity_index(), false)};
+            LOG_DBG("Adding field template dependency relationship "
+                    "{} {} {} "
+                    ": {}",
+                rr.destination(), common::model::to_string(rr.type()),
+                c.full_name(), rr.label());
+            c.add_relationship(std::move(rr));
+        }
+        else {
+            // First check if tinst already exists
+            auto tinst_ptr =
+                build_template_instantiation(template_instantiation_type);
+            auto &tinst = *tinst_ptr;
+            relationship rr{relationship_t::kDependency, tinst.full_name()};
+
+            LOG_DBG("Adding field dependency relationship {} {} {} "
+                    ": {}",
+                rr.destination(), common::model::to_string(rr.type()),
+                c.full_name(), rr.label());
+
+            c.add_relationship(std::move(rr));
+
+            ctx.diagram().add_class(std::move(tinst_ptr));
+        }
+    }
 }
 
 void translation_unit_visitor::process_template_type_parameter(
@@ -1016,17 +1149,18 @@ void translation_unit_visitor::process_friend(
         return;
 
     if (f.type()) {
-        auto name = cppast::to_string(f.type().value());
-
-        if (!ctx.config().should_include(name))
+        const auto [name_with_ns, name] =
+            cx::util::split_ns(cppast::to_string(f.type().value()));
+        if (!ctx.config().should_include(name_with_ns, name))
             return;
 
         LOG_DBG("Type friend declaration {}", name);
 
+        // TODO: Destination should include namespace...
         r.set_destination(name);
     }
     else if (f.entity()) {
-        std::string name{};
+        std::string name;
 
         if (f.entity().value().kind() ==
             cppast::cpp_entity_kind::class_template_t) {
@@ -1056,7 +1190,7 @@ void translation_unit_visitor::process_friend(
             name = cx::util::full_name(ctx.get_namespace(), f.entity().value());
         }
 
-        if (!ctx.config().should_include(name))
+        if (!ctx.config().should_include(ctx.get_namespace(), name))
             return;
 
         r.set_destination(name);
@@ -1070,8 +1204,7 @@ void translation_unit_visitor::process_friend(
 }
 
 bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
-    std::vector<std::pair<std::string, relationship_t>> &relationships,
-    relationship_t relationship_hint)
+    found_relationships_t &relationships, relationship_t relationship_hint)
 {
     bool found{false};
 
@@ -1086,35 +1219,92 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
 
+    auto name = cppast::to_string(t);
+
     if (t.kind() == cppast::cpp_type_kind::array_t) {
-        auto &a = static_cast<const cppast::cpp_array_type &>(t);
-        found = find_relationships(
-            a.value_type(), relationships, relationship_t::kAggregation);
-        return found;
+        found = find_relationships_in_array(relationships, t);
     }
+    else if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
+        found =
+            find_relationships_in_pointer(t_, relationships, relationship_hint);
+    }
+    else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
+        found = find_relationships_in_reference(
+            t_, relationships, relationship_hint);
+    }
+    else if (cppast::remove_cv(t_).kind() ==
+        cppast::cpp_type_kind::user_defined_t) {
+        found = find_relationships_in_user_defined_type(
+            t_, relationships, fn, relationship_type, t);
+    }
+    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        found = find_relationships_in_template_instantiation(
+            t, fn, relationships, relationship_type);
+    }
+
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_template_instantiation(
+    const cppast::cpp_type &t_, const std::string &fn,
+    found_relationships_t &relationships, relationship_t relationship_type)
+{
+    const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
+
+    const auto &tinst =
+        static_cast<const cppast::cpp_template_instantiation_type &>(t);
 
     auto name = cppast::to_string(t);
 
-    if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
-        auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
-        auto rt = relationship_t::kAssociation;
-        if (relationship_hint == relationship_t::kDependency)
-            rt = relationship_hint;
-        found = find_relationships(p.pointee(), relationships, rt);
+    bool found = false;
+
+    if (!tinst.arguments_exposed()) {
+        LOG_DBG("Template instantiation {} has no exposed arguments", name);
+
+        return found;
     }
-    else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
-        auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
-        auto rt = relationship_t::kAssociation;
-        if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
-            rt = relationship_t::kAggregation;
-        }
-        if (relationship_hint == relationship_t::kDependency)
-            rt = relationship_hint;
-        found = find_relationships(r.referee(), relationships, rt);
+
+    assert(tinst.arguments().has_value());
+    assert(tinst.arguments().value().size() > 0u);
+
+    [[maybe_unused]] const auto args_count = tinst.arguments().value().size();
+
+    const auto args = tinst.arguments().value();
+
+    const auto [ns, base_name] = cx::util::split_ns(fn);
+
+    auto ns_and_name = ns;
+    ns_and_name.push_back(base_name);
+
+    auto full_name = fmt::format("{}", fmt::join(ns_and_name, "::"));
+
+    // Try to match common containers
+    // TODO: Refactor to a separate class with configurable
+    //       container list
+    if (full_name.find("std::unique_ptr") == 0) {
+        found = find_relationships(args[0u].type().value(), relationships,
+            relationship_t::kAggregation);
     }
-    if (cppast::remove_cv(t_).kind() == cppast::cpp_type_kind::user_defined_t) {
-        LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
-            cppast::to_string(t_.canonical()));
+    else if (full_name.find("std::shared_ptr") == 0) {
+        found = find_relationships(args[0u].type().value(), relationships,
+            relationship_t::kAssociation);
+    }
+    else if (full_name.find("std::weak_ptr") == 0) {
+        found = find_relationships(args[0u].type().value(), relationships,
+            relationship_t::kAssociation);
+    }
+    else if (full_name.find("std::vector") == 0) {
+        if (args[0u].type().has_value())
+            found = find_relationships(args[0u].type().value(), relationships,
+                relationship_t::kAggregation);
+        else
+            LOG_WARN(
+                "Failed to process template argument of std::vector at: {}",
+                fn);
+    }
+    else if (ctx.config().should_include(ns, name)) {
+        LOG_DBG("User defined template instantiation: {} | {}",
+            cppast::to_string(t_), cppast::to_string(t_.canonical()));
 
         if (relationship_type != relationship_t::kNone)
             relationships.emplace_back(cppast::to_string(t), relationship_type);
@@ -1128,72 +1318,13 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
                 cppast::to_string(ctx.get_type_alias(fn).get()));
             found = find_relationships(
                 ctx.get_type_alias(fn).get(), relationships, relationship_type);
-            if (found)
-                return found;
         }
     }
-    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        // class_relationship r;
-
-        auto &tinst =
-            static_cast<const cppast::cpp_template_instantiation_type &>(t);
-
-        if (!tinst.arguments_exposed()) {
-            LOG_DBG("Template instantiation {} has no exposed arguments", name);
-
-            return found;
-        }
-
-        const auto &args = tinst.arguments().value();
-
-        // Try to match common containers
-        // TODO: Refactor to a separate class with configurable
-        //       container list
-        if (name.find("std::unique_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
-        }
-        else if (name.find("std::shared_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAssociation);
-        }
-        else if (name.find("std::weak_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAssociation);
-        }
-        else if (name.find("std::vector") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
-        }
-        else if (ctx.config().should_include(fn)) {
-            LOG_DBG("User defined template instantiation: {} | {}",
-                cppast::to_string(t_), cppast::to_string(t_.canonical()));
-
-            if (relationship_type != relationship_t::kNone)
-                relationships.emplace_back(
-                    cppast::to_string(t), relationship_type);
-            else
-                relationships.emplace_back(
-                    cppast::to_string(t), relationship_t::kAggregation);
-
-            // Check if t_ has an alias in the alias index
-            if (ctx.has_type_alias(fn)) {
-                LOG_DBG("Find relationship in alias of {} | {}", fn,
-                    cppast::to_string(ctx.get_type_alias(fn).get()));
-                found = find_relationships(ctx.get_type_alias(fn).get(),
-                    relationships, relationship_type);
-                if (found)
-                    return found;
-            }
-
-            return found;
-        }
-        else {
-            for (const auto &arg : args) {
-                if (arg.type()) {
-                    found = find_relationships(
-                        arg.type().value(), relationships, relationship_type);
-                }
+    else {
+        for (const auto &arg : args) {
+            if (arg.type().has_value()) {
+                found = find_relationships(
+                    arg.type().value(), relationships, relationship_type);
             }
         }
     }
@@ -1201,95 +1332,89 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
     return found;
 }
 
-class_ translation_unit_visitor::build_template_instantiation(
+bool translation_unit_visitor::find_relationships_in_user_defined_type(
+    const cppast::cpp_type &t_, found_relationships_t &relationships,
+    const std::string &fn, relationship_t &relationship_type,
+    const cppast::cpp_type &t)
+{
+    bool found;
+    LOG_DBG("Finding relationships in user defined type: {} | {}",
+        cppast::to_string(t_), cppast::to_string(t_.canonical()));
+
+    if (relationship_type != relationship_t::kNone)
+        relationships.emplace_back(cppast::to_string(t), relationship_type);
+    else
+        relationships.emplace_back(
+            cppast::to_string(t), relationship_t::kAggregation);
+
+    // Check if t_ has an alias in the alias index
+    if (ctx.has_type_alias(fn)) {
+        LOG_DBG("Find relationship in alias of {} | {}", fn,
+            cppast::to_string(ctx.get_type_alias(fn).get()));
+        found = find_relationships(
+            ctx.get_type_alias(fn).get(), relationships, relationship_type);
+    }
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_reference(
+    const cppast::cpp_type &t_, found_relationships_t &relationships,
+    const relationship_t &relationship_hint)
+{
+    bool found;
+    auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
+    auto rt = relationship_t::kAssociation;
+    if (r.reference_kind() == cppast::cpp_ref_rvalue) {
+        rt = relationship_t::kAggregation;
+    }
+    if (relationship_hint == relationship_t::kDependency)
+        rt = relationship_hint;
+    found = find_relationships(r.referee(), relationships, rt);
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_pointer(
+    const cppast::cpp_type &t_, found_relationships_t &relationships,
+    const relationship_t &relationship_hint)
+{
+    bool found;
+    auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
+    auto rt = relationship_t::kAssociation;
+    if (relationship_hint == relationship_t::kDependency)
+        rt = relationship_hint;
+    found = find_relationships(p.pointee(), relationships, rt);
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_array(
+    found_relationships_t &relationships, const cppast::cpp_type &t)
+{
+    bool found;
+    auto &a = static_cast<const cppast::cpp_array_type &>(t);
+    found = find_relationships(
+        a.value_type(), relationships, relationship_t::kAggregation);
+    return found;
+}
+
+std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
-    class_ tinst{ctx.config().using_namespace()};
+    // Create class_ instance to hold the template instantiation
+    auto tinst_ptr = std::make_unique<class_>(
+        util::split(ctx.config().using_namespace()[0], "::"));
+    auto &tinst = *tinst_ptr;
     std::string full_template_name;
 
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};
 
+    tinst.set_namespace(ctx.get_namespace());
+
+    auto tinst_full_name = cppast::to_string(t);
+
     if (t.primary_template().get(ctx.entity_index()).size()) {
-        const auto &primary_template_ref =
-            static_cast<const cppast::cpp_class_template &>(
-                t.primary_template().get(ctx.entity_index())[0].get())
-                .class_();
-
-        if (parent)
-            LOG_DBG("Template parent is {}", (*parent)->full_name());
-        else
-            LOG_DBG("Template parent is empty");
-
-        full_template_name =
-            cx::util::full_name(ctx.get_namespace(), primary_template_ref);
-
-        LOG_DBG("Found template instantiation: "
-                "type={}, canonical={}, primary_template={}, full_"
-                "template={}",
-            cppast::to_string(t), cppast::to_string(t.canonical()),
-            t.primary_template().name(), full_template_name);
-
-        if (full_template_name.back() == ':') {
-            tinst.set_name(full_template_name + tinst.name());
-        }
-
-        std::vector<std::pair<std::string, bool>> template_parameter_names{};
-        if (primary_template_ref.scope_name().has_value()) {
-            for (const auto &tp : primary_template_ref.scope_name()
-                                      .value()
-                                      .template_parameters()) {
-                template_parameter_names.emplace_back(
-                    tp.name(), tp.is_variadic());
-            }
-        }
-
-        // Check if the primary template has any base classes
-        int base_index = 0;
-        for (const auto &base : primary_template_ref.bases()) {
-            if (base.kind() == cppast::cpp_entity_kind::base_class_t) {
-                const auto &base_class =
-                    static_cast<const cppast::cpp_base_class &>(base);
-
-                const auto base_class_name =
-                    cppast::to_string(base_class.type());
-
-                LOG_DBG("Found template instantiation base: {}, {}, {}",
-                    cppast::to_string(base.kind()), base_class_name,
-                    base_index);
-
-                // Check if any of the primary template arguments has a
-                // parameter equal to this type
-                auto it = std::find_if(template_parameter_names.begin(),
-                    template_parameter_names.end(),
-                    [&base_class_name](
-                        const auto &p) { return p.first == base_class_name; });
-
-                if (it != template_parameter_names.end()) {
-                    // Found base class which is a template parameter
-                    LOG_DBG("Found base class which is a template parameter "
-                            "{}, {}, {}",
-                        it->first, it->second,
-                        std::distance(template_parameter_names.begin(), it));
-                    template_base_params.emplace_back(it->first, it->second,
-                        std::distance(template_parameter_names.begin(), it));
-                }
-                else {
-                    // This is a regular base class - it is handled by
-                    // process_template
-                }
-            }
-            base_index++;
-        }
-
-        if (primary_template_ref.user_data()) {
-            tinst.set_base_template(
-                static_cast<const char *>(primary_template_ref.user_data()));
-            LOG_DBG("Primary template ref set to: {}", tinst.base_template());
-        }
-        else
-            LOG_WARN("No user data for base template {}",
-                primary_template_ref.name());
+        build_template_instantiation_primary_template(
+            t, tinst, template_base_params, parent, full_template_name);
     }
     else {
         LOG_WARN("Template instantiation {} has no primary template",
@@ -1301,158 +1426,50 @@ class_ translation_unit_visitor::build_template_instantiation(
     LOG_DBG("Building template instantiation for {}", full_template_name);
 
     // Extract namespace from base template name
-    std::vector<std::string> ns_toks;
-    ns_toks = clanguml::util::split(
-        full_template_name.substr(0, full_template_name.find('<')), "::");
+    const auto [ns, name] = cx::util::split_ns(tinst_full_name);
+    tinst.set_name(name);
+    if (ns.empty())
+        tinst.set_namespace(ctx.get_namespace());
+    else
+        tinst.set_namespace(ns);
 
-    std::string ns;
-    if (ns_toks.size() > 1) {
-        ns = fmt::format(
-            "{}::", fmt::join(ns_toks.begin(), ns_toks.end() - 1, "::"));
+    if (tinst_full_name.find('<') != std::string::npos) {
+        tinst.set_name(tinst_full_name.substr(0, tinst_full_name.find('<')));
     }
-
-    LOG_DBG("Template namespace is {}", ns);
-
-    tinst.set_name(ns + util::split(cppast::to_string(t), "<")[0]);
 
     tinst.is_template_instantiation(true);
 
     if (tinst.full_name().substr(0, tinst.full_name().find('<')).find("::") ==
         std::string::npos) {
-        tinst.set_name(ns + tinst.full_name());
+        tinst.set_name(name);
     }
 
-    // Process template argumetns
-    int arg_index{0};
-    bool variadic_params{false};
     if (t.arguments_exposed()) {
+        auto arg_index = 0U;
+        // We can figure this only when we encounter variadic param in
+        // the list of template params, from then this variable is true
+        // and we can process following template parameters as belonging
+        // to the variadic tuple
+        auto has_variadic_params = false;
+
         for (const auto &targ : t.arguments().value()) {
-            bool add_template_argument_as_base_class{false};
             class_template ct;
             if (targ.type()) {
-                ct.set_type(cppast::to_string(targ.type().value()));
-
-                LOG_DBG("Template argument is a type {}", ct.type());
-                auto fn = cx::util::full_name(
-                    cppast::remove_cv(
-                        cx::util::unreferenced(targ.type().value())),
-                    ctx.entity_index(), false);
-
-                if (targ.type().value().kind() ==
-                    cppast::cpp_type_kind::template_instantiation_t) {
-
-                    const auto &nested_template_parameter = static_cast<
-                        const cppast::cpp_template_instantiation_type &>(
-                        targ.type().value());
-
-                    std::string nnn{"empty"};
-                    if (parent)
-                        nnn = (*parent)->name();
-
-                    class_ nested_tinst =
-                        build_template_instantiation(nested_template_parameter,
-                            ctx.config().should_include(tinst.full_name(false))
-                                ? std::make_optional(&tinst)
-                                : parent);
-
-                    relationship tinst_dependency{
-                        relationship_t::kDependency, nested_tinst.full_name()};
-
-                    auto nested_tinst_full_name = nested_tinst.full_name();
-
-                    if (ctx.config().should_include(fn)) {
-                        ctx.diagram().add_class(std::move(nested_tinst));
-                    }
-
-                    if (ctx.config().should_include(tinst.full_name(false))) {
-                        LOG_DBG(
-                            "Creating nested template dependency to template "
-                            "instantiation {}, {} -> {}",
-                            fn, tinst.full_name(),
-                            tinst_dependency.destination());
-
-                        tinst.add_relationship(std::move(tinst_dependency));
-                    }
-                    else if (parent) {
-                        LOG_DBG("Creating nested template dependency to parent "
-                                "template "
-                                "instantiation {}, {} -> {}",
-                            fn, (*parent)->full_name(),
-                            tinst_dependency.destination());
-
-                        (*parent)->add_relationship(
-                            std::move(tinst_dependency));
-                    }
-                    else {
-                        LOG_DBG("No nested template dependency to template "
-                                "instantiation: {}, {} -> {}",
-                            fn, tinst.full_name(),
-                            tinst_dependency.destination());
-                    }
-                }
-                else if (targ.type().value().kind() ==
-                    cppast::cpp_type_kind::user_defined_t) {
-                    relationship tinst_dependency{relationship_t::kDependency,
-                        cx::util::full_name(
-                            cppast::remove_cv(
-                                cx::util::unreferenced(targ.type().value())),
-                            ctx.entity_index(), false)};
-
-                    LOG_DBG(
-                        "Creating nested template dependency to user defined "
-                        "type {} -> {}",
-                        tinst.full_name(), tinst_dependency.destination());
-
-                    if (ctx.config().should_include(fn)) {
-                        tinst.add_relationship(std::move(tinst_dependency));
-                    }
-                    else if (parent) {
-                        (*parent)->add_relationship(
-                            std::move(tinst_dependency));
-                    }
-                }
+                build_template_instantiation_process_type_argument(
+                    parent, tinst, targ, ct);
             }
             else if (targ.expression()) {
-                const auto &exp = targ.expression().value();
-                if (exp.kind() == cppast::cpp_expression_kind::literal_t)
-                    ct.set_type(
-                        static_cast<const cppast::cpp_literal_expression &>(exp)
-                            .value());
-                else if (exp.kind() == cppast::cpp_expression_kind::unexposed_t)
-                    ct.set_type(
-                        static_cast<const cppast::cpp_unexposed_expression &>(
-                            exp)
-                            .expression()
-                            .as_string());
-
-                LOG_DBG("Template argument is an expression {}", ct.type());
+                build_template_instantiation_process_expression_argument(
+                    targ, ct);
             }
 
             // In case any of the template arguments are base classes, add
             // them as parents of the current template instantiation class
             if (template_base_params.size() > 0) {
-                auto [arg_name, is_variadic, index] =
-                    template_base_params.front();
-                if (variadic_params)
-                    add_template_argument_as_base_class = true;
-                else {
-                    variadic_params = is_variadic;
-                    if (arg_index == index) {
-                        add_template_argument_as_base_class = true;
-                        template_base_params.pop_front();
-                    }
-                }
-
-                if (add_template_argument_as_base_class) {
-                    LOG_DBG("Adding template argument '{}' as base class",
-                        ct.type());
-
-                    class_parent cp;
-                    cp.set_access(access_t::kPublic);
-                    cp.set_name(ct.type());
-
-                    tinst.add_parent(std::move(cp));
-                }
+                has_variadic_params =
+                    build_template_instantiation_add_base_classes(tinst,
+                        template_base_params, arg_index, has_variadic_params,
+                        ct);
             }
 
             LOG_DBG("Adding template argument '{}'", ct.type());
@@ -1480,17 +1497,257 @@ class_ translation_unit_visitor::build_template_instantiation(
     relationship r{relationship_t::kInstantiation, destination};
     tinst.add_relationship(std::move(r));
 
-    return tinst;
+    return tinst_ptr;
+}
+
+bool translation_unit_visitor::build_template_instantiation_add_base_classes(
+    class_ &tinst,
+    std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+    int arg_index, bool variadic_params, const class_template &ct) const
+{
+    bool add_template_argument_as_base_class = false;
+
+    auto [arg_name, is_variadic, index] = template_base_params.front();
+    if (variadic_params)
+        add_template_argument_as_base_class = true;
+    else {
+        variadic_params = is_variadic;
+        if (arg_index == index) {
+            add_template_argument_as_base_class = true;
+            template_base_params.pop_front();
+        }
+    }
+
+    if (add_template_argument_as_base_class) {
+        LOG_DBG("Adding template argument as base class '{}'", ct.type());
+
+        class_parent cp;
+        cp.set_access(access_t::kPublic);
+        cp.set_name(ct.type());
+
+        tinst.add_parent(std::move(cp));
+    }
+
+    return variadic_params;
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_expression_argument(
+        const cppast::cpp_template_argument &targ, class_template &ct) const
+{
+    const auto &exp = targ.expression().value();
+    if (exp.kind() == cppast::cpp_expression_kind::literal_t)
+        ct.set_type(
+            static_cast<const cppast::cpp_literal_expression &>(exp).value());
+    else if (exp.kind() == cppast::cpp_expression_kind::unexposed_t)
+        ct.set_type(static_cast<const cppast::cpp_unexposed_expression &>(exp)
+                        .expression()
+                        .as_string());
+
+    LOG_DBG("Template argument is an expression {}", ct.type());
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_type_argument(
+        const std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        class_ &tinst, const cppast::cpp_template_argument &targ,
+        class_template &ct)
+{
+    ct.set_type(cppast::to_string(targ.type().value()));
+
+    LOG_DBG("Template argument is a type {}", ct.type());
+    auto fn = cx::util::full_name(
+        cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
+        ctx.entity_index(), false);
+
+    auto [fn_ns, fn_name] = cx::util::split_ns(fn);
+
+    if (targ.type().value().kind() ==
+        cppast::cpp_type_kind::template_instantiation_t) {
+
+        const auto &nested_template_parameter =
+            static_cast<const cppast::cpp_template_instantiation_type &>(
+                targ.type().value());
+
+        std::string nnn{"empty"};
+        if (parent)
+            nnn = (*parent)->name();
+
+        auto [tinst_ns, tinst_name] =
+            cx::util::split_ns(tinst.full_name(false));
+
+        auto nested_tinst =
+            build_template_instantiation(nested_template_parameter,
+                ctx.config().should_include(tinst_ns, tinst_name)
+                    ? std::make_optional(&tinst)
+                    : parent);
+
+        relationship tinst_dependency{
+            relationship_t::kDependency, nested_tinst->full_name()};
+
+        auto nested_tinst_full_name = nested_tinst->full_name();
+
+        if (ctx.config().should_include(fn_ns, fn_name)) {
+            ctx.diagram().add_class(std::move(nested_tinst));
+        }
+
+        if (ctx.config().should_include(tinst_ns, tinst_name)
+            // TODO: check why this breaks t00033:
+            //    && ctx.config().should_include(
+            //       cx::util::split_ns(tinst_dependency.destination()))
+        ) {
+            LOG_DBG("Creating nested template dependency to template "
+                    "instantiation {}, {} -> {}",
+                fn, tinst.full_name(), tinst_dependency.destination());
+
+            tinst.add_relationship(std::move(tinst_dependency));
+        }
+        else if (parent) {
+            LOG_DBG("Creating nested template dependency to parent "
+                    "template "
+                    "instantiation {}, {} -> {}",
+                fn, (*parent)->full_name(), tinst_dependency.destination());
+
+            (*parent)->add_relationship(std::move(tinst_dependency));
+        }
+        else {
+            LOG_DBG("No nested template dependency to template "
+                    "instantiation: {}, {} -> {}",
+                fn, tinst.full_name(), tinst_dependency.destination());
+        }
+    }
+    else if (targ.type().value().kind() ==
+        cppast::cpp_type_kind::user_defined_t) {
+        relationship tinst_dependency{relationship_t::kDependency,
+            cx::util::full_name(
+                cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
+                ctx.entity_index(), false)};
+
+        LOG_DBG("Creating nested template dependency to user defined "
+                "type {} -> {}",
+            tinst.full_name(), tinst_dependency.destination());
+
+        if (ctx.config().should_include(fn_ns, fn_name)) {
+            tinst.add_relationship(std::move(tinst_dependency));
+        }
+        else if (parent) {
+            (*parent)->add_relationship(std::move(tinst_dependency));
+        }
+    }
+}
+
+void translation_unit_visitor::build_template_instantiation_primary_template(
+    const cppast::cpp_template_instantiation_type &t, class_ &tinst,
+    std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::string &full_template_name) const
+{
+    const auto &primary_template_ref =
+        static_cast<const cppast::cpp_class_template &>(
+            t.primary_template().get(ctx.entity_index())[0].get())
+            .class_();
+
+    if (parent)
+        LOG_DBG("Template parent is {}", (*parent)->full_name());
+    else
+        LOG_DBG("Template parent is empty");
+
+    full_template_name =
+        cx::util::full_name(ctx.get_namespace(), primary_template_ref);
+
+    LOG_DBG("Found template instantiation: "
+            "type={}, canonical={}, primary_template={}, full_"
+            "template={}",
+        cppast::to_string(t), cppast::to_string(t.canonical()),
+        t.primary_template().name(), full_template_name);
+
+    if (full_template_name.back() == ':') {
+        tinst.set_name(full_template_name + tinst.name());
+    }
+
+    std::vector<std::pair<std::string, bool>> template_parameter_names{};
+    if (primary_template_ref.scope_name().has_value()) {
+        for (const auto &tp :
+            primary_template_ref.scope_name().value().template_parameters()) {
+            template_parameter_names.emplace_back(tp.name(), tp.is_variadic());
+        }
+    }
+
+    // Check if the primary template has any base classes
+    int base_index = 0;
+    for (const auto &base : primary_template_ref.bases()) {
+        if (base.kind() == cppast::cpp_entity_kind::base_class_t) {
+            const auto &base_class =
+                static_cast<const cppast::cpp_base_class &>(base);
+
+            const auto base_class_name = cppast::to_string(base_class.type());
+
+            LOG_DBG("Found template instantiation base: {}, {}, {}",
+                cppast::to_string(base.kind()), base_class_name, base_index);
+
+            // Check if any of the primary template arguments has a
+            // parameter equal to this type
+            auto it = std::find_if(template_parameter_names.begin(),
+                template_parameter_names.end(),
+                [&base_class_name](
+                    const auto &p) { return p.first == base_class_name; });
+
+            if (it != template_parameter_names.end()) {
+                // Found base class which is a template parameter
+                LOG_DBG("Found base class which is a template parameter "
+                        "{}, {}, {}",
+                    it->first, it->second,
+                    std::distance(template_parameter_names.begin(), it));
+
+                template_base_params.emplace_back(it->first, it->second,
+                    std::distance(template_parameter_names.begin(), it));
+            }
+            else {
+                // This is a regular base class - it is handled by
+                // process_template
+            }
+        }
+        base_index++;
+    }
+
+    if (primary_template_ref.user_data()) {
+        tinst.set_base_template(
+            static_cast<const char *>(primary_template_ref.user_data()));
+        LOG_DBG("Primary template ref set to: {}", tinst.base_template());
+    }
+    else
+        LOG_WARN(
+            "No user data for base template {}", primary_template_ref.name());
 }
 
 const cppast::cpp_type &translation_unit_visitor::resolve_alias(
     const cppast::cpp_type &type)
 {
     const auto &raw_type = cppast::remove_cv(cx::util::unreferenced(type));
+    auto type_full_name =
+        cx::util::full_name(raw_type, ctx.entity_index(), false);
+
+    if (util::contains(type_full_name, "<"))
+        type_full_name = util::split(type_full_name, "<")[0];
+
+    if (ctx.has_type_alias_template(type_full_name)) {
+        return ctx.get_type_alias(type_full_name).get();
+    }
+    else if (ctx.has_type_alias(type_full_name)) {
+        return ctx.get_type_alias_final(raw_type).get();
+    }
+
+    return type;
+}
+
+const cppast::cpp_type &translation_unit_visitor::resolve_alias_template(
+    const cppast::cpp_type &type)
+{
+    const auto &raw_type = cppast::remove_cv(cx::util::unreferenced(type));
     const auto type_full_name =
         cx::util::full_name(raw_type, ctx.entity_index(), false);
-    if (ctx.has_type_alias(type_full_name)) {
-        return ctx.get_type_alias_final(raw_type).get();
+    if (ctx.has_type_alias_template(type_full_name)) {
+        return ctx.get_type_alias_template(type_full_name).get();
     }
 
     return type;

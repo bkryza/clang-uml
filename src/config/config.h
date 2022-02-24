@@ -87,6 +87,7 @@ struct inheritable_diagram_options {
     option<plantuml> puml{"plantuml", option_inherit_mode::append};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> generate_packages{"generate_packages", false};
 
     void inherit(const inheritable_diagram_options &parent);
 };
@@ -102,9 +103,16 @@ struct diagram : public inheritable_diagram_options {
 
     bool should_include_relationship(const std::string &rel);
 
-    bool should_include(const std::string &name_) const;
+    bool should_include(
+        const std::pair<std::vector<std::string>, std::string> &name) const;
+
+    bool should_include(
+        const std::vector<std::string> &ns, const std::string &name) const;
 
     bool should_include(const common::model::scope_t scope) const;
+    bool should_include(const std::string &name_) const;
+
+private:
 };
 
 struct source_location {

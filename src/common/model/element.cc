@@ -20,6 +20,8 @@
 
 #include "util/util.h"
 
+#include <ostream>
+
 namespace clanguml::common::model {
 
 std::atomic_uint64_t element::m_nextId = 1;
@@ -28,6 +30,8 @@ element::element(const std::vector<std::string> &using_namespaces)
     : using_namespaces_{using_namespaces}
     , m_id{m_nextId++}
 {
+    for (const auto &n : using_namespaces_)
+        assert(!util::contains(n, "::"));
 }
 
 std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
@@ -41,6 +45,13 @@ void element::add_relationship(relationship &&cr)
         return;
     }
 
+    if ((cr.type() == relationship_t::kInstantiation) &&
+        (cr.destination() == full_name(true))) {
+        LOG_WARN("Skipping self instantiation relationship for {}",
+            cr.destination());
+        return;
+    }
+
     LOG_DBG("Adding relationship: '{}' - {} - '{}'", cr.destination(),
         to_string(cr.type()), full_name(true));
 
@@ -50,6 +61,9 @@ void element::add_relationship(relationship &&cr)
 
 void element::set_using_namespaces(const std::vector<std::string> &un)
 {
+    for (const auto &n : un)
+        assert(!util::contains(n, "::"));
+
     using_namespaces_ = un;
 }
 
@@ -66,4 +80,19 @@ const std::vector<relationship> &element::relationships() const
 }
 
 void element::append(const element &e) { decorated_element::append(e); }
+
+bool operator==(const element &l, const element &r)
+{
+    return l.full_name(false) == r.full_name(false);
+}
+
+std::ostream &operator<<(std::ostream &out, const element &rhs)
+{
+    out << "(" << rhs.name() << ", ns=["
+        << util::join(rhs.get_namespace(), "::") << "], full_name=["
+        << rhs.full_name(true) << "])";
+
+    return out;
+}
+
 }

@@ -129,6 +129,20 @@ bool diagram::should_include_relationship(const std::string &rel)
     return false;
 }
 
+bool diagram::should_include(
+    const std::pair<std::vector<std::string>, std::string> &name) const
+{
+    return should_include(std::get<0>(name), std::get<1>(name));
+}
+
+bool diagram::should_include(
+    const std::vector<std::string> &ns, const std::string &name) const
+{
+    auto ns_and_name = ns;
+    ns_and_name.push_back(name);
+    return should_include(util::join(ns_and_name, "::"));
+}
+
 bool diagram::should_include(const std::string &name_) const
 {
     auto name = clanguml::util::unqualify(name_);
@@ -150,7 +164,7 @@ bool diagram::should_include(const std::string &name_) const
             return true;
     }
 
-    spdlog::debug("Skipping from diagram: {}", name);
+    LOG_DBG("Skipping from diagram: {}", name);
 
     return false;
 }
@@ -396,6 +410,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_packages);
 
         return true;
     }
@@ -476,6 +491,7 @@ template <> struct convert<config> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_packages);
 
         auto diagrams = node["diagrams"];
 

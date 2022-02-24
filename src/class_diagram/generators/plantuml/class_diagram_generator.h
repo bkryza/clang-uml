@@ -49,6 +49,7 @@ using common_generator =
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::enum_;
+using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 
@@ -62,9 +63,14 @@ public:
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const;
 
-    void generate(const class_ &c, std::ostream &ostr) const;
+    void generate(const class_ &c, std::ostream &ostr,
+        std::ostream &relationships_ostr) const;
 
-    void generate(const enum_ &e, std::ostream &ostr) const;
+    void generate(const enum_ &e, std::ostream &ostr,
+        std::ostream &relationships_ostr) const;
+
+    void generate(const package &p, std::ostream &ostr,
+        std::ostream &relationships_ostr) const;
 
     void generate(std::ostream &ostr) const override;
 };

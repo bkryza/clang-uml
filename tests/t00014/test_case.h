@@ -39,12 +39,23 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
+    REQUIRE_THAT(puml, IsClassTemplate("AString", "int"));
+    REQUIRE_THAT(puml, IsClassTemplate("AString", "std::string"));
     REQUIRE_THAT(
         puml, !IsClassTemplate("std::std::function", "void(T...,int),int)"));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(
         puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<int>")));
+    REQUIRE_THAT(
+        puml, !IsInstantiation(_A("AString<int>"), _A("AString<int>")));
+    REQUIRE_THAT(puml,
+        IsInstantiation(_A("A<T,std::string>"), _A("AString<std::string>")));
+    REQUIRE_THAT(puml,
+        !IsInstantiation(
+            _A("AString<std::string>"), _A("AString<std::string>")));
     REQUIRE_THAT(
         puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
     REQUIRE_THAT(

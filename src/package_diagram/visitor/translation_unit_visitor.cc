@@ -37,11 +37,11 @@ namespace clanguml::package_diagram::visitor {
 
 using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
+using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::diagram;
-using clanguml::package_diagram::model::package;
 
 namespace detail {
 scope_t cpp_access_specifier_to_scope(
@@ -98,10 +98,8 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             ctx.config().using_namespace()[0], "::");
 
                         if (!util::starts_with(usn, package_path)) {
-                            auto p = std::make_unique<package>(
-                                ctx.config().using_namespace());
+                            auto p = std::make_unique<package>(usn);
                             util::remove_prefix(package_path, usn);
-                            util::remove_prefix(package_parent, usn);
 
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
@@ -122,10 +120,11 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             }
 
                             if (!p->skip()) {
-                                ctx.diagram().add_element(
-                                    package_parent, std::move(p));
+                                auto rns = p->get_relative_namespace();
+                                ctx.diagram().add_element(rns, std::move(p));
                                 ctx.set_current_package(
-                                    ctx.diagram().get_element(package_path));
+                                    ctx.diagram().get_element<package>(
+                                        package_path));
                             }
                         }
 
@@ -352,6 +351,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
     const auto fn = cx::util::full_name(
         resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
     auto t_ns = util::split(fn, "::");
+    auto t_name = t_ns.back();
     t_ns.pop_back();
 
     const auto &t_raw = resolve_alias(cppast::remove_cv(t_));
@@ -464,7 +464,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kDependency);
         }
-        else if (ctx.config().should_include(fn)) {
+        else if (ctx.config().should_include(t_ns, t_name)) {
             LOG_DBG("User defined template instantiation: {} | {}",
                 cppast::to_string(t_), cppast::to_string(t_.canonical()));
 

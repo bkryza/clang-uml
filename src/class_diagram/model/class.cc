@@ -96,16 +96,36 @@ void class_::add_type_alias(type_alias &&ta)
     type_aliases_[ta.alias()] = std::move(ta);
 }
 
+std::string class_::full_name_no_ns() const
+{
+    using namespace clanguml::util;
+
+    std::ostringstream ostr;
+
+    ostr << name();
+
+    render_template_params(ostr);
+
+    return ostr.str();
+}
+
 std::string class_::full_name(bool relative) const
 {
     using namespace clanguml::util;
 
     std::ostringstream ostr;
-    if (relative)
-        ostr << ns_relative(using_namespaces(), name());
+    if (relative && starts_with(get_namespace(), using_namespaces()))
+        ostr << ns_relative(using_namespaces(), name_and_ns());
     else
-        ostr << name();
+        ostr << name_and_ns();
 
+    render_template_params(ostr);
+
+    return ostr.str();
+}
+std::ostringstream &class_::render_template_params(
+    std::ostringstream &ostr) const
+{
     if (!templates_.empty()) {
         std::vector<std::string> tnames;
         std::transform(templates_.cbegin(), templates_.cend(),
@@ -114,11 +134,11 @@ std::string class_::full_name(bool relative) const
 
                 if (!tmplt.type().empty())
                     res.push_back(
-                        ns_relative(using_namespaces(), tmplt.type()));
+                        util::ns_relative(using_namespaces(), tmplt.type()));
 
                 if (!tmplt.name().empty())
                     res.push_back(
-                        ns_relative(using_namespaces(), tmplt.name()));
+                        util::ns_relative(using_namespaces(), tmplt.name()));
 
                 if (!tmplt.default_value().empty()) {
                     res.push_back("=");
@@ -129,8 +149,7 @@ std::string class_::full_name(bool relative) const
             });
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
-
-    return ostr.str();
+    return ostr;
 }
 
 bool class_::is_abstract() const

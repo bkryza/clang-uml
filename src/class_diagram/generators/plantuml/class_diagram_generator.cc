@@ -33,20 +33,30 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     if (c.is_abstract())
         class_type = "abstract";
 
-    ostr << class_type << " \"" << c.full_name();
+    auto full_name = c.full_name();
+
+    if (m_config.generate_packages())
+        ostr << class_type << " \"" << c.full_name_no_ns();
+    else
+        ostr << class_type << " \"" << c.full_name();
 
     ostr << "\" as " << c.alias() << '\n';
 }
 
 void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
-    ostr << "enum"
-         << " \"" << e.full_name();
+    if (m_config.generate_packages())
+        ostr << "enum"
+             << " \"" << e.name();
+    else
+        ostr << "enum"
+             << " \"" << e.full_name();
 
     ostr << "\" as " << e.alias() << '\n';
 }
 
-void generator::generate(const class_ &c, std::ostream &ostr) const
+void generator::generate(
+    const class_ &c, std::ostream &ostr, std::ostream &relationships_ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
@@ -89,7 +99,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
                     return mp.to_string(m_config.using_namespace());
                 });
             auto args_string = fmt::format("{}", fmt::join(params, ", "));
-            if (m_config.generate_method_arguments() !=
+            if (m_config.generate_method_arguments() ==
                 config::method_arguments::abbreviated) {
                 args_string = clanguml::util::abbreviate(args_string, 10);
             }
@@ -213,10 +223,11 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     generate_notes(ostr, c);
 
     // Print relationships
-    ostr << all_relations_str.str();
+    relationships_ostr << all_relations_str.str();
 }
 
-void generator::generate(const enum_ &e, std::ostream &ostr) const
+void generator::generate(
+    const enum_ &e, std::ostream &ostr, std::ostream &relationships_ostr) const
 {
     ostr << "enum " << e.alias();
 
@@ -255,7 +266,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 
             relstr << '\n';
 
-            ostr << relstr.str();
+            relationships_ostr << relstr.str();
         }
         catch (error::uml_alias_missing &ex) {
             LOG_ERROR("Skipping {} relation from {} to {} due "
@@ -269,40 +280,72 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
     generate_notes(ostr, e);
 }
 
+void generator::generate(const package &p, std::ostream &ostr,
+    std::ostream &relationships_ostr) const
+{
+    if (m_config.generate_packages()) {
+        LOG_DBG("Generating package {}", p.name());
+
+        ostr << "package [" << p.name() << "] ";
+        ostr << "as " << p.alias();
+
+        if (p.is_deprecated())
+            ostr << " <<deprecated>>";
+
+        if (!p.style().empty())
+            ostr << " " << p.style();
+
+        ostr << " {" << '\n';
+    }
+
+    for (const auto &subpackage : p) {
+        if (dynamic_cast<package *>(subpackage.get())) {
+            generate(
+                dynamic_cast<package &>(*subpackage), ostr, relationships_ostr);
+        }
+        if (dynamic_cast<class_ *>(subpackage.get())) {
+            generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
+            generate(
+                dynamic_cast<class_ &>(*subpackage), ostr, relationships_ostr);
+        }
+        if (dynamic_cast<enum_ *>(subpackage.get())) {
+            generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
+            generate(
+                dynamic_cast<enum_ &>(*subpackage), ostr, relationships_ostr);
+        }
+    }
+
+    if (m_config.generate_packages()) {
+        ostr << "}" << '\n';
+    }
+
+    generate_notes(ostr, p);
+}
+
 void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
+    std::stringstream relationship_ostr;
+
     generate_plantuml_directives(ostr, m_config.puml().before);
 
-    if (m_config.should_include_entities("classes")) {
-        for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.name()))
-                continue;
-            generate_alias(c, ostr);
-            ostr << '\n';
+    for (const auto &p : m_model) {
+        if (dynamic_cast<package *>(p.get())) {
+            generate(dynamic_cast<package &>(*p), ostr, relationship_ostr);
         }
-
-        for (const auto &e : m_model.enums()) {
-            if (!m_config.should_include(e.name()))
-                continue;
-            generate_alias(e, ostr);
-            ostr << '\n';
+        if (dynamic_cast<class_ *>(p.get())) {
+            generate_alias(dynamic_cast<class_ &>(*p), ostr);
+            generate(dynamic_cast<class_ &>(*p), ostr, relationship_ostr);
         }
-
-        for (const auto &c : m_model.classes()) {
-            if (!m_config.should_include(c.name()))
-                continue;
-            generate(c, ostr);
-            ostr << '\n';
+        if (dynamic_cast<enum_ *>(p.get())) {
+            generate_alias(dynamic_cast<enum_ &>(*p), ostr);
+            generate(dynamic_cast<enum_ &>(*p), ostr, relationship_ostr);
         }
+        ostr << '\n';
     }
 
-    if (m_config.should_include_entities("enums"))
-        for (const auto &e : m_model.enums()) {
-            generate(e, ostr);
-            ostr << '\n';
-        }
+    ostr << relationship_ostr.str();
 
     generate_config_layout_hints(ostr);
 
@@ -310,5 +353,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-
 }

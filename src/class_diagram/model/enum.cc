@@ -29,7 +29,10 @@ enum_::enum_(const std::vector<std::string> &using_namespaces)
 {
 }
 
-bool operator==(const enum_ &l, const enum_ &r) { return l.name() == r.name(); }
+bool operator==(const enum_ &l, const enum_ &r)
+{
+    return (l.get_namespace() == r.get_namespace()) && (l.name() == r.name());
+}
 
 std::string enum_::full_name(bool relative) const
 {

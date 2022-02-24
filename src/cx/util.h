@@ -58,6 +58,9 @@ type_safe::optional_ref<const cppast::cpp_namespace> entity_ns(
 
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx);
 
+std::pair<std::vector<std::string>, std::string> split_ns(
+    const std::string &full_name);
+
 bool is_inside_class(const cppast::cpp_entity &e);
 } // namespace util
 } // namespace cx

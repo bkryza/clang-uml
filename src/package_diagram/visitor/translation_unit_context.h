@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/model/package.h"
 #include "config/config.h"
 #include "package_diagram/model/diagram.h"
 
@@ -75,9 +76,9 @@ public:
 
     clanguml::package_diagram::model::diagram &diagram();
 
-    void set_current_package(type_safe::optional_ref<model::package> p);
+    void set_current_package(type_safe::optional_ref<common::model::package> p);
 
-    type_safe::optional_ref<model::package> get_current_package() const;
+    type_safe::optional_ref<common::model::package> get_current_package() const;
 
 private:
     // Current visitor namespace
@@ -104,7 +105,7 @@ private:
     std::map<std::string, type_safe::object_ref<const cppast::cpp_type>>
         alias_template_index_;
 
-    type_safe::optional_ref<model::package> current_package_;
+    type_safe::optional_ref<common::model::package> current_package_;
 };
 
 }

@@ -54,8 +54,9 @@ void generator::generate_relationships(
     }
 
     // Process it's subpackages relationships
-    for (const std::unique_ptr<package> &subpackage : p) {
-        generate_relationships(*subpackage, ostr);
+    for (const auto &subpackage : p) {
+        generate_relationships(
+            dynamic_cast<const package &>(*subpackage), ostr);
     }
 }
 
@@ -77,7 +78,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
     ostr << " {" << '\n';
 
     for (const auto &subpackage : p) {
-        generate(*subpackage, ostr);
+        generate(dynamic_cast<const package &>(*subpackage), ostr);
     }
 
     ostr << "}" << '\n';
@@ -93,14 +94,14 @@ void generator::generate(std::ostream &ostr) const
 
     if (m_config.should_include_entities("packages")) {
         for (const auto &p : m_model) {
-            generate(*p, ostr);
+            generate(dynamic_cast<package &>(*p), ostr);
             ostr << '\n';
         }
     }
 
     // Process package relationships
     for (const auto &p : m_model) {
-        generate_relationships(*p, ostr);
+        generate_relationships(dynamic_cast<package &>(*p), ostr);
         ostr << '\n';
     }
 

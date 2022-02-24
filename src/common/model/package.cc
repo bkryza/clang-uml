@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/class.h
+ * src/common/model/class.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-namespace clanguml::package_diagram::model {
+namespace clanguml::common::model {
 package::package(const std::vector<std::string> &using_namespaces)
     : element{using_namespaces}
 {
@@ -41,11 +41,6 @@ std::string package::full_name(bool relative) const
     fn.push_back(name());
 
     return fmt::format("{}", fmt::join(fn, "::"));
-}
-
-bool operator==(const package &l, const package &r)
-{
-    return l.full_name(false) == r.full_name(false);
 }
 
 bool package::is_deprecated() const { return is_deprecated_; }

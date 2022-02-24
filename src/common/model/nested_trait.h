@@ -21,6 +21,7 @@
 
 #include <type_safe/optional_ref.hpp>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ public:
 
     virtual ~nested_trait() = default;
 
-    void add_element(std::unique_ptr<T> p)
+    template <typename V = T> void add_element(std::unique_ptr<V> p)
     {
         auto it = std::find_if(elements_.begin(), elements_.end(),
             [&p](const auto &e) { return *e == *p; });
@@ -50,11 +51,12 @@ public:
         }
     }
 
-    void add_element(std::vector<std::string> path, std::unique_ptr<T> p)
+    template <typename V = T>
+    void add_element(std::vector<std::string> path, std::unique_ptr<V> p)
     {
         assert(p);
 
-        LOG_DBG("Adding nested element {} at path '{}'", p->name(),
+        LOG_DBG("Adding nested element {} at path {}", p->name(),
             fmt::join(path, "::"));
 
         if (path.empty()) {
@@ -64,42 +66,57 @@ public:
 
         auto parent = get_element(path);
 
-        if (parent)
-            parent.value().add_element(std::move(p));
-        else
+        if (parent && dynamic_cast<nested_trait<T> *>(&parent.value()))
+            dynamic_cast<nested_trait<T> &>(parent.value())
+                .template add_element<V>(std::move(p));
+        else {
             spdlog::error(
                 "No parent element found at: {}", fmt::join(path, "::"));
+            throw std::runtime_error("No parent element found");
+        }
     }
 
-    type_safe::optional_ref<T> get_element(std::vector<std::string> path) const
+    template <typename V = T>
+    auto get_element(std::vector<std::string> path) const
     {
         LOG_DBG("Getting nested element at path: {}", fmt::join(path, "::"));
 
         if (path.empty() || !has_element(path.at(0))) {
             LOG_WARN("Nested element {} not found in element",
                 fmt::join(path, "::"));
-            return {};
+            return type_safe::optional_ref<V>{};
         }
 
-        auto p = get_element(path.at(0));
         if (path.size() == 1)
-            return p;
+            return get_element<V>(path.at(0));
 
-        return p.value().get_element(
-            std::vector<std::string>(path.begin() + 1, path.end()));
+        auto p = get_element<T>(path.at(0));
+
+        if (!p)
+            return type_safe::optional_ref<V>{};
+
+        if (dynamic_cast<nested_trait<T> *>(&p.value()))
+            return dynamic_cast<nested_trait<T> &>(p.value()).get_element<V>(
+                std::vector<std::string>(path.begin() + 1, path.end()));
+
+        return type_safe::optional_ref<V>{};
     }
 
-    type_safe::optional_ref<T> get_element(const std::string &name) const
+    template <typename V = T> auto get_element(const std::string &name) const
     {
         auto it = std::find_if(elements_.cbegin(), elements_.cend(),
             [&](const auto &p) { return name == p->name(); });
 
         if (it == elements_.end())
-            return {};
+            return type_safe::optional_ref<V>{type_safe::nullopt};
 
         assert(it->get() != nullptr);
 
-        return type_safe::ref(*(it->get()));
+        if (dynamic_cast<V *>(it->get()))
+            return type_safe::optional_ref<V>{
+                type_safe::ref<V>(dynamic_cast<V &>(*it->get()))};
+
+        return type_safe::optional_ref<V>{type_safe::nullopt};
     }
 
     bool has_element(const std::string &name) const
@@ -117,6 +134,24 @@ public:
 
     auto begin() const { return elements_.begin(); }
     auto end() const { return elements_.end(); }
+
+    void print_tree(const int level)
+    {
+        const auto &d = *this;
+
+        if (level == 0) {
+            std::cout << "--- Printing tree:\n";
+        }
+        for (const auto &e : d) {
+            if (dynamic_cast<nested_trait<T> *>(e.get())) {
+                std::cout << std::string(level, ' ') << "[" << *e << "]\n";
+                dynamic_cast<nested_trait<T> *>(e.get())->print_tree(level + 1);
+            }
+            else {
+                std::cout << std::string(level, ' ') << "- " << *e << "]\n";
+            }
+        }
+    }
 
 private:
     std::vector<std::unique_ptr<T>> elements_;

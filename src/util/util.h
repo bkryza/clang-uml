@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <string.h>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace clanguml {
@@ -189,6 +190,9 @@ bool contains(const T &container, const E &element)
         return std::find_if(container.begin(), container.end(),
                    [&element](const auto &e) { return *e == *element; }) !=
             container.end();
+    }
+    else if constexpr (std::is_same_v<std::remove_cv_t<T>, std::string>) {
+        return container.find(element) != std::string::npos;
     }
     else {
         return std::find(container.begin(), container.end(), element) !=
