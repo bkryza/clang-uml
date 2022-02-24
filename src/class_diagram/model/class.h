@@ -69,9 +69,14 @@ public:
 
     std::string full_name(bool relative = true) const override;
 
+    std::string full_name_no_ns() const;
+
     bool is_abstract() const;
 
 private:
+    std::ostringstream &render_template_params(
+        std::ostringstream &ostr) const;
+
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
