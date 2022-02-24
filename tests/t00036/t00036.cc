@@ -3,10 +3,7 @@ namespace t00036 {
 
 namespace ns1 {
 
-enum class E {
-    blue,
-    yellow
-};
+enum class E { blue, yellow };
 
 namespace ns11 {
 

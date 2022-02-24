@@ -96,7 +96,8 @@ void class_::add_type_alias(type_alias &&ta)
     type_aliases_[ta.alias()] = std::move(ta);
 }
 
-std::string class_::full_name_no_ns() const {
+std::string class_::full_name_no_ns() const
+{
     using namespace clanguml::util;
 
     std::ostringstream ostr;

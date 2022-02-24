@@ -74,8 +74,7 @@ public:
     bool is_abstract() const;
 
 private:
-    std::ostringstream &render_template_params(
-        std::ostringstream &ostr) const;
+    std::ostringstream &render_template_params(std::ostringstream &ostr) const;
 
     bool is_struct_{false};
     bool is_template_{false};
