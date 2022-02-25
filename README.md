@@ -126,7 +126,7 @@ the following:
 make clanguml_diagrams
 ```
 
-and checkout the PNG diagrams in `docs/diagrams` folder.
+and checkout the SVG diagrams in `docs/diagrams` folder.
 
 ### Class diagrams
 
@@ -158,7 +158,7 @@ public:
 
 generates the following diagram (via PlantUML):
 
-![class_diagram_example](docs/test_cases/t00009_class.png)
+![class_diagram_example](docs/test_cases/t00009_class.svg)
 
 #### Default mappings
 
@@ -279,7 +279,7 @@ int tmain()
 
 generates the following diagram (via PlantUML):
 
-![sequence_diagram_example](docs/test_cases/t20001_sequence.png)
+![sequence_diagram_example](docs/test_cases/t20001_sequence.svg)
 
 ### Package diagrams
 
@@ -324,7 +324,7 @@ class B : public ns1::ns2::Anon {
 
 generates the following diagram (via PlantUML):
 
-![package_diagram_example](docs/test_cases/t30003_package.png)
+![package_diagram_example](docs/test_cases/t30003_package.svg)
 
 ### Test cases
 

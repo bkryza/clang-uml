@@ -51,7 +51,7 @@ test: debug
 	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
 
 test_plantuml: test
-	plantuml debug/tests/puml/*.puml
+	plantuml -tsvg debug/tests/puml/*.puml
 
 document_test_cases: test_plantuml
 	python3 util/generate_test_cases_docs.py
@@ -59,7 +59,7 @@ document_test_cases: test_plantuml
 clanguml_diagrams: debug
 	mkdir -p docs/diagrams
 	debug/clang-uml
-	plantuml docs/diagrams/*.puml
+	plantuml -tsvg docs/diagrams/*.puml
 
 .PHONY: submodules
 submodules:
