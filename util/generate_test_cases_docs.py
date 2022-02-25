@@ -22,50 +22,49 @@ import os
 import yaml
 from shutil import copyfile
 
+
 with open(r'tests/test_cases.yaml') as f:
     test_groups = yaml.full_load(f)['test_cases']
 
     # Generate test_cases.md index
     with open(r'docs/test_cases.md', 'w') as tc_index:
-        tc_index.write("# Test cases index\n")
+        tc_index.write('# Test cases index\n')
         for test_group, test_cases in test_groups.items():
-            tc_index.write("## {}\n".format(test_group))
+            tc_index.write(f'## {test_group}\n')
             for test_case in test_cases:
-                tc_index.write(" * [{0}](./test_cases/{0}.md) - {1}\n".format(
-                    test_case['name'], test_case['title']))
+                tc_index.write(f' * [{test_case["name"]}](./test_cases/{test_case["name"]}.md) - {test_case["title"]}\n')
 
     # Generate invididual documentation docs
     for test_group, test_cases in test_groups.items():
         for test_case in test_cases:
             name = test_case['name']
-            with open(r'docs/test_cases/{}.md'.format(name), 'w') as tc:
-                tc.write("# {} - {}\n".format(name, test_case['title']))
+            with open(f'docs/test_cases/{name}.md', 'w') as tc:
+                tc.write(f'# {name} - {test_case["title"]}\n')
 
                 # Write out test description
                 if test_case['description']:
-                    tc.write("{}\n".format(test_case['description']))
+                    tc.write(f'{test_case["description"]}\n')
 
                 # Write test config file
-                config = open('tests/{0}/.clang-uml'.format(name), 'r').read()
+                config = open(f'tests/{name}/.clang-uml', 'r').read()
                 tc.write("## Config\n")
                 tc.write("```yaml\n")
                 tc.write(config)
                 tc.write("\n```\n")
                 tc.write("## Source code\n")
-                for source_file in os.listdir("tests/{0}/".format(name)):
+                for source_file in os.listdir(f'tests/{name}/'):
                     if source_file.endswith(".h") or source_file.endswith(".cc"):
                         if source_file == "test_case.h":
                             continue
-                        tc.write("File {}\n".format(source_file))
+                        tc.write(f'File {source_file}\n')
                         tc.write("```cpp\n")
-                        tc.write(open('tests/{0}/{1}'.format(name, source_file), 'r').read())
+                        tc.write(open(f'tests/{name}/{source_file}', 'r').read())
                         tc.write("\n```\n")
 
                 # Copy and link the diagram image
                 config_dict = yaml.full_load(config)
                 tc.write("## Generated UML diagrams\n")
                 for diagram_name, _ in config_dict['diagrams'].items():
-                    copyfile('debug/tests/puml/{}.png'.format(diagram_name),
-                             'docs/test_cases/{}.png'.format(diagram_name))
-                    tc.write("![{0}](./{0}.png \"{1}\")\n".format(
-                        diagram_name, test_case["title"]))
+                    copyfile(f'debug/tests/puml/{diagram_name}.svg',
+                             f'docs/test_cases/{diagram_name}.svg')
+                    tc.write(f'![{diagram_name}](./{diagram_name}.svg "{test_case["title"]}")\n')
