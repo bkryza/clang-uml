@@ -169,6 +169,31 @@ bool diagram::should_include(const std::string &name_) const
     return false;
 }
 
+bool diagram::should_include_package(const std::string &name) const
+{
+
+    for (const auto &ex : exclude().namespaces) {
+        if (name.find(ex) == 0) {
+            LOG_DBG("Skipping from diagram: {}", name);
+            return false;
+        }
+    }
+
+    // If no inclusive namespaces are provided,
+    // allow all
+    if (include().namespaces.empty())
+        return true;
+
+    for (const auto &in : include().namespaces) {
+        if (in.find(name) == 0 || name.find(in) == 0)
+            return true;
+    }
+
+    LOG_DBG("Skipping from diagram: {}", name);
+
+    return false;
+}
+
 bool diagram::should_include(const clanguml::common::model::scope_t scope) const
 {
     for (const auto &s : exclude().scopes) {

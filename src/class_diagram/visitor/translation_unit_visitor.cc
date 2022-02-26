@@ -228,7 +228,7 @@ void translation_unit_visitor::process_namespace(
 
     auto usn = util::split(ctx.config().using_namespace()[0], "::");
 
-    if (!util::starts_with(usn, package_path)) {
+    if (ctx.config().should_include_package(util::join(package_path, "::"))) {
         auto p = std::make_unique<common::model::package>(usn);
         util::remove_prefix(package_path, usn);
 
@@ -362,7 +362,8 @@ void translation_unit_visitor::process_class_declaration(
         fmt::ptr(reinterpret_cast<const void *>(&cls)));
 
     assert(c_ptr);
-    ctx.diagram().add_class(std::move(c_ptr));
+    if (ctx.config().should_include(c.full_name(false)))
+        ctx.diagram().add_class(std::move(c_ptr));
 }
 
 void translation_unit_visitor::process_class_containment(
@@ -1105,7 +1106,8 @@ void translation_unit_visitor::
 
             c.add_relationship(std::move(rr));
 
-            ctx.diagram().add_class(std::move(tinst_ptr));
+            if (ctx.config().should_include(c.full_name(false)))
+                ctx.diagram().add_class(std::move(tinst_ptr));
         }
     }
 }

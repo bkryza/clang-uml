@@ -126,6 +126,8 @@ public:
             elements_.end();
     }
 
+    bool is_empty() const { return elements_.empty(); }
+
     auto begin() { return elements_.begin(); }
     auto end() { return elements_.end(); }
 

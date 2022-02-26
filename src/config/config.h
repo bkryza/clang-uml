@@ -103,6 +103,8 @@ struct diagram : public inheritable_diagram_options {
 
     bool should_include_relationship(const std::string &rel);
 
+    bool should_include_package(const std::string &name) const;
+
     bool should_include(
         const std::pair<std::vector<std::string>, std::string> &name) const;
 

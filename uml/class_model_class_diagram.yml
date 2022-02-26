@@ -1,6 +1,7 @@
 type: class
 include_relations_also_as_members: false
 generate_method_arguments: none
+generate_packages: true
 glob:
   - src/common/model/*.h
   - src/common/model/*.cc
@@ -11,7 +12,7 @@ include:
     - clanguml::common::model
     - clanguml::class_diagram::model
 using_namespace:
-  - clanguml::class_diagram::model
+  - clanguml
 plantuml:
   before:
     - 'title clang-uml class diagram model'

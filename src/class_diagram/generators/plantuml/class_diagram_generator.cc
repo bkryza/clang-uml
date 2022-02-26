@@ -210,7 +210,7 @@ void generator::generate(
                        << " <|-- "
                        << m_model.to_alias(ns_relative(uns, c.full_name()))
                        << '\n';
-                ostr << relstr.str();
+                all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
                 LOG_ERROR("=== Skipping inheritance relation from {} to {} due "
@@ -300,15 +300,17 @@ void generator::generate(const package &p, std::ostream &ostr,
 
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get())) {
-            generate(
-                dynamic_cast<package &>(*subpackage), ostr, relationships_ostr);
+            // TODO: add option - generate_empty_packages
+            const auto &sp = dynamic_cast<package &>(*subpackage);
+            if (!sp.is_empty())
+                generate(sp, ostr, relationships_ostr);
         }
-        if (dynamic_cast<class_ *>(subpackage.get())) {
+        else if (dynamic_cast<class_ *>(subpackage.get())) {
             generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
             generate(
                 dynamic_cast<class_ &>(*subpackage), ostr, relationships_ostr);
         }
-        if (dynamic_cast<enum_ *>(subpackage.get())) {
+        else if (dynamic_cast<enum_ *>(subpackage.get())) {
             generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
             generate(
                 dynamic_cast<enum_ &>(*subpackage), ostr, relationships_ostr);
@@ -326,26 +328,28 @@ void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
-    std::stringstream relationship_ostr;
+    std::stringstream relationships_ostr;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
         if (dynamic_cast<package *>(p.get())) {
-            generate(dynamic_cast<package &>(*p), ostr, relationship_ostr);
+            const auto &sp = dynamic_cast<package &>(*p);
+            if (!sp.is_empty())
+                generate(sp, ostr, relationships_ostr);
         }
-        if (dynamic_cast<class_ *>(p.get())) {
+        else if (dynamic_cast<class_ *>(p.get())) {
             generate_alias(dynamic_cast<class_ &>(*p), ostr);
-            generate(dynamic_cast<class_ &>(*p), ostr, relationship_ostr);
+            generate(dynamic_cast<class_ &>(*p), ostr, relationships_ostr);
         }
-        if (dynamic_cast<enum_ *>(p.get())) {
+        else if (dynamic_cast<enum_ *>(p.get())) {
             generate_alias(dynamic_cast<enum_ &>(*p), ostr);
-            generate(dynamic_cast<enum_ &>(*p), ostr, relationship_ostr);
+            generate(dynamic_cast<enum_ &>(*p), ostr, relationships_ostr);
         }
         ostr << '\n';
     }
 
-    ostr << relationship_ostr.str();
+    ostr << relationships_ostr.str();
 
     generate_config_layout_hints(ostr);
 
