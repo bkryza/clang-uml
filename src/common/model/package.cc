@@ -31,7 +31,7 @@ package::package(const std::vector<std::string> &using_namespaces)
 std::string package::full_name(bool relative) const
 {
     auto fn = get_namespace();
-    auto ns = using_namespaces();
+    auto ns = using_namespace();
 
     if (relative && (fn.size() >= ns.size())) {
         if (util::starts_with(fn, ns))

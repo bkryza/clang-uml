@@ -54,7 +54,7 @@ public:
     std::vector<std::string> get_relative_namespace() const
     {
         auto relative_ns = namespace_;
-        util::remove_prefix(relative_ns, using_namespaces_);
+        util::remove_prefix(relative_ns, using_namespace_);
         return relative_ns;
     }
 
@@ -62,7 +62,7 @@ public:
 
     void set_using_namespaces(const std::vector<std::string> &un);
 
-    const std::vector<std::string> &using_namespaces() const;
+    const std::vector<std::string> &using_namespace() const;
 
     std::vector<relationship> &relationships();
 
@@ -82,7 +82,7 @@ protected:
 private:
     std::string name_;
     std::vector<std::string> namespace_;
-    std::vector<std::string> using_namespaces_;
+    std::vector<std::string> using_namespace_;
     std::vector<relationship> relationships_;
 
     static std::atomic_uint64_t m_nextId;

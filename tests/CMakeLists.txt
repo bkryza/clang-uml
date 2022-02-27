@@ -16,6 +16,14 @@ set(CLANG_UML_TEST_UTIL_HEADER
     catch.h
 )
 
+set(CLANG_UML_TEST_MODEL_SRC
+        test_model.cc
+        ${TEST_MODEL_SOURCES}
+        )
+set(CLANG_UML_TEST_MODEL_HEADER
+        catch.h
+        )
+
 set(CLANG_UML_TEST_CASES_SRC
     test_cases.cc
     ${TEST_CASE_SOURCES}
@@ -49,6 +57,16 @@ target_link_libraries(test_util
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
     spdlog::spdlog clang-umllib cppast)
+
+add_executable(test_model
+        ${CLANG_UML_TEST_MODEL_SRC}
+        ${CLANG_UML_TEST_MODEL_HEADER})
+
+target_link_libraries(test_model
+        PRIVATE
+        ${LIBCLANG_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        spdlog::spdlog clang-umllib cppast)
 
 add_executable(test_decorator_parser
     ${CLANG_UML_TEST_DECORATOR_PARSER_SRC}

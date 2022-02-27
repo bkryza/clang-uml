@@ -40,7 +40,7 @@ std::string enum_::full_name(bool relative) const
 
     std::ostringstream ostr;
     if (relative)
-        ostr << ns_relative(using_namespaces(), name());
+        ostr << ns_relative(using_namespace(), name());
     else
         ostr << name();
 

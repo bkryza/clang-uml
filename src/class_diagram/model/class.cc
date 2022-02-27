@@ -114,8 +114,8 @@ std::string class_::full_name(bool relative) const
     using namespace clanguml::util;
 
     std::ostringstream ostr;
-    if (relative && starts_with(get_namespace(), using_namespaces()))
-        ostr << ns_relative(using_namespaces(), name_and_ns());
+    if (relative && starts_with(get_namespace(), using_namespace()))
+        ostr << ns_relative(using_namespace(), name_and_ns());
     else
         ostr << name_and_ns();
 
@@ -134,11 +134,11 @@ std::ostringstream &class_::render_template_params(
 
                 if (!tmplt.type().empty())
                     res.push_back(
-                        util::ns_relative(using_namespaces(), tmplt.type()));
+                        util::ns_relative(using_namespace(), tmplt.type()));
 
                 if (!tmplt.name().empty())
                     res.push_back(
-                        util::ns_relative(using_namespaces(), tmplt.name()));
+                        util::ns_relative(using_namespace(), tmplt.name()));
 
                 if (!tmplt.default_value().empty()) {
                     res.push_back("=");

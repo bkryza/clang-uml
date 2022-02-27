@@ -27,10 +27,10 @@ namespace clanguml::common::model {
 std::atomic_uint64_t element::m_nextId = 1;
 
 element::element(const std::vector<std::string> &using_namespaces)
-    : using_namespaces_{using_namespaces}
+    : using_namespace_{using_namespaces}
     , m_id{m_nextId++}
 {
-    for (const auto &n : using_namespaces_)
+    for (const auto &n : using_namespace_)
         assert(!util::contains(n, "::"));
 }
 
@@ -64,12 +64,12 @@ void element::set_using_namespaces(const std::vector<std::string> &un)
     for (const auto &n : un)
         assert(!util::contains(n, "::"));
 
-    using_namespaces_ = un;
+    using_namespace_ = un;
 }
 
-const std::vector<std::string> &element::using_namespaces() const
+const std::vector<std::string> &element::using_namespace() const
 {
-    return using_namespaces_;
+    return using_namespace_;
 }
 
 std::vector<relationship> &element::relationships() { return relationships_; }
