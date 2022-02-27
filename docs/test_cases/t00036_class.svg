@@ -1,62 +1,76 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="527px" preserveAspectRatio="none" style="width:569px;height:527px;" version="1.1" viewBox="0 0 569 527" width="569px" zoomAndPan="magnify"><defs><filter height="300%" id="f1h9fgwvxifeyz" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[c30781010a42f12a7d563c980afcf8dc]
-cluster C_0000000674--><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="115,24.5,150,24.5,157,46.7969,403,46.7969,403,515,115,515,115,24.5" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="115" x2="157" y1="46.7969" y2="46.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="119" y="39.4951">ns1</text><!--MD5=[cc531c1893061a8a235132e4c4964076]
-cluster C_0000000677--><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="195,67.5,240,67.5,247,89.7969,379,89.7969,379,491,195,491,195,67.5" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="195" x2="247" y1="89.7969" y2="89.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="39" x="199" y="82.4951">ns11</text><!--MD5=[6b02754a8227ea69de779b367ad221d0]
-cluster C_0000000680--><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="219,110.5,274,110.5,281,132.7969,355,132.7969,355,367,219,367,219,110.5" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="219" x2="281" y1="132.7969" y2="132.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="49" x="223" y="125.4951">ns111</text><!--MD5=[f1a8d5f9172809128f35966513298d9a]
-cluster C_0000000685--><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="427,74,462,74,469,96.2969,547,96.2969,547,240,427,240,427,74" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="427" x2="469" y1="96.2969" y2="96.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="431" y="88.9951">ns2</text><!--MD5=[d6bc0f244594de74214d284f324fb151]
-cluster C_0000000686--><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="451,117,496,117,503,139.2969,523,139.2969,523,216,451,216,451,117" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="451" x2="503" y1="139.2969" y2="139.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="39" x="455" y="131.9951">ns22</text><polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="6,149.5,82,149.5,89,171.7969,96,171.7969,96,202.0938,6,202.0938,6,149.5" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="6" x2="89" y1="171.7969" y2="171.7969"/><text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="70" x="10" y="164.4951">clanguml</text><!--MD5=[14d09830d9b1ae9a58e9670757aa41ab]
-class C_0000000675--><rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="73.6094" id="C_0000000675" style="stroke: #A80036; stroke-width: 1.5;" width="47" x="131.5" y="139"/><ellipse cx="149.65" cy="155" fill="#EB937F" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M153.7594,161 L146.0406,161 L146.0406,148.6094 L153.7594,148.6094 L153.7594,150.7656 L148.4938,150.7656 L148.4938,153.4375 L153.2594,153.4375 L153.2594,155.5938 L148.4938,155.5938 L148.4938,158.8438 L153.7594,158.8438 L153.7594,161 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="164.35" y="159.1543">E</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="132.5" x2="177.5" y1="171" y2="171"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="24" x="137.5" y="185.2104">blue</text><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="35" x="137.5" y="198.0151">yellow</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="132.5" x2="177.5" y1="204.6094" y2="204.6094"/><!--MD5=[06f8d2e41f88ceddee61b0e110547e06]
-class C_0000000678--><rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="60.8047" id="C_0000000678" style="stroke: #A80036; stroke-width: 1.5;" width="52" x="261" y="414"/><ellipse cx="276.45" cy="430" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M279.4188,435.6406 Q278.8406,435.9375 278.2,436.0781 Q277.5594,436.2344 276.8563,436.2344 Q274.3563,436.2344 273.0281,434.5938 Q271.7156,432.9375 271.7156,429.8125 Q271.7156,426.6875 273.0281,425.0313 Q274.3563,423.375 276.8563,423.375 Q277.5594,423.375 278.2,423.5313 Q278.8563,423.6875 279.4188,423.9844 L279.4188,426.7031 Q278.7938,426.125 278.2,425.8594 Q277.6063,425.5781 276.9813,425.5781 Q275.6375,425.5781 274.95,426.6563 Q274.2625,427.7188 274.2625,429.8125 Q274.2625,431.9063 274.95,432.9844 Q275.6375,434.0469 276.9813,434.0469 Q277.6063,434.0469 278.2,433.7813 Q278.7938,433.5 279.4188,432.9219 L279.4188,435.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="290.55" y="434.1543">A</text><rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="9" x="307" y="411"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="7" x="308" y="423.1387">T</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="262" x2="312" y1="446" y2="446"/><ellipse cx="272" cy="457" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="26" x="281" y="460.2104">a : T</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="262" x2="312" y1="466.8047" y2="466.8047"/><!--MD5=[38dfdeab987e2937cc3318bcc3cd496b]
-class C_0000000682--><rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="48" id="C_0000000682" style="stroke: #A80036; stroke-width: 1.5;" width="60" x="257" y="303"/><ellipse cx="272" cy="319" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M274.9688,324.6406 Q274.3906,324.9375 273.75,325.0781 Q273.1094,325.2344 272.4063,325.2344 Q269.9063,325.2344 268.5781,323.5938 Q267.2656,321.9375 267.2656,318.8125 Q267.2656,315.6875 268.5781,314.0313 Q269.9063,312.375 272.4063,312.375 Q273.1094,312.375 273.75,312.5313 Q274.4063,312.6875 274.9688,312.9844 L274.9688,315.7031 Q274.3438,315.125 273.75,314.8594 Q273.1563,314.5781 272.5313,314.5781 Q271.1875,314.5781 270.5,315.6563 Q269.8125,316.7188 269.8125,318.8125 Q269.8125,320.9063 270.5,321.9844 Q271.1875,323.0469 272.5313,323.0469 Q273.1563,323.0469 273.75,322.7813 Q274.3438,322.5 274.9688,321.9219 L274.9688,324.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="286" y="323.1543">A</text><rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="18" x="302" y="300"/><text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="16" x="303" y="312.1387">int</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="258" x2="316" y1="335" y2="335"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="258" x2="316" y1="343" y2="343"/><!--MD5=[0002f56bbb429f96883ab40223413987]
-class C_0000000681--><rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="60.8047" id="C_0000000681" style="stroke: #A80036; stroke-width: 1.5;" width="104" x="235" y="145.5"/><ellipse cx="278.8" cy="161.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M281.7688,167.1406 Q281.1906,167.4375 280.55,167.5781 Q279.9094,167.7344 279.2063,167.7344 Q276.7063,167.7344 275.3781,166.0938 Q274.0656,164.4375 274.0656,161.3125 Q274.0656,158.1875 275.3781,156.5313 Q276.7063,154.875 279.2063,154.875 Q279.9094,154.875 280.55,155.0313 Q281.2063,155.1875 281.7688,155.4844 L281.7688,158.2031 Q281.1438,157.625 280.55,157.3594 Q279.9563,157.0781 279.3313,157.0781 Q277.9875,157.0781 277.3,158.1563 Q276.6125,159.2188 276.6125,161.3125 Q276.6125,163.4063 277.3,164.4844 Q277.9875,165.5469 279.3313,165.5469 Q279.9563,165.5469 280.55,165.2813 Q281.1438,165 281.7688,164.4219 L281.7688,167.1406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="299.2" y="165.6543">B</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="236" x2="338" y1="177.5" y2="177.5"/><ellipse cx="246" cy="188.5" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="78" x="255" y="191.7104">a_int : A&lt;int&gt;</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="236" x2="338" y1="198.3047" y2="198.3047"/><!--MD5=[004f694773038beeca86050864312601]
-class C_0000000687--><rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="48" id="C_0000000687" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="467" y="152"/><ellipse cx="482" cy="168" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M484.9688,173.6406 Q484.3906,173.9375 483.75,174.0781 Q483.1094,174.2344 482.4063,174.2344 Q479.9063,174.2344 478.5781,172.5938 Q477.2656,170.9375 477.2656,167.8125 Q477.2656,164.6875 478.5781,163.0313 Q479.9063,161.375 482.4063,161.375 Q483.1094,161.375 483.75,161.5313 Q484.4063,161.6875 484.9688,161.9844 L484.9688,164.7031 Q484.3438,164.125 483.75,163.8594 Q483.1563,163.5781 482.5313,163.5781 Q481.1875,163.5781 480.5,164.6563 Q479.8125,165.7188 479.8125,167.8125 Q479.8125,169.9063 480.5,170.9844 Q481.1875,172.0469 482.5313,172.0469 Q483.1563,172.0469 483.75,171.7813 Q484.3438,171.5 484.9688,170.9219 L484.9688,173.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="496" y="172.1543">C</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="468" x2="506" y1="184" y2="184"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="468" x2="506" y1="192" y2="192"/><!--MD5=[ece9d1c5156164a338868f9dcb90fd09]
-link C_0000000682 to C_0000000678--><path d="M287,351.1 C287,363.36 287,378.92 287,393.77 " fill="none" id="C_0000000682-&gt;C_0000000678" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="none" points="294,393.86,287,413.86,280,393.86,294,393.86" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[766060a905d2b3b4b3dabefd8027be37]
-reverse link C_0000000681 to C_0000000682--><path d="M287,220.15 C287,247.03 287,280.58 287,302.61 " fill="none" id="C_0000000681&lt;-C_0000000682" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#FFFFFF" points="287,206.79,283,212.79,287,218.79,291,212.79,287,206.79" style="stroke: #A80036; stroke-width: 1.0;"/><ellipse cx="293" cy="265.0664" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="31" x="300" y="269.0669">a_int</text><!--MD5=[494b624b5cfef59cab554826442e6e6d]
-@startuml
-package [clanguml] as C_0000000672 {
-}
-
-package [ns1] as C_0000000674 {
-enum "E" as C_0000000675
-enum C_0000000675 {
-blue
-yellow
-}
-package [ns11] as C_0000000677 {
-class "A<T>" as C_0000000678
-class C_0000000678 {
-+a : T
-}
-package [ns111] as C_0000000680 {
-class "A<int>" as C_0000000682
-class C_0000000682 {
-}
-class "B" as C_0000000681
-class C_0000000681 {
-+a_int : A<int>
-}
-}
-}
-}
-
-package [ns2] as C_0000000685 {
-package [ns22] as C_0000000686 {
-class "C" as C_0000000687
-class C_0000000687 {
-}
-}
-}
-
-C_0000000682 ..|> C_0000000678
-C_0000000681 o- - C_0000000682 : +a_int
-@enduml
-
-PlantUML version 1.2020.02(Sun Mar 01 11:22:07 CET 2020)
-(GPL source distribution)
-Java Runtime: OpenJDK Runtime Environment
-JVM: OpenJDK 64-Bit Server VM
-Java Version: 11.0.13+8-Ubuntu-0ubuntu1.21.10
-Operating System: Linux
-Default Encoding: UTF-8
-Language: pl
-Country: PL
---></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="527px" preserveAspectRatio="none" style="width:569px;height:527px;" version="1.1" viewBox="0 0 569 527" width="569px" zoomAndPan="magnify">
+  <defs>
+    <filter height="300%" id="f1h9fgwvxifeyz" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
+  </defs>
+  <g>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="115,24.5,150,24.5,157,46.7969,403,46.7969,403,515,115,515,115,24.5" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="115" x2="157" y1="46.7969" y2="46.7969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="119" y="39.4951">ns1</text>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="195,67.5,240,67.5,247,89.7969,379,89.7969,379,491,195,491,195,67.5" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="195" x2="247" y1="89.7969" y2="89.7969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="39" x="199" y="82.4951">ns11</text>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="219,110.5,274,110.5,281,132.7969,355,132.7969,355,367,219,367,219,110.5" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="219" x2="281" y1="132.7969" y2="132.7969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="49" x="223" y="125.4951">ns111</text>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="427,74,462,74,469,96.2969,547,96.2969,547,240,427,240,427,74" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="427" x2="469" y1="96.2969" y2="96.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="431" y="88.9951">ns2</text>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="451,117,496,117,503,139.2969,523,139.2969,523,216,451,216,451,117" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="451" x2="503" y1="139.2969" y2="139.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="39" x="455" y="131.9951">ns22</text>
+    <polygon fill="#FFFFFF" filter="url(#f1h9fgwvxifeyz)" points="6,149.5,82,149.5,89,171.7969,96,171.7969,96,202.0938,6,202.0938,6,149.5" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="6" x2="89" y1="171.7969" y2="171.7969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="70" x="10" y="164.4951">clanguml</text>
+    <rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="73.6094" id="C_0000000675" style="stroke: #A80036; stroke-width: 1.5;" width="47" x="131.5" y="139"/>
+    <ellipse cx="149.65" cy="155" fill="#EB937F" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M153.7594,161 L146.0406,161 L146.0406,148.6094 L153.7594,148.6094 L153.7594,150.7656 L148.4938,150.7656 L148.4938,153.4375 L153.2594,153.4375 L153.2594,155.5938 L148.4938,155.5938 L148.4938,158.8438 L153.7594,158.8438 L153.7594,161 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="164.35" y="159.1543">E</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="132.5" x2="177.5" y1="171" y2="171"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="24" x="137.5" y="185.2104">blue</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="35" x="137.5" y="198.0151">yellow</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="132.5" x2="177.5" y1="204.6094" y2="204.6094"/>
+    <rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="60.8047" id="C_0000000678" style="stroke: #A80036; stroke-width: 1.5;" width="52" x="261" y="414"/>
+    <ellipse cx="276.45" cy="430" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M279.4188,435.6406 Q278.8406,435.9375 278.2,436.0781 Q277.5594,436.2344 276.8563,436.2344 Q274.3563,436.2344 273.0281,434.5938 Q271.7156,432.9375 271.7156,429.8125 Q271.7156,426.6875 273.0281,425.0313 Q274.3563,423.375 276.8563,423.375 Q277.5594,423.375 278.2,423.5313 Q278.8563,423.6875 279.4188,423.9844 L279.4188,426.7031 Q278.7938,426.125 278.2,425.8594 Q277.6063,425.5781 276.9813,425.5781 Q275.6375,425.5781 274.95,426.6563 Q274.2625,427.7188 274.2625,429.8125 Q274.2625,431.9063 274.95,432.9844 Q275.6375,434.0469 276.9813,434.0469 Q277.6063,434.0469 278.2,433.7813 Q278.7938,433.5 279.4188,432.9219 L279.4188,435.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="290.55" y="434.1543">A</text>
+    <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="9" x="307" y="411"/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="7" x="308" y="423.1387">T</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="262" x2="312" y1="446" y2="446"/>
+    <ellipse cx="272" cy="457" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="26" x="281" y="460.2104">a : T</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="262" x2="312" y1="466.8047" y2="466.8047"/>
+    <rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="48" id="C_0000000682" style="stroke: #A80036; stroke-width: 1.5;" width="60" x="257" y="303"/>
+    <ellipse cx="272" cy="319" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M274.9688,324.6406 Q274.3906,324.9375 273.75,325.0781 Q273.1094,325.2344 272.4063,325.2344 Q269.9063,325.2344 268.5781,323.5938 Q267.2656,321.9375 267.2656,318.8125 Q267.2656,315.6875 268.5781,314.0313 Q269.9063,312.375 272.4063,312.375 Q273.1094,312.375 273.75,312.5313 Q274.4063,312.6875 274.9688,312.9844 L274.9688,315.7031 Q274.3438,315.125 273.75,314.8594 Q273.1563,314.5781 272.5313,314.5781 Q271.1875,314.5781 270.5,315.6563 Q269.8125,316.7188 269.8125,318.8125 Q269.8125,320.9063 270.5,321.9844 Q271.1875,323.0469 272.5313,323.0469 Q273.1563,323.0469 273.75,322.7813 Q274.3438,322.5 274.9688,321.9219 L274.9688,324.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="286" y="323.1543">A</text>
+    <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="18" x="302" y="300"/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="16" x="303" y="312.1387">int</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="258" x2="316" y1="335" y2="335"/>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="258" x2="316" y1="343" y2="343"/>
+    <rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="60.8047" id="C_0000000681" style="stroke: #A80036; stroke-width: 1.5;" width="104" x="235" y="145.5"/>
+    <ellipse cx="278.8" cy="161.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M281.7688,167.1406 Q281.1906,167.4375 280.55,167.5781 Q279.9094,167.7344 279.2063,167.7344 Q276.7063,167.7344 275.3781,166.0938 Q274.0656,164.4375 274.0656,161.3125 Q274.0656,158.1875 275.3781,156.5313 Q276.7063,154.875 279.2063,154.875 Q279.9094,154.875 280.55,155.0313 Q281.2063,155.1875 281.7688,155.4844 L281.7688,158.2031 Q281.1438,157.625 280.55,157.3594 Q279.9563,157.0781 279.3313,157.0781 Q277.9875,157.0781 277.3,158.1563 Q276.6125,159.2188 276.6125,161.3125 Q276.6125,163.4063 277.3,164.4844 Q277.9875,165.5469 279.3313,165.5469 Q279.9563,165.5469 280.55,165.2813 Q281.1438,165 281.7688,164.4219 L281.7688,167.1406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="299.2" y="165.6543">B</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="236" x2="338" y1="177.5" y2="177.5"/>
+    <ellipse cx="246" cy="188.5" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="78" x="255" y="191.7104">a_int : A&lt;int&gt;</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="236" x2="338" y1="198.3047" y2="198.3047"/>
+    <rect fill="#FEFECE" filter="url(#f1h9fgwvxifeyz)" height="48" id="C_0000000687" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="467" y="152"/>
+    <ellipse cx="482" cy="168" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M484.9688,173.6406 Q484.3906,173.9375 483.75,174.0781 Q483.1094,174.2344 482.4063,174.2344 Q479.9063,174.2344 478.5781,172.5938 Q477.2656,170.9375 477.2656,167.8125 Q477.2656,164.6875 478.5781,163.0313 Q479.9063,161.375 482.4063,161.375 Q483.1094,161.375 483.75,161.5313 Q484.4063,161.6875 484.9688,161.9844 L484.9688,164.7031 Q484.3438,164.125 483.75,163.8594 Q483.1563,163.5781 482.5313,163.5781 Q481.1875,163.5781 480.5,164.6563 Q479.8125,165.7188 479.8125,167.8125 Q479.8125,169.9063 480.5,170.9844 Q481.1875,172.0469 482.5313,172.0469 Q483.1563,172.0469 483.75,171.7813 Q484.3438,171.5 484.9688,170.9219 L484.9688,173.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="496" y="172.1543">C</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="468" x2="506" y1="184" y2="184"/>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="468" x2="506" y1="192" y2="192"/>
+    <path d="M287,351.1 C287,363.36 287,378.92 287,393.77 " fill="none" id="C_0000000682-&gt;C_0000000678" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="294,393.86,287,413.86,280,393.86,294,393.86" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M287,220.15 C287,247.03 287,280.58 287,302.61 " fill="none" id="C_0000000681&lt;-C_0000000682" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="#FFFFFF" points="287,206.79,283,212.79,287,218.79,291,212.79,287,206.79" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <ellipse cx="293" cy="265.0664" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="31" x="300" y="269.0669">a_int</text>
+  </g>
+</svg>

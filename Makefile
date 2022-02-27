@@ -55,6 +55,7 @@ test_plantuml: test
 
 document_test_cases: test_plantuml
 	python3 util/generate_test_cases_docs.py
+	python3 util/format_svg.py docs/test_cases/*.svg
 
 clanguml_diagrams: debug
 	mkdir -p docs/diagrams
