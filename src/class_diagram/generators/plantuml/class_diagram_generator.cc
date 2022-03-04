@@ -118,7 +118,7 @@ void generator::generate(
         if (m.is_defaulted())
             ostr << " = default";
 
-        ostr << " : " << ns_relative(uns, type);
+        ostr << " : " << uns.relative(type);
 
         ostr << '\n';
     }
@@ -154,9 +154,9 @@ void generator::generate(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            relstr << m_model.to_alias(ns_relative(uns, c.full_name())) << " "
+            relstr << m_model.to_alias(uns.relative(c.full_name())) << " "
                    << puml_relation << " "
-                   << m_model.to_alias(ns_relative(uns, destination));
+                   << m_model.to_alias(uns.relative(destination));
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.scope())
@@ -197,7 +197,7 @@ void generator::generate(
             ostr << "{static} ";
 
         ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
-             << ns_relative(uns, m.type()) << '\n';
+             << uns.relative(m.type()) << '\n';
     }
 
     ostr << "}" << '\n';
@@ -206,10 +206,8 @@ void generator::generate(
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(ns_relative(uns, b.name()))
-                       << " <|-- "
-                       << m_model.to_alias(ns_relative(uns, c.full_name()))
-                       << '\n';
+                relstr << m_model.to_alias(uns.relative(b.name())) << " <|-- "
+                       << m_model.to_alias(uns.relative(c.full_name())) << '\n';
                 all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
@@ -253,13 +251,13 @@ void generator::generate(
             destination = r.destination();
 
             relstr << m_model.to_alias(
-                          ns_relative(m_config.using_namespace(), e.name()))
+                          m_config.using_namespace().relative(e.name()))
                    << " "
                    << clanguml::common::generators::plantuml::to_plantuml(
                           r.type(), r.style())
                    << " "
                    << m_model.to_alias(
-                          ns_relative(m_config.using_namespace(), destination));
+                          m_config.using_namespace().relative(destination));
 
             if (!r.label().empty())
                 relstr << " : " << r.label();

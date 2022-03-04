@@ -25,8 +25,6 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE(diagram->name == "t00003_class");
 
     REQUIRE(diagram->include().namespaces.size() == 1);
-    REQUIRE_THAT(diagram->include().namespaces,
-        VectorContains(std::string{"clanguml::t00003"}));
 
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 

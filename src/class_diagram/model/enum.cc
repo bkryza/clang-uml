@@ -24,8 +24,8 @@
 
 namespace clanguml::class_diagram::model {
 
-enum_::enum_(const std::vector<std::string> &using_namespaces)
-    : element{using_namespaces}
+enum_::enum_(const common::model::namespace_ &using_namespace)
+    : element{using_namespace}
 {
 }
 
@@ -37,10 +37,11 @@ bool operator==(const enum_ &l, const enum_ &r)
 std::string enum_::full_name(bool relative) const
 {
     using namespace clanguml::util;
+    using clanguml::common::model::namespace_;
 
     std::ostringstream ostr;
     if (relative)
-        ostr << ns_relative(using_namespace(), name());
+        ostr << namespace_{name()}.relative_to(using_namespace()).to_string();
     else
         ostr << name();
 

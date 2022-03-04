@@ -18,6 +18,8 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/model/namespace.h"
+
 #include <cppast/cpp_alias_template.hpp>
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_class_template.hpp>
@@ -89,20 +91,17 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     if (!ns_declaration.is_anonymous() &&
                         !ns_declaration.is_inline()) {
 
-                        std::vector<std::string> package_parent =
-                            ctx.get_namespace();
-                        auto package_path = package_parent;
-                        package_path.push_back(e.name());
+                        auto package_parent = ctx.get_namespace();
+                        auto package_path = package_parent | e.name();
+                        auto usn = common::model::namespace_{
+                            ctx.config().using_namespace()};
 
-                        auto usn = util::split(
-                            ctx.config().using_namespace()[0], "::");
-
-                        if (!util::starts_with(usn, package_path)) {
+                        if (!usn.starts_with(package_path)) {
                             auto p = std::make_unique<package>(usn);
-                            util::remove_prefix(package_path, usn);
+                            package_path = package_path.relative_to(usn);
 
                             p->set_name(e.name());
-                            p->set_namespace(package_parent);
+                            p->set_namespace(package_path);
 
                             if (ns_declaration.comment().has_value())
                                 p->add_decorators(decorators::parse(
@@ -303,10 +302,10 @@ void translation_unit_visitor::process_class_declaration(
     }
 
     for (const auto &dependency : relationships) {
-        auto destination = util::split(std::get<0>(dependency), "::");
+        auto destination = common::model::namespace_{std::get<0>(dependency)};
 
-        if (!util::starts_with(ctx.get_namespace(), destination) &&
-            !util::starts_with(destination, ctx.get_namespace())) {
+        if (!ctx.get_namespace().starts_with(destination) &&
+            !destination.starts_with(ctx.get_namespace())) {
             relationship r{
                 relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));
@@ -330,10 +329,10 @@ void translation_unit_visitor::process_function(const cppast::cpp_function &f)
         f.return_type(), relationships, relationship_t::kDependency);
 
     for (const auto &dependency : relationships) {
-        auto destination = util::split(std::get<0>(dependency), "::");
+        auto destination = common::model::namespace_{std::get<0>(dependency)};
 
-        if (!util::starts_with(ctx.get_namespace(), destination) &&
-            !util::starts_with(destination, ctx.get_namespace())) {
+        if (!ctx.get_namespace().starts_with(destination) &&
+            !destination.starts_with(ctx.get_namespace())) {
             relationship r{
                 relationship_t::kDependency, std::get<0>(dependency)};
             current_package.value().add_relationship(std::move(r));
@@ -350,8 +349,8 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 
     const auto fn = cx::util::full_name(
         resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
-    auto t_ns = util::split(fn, "::");
-    auto t_name = t_ns.back();
+    auto t_ns = common::model::namespace_{fn};
+    auto t_name = t_ns.name();
     t_ns.pop_back();
 
     const auto &t_raw = resolve_alias(cppast::remove_cv(t_));
@@ -371,13 +370,13 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 
             const auto &t_raw_ns_final = cx::util::ns(t_raw_ns.value()) +
                 "::" + cx::util::full_name({}, t_raw_ns.value());
-            t_ns = util::split(t_raw_ns_final, "::");
+            t_ns = common::model::namespace_{t_raw_ns_final};
         }
     }
 
     std::vector<std::string> possible_matches;
 
-    possible_matches.push_back(util::join(t_ns, "::"));
+    possible_matches.push_back(t_ns.to_string());
 
     const auto fn_ns = cx::util::ns(cppast::remove_cv(t_), ctx.entity_index());
 

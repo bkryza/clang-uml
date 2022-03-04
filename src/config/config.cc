@@ -130,17 +130,22 @@ bool diagram::should_include_relationship(const std::string &rel)
 }
 
 bool diagram::should_include(
-    const std::pair<std::vector<std::string>, std::string> &name) const
+    const std::pair<common::model::namespace_, std::string> &name) const
 {
     return should_include(std::get<0>(name), std::get<1>(name));
 }
 
+// bool diagram::should_include(
+//    const common::model::namespace_ &ns, const std::string &name) const
+//{
+//    auto ns_and_name = ns | name;
+//    return should_include(ns_and_name.to_string());
+//}
+
 bool diagram::should_include(
-    const std::vector<std::string> &ns, const std::string &name) const
+    const common::model::namespace_ &ns, const std::string &name) const
 {
-    auto ns_and_name = ns;
-    ns_and_name.push_back(name);
-    return should_include(util::join(ns_and_name, "::"));
+    return should_include(ns | name);
 }
 
 bool diagram::should_include(const std::string &name_) const
@@ -148,7 +153,7 @@ bool diagram::should_include(const std::string &name_) const
     auto name = clanguml::util::unqualify(name_);
 
     for (const auto &ex : exclude().namespaces) {
-        if (name.find(ex) == 0) {
+        if (ex.starts_with(name)) {
             LOG_DBG("Skipping from diagram: {}", name);
             return false;
         }
@@ -160,7 +165,7 @@ bool diagram::should_include(const std::string &name_) const
         return true;
 
     for (const auto &in : include().namespaces) {
-        if (name.find(in) == 0)
+        if (name.find(in.to_string()) == 0)
             return true;
     }
 
@@ -169,11 +174,22 @@ bool diagram::should_include(const std::string &name_) const
     return false;
 }
 
+bool diagram::should_include(const common::model::namespace_ &path) const
+{
+    return should_include(path.to_string());
+}
+
+bool diagram::should_include_package(
+    const common::model::namespace_ &path) const
+{
+    return should_include_package(path.to_string());
+}
+
 bool diagram::should_include_package(const std::string &name) const
 {
 
     for (const auto &ex : exclude().namespaces) {
-        if (name.find(ex) == 0) {
+        if (name.find(ex.to_string()) == 0) {
             LOG_DBG("Skipping from diagram: {}", name);
             return false;
         }
@@ -185,7 +201,7 @@ bool diagram::should_include_package(const std::string &name) const
         return true;
 
     for (const auto &in : include().namespaces) {
-        if (in.find(name) == 0 || name.find(in) == 0)
+        if (in.to_string().find(name) == 0 || name.find(in.to_string()) == 0)
             return true;
     }
 
@@ -281,6 +297,21 @@ void get_option(const Node &node, clanguml::config::option<T> &option)
 {
     if (node[option.name])
         option.set(node[option.name].template as<T>());
+}
+
+template <>
+void get_option<clanguml::common::model::namespace_>(const Node &node,
+    clanguml::config::option<clanguml::common::model::namespace_> &option)
+{
+    if (node[option.name]) {
+        if (node[option.name].Type() == NodeType::Scalar)
+            option.set(node[option.name].template as<std::string>());
+        else if (node[option.name].Type() == NodeType::Sequence)
+            option.set(
+                node[option.name].template as<std::vector<std::string>>()[0]);
+        else
+            throw std::runtime_error("Invalid using_namespace value");
+    }
 }
 
 template <>
@@ -393,8 +424,12 @@ template <> struct convert<plantuml> {
 template <> struct convert<filter> {
     static bool decode(const Node &node, filter &rhs)
     {
-        if (node["namespaces"])
-            rhs.namespaces = node["namespaces"].as<decltype(rhs.namespaces)>();
+        if (node["namespaces"]) {
+            auto namespace_list =
+                node["namespaces"].as<std::vector<std::string>>();
+            for (const auto &ns : namespace_list)
+                rhs.namespaces.push_back(ns);
+        }
 
         if (node["relationships"])
             rhs.relationships =

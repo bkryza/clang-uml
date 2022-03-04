@@ -6,8 +6,7 @@ diagrams:
     glob:
       - src/**/*.cc
       - src/**/*.h
-    using_namespace:
-      - clanguml
+    using_namespace: clanguml
     generate_method_arguments: full
     generate_packages: true
     include:

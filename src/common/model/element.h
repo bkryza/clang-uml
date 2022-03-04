@@ -18,6 +18,7 @@
 #pragma once
 
 #include "decorated_element.h"
+#include "namespace.h"
 #include "relationship.h"
 #include "util/util.h"
 
@@ -30,7 +31,7 @@ namespace clanguml::common::model {
 
 class element : public decorated_element {
 public:
-    element(const std::vector<std::string> &using_namespaces);
+    element(const namespace_ &using_namespace);
 
     virtual ~element() = default;
 
@@ -42,27 +43,24 @@ public:
 
     std::string name_and_ns() const
     {
-        auto ns = namespace_;
-        ns.push_back(name());
-        return util::join(ns, "::");
+        auto ns = ns_ | name();
+        return ns.to_string();
     }
 
-    void set_namespace(const std::vector<std::string> &ns) { namespace_ = ns; }
+    void set_namespace(const namespace_ &ns) { ns_ = ns; }
 
-    std::vector<std::string> get_namespace() const { return namespace_; }
+    namespace_ get_namespace() const { return ns_; }
 
-    std::vector<std::string> get_relative_namespace() const
+    namespace_ get_relative_namespace() const
     {
-        auto relative_ns = namespace_;
-        util::remove_prefix(relative_ns, using_namespace_);
-        return relative_ns;
+        return ns_.relative_to(using_namespace_);
     }
 
     virtual std::string full_name(bool relative) const { return name(); }
 
-    void set_using_namespaces(const std::vector<std::string> &un);
+    void set_using_namespaces(const namespace_ &un);
 
-    const std::vector<std::string> &using_namespace() const;
+    const namespace_ &using_namespace() const;
 
     std::vector<relationship> &relationships();
 
@@ -81,8 +79,8 @@ protected:
 
 private:
     std::string name_;
-    std::vector<std::string> namespace_;
-    std::vector<std::string> using_namespace_;
+    namespace_ ns_;
+    namespace_ using_namespace_;
     std::vector<relationship> relationships_;
 
     static std::atomic_uint64_t m_nextId;

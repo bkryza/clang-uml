@@ -82,7 +82,7 @@ void diagram::add_class(std::unique_ptr<class_> &&c)
         auto ns = c->get_relative_namespace();
         auto name = c->name();
         add_element(ns, std::move(c));
-        ns.push_back(name);
+        ns |= name;
         const auto ccc = get_element<class_>(ns);
         assert(ccc.value().name() == name);
     }

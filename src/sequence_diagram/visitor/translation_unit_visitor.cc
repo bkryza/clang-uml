@@ -18,6 +18,7 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/model/namespace.h"
 #include "translation_unit_context.h"
 
 #include <cppast/cpp_function.hpp>
@@ -81,7 +82,7 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
         m.from = cx::util::ns(caller) + "::" + caller.name();
 
         if (!ctx.config().should_include(
-                util::split(cx::util::ns(caller), "::"), caller.name()))
+                common::model::namespace_{cx::util::ns(caller)}, caller.name()))
             continue;
 
         if (caller.kind() == cpp_entity_kind::function_t)
@@ -98,7 +99,7 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
             m.to += "()";
 
         if (!ctx.config().should_include(
-                util::split(cx::util::ns(callee), "::"), callee.name()))
+                common::model::namespace_{cx::util::ns(callee)}, callee.name()))
             continue;
 
         m.to_usr = type_safe::get(function_call.get_callee_method_id());

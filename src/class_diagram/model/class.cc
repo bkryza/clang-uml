@@ -24,8 +24,8 @@
 
 namespace clanguml::class_diagram::model {
 
-class_::class_(const std::vector<std::string> &using_namespaces)
-    : element{using_namespaces}
+class_::class_(const common::model::namespace_ &using_namespace)
+    : element{using_namespace}
 {
 }
 
@@ -112,10 +112,12 @@ std::string class_::full_name_no_ns() const
 std::string class_::full_name(bool relative) const
 {
     using namespace clanguml::util;
+    using clanguml::common::model::namespace_;
 
     std::ostringstream ostr;
-    if (relative && starts_with(get_namespace(), using_namespace()))
-        ostr << ns_relative(using_namespace(), name_and_ns());
+    // if (relative && starts_with(get_namespace(), using_namespace()))
+    if (relative)
+        ostr << namespace_{name()}.relative_to(using_namespace()).to_string();
     else
         ostr << name_and_ns();
 
@@ -126,6 +128,8 @@ std::string class_::full_name(bool relative) const
 std::ostringstream &class_::render_template_params(
     std::ostringstream &ostr) const
 {
+    using clanguml::common::model::namespace_;
+
     if (!templates_.empty()) {
         std::vector<std::string> tnames;
         std::transform(templates_.cbegin(), templates_.cend(),
@@ -133,12 +137,14 @@ std::ostringstream &class_::render_template_params(
                 std::vector<std::string> res;
 
                 if (!tmplt.type().empty())
-                    res.push_back(
-                        util::ns_relative(using_namespace(), tmplt.type()));
+                    res.push_back(namespace_{tmplt.type()}
+                                      .relative_to(using_namespace())
+                                      .to_string());
 
                 if (!tmplt.name().empty())
-                    res.push_back(
-                        util::ns_relative(using_namespace(), tmplt.name()));
+                    res.push_back(namespace_{tmplt.name()}
+                                      .relative_to(using_namespace())
+                                      .to_string());
 
                 if (!tmplt.default_value().empty()) {
                     res.push_back("=");

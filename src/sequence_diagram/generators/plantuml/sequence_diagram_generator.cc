@@ -44,8 +44,8 @@ generator::generator(
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto from = ns_relative(m_config.using_namespace(), m.from);
-    const auto to = ns_relative(m_config.using_namespace(), m.to);
+    const auto from = m_config.using_namespace().relative(m.from);
+    const auto to = m_config.using_namespace().relative(m.to);
 
     ostr << '"' << from << "\" "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
@@ -57,8 +57,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
     if ((m.from != m.to) && (m.return_type != "void")) {
-        const auto from = ns_relative(m_config.using_namespace(), m.from);
-        const auto to = ns_relative(m_config.using_namespace(), m.to);
+        const auto from = m_config.using_namespace().relative(m.from);
+        const auto to = m_config.using_namespace().relative(m.to);
 
         ostr << '"' << to << "\" "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
@@ -69,7 +69,7 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 void generator::generate_activity(const activity &a, std::ostream &ostr) const
 {
     for (const auto &m : a.messages) {
-        const auto to = ns_relative(m_config.using_namespace(), m.to);
+        const auto to = m_config.using_namespace().relative(m.to);
         generate_call(m, ostr);
         ostr << "activate " << '"' << to << '"' << std::endl;
         if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())

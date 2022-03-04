@@ -28,7 +28,7 @@ template <typename T> struct option {
     option(const std::string &name_,
         option_inherit_mode im = option_inherit_mode::override)
         : name{name_}
-        , value{{}}
+        , value{}
     {
     }
     option(const std::string &name_, const T &initial_value,

@@ -83,11 +83,10 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
         for (const auto &hint : hints) {
             std::stringstream hint_str;
             try {
-                hint_str << m_model.to_alias(ns_relative(uns, entity))
+                hint_str << m_model.to_alias(uns.relative(entity))
                          << " -[hidden]"
                          << clanguml::config::to_string(hint.hint) << "- "
-                         << m_model.to_alias(ns_relative(uns, hint.entity))
-                         << '\n';
+                         << m_model.to_alias(uns.relative(hint.entity)) << '\n';
                 ostr << hint_str.str();
             }
             catch (clanguml::error::uml_alias_missing &e) {
@@ -103,12 +102,14 @@ template <typename C, typename D>
 void generator<C, D>::generate_plantuml_directives(
     std::ostream &ostr, const std::vector<std::string> &directives) const
 {
+    using common::model::namespace_;
+
     for (const auto &b : directives) {
         std::string note{b};
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(note, alias_match)) {
-            auto alias = m_model.to_alias(util::ns_relative(
-                m_config.using_namespace(), std::get<0>(alias_match)));
+            auto alias = m_model.to_alias(
+                m_config.using_namespace().relative(std::get<0>(alias_match)));
             note.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
