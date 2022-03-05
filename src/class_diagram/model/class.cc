@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class.h
+ * src/class_diagram/model/class.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -115,15 +115,14 @@ std::string class_::full_name(bool relative) const
     using clanguml::common::model::namespace_;
 
     std::ostringstream ostr;
-    // if (relative && starts_with(get_namespace(), using_namespace()))
-    if (relative)
-        ostr << namespace_{name()}.relative_to(using_namespace()).to_string();
-    else
-        ostr << name_and_ns();
 
+    ostr << name_and_ns();
     render_template_params(ostr);
 
-    return ostr.str();
+    if (relative)
+        return using_namespace().relative(ostr.str());
+    else
+        return ostr.str();
 }
 std::ostringstream &class_::render_template_params(
     std::ostringstream &ostr) const

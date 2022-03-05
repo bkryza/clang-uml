@@ -153,7 +153,7 @@ bool diagram::should_include(const std::string &name_) const
     auto name = clanguml::util::unqualify(name_);
 
     for (const auto &ex : exclude().namespaces) {
-        if (ex.starts_with(name)) {
+        if (name.find(ex.to_string()) == 0) {
             LOG_DBG("Skipping from diagram: {}", name);
             return false;
         }

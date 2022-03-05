@@ -62,7 +62,7 @@ void element::set_using_namespaces(const namespace_ &un)
     using_namespace_ = un;
 }
 
-const namespace_ &element::using_namespace() const { return ns_; }
+const namespace_ &element::using_namespace() const { return using_namespace_; }
 
 std::vector<relationship> &element::relationships() { return relationships_; }
 

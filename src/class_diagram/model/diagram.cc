@@ -66,7 +66,8 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 
 void diagram::add_class(std::unique_ptr<class_> &&c)
 {
-    LOG_DBG("Adding class: {}, {}", c->name(), c->full_name());
+    LOG_DBG("Adding class: {}::{}, {}", c->get_namespace().to_string(),
+        c->name(), c->full_name());
 
     if (util::contains(c->name(), "::"))
         throw std::runtime_error("Name cannot contain namespace: " + c->name());

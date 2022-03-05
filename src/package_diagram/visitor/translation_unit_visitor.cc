@@ -93,15 +93,14 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                         auto package_parent = ctx.get_namespace();
                         auto package_path = package_parent | e.name();
-                        auto usn = common::model::namespace_{
-                            ctx.config().using_namespace()};
+                        auto usn = ctx.config().using_namespace();
 
-                        if (!usn.starts_with(package_path)) {
+                        if (ctx.config().should_include_package(package_path)) {
                             auto p = std::make_unique<package>(usn);
                             package_path = package_path.relative_to(usn);
 
                             p->set_name(e.name());
-                            p->set_namespace(package_path);
+                            p->set_namespace(package_parent);
 
                             if (ns_declaration.comment().has_value())
                                 p->add_decorators(decorators::parse(

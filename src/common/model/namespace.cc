@@ -1,5 +1,5 @@
 /**
- * src/common/model/namespace.h
+ * src/common/model/namespace.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -156,30 +156,6 @@ namespace_ namespace_::relative_to(const namespace_ &right) const
 
 std::string namespace_::relative(const std::string &name) const
 {
-    /*
-    std::vector<std::string> namespaces_sorted{namespaces};
-
-    std::sort(namespaces_sorted.rbegin(), namespaces_sorted.rend());
-
-    auto res = name;
-
-    for (const auto &ns : namespaces_sorted) {
-        if (ns.empty())
-            continue;
-
-        if (name == ns)
-            return split(n, "::").back();
-
-        auto ns_prefix = ns + "::";
-        auto it = res.find(ns_prefix);
-        while (it != std::string::npos) {
-            res.erase(it, ns_prefix.size());
-            it = res.find(ns_prefix);
-        }
-    }
-    return res;
-     */
-
     if (is_empty())
         return name;
 
