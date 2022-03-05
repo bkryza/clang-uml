@@ -41,9 +41,8 @@ std::string method_parameter::to_string(
     const common::model::namespace_ &using_namespace) const
 {
     using namespace clanguml::util;
-    auto type_ns = common::model::namespace_{type()}
-                       .relative_to(using_namespace)
-                       .to_string();
+    auto type_ns =
+        using_namespace.relative(common::model::namespace_{type()}.to_string());
     if (default_value().empty())
         return fmt::format("{} {}", type_ns, name());
 

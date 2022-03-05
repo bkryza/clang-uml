@@ -281,19 +281,25 @@ void generator::generate(
 void generator::generate(const package &p, std::ostream &ostr,
     std::ostream &relationships_ostr) const
 {
+    const auto &uns = m_config.using_namespace();
+
     if (m_config.generate_packages()) {
         LOG_DBG("Generating package {}", p.name());
 
-        ostr << "package [" << p.name() << "] ";
-        ostr << "as " << p.alias();
+        // Don't generate packages from namespaces filtered out by
+        // using_namespace
+        if (!uns.starts_with(p.full_name(false))) {
+            ostr << "package [" << p.name() << "] ";
+            ostr << "as " << p.alias();
 
-        if (p.is_deprecated())
-            ostr << " <<deprecated>>";
+            if (p.is_deprecated())
+                ostr << " <<deprecated>>";
 
-        if (!p.style().empty())
-            ostr << " " << p.style();
+            if (!p.style().empty())
+                ostr << " " << p.style();
 
-        ostr << " {" << '\n';
+            ostr << " {" << '\n';
+        }
     }
 
     for (const auto &subpackage : p) {
@@ -316,7 +322,11 @@ void generator::generate(const package &p, std::ostream &ostr,
     }
 
     if (m_config.generate_packages()) {
-        ostr << "}" << '\n';
+        // Don't generate packages from namespaces filtered out by
+        // using_namespace
+        if (!uns.starts_with(p.full_name(false))) {
+            ostr << "}" << '\n';
+        }
     }
 
     generate_notes(ostr, p);
