@@ -119,11 +119,19 @@ std::string class_::full_name(bool relative) const
     ostr << name_and_ns();
     render_template_params(ostr);
 
+    std::string res;
+
     if (relative)
-        return using_namespace().relative(ostr.str());
+        res = using_namespace().relative(ostr.str());
     else
-        return ostr.str();
+        res = ostr.str();
+
+    if(res.empty())
+        return "<<anonymous>>";
+
+    return res;
 }
+
 std::ostringstream &class_::render_template_params(
     std::ostringstream &ostr) const
 {

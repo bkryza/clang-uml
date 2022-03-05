@@ -33,12 +33,16 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     if (c.is_abstract())
         class_type = "abstract";
 
-    auto full_name = c.full_name();
-
+    std::string full_name;
     if (m_config.generate_packages())
-        ostr << class_type << " \"" << c.full_name_no_ns();
+        full_name = c.full_name_no_ns();
     else
-        ostr << class_type << " \"" << c.full_name();
+        full_name = c.full_name();
+
+    if (full_name.empty())
+        full_name = "<<anonymous>>";
+
+    ostr << class_type << " \"" << full_name;
 
     ostr << "\" as " << c.alias() << '\n';
 }

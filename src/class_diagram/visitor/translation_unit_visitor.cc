@@ -313,7 +313,7 @@ void translation_unit_visitor::process_class_declaration(
     auto c_ptr = std::make_unique<class_>(ctx.config().using_namespace());
     auto &c = *c_ptr;
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
-    // c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
+
     c.set_name(cls.name());
     c.set_namespace(ctx.get_namespace());
 
@@ -711,8 +711,12 @@ void translation_unit_visitor::process_field(
 {
     bool template_instantiation_added_as_aggregation{false};
 
-    class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
-        cppast::to_string(mv.type())};
+    auto type_name = cppast::to_string(mv.type());
+    if (type_name.empty())
+        type_name = "<<anonymous>>";
+
+    class_member m{
+        detail::cpp_access_specifier_to_scope(as), mv.name(), type_name};
 
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
@@ -721,6 +725,8 @@ void translation_unit_visitor::process_field(
         return;
 
     auto &tr = cx::util::unreferenced(cppast::remove_cv(mv.type()));
+
+    auto tr_declaration = cppast::to_string(tr);
 
 #ifndef __APPLE__
     LOG_DBG("Processing field {} with unreferenced type of kind {}", mv.name(),
@@ -747,8 +753,6 @@ void translation_unit_visitor::process_field(
             "Processing field with unexposed type {}", cppast::to_string(tr));
         // TODO
     }
-
-    auto tr_declaration = cppast::to_string(tr);
 
     if (!m.skip_relationship() &&
         !template_instantiation_added_as_aggregation &&
