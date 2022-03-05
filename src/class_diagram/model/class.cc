@@ -126,7 +126,7 @@ std::string class_::full_name(bool relative) const
     else
         res = ostr.str();
 
-    if(res.empty())
+    if (res.empty())
         return "<<anonymous>>";
 
     return res;
