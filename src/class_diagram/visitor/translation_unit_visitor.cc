@@ -1349,8 +1349,11 @@ bool translation_unit_visitor::find_relationships_in_user_defined_type(
     if (ctx.has_type_alias(fn)) {
         LOG_DBG("Find relationship in alias of {} | {}", fn,
             cppast::to_string(ctx.get_type_alias(fn).get()));
-        found = find_relationships(
-            ctx.get_type_alias(fn).get(), relationships, relationship_type);
+        if (cppast::to_string(t_) == fn)
+            found = true;
+        else
+            found = find_relationships(
+                ctx.get_type_alias(fn).get(), relationships, relationship_type);
     }
     return found;
 }

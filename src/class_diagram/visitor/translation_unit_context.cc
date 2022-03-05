@@ -115,7 +115,12 @@ translation_unit_context::get_type_alias_final(const cppast::cpp_type &t) const
         cx::util::full_name(cppast::remove_cv(t), entity_index_, false);
 
     if (has_type_alias(type_full_name)) {
-        return get_type_alias_final(alias_index_.at(type_full_name).get());
+        const auto &alias_type = alias_index_.at(type_full_name).get();
+        // Prevent infinite recursion
+        if (type_full_name !=
+            cx::util::full_name(
+                cppast::remove_cv(alias_type), entity_index_, false))
+            return get_type_alias_final(alias_type);
     }
 
     return type_safe::ref(t);

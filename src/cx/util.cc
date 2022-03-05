@@ -88,6 +88,10 @@ std::string ns(const cppast::cpp_entity &e)
         }
         it = it.value().parent();
     }
+
+    if (res.empty())
+        return "";
+
     std::reverse(res.begin(), res.end());
 
     return fmt::format("{}", fmt::join(res, "::"));
