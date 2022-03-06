@@ -33,12 +33,16 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     if (c.is_abstract())
         class_type = "abstract";
 
-    auto full_name = c.full_name();
-
+    std::string full_name;
     if (m_config.generate_packages())
-        ostr << class_type << " \"" << c.full_name_no_ns();
+        full_name = c.full_name_no_ns();
     else
-        ostr << class_type << " \"" << c.full_name();
+        full_name = c.full_name();
+
+    if (full_name.empty())
+        full_name = "<<anonymous>>";
+
+    ostr << class_type << " \"" << full_name;
 
     ostr << "\" as " << c.alias() << '\n';
 }
@@ -118,7 +122,7 @@ void generator::generate(
         if (m.is_defaulted())
             ostr << " = default";
 
-        ostr << " : " << ns_relative(uns, type);
+        ostr << " : " << uns.relative(type);
 
         ostr << '\n';
     }
@@ -154,9 +158,9 @@ void generator::generate(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            relstr << m_model.to_alias(ns_relative(uns, c.full_name())) << " "
+            relstr << m_model.to_alias(uns.relative(c.full_name())) << " "
                    << puml_relation << " "
-                   << m_model.to_alias(ns_relative(uns, destination));
+                   << m_model.to_alias(uns.relative(destination));
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.scope())
@@ -197,7 +201,7 @@ void generator::generate(
             ostr << "{static} ";
 
         ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
-             << ns_relative(uns, m.type()) << '\n';
+             << uns.relative(m.type()) << '\n';
     }
 
     ostr << "}" << '\n';
@@ -206,10 +210,8 @@ void generator::generate(
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(ns_relative(uns, b.name()))
-                       << " <|-- "
-                       << m_model.to_alias(ns_relative(uns, c.full_name()))
-                       << '\n';
+                relstr << m_model.to_alias(uns.relative(b.name())) << " <|-- "
+                       << m_model.to_alias(uns.relative(c.full_name())) << '\n';
                 all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
@@ -253,13 +255,13 @@ void generator::generate(
             destination = r.destination();
 
             relstr << m_model.to_alias(
-                          ns_relative(m_config.using_namespace(), e.name()))
+                          m_config.using_namespace().relative(e.name()))
                    << " "
                    << clanguml::common::generators::plantuml::to_plantuml(
                           r.type(), r.style())
                    << " "
                    << m_model.to_alias(
-                          ns_relative(m_config.using_namespace(), destination));
+                          m_config.using_namespace().relative(destination));
 
             if (!r.label().empty())
                 relstr << " : " << r.label();
@@ -283,19 +285,25 @@ void generator::generate(
 void generator::generate(const package &p, std::ostream &ostr,
     std::ostream &relationships_ostr) const
 {
+    const auto &uns = m_config.using_namespace();
+
     if (m_config.generate_packages()) {
         LOG_DBG("Generating package {}", p.name());
 
-        ostr << "package [" << p.name() << "] ";
-        ostr << "as " << p.alias();
+        // Don't generate packages from namespaces filtered out by
+        // using_namespace
+        if (!uns.starts_with(p.full_name(false))) {
+            ostr << "package [" << p.name() << "] ";
+            ostr << "as " << p.alias();
 
-        if (p.is_deprecated())
-            ostr << " <<deprecated>>";
+            if (p.is_deprecated())
+                ostr << " <<deprecated>>";
 
-        if (!p.style().empty())
-            ostr << " " << p.style();
+            if (!p.style().empty())
+                ostr << " " << p.style();
 
-        ostr << " {" << '\n';
+            ostr << " {" << '\n';
+        }
     }
 
     for (const auto &subpackage : p) {
@@ -318,7 +326,11 @@ void generator::generate(const package &p, std::ostream &ostr,
     }
 
     if (m_config.generate_packages()) {
-        ostr << "}" << '\n';
+        // Don't generate packages from namespaces filtered out by
+        // using_namespace
+        if (!uns.starts_with(p.full_name(false))) {
+            ostr << "}" << '\n';
+        }
     }
 
     generate_notes(ostr, p);

@@ -46,7 +46,7 @@ struct plantuml {
 };
 
 struct filter {
-    std::vector<std::string> namespaces;
+    std::vector<common::model::namespace_> namespaces;
 
     // Valid values are:
     //   - inheritance
@@ -79,7 +79,7 @@ std::string to_string(const hint_t t);
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};
-    option<std::vector<std::string>> using_namespace{"using_namespace"};
+    option<common::model::namespace_> using_namespace{"using_namespace"};
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
     option<filter> include{"include"};
@@ -105,14 +105,23 @@ struct diagram : public inheritable_diagram_options {
 
     bool should_include_package(const std::string &name) const;
 
-    bool should_include(
-        const std::pair<std::vector<std::string>, std::string> &name) const;
+    bool should_include_package(const common::model::namespace_ &path) const;
 
     bool should_include(
-        const std::vector<std::string> &ns, const std::string &name) const;
+        const std::pair<common::model::namespace_, std::string> &name) const;
+
+    //    bool should_include(
+    //        const std::vector<std::string> &ns, const std::string &name)
+    //        const;
+
+    bool should_include(
+        const common::model::namespace_ &ns, const std::string &name) const;
 
     bool should_include(const common::model::scope_t scope) const;
+
     bool should_include(const std::string &name_) const;
+
+    bool should_include(const common::model::namespace_ &path) const;
 
 private:
 };

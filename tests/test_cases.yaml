@@ -105,6 +105,12 @@ test_cases:
     - name: t00036
       title: Class diagram with namespaces generated as packages
       description:
+    - name: t00037
+      title: Anonymous nested struct test case
+      description:
+    - name: t00038
+      title: Template instantiation with unexposed nested templates
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

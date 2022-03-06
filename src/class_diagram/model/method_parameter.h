@@ -18,6 +18,7 @@
 #pragma once
 
 #include "common/model/decorated_element.h"
+#include "common/model/namespace.h"
 
 #include <string>
 #include <vector>
@@ -36,7 +37,7 @@ public:
     std::string default_value() const;
 
     std::string to_string(
-        const std::vector<std::string> &using_namespaces) const;
+        const common::model::namespace_ &using_namespaces) const;
 
 private:
     std::string type_;

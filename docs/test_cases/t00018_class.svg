@@ -1,43 +1,58 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="371px" preserveAspectRatio="none" style="width:259px;height:371px;" version="1.1" viewBox="0 0 259 371" width="259px" zoomAndPan="magnify"><defs><filter height="300%" id="f1jhk20t90zn1b" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[404d7982bdf7b48b1194f18f06f7bc11]
-class C_0000000346--><rect fill="#FEFECE" filter="url(#f1jhk20t90zn1b)" height="99.2188" id="C_0000000346" style="stroke: #A80036; stroke-width: 1.5;" width="227" x="13.5" y="8"/><ellipse cx="85.75" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M88.7188,29.6406 Q88.1406,29.9375 87.5,30.0781 Q86.8594,30.2344 86.1563,30.2344 Q83.6563,30.2344 82.3281,28.5938 Q81.0156,26.9375 81.0156,23.8125 Q81.0156,20.6875 82.3281,19.0313 Q83.6563,17.375 86.1563,17.375 Q86.8594,17.375 87.5,17.5313 Q88.1563,17.6875 88.7188,17.9844 L88.7188,20.7031 Q88.0938,20.125 87.5,19.8594 Q86.9063,19.5781 86.2813,19.5781 Q84.9375,19.5781 84.25,20.6563 Q83.5625,21.7188 83.5625,23.8125 Q83.5625,25.9063 84.25,26.9844 Q84.9375,28.0469 86.2813,28.0469 Q86.9063,28.0469 87.5,27.7813 Q88.0938,27.5 88.7188,26.9219 L88.7188,29.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="74" x="106.25" y="28.1543">impl::widget</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="14.5" x2="239.5" y1="40" y2="40"/><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="21.5" y="48"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="33" x="33.5" y="54.2104">n : int</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="14.5" x2="239.5" y1="60.8047" y2="60.8047"/><ellipse cx="24.5" cy="71.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="201" x="33.5" y="75.0151">draw(widget const&amp; w) const : void</text><ellipse cx="24.5" cy="84.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="166" x="33.5" y="87.8198">draw(widget const&amp; w) : void</text><ellipse cx="24.5" cy="97.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="105" x="33.5" y="100.6245">widget(int n) : void</text><!--MD5=[be1a93fdb3e0d54a8e213ac3a10ef939]
-class C_0000000351--><rect fill="#FEFECE" filter="url(#f1jhk20t90zn1b)" height="176.0469" id="C_0000000351" style="stroke: #A80036; stroke-width: 1.5;" width="242" x="6" y="184"/><ellipse cx="102.25" cy="200" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M105.2188,205.6406 Q104.6406,205.9375 104,206.0781 Q103.3594,206.2344 102.6563,206.2344 Q100.1563,206.2344 98.8281,204.5938 Q97.5156,202.9375 97.5156,199.8125 Q97.5156,196.6875 98.8281,195.0313 Q100.1563,193.375 102.6563,193.375 Q103.3594,193.375 104,193.5313 Q104.6563,193.6875 105.2188,193.9844 L105.2188,196.7031 Q104.5938,196.125 104,195.8594 Q103.4063,195.5781 102.7813,195.5781 Q101.4375,195.5781 100.75,196.6563 Q100.0625,197.7188 100.0625,199.8125 Q100.0625,201.9063 100.75,202.9844 Q101.4375,204.0469 102.7813,204.0469 Q103.4063,204.0469 104,203.7813 Q104.5938,203.5 105.2188,202.9219 L105.2188,205.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="122.75" y="204.1543">widget</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="247" y1="216" y2="216"/><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="224"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="216" x="26" y="230.2104">pImpl : std::unique_ptr&lt;impl::widget&gt;</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="247" y1="236.8047" y2="236.8047"/><ellipse cx="17" cy="247.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="106" x="26" y="251.0151">draw() const : void</text><ellipse cx="17" cy="260.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="263.8198">draw() : void</text><ellipse cx="17" cy="273.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="116" x="26" y="276.6245">shown() const : bool</text><ellipse cx="17" cy="286.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="98" x="26" y="289.4292">widget(int ) : void</text><ellipse cx="17" cy="299.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="89" x="26" y="302.2339">~widget() : void</text><ellipse cx="17" cy="311.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="141" x="26" y="315.0386">widget(widget&amp;&amp; ) : void</text><ellipse cx="17" cy="324.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="166" x="26" y="327.8433">widget(widget const&amp; ) : void</text><ellipse cx="17" cy="337.4375" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="186" x="26" y="340.6479">operator=(widget&amp;&amp; ) : widget&amp;</text><ellipse cx="17" cy="350.2422" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="211" x="26" y="353.4526">operator=(widget const&amp; ) : widget&amp;</text><!--MD5=[5c74e152e2bdeb6b789c106314308f5a]
-link C_0000000346 to C_0000000351--><path d="M121.99,107.03 C121.16,116.94 120.43,127.29 120,137 C119.4,150.47 119.43,164.7 119.83,178.66 " fill="none" id="C_0000000346-&gt;C_0000000351" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><polygon fill="#A80036" points="120,183.79,123.7153,174.6688,119.8429,178.7925,115.7193,174.9201,120,183.79" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[4bf4d6a6ead67d2d7f8a238a9e6a0e48]
-reverse link C_0000000351 to C_0000000346--><path d="M127,170.43 C127,148.43 127,126.11 127,107.25 " fill="none" id="C_0000000351&lt;-C_0000000346" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#FFFFFF" points="127,183.68,131,177.68,127,171.68,123,177.68,127,183.68" style="stroke: #A80036; stroke-width: 1.0;"/><rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="130" y="143.0664"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="35" x="140" y="150.0669">pImpl</text><!--MD5=[b294ac3c2f7572c04ceedbfbf9990f99]
-@startuml
-
-class "impl::widget" as C_0000000346
-class C_0000000346 {
-+draw(widget const& w) const : void
-+draw(widget const& w) : void
-{static} +widget(int n) : void
--n : int
-}
-
-class "widget" as C_0000000351
-class C_0000000351 {
-+draw() const : void
-+draw() : void
-+shown() const : bool
-{static} +widget(int ) : void
-{static} +~widget() : void
-{static} +widget(widget&& ) : void
-{static} +widget(widget const& ) : void
-+operator=(widget&& ) : widget&
-+operator=(widget const& ) : widget&
--pImpl : std::unique_ptr<impl::widget>
-}
-
-C_0000000346 ..> C_0000000351
-C_0000000351 o- - C_0000000346 : -pImpl
-@enduml
-
-PlantUML version 1.2020.02(Sun Mar 01 11:22:07 CET 2020)
-(GPL source distribution)
-Java Runtime: OpenJDK Runtime Environment
-JVM: OpenJDK 64-Bit Server VM
-Java Version: 11.0.13+8-Ubuntu-0ubuntu1.21.10
-Operating System: Linux
-Default Encoding: UTF-8
-Language: pl
-Country: PL
---></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="371px" preserveAspectRatio="none" style="width:259px;height:371px;" version="1.1" viewBox="0 0 259 371" width="259px" zoomAndPan="magnify">
+  <defs>
+    <filter height="300%" id="f1jhk20t90zn1b" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
+  </defs>
+  <g>
+    <rect fill="#FEFECE" filter="url(#f1jhk20t90zn1b)" height="99.2188" id="C_0000000346" style="stroke: #A80036; stroke-width: 1.5;" width="227" x="13.5" y="8"/>
+    <ellipse cx="85.75" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M88.7188,29.6406 Q88.1406,29.9375 87.5,30.0781 Q86.8594,30.2344 86.1563,30.2344 Q83.6563,30.2344 82.3281,28.5938 Q81.0156,26.9375 81.0156,23.8125 Q81.0156,20.6875 82.3281,19.0313 Q83.6563,17.375 86.1563,17.375 Q86.8594,17.375 87.5,17.5313 Q88.1563,17.6875 88.7188,17.9844 L88.7188,20.7031 Q88.0938,20.125 87.5,19.8594 Q86.9063,19.5781 86.2813,19.5781 Q84.9375,19.5781 84.25,20.6563 Q83.5625,21.7188 83.5625,23.8125 Q83.5625,25.9063 84.25,26.9844 Q84.9375,28.0469 86.2813,28.0469 Q86.9063,28.0469 87.5,27.7813 Q88.0938,27.5 88.7188,26.9219 L88.7188,29.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="74" x="106.25" y="28.1543">impl::widget</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="14.5" x2="239.5" y1="40" y2="40"/>
+    <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="21.5" y="48"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="33" x="33.5" y="54.2104">n : int</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="14.5" x2="239.5" y1="60.8047" y2="60.8047"/>
+    <ellipse cx="24.5" cy="71.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="201" x="33.5" y="75.0151">draw(widget const&amp; w) const : void</text>
+    <ellipse cx="24.5" cy="84.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="166" x="33.5" y="87.8198">draw(widget const&amp; w) : void</text>
+    <ellipse cx="24.5" cy="97.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="105" x="33.5" y="100.6245">widget(int n) : void</text>
+    <rect fill="#FEFECE" filter="url(#f1jhk20t90zn1b)" height="176.0469" id="C_0000000351" style="stroke: #A80036; stroke-width: 1.5;" width="242" x="6" y="184"/>
+    <ellipse cx="102.25" cy="200" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M105.2188,205.6406 Q104.6406,205.9375 104,206.0781 Q103.3594,206.2344 102.6563,206.2344 Q100.1563,206.2344 98.8281,204.5938 Q97.5156,202.9375 97.5156,199.8125 Q97.5156,196.6875 98.8281,195.0313 Q100.1563,193.375 102.6563,193.375 Q103.3594,193.375 104,193.5313 Q104.6563,193.6875 105.2188,193.9844 L105.2188,196.7031 Q104.5938,196.125 104,195.8594 Q103.4063,195.5781 102.7813,195.5781 Q101.4375,195.5781 100.75,196.6563 Q100.0625,197.7188 100.0625,199.8125 Q100.0625,201.9063 100.75,202.9844 Q101.4375,204.0469 102.7813,204.0469 Q103.4063,204.0469 104,203.7813 Q104.5938,203.5 105.2188,202.9219 L105.2188,205.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="122.75" y="204.1543">widget</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="247" y1="216" y2="216"/>
+    <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="224"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="216" x="26" y="230.2104">pImpl : std::unique_ptr&lt;impl::widget&gt;</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="247" y1="236.8047" y2="236.8047"/>
+    <ellipse cx="17" cy="247.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="106" x="26" y="251.0151">draw() const : void</text>
+    <ellipse cx="17" cy="260.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="263.8198">draw() : void</text>
+    <ellipse cx="17" cy="273.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="116" x="26" y="276.6245">shown() const : bool</text>
+    <ellipse cx="17" cy="286.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="98" x="26" y="289.4292">widget(int ) : void</text>
+    <ellipse cx="17" cy="299.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="89" x="26" y="302.2339">~widget() : void</text>
+    <ellipse cx="17" cy="311.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="141" x="26" y="315.0386">widget(widget&amp;&amp; ) : void</text>
+    <ellipse cx="17" cy="324.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" text-decoration="underline" textLength="166" x="26" y="327.8433">widget(widget const&amp; ) : void</text>
+    <ellipse cx="17" cy="337.4375" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="186" x="26" y="340.6479">operator=(widget&amp;&amp; ) : widget&amp;</text>
+    <ellipse cx="17" cy="350.2422" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="211" x="26" y="353.4526">operator=(widget const&amp; ) : widget&amp;</text>
+    <path d="M121.99,107.03 C121.16,116.94 120.43,127.29 120,137 C119.4,150.47 119.43,164.7 119.83,178.66 " fill="none" id="C_0000000346-&gt;C_0000000351" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="120,183.79,123.7153,174.6688,119.8429,178.7925,115.7193,174.9201,120,183.79" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M127,170.43 C127,148.43 127,126.11 127,107.25 " fill="none" id="C_0000000351&lt;-C_0000000346" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="#FFFFFF" points="127,183.68,131,177.68,127,171.68,123,177.68,127,183.68" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="130" y="143.0664"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="35" x="140" y="150.0669">pImpl</text>
+  </g>
+</svg>

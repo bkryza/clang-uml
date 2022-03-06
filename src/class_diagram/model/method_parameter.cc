@@ -38,14 +38,15 @@ void method_parameter::set_default_value(const std::string &value)
 std::string method_parameter::default_value() const { return default_value_; }
 
 std::string method_parameter::to_string(
-    const std::vector<std::string> &using_namespaces) const
+    const common::model::namespace_ &using_namespace) const
 {
     using namespace clanguml::util;
-    auto t = ns_relative(using_namespaces, type());
+    auto type_ns =
+        using_namespace.relative(common::model::namespace_{type()}.to_string());
     if (default_value().empty())
-        return fmt::format("{} {}", t, name());
+        return fmt::format("{} {}", type_ns, name());
 
-    return fmt::format("{} {} = {}", t, name(), default_value());
+    return fmt::format("{} {} = {}", type_ns, name(), default_value());
 }
 
 }

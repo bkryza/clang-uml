@@ -83,8 +83,8 @@ std::string join(const std::vector<std::string> &toks, std::string delimiter);
  *
  * @return Identifier relative to one of the matching namespaces.
  */
-std::string ns_relative(
-    const std::vector<std::string> &namespaces, const std::string &n);
+// std::string ns_relative(
+//    const std::vector<std::string> &namespaces, const std::string &n);
 
 /**
  * @brief Remove any qualifiers (e.g. const) from type.

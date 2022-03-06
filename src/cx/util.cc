@@ -39,7 +39,7 @@ std::string to_string(CXString &&cxs)
 }
 
 std::string full_name(
-    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e)
+    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e)
 {
     if (e.name().empty())
         return "";
@@ -88,6 +88,10 @@ std::string ns(const cppast::cpp_entity &e)
         }
         it = it.value().parent();
     }
+
+    if (res.empty())
+        return "";
+
     std::reverse(res.begin(), res.end());
 
     return fmt::format("{}", fmt::join(res, "::"));
@@ -126,12 +130,13 @@ bool is_inside_class(const cppast::cpp_entity &e)
     return false;
 }
 
-std::pair<std::vector<std::string>, std::string> split_ns(
+std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name)
 {
     auto name_before_template = ::clanguml::util::split(full_name, "<")[0];
-    auto ns = ::clanguml::util::split(name_before_template, "::");
-    auto name = ns.back();
+    auto ns = common::model::namespace_{
+        ::clanguml::util::split(name_before_template, "::")};
+    auto name = ns.name();
     ns.pop_back();
     return {ns, name};
 }
@@ -197,7 +202,7 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
 }
 
 std::string fully_prefixed(
-    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e)
+    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e)
 {
     if (e.name().find("::") != std::string::npos) {
         // the name already contains namespace, but it could be not

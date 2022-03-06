@@ -1,0 +1,13 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00038_class:
+    type: class
+    generate_packages: true
+    glob:
+      - ../../tests/t00038/t00038.cc
+    using_namespace:
+      - clanguml::t00038
+    include:
+      namespaces:
+        - clanguml::t00038

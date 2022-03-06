@@ -27,17 +27,17 @@ std::string diagram::to_alias(const std::string &full_name) const
 {
     LOG_DBG("Looking for alias for {}", full_name);
 
-    auto fn = util::split(full_name, "::");
+    auto path = common::model::namespace_{full_name};
 
-    if (fn.empty())
+    if (path.is_empty())
         throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", full_name));
+            fmt::format("Missing alias for '{}'", path.to_string()));
 
-    auto package = get_element<common::model::package>(fn);
+    auto package = get_element<common::model::package>(path);
 
     if (!package)
         throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", full_name));
+            fmt::format("Missing alias for '{}'", path.to_string()));
 
     return package.value().alias();
 }

@@ -34,7 +34,7 @@ namespace clanguml::class_diagram::model {
 class class_ : public common::model::element,
                public common::model::stylable_element {
 public:
-    class_(const std::vector<std::string> &using_namespaces);
+    class_(const common::model::namespace_ &using_namespace);
 
     class_(const class_ &) = delete;
     class_(class_ &&) noexcept = delete;

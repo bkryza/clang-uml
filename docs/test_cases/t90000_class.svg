@@ -1,33 +1,47 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="396px" preserveAspectRatio="none" style="width:455px;height:396px;" version="1.1" viewBox="0 0 455 396" width="455px" zoomAndPan="magnify"><defs><filter height="300%" id="fna43uwevhc6s" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[8e3bec37aaaacc2c031dacc90449fd89]
-class C_001--><rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="60.8047" id="C_001" style="stroke: #A80036; stroke-width: 1.5;" width="74" x="74" y="116"/><ellipse cx="97.55" cy="132" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M100.5188,137.6406 Q99.9406,137.9375 99.3,138.0781 Q98.6594,138.2344 97.9563,138.2344 Q95.4563,138.2344 94.1281,136.5938 Q92.8156,134.9375 92.8156,131.8125 Q92.8156,128.6875 94.1281,127.0313 Q95.4563,125.375 97.9563,125.375 Q98.6594,125.375 99.3,125.5313 Q99.9563,125.6875 100.5188,125.9844 L100.5188,128.7031 Q99.8938,128.125 99.3,127.8594 Q98.7063,127.5781 98.0813,127.5781 Q96.7375,127.5781 96.05,128.6563 Q95.3625,129.7188 95.3625,131.8125 Q95.3625,133.9063 96.05,134.9844 Q96.7375,136.0469 98.0813,136.0469 Q98.7063,136.0469 99.3,135.7813 Q99.8938,135.5 100.5188,134.9219 L100.5188,137.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="23" x="113.45" y="136.1543">Foo</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="148" y2="148"/><ellipse cx="85" cy="159" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="48" x="94" y="162.2104">int value</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="168.8047" y2="168.8047"/><!--MD5=[ab8871ed637f40707b866ba6597734bc]
-class ArrayList--><rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="ArrayList" style="stroke: #A80036; stroke-width: 1.5;" width="85" x="68.5" y="337"/><ellipse cx="83.5" cy="353" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M86.4688,358.6406 Q85.8906,358.9375 85.25,359.0781 Q84.6094,359.2344 83.9063,359.2344 Q81.4063,359.2344 80.0781,357.5938 Q78.7656,355.9375 78.7656,352.8125 Q78.7656,349.6875 80.0781,348.0313 Q81.4063,346.375 83.9063,346.375 Q84.6094,346.375 85.25,346.5313 Q85.9063,346.6875 86.4688,346.9844 L86.4688,349.7031 Q85.8438,349.125 85.25,348.8594 Q84.6563,348.5781 84.0313,348.5781 Q82.6875,348.5781 82,349.6563 Q81.3125,350.7188 81.3125,352.8125 Q81.3125,354.9063 82,355.9844 Q82.6875,357.0469 84.0313,357.0469 Q84.6563,357.0469 85.25,356.7813 Q85.8438,356.5 86.4688,355.9219 L86.4688,358.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="53" x="97.5" y="357.1543">ArrayList</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="369" y2="369"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="377" y2="377"/><path d="M6,19.5 L6,44.6328 A0,0 0 0 0 6,44.6328 L107,44.6328 L111,115.66 L115,44.6328 L216,44.6328 A0,0 0 0 0 216,44.6328 L216,29.5 L206,19.5 L6,19.5 A0,0 0 0 0 6,19.5 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M206,19.5 L206,29.5 L216,29.5 L206,19.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="189" x="12" y="36.5669">This is a very important class.</text><path d="M251.5,12 L251.5,52.2656 L352.5,52.2656 L352.5,22 L342.5,12 L251.5,12 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M342.5,12 L342.5,22 L352.5,22 L342.5,12 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="51" x="257.5" y="29.0669">This is a</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="80" x="257.5" y="44.1997">floating note</text><path d="M97,237 L97,277.2656 L261,277.2656 L261,247 L251,237 L97,237 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M251,237 L251,247 L261,247 L251,237 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="143" x="103" y="254.0669">This note is connected</text><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="117" x="103" y="269.1997">to several objects.</text><!--MD5=[42894340c49cf3a9d4462aaf0ba82014]
-class C_002--><rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="C_002" style="stroke: #A80036; stroke-width: 1.5;" width="56" x="388" y="8"/><ellipse cx="403" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/><path d="M405.9688,29.6406 Q405.3906,29.9375 404.75,30.0781 Q404.1094,30.2344 403.4063,30.2344 Q400.9063,30.2344 399.5781,28.5938 Q398.2656,26.9375 398.2656,23.8125 Q398.2656,20.6875 399.5781,19.0313 Q400.9063,17.375 403.4063,17.375 Q404.1094,17.375 404.75,17.5313 Q405.4063,17.6875 405.9688,17.9844 L405.9688,20.7031 Q405.3438,20.125 404.75,19.8594 Q404.1563,19.5781 403.5313,19.5781 Q402.1875,19.5781 401.5,20.6563 Q400.8125,21.7188 400.8125,23.8125 Q400.8125,25.9063 401.5,26.9844 Q402.1875,28.0469 403.5313,28.0469 Q404.1563,28.0469 404.75,27.7813 Q405.3438,27.5 405.9688,26.9219 L405.9688,29.6406 Z "/><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="24" x="417" y="28.1543">Boo</text><line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="40" y2="40"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="48" y2="48"/><!--MD5=[c30ba8e6b6b353b5dc88e9f8a335960f]
-reverse link C_001 to ArrayList--><path d="M88.93,195.94 C80.49,220.14 73.97,249.96 79,277 C82.9,297.95 91.89,320.43 99.36,336.71 " fill="none" id="C_001&lt;-ArrayList" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="none" points="82.48,193.22,96.26,177.12,95.53,198.29,82.48,193.22" style="stroke: #A80036; stroke-width: 1.0;"/><!--MD5=[7882cbe33356f79ad97f8b6d7af9e672]
-link C_001 to N2--><path d="M129.58,177.15 C141.54,196.22 156.72,220.44 167.08,236.98 " fill="none" id="C_001-N2" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><!--MD5=[5a614eaa38e8d197576af088f89b713e]
-link N2 to ArrayList--><path d="M166.21,277.19 C154.9,294.15 138.37,318.94 126.35,336.97 " fill="none" id="N2-ArrayList" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/><!--MD5=[d068faa0848415a1cfac22dc7051a94d]
-@startuml
-class "Foo" as C_001
-class C_001 {
- +int value
-}
-C_001 <|- - ArrayList
-note top of C_001: This is a very important class.
-note "This is a\nfloating note" as N1
-note "This note is connected\nto several objects." as N2
-C_001 .. N2
-N2 .. ArrayList
-class "Boo" as C_002
-class C_002 {
-}
-@enduml
-
-PlantUML version 1.2020.02(Sun Mar 01 11:22:07 CET 2020)
-(GPL source distribution)
-Java Runtime: OpenJDK Runtime Environment
-JVM: OpenJDK 64-Bit Server VM
-Java Version: 11.0.13+8-Ubuntu-0ubuntu1.21.10
-Operating System: Linux
-Default Encoding: UTF-8
-Language: pl
-Country: PL
---></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="396px" preserveAspectRatio="none" style="width:455px;height:396px;" version="1.1" viewBox="0 0 455 396" width="455px" zoomAndPan="magnify">
+  <defs>
+    <filter height="300%" id="fna43uwevhc6s" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
+  </defs>
+  <g>
+    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="60.8047" id="C_001" style="stroke: #A80036; stroke-width: 1.5;" width="74" x="74" y="116"/>
+    <ellipse cx="97.55" cy="132" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M100.5188,137.6406 Q99.9406,137.9375 99.3,138.0781 Q98.6594,138.2344 97.9563,138.2344 Q95.4563,138.2344 94.1281,136.5938 Q92.8156,134.9375 92.8156,131.8125 Q92.8156,128.6875 94.1281,127.0313 Q95.4563,125.375 97.9563,125.375 Q98.6594,125.375 99.3,125.5313 Q99.9563,125.6875 100.5188,125.9844 L100.5188,128.7031 Q99.8938,128.125 99.3,127.8594 Q98.7063,127.5781 98.0813,127.5781 Q96.7375,127.5781 96.05,128.6563 Q95.3625,129.7188 95.3625,131.8125 Q95.3625,133.9063 96.05,134.9844 Q96.7375,136.0469 98.0813,136.0469 Q98.7063,136.0469 99.3,135.7813 Q99.8938,135.5 100.5188,134.9219 L100.5188,137.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="23" x="113.45" y="136.1543">Foo</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="148" y2="148"/>
+    <ellipse cx="85" cy="159" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="48" x="94" y="162.2104">int value</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="168.8047" y2="168.8047"/>
+    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="ArrayList" style="stroke: #A80036; stroke-width: 1.5;" width="85" x="68.5" y="337"/>
+    <ellipse cx="83.5" cy="353" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M86.4688,358.6406 Q85.8906,358.9375 85.25,359.0781 Q84.6094,359.2344 83.9063,359.2344 Q81.4063,359.2344 80.0781,357.5938 Q78.7656,355.9375 78.7656,352.8125 Q78.7656,349.6875 80.0781,348.0313 Q81.4063,346.375 83.9063,346.375 Q84.6094,346.375 85.25,346.5313 Q85.9063,346.6875 86.4688,346.9844 L86.4688,349.7031 Q85.8438,349.125 85.25,348.8594 Q84.6563,348.5781 84.0313,348.5781 Q82.6875,348.5781 82,349.6563 Q81.3125,350.7188 81.3125,352.8125 Q81.3125,354.9063 82,355.9844 Q82.6875,357.0469 84.0313,357.0469 Q84.6563,357.0469 85.25,356.7813 Q85.8438,356.5 86.4688,355.9219 L86.4688,358.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="53" x="97.5" y="357.1543">ArrayList</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="369" y2="369"/>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="377" y2="377"/>
+    <path d="M6,19.5 L6,44.6328 A0,0 0 0 0 6,44.6328 L107,44.6328 L111,115.66 L115,44.6328 L216,44.6328 A0,0 0 0 0 216,44.6328 L216,29.5 L206,19.5 L6,19.5 A0,0 0 0 0 6,19.5 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M206,19.5 L206,29.5 L216,29.5 L206,19.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="189" x="12" y="36.5669">This is a very important class.</text>
+    <path d="M251.5,12 L251.5,52.2656 L352.5,52.2656 L352.5,22 L342.5,12 L251.5,12 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M342.5,12 L342.5,22 L352.5,22 L342.5,12 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="51" x="257.5" y="29.0669">This is a</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="80" x="257.5" y="44.1997">floating note</text>
+    <path d="M97,237 L97,277.2656 L261,277.2656 L261,247 L251,237 L97,237 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M251,237 L251,247 L261,247 L251,237 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="143" x="103" y="254.0669">This note is connected</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="117" x="103" y="269.1997">to several objects.</text>
+    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="C_002" style="stroke: #A80036; stroke-width: 1.5;" width="56" x="388" y="8"/>
+    <ellipse cx="403" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M405.9688,29.6406 Q405.3906,29.9375 404.75,30.0781 Q404.1094,30.2344 403.4063,30.2344 Q400.9063,30.2344 399.5781,28.5938 Q398.2656,26.9375 398.2656,23.8125 Q398.2656,20.6875 399.5781,19.0313 Q400.9063,17.375 403.4063,17.375 Q404.1094,17.375 404.75,17.5313 Q405.4063,17.6875 405.9688,17.9844 L405.9688,20.7031 Q405.3438,20.125 404.75,19.8594 Q404.1563,19.5781 403.5313,19.5781 Q402.1875,19.5781 401.5,20.6563 Q400.8125,21.7188 400.8125,23.8125 Q400.8125,25.9063 401.5,26.9844 Q402.1875,28.0469 403.5313,28.0469 Q404.1563,28.0469 404.75,27.7813 Q405.3438,27.5 405.9688,26.9219 L405.9688,29.6406 Z "/>
+    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="24" x="417" y="28.1543">Boo</text>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="40" y2="40"/>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="48" y2="48"/>
+    <path d="M88.93,195.94 C80.49,220.14 73.97,249.96 79,277 C82.9,297.95 91.89,320.43 99.36,336.71 " fill="none" id="C_001&lt;-ArrayList" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="none" points="82.48,193.22,96.26,177.12,95.53,198.29,82.48,193.22" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M129.58,177.15 C141.54,196.22 156.72,220.44 167.08,236.98 " fill="none" id="C_001-N2" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <path d="M166.21,277.19 C154.9,294.15 138.37,318.94 126.35,336.97 " fill="none" id="N2-ArrayList" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+  </g>
+</svg>

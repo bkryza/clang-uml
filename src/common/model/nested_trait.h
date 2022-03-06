@@ -52,58 +52,59 @@ public:
     }
 
     template <typename V = T>
-    void add_element(std::vector<std::string> path, std::unique_ptr<V> p)
+    void add_element(namespace_ ns, std::unique_ptr<V> p)
     {
         assert(p);
 
-        LOG_DBG("Adding nested element {} at path {}", p->name(),
-            fmt::join(path, "::"));
+        LOG_DBG(
+            "Adding nested element {} at path {}", p->name(), ns.to_string());
 
-        if (path.empty()) {
+        if (ns.is_empty()) {
             add_element(std::move(p));
             return;
         }
 
-        auto parent = get_element(path);
+        auto parent = get_element(ns);
 
         if (parent && dynamic_cast<nested_trait<T> *>(&parent.value()))
             dynamic_cast<nested_trait<T> &>(parent.value())
                 .template add_element<V>(std::move(p));
         else {
-            spdlog::error(
-                "No parent element found at: {}", fmt::join(path, "::"));
-            throw std::runtime_error("No parent element found");
+            spdlog::error("No parent element found at: {}", ns.to_string());
+            throw std::runtime_error(
+                "No parent element found for " + ns.to_string());
         }
     }
 
-    template <typename V = T>
-    auto get_element(std::vector<std::string> path) const
+    template <typename V = T> auto get_element(const namespace_ &path) const
     {
-        LOG_DBG("Getting nested element at path: {}", fmt::join(path, "::"));
+        LOG_DBG("Getting nested element at path: {}", path.to_string());
 
-        if (path.empty() || !has_element(path.at(0))) {
-            LOG_WARN("Nested element {} not found in element",
-                fmt::join(path, "::"));
+        if (path.is_empty() || !has_element(path[0])) {
+            LOG_WARN(
+                "Nested element {} not found in element", path.to_string());
             return type_safe::optional_ref<V>{};
         }
 
         if (path.size() == 1)
-            return get_element<V>(path.at(0));
+            return get_element<V>(path[0]);
 
-        auto p = get_element<T>(path.at(0));
+        auto p = get_element<T>(path[0]);
 
         if (!p)
             return type_safe::optional_ref<V>{};
 
         if (dynamic_cast<nested_trait<T> *>(&p.value()))
             return dynamic_cast<nested_trait<T> &>(p.value()).get_element<V>(
-                std::vector<std::string>(path.begin() + 1, path.end()));
+                namespace_{path.begin() + 1, path.end()});
 
         return type_safe::optional_ref<V>{};
     }
 
     template <typename V = T> auto get_element(const std::string &name) const
     {
+        assert(!util::contains(name, "::"));
+
         auto it = std::find_if(elements_.cbegin(), elements_.cend(),
             [&](const auto &p) { return name == p->name(); });
 

@@ -66,7 +66,8 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 
 void diagram::add_class(std::unique_ptr<class_> &&c)
 {
-    LOG_DBG("Adding class: {}, {}", c->name(), c->full_name());
+    LOG_DBG("Adding class: {}::{}, {}", c->get_namespace().to_string(),
+        c->name(), c->full_name());
 
     if (util::contains(c->name(), "::"))
         throw std::runtime_error("Name cannot contain namespace: " + c->name());
@@ -82,7 +83,7 @@ void diagram::add_class(std::unique_ptr<class_> &&c)
         auto ns = c->get_relative_namespace();
         auto name = c->name();
         add_element(ns, std::move(c));
-        ns.push_back(name);
+        ns |= name;
         const auto ccc = get_element<class_>(ns);
         assert(ccc.value().name() == name);
     }

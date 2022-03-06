@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "common/model/namespace.h"
+
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
 #include <cppast/cpp_entity.hpp>
@@ -41,13 +43,13 @@ namespace util {
 std::string to_string(CXString &&cxs);
 
 std::string full_name(
-    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e);
+    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e);
 
 std::string full_name(const cppast::cpp_type &t,
     const cppast::cpp_entity_index &idx, bool inside_class);
 
 std::string fully_prefixed(
-    const std::vector<std::string> &current_ns, const cppast::cpp_entity &e);
+    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e);
 
 const cppast::cpp_type &unreferenced(const cppast::cpp_type &t);
 
@@ -58,7 +60,7 @@ type_safe::optional_ref<const cppast::cpp_namespace> entity_ns(
 
 std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx);
 
-std::pair<std::vector<std::string>, std::string> split_ns(
+std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name);
 
 bool is_inside_class(const cppast::cpp_entity &e);

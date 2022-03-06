@@ -153,12 +153,12 @@ translation_unit_context::get_type_alias_template(
 
 void translation_unit_context::push_namespace(const std::string &ns)
 {
-    namespace_.push_back(ns);
+    namespace_ |= ns;
 }
 
 void translation_unit_context::pop_namespace() { namespace_.pop_back(); }
 
-const std::vector<std::string> &translation_unit_context::get_namespace() const
+const common::model::namespace_ &translation_unit_context::get_namespace() const
 {
     return namespace_;
 }

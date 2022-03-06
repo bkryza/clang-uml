@@ -200,7 +200,7 @@ void translation_unit_visitor::process_type_alias_template(
             cx::util::full_name(ctx.get_namespace(), at),
             type_safe::ref(at.type_alias().underlying_type()));
 
-        if (ctx.config().should_include(tinst->get_namespace(), tinst->name()))
+        if (ctx.config().should_include(tinst->get_namespace() | tinst->name()))
             ctx.diagram().add_class(std::move(tinst));
     }
 }
@@ -222,15 +222,14 @@ void translation_unit_visitor::process_type_alias(
 void translation_unit_visitor::process_namespace(
     const cppast::cpp_entity &e, const cppast::cpp_namespace &ns_declaration)
 {
-    std::vector<std::string> package_parent = ctx.get_namespace();
-    auto package_path = package_parent;
-    package_path.push_back(e.name());
+    auto package_parent = ctx.get_namespace();
+    auto package_path = package_parent | e.name();
 
-    auto usn = util::split(ctx.config().using_namespace()[0], "::");
+    auto usn = ctx.config().using_namespace();
 
-    if (ctx.config().should_include_package(util::join(package_path, "::"))) {
+    if (ctx.config().should_include_package(package_path)) {
         auto p = std::make_unique<common::model::package>(usn);
-        util::remove_prefix(package_path, usn);
+        package_path = package_path.relative_to(usn);
 
         p->set_name(e.name());
         p->set_namespace(package_parent);
@@ -267,8 +266,7 @@ void translation_unit_visitor::process_enum_declaration(
         return;
     }
 
-    auto e_ptr = std::make_unique<enum_>(
-        util::split(ctx.config().using_namespace()[0], "::"));
+    auto e_ptr = std::make_unique<enum_>(ctx.config().using_namespace());
     auto &e = *e_ptr;
     e.set_name(enm.name());
     e.set_namespace(ctx.get_namespace());
@@ -312,11 +310,10 @@ void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
     type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
 {
-    auto c_ptr = std::make_unique<class_>(
-        util::split(ctx.config().using_namespace()[0], "::"));
+    auto c_ptr = std::make_unique<class_>(ctx.config().using_namespace());
     auto &c = *c_ptr;
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
-    // c.set_name(cx::util::full_name(ctx.get_namespace(), cls));
+
     c.set_name(cls.name());
     c.set_namespace(ctx.get_namespace());
 
@@ -714,8 +711,12 @@ void translation_unit_visitor::process_field(
 {
     bool template_instantiation_added_as_aggregation{false};
 
-    class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
-        cppast::to_string(mv.type())};
+    auto type_name = cppast::to_string(mv.type());
+    if (type_name.empty())
+        type_name = "<<anonymous>>";
+
+    class_member m{
+        detail::cpp_access_specifier_to_scope(as), mv.name(), type_name};
 
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
@@ -724,6 +725,8 @@ void translation_unit_visitor::process_field(
         return;
 
     auto &tr = cx::util::unreferenced(cppast::remove_cv(mv.type()));
+
+    auto tr_declaration = cppast::to_string(tr);
 
 #ifndef __APPLE__
     LOG_DBG("Processing field {} with unreferenced type of kind {}", mv.name(),
@@ -750,8 +753,6 @@ void translation_unit_visitor::process_field(
             "Processing field with unexposed type {}", cppast::to_string(tr));
         // TODO
     }
-
-    auto tr_declaration = cppast::to_string(tr);
 
     if (!m.skip_relationship() &&
         !template_instantiation_added_as_aggregation &&
@@ -1275,8 +1276,7 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
 
     const auto [ns, base_name] = cx::util::split_ns(fn);
 
-    auto ns_and_name = ns;
-    ns_and_name.push_back(base_name);
+    auto ns_and_name = ns | base_name;
 
     auto full_name = fmt::format("{}", fmt::join(ns_and_name, "::"));
 
@@ -1353,8 +1353,11 @@ bool translation_unit_visitor::find_relationships_in_user_defined_type(
     if (ctx.has_type_alias(fn)) {
         LOG_DBG("Find relationship in alias of {} | {}", fn,
             cppast::to_string(ctx.get_type_alias(fn).get()));
-        found = find_relationships(
-            ctx.get_type_alias(fn).get(), relationships, relationship_type);
+        if (cppast::to_string(t_) == fn)
+            found = true;
+        else
+            found = find_relationships(
+                ctx.get_type_alias(fn).get(), relationships, relationship_type);
     }
     return found;
 }
@@ -1403,8 +1406,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
     // Create class_ instance to hold the template instantiation
-    auto tinst_ptr = std::make_unique<class_>(
-        util::split(ctx.config().using_namespace()[0], "::"));
+    auto tinst_ptr = std::make_unique<class_>(ctx.config().using_namespace());
     auto &tinst = *tinst_ptr;
     std::string full_template_name;
 
@@ -1430,7 +1432,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     // Extract namespace from base template name
     const auto [ns, name] = cx::util::split_ns(tinst_full_name);
     tinst.set_name(name);
-    if (ns.empty())
+    if (ns.is_empty())
         tinst.set_namespace(ctx.get_namespace());
     else
         tinst.set_namespace(ns);

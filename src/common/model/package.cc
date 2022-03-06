@@ -23,24 +23,33 @@
 #include <sstream>
 
 namespace clanguml::common::model {
-package::package(const std::vector<std::string> &using_namespaces)
-    : element{using_namespaces}
+package::package(const common::model::namespace_ &using_namespace)
+    : element{using_namespace}
 {
 }
 
 std::string package::full_name(bool relative) const
 {
-    auto fn = get_namespace();
-    auto ns = using_namespaces();
-
-    if (relative && (fn.size() >= ns.size())) {
-        if (util::starts_with(fn, ns))
-            fn = std::vector<std::string>(fn.begin() + ns.size(), fn.end());
+    if (relative) {
+        auto res = get_namespace().relative_to(using_namespace()) | name();
+        return res.to_string();
     }
 
-    fn.push_back(name());
+    return (get_namespace().relative_to(using_namespace()) | name())
+        .to_string();
 
-    return fmt::format("{}", fmt::join(fn, "::"));
+    //    auto fn = get_namespace();
+    //    auto ns = using_namespace();
+    //
+    //    if (relative && (fn.size() >= ns.size())) {
+    //        if (fn.starts_with(using_namespace())
+    //            fn = std::vector<std::string>(fn.begin() + ns.size(),
+    //            fn.end());
+    //    }
+    //
+    //    fn.push_back(name());
+    //
+    //    return fmt::format("{}", fmt::join(fn, "::"));
 }
 
 bool package::is_deprecated() const { return is_deprecated_; }

@@ -68,7 +68,7 @@ public:
 
     void pop_namespace();
 
-    const std::vector<std::string> &get_namespace() const;
+    const common::model::namespace_ &get_namespace() const;
 
     const cppast::cpp_entity_index &entity_index() const;
 
@@ -82,7 +82,7 @@ public:
 
 private:
     // Current visitor namespace
-    std::vector<std::string> namespace_;
+    common::model::namespace_ namespace_;
 
     // Reference to the cppast entity index
     cppast::cpp_entity_index &entity_index_;

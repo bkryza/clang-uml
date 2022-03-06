@@ -39,9 +39,9 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << m_model.to_alias(ns_relative(uns, p.full_name(false)))
+                relstr << m_model.to_alias(uns.relative(p.full_name(false)))
                        << " ..> "
-                       << m_model.to_alias(ns_relative(uns, r.destination()))
+                       << m_model.to_alias(uns.relative(r.destination()))
                        << '\n';
                 ostr << relstr.str();
             }
@@ -66,22 +66,28 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     const auto &uns = m_config.using_namespace();
 
-    ostr << "package [" << p.name() << "] ";
-    ostr << "as " << p.alias();
+    // Don't generate packages from namespaces filtered out by
+    // using_namespace
+    if (!uns.starts_with(p.full_name(false))) {
+        ostr << "package [" << p.name() << "] ";
+        ostr << "as " << p.alias();
 
-    if (p.is_deprecated())
-        ostr << " <<deprecated>>";
+        if (p.is_deprecated())
+            ostr << " <<deprecated>>";
 
-    if (!p.style().empty())
-        ostr << " " << p.style();
+        if (!p.style().empty())
+            ostr << " " << p.style();
 
-    ostr << " {" << '\n';
+        ostr << " {" << '\n';
+    }
 
     for (const auto &subpackage : p) {
         generate(dynamic_cast<const package &>(*subpackage), ostr);
     }
 
-    ostr << "}" << '\n';
+    if (!uns.starts_with(p.full_name(false))) {
+        ostr << "}" << '\n';
+    }
 
     generate_notes(ostr, p);
 }
@@ -92,11 +98,9 @@ void generator::generate(std::ostream &ostr) const
 
     generate_plantuml_directives(ostr, m_config.puml().before);
 
-    if (m_config.should_include_entities("packages")) {
-        for (const auto &p : m_model) {
-            generate(dynamic_cast<package &>(*p), ostr);
-            ostr << '\n';
-        }
+    for (const auto &p : m_model) {
+        generate(dynamic_cast<package &>(*p), ostr);
+        ostr << '\n';
     }
 
     // Process package relationships

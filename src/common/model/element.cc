@@ -26,12 +26,10 @@ namespace clanguml::common::model {
 
 std::atomic_uint64_t element::m_nextId = 1;
 
-element::element(const std::vector<std::string> &using_namespaces)
-    : using_namespaces_{using_namespaces}
+element::element(const namespace_ &using_namespace)
+    : using_namespace_{using_namespace}
     , m_id{m_nextId++}
 {
-    for (const auto &n : using_namespaces_)
-        assert(!util::contains(n, "::"));
 }
 
 std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
@@ -59,18 +57,12 @@ void element::add_relationship(relationship &&cr)
         relationships_.emplace_back(std::move(cr));
 }
 
-void element::set_using_namespaces(const std::vector<std::string> &un)
+void element::set_using_namespaces(const namespace_ &un)
 {
-    for (const auto &n : un)
-        assert(!util::contains(n, "::"));
-
-    using_namespaces_ = un;
+    using_namespace_ = un;
 }
 
-const std::vector<std::string> &element::using_namespaces() const
-{
-    return using_namespaces_;
-}
+const namespace_ &element::using_namespace() const { return using_namespace_; }
 
 std::vector<relationship> &element::relationships() { return relationships_; }
 
@@ -88,9 +80,8 @@ bool operator==(const element &l, const element &r)
 
 std::ostream &operator<<(std::ostream &out, const element &rhs)
 {
-    out << "(" << rhs.name() << ", ns=["
-        << util::join(rhs.get_namespace(), "::") << "], full_name=["
-        << rhs.full_name(true) << "])";
+    out << "(" << rhs.name() << ", ns=[" << rhs.get_namespace().to_string()
+        << "], full_name=[" << rhs.full_name(true) << "])";
 
     return out;
 }

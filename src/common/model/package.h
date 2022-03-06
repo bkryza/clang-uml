@@ -35,7 +35,7 @@ class package : public element,
                 public stylable_element,
                 public nested_trait<element> {
 public:
-    package(const std::vector<std::string> &using_namespaces);
+    package(const common::model::namespace_ &using_namespace);
 
     package(const package &) = delete;
     package(package &&) = default;
