@@ -18,7 +18,9 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 option(LLVM_CONFIG_PATH "Path to custom llvm-config executable")
 
 if(LLVM_CONFIG_PATH)
+    message(STATUS "Using llvm-config from ${LLVM_CONFIG_PATH}")
     set(LIBCLANG_LLVM_CONFIG_EXECUTABLE ${LLVM_CONFIG_PATH})
+    set(LLVM_CONFIG_BINARY ${LLVM_CONFIG_PATH})
 endif(LLVM_CONFIG_PATH)
 
 message(STATUS "Checking for fmt...")
