@@ -42,6 +42,8 @@ namespace util {
  */
 std::string to_string(CXString &&cxs);
 
+std::string to_string(cppast::cpp_type_kind t);
+
 std::string full_name(
     const common::model::namespace_ &current_ns, const cppast::cpp_entity &e);
 
