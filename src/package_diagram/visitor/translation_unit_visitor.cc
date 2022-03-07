@@ -379,10 +379,8 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 
     const auto fn_ns = cx::util::ns(cppast::remove_cv(t_), ctx.entity_index());
 
-#ifndef __APPLE__
     LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
-        t_.kind(), fn);
-#endif
+        cx::to_string(t_.kind()), fn);
 
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
