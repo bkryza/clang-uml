@@ -42,6 +42,8 @@ using cx::compilation_database;
 
 void print_diagrams_list(const clanguml::config::config &cfg);
 
+bool check_output_directory(const std::string &dir);
+
 int main(int argc, const char *argv[])
 {
     CLI::App app{"Clang-based PlantUML diagram generator for C++"};
@@ -96,6 +98,9 @@ int main(int argc, const char *argv[])
     auto od = config.output_directory();
     if (output_directory)
         od = output_directory.value();
+
+    if (!check_output_directory(od))
+        return 1;
 
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
@@ -162,6 +167,26 @@ int main(int argc, const char *argv[])
     }
 
     return 0;
+}
+
+bool check_output_directory(const std::string &dir)
+{
+    namespace fs = std::filesystem;
+    using std::cout;
+
+    fs::path output_dir{dir};
+
+    if (!fs::exists(output_dir)) {
+        cout << "ERROR: Output directory " << dir << " doesn't exist...\n";
+        return false;
+    }
+
+    if (!fs::is_directory(output_dir)) {
+        cout << "ERROR: " << dir << " is not a directory...\n";
+        return false;
+    }
+
+    return true;
 }
 
 void print_diagrams_list(const clanguml::config::config &cfg)
