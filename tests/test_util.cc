@@ -18,6 +18,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "util/util.h"
+#include <cx/util.h>
 
 #include "catch.h"
 
@@ -35,19 +36,6 @@ TEST_CASE("Test split", "[unit-test]")
 
     CHECK(split("std::vector::detail::", "::") == C{"std", "vector", "detail"});
 }
-//
-// TEST_CASE("Test ns_relative", "[unit-test]")
-//{
-//    using namespace clanguml::util;
-//
-//    CHECK(ns_relative({}, "std::vector") == "std::vector");
-//    CHECK(ns_relative({"std"}, "std::vector") == "vector");
-//    CHECK(ns_relative({"std"}, "const std::vector&") == "const vector&");
-//    CHECK(ns_relative({"std", "clanguml::t0"},
-//              "static const std::vector<clanguml::t0::a>&") ==
-//        "static const vector<a>&");
-//    CHECK(ns_relative({"clanguml::t0"}, "clanguml::t0") == "t0");
-//}
 
 TEST_CASE("Test abbreviate", "[unit-test]")
 {
@@ -79,4 +67,45 @@ TEST_CASE("Test replace_all", "[unit-test]")
     CHECK(replace_all(text, "@clanguml", "\\clanguml") == true);
 
     CHECK(text == orig);
+}
+
+TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
+{
+    using namespace clanguml::cx::util;
+
+    const std::string int_template_str{"ns1::ns2::class1<int>"};
+
+    auto int_template = parse_unexposed_template_params(int_template_str);
+
+    CHECK(int_template.size() == 1);
+    CHECK(int_template[0].template_params_.size() == 1);
+    CHECK(int_template[0].type() == "ns1::ns2::class1");
+    CHECK(int_template[0].template_params_[0].type() == "int");
+
+    const std::string int_int_template_str{"ns1::ns2::class1<int, int>"};
+
+    auto int_int_template =
+        parse_unexposed_template_params(int_int_template_str);
+
+    CHECK(int_int_template.size() == 1);
+    CHECK(int_int_template[0].template_params_.size() == 2);
+    CHECK(int_int_template[0].type() == "ns1::ns2::class1");
+    CHECK(int_int_template[0].template_params_[0].type() == "int");
+    CHECK(int_int_template[0].template_params_[1].type() == "int");
+
+    const std::string nested_template_str{
+        "class1<int, ns1::class2<int, std::vector<std::string>>>"};
+
+    auto nested_template = parse_unexposed_template_params(nested_template_str);
+
+    CHECK(nested_template.size() == 1);
+    CHECK(nested_template[0].template_params_.size() == 2);
+    CHECK(nested_template[0].type() == "class1");
+    CHECK(nested_template[0].template_params_[0].type() == "int");
+    const auto &class2 = nested_template[0].template_params_[1];
+    CHECK(class2.type() == "ns1::class2");
+    CHECK(class2.template_params_[0].type() == "int");
+    CHECK(class2.template_params_[1].type() == "std::vector");
+    CHECK(
+        class2.template_params_[1].template_params_[0].type() == "std::string");
 }

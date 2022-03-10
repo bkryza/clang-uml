@@ -41,6 +41,8 @@ public:
 
     friend bool operator==(const class_template &l, const class_template &r);
 
+    std::vector<class_template> template_params_;
+
 private:
     std::string type_;
     std::string name_;

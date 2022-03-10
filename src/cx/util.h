@@ -24,6 +24,7 @@
 #include <cppast/cpp_entity.hpp>
 #include <cppast/cpp_type.hpp>
 
+#include <class_diagram/model/class_template.h>
 #include <string>
 
 namespace clanguml {
@@ -66,6 +67,10 @@ std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name);
 
 bool is_inside_class(const cppast::cpp_entity &e);
+
+std::vector<class_diagram::model::class_template>
+parse_unexposed_template_params(const std::string &params);
+
 } // namespace util
 } // namespace cx
 } // namespace clanguml
