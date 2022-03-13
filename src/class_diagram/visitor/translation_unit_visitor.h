@@ -109,7 +109,7 @@ public:
     bool find_relationships(const cppast::cpp_type &t,
         found_relationships_t &relationships,
         clanguml::common::model::relationship_t relationship_hint =
-            clanguml::common::model::relationship_t::kNone);
+            clanguml::common::model::relationship_t::kNone) const;
 
     void process_template_type_parameter(
         const cppast::cpp_template_type_parameter &t,
@@ -175,24 +175,28 @@ private:
         const cppast::cpp_type &type);
 
     bool find_relationships_in_array(
-        found_relationships_t &relationships, const cppast::cpp_type &t);
+        found_relationships_t &relationships, const cppast::cpp_type &t) const;
 
     bool find_relationships_in_pointer(const cppast::cpp_type &t_,
         found_relationships_t &relationships,
-        const common::model::relationship_t &relationship_hint);
+        const common::model::relationship_t &relationship_hint) const;
 
     bool find_relationships_in_reference(const cppast::cpp_type &t_,
         found_relationships_t &relationships,
-        const common::model::relationship_t &relationship_hint);
+        const common::model::relationship_t &relationship_hint) const;
 
     bool find_relationships_in_user_defined_type(const cppast::cpp_type &t_,
         found_relationships_t &relationships, const std::string &fn,
         common::model::relationship_t &relationship_type,
-        const cppast::cpp_type &t);
+        const cppast::cpp_type &t) const;
 
     bool find_relationships_in_template_instantiation(const cppast::cpp_type &t,
         const std::string &fn, found_relationships_t &relationships,
-        common::model::relationship_t relationship_type);
+        common::model::relationship_t relationship_type) const;
+
+    bool find_relationships_in_unexposed_template_params(
+        const model::class_template &ct,
+        found_relationships_t &relationships) const;
 
     void build_template_instantiation_primary_template(
         const cppast::cpp_template_instantiation_type &t,

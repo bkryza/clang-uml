@@ -129,7 +129,13 @@ const std::string &namespace_::operator[](const int index) const
 
 bool namespace_::starts_with(const namespace_ &right) const
 {
+
     return util::starts_with(namespace_path_, right.namespace_path_);
+}
+
+bool namespace_::ends_with(const namespace_ &right) const
+{
+    return util::ends_with(namespace_path_, right.namespace_path_);
 }
 
 namespace_ namespace_::common_path(const namespace_ &right) const

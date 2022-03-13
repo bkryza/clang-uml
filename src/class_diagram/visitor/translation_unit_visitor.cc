@@ -178,6 +178,17 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 process_type_alias_template(at);
             }
+            else if (e.kind() == cppast::cpp_entity_kind::using_directive_t) {
+
+                const auto &using_directive =
+                    static_cast<const cppast::cpp_using_directive &>(e);
+
+                const auto ns_ref = using_directive.target();
+                if (ns_ref.get(ctx.entity_index()).size() > 0) {
+                    auto full_ns = cx::util::full_name(ctx.get_namespace(),
+                        ns_ref.get(ctx.entity_index()).at(0).get());
+                }
+            }
         });
 }
 
@@ -491,8 +502,15 @@ void translation_unit_visitor::
     auto ua = tspec.value().unexposed_arguments().as_string();
 
     auto template_params = cx::util::parse_unexposed_template_params(ua);
+
+    found_relationships_t relationships;
     for (const auto &param : template_params) {
+        find_relationships_in_unexposed_template_params(param, relationships);
         c.add_template(param);
+    }
+
+    for (auto &r : relationships) {
+        c.add_relationship({std::get<1>(r), std::get<0>(r)});
     }
 
     const auto &primary_template_ref =
@@ -1193,7 +1211,8 @@ void translation_unit_visitor::process_friend(
 }
 
 bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
-    found_relationships_t &relationships, relationship_t relationship_hint)
+    found_relationships_t &relationships,
+    relationship_t relationship_hint) const
 {
     bool found{false};
 
@@ -1234,7 +1253,8 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 
 bool translation_unit_visitor::find_relationships_in_template_instantiation(
     const cppast::cpp_type &t_, const std::string &fn,
-    found_relationships_t &relationships, relationship_t relationship_type)
+    found_relationships_t &relationships,
+    relationship_t relationship_type) const
 {
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
 
@@ -1321,7 +1341,7 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
 bool translation_unit_visitor::find_relationships_in_user_defined_type(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
     const std::string &fn, relationship_t &relationship_type,
-    const cppast::cpp_type &t)
+    const cppast::cpp_type &t) const
 {
     bool found;
     LOG_DBG("Finding relationships in user defined type: {} | {}",
@@ -1348,7 +1368,7 @@ bool translation_unit_visitor::find_relationships_in_user_defined_type(
 
 bool translation_unit_visitor::find_relationships_in_reference(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
-    const relationship_t &relationship_hint)
+    const relationship_t &relationship_hint) const
 {
     bool found;
     auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
@@ -1364,7 +1384,7 @@ bool translation_unit_visitor::find_relationships_in_reference(
 
 bool translation_unit_visitor::find_relationships_in_pointer(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
-    const relationship_t &relationship_hint)
+    const relationship_t &relationship_hint) const
 {
     bool found;
     auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
@@ -1376,12 +1396,54 @@ bool translation_unit_visitor::find_relationships_in_pointer(
 }
 
 bool translation_unit_visitor::find_relationships_in_array(
-    found_relationships_t &relationships, const cppast::cpp_type &t)
+    found_relationships_t &relationships, const cppast::cpp_type &t) const
 {
     bool found;
     auto &a = static_cast<const cppast::cpp_array_type &>(t);
     found = find_relationships(
         a.value_type(), relationships, relationship_t::kAggregation);
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
+    const class_template &ct, found_relationships_t &relationships) const
+{
+    bool found{false};
+    LOG_DBG("Finding relationships in user defined type: {}",
+        ct.to_string(ctx.config().using_namespace()));
+
+    if (!util::contains(ct.type(), "::")) {
+        // The type name has no namespace - assume it is in the current
+        // namespace
+        // TODO: try also all namespaces declared through 'using namespace'
+        // directive in the current scope
+        if (ctx.config().should_include(ctx.get_namespace(), ct.type())) {
+            relationships.emplace_back(ct.type(), relationship_t::kDependency);
+            found = true;
+        }
+    }
+    else {
+        // Calculate the complete namespace of the type
+        auto type_ns = common::model::namespace_{ct.type()};
+        auto type_name = type_ns.name();
+        type_ns.pop_back();
+
+        auto current_ns = ctx.get_namespace();
+        if (current_ns.ends_with(type_ns)) {
+            if (ctx.config().should_include(current_ns, type_name)) {
+                auto full_name = (current_ns | type_name).to_string();
+                relationships.emplace_back(
+                    full_name, relationship_t::kDependency);
+                found = true;
+            }
+        }
+    }
+
+    for (const auto &nested_template_params : ct.template_params_) {
+        found = find_relationships_in_unexposed_template_params(
+                    nested_template_params, relationships) ||
+            found;
+    }
     return found;
 }
 

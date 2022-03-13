@@ -68,6 +68,7 @@ public:
     void pop_back();
 
     bool starts_with(const namespace_ &right) const;
+    bool ends_with(const namespace_ &right) const;
     namespace_ common_path(const namespace_ &right) const;
     namespace_ relative_to(const namespace_ &right) const;
     std::string relative(const std::string &name) const;
