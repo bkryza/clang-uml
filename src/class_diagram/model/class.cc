@@ -62,7 +62,7 @@ void class_::add_parent(class_parent &&parent)
     bases_.emplace_back(std::move(parent));
 }
 
-void class_::add_template(class_template &&tmplt)
+void class_::add_template(class_template tmplt)
 {
     templates_.emplace_back(std::move(tmplt));
 }
@@ -141,24 +141,7 @@ std::ostringstream &class_::render_template_params(
         std::vector<std::string> tnames;
         std::transform(templates_.cbegin(), templates_.cend(),
             std::back_inserter(tnames), [this](const auto &tmplt) {
-                std::vector<std::string> res;
-
-                if (!tmplt.type().empty())
-                    res.push_back(namespace_{tmplt.type()}
-                                      .relative_to(using_namespace())
-                                      .to_string());
-
-                if (!tmplt.name().empty())
-                    res.push_back(namespace_{tmplt.name()}
-                                      .relative_to(using_namespace())
-                                      .to_string());
-
-                if (!tmplt.default_value().empty()) {
-                    res.push_back("=");
-                    res.push_back(tmplt.default_value());
-                }
-
-                return fmt::format("{}", fmt::join(res, " "));
+                return tmplt.to_string(using_namespace());
             });
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }

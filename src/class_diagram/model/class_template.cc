@@ -17,6 +17,8 @@
  */
 
 #include "class_template.h"
+#include <common/model/namespace.h>
+#include <fmt/format.h>
 
 namespace clanguml::class_diagram::model {
 
@@ -57,4 +59,38 @@ bool operator==(const class_template &l, const class_template &r)
 {
     return (l.name() == r.name()) && (l.type() == r.type());
 }
+
+std::string class_template::to_string(
+    const clanguml::common::model::namespace_ &using_namespace) const
+{
+    using clanguml::common::model::namespace_;
+
+    std::string res;
+    if (!type().empty())
+        res += namespace_{type()}.relative_to(using_namespace).to_string();
+
+    // Render nested template params
+    if (!template_params_.empty()) {
+        std::vector<std::string> params;
+        for (const auto &template_param : template_params_) {
+            params.push_back(template_param.to_string(using_namespace));
+        }
+
+        res += fmt::format("<{}>", fmt::join(params, ","));
+    }
+
+    if (!name().empty()) {
+        if (!type().empty())
+            res += " ";
+        res += namespace_{name()}.relative_to(using_namespace).to_string();
+    }
+
+    if (!default_value().empty()) {
+        res += "=";
+        res += default_value();
+    }
+
+    return res;
+}
+
 }

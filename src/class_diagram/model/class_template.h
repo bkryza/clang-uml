@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "common/model/namespace.h"
+
 #include <string>
 #include <vector>
 
@@ -42,6 +44,9 @@ public:
     friend bool operator==(const class_template &l, const class_template &r);
 
     std::vector<class_template> template_params_;
+
+    std::string to_string(
+        const clanguml::common::model::namespace_ &using_namespace) const;
 
 private:
     std::string type_;

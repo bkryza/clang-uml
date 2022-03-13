@@ -490,43 +490,31 @@ void translation_unit_visitor::
 {
     auto ua = tspec.value().unexposed_arguments().as_string();
 
-    // Naive parse of template arguments:
-    auto toks = util::split(ua, ",");
-    for (const auto &t : toks) {
-        c.add_template({t});
+    auto template_params = cx::util::parse_unexposed_template_params(ua);
+    for (const auto &param : template_params) {
+        c.add_template(param);
+    }
 
-        if (!tspec.value().primary_template().is_overloaded()) {
-            if (tspec.value()
-                    .primary_template()
-                    .get(ctx.entity_index())
-                    .size() == 0) {
-                LOG_WARN("Template {} has no exposed parameters",
-                    tspec.value().name());
-
-                continue;
-            }
-        }
-
-        const auto &primary_template_ref = static_cast<
-            const cppast::cpp_class_template &>(
+    const auto &primary_template_ref =
+        static_cast<const cppast::cpp_class_template &>(
             tspec.value().primary_template().get(ctx.entity_index())[0].get())
-                                               .class_();
+            .class_();
 
-        if (primary_template_ref.user_data()) {
-            auto base_template_full_name =
-                static_cast<const char *>(primary_template_ref.user_data());
-            LOG_DBG("Primary template ref set to: {}", base_template_full_name);
-            // Add template specialization/instantiation
-            // relationship
-            c.add_relationship(
-                {relationship_t::kInstantiation, base_template_full_name});
-        }
-        else {
-            LOG_WARN("No user data for base template {}",
-                primary_template_ref.name());
-        }
+    if (primary_template_ref.user_data()) {
+        auto base_template_full_name =
+            static_cast<const char *>(primary_template_ref.user_data());
+        LOG_DBG("Primary template ref set to: {}", base_template_full_name);
+        // Add template specialization/instantiation
+        // relationship
+        c.add_relationship(
+            {relationship_t::kInstantiation, base_template_full_name});
+    }
+    else {
+        LOG_WARN(
+            "No user data for base template {}", primary_template_ref.name());
     }
 }
+
 void translation_unit_visitor::process_class_bases(
     const cppast::cpp_class &cls, class_ &c) const
 {

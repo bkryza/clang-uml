@@ -345,7 +345,7 @@ parse_unexposed_template_params(const std::string &params)
         else {
             type += *it;
         }
-        if(complete_class_template) {
+        if (complete_class_template) {
             class_template t;
             t.set_type(clanguml::util::trim(type));
             type = "";
@@ -357,7 +357,7 @@ parse_unexposed_template_params(const std::string &params)
         it++;
     }
 
-    if(!type.empty()) {
+    if (!type.empty()) {
         class_template t;
         t.set_type(clanguml::util::trim(type));
         type = "";
