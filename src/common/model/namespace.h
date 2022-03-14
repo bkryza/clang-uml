@@ -23,9 +23,9 @@
 namespace clanguml::common::model {
 
 class namespace_ {
+public:
     using container_type = std::vector<std::string>;
 
-public:
     namespace_() = default;
 
     namespace_(const std::string &ns);
@@ -42,6 +42,7 @@ public:
     namespace_ &operator=(namespace_ &&right) noexcept = default;
 
     friend bool operator==(const namespace_ &left, const namespace_ &right);
+    friend bool operator<(const namespace_ &left, const namespace_ &right);
 
     namespace_(std::initializer_list<std::string> ns);
 
@@ -83,6 +84,25 @@ public:
 
 private:
     container_type namespace_path_;
+};
+
+}
+
+namespace std {
+
+template <> struct hash<clanguml::common::model::namespace_> {
+    std::size_t operator()(const clanguml::common::model::namespace_ &key) const
+    {
+        using clanguml::common::model::namespace_;
+
+        std::size_t seed = key.size();
+        for (const auto &ns : key) {
+            seed ^= std::hash<std::string>{}(ns) + 0x6a3712b5 + (seed << 6) +
+                (seed >> 2);
+        }
+
+        return seed;
+    }
 };
 
 }

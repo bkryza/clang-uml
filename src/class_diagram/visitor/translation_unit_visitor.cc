@@ -187,6 +187,8 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                 if (ns_ref.get(ctx.entity_index()).size() > 0) {
                     auto full_ns = cx::util::full_name(ctx.get_namespace(),
                         ns_ref.get(ctx.entity_index()).at(0).get());
+
+                    ctx.add_using_namespace_directive(full_ns);
                 }
             }
         });

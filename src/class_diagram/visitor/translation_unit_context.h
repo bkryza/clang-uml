@@ -78,9 +78,20 @@ public:
 
     type_safe::optional_ref<common::model::package> get_current_package() const;
 
+    void add_using_namespace_directive(common::model::namespace_ ns);
+
+    const std::set<common::model::namespace_> &using_namespace_directive(
+        const common::model::namespace_ &ns) const;
+
 private:
     // Current visitor namespace
     common::model::namespace_ ns_;
+
+    // A map of 'using namespace' declared within a given namespace scope
+    // This is necessary to properly establish the namespace of a given entity
+    // for instance in unexposed template parameters
+    std::map<std::string, std::set<common::model::namespace_>>
+        using_ns_declarations_;
 
     // Reference to the cppast entity index
     cppast::cpp_entity_index &entity_index_;

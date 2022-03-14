@@ -185,6 +185,11 @@ bool operator==(const namespace_ &left, const namespace_ &right)
     return left.namespace_path_ == right.namespace_path_;
 }
 
+bool operator<(const namespace_ &left, const namespace_ &right)
+{
+    return std::hash<namespace_>{}(left) < std::hash<namespace_>{}(right);
+}
+
 std::string namespace_::name() const
 {
     assert(size() > 0);

@@ -196,4 +196,17 @@ translation_unit_context::get_current_package() const
     return current_package_;
 }
 
+void translation_unit_context::add_using_namespace_directive(
+    common::model::namespace_ ns)
+{
+    using_ns_declarations_[ns_.to_string()].insert(std::move(ns));
+}
+
+const std::set<common::model::namespace_> &
+translation_unit_context::using_namespace_directive(
+    const common::model::namespace_ &ns) const
+{
+    return using_ns_declarations_.at(ns.to_string());
+}
+
 }
