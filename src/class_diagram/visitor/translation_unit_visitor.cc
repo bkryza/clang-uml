@@ -547,7 +547,10 @@ void translation_unit_visitor::process_class_bases(
 {
     for (auto &base : cls.bases()) {
         class_parent cp;
-        cp.set_name(cx::util::fully_prefixed(ctx.get_namespace(), base));
+        auto base_ns = common::model::namespace_{
+            cx::util::ns(base.type(), ctx.entity_index())};
+        base_ns = base_ns | base.name();
+        cp.set_name(base_ns.to_string());
         cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {

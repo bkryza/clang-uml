@@ -60,9 +60,6 @@ TEST_CASE("t00038", "[test-case][class]")
             _A("map<std::map<key_t,std::vector<std::integral_constant<property_"
                "t,property_t::property_c>>>>")));
 
-    // TODO: Add parsing of unexposed template arguments to infer
-    //       additional relationships
-
     REQUIRE_THAT(puml,
         IsDependency(_A("map<std::integral_constant<property_t,property_t::"
                         "property_a>>"),
@@ -88,6 +85,11 @@ TEST_CASE("t00038", "[test-case][class]")
         IsDependency(_A("map<std::integral_constant<thirdparty::ns1::color_t,"
                         "thirdparty::ns1::color_t::red>>"),
             _A("thirdparty::ns1::color_t")));
+
+    REQUIRE_THAT(puml,
+        IsBaseClass(_A("thirdparty::ns1::E"),
+            _A("map<std::integral_constant<thirdparty::ns1::color_t,"
+               "thirdparty::ns1::color_t::red>>")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
