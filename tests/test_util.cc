@@ -75,7 +75,8 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 
     const std::string int_template_str{"ns1::ns2::class1<int>"};
 
-    auto int_template = parse_unexposed_template_params(int_template_str);
+    auto int_template = parse_unexposed_template_params(
+        int_template_str, [](const auto &n) { return n; });
 
     CHECK(int_template.size() == 1);
     CHECK(int_template[0].template_params_.size() == 1);
@@ -84,8 +85,8 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 
     const std::string int_int_template_str{"ns1::ns2::class1<int, int>"};
 
-    auto int_int_template =
-        parse_unexposed_template_params(int_int_template_str);
+    auto int_int_template = parse_unexposed_template_params(
+        int_int_template_str, [](const auto &n) { return n; });
 
     CHECK(int_int_template.size() == 1);
     CHECK(int_int_template[0].template_params_.size() == 2);
@@ -96,7 +97,8 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
     const std::string nested_template_str{
         "class1<int, ns1::class2<int, std::vector<std::string>>>"};
 
-    auto nested_template = parse_unexposed_template_params(nested_template_str);
+    auto nested_template = parse_unexposed_template_params(
+        nested_template_str, [](const auto &n) { return n; });
 
     CHECK(nested_template.size() == 1);
     CHECK(nested_template[0].template_params_.size() == 2);

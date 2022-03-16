@@ -3,7 +3,7 @@ output_directory: puml
 diagrams:
   t00038_class:
     type: class
-    generate_packages: true
+    generate_packages: false
     glob:
       - ../../tests/t00038/t00038.cc
     using_namespace:
@@ -11,3 +11,4 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00038
+        - thirdparty::ns1

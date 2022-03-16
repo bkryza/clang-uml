@@ -23,7 +23,7 @@ TEST_CASE("t00038", "[test-case][class]")
     auto diagram = config.diagrams["t00038_class"];
 
     REQUIRE(diagram->name == "t00038_class");
-    REQUIRE(diagram->generate_packages() == true);
+    REQUIRE(diagram->generate_packages() == false);
 
     auto model = generate_class_diagram(db, diagram);
 
@@ -38,6 +38,7 @@ TEST_CASE("t00038", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("A")));
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("C")));
+    REQUIRE_THAT(puml, IsClass(_A("thirdparty::ns1::E")));
     REQUIRE_THAT(puml, IsClass(_A("key_t")));
     REQUIRE_THAT(puml, IsClassTemplate("map", "T"));
     REQUIRE_THAT(puml,
@@ -45,8 +46,7 @@ TEST_CASE("t00038", "[test-case][class]")
             "std::integral_constant<property_t,property_t::property_a>"));
     REQUIRE_THAT(puml,
         IsClassTemplate("map",
-            "std::vector<std::integral_constant<t00038::property_t,t00038::"
-            "property_t::"
+            "std::vector<std::integral_constant<property_t,property_t::"
             "property_b>>"));
     REQUIRE_THAT(puml,
         IsClassTemplate("map",
@@ -70,9 +70,8 @@ TEST_CASE("t00038", "[test-case][class]")
 
     REQUIRE_THAT(puml,
         IsDependency(_A("map<"
-                        "std::vector<std::integral_constant<t00038::property_t,"
-                        "t00038::property_t::"
-                        "property_b>>>"),
+                        "std::vector<std::integral_constant<property_t,"
+                        "property_t::property_b>>>"),
             _A("property_t")));
 
     REQUIRE_THAT(puml,
@@ -84,6 +83,11 @@ TEST_CASE("t00038", "[test-case][class]")
         IsDependency(_A("map<std::map<key_t,std::vector<std::integral_constant<"
                         "property_t,property_t::property_c>>>>"),
             _A("key_t")));
+
+    REQUIRE_THAT(puml,
+        IsDependency(_A("map<std::integral_constant<thirdparty::ns1::color_t,"
+                        "thirdparty::ns1::color_t::red>>"),
+            _A("thirdparty::ns1::color_t")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

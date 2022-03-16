@@ -297,7 +297,8 @@ const cppast::cpp_type &unreferenced(const cppast::cpp_type &t)
 }
 
 std::vector<class_diagram::model::class_template>
-parse_unexposed_template_params(const std::string &params)
+parse_unexposed_template_params(const std::string &params,
+    std::function<std::string(const std::string &)> ns_resolve)
 {
     using class_diagram::model::class_template;
 
@@ -331,7 +332,8 @@ parse_unexposed_template_params(const std::string &params)
             }
             std::string nested_params_str(
                 bracket_match_begin, bracket_match_end);
-            nested_params = parse_unexposed_template_params(nested_params_str);
+            nested_params =
+                parse_unexposed_template_params(nested_params_str, ns_resolve);
             if (nested_params.empty())
                 nested_params.emplace_back(class_template{nested_params_str});
             it = bracket_match_end - 1;
@@ -347,7 +349,7 @@ parse_unexposed_template_params(const std::string &params)
         }
         if (complete_class_template) {
             class_template t;
-            t.set_type(clanguml::util::trim(type));
+            t.set_type(ns_resolve(clanguml::util::trim(type)));
             type = "";
             t.template_params_ = std::move(nested_params);
 
@@ -359,7 +361,7 @@ parse_unexposed_template_params(const std::string &params)
 
     if (!type.empty()) {
         class_template t;
-        t.set_type(clanguml::util::trim(type));
+        t.set_type(ns_resolve(clanguml::util::trim(type)));
         type = "";
         t.template_params_ = std::move(nested_params);
 

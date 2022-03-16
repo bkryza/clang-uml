@@ -83,6 +83,9 @@ public:
     const std::set<common::model::namespace_> &using_namespace_directive(
         const common::model::namespace_ &ns) const;
 
+    type_safe::optional<common::model::namespace_> get_name_with_namespace(
+        const std::string &name) const;
+
 private:
     // Current visitor namespace
     common::model::namespace_ ns_;
@@ -90,6 +93,8 @@ private:
     // A map of 'using namespace' declared within a given namespace scope
     // This is necessary to properly establish the namespace of a given entity
     // for instance in unexposed template parameters
+    //  - key - namespace
+    //  - value - set of namespaces 'imported' within this namespace scope
     std::map<std::string, std::set<common::model::namespace_>>
         using_ns_declarations_;
 

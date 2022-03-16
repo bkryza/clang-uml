@@ -3,6 +3,19 @@
 #include <type_traits>
 #include <vector>
 
+namespace thirdparty {
+namespace ns1 {
+enum class color_t { red, green, blue };
+
+struct E {
+};
+} // namespace ns1
+namespace ns2 {
+struct F {
+};
+} // namespace ns2
+} // namespace thirdparty
+
 namespace clanguml {
 namespace t00038 {
 
@@ -20,6 +33,11 @@ struct key_t {
 };
 
 template <typename T> struct map;
+
+using namespace thirdparty::ns1;
+
+template <> struct map<std::integral_constant<color_t, color_t::red>> : E {
+};
 
 template <>
 struct map<std::integral_constant<clanguml::t00038::property_t,

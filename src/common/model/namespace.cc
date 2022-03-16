@@ -99,6 +99,17 @@ void namespace_::append(const namespace_ &ns)
 
 void namespace_::pop_back() { namespace_path_.pop_back(); }
 
+type_safe::optional<namespace_> namespace_::parent() const
+{
+    if (size() <= 1) {
+        return {};
+    }
+
+    namespace_ res{*this};
+    res.pop_back();
+    return {std::move(res)};
+}
+
 namespace_ namespace_::operator|(const namespace_ &right) const
 {
     namespace_ res{*this};

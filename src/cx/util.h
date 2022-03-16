@@ -69,7 +69,8 @@ std::pair<common::model::namespace_, std::string> split_ns(
 bool is_inside_class(const cppast::cpp_entity &e);
 
 std::vector<class_diagram::model::class_template>
-parse_unexposed_template_params(const std::string &params);
+parse_unexposed_template_params(const std::string &params,
+    std::function<std::string(const std::string &)> ns_resolve);
 
 } // namespace util
 } // namespace cx

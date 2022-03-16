@@ -41,9 +41,11 @@ std::string enum_::full_name(bool relative) const
 
     std::ostringstream ostr;
     if (relative)
-        ostr << namespace_{name()}.relative_to(using_namespace()).to_string();
+        ostr << namespace_{name_and_ns()}
+                    .relative_to(using_namespace())
+                    .to_string();
     else
-        ostr << name();
+        ostr << name_and_ns();
 
     return ostr.str();
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <type_safe/optional.hpp>
 #include <vector>
 
 namespace clanguml::common::model {
@@ -67,6 +68,8 @@ public:
     void append(const namespace_ &ns);
 
     void pop_back();
+
+    type_safe::optional<namespace_> parent() const;
 
     bool starts_with(const namespace_ &right) const;
     bool ends_with(const namespace_ &right) const;

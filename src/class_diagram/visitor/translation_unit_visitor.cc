@@ -179,14 +179,15 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                 process_type_alias_template(at);
             }
             else if (e.kind() == cppast::cpp_entity_kind::using_directive_t) {
+                using common::model::namespace_;
 
                 const auto &using_directive =
                     static_cast<const cppast::cpp_using_directive &>(e);
 
                 const auto ns_ref = using_directive.target();
+                const auto &ns = ns_ref.get(ctx.entity_index()).at(0).get();
                 if (ns_ref.get(ctx.entity_index()).size() > 0) {
-                    auto full_ns = cx::util::full_name(ctx.get_namespace(),
-                        ns_ref.get(ctx.entity_index()).at(0).get());
+                    auto full_ns = namespace_{cx::util::ns(ns)} | ns.name();
 
                     ctx.add_using_namespace_directive(full_ns);
                 }
@@ -503,10 +504,16 @@ void translation_unit_visitor::
 {
     auto ua = tspec.value().unexposed_arguments().as_string();
 
-    auto template_params = cx::util::parse_unexposed_template_params(ua);
+    auto template_params = cx::util::parse_unexposed_template_params(
+        ua, [this](const std::string &t) {
+            auto full_type = ctx.get_name_with_namespace(t);
+            if (full_type.has_value())
+                return full_type.value().to_string();
+            return t;
+        });
 
     found_relationships_t relationships;
-    for (const auto &param : template_params) {
+    for (auto &param : template_params) {
         find_relationships_in_unexposed_template_params(param, relationships);
         c.add_template(param);
     }
@@ -1414,31 +1421,17 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
     LOG_DBG("Finding relationships in user defined type: {}",
         ct.to_string(ctx.config().using_namespace()));
 
-    if (!util::contains(ct.type(), "::")) {
-        // The type name has no namespace - assume it is in the current
-        // namespace
-        // TODO: try also all namespaces declared through 'using namespace'
-        // directive in the current scope
-        if (ctx.config().should_include(ctx.get_namespace(), ct.type())) {
-            relationships.emplace_back(ct.type(), relationship_t::kDependency);
-            found = true;
-        }
-    }
-    else {
-        // Calculate the complete namespace of the type
-        auto type_ns = common::model::namespace_{ct.type()};
-        auto type_name = type_ns.name();
-        type_ns.pop_back();
+    auto type_with_namespace = ctx.get_name_with_namespace(ct.type());
 
-        auto current_ns = ctx.get_namespace();
-        if (current_ns.ends_with(type_ns)) {
-            if (ctx.config().should_include(current_ns, type_name)) {
-                auto full_name = (current_ns | type_name).to_string();
-                relationships.emplace_back(
-                    full_name, relationship_t::kDependency);
-                found = true;
-            }
-        }
+    if (!type_with_namespace.has_value()) {
+        // Couldn't find declaration of this type
+        type_with_namespace = common::model::namespace_{ct.type()};
+    }
+
+    if (ctx.config().should_include(type_with_namespace.value())) {
+        relationships.emplace_back(type_with_namespace.value().to_string(),
+            relationship_t::kDependency);
+        found = true;
     }
 
     for (const auto &nested_template_params : ct.template_params_) {

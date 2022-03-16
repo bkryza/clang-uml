@@ -209,4 +209,59 @@ translation_unit_context::using_namespace_directive(
     return using_ns_declarations_.at(ns.to_string());
 }
 
+type_safe::optional<common::model::namespace_>
+translation_unit_context::get_name_with_namespace(const std::string &name) const
+{
+    using common::model::namespace_;
+
+    std::set<namespace_> possible_matches;
+    possible_matches.emplace(name);
+
+    possible_matches.emplace(get_namespace() | namespace_{name});
+    auto parent = get_namespace().parent();
+    while (parent.has_value()) {
+        possible_matches.emplace(parent.value() | namespace_{name});
+        parent = parent.value().parent();
+    }
+
+    if (using_ns_declarations_.find(get_namespace().to_string()) !=
+        using_ns_declarations_.end()) {
+        for (const auto &ns :
+            using_ns_declarations_.at(get_namespace().to_string())) {
+            possible_matches.emplace(ns | namespace_{name});
+            auto parent = ns.parent();
+            while (parent.has_value()) {
+                possible_matches.emplace(parent.value() | namespace_{name});
+                parent = parent.value().parent();
+            }
+        }
+    }
+
+    // Search classes
+    for (const auto &c : diagram_.classes()) {
+        auto c_ns = namespace_{c->name_and_ns()};
+        for (const auto &possible_match : possible_matches) {
+            if (c_ns == possible_match) {
+                return possible_match;
+            }
+        }
+    }
+
+    // Search enums
+    for (const auto &e : diagram_.enums()) {
+        auto e_ns = namespace_{e->name_and_ns()};
+        for (const auto &possible_match : possible_matches) {
+            if (e_ns == possible_match) {
+                return possible_match;
+            }
+            // Try to also match possible references to enum values
+            else if (possible_match.starts_with(e_ns)) {
+                return possible_match;
+            }
+        }
+    }
+
+    return {};
+}
+
 }
