@@ -125,7 +125,9 @@ std::string ns(const cppast::cpp_entity &e)
     auto it = e.parent();
     while (it) {
         if (it.value().kind() == cppast::cpp_entity_kind::namespace_t) {
-            if (!it.value().name().empty())
+            const auto &ns =
+                static_cast<const cppast::cpp_namespace &>(it.value());
+            if (!ns.name().empty() && !ns.is_inline())
                 res.push_back(it.value().name());
         }
         it = it.value().parent();
