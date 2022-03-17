@@ -522,6 +522,10 @@ void translation_unit_visitor::
         c.add_relationship({std::get<1>(r), std::get<0>(r)});
     }
 
+    if (!tspec.has_value() ||
+        tspec.value().primary_template().get(ctx.entity_index()).size() == 0)
+        return;
+
     const auto &primary_template_ref =
         static_cast<const cppast::cpp_class_template &>(
             tspec.value().primary_template().get(ctx.entity_index())[0].get())
