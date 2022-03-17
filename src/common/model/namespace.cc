@@ -99,6 +99,17 @@ void namespace_::append(const namespace_ &ns)
 
 void namespace_::pop_back() { namespace_path_.pop_back(); }
 
+type_safe::optional<namespace_> namespace_::parent() const
+{
+    if (size() <= 1) {
+        return {};
+    }
+
+    namespace_ res{*this};
+    res.pop_back();
+    return {std::move(res)};
+}
+
 namespace_ namespace_::operator|(const namespace_ &right) const
 {
     namespace_ res{*this};
@@ -129,7 +140,13 @@ const std::string &namespace_::operator[](const int index) const
 
 bool namespace_::starts_with(const namespace_ &right) const
 {
+
     return util::starts_with(namespace_path_, right.namespace_path_);
+}
+
+bool namespace_::ends_with(const namespace_ &right) const
+{
+    return util::ends_with(namespace_path_, right.namespace_path_);
 }
 
 namespace_ namespace_::common_path(const namespace_ &right) const
@@ -177,6 +194,11 @@ std::string namespace_::relative(const std::string &name) const
 bool operator==(const namespace_ &left, const namespace_ &right)
 {
     return left.namespace_path_ == right.namespace_path_;
+}
+
+bool operator<(const namespace_ &left, const namespace_ &right)
+{
+    return std::hash<namespace_>{}(left) < std::hash<namespace_>{}(right);
 }
 
 std::string namespace_::name() const

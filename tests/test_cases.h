@@ -31,6 +31,7 @@
 #include "util/util.h"
 
 #define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_CONSOLE_WIDTH 512
 
 #include "catch.h"
 

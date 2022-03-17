@@ -178,6 +178,20 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 process_type_alias_template(at);
             }
+            else if (e.kind() == cppast::cpp_entity_kind::using_directive_t) {
+                using common::model::namespace_;
+
+                const auto &using_directive =
+                    static_cast<const cppast::cpp_using_directive &>(e);
+
+                const auto ns_ref = using_directive.target();
+                const auto &ns = ns_ref.get(ctx.entity_index()).at(0).get();
+                if (ns_ref.get(ctx.entity_index()).size() > 0) {
+                    auto full_ns = namespace_{cx::util::ns(ns)} | ns.name();
+
+                    ctx.add_using_namespace_directive(full_ns);
+                }
+            }
         });
 }
 
@@ -490,49 +504,54 @@ void translation_unit_visitor::
 {
     auto ua = tspec.value().unexposed_arguments().as_string();
 
-    // Naive parse of template arguments:
-    auto toks = util::split(ua, ",");
-    for (const auto &t : toks) {
-        c.add_template({t});
+    auto template_params = cx::util::parse_unexposed_template_params(
+        ua, [this](const std::string &t) {
+            auto full_type = ctx.get_name_with_namespace(t);
+            if (full_type.has_value())
+                return full_type.value().to_string();
+            return t;
+        });
 
-        if (!tspec.value().primary_template().is_overloaded()) {
-            if (tspec.value()
-                    .primary_template()
-                    .get(ctx.entity_index())
-                    .size() == 0) {
-                LOG_WARN("Template {} has no exposed parameters",
-                    tspec.value().name());
+    found_relationships_t relationships;
+    for (auto &param : template_params) {
+        find_relationships_in_unexposed_template_params(param, relationships);
+        c.add_template(param);
+    }
 
-                continue;
-            }
-        }
+    for (auto &r : relationships) {
+        c.add_relationship({std::get<1>(r), std::get<0>(r)});
+    }
 
-        const auto &primary_template_ref = static_cast<
-            const cppast::cpp_class_template &>(
+    const auto &primary_template_ref =
+        static_cast<const cppast::cpp_class_template &>(
             tspec.value().primary_template().get(ctx.entity_index())[0].get())
-                                               .class_();
+            .class_();
 
-        if (primary_template_ref.user_data()) {
-            auto base_template_full_name =
-                static_cast<const char *>(primary_template_ref.user_data());
-            LOG_DBG("Primary template ref set to: {}", base_template_full_name);
-            // Add template specialization/instantiation
-            // relationship
-            c.add_relationship(
-                {relationship_t::kInstantiation, base_template_full_name});
-        }
-        else {
-            LOG_WARN("No user data for base template {}",
-                primary_template_ref.name());
-        }
+    if (primary_template_ref.user_data()) {
+        auto base_template_full_name =
+            static_cast<const char *>(primary_template_ref.user_data());
+        LOG_DBG("Primary template ref set to: {}", base_template_full_name);
+        // Add template specialization/instantiation
+        // relationship
+        c.add_relationship(
+            {relationship_t::kInstantiation, base_template_full_name});
+    }
+    else {
+        LOG_WARN(
+            "No user data for base template {}", primary_template_ref.name());
     }
 }
+
 void translation_unit_visitor::process_class_bases(
     const cppast::cpp_class &cls, class_ &c) const
 {
     for (auto &base : cls.bases()) {
         class_parent cp;
-        cp.set_name(cx::util::fully_prefixed(ctx.get_namespace(), base));
+        auto base_ns = common::model::namespace_{
+            cx::util::ns(base.type(), ctx.entity_index())};
+        base_ns = base_ns | common::model::namespace_{base.name()}.name();
+        cp.set_name(
+            base_ns.relative_to(ctx.config().using_namespace()).to_string());
         cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {
@@ -1205,7 +1224,8 @@ void translation_unit_visitor::process_friend(
 }
 
 bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
-    found_relationships_t &relationships, relationship_t relationship_hint)
+    found_relationships_t &relationships,
+    relationship_t relationship_hint) const
 {
     bool found{false};
 
@@ -1246,7 +1266,8 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 
 bool translation_unit_visitor::find_relationships_in_template_instantiation(
     const cppast::cpp_type &t_, const std::string &fn,
-    found_relationships_t &relationships, relationship_t relationship_type)
+    found_relationships_t &relationships,
+    relationship_t relationship_type) const
 {
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
 
@@ -1333,7 +1354,7 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
 bool translation_unit_visitor::find_relationships_in_user_defined_type(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
     const std::string &fn, relationship_t &relationship_type,
-    const cppast::cpp_type &t)
+    const cppast::cpp_type &t) const
 {
     bool found;
     LOG_DBG("Finding relationships in user defined type: {} | {}",
@@ -1360,7 +1381,7 @@ bool translation_unit_visitor::find_relationships_in_user_defined_type(
 
 bool translation_unit_visitor::find_relationships_in_reference(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
-    const relationship_t &relationship_hint)
+    const relationship_t &relationship_hint) const
 {
     bool found;
     auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
@@ -1376,7 +1397,7 @@ bool translation_unit_visitor::find_relationships_in_reference(
 
 bool translation_unit_visitor::find_relationships_in_pointer(
     const cppast::cpp_type &t_, found_relationships_t &relationships,
-    const relationship_t &relationship_hint)
+    const relationship_t &relationship_hint) const
 {
     bool found;
     auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
@@ -1388,12 +1409,40 @@ bool translation_unit_visitor::find_relationships_in_pointer(
 }
 
 bool translation_unit_visitor::find_relationships_in_array(
-    found_relationships_t &relationships, const cppast::cpp_type &t)
+    found_relationships_t &relationships, const cppast::cpp_type &t) const
 {
     bool found;
     auto &a = static_cast<const cppast::cpp_array_type &>(t);
     found = find_relationships(
         a.value_type(), relationships, relationship_t::kAggregation);
+    return found;
+}
+
+bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
+    const class_template &ct, found_relationships_t &relationships) const
+{
+    bool found{false};
+    LOG_DBG("Finding relationships in user defined type: {}",
+        ct.to_string(ctx.config().using_namespace()));
+
+    auto type_with_namespace = ctx.get_name_with_namespace(ct.type());
+
+    if (!type_with_namespace.has_value()) {
+        // Couldn't find declaration of this type
+        type_with_namespace = common::model::namespace_{ct.type()};
+    }
+
+    if (ctx.config().should_include(type_with_namespace.value())) {
+        relationships.emplace_back(type_with_namespace.value().to_string(),
+            relationship_t::kDependency);
+        found = true;
+    }
+
+    for (const auto &nested_template_params : ct.template_params_) {
+        found = find_relationships_in_unexposed_template_params(
+                    nested_template_params, relationships) ||
+            found;
+    }
     return found;
 }
 

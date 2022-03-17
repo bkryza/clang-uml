@@ -158,6 +158,16 @@ bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
         std::vector<std::string>(col.begin(), col.begin() + prefix.size());
 }
 
+template <typename T>
+bool ends_with(const std::vector<T> &col, const std::vector<T> &suffix)
+{
+    if (suffix.size() > col.size())
+        return false;
+
+    return std::vector<std::string>(suffix.rbegin(), suffix.rend()) ==
+        std::vector<std::string>(col.rbegin(), col.rbegin() + suffix.size());
+}
+
 /**
  * @brief Removes prefix sequence of elements from the beggining of col.
  *
