@@ -16,25 +16,25 @@
  * limitations under the License.
  */
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 
-#include "config/config.h"
 #include "util/util.h"
 
 #include <cli11/CLI11.hpp>
 #include <cppast/libclang_parser.hpp>
+#include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <string.h>
+#include <util/thread_pool_executor.h>
 
 using namespace clanguml;
 using config::config;
@@ -44,6 +44,10 @@ void print_diagrams_list(const clanguml::config::config &cfg);
 
 bool check_output_directory(const std::string &dir);
 
+void generate_diagram(const std::string &od, const std::string &name,
+    std::shared_ptr<clanguml::config::diagram> diagram,
+    const cppast::libclang_compilation_database &db, bool verbose);
+
 int main(int argc, const char *argv[])
 {
     CLI::App app{"Clang-based PlantUML diagram generator for C++"};
@@ -52,6 +56,7 @@ int main(int argc, const char *argv[])
     std::string compilation_database_dir{'.'};
     std::vector<std::string> diagram_names{};
     std::optional<std::string> output_directory;
+    unsigned int thread_count{0};
     bool verbose{false};
     bool list_diagrams{false};
 
@@ -63,16 +68,15 @@ int main(int argc, const char *argv[])
         "List of diagram names to generate");
     app.add_option("-o,--output-directory", output_directory,
         "Override output directory specified in config file");
+    app.add_option("-t,--thread-count", thread_count,
+        "Thread pool size (0 = hardware concurrency)");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
 
     CLI11_PARSE(app, argc, argv);
 
-    if (verbose) {
-        spdlog::default_logger_raw()->set_level(spdlog::level::debug);
-        spdlog::default_logger_raw()->set_pattern("[%l] %v");
-    }
+    clanguml::util::setup_logging(verbose);
 
     clanguml::config::config config;
     try {
@@ -93,7 +97,7 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir());
 
-    cppast::libclang_compilation_database db(config.compilation_database_dir());
+    cppast::libclang_compilation_database db{config.compilation_database_dir()};
 
     auto od = config.output_directory();
     if (output_directory)
@@ -102,71 +106,88 @@ int main(int argc, const char *argv[])
     if (!check_output_directory(od))
         return 1;
 
+    util::thread_pool_executor generator_executor{thread_count};
+    std::vector<std::future<void>> futs;
+
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
         // and this diagram is not in that list - skip it
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
-        using clanguml::config::class_diagram;
-        using clanguml::config::diagram_type;
-        using clanguml::config::package_diagram;
-        using clanguml::config::sequence_diagram;
+        futs.emplace_back(generator_executor.add(
+            [&od, &name = name, &diagram = diagram, &db = db, verbose]() {
+                generate_diagram(od, name, diagram, db, verbose);
+            }));
+    }
 
-        auto path = std::filesystem::path{od} / fmt::format("{}.puml", name);
-        std::ofstream ofs;
-        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-
-        if (diagram->type() == diagram_type::class_diagram) {
-            using diagram_config = clanguml::config::class_diagram;
-            using diagram_model = clanguml::class_diagram::model::diagram;
-            using diagram_visitor =
-                clanguml::class_diagram::visitor::translation_unit_visitor;
-
-            auto model =
-                clanguml::common::generators::plantuml::generate<diagram_model,
-                    diagram_config, diagram_visitor>(db, diagram->name,
-                    dynamic_cast<diagram_config &>(*diagram));
-
-            ofs << clanguml::class_diagram::generators::plantuml::generator(
-                dynamic_cast<diagram_config &>(*diagram), model);
-        }
-        else if (diagram->type() == diagram_type::sequence_diagram) {
-            using diagram_config = clanguml::config::sequence_diagram;
-            using diagram_model = clanguml::sequence_diagram::model::diagram;
-            using diagram_visitor =
-                clanguml::sequence_diagram::visitor::translation_unit_visitor;
-
-            auto model =
-                clanguml::common::generators::plantuml::generate<diagram_model,
-                    diagram_config, diagram_visitor>(db, diagram->name,
-                    dynamic_cast<diagram_config &>(*diagram));
-
-            ofs << clanguml::sequence_diagram::generators::plantuml::generator(
-                dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
-                model);
-        }
-        else if (diagram->type() == diagram_type::package_diagram) {
-            using diagram_config = clanguml::config::package_diagram;
-            using diagram_model = clanguml::package_diagram::model::diagram;
-            using diagram_visitor =
-                clanguml::package_diagram::visitor::translation_unit_visitor;
-
-            auto model =
-                clanguml::common::generators::plantuml::generate<diagram_model,
-                    diagram_config, diagram_visitor>(db, diagram->name,
-                    dynamic_cast<diagram_config &>(*diagram));
-
-            ofs << clanguml::package_diagram::generators::plantuml::generator(
-                dynamic_cast<diagram_config &>(*diagram), model);
-        }
-
-        LOG_INFO("Written {} diagram to {}", name, path.string());
-
-        ofs.close();
+    for (auto &fut : futs) {
+        fut.get();
     }
 
     return 0;
+}
+
+void generate_diagram(const std::string &od, const std::string &name,
+    std::shared_ptr<clanguml::config::diagram> diagram,
+    const cppast::libclang_compilation_database &db, bool verbose)
+{
+    using clanguml::config::class_diagram;
+    using clanguml::config::diagram_type;
+    using clanguml::config::package_diagram;
+    using clanguml::config::sequence_diagram;
+
+    auto path = std::filesystem::path{od} / fmt::format("{}.puml", name);
+    std::ofstream ofs;
+    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+
+    if (diagram->type() == diagram_type::class_diagram) {
+        using diagram_config = class_diagram;
+        using diagram_model = clanguml::class_diagram::model::diagram;
+        using diagram_visitor =
+            clanguml::class_diagram::visitor::translation_unit_visitor;
+
+        auto model =
+            clanguml::common::generators::plantuml::generate<diagram_model,
+                diagram_config, diagram_visitor>(db, diagram->name,
+                dynamic_cast<diagram_config &>(*diagram), verbose);
+
+        ofs << clanguml::class_diagram::generators::plantuml::generator(
+            dynamic_cast<diagram_config &>(*diagram), model);
+    }
+    else if (diagram->type() == diagram_type::sequence_diagram) {
+        using diagram_config = sequence_diagram;
+        using diagram_model = clanguml::sequence_diagram::model::diagram;
+        using diagram_visitor =
+            clanguml::sequence_diagram::visitor::translation_unit_visitor;
+
+        auto model =
+            clanguml::common::generators::plantuml::generate<diagram_model,
+                diagram_config, diagram_visitor>(db, diagram->name,
+                dynamic_cast<diagram_config &>(*diagram), verbose);
+
+        ofs << clanguml::sequence_diagram::generators::plantuml::generator(
+            dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
+            model);
+    }
+    else if (diagram->type() == diagram_type::package_diagram) {
+        using diagram_config = package_diagram;
+        using diagram_model = clanguml::package_diagram::model::diagram;
+        using diagram_visitor =
+            clanguml::package_diagram::visitor::translation_unit_visitor;
+
+        auto model =
+            clanguml::common::generators::plantuml::generate<diagram_model,
+                diagram_config, diagram_visitor>(db, diagram->name,
+                dynamic_cast<diagram_config &>(*diagram), verbose);
+
+        ofs << clanguml::package_diagram::generators::plantuml::generator(
+            dynamic_cast<diagram_config &>(*diagram), model);
+    }
+
+    LOG_INFO("Written {} diagram to {}", name, path.string());
+
+    ofs.close();
 }
 
 bool check_output_directory(const std::string &dir)

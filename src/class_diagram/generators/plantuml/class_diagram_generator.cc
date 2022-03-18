@@ -179,8 +179,8 @@ void generator::generate(
             }
         }
         catch (error::uml_alias_missing &e) {
-            LOG_ERROR("=== Skipping {} relation from {} to {} due "
-                      "to: {}",
+            LOG_DBG("=== Skipping {} relation from {} to {} due "
+                    "to: {}",
                 plantuml_common::to_plantuml(r.type(), r.style()),
                 c.full_name(), destination, e.what());
         }
@@ -215,8 +215,8 @@ void generator::generate(
                 all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
-                LOG_ERROR("=== Skipping inheritance relation from {} to {} due "
-                          "to: {}",
+                LOG_DBG("=== Skipping inheritance relation from {} to {} due "
+                        "to: {}",
                     b.name(), c.name(), e.what());
             }
         }
@@ -271,8 +271,8 @@ void generator::generate(
             relationships_ostr << relstr.str();
         }
         catch (error::uml_alias_missing &ex) {
-            LOG_ERROR("Skipping {} relation from {} to {} due "
-                      "to: {}",
+            LOG_DBG("Skipping {} relation from {} to {} due "
+                    "to: {}",
                 clanguml::common::generators::plantuml::to_plantuml(
                     r.type(), r.style()),
                 e.full_name(), destination, ex.what());

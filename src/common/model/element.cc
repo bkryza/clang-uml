@@ -37,15 +37,15 @@ std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
 void element::add_relationship(relationship &&cr)
 {
     if (cr.destination().empty()) {
-        LOG_WARN("Skipping relationship '{}' - {} - '{}' due empty "
-                 "destination",
+        LOG_DBG("Skipping relationship '{}' - {} - '{}' due empty "
+                "destination",
             cr.destination(), to_string(cr.type()), full_name(true));
         return;
     }
 
     if ((cr.type() == relationship_t::kInstantiation) &&
         (cr.destination() == full_name(true))) {
-        LOG_WARN("Skipping self instantiation relationship for {}",
+        LOG_DBG("Skipping self instantiation relationship for {}",
             cr.destination());
         return;
     }

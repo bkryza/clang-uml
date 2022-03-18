@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
@@ -36,20 +37,27 @@ std::string trim(const std::string &s);
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::error(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,     \
-        ##__VA_ARGS__)
+    spdlog::get("console")->error(std::string("[{}:{}] ") + fmt__,             \
+        __FILENAME__, __LINE__, ##__VA_ARGS__)
 
 #define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::warn(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,      \
-        ##__VA_ARGS__)
+    spdlog::get("console")->warn(std::string("[{}:{}] ") + fmt__,              \
+        __FILENAME__, __LINE__, ##__VA_ARGS__)
 
 #define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::info(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,      \
-        ##__VA_ARGS__)
+    spdlog::get("console")->info(std::string("[{}:{}] ") + fmt__,              \
+        __FILENAME__, __LINE__, ##__VA_ARGS__)
 
 #define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::debug(std::string("[{}:{}] ") + fmt__, __FILENAME__, __LINE__,     \
-        ##__VA_ARGS__)
+    spdlog::get("console")->debug(std::string("[{}:{}] ") + fmt__,             \
+        __FILENAME__, __LINE__, ##__VA_ARGS__)
+
+/**
+ * @brief Setup spdlog logger.
+ *
+ * @param verbose Whether the logging should be verbose or not.
+ */
+void setup_logging(bool verbose);
 
 /**
  * @brief Split a string using delimiter
@@ -66,25 +74,6 @@ std::string trim(const std::string &s);
 std::vector<std::string> split(std::string str, std::string delimiter);
 
 std::string join(const std::vector<std::string> &toks, std::string delimiter);
-
-/**
- * @brief Get name of the identifier relative to a set of namespaces
- *
- * This function tries to match a given C++ identifier (e.g.
- * clanguml::util::split) to the longest namespace from the provided list
- * matching the identifier from the left.
- * If a match is found, the relative identifier is returned. If none of
- * the namespaces match the identifier or if nothing is left after
- * removing the matching namespace from the identifier, original identifier is
- * returned.
- *
- * @param namespaces List of C++ namespaces to consider
- * @param n Identifier to relativize
- *
- * @return Identifier relative to one of the matching namespaces.
- */
-// std::string ns_relative(
-//    const std::vector<std::string> &namespaces, const std::string &n);
 
 /**
  * @brief Remove any qualifiers (e.g. const) from type.

@@ -200,7 +200,7 @@ void translation_unit_visitor::process_type_alias_template(
 {
     if (at.type_alias().underlying_type().kind() ==
         cppast::cpp_type_kind::unexposed_t) {
-        LOG_WARN("Template alias has unexposed underlying type: {}",
+        LOG_DBG("Template alias has unexposed underlying type: {}",
             static_cast<const cppast::cpp_unexposed_type &>(
                 at.type_alias().underlying_type())
                 .name());
@@ -407,8 +407,8 @@ bool translation_unit_visitor::process_template_parameters(
         process_scope_template_parameters(c, scope);
     }
     else {
-        LOG_WARN("Class {} is templated but it's scope {} is not - "
-                 "probably this is a specialization",
+        LOG_DBG("Class {} is templated but it's scope {} is not - "
+                "probably this is a specialization",
             cls.name(), scope.name());
 
         // Add specialization arguments
@@ -541,7 +541,7 @@ void translation_unit_visitor::
             {relationship_t::kInstantiation, base_template_full_name});
     }
     else {
-        LOG_WARN(
+        LOG_DBG(
             "No user data for base template {}", primary_template_ref.name());
     }
 }
@@ -1321,8 +1321,7 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kAggregation);
         else
-            LOG_WARN(
-                "Failed to process template argument of std::vector at: {}",
+            LOG_DBG("Failed to process template argument of std::vector at: {}",
                 fn);
     }
     else if (ctx.config().should_include(ns, name)) {
@@ -1470,7 +1469,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             t, tinst, template_base_params, parent, full_template_name);
     }
     else {
-        LOG_WARN("Template instantiation {} has no primary template",
+        LOG_DBG("Template instantiation {} has no primary template",
             cppast::to_string(t));
 
         full_template_name = cppast::to_string(t);
@@ -1769,7 +1768,7 @@ void translation_unit_visitor::build_template_instantiation_primary_template(
         LOG_DBG("Primary template ref set to: {}", tinst.base_template());
     }
     else
-        LOG_WARN(
+        LOG_DBG(
             "No user data for base template {}", primary_template_ref.name());
 }
 

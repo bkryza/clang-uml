@@ -35,7 +35,7 @@ thread_pool_executor::thread_pool_executor(unsigned int pool_size)
     }
 }
 
-~thread_pool_executor::thread_pool_executor() { stop(); }
+thread_pool_executor::~thread_pool_executor() { stop(); }
 
 std::future<void> thread_pool_executor::add(std::function<void()> &&task)
 {

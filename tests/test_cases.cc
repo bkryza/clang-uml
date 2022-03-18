@@ -222,10 +222,7 @@ int main(int argc, char *argv[])
     if (returnCode != 0)
         return returnCode;
 
-    if (debug_log) {
-        spdlog::default_logger_raw()->set_level(spdlog::level::debug);
-        spdlog::default_logger_raw()->set_pattern("[%l] %v");
-    }
+    clanguml::util::setup_logging(debug_log);
 
     return session.run();
 }
