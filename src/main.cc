@@ -26,7 +26,6 @@
 
 #include <cli11/CLI11.hpp>
 #include <cppast/libclang_parser.hpp>
-#include <spdlog/cfg/env.h>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
