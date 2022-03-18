@@ -26,6 +26,18 @@ namespace util {
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
+void setup_logging(bool verbose)
+{
+    auto console =
+        spdlog::stdout_color_mt("console", spdlog::color_mode::automatic);
+
+    console->set_pattern("[%^%l%^] [tid %t] %v");
+
+    if (verbose) {
+        console->set_level(spdlog::level::debug);
+    }
+}
+
 std::string ltrim(const std::string &s)
 {
     size_t start = s.find_first_not_of(WHITESPACE);
@@ -67,34 +79,6 @@ std::string join(const std::vector<std::string> &toks, std::string delimiter)
 {
     return fmt::format("{}", fmt::join(toks, delimiter));
 }
-
-/*
-std::string ns_relative(
-    const std::vector<std::string> &namespaces, const std::string &n)
-{
-    std::vector<std::string> namespaces_sorted{namespaces};
-
-    std::sort(namespaces_sorted.rbegin(), namespaces_sorted.rend());
-
-    auto res = n;
-
-    for (const auto &ns : namespaces_sorted) {
-        if (ns.empty())
-            continue;
-
-        if (n == ns)
-            return split(n, "::").back();
-
-        auto ns_prefix = ns + "::";
-        auto it = res.find(ns_prefix);
-        while (it != std::string::npos) {
-            res.erase(it, ns_prefix.size());
-            it = res.find(ns_prefix);
-        }
-    }
-    return res;
-}
-*/
 
 std::string unqualify(const std::string &s)
 {

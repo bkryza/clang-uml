@@ -110,10 +110,6 @@ struct diagram : public inheritable_diagram_options {
     bool should_include(
         const std::pair<common::model::namespace_, std::string> &name) const;
 
-    //    bool should_include(
-    //        const std::vector<std::string> &ns, const std::string &name)
-    //        const;
-
     bool should_include(
         const common::model::namespace_ &ns, const std::string &name) const;
 

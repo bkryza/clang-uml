@@ -81,8 +81,7 @@ public:
         LOG_DBG("Getting nested element at path: {}", path.to_string());
 
         if (path.is_empty() || !has_element(path[0])) {
-            LOG_WARN(
-                "Nested element {} not found in element", path.to_string());
+            LOG_DBG("Nested element {} not found in element", path.to_string());
             return type_safe::optional_ref<V>{};
         }
 

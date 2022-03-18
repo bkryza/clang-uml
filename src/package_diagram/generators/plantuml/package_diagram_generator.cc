@@ -46,8 +46,8 @@ void generator::generate_relationships(
                 ostr << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
-                LOG_ERROR("=== Skipping dependency relation from {} to {} due "
-                          "to: {}",
+                LOG_DBG("=== Skipping dependency relation from {} to {} due "
+                        "to: {}",
                     p.full_name(false), r.destination(), e.what());
             }
         }

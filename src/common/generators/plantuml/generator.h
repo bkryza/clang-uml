@@ -90,8 +90,8 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
                 ostr << hint_str.str();
             }
             catch (clanguml::error::uml_alias_missing &e) {
-                LOG_ERROR("=== Skipping layout hint from {} to {} due "
-                          "to: {}",
+                LOG_DBG("=== Skipping layout hint from {} to {} due "
+                        "to: {}",
                     entity, hint.entity, e.what());
             }
         }
@@ -133,8 +133,8 @@ void generator<C, D>::generate_notes(
 
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
-DiagramModel generate(cppast::libclang_compilation_database &db,
-    const std::string &name, DiagramConfig &diagram)
+DiagramModel generate(const cppast::libclang_compilation_database &db,
+    const std::string &name, DiagramConfig &diagram, bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
     DiagramModel d;
@@ -151,8 +151,10 @@ DiagramModel generate(cppast::libclang_compilation_database &db,
     }
 
     cppast::cpp_entity_index idx;
+    auto logger =
+        verbose ? cppast::default_logger() : cppast::default_quiet_logger();
     cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx)};
+        type_safe::ref(idx), std::move(logger)};
 
     // Process all matching translation units
     DiagramVisitor ctx(idx, d, diagram);

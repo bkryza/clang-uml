@@ -135,13 +135,6 @@ bool diagram::should_include(
     return should_include(std::get<0>(name), std::get<1>(name));
 }
 
-// bool diagram::should_include(
-//    const common::model::namespace_ &ns, const std::string &name) const
-//{
-//    auto ns_and_name = ns | name;
-//    return should_include(ns_and_name.to_string());
-//}
-
 bool diagram::should_include(
     const common::model::namespace_ &ns, const std::string &name) const
 {
@@ -346,7 +339,7 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
         return std::make_shared<package_diagram>(d.as<package_diagram>());
     }
 
-    LOG_WARN("Diagrams of type {} are not supported... ", diagram_type);
+    LOG_ERROR("Diagrams of type {} are not supported... ", diagram_type);
 
     return {};
 }

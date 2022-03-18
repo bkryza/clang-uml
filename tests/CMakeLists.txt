@@ -48,6 +48,13 @@ set(CLANG_UML_TEST_CONFIG_HEADER
         catch.h
         )
 
+set(CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC
+        test_thread_pool_executor.cc
+        )
+set(CLANG_UML_TEST_THREAD_POOL_EXECUTOR_HEADER
+        catch.h
+        )
+
 add_executable(test_util
     ${CLANG_UML_TEST_UTIL_SRC}
     ${CLANG_UML_TEST_UTIL_HEADER})
@@ -83,6 +90,16 @@ add_executable(test_config
         ${CLANG_UML_TEST_CONFIG_HEADER})
 
 target_link_libraries(test_config
+        PRIVATE
+        ${LIBCLANG_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        spdlog::spdlog clang-umllib cppast)
+
+add_executable(test_thread_pool_executor
+        ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC}
+        ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_HEADER})
+
+target_link_libraries(test_thread_pool_executor
         PRIVATE
         ${LIBCLANG_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
@@ -125,4 +142,6 @@ endforeach()
 add_test(NAME test_util COMMAND test_util)
 add_test(NAME test_decorator_parser COMMAND test_decorator_parser)
 add_test(NAME test_config COMMAND test_config)
+add_test(NAME test_model COMMAND test_model)
+add_test(NAME test_thread_pool_executor COMMAND test_thread_pool_executor)
 add_test(NAME test_cases COMMAND test_cases)
