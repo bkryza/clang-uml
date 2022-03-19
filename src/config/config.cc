@@ -91,6 +91,7 @@ void inheritable_diagram_options::inherit(
     exclude.override(parent.exclude);
     puml.override(parent.puml);
     generate_method_arguments.override(parent.generate_method_arguments);
+    generate_links.override(parent.generate_links);
 }
 
 bool diagram::should_include_entities(const std::string &ent)
@@ -268,6 +269,7 @@ using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
+using clanguml::config::generate_links_config;
 using clanguml::config::hint_t;
 using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
@@ -439,6 +441,19 @@ template <> struct convert<filter> {
     }
 };
 
+//
+// generate_links_config Yaml decoder
+//
+template <> struct convert<generate_links_config> {
+    static bool decode(const Node &node, generate_links_config &rhs)
+    {
+        if (node["prefix"])
+            rhs.prefix = node["prefix"].as<decltype(rhs.prefix)>();
+
+        return true;
+    }
+};
+
 template <typename T> bool decode_diagram(const Node &node, T &rhs)
 {
     get_option(node, rhs.glob);
@@ -464,6 +479,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.generate_links);
 
         return true;
     }
@@ -479,6 +495,7 @@ template <> struct convert<sequence_diagram> {
             return false;
 
         get_option(node, rhs.start_from);
+        get_option(node, rhs.generate_links);
 
         return true;
     }
@@ -494,6 +511,7 @@ template <> struct convert<package_diagram> {
             return false;
 
         get_option(node, rhs.layout);
+        get_option(node, rhs.generate_links);
 
         return true;
     }
@@ -545,6 +563,7 @@ template <> struct convert<config> {
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.generate_links);
 
         auto diagrams = node["diagrams"];
 

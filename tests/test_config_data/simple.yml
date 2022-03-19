@@ -9,6 +9,8 @@ diagrams:
     using_namespace: clanguml
     generate_method_arguments: full
     generate_packages: true
+    generate_links:
+      prefix: https://github.com/bkryza/clang-uml/blob/master/
     include:
       namespaces:
         - clanguml

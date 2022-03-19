@@ -35,6 +35,7 @@ template <typename T> struct option {
         option_inherit_mode im = option_inherit_mode::override)
         : name{name_}
         , value{initial_value}
+        , has_value{true}
     {
     }
 
@@ -42,6 +43,7 @@ template <typename T> struct option {
     {
         value = v;
         is_declared = true;
+        has_value = true;
     }
 
     void override(const option<T> &o)
@@ -53,6 +55,7 @@ template <typename T> struct option {
                 value = o.value;
 
             is_declared = true;
+            has_value = true;
         }
     }
 
@@ -62,9 +65,12 @@ template <typename T> struct option {
 
     const T &operator()() const { return value; }
 
+    operator bool() const { return has_value; }
+
     std::string name;
     T value;
     bool is_declared{false};
+    bool has_value{false};
     option_inherit_mode inheritance_mode;
 };
 }
