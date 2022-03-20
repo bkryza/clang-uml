@@ -74,6 +74,18 @@ struct layout_hint {
 
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
 
+struct generate_links_config {
+    std::string link;
+    std::string tooltip;
+};
+
+struct git_config {
+    std::string branch;
+    std::string revision;
+    std::string commit;
+    std::string toplevel;
+};
+
 std::string to_string(const diagram_type t);
 std::string to_string(const hint_t t);
 
@@ -88,6 +100,8 @@ struct inheritable_diagram_options {
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
     option<bool> generate_packages{"generate_packages", false};
+    option<generate_links_config> generate_links{"generate_links"};
+    option<git_config> git{"git"};
 
     void inherit(const inheritable_diagram_options &parent);
 };
@@ -96,8 +110,6 @@ struct diagram : public inheritable_diagram_options {
     virtual ~diagram() = default;
 
     virtual diagram_type type() const = 0;
-
-    std::string name;
 
     bool should_include_entities(const std::string &ent);
 
@@ -119,7 +131,7 @@ struct diagram : public inheritable_diagram_options {
 
     bool should_include(const common::model::namespace_ &path) const;
 
-private:
+    std::string name;
 };
 
 struct source_location {

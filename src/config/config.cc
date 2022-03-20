@@ -32,6 +32,19 @@ config load(const std::string &config_file)
         doc.force_insert(
             "__parent_path", config_file_path.parent_path().string());
 
+        // If the current directory is also a git repository,
+        // load some config values which can be included in the
+        // generated diagrams
+        if (util::is_git_repository() && !doc["git"]) {
+            YAML::Node git_config{YAML::NodeType::Map};
+            git_config["branch"] = util::get_git_branch();
+            git_config["revision"] = util::get_git_revision();
+            git_config["commit"] = util::get_git_commit();
+            git_config["toplevel"] = util::get_git_toplevel_dir();
+
+            doc["git"] = git_config;
+        }
+
         return doc.as<config>();
     }
     catch (YAML::BadFile &e) {
@@ -91,6 +104,8 @@ void inheritable_diagram_options::inherit(
     exclude.override(parent.exclude);
     puml.override(parent.puml);
     generate_method_arguments.override(parent.generate_method_arguments);
+    generate_links.override(parent.generate_links);
+    git.override(parent.git);
 }
 
 bool diagram::should_include_entities(const std::string &ent)
@@ -268,6 +283,8 @@ using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
+using clanguml::config::generate_links_config;
+using clanguml::config::git_config;
 using clanguml::config::hint_t;
 using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
@@ -439,6 +456,44 @@ template <> struct convert<filter> {
     }
 };
 
+//
+// generate_links_config Yaml decoder
+//
+template <> struct convert<generate_links_config> {
+    static bool decode(const Node &node, generate_links_config &rhs)
+    {
+        if (node["link"])
+            rhs.link = node["link"].as<decltype(rhs.link)>();
+
+        if (node["tooltip"])
+            rhs.tooltip = node["tooltip"].as<decltype(rhs.tooltip)>();
+
+        return true;
+    }
+};
+
+//
+// git_config Yaml decoder
+//
+template <> struct convert<git_config> {
+    static bool decode(const Node &node, git_config &rhs)
+    {
+        if (node["branch"])
+            rhs.branch = node["branch"].as<decltype(rhs.branch)>();
+
+        if (node["revision"])
+            rhs.revision = node["revision"].as<decltype(rhs.revision)>();
+
+        if (node["commit"])
+            rhs.commit = node["commit"].as<decltype(rhs.commit)>();
+
+        if (node["toplevel"])
+            rhs.toplevel = node["toplevel"].as<decltype(rhs.toplevel)>();
+
+        return true;
+    }
+};
+
 template <typename T> bool decode_diagram(const Node &node, T &rhs)
 {
     get_option(node, rhs.glob);
@@ -446,6 +501,8 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
+    get_option(node, rhs.git);
+    get_option(node, rhs.generate_links);
 
     return true;
 }
@@ -545,6 +602,8 @@ template <> struct convert<config> {
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.generate_links);
+        get_option(node, rhs.git);
 
         auto diagrams = node["diagrams"];
 

@@ -73,6 +73,16 @@ const std::vector<relationship> &element::relationships() const
 
 void element::append(const element &e) { decorated_element::append(e); }
 
+inja::json element::context() const
+{
+    inja::json ctx;
+    ctx["name"] = name();
+    ctx["alias"] = alias();
+    ctx["full_name"] = full_name(false);
+    ctx["namespace"] = get_namespace().to_string();
+    return ctx;
+}
+
 bool operator==(const element &l, const element &r)
 {
     return l.full_name(false) == r.full_name(false);

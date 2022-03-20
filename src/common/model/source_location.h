@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_element.h
+ * src/common/model/source_location.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,31 +17,30 @@
  */
 #pragma once
 
-#include "common/model/decorated_element.h"
-#include "common/model/source_location.h"
-
-#include <inja/inja.hpp>
-
 #include <string>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
-class class_element : public common::model::decorated_element,
-                      public common::model::source_location {
+class source_location {
 public:
-    class_element(common::model::scope_t scope, const std::string &name,
-        const std::string &type);
+    source_location() = default;
 
-    common::model::scope_t scope() const;
-    std::string name() const;
-    std::string type() const;
+    source_location(const std::string &f, unsigned int l)
+        : file_{f}
+        , line_{l}
+    {
+    }
 
-    virtual inja::json context() const;
+    const std::string &file() const { return file_; }
+
+    void set_file(const std::string &file) { file_ = file; }
+
+    unsigned int line() const { return line_; }
+
+    void set_line(const unsigned line) { line_ = line; }
 
 private:
-    common::model::scope_t scope_;
-    std::string name_;
-    std::string type_;
+    std::string file_;
+    unsigned int line_{0};
 };
-
 }

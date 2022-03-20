@@ -18,10 +18,12 @@ Main features supported so far include:
     * Relationship inference from C++ containers and smart pointers
     * Namespace based content filtering
     * Optional package generation from namespaces
+    * Interactive links to online code to classes, methods and class fields 
 * Sequence diagram generation
     * Generation of sequence diagram from one code location to another (currently only for non-template code)
 * Package diagram generation
     * Generation of package diagram based on C++ namespaces
+    * Interactive links to online code to packages
 
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md).
 
@@ -163,6 +165,9 @@ public:
 generates the following diagram (via PlantUML):
 
 ![class_diagram_example](docs/test_cases/t00009_class.svg)
+
+> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00009_class.svg),
+> and checkout the hover tooltips and hyperlinks to classes and methods.
 
 #### Default mappings
 
@@ -342,6 +347,7 @@ This project relies on the following great tools:
   * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
   * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
   * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
+  * [inja](https://github.com/pantor/inja) - a template engine for modern C++
 
 ## LICENSE
 

@@ -34,6 +34,11 @@ TEST_CASE("Test config simple", "[unit-test]")
     CHECK(diagram.generate_method_arguments() ==
         clanguml::config::method_arguments::full);
     CHECK(diagram.generate_packages() == true);
+    CHECK(diagram.generate_links == true);
+    CHECK(diagram.generate_links().link ==
+        "https://github.com/bkryza/clang-uml/blob/{{ git.branch }}/{{ "
+        "element.source.file }}#L{{ element.source.line }}");
+    CHECK(diagram.generate_links().tooltip == "{{ element.comment }}");
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")
@@ -48,6 +53,7 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(def.glob()[1] == "src/**/*.h");
     CHECK(clanguml::util::contains(def.using_namespace(), "clanguml"));
     CHECK(def.generate_packages() == false);
+    CHECK(def.generate_links == false);
 
     auto &cus = *cfg.diagrams["class_custom"];
     CHECK(cus.type() == clanguml::config::diagram_type::class_diagram);
@@ -55,7 +61,8 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(cus.glob()[0] == "src/main.cc");
     CHECK(cus.using_namespace().starts_with({"clanguml::ns1"}));
     CHECK(cus.include_relations_also_as_members());
-    CHECK(def.generate_packages() == false);
+    CHECK(cus.generate_packages() == false);
+    CHECK(cus.generate_links == false);
 }
 
 TEST_CASE("Test config includes", "[unit-test]")

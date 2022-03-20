@@ -37,6 +37,12 @@ compilation_database_dir: debug
 output_directory: docs/diagrams
 # Set this as default for all diagrams
 generate_method_arguments: none
+# Enable generation of hyperlinks to diagram elements
+generate_links:
+  # Link pattern
+  link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
+  # Tooltip pattern
+  tooltip: "{{ element.name }}"
 # The map of diagrams - keys are also diagram file names
 diagrams:
   main_package:
