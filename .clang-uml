@@ -1,5 +1,8 @@
 compilation_database_dir: debug
 output_directory: docs/diagrams
+generate_links:
+  link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
+  tooltip: "{{ element.name }}"
 diagrams:
   main_package:
     include!: uml/main_package_diagram.yml
