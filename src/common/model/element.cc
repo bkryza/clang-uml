@@ -73,7 +73,8 @@ const std::vector<relationship> &element::relationships() const
 
 void element::append(const element &e) { decorated_element::append(e); }
 
-inja::json element::context() const {
+inja::json element::context() const
+{
     inja::json ctx;
     ctx["name"] = name();
     ctx["alias"] = alias();

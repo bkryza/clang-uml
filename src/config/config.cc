@@ -35,7 +35,7 @@ config load(const std::string &config_file)
         // If the current directory is also a git repository,
         // load some config values which can be included in the
         // generated diagrams
-        if(util::is_git_repository() && !doc["git"]) {
+        if (util::is_git_repository() && !doc["git"]) {
             YAML::Node git_config{YAML::NodeType::Map};
             git_config["branch"] = util::get_git_branch();
             git_config["revision"] = util::get_git_revision();
@@ -284,6 +284,7 @@ using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
+using clanguml::config::git_config;
 using clanguml::config::hint_t;
 using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
@@ -291,7 +292,6 @@ using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
-using clanguml::config::git_config;
 
 inline bool has_key(const YAML::Node &n, const std::string &key)
 {
