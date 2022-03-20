@@ -99,6 +99,11 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                             auto p = std::make_unique<package>(usn);
                             package_path = package_path.relative_to(usn);
 
+                            if (e.location().has_value()) {
+                                p->set_file(e.location().value().file);
+                                p->set_line(e.location().value().line);
+                            }
+
                             p->set_name(e.name());
                             p->set_namespace(package_parent);
 

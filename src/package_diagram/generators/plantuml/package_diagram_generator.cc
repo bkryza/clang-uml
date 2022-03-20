@@ -75,6 +75,10 @@ void generator::generate(const package &p, std::ostream &ostr) const
         if (p.is_deprecated())
             ostr << " <<deprecated>>";
 
+        if (m_config.generate_links) {
+            generate_link(ostr, p);
+        }
+
         if (!p.style().empty())
             ostr << " " << p.style();
 
