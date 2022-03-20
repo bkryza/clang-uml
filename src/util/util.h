@@ -59,6 +59,18 @@ std::string trim(const std::string &s);
  */
 void setup_logging(bool verbose);
 
+std::string get_process_output(const std::string &command);
+
+bool is_git_repository();
+
+std::string get_git_branch();
+
+std::string get_git_revision();
+
+std::string get_git_commit();
+
+std::string get_git_toplevel_dir();
+
 /**
  * @brief Split a string using delimiter
  *

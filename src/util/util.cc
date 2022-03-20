@@ -38,6 +38,55 @@ void setup_logging(bool verbose)
     }
 }
 
+std::string get_process_output(const std::string &command)
+{
+    std::array<char, 1024> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(
+        popen(command.c_str(), "r"), pclose);
+
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+
+    return result;
+}
+
+bool is_git_repository()
+{
+#if defined(_WIN32) || defined(_WIN64)
+    return false;
+#else
+    return contains(
+        trim(get_process_output("git rev-parse --git-dir 2> /dev/null")),
+        ".git");
+#endif
+}
+
+std::string get_git_branch()
+{
+    return trim(get_process_output("git rev-parse --abbrev-ref HEAD"));
+}
+
+std::string get_git_revision()
+{
+    return trim(get_process_output("git describe --tags --always"));
+}
+
+std::string get_git_commit()
+{
+    return trim(get_process_output("git rev-parse HEAD"));
+}
+
+std::string get_git_toplevel_dir()
+{
+    return trim(get_process_output("git rev-parse --show-toplevel"));
+}
+
 std::string ltrim(const std::string &s)
 {
     size_t start = s.find_first_not_of(WHITESPACE);
