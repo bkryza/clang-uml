@@ -1,5 +1,6 @@
 compilation_database_dir: debug
 output_directory: output
+
 diagrams:
   class_main:
     type: class
@@ -10,7 +11,8 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     generate_links:
-      prefix: https://github.com/bkryza/clang-uml/blob/master/
+      link: https://github.com/bkryza/clang-uml/blob/{{ git.branch }}/{{ element.source.file }}#L{{ element.source.line }}
+      tooltip: "{{ element.comment }}"
     include:
       namespaces:
         - clanguml

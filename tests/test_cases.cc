@@ -20,6 +20,17 @@
 
 #include <spdlog/spdlog.h>
 
+void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
+{
+    // Inject links config to all test cases
+    clanguml::config::generate_links_config links_config{
+        "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ "
+        "element.source.path }}#L{{ element.source.line }}",
+        "{{ element.name }}"};
+
+    diagram->generate_links.set(links_config);
+}
+
 std::pair<clanguml::config::config, cppast::libclang_compilation_database>
 load_config(const std::string &test_name)
 {
@@ -50,6 +61,8 @@ clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     using diagram_visitor =
         clanguml::sequence_diagram::visitor::translation_unit_visitor;
 
+    inject_diagram_options(diagram);
+
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
@@ -66,6 +79,8 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
     using diagram_visitor =
         clanguml::class_diagram::visitor::translation_unit_visitor;
 
+    inject_diagram_options(diagram);
+
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(
         db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
@@ -81,6 +96,8 @@ clanguml::package_diagram::model::diagram generate_package_diagram(
     using diagram_model = clanguml::package_diagram::model::diagram;
     using diagram_visitor =
         clanguml::package_diagram::visitor::translation_unit_visitor;
+
+    inject_diagram_options(diagram);
 
     return clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(

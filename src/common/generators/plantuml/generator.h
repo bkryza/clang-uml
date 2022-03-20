@@ -23,11 +23,13 @@
 
 #include <cppast/libclang_parser.hpp>
 #include <glob/glob.hpp>
+#include <inja/inja.hpp>
 
 #include <ostream>
 
 namespace clanguml::common::generators::plantuml {
 
+using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
@@ -42,6 +44,7 @@ public:
         : m_config{config}
         , m_model{model}
     {
+        init_context();
     }
 
     virtual ~generator() = default;
@@ -57,11 +60,21 @@ public:
         std::ostream &ostr, const std::vector<std::string> &directives) const;
 
     void generate_notes(
-        std::ostream &ostr, const model::element &decorators) const;
+        std::ostream &ostr, const model::element &element) const;
+
+    void generate_link(std::ostream &ostr, const model::element &e) const;
+
+    const inja::json &context() const;
+
+    template <typename E> inja::json element_context(const E &e) const;
+
+private:
+    void init_context();
 
 protected:
     ConfigType &m_config;
     DiagramType &m_model;
+    inja::json m_context;
 };
 
 template <typename C, typename D>
@@ -69,6 +82,50 @@ std::ostream &operator<<(std::ostream &os, const generator<C, D> &g)
 {
     g.generate(os);
     return os;
+}
+
+template <typename C, typename D>
+const inja::json &generator<C, D>::context() const
+{
+    return m_context;
+}
+
+template <typename C, typename D> void generator<C, D>::init_context()
+{
+    if (m_config.git) {
+        m_context["git"]["branch"] = m_config.git().branch;
+        m_context["git"]["revision"] = m_config.git().revision;
+        m_context["git"]["commit"] = m_config.git().commit;
+        m_context["git"]["toplevel"] = m_config.git().toplevel;
+    }
+
+    m_context["diagram"]["name"] = m_config.name;
+    m_context["diagram"]["type"] = to_string(m_config.type());
+}
+
+template <typename C, typename D>
+template <typename E>
+inja::json generator<C, D>::element_context(const E &e) const
+{
+    auto ctx = context();
+
+    ctx["element"] = e.context();
+
+    if (!e.file().empty()) {
+        std::filesystem::path file{e.file()};
+        std::string relative_path = std::filesystem::relative(file);
+
+        if (ctx.template contains("git"))
+            relative_path =
+                std::filesystem::relative(file, ctx["git"]["toplevel"]);
+
+        ctx["element"]["source"]["path"] = relative_path;
+        ctx["element"]["source"]["full_path"] = file.string();
+        ctx["element"]["source"]["name"] = file.filename();
+        ctx["element"]["source"]["line"] = e.line();
+    }
+
+    return ctx;
 }
 
 template <typename C, typename D>
@@ -129,6 +186,28 @@ void generator<C, D>::generate_notes(
                  << "end note\n";
         }
     }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_link(
+    std::ostream &ostr, const model::element &e) const
+{
+    if (e.file().empty())
+        return;
+
+    if (!m_config.generate_links().link.empty()) {
+        ostr << " [[";
+        inja::render_to(
+            ostr, m_config.generate_links().link, element_context(e));
+    }
+
+    if (!m_config.generate_links().tooltip.empty()) {
+        ostr << "{";
+        inja::render_to(
+            ostr, m_config.generate_links().tooltip, element_context(e));
+        ostr << "}";
+    }
+    ostr << "]]";
 }
 
 template <typename DiagramModel, typename DiagramConfig,

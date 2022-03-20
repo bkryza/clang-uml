@@ -248,6 +248,11 @@ void translation_unit_visitor::process_namespace(
         p->set_name(e.name());
         p->set_namespace(package_parent);
 
+        if (e.location().has_value()) {
+            p->set_file(e.location().value().file);
+            p->set_line(e.location().value().line);
+        }
+
         if (ns_declaration.comment().has_value())
             p->add_decorators(
                 decorators::parse(ns_declaration.comment().value()));
@@ -284,6 +289,11 @@ void translation_unit_visitor::process_enum_declaration(
     auto &e = *e_ptr;
     e.set_name(enm.name());
     e.set_namespace(ctx.get_namespace());
+
+    if (enm.location().has_value()) {
+        e.set_file(enm.location().value().file);
+        e.set_line(enm.location().value().line);
+    }
 
     if (enm.comment().has_value())
         e.add_decorators(decorators::parse(enm.comment().value()));
@@ -326,6 +336,12 @@ void translation_unit_visitor::process_class_declaration(
 {
     auto c_ptr = std::make_unique<class_>(ctx.config().using_namespace());
     auto &c = *c_ptr;
+
+    if (cls.location().has_value()) {
+        c.set_file(cls.location().value().file);
+        c.set_line(cls.location().value().line);
+    }
+
     c.is_struct(cls.class_kind() == cppast::cpp_class_kind::struct_t);
 
     c.set_name(cls.name());
@@ -741,6 +757,11 @@ void translation_unit_visitor::process_field(
     class_member m{
         detail::cpp_access_specifier_to_scope(as), mv.name(), type_name};
 
+    if (mv.location().has_value()) {
+        m.set_file(mv.location().value().file);
+        m.set_line(mv.location().value().line);
+    }
+
     if (mv.comment().has_value())
         m.add_decorators(decorators::parse(mv.comment().value()));
 
@@ -830,6 +851,11 @@ void translation_unit_visitor::process_static_field(
     class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
         cppast::to_string(mv.type())};
 
+    if (mv.location().has_value()) {
+        m.set_file(mv.location().value().file);
+        m.set_line(mv.location().value().line);
+    }
+
     m.is_static(true);
 
     if (mv.comment().has_value())
@@ -852,6 +878,11 @@ void translation_unit_visitor::process_method(
     m.is_const(cppast::is_const(mf.cv_qualifier()));
     m.is_defaulted(false);
     m.is_static(false);
+
+    if (mf.location().has_value()) {
+        m.set_file(mf.location().value().file);
+        m.set_line(mf.location().value().line);
+    }
 
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
@@ -889,6 +920,11 @@ void translation_unit_visitor::process_template_method(
     m.is_defaulted(false);
     m.is_static(false);
 
+    if (mf.location().has_value()) {
+        m.set_file(mf.location().value().file);
+        m.set_line(mf.location().value().line);
+    }
+
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
 
@@ -920,6 +956,11 @@ void translation_unit_visitor::process_static_method(
     m.is_defaulted(false);
     m.is_static(true);
 
+    if (mf.location().has_value()) {
+        m.set_file(mf.location().value().file);
+        m.set_line(mf.location().value().line);
+    }
+
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
 
@@ -946,6 +987,11 @@ void translation_unit_visitor::process_constructor(
     m.is_defaulted(false);
     m.is_static(true);
 
+    if (mf.location().has_value()) {
+        m.set_file(mf.location().value().file);
+        m.set_line(mf.location().value().line);
+    }
+
     if (mf.comment().has_value())
         m.add_decorators(decorators::parse(mf.comment().value()));
 
@@ -969,6 +1015,11 @@ void translation_unit_visitor::process_destructor(
     m.is_const(false);
     m.is_defaulted(false);
     m.is_static(true);
+
+    if (mf.location().has_value()) {
+        m.set_file(mf.location().value().file);
+        m.set_line(mf.location().value().line);
+    }
 
     c.add_method(std::move(m));
 }

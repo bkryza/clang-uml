@@ -35,8 +35,10 @@ TEST_CASE("Test config simple", "[unit-test]")
         clanguml::config::method_arguments::full);
     CHECK(diagram.generate_packages() == true);
     CHECK(diagram.generate_links == true);
-    CHECK(diagram.generate_links().prefix ==
-        "https://github.com/bkryza/clang-uml/blob/master/");
+    CHECK(diagram.generate_links().link ==
+        "https://github.com/bkryza/clang-uml/blob/{{ git.branch }}/{{ "
+        "element.source.file }}#L{{ element.source.line }}");
+    CHECK(diagram.generate_links().tooltip == "{{ element.comment }}");
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")

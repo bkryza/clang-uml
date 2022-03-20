@@ -20,11 +20,34 @@
 
 #include "util/error.h"
 
+#include <inja/inja.hpp>
+
 namespace clanguml::class_diagram::generators::plantuml {
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
 {
+}
+
+void generator::generate_link(
+    std::ostream &ostr, const class_diagram::model::class_element &e) const
+{
+    if (e.file().empty())
+        return;
+
+    if (!m_config.generate_links().link.empty()) {
+        ostr << " [[[";
+        inja::render_to(
+            ostr, m_config.generate_links().link, element_context(e));
+    }
+
+    if (!m_config.generate_links().tooltip.empty()) {
+        ostr << "{";
+        inja::render_to(
+            ostr, m_config.generate_links().tooltip, element_context(e));
+        ostr << "}";
+    }
+    ostr << "]]]";
 }
 
 void generator::generate_alias(const class_ &c, std::ostream &ostr) const
@@ -71,6 +94,10 @@ void generator::generate(
         class_type = "abstract";
 
     ostr << class_type << " " << c.alias();
+
+    if (m_config.generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
+    }
 
     if (!c.style().empty())
         ostr << " " << c.style();
@@ -123,6 +150,10 @@ void generator::generate(
             ostr << " = default";
 
         ostr << " : " << uns.relative(type);
+
+        if (m_config.generate_links) {
+            generate_link(ostr, m);
+        }
 
         ostr << '\n';
     }
@@ -201,7 +232,13 @@ void generator::generate(
             ostr << "{static} ";
 
         ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
-             << uns.relative(m.type()) << '\n';
+             << uns.relative(m.type());
+
+        if (m_config.generate_links) {
+            generate_link(ostr, m);
+        }
+
+        ostr << '\n';
     }
 
     ostr << "}" << '\n';
@@ -232,6 +269,10 @@ void generator::generate(
     const enum_ &e, std::ostream &ostr, std::ostream &relationships_ostr) const
 {
     ostr << "enum " << e.alias();
+
+    if (m_config.generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, e);
+    }
 
     if (!e.style().empty())
         ostr << " " << e.style();

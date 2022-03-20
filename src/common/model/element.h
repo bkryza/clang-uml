@@ -20,7 +20,10 @@
 #include "decorated_element.h"
 #include "namespace.h"
 #include "relationship.h"
+#include "source_location.h"
 #include "util/util.h"
+
+#include <inja/inja.hpp>
 
 #include <atomic>
 #include <exception>
@@ -29,7 +32,7 @@
 
 namespace clanguml::common::model {
 
-class element : public decorated_element {
+class element : public decorated_element, public source_location {
 public:
     element(const namespace_ &using_namespace);
 
@@ -74,6 +77,8 @@ public:
 
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
+    virtual inja::json context() const;
+
 protected:
     const uint64_t m_id{0};
 
@@ -82,6 +87,7 @@ private:
     namespace_ ns_;
     namespace_ using_namespace_;
     std::vector<relationship> relationships_;
+    type_safe::optional<source_location> location_;
 
     static std::atomic_uint64_t m_nextId;
 };

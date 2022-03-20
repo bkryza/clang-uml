@@ -34,4 +34,12 @@ std::string class_element::name() const { return name_; }
 
 std::string class_element::type() const { return type_; }
 
+inja::json class_element::context() const
+{
+    inja::json ctx;
+    ctx["name"] = name();
+    ctx["type"] = type();
+    ctx["scope"] = to_string(scope());
+    return ctx;
+}
 }

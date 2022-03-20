@@ -59,6 +59,9 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    void generate_link(
+        std::ostream &ostr, const class_diagram::model::class_element &e) const;
+
     void generate_alias(const class_ &c, std::ostream &ostr) const;
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const;
