@@ -14,5 +14,5 @@ diagrams:
       after:
         - '@A(ProductA1) <.. @A(Factory1)'
         - '@A(ProductB1) <.. @A(Factory1)'
-        - '@A(ProductA2) <.. @A(Factory2)'
-        - '@A(ProductB2) <.. @A(Factory2)'
+        - '{{ alias("ProductA2") }} <.. {{ alias("Factory2") }}'
+        - '{{ alias("ProductB2") }} <.. {{ alias("Factory2") }}'

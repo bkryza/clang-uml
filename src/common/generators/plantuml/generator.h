@@ -168,16 +168,19 @@ void generator<C, D>::generate_plantuml_directives(
 {
     using common::model::namespace_;
 
-    for (const auto &b : directives) {
-        std::string note{b};
+    for (const auto &d : directives) {
+        // Render the directive with template engine first
+        std::string directive{env().render(std::string_view{d}, context())};
+
+        // Now search for alias @A() directives in the text
         std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(note, alias_match)) {
+        while (util::find_element_alias(directive, alias_match)) {
             auto alias = m_model.to_alias(
                 m_config.using_namespace().relative(std::get<0>(alias_match)));
-            note.replace(
+            directive.replace(
                 std::get<1>(alias_match), std::get<2>(alias_match), alias);
         }
-        ostr << note << '\n';
+        ostr << directive << '\n';
     }
 }
 
@@ -268,7 +271,9 @@ template <typename C, typename D> void generator<C, D>::init_context()
 
 template <typename C, typename D> void generator<C, D>::init_env()
 {
+    //
     // Add basic string functions to inja environment
+    //
     m_env.add_callback("empty", 1, [](inja::Arguments &args) {
         return args.at(0)->get<std::string>().empty();
     });
@@ -299,6 +304,20 @@ template <typename C, typename D> void generator<C, D>::init_env()
     m_env.add_callback("split", 2, [](inja::Arguments &args) {
         return util::split(
             args[0]->get<std::string>(), args[1]->get<std::string>());
+    });
+
+    //
+    // Add PlantUML specific functions
+    //
+
+    // Convert C++ entity to PlantUML alias, e.g.
+    //   "note left of {{ alias("ClassA") }}: This is a note"
+    // is equivalent to the old syntax:
+    //   "note left of @A(ClassA): This is a note"
+    m_env.add_callback("alias", 1, [this](inja::Arguments &args) {
+        auto alias_match = args[0]->get<std::string>();
+        return m_model.to_alias(
+            m_config.using_namespace().relative(alias_match));
     });
 }
 
