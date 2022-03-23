@@ -248,6 +248,9 @@ void translation_unit_visitor::process_namespace(
         p->set_name(e.name());
         p->set_namespace(package_parent);
 
+        if (e.comment().has_value())
+            p->set_comment(e.comment().value());
+
         if (e.location().has_value()) {
             p->set_file(e.location().value().file);
             p->set_line(e.location().value().line);
@@ -289,6 +292,9 @@ void translation_unit_visitor::process_enum_declaration(
     auto &e = *e_ptr;
     e.set_name(enm.name());
     e.set_namespace(ctx.get_namespace());
+
+    if (enm.comment().has_value())
+        e.set_comment(enm.comment().value());
 
     if (enm.location().has_value()) {
         e.set_file(enm.location().value().file);
@@ -347,8 +353,10 @@ void translation_unit_visitor::process_class_declaration(
     c.set_name(cls.name());
     c.set_namespace(ctx.get_namespace());
 
-    if (cls.comment().has_value())
+    if (cls.comment().has_value()) {
+        c.set_comment(cls.comment().value());
         c.add_decorators(decorators::parse(cls.comment().value()));
+    }
 
     // Process class documentation comment
     if (cppast::is_templated(cls)) {
@@ -879,6 +887,9 @@ void translation_unit_visitor::process_method(
     m.is_defaulted(false);
     m.is_static(false);
 
+    if (mf.comment().has_value())
+        m.set_comment(mf.comment().value());
+
     if (mf.location().has_value()) {
         m.set_file(mf.location().value().file);
         m.set_line(mf.location().value().line);
@@ -920,6 +931,9 @@ void translation_unit_visitor::process_template_method(
     m.is_defaulted(false);
     m.is_static(false);
 
+    if (mf.comment().has_value())
+        m.set_comment(mf.comment().value());
+
     if (mf.location().has_value()) {
         m.set_file(mf.location().value().file);
         m.set_line(mf.location().value().line);
@@ -956,6 +970,9 @@ void translation_unit_visitor::process_static_method(
     m.is_defaulted(false);
     m.is_static(true);
 
+    if (mf.comment().has_value())
+        m.set_comment(mf.comment().value());
+
     if (mf.location().has_value()) {
         m.set_file(mf.location().value().file);
         m.set_line(mf.location().value().line);
@@ -987,6 +1004,9 @@ void translation_unit_visitor::process_constructor(
     m.is_defaulted(false);
     m.is_static(true);
 
+    if (mf.comment().has_value())
+        m.set_comment(mf.comment().value());
+
     if (mf.location().has_value()) {
         m.set_file(mf.location().value().file);
         m.set_line(mf.location().value().line);
@@ -1015,6 +1035,9 @@ void translation_unit_visitor::process_destructor(
     m.is_const(false);
     m.is_defaulted(false);
     m.is_static(true);
+
+    if (mf.comment().has_value())
+        m.set_comment(mf.comment().value());
 
     if (mf.location().has_value()) {
         m.set_file(mf.location().value().file);

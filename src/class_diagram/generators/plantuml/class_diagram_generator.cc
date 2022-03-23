@@ -35,16 +35,18 @@ void generator::generate_link(
     if (e.file().empty())
         return;
 
+    auto context = element_context(e);
+
     if (!m_config.generate_links().link.empty()) {
         ostr << " [[[";
-        inja::render_to(
-            ostr, m_config.generate_links().link, element_context(e));
+        ostr << env().render(
+            std::string_view{m_config.generate_links().link}, context);
     }
 
     if (!m_config.generate_links().tooltip.empty()) {
         ostr << "{";
-        inja::render_to(
-            ostr, m_config.generate_links().tooltip, element_context(e));
+        ostr << env().render(
+            std::string_view{m_config.generate_links().tooltip}, context);
         ostr << "}";
     }
     ostr << "]]]";

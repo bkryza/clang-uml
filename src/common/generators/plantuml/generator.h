@@ -45,6 +45,7 @@ public:
         , m_model{model}
     {
         init_context();
+        init_env();
     }
 
     virtual ~generator() = default;
@@ -64,17 +65,23 @@ public:
 
     void generate_link(std::ostream &ostr, const model::element &e) const;
 
+protected:
     const inja::json &context() const;
+
+    inja::Environment &env() const;
 
     template <typename E> inja::json element_context(const E &e) const;
 
 private:
     void init_context();
 
+    void init_env();
+
 protected:
     ConfigType &m_config;
     DiagramType &m_model;
     inja::json m_context;
+    mutable inja::Environment m_env;
 };
 
 template <typename C, typename D>
@@ -90,17 +97,10 @@ const inja::json &generator<C, D>::context() const
     return m_context;
 }
 
-template <typename C, typename D> void generator<C, D>::init_context()
+template <typename C, typename D>
+inja::Environment &generator<C, D>::env() const
 {
-    if (m_config.git) {
-        m_context["git"]["branch"] = m_config.git().branch;
-        m_context["git"]["revision"] = m_config.git().revision;
-        m_context["git"]["commit"] = m_config.git().commit;
-        m_context["git"]["toplevel"] = m_config.git().toplevel;
-    }
-
-    m_context["diagram"]["name"] = m_config.name;
-    m_context["diagram"]["type"] = to_string(m_config.type());
+    return m_env;
 }
 
 template <typename C, typename D>
@@ -123,6 +123,13 @@ inja::json generator<C, D>::element_context(const E &e) const
         ctx["element"]["source"]["full_path"] = file.string();
         ctx["element"]["source"]["name"] = file.filename();
         ctx["element"]["source"]["line"] = e.line();
+    }
+
+    if (e.comment().has_value()) {
+        std::string c = e.comment().value();
+        if (!c.empty()) {
+            ctx["element"]["comment"] = util::trim(c);
+        }
     }
 
     return ctx;
@@ -197,16 +204,18 @@ void generator<C, D>::generate_link(
 
     if (!m_config.generate_links().link.empty()) {
         ostr << " [[";
-        inja::render_to(
-            ostr, m_config.generate_links().link, element_context(e));
+        ostr << env().render(std::string_view{m_config.generate_links().link},
+            element_context(e));
     }
 
     if (!m_config.generate_links().tooltip.empty()) {
         ostr << "{";
-        inja::render_to(
-            ostr, m_config.generate_links().tooltip, element_context(e));
+        ostr << env().render(
+            std::string_view{m_config.generate_links().tooltip},
+            element_context(e));
         ostr << "}";
     }
+
     ostr << "]]";
 }
 
@@ -242,6 +251,55 @@ DiagramModel generate(const cppast::libclang_compilation_database &db,
         ctx(file);
 
     return std::move(d);
+}
+
+template <typename C, typename D> void generator<C, D>::init_context()
+{
+    if (m_config.git) {
+        m_context["git"]["branch"] = m_config.git().branch;
+        m_context["git"]["revision"] = m_config.git().revision;
+        m_context["git"]["commit"] = m_config.git().commit;
+        m_context["git"]["toplevel"] = m_config.git().toplevel;
+    }
+
+    m_context["diagram"]["name"] = m_config.name;
+    m_context["diagram"]["type"] = to_string(m_config.type());
+}
+
+template <typename C, typename D> void generator<C, D>::init_env()
+{
+    // Add basic string functions to inja environment
+    m_env.add_callback("empty", 1, [](inja::Arguments &args) {
+        return args.at(0)->get<std::string>().empty();
+    });
+
+    m_env.add_callback("ltrim", 1, [](inja::Arguments &args) {
+        return util::ltrim(args.at(0)->get<std::string>());
+    });
+
+    m_env.add_callback("rtrim", 1, [](inja::Arguments &args) {
+        return util::rtrim(args.at(0)->get<std::string>());
+    });
+
+    m_env.add_callback("trim", 1, [](inja::Arguments &args) {
+        return util::trim(args.at(0)->get<std::string>());
+    });
+
+    m_env.add_callback("abbrv", 2, [](inja::Arguments &args) {
+        return util::abbreviate(
+            args.at(0)->get<std::string>(), args.at(1)->get<unsigned>());
+    });
+
+    m_env.add_callback("replace", 3, [](inja::Arguments &args) {
+        std::string result = args[0]->get<std::string>();
+        std::regex pattern(args[1]->get<std::string>());
+        return std::regex_replace(result, pattern, args[2]->get<std::string>());
+    });
+
+    m_env.add_callback("split", 2, [](inja::Arguments &args) {
+        return util::split(
+            args[0]->get<std::string>(), args[1]->get<std::string>());
+    });
 }
 
 }

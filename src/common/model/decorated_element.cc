@@ -87,4 +87,11 @@ void decorated_element::append(const decorated_element &de)
         decorators_.push_back(d);
     }
 }
+
+std::optional<std::string> decorated_element::comment() const
+{
+    return comment_;
+}
+
+void decorated_element::set_comment(const std::string &c) { comment_ = c; }
 }

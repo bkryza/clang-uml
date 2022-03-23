@@ -24,9 +24,8 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
     // Inject links config to all test cases
     clanguml::config::generate_links_config links_config{
-        "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ "
-        "element.source.path }}#L{{ element.source.line }}",
-        "{{ element.name }}"};
+        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})",
+        R"({% if "comment" in element %}{{ abbrv(trim(replace(element.comment, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})"};
 
     diagram->generate_links.set(links_config);
 }

@@ -22,6 +22,7 @@
 #include "decorators/decorators.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -45,8 +46,13 @@ public:
 
     void append(const decorated_element &de);
 
+    std::optional<std::string> comment() const;
+
+    void set_comment(const std::string &c);
+
 private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;
+    std::optional<std::string> comment_;
 };
 
 }
