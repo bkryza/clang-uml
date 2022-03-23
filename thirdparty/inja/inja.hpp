@@ -2295,7 +2295,10 @@ class Renderer : public NodeVisitor {
     } break;
     case Op::In: {
       const auto args = get_arguments<2>(node);
-      make_result(std::find(args[1]->begin(), args[1]->end(), *args[0]) != args[1]->end());
+      if (args[1]->is_object())
+        make_result(args[1]->find(*args[0]) != args[1]->end());
+      else
+        make_result(std::find(args[1]->begin(), args[1]->end(), *args[0]) != args[1]->end());
     } break;
     case Op::Equal: {
       const auto args = get_arguments<2>(node);
