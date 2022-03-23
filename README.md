@@ -117,7 +117,7 @@ diagrams:
         - myproject::detail
     plantuml:
       after:
-        - 'note left of @A(MyProjectMain) : Main class of myproject library.'
+        - 'note left of {{ alias("MyProjectMain") }}: Main class of myproject library.'
 ```
 
 See ![here](docs/configuration_file.md) for detailed configuration file reference guide.

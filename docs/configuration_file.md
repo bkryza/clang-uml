@@ -27,6 +27,21 @@
     * `before` - list of directives which will be added before the generated diagram
     * `after` - list of directives which will be added after the generated diagram
 
+### Template engine
+`clang-uml` integrates [inja](https://github.com/pantor/inja) template engine, with several
+additional functions which can be used in textual directives within the configuration files,
+notes and to generate links and tooltips to diagrams.
+
+The following, are the `clang-uml` additional template functions:
+* `ltrim(string)` - left trims a string
+* `rtrim(string)` - right trims a string
+* `trim(string)` - trims a string
+* `substr(string, offset, length)` - returns a substring of a string from offset of length
+* `split(string)` - splits a string and returns a list of strings
+* `replace(string, regex, replacement)` - returns a string with replace matches to regex with replacement string
+* `abbrv(string, length)` - returns a string truncated to length including trailing ellipsis
+* `alias(string)` - returns a PlantUML alias of an C++ entity represented by string name
+
 
 ## Example complete config
 
