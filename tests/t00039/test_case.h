@@ -1,5 +1,5 @@
 /**
- * tests/t30003/test_case.cc
+ * tests/t00039/test_case.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,32 +16,32 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30003", "[test-case][package]")
+TEST_CASE("t00039", "[test-case][class]")
 {
-    auto [config, db] = load_config("t30003");
+    auto [config, db] = load_config("t00039");
 
-    auto diagram = config.diagrams["t30003_package"];
+    auto diagram = config.diagrams["t00039_class"];
 
-    REQUIRE(diagram->name == "t30003_package");
+    REQUIRE(diagram->name == "t00039_class");
+    REQUIRE(diagram->generate_packages() == false);
 
-    auto model = generate_package_diagram(db, diagram);
+    auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t30003_package");
+    REQUIRE(model.name() == "t00039_class");
 
-    auto puml = generate_package_puml(diagram, model);
+    auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsPackage("ns1"));
-    REQUIRE_THAT(puml, IsPackage("ns2"));
-    REQUIRE_THAT(puml, IsPackage("ns3"));
-    REQUIRE_THAT(puml, IsPackage("ns2_v1_0_0"));
-    REQUIRE_THAT(puml, IsPackage("ns2_v0_9_0"));
+    REQUIRE_THAT(puml, IsClass(_A("A")));
+    REQUIRE_THAT(puml, IsClass(_A("AA")));
+    REQUIRE_THAT(puml, IsClass(_A("AAA")));
+    REQUIRE_THAT(puml, IsClass(_A("ns2::AAAA")));
 
-    REQUIRE_THAT(puml, IsDeprecated(_A("ns2_v0_9_0")));
-    REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
+    REQUIRE_THAT(puml, !IsClass(_A("B")));
+    REQUIRE_THAT(puml, !IsClass(_A("ns1::BB")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

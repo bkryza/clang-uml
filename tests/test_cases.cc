@@ -66,7 +66,7 @@ clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
 
-    return model;
+    return std::move(model);
 }
 
 clanguml::class_diagram::model::diagram generate_class_diagram(
@@ -84,7 +84,7 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
         diagram_config, diagram_visitor>(
         db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
 
-    return model;
+    return std::move(model);
 }
 
 clanguml::package_diagram::model::diagram generate_package_diagram(
@@ -197,6 +197,7 @@ using namespace clanguml::test::matchers;
 #include "t00036/test_case.h"
 #include "t00037/test_case.h"
 #include "t00038/test_case.h"
+#include "t00039/test_case.h"
 
 //
 // Sequence diagram tests

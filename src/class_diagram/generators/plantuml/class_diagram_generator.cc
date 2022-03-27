@@ -110,7 +110,7 @@ void generator::generate(
     // Process methods
     //
     for (const auto &m : c.methods()) {
-        if (!m_config.should_include(m.scope()))
+        if (!m_model.should_include(m.scope()))
             continue;
 
         if (m.is_pure_virtual())
@@ -168,8 +168,7 @@ void generator::generate(
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
     for (const auto &r : c.relationships()) {
-        if (!m_config.should_include_relationship(
-                common::model::to_string(r.type())))
+        if (!m_model.should_include(r.type()))
             continue;
 
         LOG_DBG("== Processing relationship {}",
@@ -223,7 +222,7 @@ void generator::generate(
     // Process members
     //
     for (const auto &m : c.members()) {
-        if (!m_config.should_include(m.scope()))
+        if (!m_model.should_include(m.scope()))
             continue;
 
         if (!m_config.include_relations_also_as_members() &&
@@ -245,7 +244,7 @@ void generator::generate(
 
     ostr << "}" << '\n';
 
-    if (m_config.should_include_relationship("inheritance")) {
+    if (m_model.should_include(relationship_t::kExtension)) {
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
@@ -288,8 +287,7 @@ void generator::generate(
     ostr << "}" << '\n';
 
     for (const auto &r : e.relationships()) {
-        if (!m_config.should_include_relationship(
-                common::model::to_string(r.type())))
+        if (!m_model.should_include(r.type()))
             continue;
 
         std::string destination;

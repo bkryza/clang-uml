@@ -22,15 +22,15 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
     auto diagram = config.diagrams["t20001_sequence"];
 
-    REQUIRE(diagram->should_include("clanguml::t20001::A"));
-    REQUIRE(!diagram->should_include("clanguml::t20001::detail::C"));
-    REQUIRE(!diagram->should_include("std::vector"));
-
     REQUIRE(diagram->name == "t20001_sequence");
 
     auto model = generate_sequence_diagram(db, diagram);
 
     REQUIRE(model.name() == "t20001_sequence");
+
+    REQUIRE(model.should_include("clanguml::t20001::A"));
+    REQUIRE(!model.should_include("clanguml::t20001::detail::C"));
+    REQUIRE(!model.should_include("std::vector"));
 
     auto puml = generate_sequence_puml(diagram, model);
 

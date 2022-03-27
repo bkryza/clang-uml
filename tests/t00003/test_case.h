@@ -28,11 +28,10 @@ TEST_CASE("t00003", "[test-case][class]")
 
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    REQUIRE(diagram->should_include("clanguml::t00003::A"));
-
     auto model = generate_class_diagram(db, diagram);
 
     REQUIRE(model.name() == "t00003_class");
+    REQUIRE(model.should_include(std::string("clanguml::t00003::A")));
 
     auto puml = generate_class_puml(diagram, model);
     AliasMatcher _A(puml);

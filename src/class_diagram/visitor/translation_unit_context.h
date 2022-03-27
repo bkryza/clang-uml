@@ -74,6 +74,8 @@ public:
 
     clanguml::class_diagram::model::diagram &diagram();
 
+    clanguml::class_diagram::model::diagram &diagram() const;
+
     void set_current_package(type_safe::optional_ref<common::model::package> p);
 
     type_safe::optional_ref<common::model::package> get_current_package() const;

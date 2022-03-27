@@ -24,11 +24,6 @@ TEST_CASE("t00019", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00019_class");
 
-    REQUIRE(diagram->should_include("clanguml::t00019::Layer1"));
-    REQUIRE(diagram->should_include("clanguml::t00019::Layer2"));
-    REQUIRE(diagram->should_include("clanguml::t00019::Layer3"));
-    REQUIRE(diagram->should_include("clanguml::t00019::Base"));
-
     auto model = generate_class_diagram(db, diagram);
 
     REQUIRE(model.name() == "t00019_class");

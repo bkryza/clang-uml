@@ -24,9 +24,6 @@ TEST_CASE("t00009", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00009_class");
 
-    REQUIRE(diagram->should_include("clanguml::t00009::A"));
-    REQUIRE(diagram->should_include("clanguml::t00009::B"));
-
     auto model = generate_class_diagram(db, diagram);
 
     REQUIRE(model.name() == "t00009_class");

@@ -146,7 +146,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     }
                 }
 
-                if (ctx.config().should_include(
+                if (ctx.diagram().should_include(
                         ctx.get_namespace(), cls.name()))
                     process_class_declaration(cls);
             }
@@ -157,7 +157,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 auto &enm = static_cast<const cppast::cpp_enum &>(e);
 
-                if (ctx.config().should_include(
+                if (ctx.diagram().should_include(
                         ctx.get_namespace(), enm.name()))
                     process_enum_declaration(enm);
             }
@@ -214,7 +214,7 @@ void translation_unit_visitor::process_type_alias_template(
             cx::util::full_name(ctx.get_namespace(), at),
             type_safe::ref(at.type_alias().underlying_type()));
 
-        if (ctx.config().should_include(tinst->get_namespace() | tinst->name()))
+        if (ctx.diagram().should_include(tinst->get_namespace(), tinst->name()))
             ctx.diagram().add_class(std::move(tinst));
     }
 }
@@ -241,7 +241,7 @@ void translation_unit_visitor::process_namespace(
 
     auto usn = ctx.config().using_namespace();
 
-    if (ctx.config().should_include_package(package_path)) {
+    if (ctx.diagram().should_include(package_path)) {
         auto p = std::make_unique<common::model::package>(usn);
         package_path = package_path.relative_to(usn);
 
@@ -397,7 +397,8 @@ void translation_unit_visitor::process_class_declaration(
         fmt::ptr(reinterpret_cast<const void *>(&cls)));
 
     assert(c_ptr);
-    if (ctx.config().should_include(c.full_name(false)))
+
+    if (ctx.diagram().should_include(c))
         ctx.diagram().add_class(std::move(c_ptr));
 }
 
@@ -729,7 +730,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         }
     }
 
-    if (ctx.config().should_include(tinst.get_namespace(), tinst.name())) {
+    if (ctx.diagram().should_include(tinst.get_namespace(), tinst.name())) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
             rr.destination(), clanguml::common::model::to_string(rr.type()),
             c.full_name(), rr.label());
@@ -1100,7 +1101,8 @@ void translation_unit_visitor::process_function_parameter(
             relationship_t::kDependency);
 
         for (const auto &[type, relationship_type] : relationships) {
-            if (ctx.config().should_include(cx::util::split_ns(type)) &&
+            auto [type_ns, type_name] = cx::util::split_ns(type);
+            if (ctx.diagram().should_include(type_ns, type_name) &&
                 (relationship_type != relationship_t::kNone) &&
                 (type != c.name_and_ns())) {
                 relationship r{relationship_t::kDependency, type};
@@ -1165,7 +1167,7 @@ void translation_unit_visitor::
             // arguments string
         }
 
-        if (!ctx.config().should_include(ctx.get_namespace(),
+        if (!ctx.diagram().should_include(ctx.get_namespace(),
                 template_instantiation_type.primary_template()
                     .get(ctx.entity_index())[0]
                     .get()
@@ -1202,7 +1204,7 @@ void translation_unit_visitor::
 
             c.add_relationship(std::move(rr));
 
-            if (ctx.config().should_include(c.full_name(false)))
+            if (ctx.diagram().should_include(c))
                 ctx.diagram().add_class(std::move(tinst_ptr));
         }
     }
@@ -1249,7 +1251,7 @@ void translation_unit_visitor::process_friend(
     if (f.type()) {
         const auto [name_with_ns, name] =
             cx::util::split_ns(cppast::to_string(f.type().value()));
-        if (!ctx.config().should_include(name_with_ns, name))
+        if (!ctx.diagram().should_include(name_with_ns, name))
             return;
 
         LOG_DBG("Type friend declaration {}", name);
@@ -1288,7 +1290,7 @@ void translation_unit_visitor::process_friend(
             name = cx::util::full_name(ctx.get_namespace(), f.entity().value());
         }
 
-        if (!ctx.config().should_include(ctx.get_namespace(), name))
+        if (!ctx.diagram().should_include(ctx.get_namespace(), name))
             return;
 
         r.set_destination(name);
@@ -1398,7 +1400,7 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
             LOG_DBG("Failed to process template argument of std::vector at: {}",
                 fn);
     }
-    else if (ctx.config().should_include(ns, name)) {
+    else if (ctx.diagram().should_include(ns, name)) {
         LOG_DBG("User defined template instantiation: {} | {}",
             cppast::to_string(t_), cppast::to_string(t_.canonical()));
 
@@ -1509,7 +1511,7 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
         type_with_namespace = common::model::namespace_{ct.type()};
     }
 
-    if (ctx.config().should_include(type_with_namespace.value())) {
+    if (ctx.diagram().should_include(type_with_namespace.value().to_string())) {
         relationships.emplace_back(type_with_namespace.value().to_string(),
             relationship_t::kDependency);
         found = true;
@@ -1704,7 +1706,7 @@ void translation_unit_visitor::
 
         auto nested_tinst =
             build_template_instantiation(nested_template_parameter,
-                ctx.config().should_include(tinst_ns, tinst_name)
+                ctx.diagram().should_include(tinst_ns, tinst_name)
                     ? std::make_optional(&tinst)
                     : parent);
 
@@ -1713,11 +1715,11 @@ void translation_unit_visitor::
 
         auto nested_tinst_full_name = nested_tinst->full_name();
 
-        if (ctx.config().should_include(fn_ns, fn_name)) {
+        if (ctx.diagram().should_include(fn_ns, fn_name)) {
             ctx.diagram().add_class(std::move(nested_tinst));
         }
 
-        if (ctx.config().should_include(tinst_ns, tinst_name)
+        if (ctx.diagram().should_include(tinst_ns, tinst_name)
             // TODO: check why this breaks t00033:
             //    && ctx.config().should_include(
             //       cx::util::split_ns(tinst_dependency.destination()))
@@ -1753,7 +1755,7 @@ void translation_unit_visitor::
                 "type {} -> {}",
             tinst.full_name(), tinst_dependency.destination());
 
-        if (ctx.config().should_include(fn_ns, fn_name)) {
+        if (ctx.diagram().should_include(fn_ns, fn_name)) {
             tinst.add_relationship(std::move(tinst_dependency));
         }
         else if (parent) {

@@ -18,10 +18,63 @@
 
 #include "diagram.h"
 
+#include "diagram_filter.h"
+#include "namespace.h"
+
 namespace clanguml::common::model {
+
+diagram::diagram() = default;
+
+diagram::~diagram() = default;
+
+diagram::diagram(diagram &&) = default;
+
+diagram &diagram::operator=(diagram &&) = default;
 
 std::string diagram::name() const { return name_; }
 
 void diagram::set_name(const std::string &name) { name_ = name; }
+
+void diagram::set_filter(std::unique_ptr<diagram_filter> filter)
+{
+    filter_ = std::move(filter);
+}
+
+bool diagram::should_include(const element &e) const {
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(e);
+}
+
+bool diagram::should_include(const std::string &name) const {
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(name);
+}
+
+bool diagram::should_include(const relationship_t r) const {
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(r);
+}
+
+bool diagram::should_include(const scope_t s) const {
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(s);
+}
+
+bool diagram::should_include(
+    const namespace_ &ns, const std::string &name) const
+{
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(ns, name);
+}
 
 }

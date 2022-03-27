@@ -22,10 +22,6 @@ TEST_CASE("t30005", "[test-case][package]")
 
     auto diagram = config.diagrams["t30005_package"];
 
-    REQUIRE(diagram->should_include("clanguml::t30005::A"));
-    REQUIRE(diagram->should_include("clanguml::t30005::C"));
-    REQUIRE(!diagram->should_include("std::vector"));
-
     REQUIRE(diagram->name == "t30005_package");
 
     auto model = generate_package_diagram(db, diagram);

@@ -95,7 +95,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         auto package_path = package_parent | e.name();
                         auto usn = ctx.config().using_namespace();
 
-                        if (ctx.config().should_include_package(package_path)) {
+                        if (ctx.diagram().should_include(package_path)) {
                             auto p = std::make_unique<package>(usn);
                             package_path = package_path.relative_to(usn);
 
@@ -465,7 +465,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kDependency);
         }
-        else if (ctx.config().should_include(t_ns, t_name)) {
+        else if (ctx.diagram().should_include(t_ns, t_name)) {
             LOG_DBG("User defined template instantiation: {} | {}",
                 cppast::to_string(t_), cppast::to_string(t_.canonical()));
 

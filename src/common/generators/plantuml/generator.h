@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/model/diagram_filter.h"
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
@@ -225,16 +226,18 @@ void generator<C, D>::generate_link(
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 DiagramModel generate(const cppast::libclang_compilation_database &db,
-    const std::string &name, DiagramConfig &diagram, bool verbose = false)
+    const std::string &name, DiagramConfig &config, bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
-    DiagramModel d;
-    d.set_name(name);
+    DiagramModel diagram{};
+    diagram.set_name(name);
+    diagram.set_filter(
+        std::make_unique<model::diagram_filter>(diagram, config));
 
     // Get all translation units matching the glob from diagram
     // configuration
     std::vector<std::string> translation_units{};
-    for (const auto &g : diagram.glob()) {
+    for (const auto &g : config.glob()) {
         LOG_DBG("Processing glob: {}", g);
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
@@ -248,12 +251,12 @@ DiagramModel generate(const cppast::libclang_compilation_database &db,
         type_safe::ref(idx), std::move(logger)};
 
     // Process all matching translation units
-    DiagramVisitor ctx(idx, d, diagram);
+    DiagramVisitor ctx(idx, diagram, config);
     cppast::parse_files(parser, translation_units, db);
     for (auto &file : parser.files())
         ctx(file);
 
-    return std::move(d);
+    return std::move(diagram);
 }
 
 template <typename C, typename D> void generator<C, D>::init_context()

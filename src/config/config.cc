@@ -108,134 +108,6 @@ void inheritable_diagram_options::inherit(
     git.override(parent.git);
 }
 
-bool diagram::should_include_entities(const std::string &ent)
-{
-    for (const auto &ex : exclude().entity_types) {
-        if (ent == ex)
-            return false;
-    }
-
-    if (include().entity_types.empty())
-        return true;
-
-    for (const auto &in : include().entity_types) {
-        if (ent == in)
-            return true;
-    }
-
-    return false;
-}
-
-bool diagram::should_include_relationship(const std::string &rel)
-{
-    for (const auto &ex : exclude().relationships) {
-        if (rel == ex)
-            return false;
-    }
-
-    if (include().relationships.empty())
-        return true;
-
-    for (const auto &in : include().relationships) {
-        if (rel == in)
-            return true;
-    }
-
-    return false;
-}
-
-bool diagram::should_include(
-    const std::pair<common::model::namespace_, std::string> &name) const
-{
-    return should_include(std::get<0>(name), std::get<1>(name));
-}
-
-bool diagram::should_include(
-    const common::model::namespace_ &ns, const std::string &name) const
-{
-    return should_include(ns | name);
-}
-
-bool diagram::should_include(const std::string &name_) const
-{
-    auto name = clanguml::util::unqualify(name_);
-
-    for (const auto &ex : exclude().namespaces) {
-        if (name.find(ex.to_string()) == 0) {
-            LOG_DBG("Skipping from diagram: {}", name);
-            return false;
-        }
-    }
-
-    // If no inclusive namespaces are provided,
-    // allow all
-    if (include().namespaces.empty())
-        return true;
-
-    for (const auto &in : include().namespaces) {
-        if (name.find(in.to_string()) == 0)
-            return true;
-    }
-
-    LOG_DBG("Skipping from diagram: {}", name);
-
-    return false;
-}
-
-bool diagram::should_include(const common::model::namespace_ &path) const
-{
-    return should_include(path.to_string());
-}
-
-bool diagram::should_include_package(
-    const common::model::namespace_ &path) const
-{
-    return should_include_package(path.to_string());
-}
-
-bool diagram::should_include_package(const std::string &name) const
-{
-
-    for (const auto &ex : exclude().namespaces) {
-        if (name.find(ex.to_string()) == 0) {
-            LOG_DBG("Skipping from diagram: {}", name);
-            return false;
-        }
-    }
-
-    // If no inclusive namespaces are provided,
-    // allow all
-    if (include().namespaces.empty())
-        return true;
-
-    for (const auto &in : include().namespaces) {
-        if (in.to_string().find(name) == 0 || name.find(in.to_string()) == 0)
-            return true;
-    }
-
-    LOG_DBG("Skipping from diagram: {}", name);
-
-    return false;
-}
-
-bool diagram::should_include(const clanguml::common::model::scope_t scope) const
-{
-    for (const auto &s : exclude().scopes) {
-        if (s == scope)
-            return false;
-    }
-
-    if (include().scopes.empty())
-        return true;
-
-    for (const auto &s : include().scopes) {
-        if (s == scope)
-            return true;
-    }
-
-    return false;
-}
-
 diagram_type class_diagram::type() const { return diagram_type::class_diagram; }
 
 bool class_diagram::has_class(std::string clazz)
@@ -445,12 +317,18 @@ template <> struct convert<filter> {
             rhs.relationships =
                 node["relationships"].as<decltype(rhs.relationships)>();
 
-        if (node["entity_types"])
-            rhs.entity_types =
-                node["entity_types"].as<decltype(rhs.entity_types)>();
+        if (node["elements"])
+            rhs.elements =
+                node["elements"].as<decltype(rhs.elements)>();
 
         if (node["scopes"])
             rhs.scopes = node["scopes"].as<decltype(rhs.scopes)>();
+
+        if (node["subclasses"])
+            rhs.subclasses = node["subclasses"].as<decltype(rhs.subclasses)>();
+
+        if (node["context"])
+            rhs.context = node["context"].as<decltype(rhs.context)>();
 
         return true;
     }
