@@ -59,7 +59,7 @@ public:
         return ns_.relative_to(using_namespace_);
     }
 
-    virtual std::string full_name(bool relative) const { return name(); }
+    virtual std::string full_name(bool relative) const { return name_and_ns(); }
 
     void set_using_namespaces(const namespace_ &un);
 

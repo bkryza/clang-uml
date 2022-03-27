@@ -20,26 +20,26 @@
 
 namespace clanguml::common::model {
 
-bool filter_visitor::match(const diagram &d, const common::model::element &e)
+std::optional<bool> filter_visitor::match(const diagram &d, const common::model::element &e)
 {
-    return false;
+    return {};
 }
 
-bool filter_visitor::match(
+std::optional<bool> filter_visitor::match(
     const diagram &d, const common::model::relationship_t &r)
 {
-    return false;
+    return {};
 }
 
-bool filter_visitor::match(const diagram &d, const common::model::scope_t &r)
+std::optional<bool> filter_visitor::match(const diagram &d, const common::model::scope_t &r)
 {
-    return false;
+    return {};
 }
 
-bool filter_visitor::match(
+std::optional<bool> filter_visitor::match(
     const diagram &d, const common::model::namespace_ &ns)
 {
-    return false;
+    return {};
 }
 
 template <>

@@ -25,6 +25,7 @@
 #include "type_alias.h"
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace clanguml::class_diagram::model {
@@ -48,6 +49,9 @@ public:
 
     bool has_enum(const enum_ &e) const;
 
+    type_safe::optional_ref<const class_> get_class(
+        const std::string &name) const;
+
     void add_type_alias(std::unique_ptr<type_alias> &&ta);
 
     void add_class(std::unique_ptr<class_> &&c);
@@ -58,11 +62,29 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
+    void get_parents(
+        std::unordered_set<type_safe::object_ref<const class_>> &parents) const;
+
     friend void print_diagram_tree(const diagram &d, const int level);
 
 private:
     std::vector<type_safe::object_ref<const class_, false>> classes_;
     std::vector<type_safe::object_ref<const enum_, false>> enums_;
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
+};
+}
+
+namespace std {
+
+template <>
+struct hash<
+    type_safe::object_ref<const clanguml::class_diagram::model::class_>> {
+    std::size_t operator()(const type_safe::object_ref<
+        const clanguml::class_diagram::model::class_> &key) const
+    {
+        using clanguml::class_diagram::model::class_;
+
+        return std::hash<std::string>{}(key.get().full_name(false));
+    }
 };
 }

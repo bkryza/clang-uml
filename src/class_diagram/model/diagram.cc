@@ -48,6 +48,18 @@ bool diagram::has_enum(const enum_ &e) const
         [&e](const auto &ee) { return ee.get().full_name() == e.full_name(); });
 }
 
+type_safe::optional_ref<const class_> diagram::get_class(
+    const std::string &name) const
+{
+    for (const auto &c : classes_) {
+        if (c.get().full_name(false) == name) {
+            return {c};
+        }
+    }
+
+    return type_safe::nullopt;
+}
+
 void diagram::add_type_alias(std::unique_ptr<type_alias> &&ta)
 {
     LOG_DBG(
@@ -105,6 +117,28 @@ void diagram::add_enum(std::unique_ptr<enum_> &&e)
     }
     else
         LOG_DBG("Enum {} already in the model", e->name());
+}
+
+void diagram::get_parents(
+    std::unordered_set<type_safe::object_ref<const class_>> &parents) const
+{
+    bool found_new = false;
+    for (const auto &parent : parents) {
+        for (const auto &rel : parent.get().relationships()) {
+            if (rel.type() == common::model::relationship_t::kExtension) {
+                const auto p = get_class(rel.destination());
+                if (p.has_value()) {
+                    auto [it, found] = parents.emplace(p.value());
+                    if (found)
+                        found_new = true;
+                }
+            }
+        }
+    }
+
+    if (found_new) {
+        get_parents(parents);
+    }
 }
 
 std::string diagram::to_alias(const std::string &full_name) const

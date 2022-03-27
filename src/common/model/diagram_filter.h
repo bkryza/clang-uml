@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "class_diagram/model/diagram.h"
 #include "common/model/diagram.h"
 #include "common/model/element.h"
 #include "common/model/enums.h"
@@ -36,11 +37,14 @@ public:
     {
     }
 
-    virtual bool match(const diagram &d, const common::model::element &e);
-    virtual bool match(
+    virtual std::optional<bool> match(
+        const diagram &d, const common::model::element &e);
+    virtual std::optional<bool> match(
         const diagram &d, const common::model::relationship_t &r);
-    virtual bool match(const diagram &d, const common::model::scope_t &r);
-    virtual bool match(const diagram &d, const common::model::namespace_ &ns);
+    virtual std::optional<bool> match(
+        const diagram &d, const common::model::scope_t &r);
+    virtual std::optional<bool> match(
+        const diagram &d, const common::model::namespace_ &ns);
 
     bool is_inclusive() const { return type_ == filter_t::kInclusive; }
     bool is_exclusive() const { return type_ == filter_t::kExclusive; }
@@ -55,16 +59,16 @@ struct namespace_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const namespace_ &ns) override
+    std::optional<bool> match(const diagram &d, const namespace_ &ns) override
     {
         if (namespaces_.empty())
-            return is_inclusive();
+            return {};
 
         return std::any_of(namespaces_.begin(), namespaces_.end(),
             [&ns](const auto &nsit) { return ns.starts_with(nsit); });
     }
 
-    bool match(const diagram &d, const element &e) override
+    std::optional<bool> match(const diagram &d, const element &e) override
     {
         return std::any_of(
             namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
@@ -82,8 +86,11 @@ struct element_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const element &e) override
+    std::optional<bool> match(const diagram &d, const element &e) override
     {
+        if (elements_.empty())
+            return {};
+
         return std::any_of(
             elements_.begin(), elements_.end(), [&e](const auto &el) {
                 auto fn = e.full_name(false);
@@ -102,12 +109,38 @@ struct subclass_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const element &e) override
+    std::optional<bool> match(const diagram &d, const element &e) override
     {
         if (roots_.empty())
-            return is_inclusive();
+            return {};
 
-        return true;
+        const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+        // First get all parents of element e
+        std::unordered_set<
+            type_safe::object_ref<const class_diagram::model::class_, false>>
+            parents;
+
+        const auto &fn = e.full_name(false);
+        auto class_ref = cd.get_class(fn);
+
+        if (!class_ref.has_value())
+            return false;
+
+        parents.emplace(class_ref.value());
+
+        cd.get_parents(parents);
+
+        // Now check if any of the parents matches the roots specified in the
+        // filter config
+        for (const auto &root : roots_) {
+            for (const auto &parent : parents) {
+                if (root == parent.get().full_name(false))
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     std::vector<std::string> roots_;
@@ -120,10 +153,11 @@ struct relationship_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const relationship_t &r) override
+    std::optional<bool> match(
+        const diagram &d, const relationship_t &r) override
     {
         if (relationships_.empty())
-            return is_inclusive();
+            return {};
 
         return std::any_of(relationships_.begin(), relationships_.end(),
             [&r](const auto &rel) {
@@ -142,13 +176,13 @@ struct scope_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const scope_t &s) override
+    std::optional<bool> match(const diagram &d, const scope_t &s) override
     {
         if (scopes_.empty())
-            return is_inclusive();
+            return {};
 
-        return std::any_of(scopes_.begin(), scopes_.end(),
-            [&s](const auto &rel) {
+        return std::any_of(
+            scopes_.begin(), scopes_.end(), [&s](const auto &rel) {
                 bool res = to_string(s) == rel;
                 return res;
             });
@@ -164,10 +198,10 @@ struct context_filter : public filter_visitor {
     {
     }
 
-    bool match(const diagram &d, const element &r) override
+    std::optional<bool> match(const diagram &d, const element &r) override
     {
         if (context_.empty())
-            return is_inclusive();
+            return {};
 
         return std::any_of(context_.begin(), context_.end(),
             [&r](const auto &rel) { return true; });
@@ -209,12 +243,25 @@ public:
 
     template <typename T> bool should_include(const T &e)
     {
-        if (std::any_of(exclusive_.begin(), exclusive_.end(),
-                [this, &e](const auto &ex) { return ex->match(diagram_, e); }))
+        bool exc = std::any_of(
+            exclusive_.begin(), exclusive_.end(), [this, &e](const auto &ex) {
+                auto m = ex->match(diagram_, e);
+                // Return a match if a filter is undefined for specific element
+                // or it's a match
+                return !m.has_value() || m.value();
+            });
+        if (exc)
             return false;
 
-        if (std::any_of(inclusive_.begin(), inclusive_.end(),
-                [this, &e](const auto &in) { return in->match(diagram_, e); }))
+        bool inc = std::all_of(
+            inclusive_.begin(), inclusive_.end(), [this, &e](const auto &in) {
+                auto m = in->match(diagram_, e);
+                // Return a match if a filter is undefined for specific element
+                // or it's a match
+                return !m.has_value() || m.value();
+            });
+
+        if (inc)
             return true;
 
         return false;
@@ -227,14 +274,18 @@ private:
         if (c.include) {
             inclusive_.emplace_back(std::make_unique<namespace_filter>(
                 filter_t::kInclusive, c.include().namespaces));
-            inclusive_.emplace_back(std::make_unique<element_filter>(
-                filter_t::kInclusive, c.include().elements));
+
             inclusive_.emplace_back(std::make_unique<relationship_filter>(
                 filter_t::kInclusive, c.include().relationships));
             inclusive_.emplace_back(std::make_unique<scope_filter>(
                 filter_t::kInclusive, c.include().scopes));
+
+            inclusive_.emplace_back(std::make_unique<element_filter>(
+                filter_t::kInclusive, c.include().elements));
+
             inclusive_.emplace_back(std::make_unique<subclass_filter>(
                 filter_t::kInclusive, c.include().subclasses));
+
             inclusive_.emplace_back(std::make_unique<context_filter>(
                 filter_t::kInclusive, c.include().context));
         }
@@ -257,6 +308,8 @@ private:
     }
 
     std::vector<std::unique_ptr<filter_visitor>> inclusive_;
+    //    std::vector<std::unique_ptr<filter_visitor>> inclusive_and_;
+
     std::vector<std::unique_ptr<filter_visitor>> exclusive_;
     const common::model::diagram &diagram_;
 };
