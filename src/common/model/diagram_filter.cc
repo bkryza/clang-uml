@@ -20,7 +20,8 @@
 
 namespace clanguml::common::model {
 
-std::optional<bool> filter_visitor::match(const diagram &d, const common::model::element &e)
+std::optional<bool> filter_visitor::match(
+    const diagram &d, const common::model::element &e)
 {
     return {};
 }
@@ -31,7 +32,8 @@ std::optional<bool> filter_visitor::match(
     return {};
 }
 
-std::optional<bool> filter_visitor::match(const diagram &d, const common::model::scope_t &r)
+std::optional<bool> filter_visitor::match(
+    const diagram &d, const common::model::scope_t &r)
 {
     return {};
 }

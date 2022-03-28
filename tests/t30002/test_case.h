@@ -26,9 +26,9 @@ TEST_CASE("t30002", "[test-case][package]")
 
     auto model = generate_package_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t30002_package");
+    REQUIRE(model->name() == "t30002_package");
 
-    auto puml = generate_package_puml(diagram, model);
+    auto puml = generate_package_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

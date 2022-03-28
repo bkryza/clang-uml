@@ -318,8 +318,7 @@ template <> struct convert<filter> {
                 node["relationships"].as<decltype(rhs.relationships)>();
 
         if (node["elements"])
-            rhs.elements =
-                node["elements"].as<decltype(rhs.elements)>();
+            rhs.elements = node["elements"].as<decltype(rhs.elements)>();
 
         if (node["scopes"])
             rhs.scopes = node["scopes"].as<decltype(rhs.scopes)>();

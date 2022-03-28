@@ -355,14 +355,18 @@ void generator::generate(const package &p, std::ostream &ostr,
                 generate(sp, ostr, relationships_ostr);
         }
         else if (dynamic_cast<class_ *>(subpackage.get())) {
-            generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
-            generate(
-                dynamic_cast<class_ &>(*subpackage), ostr, relationships_ostr);
+            if (m_model.should_include(*subpackage)) {
+                generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
+                generate(dynamic_cast<class_ &>(*subpackage), ostr,
+                    relationships_ostr);
+            }
         }
         else if (dynamic_cast<enum_ *>(subpackage.get())) {
-            generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
-            generate(
-                dynamic_cast<enum_ &>(*subpackage), ostr, relationships_ostr);
+            if (m_model.should_include(*subpackage)) {
+                generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
+                generate(dynamic_cast<enum_ &>(*subpackage), ostr,
+                    relationships_ostr);
+            }
         }
     }
 
@@ -392,12 +396,16 @@ void generator::generate(std::ostream &ostr) const
                 generate(sp, ostr, relationships_ostr);
         }
         else if (dynamic_cast<class_ *>(p.get())) {
-            generate_alias(dynamic_cast<class_ &>(*p), ostr);
-            generate(dynamic_cast<class_ &>(*p), ostr, relationships_ostr);
+            if (m_model.should_include(*p)) {
+                generate_alias(dynamic_cast<class_ &>(*p), ostr);
+                generate(dynamic_cast<class_ &>(*p), ostr, relationships_ostr);
+            }
         }
         else if (dynamic_cast<enum_ *>(p.get())) {
-            generate_alias(dynamic_cast<enum_ &>(*p), ostr);
-            generate(dynamic_cast<enum_ &>(*p), ostr, relationships_ostr);
+            if (m_model.should_include(*p)) {
+                generate_alias(dynamic_cast<enum_ &>(*p), ostr);
+                generate(dynamic_cast<enum_ &>(*p), ostr, relationships_ostr);
+            }
         }
         ostr << '\n';
     }

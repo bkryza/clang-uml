@@ -95,18 +95,18 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         auto package_path = package_parent | e.name();
                         auto usn = ctx.config().using_namespace();
 
-                        if (ctx.diagram().should_include(package_path)) {
-                            auto p = std::make_unique<package>(usn);
-                            package_path = package_path.relative_to(usn);
+                        auto p = std::make_unique<package>(usn);
+                        package_path = package_path.relative_to(usn);
 
-                            if (e.location().has_value()) {
-                                p->set_file(e.location().value().file);
-                                p->set_line(e.location().value().line);
-                            }
+                        if (e.location().has_value()) {
+                            p->set_file(e.location().value().file);
+                            p->set_line(e.location().value().line);
+                        }
 
-                            p->set_name(e.name());
-                            p->set_namespace(package_parent);
+                        p->set_name(e.name());
+                        p->set_namespace(package_parent);
 
+                        if (ctx.diagram().should_include(*p)) {
                             if (ns_declaration.comment().has_value())
                                 p->add_decorators(decorators::parse(
                                     ns_declaration.comment().value()));

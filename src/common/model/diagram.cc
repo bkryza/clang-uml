@@ -40,28 +40,36 @@ void diagram::set_filter(std::unique_ptr<diagram_filter> filter)
     filter_ = std::move(filter);
 }
 
-bool diagram::should_include(const element &e) const {
+void diagram::set_complete(bool complete) { complete_ = complete; }
+
+bool diagram::complete() const { return complete_; }
+
+bool diagram::should_include(const element &e) const
+{
     if (filter_.get() == nullptr)
         return true;
 
     return filter_->should_include(e);
 }
 
-bool diagram::should_include(const std::string &name) const {
+bool diagram::should_include(const std::string &name) const
+{
     if (filter_.get() == nullptr)
         return true;
 
     return filter_->should_include(name);
 }
 
-bool diagram::should_include(const relationship_t r) const {
+bool diagram::should_include(const relationship_t r) const
+{
     if (filter_.get() == nullptr)
         return true;
 
     return filter_->should_include(r);
 }
 
-bool diagram::should_include(const scope_t s) const {
+bool diagram::should_include(const scope_t s) const
+{
     if (filter_.get() == nullptr)
         return true;
 

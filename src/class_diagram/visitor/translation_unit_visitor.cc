@@ -241,13 +241,13 @@ void translation_unit_visitor::process_namespace(
 
     auto usn = ctx.config().using_namespace();
 
-    if (ctx.diagram().should_include(package_path)) {
-        auto p = std::make_unique<common::model::package>(usn);
-        package_path = package_path.relative_to(usn);
+    auto p = std::make_unique<common::model::package>(usn);
+    package_path = package_path.relative_to(usn);
 
-        p->set_name(e.name());
-        p->set_namespace(package_parent);
+    p->set_name(e.name());
+    p->set_namespace(package_parent);
 
+    if (ctx.diagram().should_include(*p)) {
         if (e.comment().has_value())
             p->set_comment(e.comment().value());
 
@@ -580,7 +580,8 @@ void translation_unit_visitor::process_class_bases(
             cx::util::ns(base.type(), ctx.entity_index())};
         base_ns = base_ns | common::model::namespace_{base.name()}.name();
         cp.set_name(
-            base_ns.relative_to(ctx.config().using_namespace()).to_string());
+            // base_ns.relative_to(ctx.config().using_namespace()).to_string());
+            base_ns.to_string());
         cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {

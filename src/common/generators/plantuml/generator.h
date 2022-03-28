@@ -225,14 +225,15 @@ void generator<C, D>::generate_link(
 
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
-DiagramModel generate(const cppast::libclang_compilation_database &db,
-    const std::string &name, DiagramConfig &config, bool verbose = false)
+std::unique_ptr<DiagramModel> generate(
+    const cppast::libclang_compilation_database &db, const std::string &name,
+    DiagramConfig &config, bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
-    DiagramModel diagram{};
-    diagram.set_name(name);
-    diagram.set_filter(
-        std::make_unique<model::diagram_filter>(diagram, config));
+    auto diagram = std::make_unique<DiagramModel>();
+    diagram->set_name(name);
+    diagram->set_filter(
+        std::make_unique<model::diagram_filter>(*diagram, config));
 
     // Get all translation units matching the glob from diagram
     // configuration
@@ -251,10 +252,12 @@ DiagramModel generate(const cppast::libclang_compilation_database &db,
         type_safe::ref(idx), std::move(logger)};
 
     // Process all matching translation units
-    DiagramVisitor ctx(idx, diagram, config);
+    DiagramVisitor ctx(idx, *diagram, config);
     cppast::parse_files(parser, translation_units, db);
     for (auto &file : parser.files())
         ctx(file);
+
+    diagram->set_complete(true);
 
     return std::move(diagram);
 }

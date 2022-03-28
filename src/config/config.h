@@ -35,7 +35,6 @@
 namespace clanguml {
 namespace config {
 
-
 enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
 enum class method_arguments { full, abbreviated, none };
 

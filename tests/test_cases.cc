@@ -51,8 +51,8 @@ std::pair<clanguml::config::config, compilation_database> load_config2(
     return std::make_pair(std::move(config), std::move(db));
 }
 
-clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
-    cppast::libclang_compilation_database &db,
+std::unique_ptr<clanguml::sequence_diagram::model::diagram>
+generate_sequence_diagram(cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     using diagram_config = clanguml::config::sequence_diagram;
@@ -69,7 +69,7 @@ clanguml::sequence_diagram::model::diagram generate_sequence_diagram(
     return std::move(model);
 }
 
-clanguml::class_diagram::model::diagram generate_class_diagram(
+std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
     cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -87,8 +87,8 @@ clanguml::class_diagram::model::diagram generate_class_diagram(
     return std::move(model);
 }
 
-clanguml::package_diagram::model::diagram generate_package_diagram(
-    cppast::libclang_compilation_database &db,
+std::unique_ptr<clanguml::package_diagram::model::diagram>
+generate_package_diagram(cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     using diagram_config = clanguml::config::package_diagram;

@@ -33,12 +33,12 @@ TEST_CASE("t00002", "[test-case][class]")
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t00002_class");
+    REQUIRE(model->name() == "t00002_class");
 
-    REQUIRE(model.should_include({"clanguml", "t00002"}, "A"));
-    REQUIRE(!model.should_include({"std"}, "vector"));
+    REQUIRE(model->should_include({"clanguml", "t00002"}, "A"));
+    REQUIRE(!model->should_include({"std"}, "vector"));
 
-    auto puml = generate_class_puml(diagram, model);
+    auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

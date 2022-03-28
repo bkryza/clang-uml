@@ -44,6 +44,9 @@ public:
 
     void set_filter(std::unique_ptr<diagram_filter> filter);
 
+    void set_complete(bool complete);
+    bool complete() const;
+
     // TODO: refactor to a template method
     bool should_include(const element &e) const;
     bool should_include(const std::string &e) const;
@@ -55,6 +58,7 @@ public:
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;
+    bool complete_{false};
 };
 
 }

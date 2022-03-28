@@ -124,14 +124,12 @@ void diagram::get_parents(
 {
     bool found_new = false;
     for (const auto &parent : parents) {
-        for (const auto &rel : parent.get().relationships()) {
-            if (rel.type() == common::model::relationship_t::kExtension) {
-                const auto p = get_class(rel.destination());
-                if (p.has_value()) {
-                    auto [it, found] = parents.emplace(p.value());
-                    if (found)
-                        found_new = true;
-                }
+        for (const auto &pp : parent.get().parents()) {
+            const auto p = get_class(pp.name());
+            if (p.has_value()) {
+                auto [it, found] = parents.emplace(p.value());
+                if (found)
+                    found_new = true;
             }
         }
     }

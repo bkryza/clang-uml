@@ -184,7 +184,8 @@ clanguml::class_diagram::model::diagram &translation_unit_context::diagram()
     return diagram_;
 }
 
-clanguml::class_diagram::model::diagram &translation_unit_context::diagram() const
+clanguml::class_diagram::model::diagram &
+translation_unit_context::diagram() const
 {
     return diagram_;
 }
