@@ -37,6 +37,7 @@
  * [t00036](./test_cases/t00036.md) - Class diagram with namespaces generated as packages
  * [t00037](./test_cases/t00037.md) - Anonymous nested struct test case
  * [t00038](./test_cases/t00038.md) - Template instantiation with unexposed nested templates
+ * [t00039](./test_cases/t00039.md) - Subclass class diagram filter test
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
