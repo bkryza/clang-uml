@@ -158,7 +158,7 @@ std::optional<bool> subclass_filter::match(
 relationship_filter::relationship_filter(
     filter_t type, std::vector<relationship_t> relationships)
     : filter_visitor{type}
-    , relationships_{std::move(relationships)}
+    , relationships_{relationships}
 {
 }
 
@@ -174,7 +174,7 @@ std::optional<bool> relationship_filter::match(
 
 scope_filter::scope_filter(filter_t type, std::vector<scope_t> scopes)
     : filter_visitor{type}
-    , scopes_{std::move(scopes)}
+    , scopes_{scopes}
 {
 }
 
@@ -263,9 +263,9 @@ void diagram_filter::init_filters(const config::diagram &c)
         exclusive_.emplace_back(std::make_unique<element_filter>(
             filter_t::kExclusive, c.exclude().elements));
         exclusive_.emplace_back(std::make_unique<relationship_filter>(
-            filter_t::kExclusive, c.include().relationships));
+            filter_t::kExclusive, c.exclude().relationships));
         exclusive_.emplace_back(std::make_unique<scope_filter>(
-            filter_t::kExclusive, c.include().scopes));
+            filter_t::kExclusive, c.exclude().scopes));
         exclusive_.emplace_back(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));
         exclusive_.emplace_back(std::make_unique<context_filter>(

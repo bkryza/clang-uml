@@ -137,8 +137,8 @@ public:
         bool exc = std::any_of(
             exclusive_.begin(), exclusive_.end(), [this, &e](const auto &ex) {
                 auto m = ex->match(diagram_, e);
-                // Return a match if a filter is undefined for specific element
-                // or it's a match
+                // Return true if a filter is defined for specific element
+                // and it's a match
                 return m.has_value() && m.value();
             });
         if (exc)
@@ -147,7 +147,7 @@ public:
         bool inc = std::all_of(
             inclusive_.begin(), inclusive_.end(), [this, &e](const auto &in) {
                 auto m = in->match(diagram_, e);
-                // Return a match if a filter is undefined for specific element
+                // Return true if a filter is undefined for specific element
                 // or it's a match
                 return !m.has_value() || m.value();
             });

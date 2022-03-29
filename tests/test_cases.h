@@ -245,7 +245,7 @@ ContainsMatcher IsInnerClass(std::string const &parent,
 }
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
-    std::string const &label, std::string multiplicity_source = "",
+    std::string const &label = "", std::string multiplicity_source = "",
     std::string multiplicity_dest = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

@@ -114,6 +114,9 @@ test_cases:
     - name: t00039
       title: Subclass class diagram filter test
       description:
+    - name: t00040
+      title: Relationship and scope filter test
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
