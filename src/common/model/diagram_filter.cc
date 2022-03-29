@@ -21,31 +21,260 @@
 namespace clanguml::common::model {
 
 std::optional<bool> filter_visitor::match(
-    const diagram &d, const common::model::element &e)
+    const diagram &d, const common::model::element &e) const
 {
     return {};
 }
 
 std::optional<bool> filter_visitor::match(
-    const diagram &d, const common::model::relationship_t &r)
+    const diagram &d, const common::model::relationship_t &r) const
 {
     return {};
 }
 
 std::optional<bool> filter_visitor::match(
-    const diagram &d, const common::model::scope_t &r)
+    const diagram &d, const common::model::scope_t &r) const
 {
     return {};
 }
 
 std::optional<bool> filter_visitor::match(
-    const diagram &d, const common::model::namespace_ &ns)
+    const diagram &d, const common::model::namespace_ &ns) const
 {
     return {};
+}
+
+bool filter_visitor::is_inclusive() const
+{
+    return type_ == filter_t::kInclusive;
+}
+
+bool filter_visitor::is_exclusive() const
+{
+    return type_ == filter_t::kExclusive;
+}
+
+filter_t filter_visitor::type() const { return type_; }
+
+namespace_filter::namespace_filter(
+    filter_t type, std::vector<namespace_> namespaces)
+    : filter_visitor{type}
+    , namespaces_{namespaces}
+{
+}
+
+std::optional<bool> namespace_filter::match(
+    const diagram &d, const namespace_ &ns) const
+{
+    if (namespaces_.empty() || ns.is_empty())
+        return {};
+
+    return std::any_of(namespaces_.begin(), namespaces_.end(),
+        [&ns](const auto &nsit) { return ns.starts_with(nsit) || ns == nsit; });
+}
+
+std::optional<bool> namespace_filter::match(
+    const diagram &d, const element &e) const
+{
+    if (namespaces_.empty())
+        return {};
+
+    if (dynamic_cast<const package *>(&e) != nullptr) {
+        return std::any_of(
+            namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
+                return (e.get_namespace() | e.name()).starts_with(nsit) ||
+                    nsit.starts_with(e.get_namespace() | e.name()) ||
+                    (e.get_namespace() | e.name()) == nsit;
+            });
+    }
+    else {
+        return std::any_of(
+            namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
+                return e.get_namespace().starts_with(nsit);
+            });
+    }
+}
+
+element_filter::element_filter(filter_t type, std::vector<std::string> elements)
+    : filter_visitor{type}
+    , elements_{elements}
+{
+}
+
+std::optional<bool> element_filter::match(
+    const diagram &d, const element &e) const
+{
+    if (elements_.empty())
+        return {};
+
+    return std::any_of(elements_.begin(), elements_.end(),
+        [&e](const auto &el) { return e.full_name(false) == el; });
+}
+
+subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
+    : filter_visitor{type}
+    , roots_{roots}
+{
+}
+
+std::optional<bool> subclass_filter::match(
+    const diagram &d, const element &e) const
+{
+    if (roots_.empty())
+        return {};
+
+    if (!d.complete())
+        return {};
+
+    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+    // First get all parents of element e
+    std::unordered_set<
+        type_safe::object_ref<const class_diagram::model::class_, false>>
+        parents;
+
+    const auto &fn = e.full_name(false);
+    auto class_ref = cd.get_class(fn);
+
+    if (!class_ref.has_value())
+        return false;
+
+    parents.emplace(class_ref.value());
+
+    cd.get_parents(parents);
+
+    // Now check if any of the parents matches the roots specified in the
+    // filter config
+    for (const auto &root : roots_) {
+        for (const auto &parent : parents) {
+            if (root == parent.get().full_name(false))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+relationship_filter::relationship_filter(
+    filter_t type, std::vector<relationship_t> relationships)
+    : filter_visitor{type}
+    , relationships_{std::move(relationships)}
+{
+}
+
+std::optional<bool> relationship_filter::match(
+    const diagram &d, const relationship_t &r) const
+{
+    if (relationships_.empty())
+        return {};
+
+    return std::any_of(relationships_.begin(), relationships_.end(),
+        [&r](const auto &rel) { return r == rel; });
+}
+
+scope_filter::scope_filter(filter_t type, std::vector<scope_t> scopes)
+    : filter_visitor{type}
+    , scopes_{std::move(scopes)}
+{
+}
+
+std::optional<bool> scope_filter::match(
+    const diagram &d, const scope_t &s) const
+{
+    if (scopes_.empty())
+        return {};
+
+    return std::any_of(scopes_.begin(), scopes_.end(),
+        [&s](const auto &scope) { return s == scope; });
+}
+
+context_filter::context_filter(filter_t type, std::vector<std::string> context)
+    : filter_visitor{type}
+    , context_{context}
+{
+}
+
+std::optional<bool> context_filter::match(
+    const diagram &d, const element &r) const
+{
+    if (!d.complete())
+        return {};
+
+    if (context_.empty())
+        return {};
+
+    return std::any_of(context_.begin(), context_.end(),
+        [&r](const auto &rel) { return std::optional<bool>{}; });
+}
+
+diagram_filter::diagram_filter(
+    const common::model::diagram &d, const config::diagram &c)
+    : diagram_{d}
+{
+    init_filters(c);
+}
+
+void diagram_filter::add_inclusive_filter(std::unique_ptr<filter_visitor> fv)
+{
+    inclusive_.emplace_back(std::move(fv));
+}
+
+void diagram_filter::add_exclusive_filter(std::unique_ptr<filter_visitor> fv)
+{
+    exclusive_.emplace_back(std::move(fv));
+}
+
+bool diagram_filter::should_include(
+    namespace_ ns, const std::string &name) const
+{
+    if (should_include(ns)) {
+        element e{namespace_{}};
+        e.set_name(name);
+        e.set_namespace(ns);
+
+        return should_include(e);
+    }
+
+    return false;
+}
+
+void diagram_filter::init_filters(const config::diagram &c)
+{
+    // Process inclusive filters
+    if (c.include) {
+        inclusive_.emplace_back(std::make_unique<namespace_filter>(
+            filter_t::kInclusive, c.include().namespaces));
+        inclusive_.emplace_back(std::make_unique<relationship_filter>(
+            filter_t::kInclusive, c.include().relationships));
+        inclusive_.emplace_back(std::make_unique<scope_filter>(
+            filter_t::kInclusive, c.include().scopes));
+        inclusive_.emplace_back(std::make_unique<element_filter>(
+            filter_t::kInclusive, c.include().elements));
+        inclusive_.emplace_back(std::make_unique<subclass_filter>(
+            filter_t::kInclusive, c.include().subclasses));
+        inclusive_.emplace_back(std::make_unique<context_filter>(
+            filter_t::kInclusive, c.include().context));
+    }
+
+    // Process exclusive filters
+    if (c.exclude) {
+        exclusive_.emplace_back(std::make_unique<namespace_filter>(
+            filter_t::kExclusive, c.exclude().namespaces));
+        exclusive_.emplace_back(std::make_unique<element_filter>(
+            filter_t::kExclusive, c.exclude().elements));
+        exclusive_.emplace_back(std::make_unique<relationship_filter>(
+            filter_t::kExclusive, c.include().relationships));
+        exclusive_.emplace_back(std::make_unique<scope_filter>(
+            filter_t::kExclusive, c.include().scopes));
+        exclusive_.emplace_back(std::make_unique<subclass_filter>(
+            filter_t::kExclusive, c.exclude().subclasses));
+        exclusive_.emplace_back(std::make_unique<context_filter>(
+            filter_t::kExclusive, c.exclude().context));
+    }
 }
 
 template <>
-bool diagram_filter::should_include<std::string>(const std::string &name)
+bool diagram_filter::should_include<std::string>(const std::string &name) const
 {
     auto [ns, n] = cx::util::split_ns(name);
 
