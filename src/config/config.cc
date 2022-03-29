@@ -151,6 +151,7 @@ template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 }
 
 namespace YAML {
+using clanguml::common::model::relationship_t;
 using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
@@ -456,6 +457,53 @@ template <> struct convert<layout_hint> {
         else if (node["right"]) {
             rhs.hint = hint_t::right;
             rhs.entity = node["right"].as<std::string>();
+        }
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
+// config relationship_t decoder
+//
+template <> struct convert<relationship_t> {
+    static bool decode(const Node &node, relationship_t &rhs)
+    {
+        assert(node.Type() == NodeType::Scalar);
+
+        auto relationship_name = node.as<std::string>();
+        if (relationship_name == "extension" ||
+            relationship_name == "inheritance") {
+            rhs = relationship_t::kExtension;
+        }
+        else if (relationship_name == "composition") {
+            rhs = relationship_t::kComposition;
+        }
+        else if (relationship_name == "aggregation") {
+            rhs = relationship_t::kAggregation;
+        }
+        else if (relationship_name == "containment") {
+            rhs = relationship_t::kContainment;
+        }
+        else if (relationship_name == "ownership") {
+            rhs = relationship_t::kOwnership;
+        }
+        else if (relationship_name == "association") {
+            rhs = relationship_t::kAssociation;
+        }
+        else if (relationship_name == "instantiation") {
+            rhs = relationship_t::kInstantiation;
+        }
+        else if (relationship_name == "friendship") {
+            rhs = relationship_t::kFriendship;
+        }
+        else if (relationship_name == "dependency") {
+            rhs = relationship_t::kDependency;
+        }
+        else if (relationship_name == "none") {
+            rhs = relationship_t::kNone;
         }
         else
             return false;

@@ -165,9 +165,10 @@ struct subclass_filter : public filter_visitor {
 };
 
 struct relationship_filter : public filter_visitor {
-    relationship_filter(filter_t type, std::vector<std::string> relationships)
+    relationship_filter(
+        filter_t type, std::vector<relationship_t> relationships)
         : filter_visitor{type}
-        , relationships_{relationships}
+        , relationships_{std::move(relationships)}
     {
     }
 
@@ -178,19 +179,16 @@ struct relationship_filter : public filter_visitor {
             return {};
 
         return std::any_of(relationships_.begin(), relationships_.end(),
-            [&r](const auto &rel) {
-                bool res = to_string(r) == rel;
-                return res;
-            });
+            [&r](const auto &rel) { return r == rel; });
     }
 
-    std::vector<std::string> relationships_;
+    std::vector<relationship_t> relationships_;
 };
 
 struct scope_filter : public filter_visitor {
-    scope_filter(filter_t type, std::vector<std::string> scopes)
+    scope_filter(filter_t type, std::vector<scope_t> scopes)
         : filter_visitor{type}
-        , scopes_{scopes}
+        , scopes_{std::move(scopes)}
     {
     }
 
@@ -199,14 +197,11 @@ struct scope_filter : public filter_visitor {
         if (scopes_.empty())
             return {};
 
-        return std::any_of(
-            scopes_.begin(), scopes_.end(), [&s](const auto &rel) {
-                bool res = to_string(s) == rel;
-                return res;
-            });
+        return std::any_of(scopes_.begin(), scopes_.end(),
+            [&s](const auto &scope) { return s == scope; });
     }
 
-    std::vector<std::string> scopes_;
+    std::vector<scope_t> scopes_;
 };
 
 struct context_filter : public filter_visitor {

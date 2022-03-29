@@ -51,16 +51,16 @@ struct filter {
     std::vector<std::string> elements;
 
     // E.g.:
-    //   - inheritance
+    //   - inheritance/extension
     //   - dependency
     //   - instantiation
-    std::vector<std::string> relationships;
+    std::vector<common::model::relationship_t> relationships;
 
     // E.g.:
     //   - public
     //   - protected
     //   - private
-    std::vector<std::string> scopes;
+    std::vector<common::model::scope_t> scopes;
 
     std::vector<std::string> subclasses;
 
