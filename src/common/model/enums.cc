@@ -49,22 +49,6 @@ std::string to_string(relationship_t r)
     }
 }
 
-std::string to_string(scope_t s)
-{
-    switch (s) {
-    case scope_t::kPublic:
-        return "public";
-    case scope_t::kProtected:
-        return "protected";
-    case scope_t::kPrivate:
-        return "private";
-    case scope_t::kNone:
-        return "none";
-    default:
-        assert(false);
-    }
-}
-
 std::string to_string(access_t a)
 {
     switch (a) {

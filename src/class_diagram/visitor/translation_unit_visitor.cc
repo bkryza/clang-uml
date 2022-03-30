@@ -46,28 +46,27 @@ using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 
 namespace detail {
-scope_t cpp_access_specifier_to_scope(
+access_t cpp_access_specifier_to_access(
     cppast::cpp_access_specifier_kind access_specifier)
 {
-    scope_t scope = scope_t::kPublic;
+    auto access = access_t::kPublic;
     switch (access_specifier) {
     case cppast::cpp_access_specifier_kind::cpp_public:
-        scope = scope_t::kPublic;
+        access = access_t::kPublic;
         break;
     case cppast::cpp_access_specifier_kind::cpp_private:
-        scope = scope_t::kPrivate;
+        access = access_t::kPrivate;
         break;
     case cppast::cpp_access_specifier_kind::cpp_protected:
-        scope = scope_t::kProtected;
+        access = access_t::kProtected;
         break;
     default:
         break;
     }
 
-    return scope;
+    return access;
 }
 }
 
@@ -662,7 +661,7 @@ void translation_unit_visitor::process_class_children(
                 child.scope_name() ? child.scope_name().value().name()
                                    : "<no-scope>");
 
-            process_friend(fr, c);
+            process_friend(fr, c, last_access_specifier);
         }
         else if (cppast::is_friended(child)) {
             auto &fr =
@@ -670,7 +669,7 @@ void translation_unit_visitor::process_class_children(
 
             LOG_DBG("Found friend template: {}", child.name());
 
-            process_friend(fr, c);
+            process_friend(fr, c, last_access_specifier);
         }
         else {
             LOG_DBG("Found some other class child: {} ({})", child.name(),
@@ -717,7 +716,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         relationship_type = relationship_t::kAggregation;
 
     relationship rr{relationship_type, tinst.full_name(),
-        detail::cpp_access_specifier_to_scope(as), mv.name()};
+        detail::cpp_access_specifier_to_access(as), mv.name()};
     rr.set_style(m.style_spec());
 
     // Process field decorators
@@ -765,7 +764,7 @@ void translation_unit_visitor::process_field(
         type_name = "<<anonymous>>";
 
     class_member m{
-        detail::cpp_access_specifier_to_scope(as), mv.name(), type_name};
+        detail::cpp_access_specifier_to_access(as), mv.name(), type_name};
 
     if (mv.location().has_value()) {
         m.set_file(mv.location().value().file);
@@ -816,7 +815,7 @@ void translation_unit_visitor::process_field(
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
-                relationship r{relationship_type, type, m.scope(), m.name()};
+                relationship r{relationship_type, type, m.access(), m.name()};
                 r.set_style(m.style_spec());
 
                 auto [decorator_rtype, decorator_rmult] = m.get_relationship();
@@ -848,7 +847,7 @@ void translation_unit_visitor::process_anonymous_enum(
     for (const auto &ev : en) {
         if (ev.kind() == cppast::cpp_entity_kind::enum_value_t) {
             class_member m{
-                detail::cpp_access_specifier_to_scope(as), ev.name(), "enum"};
+                detail::cpp_access_specifier_to_access(as), ev.name(), "enum"};
             c.add_member(std::move(m));
         }
     }
@@ -858,7 +857,7 @@ void translation_unit_visitor::process_static_field(
     const cppast::cpp_variable &mv, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_member m{detail::cpp_access_specifier_to_scope(as), mv.name(),
+    class_member m{detail::cpp_access_specifier_to_access(as), mv.name(),
         cppast::to_string(mv.type())};
 
     if (mv.location().has_value()) {
@@ -881,7 +880,7 @@ void translation_unit_visitor::process_method(
     const cppast::cpp_member_function &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m{detail::cpp_access_specifier_to_scope(as),
+    class_method m{detail::cpp_access_specifier_to_access(as),
         util::trim(mf.name()), cppast::to_string(mf.return_type())};
     m.is_pure_virtual(cppast::is_pure(mf.virtual_info()));
     m.is_virtual(cppast::is_virtual(mf.virtual_info()));
@@ -923,8 +922,8 @@ void translation_unit_visitor::process_template_method(
             static_cast<const cppast::cpp_member_function &>(mf.function())
                 .return_type());
 
-    class_method m{
-        detail::cpp_access_specifier_to_scope(as), util::trim(mf.name()), type};
+    class_method m{detail::cpp_access_specifier_to_access(as),
+        util::trim(mf.name()), type};
     m.is_pure_virtual(false);
     m.is_virtual(false);
     m.is_const(cppast::is_const(
@@ -964,7 +963,7 @@ void translation_unit_visitor::process_static_method(
     const cppast::cpp_function &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m{detail::cpp_access_specifier_to_scope(as),
+    class_method m{detail::cpp_access_specifier_to_access(as),
         util::trim(mf.name()), cppast::to_string(mf.return_type())};
     m.is_pure_virtual(false);
     m.is_virtual(false);
@@ -998,7 +997,7 @@ void translation_unit_visitor::process_constructor(
     const cppast::cpp_constructor &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m{detail::cpp_access_specifier_to_scope(as),
+    class_method m{detail::cpp_access_specifier_to_access(as),
         util::trim(mf.name()), "void"};
     m.is_pure_virtual(false);
     m.is_virtual(false);
@@ -1030,7 +1029,7 @@ void translation_unit_visitor::process_destructor(
     const cppast::cpp_destructor &mf, class_ &c,
     cppast::cpp_access_specifier_kind as)
 {
-    class_method m{detail::cpp_access_specifier_to_scope(as),
+    class_method m{detail::cpp_access_specifier_to_access(as),
         util::trim(mf.name()), "void"};
     m.is_pure_virtual(false);
     m.is_virtual(cppast::is_virtual(mf.virtual_info()));
@@ -1230,8 +1229,8 @@ void translation_unit_visitor::process_template_template_parameter(
     parent.add_template({"", t.name() + "<>"});
 }
 
-void translation_unit_visitor::process_friend(
-    const cppast::cpp_friend &f, class_ &parent)
+void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
+    class_ &parent, cppast::cpp_access_specifier_kind as)
 {
     // Only process friends to other classes or class templates
     if (!f.entity() ||
@@ -1240,8 +1239,8 @@ void translation_unit_visitor::process_friend(
                 cppast::cpp_entity_kind::class_template_t))
         return;
 
-    relationship r{
-        relationship_t::kFriendship, "", scope_t::kNone, "<<friend>>"};
+    relationship r{relationship_t::kFriendship, "",
+        detail::cpp_access_specifier_to_access(as), "<<friend>>"};
 
     if (f.comment().has_value())
         r.add_decorators(decorators::parse(f.comment().value()));

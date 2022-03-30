@@ -20,6 +20,11 @@
 
 namespace clanguml::common::model {
 
+filter_visitor::filter_visitor(filter_t type)
+    : type_{type}
+{
+}
+
 std::optional<bool> filter_visitor::match(
     const diagram &d, const common::model::element &e) const
 {
@@ -33,7 +38,7 @@ std::optional<bool> filter_visitor::match(
 }
 
 std::optional<bool> filter_visitor::match(
-    const diagram &d, const common::model::scope_t &r) const
+    const diagram &d, const common::model::access_t &a) const
 {
     return {};
 }
@@ -172,20 +177,20 @@ std::optional<bool> relationship_filter::match(
         [&r](const auto &rel) { return r == rel; });
 }
 
-scope_filter::scope_filter(filter_t type, std::vector<scope_t> scopes)
+access_filter::access_filter(filter_t type, std::vector<access_t> access)
     : filter_visitor{type}
-    , scopes_{scopes}
+    , access_{access}
 {
 }
 
-std::optional<bool> scope_filter::match(
-    const diagram &d, const scope_t &s) const
+std::optional<bool> access_filter::match(
+    const diagram &d, const access_t &a) const
 {
-    if (scopes_.empty())
+    if (access_.empty())
         return {};
 
-    return std::any_of(scopes_.begin(), scopes_.end(),
-        [&s](const auto &scope) { return s == scope; });
+    return std::any_of(access_.begin(), access_.end(),
+        [&a](const auto &access) { return a == access; });
 }
 
 context_filter::context_filter(filter_t type, std::vector<std::string> context)
@@ -246,8 +251,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().namespaces));
         inclusive_.emplace_back(std::make_unique<relationship_filter>(
             filter_t::kInclusive, c.include().relationships));
-        inclusive_.emplace_back(std::make_unique<scope_filter>(
-            filter_t::kInclusive, c.include().scopes));
+        inclusive_.emplace_back(std::make_unique<access_filter>(
+            filter_t::kInclusive, c.include().access));
         inclusive_.emplace_back(std::make_unique<element_filter>(
             filter_t::kInclusive, c.include().elements));
         inclusive_.emplace_back(std::make_unique<subclass_filter>(
@@ -264,8 +269,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, c.exclude().elements));
         exclusive_.emplace_back(std::make_unique<relationship_filter>(
             filter_t::kExclusive, c.exclude().relationships));
-        exclusive_.emplace_back(std::make_unique<scope_filter>(
-            filter_t::kExclusive, c.exclude().scopes));
+        exclusive_.emplace_back(std::make_unique<access_filter>(
+            filter_t::kExclusive, c.exclude().access));
         exclusive_.emplace_back(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));
         exclusive_.emplace_back(std::make_unique<context_filter>(

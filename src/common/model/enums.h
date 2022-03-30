@@ -23,8 +23,6 @@ namespace clanguml::common::model {
 
 enum class access_t { kPublic, kProtected, kPrivate };
 
-enum class scope_t { kPublic, kProtected, kPrivate, kNone };
-
 enum class relationship_t {
     kNone,
     kExtension,
@@ -41,8 +39,6 @@ enum class relationship_t {
 enum class message_t { kCall, kReturn };
 
 std::string to_string(relationship_t r);
-
-std::string to_string(scope_t r);
 
 std::string to_string(access_t r);
 

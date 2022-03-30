@@ -60,7 +60,7 @@ struct filter {
     //   - public
     //   - protected
     //   - private
-    std::vector<common::model::scope_t> scopes;
+    std::vector<common::model::access_t> access;
 
     std::vector<std::string> subclasses;
 

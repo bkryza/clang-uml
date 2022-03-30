@@ -68,7 +68,7 @@ bool diagram::should_include(const relationship_t r) const
     return filter_->should_include(r);
 }
 
-bool diagram::should_include(const scope_t s) const
+bool diagram::should_include(const access_t s) const
 {
     if (filter_.get() == nullptr)
         return true;

@@ -151,8 +151,8 @@ template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 }
 
 namespace YAML {
+using clanguml::common::model::access_t;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::filter;
@@ -234,15 +234,18 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
     return {};
 }
 
-template <> struct convert<scope_t> {
-    static bool decode(const Node &node, scope_t &rhs)
+//
+// config access_t decoder
+//
+template <> struct convert<access_t> {
+    static bool decode(const Node &node, access_t &rhs)
     {
         if (node.as<std::string>() == "public")
-            rhs = scope_t::kPublic;
+            rhs = access_t::kPublic;
         else if (node.as<std::string>() == "protected")
-            rhs = scope_t::kProtected;
+            rhs = access_t::kProtected;
         else if (node.as<std::string>() == "private")
-            rhs = scope_t::kPrivate;
+            rhs = access_t::kPrivate;
         else
             return false;
 
@@ -368,8 +371,8 @@ template <> struct convert<filter> {
         if (node["elements"])
             rhs.elements = node["elements"].as<decltype(rhs.elements)>();
 
-        if (node["scopes"])
-            rhs.scopes = node["scopes"].as<decltype(rhs.scopes)>();
+        if (node["access"])
+            rhs.access = node["access"].as<decltype(rhs.access)>();
 
         if (node["subclasses"])
             rhs.subclasses = node["subclasses"].as<decltype(rhs.subclasses)>();

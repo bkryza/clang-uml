@@ -49,9 +49,9 @@ using common_generator =
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::enum_;
+using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 
 using namespace clanguml::util;
 

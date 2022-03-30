@@ -42,29 +42,28 @@ using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::diagram;
 
 namespace detail {
-scope_t cpp_access_specifier_to_scope(
+access_t cpp_access_specifier_to_access(
     cppast::cpp_access_specifier_kind access_specifier)
 {
-    scope_t scope = scope_t::kPublic;
+    access_t access = access_t::kPublic;
     switch (access_specifier) {
     case cppast::cpp_access_specifier_kind::cpp_public:
-        scope = scope_t::kPublic;
+        access = access_t::kPublic;
         break;
     case cppast::cpp_access_specifier_kind::cpp_private:
-        scope = scope_t::kPrivate;
+        access = access_t::kPrivate;
         break;
     case cppast::cpp_access_specifier_kind::cpp_protected:
-        scope = scope_t::kProtected;
+        access = access_t::kProtected;
         break;
     default:
         break;
     }
 
-    return scope;
+    return access;
 }
 }
 

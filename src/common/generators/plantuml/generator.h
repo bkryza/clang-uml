@@ -30,13 +30,13 @@
 
 namespace clanguml::common::generators::plantuml {
 
+using clanguml::common::model::access_t;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 
 std::string to_plantuml(relationship_t r, std::string style);
-std::string to_plantuml(scope_t scope);
+std::string to_plantuml(access_t scope);
 std::string to_plantuml(message_t r);
 
 template <typename ConfigType, typename DiagramType> class generator {

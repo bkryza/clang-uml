@@ -110,7 +110,7 @@ void generator::generate(
     // Process methods
     //
     for (const auto &m : c.methods()) {
-        if (!m_model.should_include(m.scope()))
+        if (!m_model.should_include(m.access()))
             continue;
 
         if (m.is_pure_virtual())
@@ -121,7 +121,7 @@ void generator::generate(
 
         std::string type{m.type()};
 
-        ostr << plantuml_common::to_plantuml(m.scope()) << m.name();
+        ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
         ostr << "(";
         if (m_config.generate_method_arguments() !=
@@ -195,7 +195,7 @@ void generator::generate(
                    << m_model.to_alias(uns.relative(destination));
 
             if (!r.label().empty()) {
-                relstr << " : " << plantuml_common::to_plantuml(r.scope())
+                relstr << " : " << plantuml_common::to_plantuml(r.access())
                        << r.label();
                 rendered_relations.emplace(r.label());
             }
@@ -222,7 +222,7 @@ void generator::generate(
     // Process members
     //
     for (const auto &m : c.members()) {
-        if (!m_model.should_include(m.scope()))
+        if (!m_model.should_include(m.access()))
             continue;
 
         if (!m_config.include_relations_also_as_members() &&
@@ -232,7 +232,7 @@ void generator::generate(
         if (m.is_static())
             ostr << "{static} ";
 
-        ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
+        ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
              << uns.relative(m.type());
 
         if (m_config.generate_links) {

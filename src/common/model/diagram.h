@@ -52,7 +52,7 @@ public:
     bool should_include(const std::string &e) const;
     bool should_include(const relationship r) const;
     bool should_include(const relationship_t r) const;
-    bool should_include(const scope_t s) const;
+    bool should_include(const access_t s) const;
     bool should_include(const namespace_ &ns, const std::string &name) const;
 
 private:

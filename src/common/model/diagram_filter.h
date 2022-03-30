@@ -32,10 +32,7 @@ enum filter_t { kInclusive, kExclusive };
 
 class filter_visitor {
 public:
-    filter_visitor(filter_t type)
-        : type_{type}
-    {
-    }
+    filter_visitor(filter_t type);
 
     virtual std::optional<bool> match(
         const diagram &d, const common::model::element &e) const;
@@ -44,7 +41,7 @@ public:
         const diagram &d, const common::model::relationship_t &r) const;
 
     virtual std::optional<bool> match(
-        const diagram &d, const common::model::scope_t &r) const;
+        const diagram &d, const common::model::access_t &a) const;
 
     virtual std::optional<bool> match(
         const diagram &d, const common::model::namespace_ &ns) const;
@@ -102,14 +99,14 @@ private:
     std::vector<relationship_t> relationships_;
 };
 
-struct scope_filter : public filter_visitor {
-    scope_filter(filter_t type, std::vector<scope_t> scopes);
+struct access_filter : public filter_visitor {
+    access_filter(filter_t type, std::vector<access_t> access);
 
     std::optional<bool> match(
-        const diagram &d, const scope_t &s) const override;
+        const diagram &d, const access_t &a) const override;
 
 private:
-    std::vector<scope_t> scopes_;
+    std::vector<access_t> access_;
 };
 
 struct context_filter : public filter_visitor {

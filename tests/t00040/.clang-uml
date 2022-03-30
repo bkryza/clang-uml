@@ -11,7 +11,7 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00040
-      scopes:
+      access:
         - public
         - protected
     exclude:
