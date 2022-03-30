@@ -21,6 +21,8 @@
 
 namespace clanguml::common::model {
 
+enum class diagram_t { kClass, kSequence, kPackage };
+
 enum class access_t { kPublic, kProtected, kPrivate };
 
 enum class relationship_t {

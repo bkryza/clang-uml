@@ -38,6 +38,8 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    common::model::diagram_t type() const override;
+
     std::string to_alias(const std::string &full_name) const;
 };
 }

@@ -36,6 +36,11 @@ const std::vector<type_safe::object_ref<const enum_>> diagram::enums() const
     return enums_;
 }
 
+common::model::diagram_t diagram::type() const
+{
+    return common::model::diagram_t::kClass;
+}
+
 bool diagram::has_class(const class_ &c) const
 {
     return std::any_of(classes_.cbegin(), classes_.cend(),

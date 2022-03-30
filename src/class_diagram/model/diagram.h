@@ -41,6 +41,8 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    common::model::diagram_t type() const override;
+
     const std::vector<type_safe::object_ref<const class_>> classes() const;
 
     const std::vector<type_safe::object_ref<const enum_>> enums() const;

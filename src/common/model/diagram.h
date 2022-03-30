@@ -34,6 +34,8 @@ public:
     diagram();
     virtual ~diagram();
 
+    virtual diagram_t type() const = 0;
+
     diagram(const diagram &) = delete;
     diagram(diagram &&);
     diagram &operator=(const diagram &) = delete;
