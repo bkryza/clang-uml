@@ -18,12 +18,14 @@
     * `elements` - list of elements, i.e. specific classes, enums, templates to include
     * `access` - list of visibility scopes to include (e.g. `private`)
     * `subclasses` - include only subclasses of specified classes (and themselves)
+    * `context` - include only entities in direct relationship with specified classes
 * `exclude` - definition of excqlusion patterns:
     * `namespaces` - list of namespaces to exclude
     * `relationships` - list of relationships to exclude
     * `elements` - list of elements, i.e. specific classes, enums, templates to exclude
     * `access` - list of visibility scopes to exclude (e.g. `private`)
     * `subclasses` - exclude subclasses of specified classes (and themselves)
+    * `context` - exclude only entities in direct relationship with specified classes
 * `layout` - add layout hints for entities (classes, packages)
 * `plantuml` - verbatim PlantUML directives which should be added to a diagram
     * `before` - list of directives which will be added before the generated diagram
@@ -81,6 +83,9 @@ diagrams:
       namespaces:
         - clanguml::common::model
         - clanguml::class_diagram::model
+      # Only include elements in direct relationship with ClassA
+      context:
+        - ClassA
     exclude:
       # Do not include private members and methods in the diagram
       access:
