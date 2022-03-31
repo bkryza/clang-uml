@@ -20,6 +20,7 @@
 
 import sys
 from lxml import etree
+import lxml.html
 
 def main(argv):
     if len(argv) < 1:
@@ -34,6 +35,12 @@ def main(argv):
 
         # Parse SVG XML
         tree = etree.fromstring(bytes(xml, encoding='utf8'))
+
+        # Add style color for <a> links
+        defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})[0]
+        style = etree.SubElement(defs, 'style')
+        style.text = 'a:hover { text-decoration: underline; }'
+        style.set('type', 'text/css')
 
         # Remove comments from SVG, to minimize diff
         # when updating diagrams in Git

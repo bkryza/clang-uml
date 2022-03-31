@@ -6,6 +6,7 @@
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
       <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
     </filter>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
     <rect fill="#FFFFFF" filter="url(#f1q9wj85sphji5)" height="260.5313" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="175" y="69.4297"/>
