@@ -46,6 +46,11 @@ TEST_CASE("t00039", "[test-case][class]")
     REQUIRE_THAT(puml, !IsClass(_A("B")));
     REQUIRE_THAT(puml, !IsClass(_A("ns1::BB")));
 
+    REQUIRE_THAT(puml, IsClassTemplate("ns3::F", "T"));
+    REQUIRE_THAT(puml, IsClassTemplate("ns3::FF", "T,M"));
+    REQUIRE_THAT(puml, IsClassTemplate("ns3::FE", "T,M"));
+    REQUIRE_THAT(puml, IsClassTemplate("ns3::FFF", "T,M,N"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

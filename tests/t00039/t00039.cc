@@ -1,3 +1,5 @@
+#include <string>
+
 namespace clanguml::t00039 {
 struct B {
 };
@@ -21,4 +23,23 @@ namespace ns2 {
 struct AAAA : public AAA {
 };
 } // namespace ns2
+
+namespace ns3 {
+template <typename T> struct F {
+    T *t;
+};
+
+template <typename T, typename M> struct FF : public F<T> {
+    M *m;
+};
+
+template <typename T, typename M> struct FE : public F<T> {
+    M *m;
+};
+
+template <typename T, typename M, typename N> struct FFF : public FF<T, M> {
+    N *n;
+};
+
+} // namespace ns3
 } // namespace clanguml::t00039
