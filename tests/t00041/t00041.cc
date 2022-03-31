@@ -32,4 +32,15 @@ struct RR : public R {
 struct RRR : public RR {
 };
 
+namespace ns1 {
+struct N {
+};
+
+struct NN : public N {
+};
+
+struct NM : public N {
+};
+}
+
 } // namespace clanguml::t00041

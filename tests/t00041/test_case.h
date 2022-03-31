@@ -55,6 +55,12 @@ TEST_CASE("t00041", "[test-case][class]")
     REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("E"), "+e"));
     REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("F"), "+f"));
 
+    REQUIRE_THAT(puml, IsClass(_A("ns1::N")));
+    REQUIRE_THAT(puml, IsClass(_A("ns1::NN")));
+    REQUIRE_THAT(puml, IsClass(_A("ns1::NM")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NN")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NM")));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

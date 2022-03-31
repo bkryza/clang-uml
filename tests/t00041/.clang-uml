@@ -13,3 +13,5 @@ diagrams:
         - clanguml::t00041
       context:
         - clanguml::t00041::RR
+      subclasses:
+        - clanguml::t00041::ns1::N

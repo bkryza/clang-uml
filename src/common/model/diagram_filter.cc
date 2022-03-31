@@ -1,5 +1,5 @@
 /**
- * src/common/model/diagram_filter.h
+ * src/common/model/diagram_filter.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -60,6 +60,34 @@ bool filter_visitor::is_exclusive() const
 }
 
 filter_t filter_visitor::type() const { return type_; }
+
+anyof_filter::anyof_filter(
+    filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
+    : filter_visitor{type}
+    , filters_{std::move(filters)}
+{
+}
+
+std::optional<bool> anyof_filter::match(
+    const diagram &d, const common::model::element &e) const
+{
+    std::optional<bool> res{};
+
+    for (const auto &filter : filters_) {
+        auto m = filter->match(d, e);
+        if (m.has_value()) {
+            if (m.value() == true) {
+                res = true;
+                break;
+            }
+            else {
+                res = false;
+            }
+        }
+    }
+
+    return res;
+}
 
 namespace_filter::namespace_filter(
     filter_t type, std::vector<namespace_> namespaces)
@@ -301,12 +329,18 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().relationships));
         inclusive_.emplace_back(std::make_unique<access_filter>(
             filter_t::kInclusive, c.include().access));
-        inclusive_.emplace_back(std::make_unique<element_filter>(
+
+        // Include any of these matches even if one them does not match
+        std::vector<std::unique_ptr<filter_visitor>> element_filters;
+        element_filters.emplace_back(std::make_unique<element_filter>(
             filter_t::kInclusive, c.include().elements));
-        inclusive_.emplace_back(std::make_unique<subclass_filter>(
+        element_filters.emplace_back(std::make_unique<subclass_filter>(
             filter_t::kInclusive, c.include().subclasses));
-        inclusive_.emplace_back(std::make_unique<context_filter>(
+        element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
+
+        inclusive_.emplace_back(std::make_unique<anyof_filter>(
+            filter_t::kInclusive, std::move(element_filters)));
     }
 
     // Process exclusive filters

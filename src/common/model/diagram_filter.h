@@ -1,5 +1,5 @@
 /**
- * src/common/model/entity_filter.h
+ * src/common/model/diagram_filter.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -53,6 +53,17 @@ public:
 
 private:
     filter_t type_;
+};
+
+struct anyof_filter : public filter_visitor {
+    anyof_filter(
+        filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
+
+    std::optional<bool> match(
+        const diagram &d, const common::model::element &e) const override;
+
+private:
+    std::vector<std::unique_ptr<filter_visitor>> filters_;
 };
 
 struct namespace_filter : public filter_visitor {
