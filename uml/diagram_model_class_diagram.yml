@@ -16,6 +16,9 @@ include:
     - clanguml::class_diagram::model
     - clanguml::sequence_diagram::model
     - clanguml::package_diagram::model
+exclude:
+  relationships:
+    - dependency
 using_namespace:
   - clanguml
 plantuml:

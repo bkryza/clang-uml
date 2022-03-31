@@ -12,6 +12,9 @@ include:
     - clanguml::package_diagram::model
 using_namespace:
   - clanguml::package_diagram::model
+exclude:
+  relationships:
+    - dependency
 plantuml:
   before:
     - 'title clang-uml package diagram model'

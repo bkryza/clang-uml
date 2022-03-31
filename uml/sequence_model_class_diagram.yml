@@ -10,6 +10,9 @@ include:
   namespaces:
     - clanguml::common::model
     - clanguml::sequence_diagram::model
+exclude:
+  relationships:
+    - dependency
 using_namespace:
   - clanguml::sequence_diagram::model
 plantuml:
