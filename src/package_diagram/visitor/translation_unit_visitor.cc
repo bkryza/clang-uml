@@ -42,29 +42,28 @@ using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
-using clanguml::common::model::scope_t;
 using clanguml::package_diagram::model::diagram;
 
 namespace detail {
-scope_t cpp_access_specifier_to_scope(
+access_t cpp_access_specifier_to_access(
     cppast::cpp_access_specifier_kind access_specifier)
 {
-    scope_t scope = scope_t::kPublic;
+    access_t access = access_t::kPublic;
     switch (access_specifier) {
     case cppast::cpp_access_specifier_kind::cpp_public:
-        scope = scope_t::kPublic;
+        access = access_t::kPublic;
         break;
     case cppast::cpp_access_specifier_kind::cpp_private:
-        scope = scope_t::kPrivate;
+        access = access_t::kPrivate;
         break;
     case cppast::cpp_access_specifier_kind::cpp_protected:
-        scope = scope_t::kProtected;
+        access = access_t::kProtected;
         break;
     default:
         break;
     }
 
-    return scope;
+    return access;
 }
 }
 
@@ -95,18 +94,18 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         auto package_path = package_parent | e.name();
                         auto usn = ctx.config().using_namespace();
 
-                        if (ctx.config().should_include_package(package_path)) {
-                            auto p = std::make_unique<package>(usn);
-                            package_path = package_path.relative_to(usn);
+                        auto p = std::make_unique<package>(usn);
+                        package_path = package_path.relative_to(usn);
 
-                            if (e.location().has_value()) {
-                                p->set_file(e.location().value().file);
-                                p->set_line(e.location().value().line);
-                            }
+                        if (e.location().has_value()) {
+                            p->set_file(e.location().value().file);
+                            p->set_line(e.location().value().line);
+                        }
 
-                            p->set_name(e.name());
-                            p->set_namespace(package_parent);
+                        p->set_name(e.name());
+                        p->set_namespace(package_parent);
 
+                        if (ctx.diagram().should_include(*p)) {
                             if (ns_declaration.comment().has_value())
                                 p->add_decorators(decorators::parse(
                                     ns_declaration.comment().value()));
@@ -465,7 +464,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
             found = find_relationships(args[0u].type().value(), relationships,
                 relationship_t::kDependency);
         }
-        else if (ctx.config().should_include(t_ns, t_name)) {
+        else if (ctx.diagram().should_include(t_ns, t_name)) {
             LOG_DBG("User defined template instantiation: {} | {}",
                 cppast::to_string(t_), cppast::to_string(t_.canonical()));
 

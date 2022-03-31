@@ -24,17 +24,17 @@ TEST_CASE("t00006", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00006_class");
 
-    REQUIRE(diagram->should_include("clanguml::t00006::A"));
-    REQUIRE(diagram->should_include("clanguml::t00006::B"));
-    REQUIRE(diagram->should_include("clanguml::t00006::C"));
-    REQUIRE(diagram->should_include("clanguml::t00006::D"));
-    REQUIRE(diagram->should_include("clanguml::t00006::E"));
-
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t00006_class");
+    REQUIRE(model->name() == "t00006_class");
 
-    auto puml = generate_class_puml(diagram, model);
+    REQUIRE(model->should_include("clanguml::t00006::A"));
+    REQUIRE(model->should_include("clanguml::t00006::B"));
+    REQUIRE(model->should_include("clanguml::t00006::C"));
+    REQUIRE(model->should_include("clanguml::t00006::D"));
+    REQUIRE(model->should_include("clanguml::t00006::E"));
+
+    auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

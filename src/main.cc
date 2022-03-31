@@ -152,7 +152,7 @@ void generate_diagram(const std::string &od, const std::string &name,
                 dynamic_cast<diagram_config &>(*diagram), verbose);
 
         ofs << clanguml::class_diagram::generators::plantuml::generator(
-            dynamic_cast<diagram_config &>(*diagram), model);
+            dynamic_cast<diagram_config &>(*diagram), *model);
     }
     else if (diagram->type() == diagram_type::sequence_diagram) {
         using diagram_config = sequence_diagram;
@@ -167,7 +167,7 @@ void generate_diagram(const std::string &od, const std::string &name,
 
         ofs << clanguml::sequence_diagram::generators::plantuml::generator(
             dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
-            model);
+            *model);
     }
     else if (diagram->type() == diagram_type::package_diagram) {
         using diagram_config = package_diagram;
@@ -181,7 +181,7 @@ void generate_diagram(const std::string &od, const std::string &name,
                 dynamic_cast<diagram_config &>(*diagram), verbose);
 
         ofs << clanguml::package_diagram::generators::plantuml::generator(
-            dynamic_cast<diagram_config &>(*diagram), model);
+            dynamic_cast<diagram_config &>(*diagram), *model);
     }
 
     LOG_INFO("Written {} diagram to {}", name, path.string());

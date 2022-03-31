@@ -11,17 +11,21 @@
 * `glob` - list of glob patterns to match source code files for analysis
 * `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `generate_method_arguments` - determines whether the class diagrams methods contain full arguments (`full`), are abbreviated (`abbreviated`) or skipped (`none`)
-* `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`
+* `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`, at most 1 value is supported
 * `include` - definition of inclusion patterns:
     * `namespaces` - list of namespaces to include
     * `relationships` - list of relationships to include
-    * `entity_types` - list of entity types to include (e.g. `class`, `enum`)
-    * `scopes` - list of visibility scopes to include (e.g. `private`)
+    * `elements` - list of elements, i.e. specific classes, enums, templates to include
+    * `access` - list of visibility scopes to include (e.g. `private`)
+    * `subclasses` - include only subclasses of specified classes (and themselves)
+    * `context` - include only entities in direct relationship with specified classes
 * `exclude` - definition of excqlusion patterns:
     * `namespaces` - list of namespaces to exclude
     * `relationships` - list of relationships to exclude
-    * `entity_types` - list of entity types to exclude (e.g. `class`, `enum`)
-    * `scopes` - list of visibility scopes to exclude (e.g. `private`)
+    * `elements` - list of elements, i.e. specific classes, enums, templates to exclude
+    * `access` - list of visibility scopes to exclude (e.g. `private`)
+    * `subclasses` - exclude subclasses of specified classes (and themselves)
+    * `context` - exclude only entities in direct relationship with specified classes
 * `layout` - add layout hints for entities (classes, packages)
 * `plantuml` - verbatim PlantUML directives which should be added to a diagram
     * `before` - list of directives which will be added before the generated diagram
@@ -79,9 +83,12 @@ diagrams:
       namespaces:
         - clanguml::common::model
         - clanguml::class_diagram::model
+      # Only include elements in direct relationship with ClassA
+      context:
+        - ClassA
     exclude:
       # Do not include private members and methods in the diagram
-      scopes:
+      access:
         - private
     layout:
       # Add layout hints for PlantUML

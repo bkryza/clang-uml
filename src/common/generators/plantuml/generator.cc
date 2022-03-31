@@ -42,14 +42,14 @@ std::string to_plantuml(relationship_t r, std::string style)
     }
 }
 
-std::string to_plantuml(scope_t scope)
+std::string to_plantuml(access_t scope)
 {
     switch (scope) {
-    case scope_t::kPublic:
+    case access_t::kPublic:
         return "+";
-    case scope_t::kProtected:
+    case access_t::kProtected:
         return "#";
-    case scope_t::kPrivate:
+    case access_t::kPrivate:
         return "-";
     default:
         return "";

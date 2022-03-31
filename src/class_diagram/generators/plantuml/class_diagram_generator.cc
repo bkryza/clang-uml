@@ -110,7 +110,7 @@ void generator::generate(
     // Process methods
     //
     for (const auto &m : c.methods()) {
-        if (!m_config.should_include(m.scope()))
+        if (!m_model.should_include(m.access()))
             continue;
 
         if (m.is_pure_virtual())
@@ -121,7 +121,7 @@ void generator::generate(
 
         std::string type{m.type()};
 
-        ostr << plantuml_common::to_plantuml(m.scope()) << m.name();
+        ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
         ostr << "(";
         if (m_config.generate_method_arguments() !=
@@ -168,8 +168,7 @@ void generator::generate(
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
     for (const auto &r : c.relationships()) {
-        if (!m_config.should_include_relationship(
-                common::model::to_string(r.type())))
+        if (!m_model.should_include(r.type()))
             continue;
 
         LOG_DBG("== Processing relationship {}",
@@ -196,7 +195,7 @@ void generator::generate(
                    << m_model.to_alias(uns.relative(destination));
 
             if (!r.label().empty()) {
-                relstr << " : " << plantuml_common::to_plantuml(r.scope())
+                relstr << " : " << plantuml_common::to_plantuml(r.access())
                        << r.label();
                 rendered_relations.emplace(r.label());
             }
@@ -223,7 +222,7 @@ void generator::generate(
     // Process members
     //
     for (const auto &m : c.members()) {
-        if (!m_config.should_include(m.scope()))
+        if (!m_model.should_include(m.access()))
             continue;
 
         if (!m_config.include_relations_also_as_members() &&
@@ -233,7 +232,7 @@ void generator::generate(
         if (m.is_static())
             ostr << "{static} ";
 
-        ostr << plantuml_common::to_plantuml(m.scope()) << m.name() << " : "
+        ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
              << uns.relative(m.type());
 
         if (m_config.generate_links) {
@@ -245,7 +244,7 @@ void generator::generate(
 
     ostr << "}" << '\n';
 
-    if (m_config.should_include_relationship("inheritance")) {
+    if (m_model.should_include(relationship_t::kExtension)) {
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
@@ -288,8 +287,7 @@ void generator::generate(
     ostr << "}" << '\n';
 
     for (const auto &r : e.relationships()) {
-        if (!m_config.should_include_relationship(
-                common::model::to_string(r.type())))
+        if (!m_model.should_include(r.type()))
             continue;
 
         std::string destination;
@@ -357,14 +355,18 @@ void generator::generate(const package &p, std::ostream &ostr,
                 generate(sp, ostr, relationships_ostr);
         }
         else if (dynamic_cast<class_ *>(subpackage.get())) {
-            generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
-            generate(
-                dynamic_cast<class_ &>(*subpackage), ostr, relationships_ostr);
+            if (m_model.should_include(*subpackage)) {
+                generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
+                generate(dynamic_cast<class_ &>(*subpackage), ostr,
+                    relationships_ostr);
+            }
         }
         else if (dynamic_cast<enum_ *>(subpackage.get())) {
-            generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
-            generate(
-                dynamic_cast<enum_ &>(*subpackage), ostr, relationships_ostr);
+            if (m_model.should_include(*subpackage)) {
+                generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
+                generate(dynamic_cast<enum_ &>(*subpackage), ostr,
+                    relationships_ostr);
+            }
         }
     }
 
@@ -394,12 +396,16 @@ void generator::generate(std::ostream &ostr) const
                 generate(sp, ostr, relationships_ostr);
         }
         else if (dynamic_cast<class_ *>(p.get())) {
-            generate_alias(dynamic_cast<class_ &>(*p), ostr);
-            generate(dynamic_cast<class_ &>(*p), ostr, relationships_ostr);
+            if (m_model.should_include(*p)) {
+                generate_alias(dynamic_cast<class_ &>(*p), ostr);
+                generate(dynamic_cast<class_ &>(*p), ostr, relationships_ostr);
+            }
         }
         else if (dynamic_cast<enum_ *>(p.get())) {
-            generate_alias(dynamic_cast<enum_ &>(*p), ostr);
-            generate(dynamic_cast<enum_ &>(*p), ostr, relationships_ostr);
+            if (m_model.should_include(*p)) {
+                generate_alias(dynamic_cast<enum_ &>(*p), ostr);
+                generate(dynamic_cast<enum_ &>(*p), ostr, relationships_ostr);
+            }
         }
         ostr << '\n';
     }

@@ -124,7 +124,8 @@ public:
         clanguml::class_diagram::model::class_ &parent);
 
     void process_friend(const cppast::cpp_friend &t,
-        clanguml::class_diagram::model::class_ &parent);
+        clanguml::class_diagram::model::class_ &parent,
+        cppast::cpp_access_specifier_kind as);
 
     void process_namespace(const cppast::cpp_entity &e,
         const cppast::cpp_namespace &ns_declaration);

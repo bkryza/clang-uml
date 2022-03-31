@@ -29,17 +29,17 @@ namespace clanguml::class_diagram::model {
 class class_element : public common::model::decorated_element,
                       public common::model::source_location {
 public:
-    class_element(common::model::scope_t scope, const std::string &name,
+    class_element(common::model::access_t scope, const std::string &name,
         const std::string &type);
 
-    common::model::scope_t scope() const;
+    common::model::access_t access() const;
     std::string name() const;
     std::string type() const;
 
     virtual inja::json context() const;
 
 private:
-    common::model::scope_t scope_;
+    common::model::access_t access_;
     std::string name_;
     std::string type_;
 };

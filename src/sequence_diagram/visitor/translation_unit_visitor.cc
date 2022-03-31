@@ -81,7 +81,7 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
                 .value();
         m.from = cx::util::ns(caller) + "::" + caller.name();
 
-        if (!ctx.config().should_include(
+        if (!ctx.diagram().should_include(
                 common::model::namespace_{cx::util::ns(caller)}, caller.name()))
             continue;
 
@@ -98,7 +98,7 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
         if (callee.kind() == cpp_entity_kind::function_t)
             m.to += "()";
 
-        if (!ctx.config().should_include(
+        if (!ctx.diagram().should_include(
                 common::model::namespace_{cx::util::ns(callee)}, callee.name()))
             continue;
 

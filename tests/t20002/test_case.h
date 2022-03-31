@@ -26,9 +26,9 @@ TEST_CASE("t20002", "[test-case][sequence]")
 
     auto model = generate_sequence_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t20002_sequence");
+    REQUIRE(model->name() == "t20002_sequence");
 
-    auto puml = generate_sequence_puml(diagram, model);
+    auto puml = generate_sequence_puml(diagram, *model);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));

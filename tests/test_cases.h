@@ -245,7 +245,7 @@ ContainsMatcher IsInnerClass(std::string const &parent,
 }
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
-    std::string const &label, std::string multiplicity_source = "",
+    std::string const &label = "", std::string multiplicity_source = "",
     std::string multiplicity_dest = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -262,13 +262,6 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
 
     return ContainsMatcher(CasedString(
         fmt::format(format_string, from, to, label), caseSensitivity));
-}
-
-ContainsMatcher IsFriend(std::string const &from, std::string const &to,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(CasedString(
-        fmt::format("{} <.. {} : <<friend>>", from, to), caseSensitivity));
 }
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
@@ -422,6 +415,24 @@ ContainsMatcher IsField(std::string const &name,
 
     return ContainsMatcher(
         CasedString(pattern + " : " + type, caseSensitivity));
+}
+
+template <typename... Ts>
+ContainsMatcher IsFriend(std::string const &from, std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    return ContainsMatcher(
+        CasedString(fmt::format("{} <.. {} : {}<<friend>>", from, to, pattern),
+            caseSensitivity));
 }
 
 ContainsMatcher IsPackage(std::string const &str,

@@ -20,15 +20,15 @@
 
 namespace clanguml::class_diagram::model {
 
-class_element::class_element(common::model::scope_t scope,
+class_element::class_element(common::model::access_t access,
     const std::string &name, const std::string &type)
-    : scope_{scope}
+    : access_{access}
     , name_{name}
     , type_{type}
 {
 }
 
-common::model::scope_t class_element::scope() const { return scope_; }
+common::model::access_t class_element::access() const { return access_; }
 
 std::string class_element::name() const { return name_; }
 
@@ -39,7 +39,7 @@ inja::json class_element::context() const
     inja::json ctx;
     ctx["name"] = name();
     ctx["type"] = type();
-    ctx["scope"] = to_string(scope());
+    ctx["access"] = to_string(access());
     return ctx;
 }
 }

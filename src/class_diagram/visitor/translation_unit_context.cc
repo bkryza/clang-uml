@@ -184,6 +184,12 @@ clanguml::class_diagram::model::diagram &translation_unit_context::diagram()
     return diagram_;
 }
 
+clanguml::class_diagram::model::diagram &
+translation_unit_context::diagram() const
+{
+    return diagram_;
+}
+
 void translation_unit_context::set_current_package(
     type_safe::optional_ref<common::model::package> p)
 {

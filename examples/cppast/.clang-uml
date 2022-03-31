@@ -25,7 +25,7 @@ diagrams:
     exclude:
       namespaces:
         - cppast::detail
-      scopes:
+      access:
         - public
         - protected
         - private
@@ -73,7 +73,7 @@ diagrams:
         - cppast::detail
       entity_types:
         - enums
-      scopes:
+      access:
         - public
         - protected
         - private
@@ -93,7 +93,7 @@ diagrams:
     exclude:
       namespaces:
         - cppast::detail
-      scopes:
+      access:
         - public
         - protected
         - private

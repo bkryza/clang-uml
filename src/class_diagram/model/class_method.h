@@ -27,7 +27,7 @@ namespace clanguml::class_diagram::model {
 
 class class_method : public class_element {
 public:
-    class_method(common::model::scope_t scope, const std::string &name,
+    class_method(common::model::access_t access, const std::string &name,
         const std::string &type);
 
     bool is_pure_virtual() const;

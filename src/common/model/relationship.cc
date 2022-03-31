@@ -21,12 +21,12 @@
 namespace clanguml::common::model {
 
 relationship::relationship(relationship_t type, const std::string &destination,
-    scope_t scope, const std::string &label,
+    access_t access, const std::string &label,
     const std::string &multiplicity_source,
     const std::string &multiplicity_destination)
     : type_{type}
     , destination_{destination}
-    , scope_{scope}
+    , access_{access}
     , label_{label}
     , multiplicity_source_{multiplicity_source}
     , multiplicity_destination_{multiplicity_destination}
@@ -70,9 +70,9 @@ void relationship::set_label(const std::string &label) { label_ = label; }
 
 std::string relationship::label() const { return label_; }
 
-void relationship::set_scope(scope_t scope) noexcept { scope_ = scope; }
+void relationship::set_access(access_t access) noexcept { access_ = access; }
 
-scope_t relationship::scope() const noexcept { return scope_; }
+access_t relationship::access() const noexcept { return access_; }
 
 bool operator==(const relationship &l, const relationship &r)
 {

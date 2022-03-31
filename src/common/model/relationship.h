@@ -28,7 +28,7 @@ class relationship : public common::model::decorated_element,
                      public common::model::stylable_element {
 public:
     relationship(relationship_t type, const std::string &destination,
-        scope_t scope = scope_t::kNone, const std::string &label = "",
+        access_t access = access_t::kPublic, const std::string &label = "",
         const std::string &multiplicity_source = "",
         const std::string &multiplicity_destination = "");
 
@@ -50,8 +50,8 @@ public:
     void set_label(const std::string &label);
     std::string label() const;
 
-    void set_scope(scope_t scope) noexcept;
-    scope_t scope() const noexcept;
+    void set_access(access_t scope) noexcept;
+    access_t access() const noexcept;
 
     friend bool operator==(const relationship &l, const relationship &r);
 
@@ -61,6 +61,6 @@ private:
     std::string multiplicity_source_;
     std::string multiplicity_destination_;
     std::string label_;
-    scope_t scope_{scope_t::kNone};
+    access_t access_{access_t::kPublic};
 };
 }

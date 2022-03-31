@@ -24,9 +24,9 @@ TEST_CASE("t90000", "[test-case][config]")
 
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t90000_class");
+    REQUIRE(model->name() == "t90000_class");
 
-    auto puml = generate_class_puml(diagram, model);
+    auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

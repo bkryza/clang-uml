@@ -6,6 +6,9 @@ glob:
 include:
   namespaces:
     - clanguml::common::model
+exclude:
+  relationships:
+    - dependency
 using_namespace:
   - clanguml::common::model
 plantuml:

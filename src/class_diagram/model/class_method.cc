@@ -20,9 +20,9 @@
 
 namespace clanguml::class_diagram::model {
 
-class_method::class_method(common::model::scope_t scope,
+class_method::class_method(common::model::access_t access,
     const std::string &name, const std::string &type)
-    : class_element{scope, name, type}
+    : class_element{access, name, type}
 {
 }
 

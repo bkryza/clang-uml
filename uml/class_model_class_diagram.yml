@@ -11,6 +11,9 @@ include:
   namespaces:
     - clanguml::common::model
     - clanguml::class_diagram::model
+exclude:
+  relationships:
+    - dependency
 using_namespace:
   - clanguml
 plantuml:

@@ -24,13 +24,12 @@ TEST_CASE("t00020", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00020_class");
 
-    REQUIRE(diagram->should_include("clanguml::t00020::ProductA"));
-
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t00020_class");
+    REQUIRE(model->name() == "t00020_class");
+    REQUIRE(model->should_include("clanguml::t00020::ProductA"));
 
-    auto puml = generate_class_puml(diagram, model);
+    auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

@@ -18,16 +18,15 @@
 
 #include "diagram.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <spdlog/spdlog.h>
-
 #include <functional>
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace clanguml::sequence_diagram::model {
+
+common::model::diagram_t diagram::type() const
+{
+    return common::model::diagram_t::kSequence;
+}
 
 std::string diagram::to_alias(const std::string &full_name) const
 {

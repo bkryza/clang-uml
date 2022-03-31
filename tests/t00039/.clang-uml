@@ -1,0 +1,16 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00039_class:
+    type: class
+    generate_packages: false
+    glob:
+      - ../../tests/t00039/t00039.cc
+    using_namespace:
+      - clanguml::t00039
+    include:
+      subclasses:
+        - clanguml::t00039::A
+        - clanguml::t00039::ns3::F<T>
+      relationships:
+        - inheritance

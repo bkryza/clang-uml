@@ -24,14 +24,11 @@ TEST_CASE("t00011", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00011_class");
 
-    REQUIRE(diagram->should_include("clanguml::t00011::A"));
-    REQUIRE(diagram->should_include("clanguml::t00011::B"));
-
     auto model = generate_class_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t00011_class");
+    REQUIRE(model->name() == "t00011_class");
 
-    auto puml = generate_class_puml(diagram, model);
+    auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
@@ -40,7 +37,7 @@ TEST_CASE("t00011", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("D<T>")));
 
-    REQUIRE_THAT(puml, IsFriend(_A("A"), _A("B")));
+    REQUIRE_THAT(puml, IsFriend<Private>(_A("A"), _A("B")));
     // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
     save_puml(

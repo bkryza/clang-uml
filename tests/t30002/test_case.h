@@ -22,17 +22,13 @@ TEST_CASE("t30002", "[test-case][package]")
 
     auto diagram = config.diagrams["t30002_package"];
 
-    REQUIRE(diagram->should_include("clanguml::t30002::A"));
-    REQUIRE(!diagram->should_include("clanguml::t30002::detail::C"));
-    REQUIRE(!diagram->should_include("std::vector"));
-
     REQUIRE(diagram->name == "t30002_package");
 
     auto model = generate_package_diagram(db, diagram);
 
-    REQUIRE(model.name() == "t30002_package");
+    REQUIRE(model->name() == "t30002_package");
 
-    auto puml = generate_package_puml(diagram, model);
+    auto puml = generate_package_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));

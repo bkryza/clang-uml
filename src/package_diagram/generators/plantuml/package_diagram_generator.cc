@@ -35,7 +35,7 @@ void generator::generate_relationships(
     const auto &uns = m_config.using_namespace();
 
     // Generate this packages relationship
-    if (m_config.should_include_relationship("dependency")) {
+    if (m_model.should_include(relationship_t::kDependency)) {
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {

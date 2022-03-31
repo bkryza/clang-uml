@@ -48,21 +48,23 @@ struct plantuml {
 struct filter {
     std::vector<common::model::namespace_> namespaces;
 
-    // Valid values are:
-    //   - inheritance
-    //   - dependency
-    //   - instantiation
-    std::vector<std::string> relationships;
+    std::vector<std::string> elements;
 
     // E.g.:
-    //   - classes
-    //   - enums
-    std::vector<std::string> entity_types;
+    //   - inheritance/extension
+    //   - dependency
+    //   - instantiation
+    std::vector<common::model::relationship_t> relationships;
 
     // E.g.:
     //   - public
+    //   - protected
     //   - private
-    std::vector<common::model::scope_t> scopes;
+    std::vector<common::model::access_t> access;
+
+    std::vector<std::string> subclasses;
+
+    std::vector<std::string> context;
 };
 
 enum class hint_t { up, down, left, right };
@@ -110,26 +112,6 @@ struct diagram : public inheritable_diagram_options {
     virtual ~diagram() = default;
 
     virtual diagram_type type() const = 0;
-
-    bool should_include_entities(const std::string &ent);
-
-    bool should_include_relationship(const std::string &rel);
-
-    bool should_include_package(const std::string &name) const;
-
-    bool should_include_package(const common::model::namespace_ &path) const;
-
-    bool should_include(
-        const std::pair<common::model::namespace_, std::string> &name) const;
-
-    bool should_include(
-        const common::model::namespace_ &ns, const std::string &name) const;
-
-    bool should_include(const common::model::scope_t scope) const;
-
-    bool should_include(const std::string &name_) const;
-
-    bool should_include(const common::model::namespace_ &path) const;
 
     std::string name;
 };

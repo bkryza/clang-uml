@@ -17,18 +17,50 @@
  */
 #pragma once
 
+#include "enums.h"
+
+#include <memory>
 #include <string>
 
 namespace clanguml::common::model {
 
+class diagram_filter;
+class namespace_;
+class element;
+class relationship;
+
 class diagram {
 public:
-    std::string name() const;
+    diagram();
+    virtual ~diagram();
+
+    virtual diagram_t type() const = 0;
+
+    diagram(const diagram &) = delete;
+    diagram(diagram &&);
+    diagram &operator=(const diagram &) = delete;
+    diagram &operator=(diagram &&);
 
     void set_name(const std::string &name);
+    std::string name() const;
+
+    void set_filter(std::unique_ptr<diagram_filter> filter);
+
+    void set_complete(bool complete);
+    bool complete() const;
+
+    // TODO: refactor to a template method
+    bool should_include(const element &e) const;
+    bool should_include(const std::string &e) const;
+    bool should_include(const relationship r) const;
+    bool should_include(const relationship_t r) const;
+    bool should_include(const access_t s) const;
+    bool should_include(const namespace_ &ns, const std::string &name) const;
 
 private:
     std::string name_;
+    std::unique_ptr<diagram_filter> filter_;
+    bool complete_{false};
 };
 
 }

@@ -36,6 +36,11 @@ const std::vector<type_safe::object_ref<const enum_>> diagram::enums() const
     return enums_;
 }
 
+common::model::diagram_t diagram::type() const
+{
+    return common::model::diagram_t::kClass;
+}
+
 bool diagram::has_class(const class_ &c) const
 {
     return std::any_of(classes_.cbegin(), classes_.cend(),
@@ -46,6 +51,18 @@ bool diagram::has_enum(const enum_ &e) const
 {
     return std::any_of(enums_.cbegin(), enums_.cend(),
         [&e](const auto &ee) { return ee.get().full_name() == e.full_name(); });
+}
+
+type_safe::optional_ref<const class_> diagram::get_class(
+    const std::string &name) const
+{
+    for (const auto &c : classes_) {
+        if (c.get().full_name(false) == name) {
+            return {c};
+        }
+    }
+
+    return type_safe::nullopt;
 }
 
 void diagram::add_type_alias(std::unique_ptr<type_alias> &&ta)
@@ -105,6 +122,26 @@ void diagram::add_enum(std::unique_ptr<enum_> &&e)
     }
     else
         LOG_DBG("Enum {} already in the model", e->name());
+}
+
+void diagram::get_parents(
+    std::unordered_set<type_safe::object_ref<const class_>> &parents) const
+{
+    bool found_new = false;
+    for (const auto &parent : parents) {
+        for (const auto &pp : parent.get().parents()) {
+            const auto p = get_class(pp.name());
+            if (p.has_value()) {
+                auto [it, found] = parents.emplace(p.value());
+                if (found)
+                    found_new = true;
+            }
+        }
+    }
+
+    if (found_new) {
+        get_parents(parents);
+    }
 }
 
 std::string diagram::to_alias(const std::string &full_name) const

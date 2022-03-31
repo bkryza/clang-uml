@@ -236,7 +236,7 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
                 static_cast<const cppast::cpp_template_instantiation_type &>(t)
                     .primary_template();
             if (!primary_template.is_overloaded()) {
-                LOG_WARN(
+                LOG_DBG(
                     "Cannot establish namespace for ", cppast::to_string(t));
                 return "";
             }
