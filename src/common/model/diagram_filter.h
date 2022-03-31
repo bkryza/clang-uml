@@ -25,6 +25,7 @@
 #include "config/config.h"
 #include "cx/util.h"
 #include "diagram.h"
+#include "tvl.h"
 
 namespace clanguml::common::model {
 
@@ -34,16 +35,16 @@ class filter_visitor {
 public:
     filter_visitor(filter_t type);
 
-    virtual std::optional<bool> match(
+    virtual tvl::value_t match(
         const diagram &d, const common::model::element &e) const;
 
-    virtual std::optional<bool> match(
+    virtual tvl::value_t match(
         const diagram &d, const common::model::relationship_t &r) const;
 
-    virtual std::optional<bool> match(
+    virtual tvl::value_t match(
         const diagram &d, const common::model::access_t &a) const;
 
-    virtual std::optional<bool> match(
+    virtual tvl::value_t match(
         const diagram &d, const common::model::namespace_ &ns) const;
 
     bool is_inclusive() const;
@@ -59,7 +60,7 @@ struct anyof_filter : public filter_visitor {
     anyof_filter(
         filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
 
-    std::optional<bool> match(
+    tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
 
 private:
@@ -69,11 +70,9 @@ private:
 struct namespace_filter : public filter_visitor {
     namespace_filter(filter_t type, std::vector<namespace_> namespaces);
 
-    std::optional<bool> match(
-        const diagram &d, const namespace_ &ns) const override;
+    tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
-    std::optional<bool> match(
-        const diagram &d, const element &e) const override;
+    tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
     std::vector<namespace_> namespaces_;
@@ -82,8 +81,7 @@ private:
 struct element_filter : public filter_visitor {
     element_filter(filter_t type, std::vector<std::string> elements);
 
-    std::optional<bool> match(
-        const diagram &d, const element &e) const override;
+    tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
     std::vector<std::string> elements_;
@@ -92,8 +90,7 @@ private:
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<std::string> roots);
 
-    std::optional<bool> match(
-        const diagram &d, const element &e) const override;
+    tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
     std::vector<std::string> roots_;
@@ -103,7 +100,7 @@ struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);
 
-    std::optional<bool> match(
+    tvl::value_t match(
         const diagram &d, const relationship_t &r) const override;
 
 private:
@@ -113,8 +110,7 @@ private:
 struct access_filter : public filter_visitor {
     access_filter(filter_t type, std::vector<access_t> access);
 
-    std::optional<bool> match(
-        const diagram &d, const access_t &a) const override;
+    tvl::value_t match(const diagram &d, const access_t &a) const override;
 
 private:
     std::vector<access_t> access_;
@@ -123,8 +119,7 @@ private:
 struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<std::string> context);
 
-    std::optional<bool> match(
-        const diagram &d, const element &r) const override;
+    tvl::value_t match(const diagram &d, const element &r) const override;
 
 private:
     std::vector<std::string> context_;
@@ -142,25 +137,16 @@ public:
 
     template <typename T> bool should_include(const T &e) const
     {
-        bool exc = std::any_of(
-            exclusive_.begin(), exclusive_.end(), [this, &e](const auto &ex) {
-                auto m = ex->match(diagram_, e);
-                // Return true if a filter is defined for specific element
-                // and it's a match
-                return m.has_value() && m.value();
-            });
-        if (exc)
+        auto exc = tvl::any_of(exclusive_.begin(), exclusive_.end(),
+            [this, &e](const auto &ex) { return ex->match(diagram_, e); });
+
+        if (tvl::is_true(exc))
             return false;
 
-        bool inc = std::all_of(
-            inclusive_.begin(), inclusive_.end(), [this, &e](const auto &in) {
-                auto m = in->match(diagram_, e);
-                // Return true if a filter is undefined for specific element
-                // or it's a match
-                return !m.has_value() || m.value();
-            });
+        auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
+            [this, &e](const auto &in) { return in->match(diagram_, e); });
 
-        if (inc)
+        if (tvl::is_undefined(inc) || tvl::is_true(inc))
             return true;
 
         return false;
