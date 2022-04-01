@@ -5,8 +5,10 @@
 `clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
 and package diagram generator, driven by YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
-existing project code. The configuration file or files for `clang-uml` define the
+legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
+
+`clang-uml` currently supports C++ up to version 17.
 
 ## Features
 Main features supported so far include:
@@ -16,9 +18,9 @@ Main features supported so far include:
     * Class relationships including associations, aggregations, dependencies and friendship
     * Template instantiation relationships
     * Relationship inference from C++ containers and smart pointers
-    * Namespace based content filtering
+    * Diagram content filtering based on namespaces, elements and relationships
     * Optional package generation from namespaces
-    * Interactive links to online code to classes, methods and class fields 
+    * Interactive links to online code to classes, methods and class fields in SVG diagrams
 * Sequence diagram generation
     * Generation of sequence diagram from one code location to another (currently only for non-template code)
 * Package diagram generation
@@ -30,7 +32,7 @@ To see what `clang-uml` can do so far, checkout the diagrams generated for unit 
 ## Installation
 
 ### Building from source
-Currently the only method to install `clang-uml` is from source. First make sure
+Currently, the only method to install `clang-uml` is from source. First make sure
 that you have the following dependencies installed:
 
 ```bash
@@ -120,9 +122,9 @@ diagrams:
         - 'note left of {{ alias("MyProjectMain") }}: Main class of myproject library.'
 ```
 
-See ![here](docs/configuration_file.md) for detailed configuration file reference guide.
+See [here](docs/configuration_file.md) for detailed configuration file reference guide.
 
-### Examples
+## Examples
 To see what `clang-uml` can do, checkout the test cases documentation [here](./docs/test_cases.md).
 
 In order to see diagrams for the `clang-uml` itself, based on its own [config](.clang-uml) run
@@ -168,44 +170,6 @@ generates the following diagram (via PlantUML):
 
 > Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00009_class.svg),
 > and checkout the hover tooltips and hyperlinks to classes and methods.
-
-#### Default mappings
-
-| UML                            | C++                                                                                                |
-| ----                           | ---                                                                                                |
-| Inheritance (A is kind of B)   | Public, protected or private inheritance                                                           |
-| Association (A knows of B)     | Class A has a pointer or a reference to class B, or any container with a pointer or reference to B |
-| Dependency (A uses B)          | Any method of class A has argument of type B                                                       |
-| Aggregation (A has B)          | Class A has a field of type B or an owning pointer of type B                                       |
-| Composition (A has B)          | Class A has a field of type container of B                                                         |
-| Template (T specializes A)     | Class A has a template parameter T                                                                 |
-| Nesting (A has inner class B)  | Class B is an inner class of A
-| Friendship (A is a friend of B)| Class A is an friend class of B
-
-#### Comment decorators
-
-`clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
-generation of UML diagrams from C++ and overriding default inference rules for relationships.
-
-The following decorators are currently supported:
-- [note](docs/test_cases/t00028.md) - add a PlantUML note to a C++ entity
-- [skip](docs/test_cases/t00029.md) - skip the underlying C++ entity
-- [skiprelationship](docs/test_cases/t00029.md) - skip only relationship generation for a class property
-- [composition](docs/test_cases/t00030.md) - document the property as composition
-- [association](docs/test_cases/t00030.md) - document the property as association
-- [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
-- [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
-
-##### Doxygen integration
-`clang-uml` decorstors can be omitted completely in ![Doxygen](https://www.doxygen.nl/index.html), by adding the following
-lines to the Doxygen config file:
-
-```
-ALIASES                += clanguml=""
-ALIASES                += clanguml{1}=""
-ALIASES                += clanguml{2}=""
-ALIASES                += clanguml{3}=""
-```
 
 ### Sequence diagrams
 
@@ -334,6 +298,73 @@ class B : public ns1::ns2::Anon {
 generates the following diagram (via PlantUML):
 
 ![package_diagram_example](docs/test_cases/t30003_package.svg)
+
+
+### Default mappings
+
+| UML                                    | PlantUML   |
+| ----                                   | ---        |
+| Inheritance                            | ![extension](docs/img/puml_inheritance.png) |
+| Association                            | ![association](docs/img/puml_association.png) |
+| Dependency                             | ![dependency](docs/img/puml_dependency.png) |
+| Aggregation                            | ![aggregation](docs/img/puml_aggregation.png) |
+| Composition                            | ![composition](docs/img/puml_composition.png) |
+| Template specialization/instantiation  | ![specialization](docs/img/puml_instantiation.png) |
+| Nesting (inner class/enum)             | ![nesting](docs/img/puml_nested.png) |
+
+### Diagram content filtering
+For typical code bases, generating a single diagram from entire code or even a single namespace can be too big to
+be useful, e.g. as part of documentation. `clang-uml` allows specifying content to be included and excluded from
+each diagram using simple YAML configuration:
+
+```yaml
+include:
+  # Include elements from 2 namespaces
+  namespaces:
+    - clanguml::common
+    - clanguml::config
+  # Include all subclasses of ClassA (including ClassA)
+  subclasses:
+    - clanguml::common::ClassA
+  # Include only inheritance relationships
+  relationships:
+    - inheritance
+  # Include only classes in direct relation to ClassB (including ClassB)
+  context:
+    - clanguml::common::ClassB
+exclude:
+  # Exclude all elements from detail namespace
+  namespaces:
+    - clanguml::common::detail
+  # Exclude ClassF
+  exclude:
+    - clanguml::common::ClassF
+```
+
+### Comment decorators
+
+`clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
+generation of UML diagrams from C++ and overriding default inference rules for relationships.
+
+The following decorators are currently supported:
+- [note](docs/test_cases/t00028.md) - add a PlantUML note to a C++ entity
+- [skip](docs/test_cases/t00029.md) - skip the underlying C++ entity
+- [skiprelationship](docs/test_cases/t00029.md) - skip only relationship generation for a class property
+- [composition](docs/test_cases/t00030.md) - document the property as composition
+- [association](docs/test_cases/t00030.md) - document the property as association
+- [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
+- [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
+
+### Doxygen integration
+`clang-uml` decorstors can be omitted completely in [Doxygen](https://www.doxygen.nl/index.html), by adding the following
+lines to the Doxygen config file:
+
+```
+ALIASES                += clanguml=""
+ALIASES                += clanguml{1}=""
+ALIASES                += clanguml{2}=""
+ALIASES                += clanguml{3}=""
+```
 
 ### Test cases
 
