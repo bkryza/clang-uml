@@ -23,6 +23,7 @@
 NUMPROC ?= $(shell nproc)
 
 LLVM_CONFIG_PATH ?=
+CMAKE_CXX_FLAGS ?=
 
 .PHONY: clean
 clean:
@@ -32,6 +33,7 @@ debug/CMakeLists.txt:
 	cmake -S . -B debug \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
+		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
 		-DLLVM_CONFIG_PATH=$(LLVM_CONFIG_PATH)
 
 release/CMakeLists.txt:

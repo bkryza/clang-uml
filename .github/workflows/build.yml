@@ -20,5 +20,15 @@ jobs:
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
     - name: Build and unit test
       run: |
-        NUMPROC=2 make debug
+        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" make debug
         make test
+    - name: Run coverage
+      run: |
+        lcov --no-external --directory src -c -d debug -o coverage.info
+        lcov -l coverage.info
+    - name: Upload coverage
+      uses: codecov/codecov-action@v2
+      with:
+        files: coverage.info
+        name: clang-uml
+        fail_ci_if_error: true

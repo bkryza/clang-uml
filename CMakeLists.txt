@@ -47,6 +47,7 @@ set(LLVM_PREFERRED_VERSION 12.0.0)
 find_package(LibClang REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${LIBCLANG_CXXFLAGS}")
+message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # Thirdparty sources
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)

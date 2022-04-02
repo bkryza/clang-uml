@@ -1,6 +1,7 @@
 # clang-uml - C++ UML diagram generator based on Clang and PlantUML
 
-![linux build](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
+[![Build status]](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)
+[![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
 
 `clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
 and package diagram generator, driven by YAML configuration files. The main idea behind the
