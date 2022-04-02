@@ -19,6 +19,8 @@
 
 #include "enums.h"
 
+#include <type_safe/optional_ref.hpp>
+
 #include <memory>
 #include <string>
 
@@ -35,6 +37,9 @@ public:
     virtual ~diagram();
 
     virtual diagram_t type() const = 0;
+
+    virtual type_safe::optional_ref<const element> get(
+        const std::string &full_name) const = 0;
 
     diagram(const diagram &) = delete;
     diagram(diagram &&);

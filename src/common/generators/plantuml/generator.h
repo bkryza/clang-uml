@@ -325,6 +325,27 @@ template <typename C, typename D> void generator<C, D>::init_env()
         return m_model.to_alias(
             m_config.using_namespace().relative(alias_match));
     });
+
+    m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
+        std::string res{};
+        auto full_name = args[0]->get<std::string>();
+        auto element = m_model.get(full_name);
+
+        if (!element.has_value()) {
+            // Try with current using namespace prepended
+            element = m_model.get(fmt::format(
+                "{}::{}", m_config.using_namespace().to_string(), full_name));
+        }
+
+        if (element.has_value()) {
+            auto comment = element.value().comment();
+
+            if (comment.has_value())
+                res = comment.value();
+        }
+
+        return res;
+    });
 }
 
 }

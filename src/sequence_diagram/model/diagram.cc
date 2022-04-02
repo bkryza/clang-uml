@@ -28,6 +28,12 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kSequence;
 }
 
+type_safe::optional_ref<const clanguml::common::model::element> diagram::get(
+    const std::string &full_name) const
+{
+    return {};
+}
+
 std::string diagram::to_alias(const std::string &full_name) const
 {
     return full_name;

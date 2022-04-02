@@ -56,6 +56,9 @@ TEST_CASE("t00002", "[test-case][class]")
 
     REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
 
+    REQUIRE_THAT(puml, HasNote(_A("A"), "left", "This is class A"));
+    REQUIRE_THAT(puml, HasNote(_A("B"), "top", "This is class B"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

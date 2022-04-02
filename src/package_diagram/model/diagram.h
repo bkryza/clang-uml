@@ -40,6 +40,9 @@ public:
 
     common::model::diagram_t type() const override;
 
+    type_safe::optional_ref<const clanguml::common::model::element> get(
+        const std::string &full_name) const;
+
     std::string to_alias(const std::string &full_name) const;
 };
 }

@@ -43,6 +43,9 @@ public:
 
     common::model::diagram_t type() const override;
 
+    type_safe::optional_ref<const clanguml::common::model::element> get(
+        const std::string &full_name) const override;
+
     const std::vector<type_safe::object_ref<const class_>> classes() const;
 
     const std::vector<type_safe::object_ref<const enum_>> enums() const;
@@ -52,6 +55,9 @@ public:
     bool has_enum(const enum_ &e) const;
 
     type_safe::optional_ref<const class_> get_class(
+        const std::string &name) const;
+
+    type_safe::optional_ref<const enum_> get_enum(
         const std::string &name) const;
 
     void add_type_alias(std::unique_ptr<type_alias> &&ta);

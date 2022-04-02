@@ -12,4 +12,9 @@ diagrams:
         - clanguml::t00002
     plantuml:
       after:
-        - 'note left of @A(A) : Base abstract interface.'
+        - 'note left of @A(A) : {{ comment("A") }}'
+        - 'note top of @A(B) : {{ comment("clanguml::t00002::B") }}'
+        - |
+          note right of {{ alias("D") }}
+          {{ comment("D") }}
+          end note

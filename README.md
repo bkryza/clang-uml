@@ -319,24 +319,24 @@ each diagram using simple YAML configuration:
 
 ```yaml
 include:
-  # Include elements from 2 namespaces
+  # Include only elements from these namespaces
   namespaces:
     - clanguml::common
     - clanguml::config
   # Include all subclasses of ClassA (including ClassA)
   subclasses:
     - clanguml::common::ClassA
+  # and classes in direct relation to ClassB (including ClassB)
+  context:
+    - clanguml::common::ClassB
   # Include only inheritance relationships
   relationships:
     - inheritance
-  # Include only classes in direct relation to ClassB (including ClassB)
-  context:
-    - clanguml::common::ClassB
 exclude:
   # Exclude all elements from detail namespace
   namespaces:
     - clanguml::common::detail
-  # Exclude ClassF
+  # and also exclude ClassF
   exclude:
     - clanguml::common::ClassF
 ```

@@ -41,6 +41,21 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kClass;
 }
 
+type_safe::optional_ref<const clanguml::common::model::element> diagram::get(
+    const std::string &full_name) const
+{
+    type_safe::optional_ref<const clanguml::common::model::element> res;
+
+    res = get_class(full_name);
+
+    if (res.has_value())
+        return res;
+
+    res = get_enum(full_name);
+
+    return res;
+}
+
 bool diagram::has_class(const class_ &c) const
 {
     return std::any_of(classes_.cbegin(), classes_.cend(),
@@ -59,6 +74,18 @@ type_safe::optional_ref<const class_> diagram::get_class(
     for (const auto &c : classes_) {
         if (c.get().full_name(false) == name) {
             return {c};
+        }
+    }
+
+    return type_safe::nullopt;
+}
+
+type_safe::optional_ref<const enum_> diagram::get_enum(
+    const std::string &name) const
+{
+    for (const auto &e : enums_) {
+        if (e.get().full_name(false) == name) {
+            return {e};
         }
     }
 
