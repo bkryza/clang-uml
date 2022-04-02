@@ -14,7 +14,7 @@ type and contents of each generated diagram.
 ## Features
 Main features supported so far include:
 
-* Class diagram generation
+* **Class diagram generation**
     * Basic class properties and methods including visibility
     * Class relationships including associations, aggregations, dependencies and friendship
     * Template instantiation relationships
@@ -22,9 +22,9 @@ Main features supported so far include:
     * Diagram content filtering based on namespaces, elements and relationships
     * Optional package generation from namespaces
     * Interactive links to online code to classes, methods and class fields in SVG diagrams
-* Sequence diagram generation
+* **Sequence diagram generation**
     * Generation of sequence diagram from one code location to another (currently only for non-template code)
-* Package diagram generation
+* **Package diagram generation**
     * Generation of package diagram based on C++ namespaces
     * Interactive links to online code to packages
 
