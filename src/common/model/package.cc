@@ -37,19 +37,6 @@ std::string package::full_name(bool relative) const
 
     return (get_namespace().relative_to(using_namespace()) | name())
         .to_string();
-
-    //    auto fn = get_namespace();
-    //    auto ns = using_namespace();
-    //
-    //    if (relative && (fn.size() >= ns.size())) {
-    //        if (fn.starts_with(using_namespace())
-    //            fn = std::vector<std::string>(fn.begin() + ns.size(),
-    //            fn.end());
-    //    }
-    //
-    //    fn.push_back(name());
-    //
-    //    return fmt::format("{}", fmt::join(fn, "::"));
 }
 
 bool package::is_deprecated() const { return is_deprecated_; }

@@ -42,6 +42,12 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE_THAT(puml, IsPackage("AAA"));
     REQUIRE_THAT(puml, IsPackage("AAA"));
 
+    // TODO: Fix _A() to handle fully qualified names, right
+    //       now it only finds the first element with unqalified
+    //       name match
+    REQUIRE_THAT(
+        puml, HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

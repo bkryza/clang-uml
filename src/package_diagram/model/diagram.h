@@ -40,9 +40,18 @@ public:
 
     common::model::diagram_t type() const override;
 
-    type_safe::optional_ref<const clanguml::common::model::element> get(
+    type_safe::optional_ref<const common::model::element> get(
         const std::string &full_name) const;
 
+    void add_package(std::unique_ptr<common::model::package> &&p);
+
+    type_safe::optional_ref<const common::model::package> get_package(
+        const std::string &name) const;
+
     std::string to_alias(const std::string &full_name) const;
+
+private:
+    std::vector<type_safe::object_ref<const common::model::package, false>>
+        packages_;
 };
 }

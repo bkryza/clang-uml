@@ -48,6 +48,8 @@ public:
 
     void set_deprecated(bool deprecated);
 
+    void add_package(std::unique_ptr<common::model::package> &&p);
+
 private:
     bool is_deprecated_{false};
 };

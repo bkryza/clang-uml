@@ -28,10 +28,33 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kPackage;
 }
 
+void diagram::add_package(std::unique_ptr<common::model::package> &&p)
+{
+    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
+
+    auto ns = p->get_relative_namespace();
+
+    packages_.emplace_back(*p);
+
+    add_element(ns, std::move(p));
+}
+
+type_safe::optional_ref<const common::model::package> diagram::get_package(
+    const std::string &name) const
+{
+    for (const auto &p : packages_) {
+        if (p.get().full_name(false) == name) {
+            return {p};
+        }
+    }
+
+    return type_safe::nullopt;
+}
+
 type_safe::optional_ref<const clanguml::common::model::element> diagram::get(
     const std::string &full_name) const
 {
-    return {};
+    return get_package(full_name);
 }
 
 std::string diagram::to_alias(const std::string &full_name) const

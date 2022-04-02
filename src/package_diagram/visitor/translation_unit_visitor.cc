@@ -106,9 +106,12 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                         p->set_namespace(package_parent);
 
                         if (ctx.diagram().should_include(*p)) {
-                            if (ns_declaration.comment().has_value())
+                            if (ns_declaration.comment().has_value()) {
+                                p->set_comment(
+                                    ns_declaration.comment().value());
                                 p->add_decorators(decorators::parse(
                                     ns_declaration.comment().value()));
+                            }
 
                             p->set_style(p->style_spec());
 
@@ -123,7 +126,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                             if (!p->skip()) {
                                 auto rns = p->get_relative_namespace();
-                                ctx.diagram().add_element(rns, std::move(p));
+                                ctx.diagram().add_package(std::move(p));
                                 ctx.set_current_package(
                                     ctx.diagram().get_element<package>(
                                         package_path));
