@@ -1,0 +1,10 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t40001_include:
+    type: include
+    glob:
+      - ../../tests/t40001/t40001.cc
+    plantuml:
+      before:
+        - "' t40001 test include diagram"

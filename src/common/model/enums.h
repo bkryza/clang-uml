@@ -35,7 +35,8 @@ enum class relationship_t {
     kAssociation,
     kInstantiation,
     kFriendship,
-    kDependency
+    kDependency,
+    kInclusion
 };
 
 enum class message_t { kCall, kReturn };

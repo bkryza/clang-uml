@@ -101,7 +101,7 @@ std::string rtrim(const std::string &s)
 
 std::string trim(const std::string &s) { return rtrim(ltrim(s)); }
 
-std::vector<std::string> split(std::string str, std::string delimiter)
+std::vector<std::string> split(std::string str, std::string_view delimiter)
 {
     std::vector<std::string> result;
 
@@ -124,7 +124,8 @@ std::vector<std::string> split(std::string str, std::string delimiter)
     return result;
 }
 
-std::string join(const std::vector<std::string> &toks, std::string delimiter)
+std::string join(
+    const std::vector<std::string> &toks, std::string_view delimiter)
 {
     return fmt::format("{}", fmt::join(toks, delimiter));
 }

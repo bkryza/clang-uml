@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/diagram.cc
+ * src/include_diagram/model/source_file.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,27 +16,4 @@
  * limitations under the License.
  */
 
-#include "diagram.h"
-
-#include <functional>
-#include <memory>
-
-namespace clanguml::sequence_diagram::model {
-
-common::model::diagram_t diagram::type() const
-{
-    return common::model::diagram_t::kSequence;
-}
-
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
-    const std::string &full_name) const
-{
-    return {};
-}
-
-std::string diagram::to_alias(const std::string &full_name) const
-{
-    return full_name;
-}
-
-}
+#include "source_file.h"

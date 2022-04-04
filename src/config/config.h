@@ -35,7 +35,13 @@
 namespace clanguml {
 namespace config {
 
-enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
+enum class diagram_type {
+    class_diagram,
+    sequence_diagram,
+    package_diagram,
+    include_diagram
+};
+
 enum class method_arguments { full, abbreviated, none };
 
 struct plantuml {
@@ -143,6 +149,14 @@ struct sequence_diagram : public diagram {
 
 struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
+
+    diagram_type type() const override;
+
+    option<layout_hints> layout{"layout"};
+};
+
+struct include_diagram : public diagram {
+    virtual ~include_diagram() = default;
 
     diagram_type type() const override;
 

@@ -24,6 +24,8 @@
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
+#include "include_diagram/generators/plantuml/include_diagram_generator.h"
+#include "include_diagram/visitor/translation_unit_visitor.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "package_diagram/visitor/translation_unit_visitor.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"

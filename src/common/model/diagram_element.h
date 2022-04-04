@@ -1,0 +1,71 @@
+/**
+ * src/common/model/diagram_element.h
+ *
+ * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+#pragma once
+
+#include "decorated_element.h"
+#include "relationship.h"
+#include "util/util.h"
+
+#include <inja/inja.hpp>
+
+#include <atomic>
+#include <exception>
+#include <string>
+#include <vector>
+
+namespace clanguml::common::model {
+
+class diagram_element : public decorated_element {
+public:
+    diagram_element();
+
+    virtual ~diagram_element() = default;
+
+    std::string alias() const;
+
+    void set_name(const std::string &name) { name_ = name; }
+
+    std::string name() const { return name_; }
+
+    virtual std::string full_name(bool relative) const { return name(); }
+
+    std::vector<relationship> &relationships();
+
+    const std::vector<relationship> &relationships() const;
+
+    void add_relationship(relationship &&cr);
+
+    void append(const decorated_element &e);
+
+    friend bool operator==(const diagram_element &l, const diagram_element &r);
+
+    friend std::ostream &operator<<(
+        std::ostream &out, const diagram_element &rhs);
+
+    virtual inja::json context() const;
+
+protected:
+    const uint64_t m_id{0};
+
+private:
+    std::string name_;
+    std::vector<relationship> relationships_;
+
+    static std::atomic_uint64_t m_nextId;
+};
+}

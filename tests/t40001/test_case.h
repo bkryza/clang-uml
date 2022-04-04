@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/diagram.cc
+ * tests/t40001/test_case.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,27 +16,25 @@
  * limitations under the License.
  */
 
-#include "diagram.h"
-
-#include <functional>
-#include <memory>
-
-namespace clanguml::sequence_diagram::model {
-
-common::model::diagram_t diagram::type() const
+TEST_CASE("t40001", "[test-case][package]")
 {
-    return common::model::diagram_t::kSequence;
-}
+    auto [config, db] = load_config("t40001");
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
-    const std::string &full_name) const
-{
-    return {};
-}
+    auto diagram = config.diagrams["t40001_include"];
 
-std::string diagram::to_alias(const std::string &full_name) const
-{
-    return full_name;
-}
+    REQUIRE(diagram->name == "t40001_include");
 
+    auto model = generate_include_diagram(db, diagram);
+
+    REQUIRE(model->name() == "t40001_include");
+
+    auto puml = generate_include_puml(diagram, *model);
+
+    AliasMatcher _A(puml);
+
+    REQUIRE_THAT(puml, StartsWith("@startuml"));
+    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+
+    save_puml(
+        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

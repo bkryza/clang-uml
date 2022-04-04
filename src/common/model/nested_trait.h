@@ -1,5 +1,5 @@
 /**
- * src/common/model/element.h
+ * src/common/model/nested_trait.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace clanguml::common::model {
-template <typename T> class nested_trait {
+template <typename T, typename Path> class nested_trait {
 public:
     nested_trait() = default;
 
@@ -52,31 +52,31 @@ public:
     }
 
     template <typename V = T>
-    void add_element(namespace_ ns, std::unique_ptr<V> p)
+    void add_element(const Path &path, std::unique_ptr<V> p)
     {
         assert(p);
 
         LOG_DBG(
-            "Adding nested element {} at path {}", p->name(), ns.to_string());
+            "Adding nested element {} at path {}", p->name(), path.to_string());
 
-        if (ns.is_empty()) {
+        if (path.is_empty()) {
             add_element(std::move(p));
             return;
         }
 
-        auto parent = get_element(ns);
+        auto parent = get_element(path);
 
-        if (parent && dynamic_cast<nested_trait<T> *>(&parent.value()))
-            dynamic_cast<nested_trait<T> &>(parent.value())
+        if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
+            dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
         else {
-            spdlog::error("No parent element found at: {}", ns.to_string());
+            spdlog::error("No parent element found at: {}", path.to_string());
             throw std::runtime_error(
-                "No parent element found for " + ns.to_string());
+                "No parent element found for " + path.to_string());
         }
     }
 
-    template <typename V = T> auto get_element(const namespace_ &path) const
+    template <typename V = T> auto get_element(const Path &path) const
     {
         LOG_DBG("Getting nested element at path: {}", path.to_string());
 
@@ -93,9 +93,9 @@ public:
         if (!p)
             return type_safe::optional_ref<V>{};
 
-        if (dynamic_cast<nested_trait<T> *>(&p.value()))
-            return dynamic_cast<nested_trait<T> &>(p.value()).get_element<V>(
-                namespace_{path.begin() + 1, path.end()});
+        if (dynamic_cast<nested_trait<T, Path> *>(&p.value()))
+            return dynamic_cast<nested_trait<T, Path> &>(p.value())
+                .get_element<V>(Path{path.begin() + 1, path.end()});
 
         return type_safe::optional_ref<V>{};
     }
@@ -145,9 +145,10 @@ public:
             std::cout << "--- Printing tree:\n";
         }
         for (const auto &e : d) {
-            if (dynamic_cast<nested_trait<T> *>(e.get())) {
+            if (dynamic_cast<nested_trait<T, Path> *>(e.get())) {
                 std::cout << std::string(level, ' ') << "[" << *e << "]\n";
-                dynamic_cast<nested_trait<T> *>(e.get())->print_tree(level + 1);
+                dynamic_cast<nested_trait<T, Path> *>(e.get())->print_tree(
+                    level + 1);
             }
             else {
                 std::cout << std::string(level, ' ') << "- " << *e << "]\n";

@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/diagram.cc
+ * src/include_diagram/model/diagram.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -18,24 +18,47 @@
 
 #include "diagram.h"
 
-#include <functional>
-#include <memory>
+#include "util/error.h"
+#include "util/util.h"
 
-namespace clanguml::sequence_diagram::model {
+namespace clanguml::include_diagram::model {
 
 common::model::diagram_t diagram::type() const
 {
-    return common::model::diagram_t::kSequence;
+    return common::model::diagram_t::kPackage;
 }
 
 type_safe::optional_ref<const common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
-    return {};
+    return get_file(full_name);
+}
+
+void diagram::add_file(std::unique_ptr<include_diagram::model::source_file> &&f)
+{
+    LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
+
+    files_.emplace_back(*f);
+
+    add_element(f->path(), std::move(f));
+}
+
+type_safe::optional_ref<const include_diagram::model::source_file>
+diagram::get_file(const std::string &name) const
+{
+    for (const auto &p : files_) {
+        if (p.get().full_name(false) == name) {
+            return {p};
+        }
+    }
+
+    return type_safe::nullopt;
 }
 
 std::string diagram::to_alias(const std::string &full_name) const
 {
+    LOG_DBG("Looking for alias for {}", full_name);
+
     return full_name;
 }
 

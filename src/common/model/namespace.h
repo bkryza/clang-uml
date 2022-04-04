@@ -17,77 +17,19 @@
  */
 #pragma once
 
+#include "path.h"
+
 #include <string>
 #include <type_safe/optional.hpp>
 #include <vector>
 
 namespace clanguml::common::model {
 
-class namespace_ {
-public:
-    using container_type = std::vector<std::string>;
-
-    namespace_() = default;
-
-    namespace_(const std::string &ns);
-
-    namespace_(container_type::const_iterator begin,
-        container_type::const_iterator end);
-
-    namespace_(const namespace_ &right) noexcept = default;
-
-    namespace_ &operator=(const namespace_ &right) noexcept = default;
-
-    namespace_(namespace_ &&right) noexcept = default;
-
-    namespace_ &operator=(namespace_ &&right) noexcept = default;
-
-    friend bool operator==(const namespace_ &left, const namespace_ &right);
-    friend bool operator<(const namespace_ &left, const namespace_ &right);
-
-    namespace_(std::initializer_list<std::string> ns);
-
-    explicit namespace_(const std::vector<std::string> &ns);
-
-    std::string to_string() const;
-
-    bool is_empty() const;
-
-    size_t size() const;
-
-    namespace_ operator|(const namespace_ &right) const;
-    void operator|=(const namespace_ &right);
-    namespace_ operator|(const std::string &right) const;
-    void operator|=(const std::string &right);
-
-    std::string &operator[](const int index);
-    const std::string &operator[](const int index) const;
-
-    void append(const std::string &ns);
-
-    void append(const namespace_ &ns);
-
-    void pop_back();
-
-    type_safe::optional<namespace_> parent() const;
-
-    bool starts_with(const namespace_ &right) const;
-    bool ends_with(const namespace_ &right) const;
-    namespace_ common_path(const namespace_ &right) const;
-    namespace_ relative_to(const namespace_ &right) const;
-    std::string relative(const std::string &name) const;
-    std::string name() const;
-
-    container_type::iterator begin();
-    container_type::iterator end();
-    container_type::const_iterator begin() const;
-    container_type::const_iterator end() const;
-    container_type::const_iterator cbegin() const;
-    container_type::const_iterator cend() const;
-
-private:
-    container_type namespace_path_;
+struct ns_path_separator {
+    static constexpr std::string_view value = "::";
 };
+
+using namespace_ = path<ns_path_separator>;
 
 }
 
@@ -96,7 +38,7 @@ namespace std {
 template <> struct hash<clanguml::common::model::namespace_> {
     std::size_t operator()(const clanguml::common::model::namespace_ &key) const
     {
-        using clanguml::common::model::namespace_;
+        using clanguml::common::model::path;
 
         std::size_t seed = key.size();
         for (const auto &ns : key) {

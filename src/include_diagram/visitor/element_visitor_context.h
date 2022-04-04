@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/diagram.cc
+ * src/include_diagram/model/visitor/element_visitor_context.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,28 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "diagram.h"
+#include "include_diagram/model/diagram.h"
 
-#include <functional>
-#include <memory>
+namespace clanguml::include_diagram::visitor {
 
-namespace clanguml::sequence_diagram::model {
+class translation_unit_context;
 
-common::model::diagram_t diagram::type() const
-{
-    return common::model::diagram_t::kSequence;
-}
+template <typename T> class element_visitor_context {
+public:
+    element_visitor_context(
+        clanguml::include_diagram::model::diagram &diagram, T &element);
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
-    const std::string &full_name) const
-{
-    return {};
-}
+    T &element();
 
-std::string diagram::to_alias(const std::string &full_name) const
-{
-    return full_name;
-}
+    clanguml::include_diagram::model::diagram &diagram();
+
+private:
+    translation_unit_context *ctx_;
+
+    T &element_;
+    clanguml::include_diagram::model::diagram &diagram_;
+};
 
 }

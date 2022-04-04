@@ -83,9 +83,10 @@ std::string get_git_toplevel_dir();
  *
  * @return Vector of string tokens.
  */
-std::vector<std::string> split(std::string str, std::string delimiter);
+std::vector<std::string> split(std::string str, std::string_view delimiter);
 
-std::string join(const std::vector<std::string> &toks, std::string delimiter);
+std::string join(
+    const std::vector<std::string> &toks, std::string_view delimiter);
 
 /**
  * @brief Remove any qualifiers (e.g. const) from type.

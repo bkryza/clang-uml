@@ -24,37 +24,9 @@
 
 namespace clanguml::common::model {
 
-std::atomic_uint64_t element::m_nextId = 1;
-
 element::element(const namespace_ &using_namespace)
     : using_namespace_{using_namespace}
-    , m_id{m_nextId++}
 {
-}
-
-std::string element::alias() const { return fmt::format("C_{:010}", m_id); }
-
-void element::add_relationship(relationship &&cr)
-{
-    if (cr.destination().empty()) {
-        LOG_DBG("Skipping relationship '{}' - {} - '{}' due empty "
-                "destination",
-            cr.destination(), to_string(cr.type()), full_name(true));
-        return;
-    }
-
-    if ((cr.type() == relationship_t::kInstantiation) &&
-        (cr.destination() == full_name(true))) {
-        LOG_DBG("Skipping self instantiation relationship for {}",
-            cr.destination());
-        return;
-    }
-
-    LOG_DBG("Adding relationship: '{}' - {} - '{}'", cr.destination(),
-        to_string(cr.type()), full_name(true));
-
-    if (!util::contains(relationships_, cr))
-        relationships_.emplace_back(std::move(cr));
 }
 
 void element::set_using_namespaces(const namespace_ &un)
@@ -63,15 +35,6 @@ void element::set_using_namespaces(const namespace_ &un)
 }
 
 const namespace_ &element::using_namespace() const { return using_namespace_; }
-
-std::vector<relationship> &element::relationships() { return relationships_; }
-
-const std::vector<relationship> &element::relationships() const
-{
-    return relationships_;
-}
-
-void element::append(const element &e) { decorated_element::append(e); }
 
 inja::json element::context() const
 {

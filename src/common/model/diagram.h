@@ -17,7 +17,9 @@
  */
 #pragma once
 
+#include "diagram_element.h"
 #include "enums.h"
+#include "namespace.h"
 
 #include <type_safe/optional_ref.hpp>
 
@@ -27,7 +29,6 @@
 namespace clanguml::common::model {
 
 class diagram_filter;
-class namespace_;
 class element;
 class relationship;
 
@@ -38,7 +39,7 @@ public:
 
     virtual diagram_t type() const = 0;
 
-    virtual type_safe::optional_ref<const element> get(
+    virtual type_safe::optional_ref<const diagram_element> get(
         const std::string &full_name) const = 0;
 
     diagram(const diagram &) = delete;

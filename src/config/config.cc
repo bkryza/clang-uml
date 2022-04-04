@@ -66,6 +66,8 @@ std::string to_string(const diagram_type t)
         return "sequence";
     case diagram_type::package_diagram:
         return "package";
+    case diagram_type::include_diagram:
+        return "include";
     default:
         assert(false);
     }
@@ -136,6 +138,11 @@ diagram_type package_diagram::type() const
     return diagram_type::package_diagram;
 }
 
+diagram_type include_diagram::type() const
+{
+    return diagram_type::include_diagram;
+}
+
 template <>
 void append_value<std::vector<std::string>>(
     std::vector<std::string> &l, const std::vector<std::string> &r)
@@ -159,6 +166,7 @@ using clanguml::config::filter;
 using clanguml::config::generate_links_config;
 using clanguml::config::git_config;
 using clanguml::config::hint_t;
+using clanguml::config::include_diagram;
 using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
@@ -227,6 +235,9 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
     }
     else if (diagram_type == "package") {
         return std::make_shared<package_diagram>(d.as<package_diagram>());
+    }
+    else if (diagram_type == "include") {
+        return std::make_shared<include_diagram>(d.as<include_diagram>());
     }
 
     LOG_ERROR("Diagrams of type {} are not supported... ", diagram_type);
@@ -470,10 +481,25 @@ template <> struct convert<sequence_diagram> {
 };
 
 //
-// class_diagram Yaml decoder
+// package_diagram Yaml decoder
 //
 template <> struct convert<package_diagram> {
     static bool decode(const Node &node, package_diagram &rhs)
+    {
+        if (!decode_diagram(node, rhs))
+            return false;
+
+        get_option(node, rhs.layout);
+
+        return true;
+    }
+};
+
+//
+// include_diagram Yaml decoder
+//
+template <> struct convert<include_diagram> {
+    static bool decode(const Node &node, include_diagram &rhs)
     {
         if (!decode_diagram(node, rhs))
             return false;

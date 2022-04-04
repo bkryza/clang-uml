@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/diagram.h
+ * src/include_diagram/model/diagram.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -19,18 +19,18 @@
 
 #include "common/model/diagram.h"
 #include "common/model/package.h"
+#include "source_file.h"
 
 #include <type_safe/optional_ref.hpp>
 
 #include <string>
 #include <vector>
 
-namespace clanguml::package_diagram::model {
+namespace clanguml::include_diagram::model {
 
 class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::nested_trait<
-                    clanguml::common::model::element,
-                    clanguml::common::model::namespace_> {
+                public clanguml::common::model::nested_trait<source_file,
+                    filesystem_path> {
 public:
     diagram() = default;
 
@@ -44,15 +44,16 @@ public:
     type_safe::optional_ref<const common::model::diagram_element> get(
         const std::string &full_name) const;
 
-    void add_package(std::unique_ptr<common::model::package> &&p);
+    void add_file(std::unique_ptr<include_diagram::model::source_file> &&f);
 
-    type_safe::optional_ref<const common::model::package> get_package(
+    type_safe::optional_ref<const include_diagram::model::source_file> get_file(
         const std::string &name) const;
 
     std::string to_alias(const std::string &full_name) const;
 
 private:
-    std::vector<type_safe::object_ref<const common::model::package, false>>
-        packages_;
+    std::vector<
+        type_safe::object_ref<const include_diagram::model::source_file, false>>
+        files_;
 };
 }

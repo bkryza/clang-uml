@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "decorated_element.h"
+#include "diagram_element.h"
 #include "namespace.h"
 #include "relationship.h"
 #include "source_location.h"
@@ -32,17 +32,11 @@
 
 namespace clanguml::common::model {
 
-class element : public decorated_element, public source_location {
+class element : public diagram_element, public source_location {
 public:
     element(const namespace_ &using_namespace);
 
     virtual ~element() = default;
-
-    std::string alias() const;
-
-    void set_name(const std::string &name) { name_ = name; }
-
-    std::string name() const { return name_; }
 
     std::string name_and_ns() const
     {
@@ -59,36 +53,26 @@ public:
         return ns_.relative_to(using_namespace_);
     }
 
-    virtual std::string full_name(bool relative) const { return name_and_ns(); }
+    const namespace_ &path() const { return ns_; }
+
+    std::string full_name(bool relative) const override
+    {
+        return name_and_ns();
+    }
 
     void set_using_namespaces(const namespace_ &un);
 
     const namespace_ &using_namespace() const;
 
-    std::vector<relationship> &relationships();
-
-    const std::vector<relationship> &relationships() const;
-
-    void add_relationship(relationship &&cr);
-
-    void append(const element &e);
-
     friend bool operator==(const element &l, const element &r);
 
     friend std::ostream &operator<<(std::ostream &out, const element &rhs);
 
-    virtual inja::json context() const;
-
-protected:
-    const uint64_t m_id{0};
+    inja::json context() const override;
 
 private:
-    std::string name_;
     namespace_ ns_;
     namespace_ using_namespace_;
-    std::vector<relationship> relationships_;
-    type_safe::optional<source_location> location_;
-
-    static std::atomic_uint64_t m_nextId;
+    //    type_safe::optional<source_location> location_;
 };
 }

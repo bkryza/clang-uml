@@ -103,6 +103,22 @@ generate_package_diagram(cppast::libclang_compilation_database &db,
         db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
 }
 
+std::unique_ptr<clanguml::include_diagram::model::diagram>
+generate_include_diagram(cppast::libclang_compilation_database &db,
+    std::shared_ptr<clanguml::config::diagram> diagram)
+{
+    using diagram_config = clanguml::config::include_diagram;
+    using diagram_model = clanguml::include_diagram::model::diagram;
+    using diagram_visitor =
+        clanguml::include_diagram::visitor::translation_unit_visitor;
+
+    inject_diagram_options(diagram);
+
+    return clanguml::common::generators::plantuml::generate<diagram_model,
+        diagram_config, diagram_visitor>(
+        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+}
+
 std::string generate_sequence_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::sequence_diagram::model::diagram &model)
@@ -141,6 +157,20 @@ std::string generate_package_puml(
 
     ss << generator(
         dynamic_cast<clanguml::config::package_diagram &>(*config), model);
+
+    return ss.str();
+}
+
+std::string generate_include_puml(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::include_diagram::model::diagram &model)
+{
+    using namespace clanguml::include_diagram::generators::plantuml;
+
+    std::stringstream ss;
+
+    ss << generator(
+        dynamic_cast<clanguml::config::include_diagram &>(*config), model);
 
     return ss.str();
 }
@@ -217,6 +247,11 @@ using namespace clanguml::test::matchers;
 #include "t30005/test_case.h"
 #include "t30006/test_case.h"
 #include "t30007/test_case.h"
+
+//
+// Include diagram tests
+//
+#include "t40001/test_case.h"
 
 //
 // Other tests (e.g. configuration file)
