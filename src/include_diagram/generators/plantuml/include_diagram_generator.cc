@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/generators/plantuml/package_diagram_generator.cc
+ * src/include_diagram/generators/plantuml/include_diagram_generator.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -57,14 +57,21 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
 
     if (f.type() == common::model::source_file_t::kDirectory) {
         ostr << "folder " << f.name();
-        ostr << " as " << f.alias() << " {\n";
+        ostr << " as " << f.alias();
+        ostr << " {\n";
         for (const auto &file : f) {
             generate(dynamic_cast<const source_file &>(*file), ostr);
         }
         ostr << "}" << '\n';
     }
     else {
-        ostr << "file " << f.name() << " as " << f.alias() << '\n';
+        ostr << "file " << f.name() << " as " << f.alias();
+
+        if (m_config.generate_links) {
+            generate_link(ostr, f);
+        }
+
+        ostr << '\n';
     }
 }
 

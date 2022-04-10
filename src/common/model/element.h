@@ -73,6 +73,5 @@ public:
 private:
     namespace_ ns_;
     namespace_ using_namespace_;
-    //    type_safe::optional<source_location> location_;
 };
 }

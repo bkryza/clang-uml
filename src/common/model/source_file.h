@@ -20,6 +20,7 @@
 #include "common/model/diagram_element.h"
 #include "common/model/nested_trait.h"
 #include "common/model/path.h"
+#include "common/model/source_location.h"
 #include "common/model/stylable_element.h"
 #include "util/util.h"
 
@@ -43,6 +44,7 @@ using filesystem_path = common::model::path<fs_path_sep>;
 class source_file
     : public common::model::diagram_element,
       public common::model::stylable_element,
+      public source_location,
       public common::model::nested_trait<common::model::source_file,
           filesystem_path> {
 public:

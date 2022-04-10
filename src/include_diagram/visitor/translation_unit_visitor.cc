@@ -77,6 +77,7 @@ void translation_unit_visitor::process_file(const std::string &file,
 
     include_path = include_path.lexically_normal();
 
+    std::string full_file_path = include_path;
     auto f_abs = std::make_unique<common::model::source_file>();
 
     if (include_path.is_absolute())
@@ -138,6 +139,10 @@ void translation_unit_visitor::process_file(const std::string &file,
 
             ctx.get_current_file().value().add_relationship(
                 common::model::relationship{relationship_type, f->alias()});
+
+            auto fp = std::filesystem::absolute(file).lexically_normal();
+            f->set_file(fp.string());
+            f->set_line(0);
         }
 
         if (!ctx.diagram().get_element(f->path() | f->name()).has_value()) {

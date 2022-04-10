@@ -64,7 +64,8 @@ public:
     void generate_notes(
         std::ostream &ostr, const model::element &element) const;
 
-    void generate_link(std::ostream &ostr, const model::element &e) const;
+    template <typename E>
+    void generate_link(std::ostream &ostr, const E &e) const;
 
 protected:
     const inja::json &context() const;
@@ -114,9 +115,9 @@ inja::json generator<C, D>::element_context(const E &e) const
 
     if (!e.file().empty()) {
         std::filesystem::path file{e.file()};
-        std::string relative_path = std::filesystem::relative(file);
+        std::string relative_path = file.string();
 
-        if (ctx.template contains("git"))
+        if (file.is_absolute() && ctx.template contains("git"))
             relative_path =
                 std::filesystem::relative(file, ctx["git"]["toplevel"]);
 
@@ -200,8 +201,8 @@ void generator<C, D>::generate_notes(
 }
 
 template <typename C, typename D>
-void generator<C, D>::generate_link(
-    std::ostream &ostr, const model::element &e) const
+template <typename E>
+void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
     if (e.file().empty())
         return;
