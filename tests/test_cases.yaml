@@ -149,6 +149,10 @@ test_cases:
     - name: t30007
       title: Package diagram layout hints test case
       description:
+  Include diagrams:
+    - name: t40001
+      title: Basic include graph diagram test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test

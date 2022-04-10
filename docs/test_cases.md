@@ -51,5 +51,7 @@
  * [t30005](./test_cases/t30005.md) - Package namespace alias test case
  * [t30006](./test_cases/t30006.md) - Package split namespace test case
  * [t30007](./test_cases/t30007.md) - Package diagram layout hints test case
+## Include diagrams
+ * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test
