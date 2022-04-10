@@ -27,7 +27,9 @@ Main features supported so far include:
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces
     * Interactive links to online code to packages
-
+* **Include graph diagram generation**
+    * Show include graph for selected files
+  
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md).
 
 ## Installation
@@ -300,6 +302,26 @@ generates the following diagram (via PlantUML):
 
 ![package_diagram_example](docs/test_cases/t30003_package.svg)
 
+### Include diagrams
+
+#### Example
+
+The following C++ code structure:
+
+```
+tests/t40001
+├── include
+│   ├── lib1
+│   │   └── lib1.h
+│   └── t40001_include1.h
+└── src
+    └── t40001.cc
+
+```
+
+generates the following diagram (via PlantUML) based on include directives in the code:
+
+![package_diagram_example](docs/test_cases/t40001_include.svg)
 
 ### Default mappings
 
@@ -312,6 +334,8 @@ generates the following diagram (via PlantUML):
 | Composition                            | ![composition](docs/img/puml_composition.png) |
 | Template specialization/instantiation  | ![specialization](docs/img/puml_instantiation.png) |
 | Nesting (inner class/enum)             | ![nesting](docs/img/puml_nested.png) |
+| Include (local)                        | ![association](docs/img/puml_association.png) |
+| Include (system)                       | ![dependency](docs/img/puml_dependency.png) |
 
 ### Diagram content filtering
 For typical code bases, generating a single diagram from entire code or even a single namespace can be too big to

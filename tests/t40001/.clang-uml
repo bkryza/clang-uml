@@ -1,0 +1,22 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t40001_include:
+    type: include
+    # Provide the files to parse in order to look
+    # for #include directives
+    glob:
+      - ../../tests/t40001/**/*.cc
+      - ../../tests/t40001/**/*.h
+    # Render the paths relative to this directory
+    relative_to: ../../tests/t40001
+    include:
+      # Include only headers belonging to these paths
+      paths:
+        - ../../tests/t40001
+    plantuml:
+      before:
+        - "' t40001 test include diagram"
+      after:
+        - 'note right of {{ alias("include/lib1") }}: This is a lib1 include dir'
+        - 'note right of {{ alias("include/t40001_include1.h") }}: This is a t40001_include1.h include file'

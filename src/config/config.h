@@ -35,7 +35,13 @@
 namespace clanguml {
 namespace config {
 
-enum class diagram_type { class_diagram, sequence_diagram, package_diagram };
+enum class diagram_type {
+    class_diagram,
+    sequence_diagram,
+    package_diagram,
+    include_diagram
+};
+
 enum class method_arguments { full, abbreviated, none };
 
 struct plantuml {
@@ -65,6 +71,8 @@ struct filter {
     std::vector<std::string> subclasses;
 
     std::vector<std::string> context;
+
+    std::vector<std::filesystem::path> paths;
 };
 
 enum class hint_t { up, down, left, right };
@@ -104,6 +112,8 @@ struct inheritable_diagram_options {
     option<bool> generate_packages{"generate_packages", false};
     option<generate_links_config> generate_links{"generate_links"};
     option<git_config> git{"git"};
+    option<std::filesystem::path> base_directory{"__parent_path"};
+    option<std::filesystem::path> relative_to{"relative_to"};
 
     void inherit(const inheritable_diagram_options &parent);
 };
@@ -143,6 +153,14 @@ struct sequence_diagram : public diagram {
 
 struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
+
+    diagram_type type() const override;
+
+    option<layout_hints> layout{"layout"};
+};
+
+struct include_diagram : public diagram {
+    virtual ~include_diagram() = default;
 
     diagram_type type() const override;
 

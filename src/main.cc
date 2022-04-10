@@ -19,6 +19,7 @@
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
+#include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 
@@ -133,6 +134,7 @@ void generate_diagram(const std::string &od, const std::string &name,
 {
     using clanguml::config::class_diagram;
     using clanguml::config::diagram_type;
+    using clanguml::config::include_diagram;
     using clanguml::config::package_diagram;
     using clanguml::config::sequence_diagram;
 
@@ -181,6 +183,20 @@ void generate_diagram(const std::string &od, const std::string &name,
                 dynamic_cast<diagram_config &>(*diagram), verbose);
 
         ofs << clanguml::package_diagram::generators::plantuml::generator(
+            dynamic_cast<diagram_config &>(*diagram), *model);
+    }
+    else if (diagram->type() == diagram_type::include_diagram) {
+        using diagram_config = include_diagram;
+        using diagram_model = clanguml::include_diagram::model::diagram;
+        using diagram_visitor =
+            clanguml::include_diagram::visitor::translation_unit_visitor;
+
+        auto model =
+            clanguml::common::generators::plantuml::generate<diagram_model,
+                diagram_config, diagram_visitor>(db, diagram->name,
+                dynamic_cast<diagram_config &>(*diagram), verbose);
+
+        ofs << clanguml::include_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);
     }
 

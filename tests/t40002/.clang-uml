@@ -1,0 +1,19 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t40002_include:
+    type: include
+    # Provide the files to parse in order to look
+    # for #include directives
+    glob:
+      - ../../tests/t40002/**/*.cc
+      - ../../tests/t40002/**/*.h
+    # Render the paths relative to this directory
+    relative_to: ../../tests/t40002
+    include:
+      # Include only files belonging to these paths
+      paths:
+        - ../../tests/t40002
+    plantuml:
+      before:
+        - "' t40002 test include diagram"

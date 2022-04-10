@@ -1,0 +1,11 @@
+type: include
+glob:
+  - src/**/*.h
+  - src/**/*.cc
+relative_to: .
+include:
+  paths:
+    - src
+plantuml:
+  before:
+    - "title clang-uml include graph diagram"

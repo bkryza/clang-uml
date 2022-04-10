@@ -51,7 +51,7 @@ type_safe::optional_ref<const common::model::package> diagram::get_package(
     return type_safe::nullopt;
 }
 
-type_safe::optional_ref<const clanguml::common::model::element> diagram::get(
+type_safe::optional_ref<const common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
     return get_package(full_name);

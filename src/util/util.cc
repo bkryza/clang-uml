@@ -101,7 +101,7 @@ std::string rtrim(const std::string &s)
 
 std::string trim(const std::string &s) { return rtrim(ltrim(s)); }
 
-std::vector<std::string> split(std::string str, std::string delimiter)
+std::vector<std::string> split(std::string str, std::string_view delimiter)
 {
     std::vector<std::string> result;
 
@@ -124,7 +124,8 @@ std::vector<std::string> split(std::string str, std::string delimiter)
     return result;
 }
 
-std::string join(const std::vector<std::string> &toks, std::string delimiter)
+std::string join(
+    const std::vector<std::string> &toks, std::string_view delimiter)
 {
     return fmt::format("{}", fmt::join(toks, delimiter));
 }
@@ -195,6 +196,38 @@ bool replace_all(
     }
 
     return replaced;
+}
+
+template <>
+bool starts_with(
+    const std::filesystem::path &path, const std::filesystem::path &prefix)
+{
+    if (path == prefix)
+        return true;
+
+    const int path_length = std::distance(std::begin(path), std::end(path));
+
+    auto last_nonempty_prefix_element = std::prev(std::find_if(
+        prefix.begin(), prefix.end(), [](auto &&n) { return n.empty(); }));
+
+    int prefix_length =
+        std::distance(std::begin(prefix), last_nonempty_prefix_element);
+
+    // Empty prefix always matches
+    if (prefix_length == 0)
+        return true;
+
+    // Prefix longer then path never matches
+    if (prefix_length >= path_length)
+        return false;
+
+    auto path_compare_end = path.begin();
+    std::advance(path_compare_end, prefix_length);
+
+    std::vector<std::string> pref(prefix.begin(), last_nonempty_prefix_element);
+    std::vector<std::string> pat(path.begin(), path_compare_end);
+
+    return pref == pat;
 }
 
 }

@@ -33,7 +33,7 @@ namespace clanguml::common::model {
 
 class package : public element,
                 public stylable_element,
-                public nested_trait<element> {
+                public nested_trait<element, namespace_> {
 public:
     package(const common::model::namespace_ &using_namespace);
 

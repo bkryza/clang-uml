@@ -29,7 +29,8 @@ namespace clanguml::package_diagram::model {
 
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::nested_trait<
-                    clanguml::common::model::element> {
+                    clanguml::common::model::element,
+                    clanguml::common::model::namespace_> {
 public:
     diagram() = default;
 
@@ -40,7 +41,7 @@ public:
 
     common::model::diagram_t type() const override;
 
-    type_safe::optional_ref<const common::model::element> get(
+    type_safe::optional_ref<const common::model::diagram_element> get(
         const std::string &full_name) const;
 
     void add_package(std::unique_ptr<common::model::package> &&p);

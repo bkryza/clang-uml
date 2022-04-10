@@ -25,7 +25,10 @@
 #include "config/config.h"
 #include "cx/util.h"
 #include "diagram.h"
+#include "source_file.h"
 #include "tvl.h"
+
+#include <filesystem>
 
 namespace clanguml::common::model {
 
@@ -46,6 +49,9 @@ public:
 
     virtual tvl::value_t match(
         const diagram &d, const common::model::namespace_ &ns) const;
+
+    virtual tvl::value_t match(
+        const diagram &d, const common::model::source_file &f) const;
 
     bool is_inclusive() const;
     bool is_exclusive() const;
@@ -123,6 +129,18 @@ struct context_filter : public filter_visitor {
 
 private:
     std::vector<std::string> context_;
+};
+
+struct paths_filter : public filter_visitor {
+    paths_filter(filter_t type, const std::filesystem::path &root,
+        std::vector<std::filesystem::path> p);
+
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &r) const override;
+
+private:
+    std::vector<std::filesystem::path> paths_;
+    std::filesystem::path root_;
 };
 
 class diagram_filter {

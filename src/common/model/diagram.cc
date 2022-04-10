@@ -85,4 +85,12 @@ bool diagram::should_include(
     return filter_->should_include(ns, name);
 }
 
+bool diagram::should_include(const common::model::source_file &f) const
+{
+    if (filter_.get() == nullptr)
+        return true;
+
+    return filter_->should_include(f);
+}
+
 }
