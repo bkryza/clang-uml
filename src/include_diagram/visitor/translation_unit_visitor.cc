@@ -130,6 +130,15 @@ void translation_unit_visitor::process_file(const std::string &file,
             }
         }
 
+        auto diagram_file_path = f->path() | f->name();
+
+        if (!ctx.diagram().get_element(diagram_file_path).has_value()) {
+            ctx.diagram().add_file(std::move(f));
+        }
+
+        auto &diagram_source_file =
+            ctx.diagram().get_element(diagram_file_path).value();
+
         if (!register_as_current) {
             auto relationship_type =
                 common::model::relationship_t::kAssociation;
@@ -138,17 +147,15 @@ void translation_unit_visitor::process_file(const std::string &file,
                 relationship_type = common::model::relationship_t::kDependency;
 
             ctx.get_current_file().value().add_relationship(
-                common::model::relationship{relationship_type, f->alias()});
+                common::model::relationship{
+                    relationship_type, diagram_source_file.alias()});
 
             auto fp = std::filesystem::absolute(file).lexically_normal();
-            f->set_file(fp.string());
-            f->set_line(0);
+            diagram_source_file.set_file(fp.string());
+            diagram_source_file.set_line(0);
         }
 
-        if (!ctx.diagram().get_element(f->path() | f->name()).has_value()) {
-            ctx.set_current_file(type_safe::opt_ref(*f));
-            ctx.diagram().add_file(std::move(f));
-        }
+        ctx.set_current_file(type_safe::opt_ref(diagram_source_file));
     }
 }
 }

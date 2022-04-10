@@ -153,6 +153,9 @@ test_cases:
     - name: t40001
       title: Basic include graph diagram test case
       description:
+    - name: t40002
+      title: Cyclic include graph diagram test case
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test
