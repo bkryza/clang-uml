@@ -21,14 +21,15 @@
 #include "cx/cursor.h"
 #include "include_diagram/model/diagram.h"
 #include "include_diagram/visitor/translation_unit_context.h"
+#include "common/model/enums.h"
+#include "common/model/package.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
 #include <cppast/visitor.hpp>
+#include <cppast/cpp_preprocessor.hpp>
 #include <type_safe/reference.hpp>
 
-#include <common/model/enums.h>
-#include <common/model/package.h>
 #include <functional>
 #include <map>
 #include <memory>
@@ -45,6 +46,9 @@ public:
     void operator()(const cppast::cpp_entity &file);
 
 private:
+    void process_file(const std::string &file, bool register_as_current = false,
+        std::optional<cppast::cpp_include_kind> include_kind = {});
+
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
 };

@@ -31,11 +31,41 @@ void generator::generate_relationships(
     const source_file &f, std::ostream &ostr) const
 {
     LOG_DBG("Generating relationships for file {}", f.full_name(true));
+
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        for (const auto &file : f) {
+            generate_relationships(
+                dynamic_cast<const source_file &>(*file), ostr);
+        }
+    }
+    else {
+        for (const auto &r : f.relationships()) {
+            if (m_model.should_include(r.type())) {
+                ostr << f.alias() << " "
+                     << plantuml_common::to_plantuml(r.type(), r.style()) << " "
+                     << r.destination() << '\n';
+            }
+        }
+    }
 }
 
 void generator::generate(const source_file &f, std::ostream &ostr) const
 {
     LOG_DBG("Generating source_file {}", f.name());
+
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        ostr << "folder " << f.name();
+        ostr << " as " << f.alias() << " {\n";
+        for (const auto &file : f) {
+            generate(dynamic_cast<const source_file &>(*file), ostr);
+        }
+        ostr << "}" << '\n';
+    }
+    else {
+        ostr << "file " << f.name() << " as " << f.alias() << '\n';
+    }
 }
 
 void generator::generate(std::ostream &ostr) const
@@ -44,15 +74,14 @@ void generator::generate(std::ostream &ostr) const
 
     generate_plantuml_directives(ostr, m_config.puml().before);
 
+    // Generate files and folders
     for (const auto &p : m_model) {
         generate(dynamic_cast<source_file &>(*p), ostr);
-        ostr << '\n';
     }
 
-    // Process package relationships
+    // Process file include relationships
     for (const auto &p : m_model) {
         generate_relationships(dynamic_cast<source_file &>(*p), ostr);
-        ostr << '\n';
     }
 
     generate_config_layout_hints(ostr);

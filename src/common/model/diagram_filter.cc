@@ -49,6 +49,12 @@ tvl::value_t filter_visitor::match(
     return {};
 }
 
+tvl::value_t filter_visitor::match(
+    const diagram &d, const common::model::source_file &f) const
+{
+    return {};
+}
+
 bool filter_visitor::is_inclusive() const
 {
     return type_ == filter_t::kInclusive;
@@ -254,6 +260,40 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
         });
 }
 
+paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
+    std::vector<std::filesystem::path> p)
+    : filter_visitor{type}
+    , root_{root}
+{
+    for (auto &&path : p) {
+        std::filesystem::path absolute_path;
+
+        if (path.is_relative())
+            absolute_path = root / path;
+
+        absolute_path = absolute_path.lexically_normal();
+
+        paths_.emplace_back(std::move(absolute_path));
+    }
+}
+
+tvl::value_t paths_filter::match(
+    const diagram &d, const common::model::source_file &p) const
+{
+
+    if (paths_.empty()) {
+        return {};
+    }
+
+    auto pp = p.fs_path(root_);
+    for (const auto &path : paths_) {
+        if (util::starts_with(pp, path))
+            return true;
+    }
+
+    return false;
+}
+
 diagram_filter::diagram_filter(
     const common::model::diagram &d, const config::diagram &c)
     : diagram_{d}
@@ -295,6 +335,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().relationships));
         inclusive_.emplace_back(std::make_unique<access_filter>(
             filter_t::kInclusive, c.include().access));
+        inclusive_.emplace_back(std::make_unique<paths_filter>(
+            filter_t::kInclusive, c.base_directory(), c.include().paths));
 
         // Include any of these matches even if one them does not match
         std::vector<std::unique_ptr<filter_visitor>> element_filters;
@@ -304,6 +346,7 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().subclasses));
         element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
+
 
         inclusive_.emplace_back(std::make_unique<anyof_filter>(
             filter_t::kInclusive, std::move(element_filters)));
@@ -323,6 +366,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, c.exclude().subclasses));
         exclusive_.emplace_back(std::make_unique<context_filter>(
             filter_t::kExclusive, c.exclude().context));
+        exclusive_.emplace_back(std::make_unique<paths_filter>(
+            filter_t::kInclusive, c.base_directory(), c.exclude().paths));
     }
 }
 

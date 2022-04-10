@@ -20,6 +20,7 @@
 #include "diagram_element.h"
 #include "enums.h"
 #include "namespace.h"
+#include "source_file.h"
 
 #include <type_safe/optional_ref.hpp>
 
@@ -58,9 +59,11 @@ public:
     // TODO: refactor to a template method
     bool should_include(const element &e) const;
     bool should_include(const std::string &e) const;
+    bool should_include(const source_file &path) const;
     bool should_include(const relationship r) const;
     bool should_include(const relationship_t r) const;
     bool should_include(const access_t s) const;
+
     bool should_include(const namespace_ &ns, const std::string &name) const;
 
 private:

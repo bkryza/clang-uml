@@ -49,12 +49,12 @@ clanguml::include_diagram::model::diagram &translation_unit_context::diagram()
 }
 
 void translation_unit_context::set_current_file(
-    type_safe::optional_ref<include_diagram::model::source_file> f)
+    type_safe::optional_ref<common::model::source_file> f)
 {
     current_file_ = f;
 }
 
-type_safe::optional_ref<include_diagram::model::source_file>
+type_safe::optional_ref<common::model::source_file>
 translation_unit_context::get_current_file() const
 {
     return current_file_;

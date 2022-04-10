@@ -20,10 +20,10 @@
 #include "common/generators/plantuml/generator.h"
 #include "common/model/package.h"
 #include "common/model/relationship.h"
+#include "common/model/source_file.h"
 #include "config/config.h"
 #include "cx/compilation_database.h"
 #include "include_diagram/model/diagram.h"
-#include "include_diagram/model/source_file.h"
 #include "include_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
@@ -50,7 +50,7 @@ using common_generator =
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
-using clanguml::include_diagram::model::source_file;
+using clanguml::common::model::source_file;
 using namespace clanguml::util;
 
 class generator : public common_generator<diagram_config, diagram_model> {

@@ -21,6 +21,7 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <filesystem>
 #include <string.h>
 #include <string>
 #include <type_traits>
@@ -143,22 +144,25 @@ template <typename T> void append(std::vector<T> &l, const std::vector<T> &r)
 }
 
 /**
- * @brief Checks if vector starts with a prefix.
+ * @brief Checks if container starts with a prefix.
  *
- * @tparam T
- * @param col
- * @param prefix
- * @return
+ * @tparam T e.g. std::vector<std::string>
+ * @param con Container to be checked against prefix
+ * @param prefix Container, which specifies the prefix
+ * @return true if first prefix.size() elements of con are equal to prefix
  */
-template <typename T>
-bool starts_with(const std::vector<T> &col, const std::vector<T> &prefix)
+template <typename T> bool starts_with(const T &con, const T &prefix)
 {
-    if (prefix.size() > col.size())
+    if (prefix.size() > con.size())
         return false;
 
-    return std::vector<std::string>(prefix.begin(), prefix.end()) ==
-        std::vector<std::string>(col.begin(), col.begin() + prefix.size());
+    return T(prefix.begin(), prefix.end()) ==
+        T(con.begin(), con.begin() + prefix.size());
 }
+
+template <>
+bool starts_with(
+    const std::filesystem::path &path, const std::filesystem::path &prefix);
 
 template <typename T>
 bool ends_with(const std::vector<T> &col, const std::vector<T> &suffix)

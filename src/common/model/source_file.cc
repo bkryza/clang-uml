@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/model/source_file.cc
+ * src/common/model/source_file.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *

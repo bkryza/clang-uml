@@ -71,6 +71,8 @@ struct filter {
     std::vector<std::string> subclasses;
 
     std::vector<std::string> context;
+
+    std::vector<std::filesystem::path> paths;
 };
 
 enum class hint_t { up, down, left, right };
@@ -110,6 +112,8 @@ struct inheritable_diagram_options {
     option<bool> generate_packages{"generate_packages", false};
     option<generate_links_config> generate_links{"generate_links"};
     option<git_config> git{"git"};
+    option<std::filesystem::path> base_directory{"__parent_path"};
+    option<std::filesystem::path> relative_to{"relative_to"};
 
     void inherit(const inheritable_diagram_options &parent);
 };

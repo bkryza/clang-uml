@@ -41,9 +41,9 @@ public:
     clanguml::include_diagram::model::diagram &diagram();
 
     void set_current_file(
-        type_safe::optional_ref<include_diagram::model::source_file> p);
+        type_safe::optional_ref<common::model::source_file> p);
 
-    type_safe::optional_ref<include_diagram::model::source_file>
+    type_safe::optional_ref<common::model::source_file>
     get_current_file() const;
 
 private:
@@ -56,7 +56,7 @@ private:
     // Reference to class diagram config
     const clanguml::config::include_diagram &config_;
 
-    type_safe::optional_ref<include_diagram::model::source_file> current_file_;
+    type_safe::optional_ref<common::model::source_file> current_file_;
 };
 
 }

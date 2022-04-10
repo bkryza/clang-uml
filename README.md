@@ -27,7 +27,9 @@ Main features supported so far include:
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces
     * Interactive links to online code to packages
-
+* **Include graph diagram generation**
+    * Show include graph for selected files
+  
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md).
 
 ## Installation

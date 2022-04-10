@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/model/source_file.h
+ * src/common/model/source_file.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -30,9 +30,9 @@
 #include <string>
 #include <vector>
 
-namespace clanguml::include_diagram::model {
+namespace clanguml::common::model {
 
-enum class source_file_type { kDirectory, kHeader, kImplementation };
+enum class source_file_t { kDirectory, kHeader, kImplementation };
 
 struct fs_path_sep {
     static constexpr std::string_view value = "/";
@@ -43,12 +43,18 @@ using filesystem_path = common::model::path<fs_path_sep>;
 class source_file
     : public common::model::diagram_element,
       public common::model::stylable_element,
-      public common::model::nested_trait<common::model::diagram_element,
+      public common::model::nested_trait<common::model::source_file,
           filesystem_path> {
 public:
     source_file() = default;
 
     void set_path(const filesystem_path &p) { path_ = p; }
+
+    void set_absolute() { is_absolute_ = true; }
+
+    void set_type(source_file_t type) { type_ = type; }
+
+    source_file_t type() const { return type_; }
 
     source_file(const source_file &) = delete;
     source_file(source_file &&) = default;
@@ -62,23 +68,41 @@ public:
         return (path_ | name()).to_string();
     }
 
-    void add_file(std::unique_ptr<include_diagram::model::source_file> &&f)
+    void add_file(std::unique_ptr<source_file> &&f)
     {
         LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
 
         add_element(f->path(), std::move(f));
     }
 
+    std::filesystem::path fs_path(const std::filesystem::path &base = {}) const
+    {
+        std::filesystem::path res;
+
+        for (const auto &pe : path_) {
+            res /= pe;
+        }
+
+        if (is_absolute_)
+            res = "/" / res;
+        else
+            res = base / res;
+
+        return res.lexically_normal();
+    }
+
 private:
     filesystem_path path_;
+    source_file_t type_{source_file_t::kDirectory};
+    bool is_absolute_{false};
 };
 }
 
 namespace std {
 
-template <> struct hash<clanguml::include_diagram::model::filesystem_path> {
+template <> struct hash<clanguml::common::model::filesystem_path> {
     std::size_t operator()(
-        const clanguml::include_diagram::model::filesystem_path &key) const
+        const clanguml::common::model::filesystem_path &key) const
     {
         using clanguml::common::model::path;
 

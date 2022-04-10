@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "config.h"
+
 #include <filesystem>
 
 namespace clanguml {
@@ -28,12 +30,13 @@ config load(const std::string &config_file)
 
         // Store the parent path of the config_file to properly resolve
         // the include files paths
-        auto config_file_path = std::filesystem::path{config_file};
+        auto config_file_path =
+            std::filesystem::absolute(std::filesystem::path{config_file});
         doc.force_insert(
             "__parent_path", config_file_path.parent_path().string());
 
         // If the current directory is also a git repository,
-        // load some config values which can be included in the
+        // load some config values, which can be included in the
         // generated diagrams
         if (util::is_git_repository() && !doc["git"]) {
             YAML::Node git_config{YAML::NodeType::Map};
@@ -108,6 +111,8 @@ void inheritable_diagram_options::inherit(
     generate_method_arguments.override(parent.generate_method_arguments);
     generate_links.override(parent.generate_links);
     git.override(parent.git);
+    base_directory.override(parent.base_directory);
+    relative_to.override(parent.relative_to);
 }
 
 diagram_type class_diagram::type() const { return diagram_type::class_diagram; }
@@ -244,6 +249,21 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
 
     return {};
 }
+
+//
+// config std::filesystem::path decoder
+//
+template <> struct convert<std::filesystem::path> {
+    static bool decode(const Node &node, std::filesystem::path &rhs)
+    {
+        if (!node.IsScalar())
+            return false;
+
+        rhs = std::filesystem::path{node.as<std::string>()};
+
+        return true;
+    }
+};
 
 //
 // config access_t decoder
@@ -391,6 +411,9 @@ template <> struct convert<filter> {
         if (node["context"])
             rhs.context = node["context"].as<decltype(rhs.context)>();
 
+        if (node["paths"])
+            rhs.paths = node["paths"].as<decltype(rhs.paths)>();
+
         return true;
     }
 };
@@ -505,6 +528,16 @@ template <> struct convert<include_diagram> {
             return false;
 
         get_option(node, rhs.layout);
+        get_option(node, rhs.relative_to);
+
+        // Convert the path in relative_to to an absolute path, with respect
+        // to the directory where the `.clang-uml` configuration file is located
+        if (rhs.relative_to) {
+            auto absolute_relative_to =
+                std::filesystem::path{node["__parent_path"].as<std::string>()} /
+                rhs.relative_to();
+            rhs.relative_to.set(absolute_relative_to.lexically_normal());
+        }
 
         return true;
     }
@@ -558,25 +591,29 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.generate_links);
         get_option(node, rhs.git);
+        rhs.base_directory.set(node["__parent_path"].as<std::string>());
+        get_option(node, rhs.relative_to);
 
         auto diagrams = node["diagrams"];
 
         assert(diagrams.Type() == NodeType::Map);
 
-        for (const auto &d : diagrams) {
+        for (auto d : diagrams) {
             auto name = d.first.as<std::string>();
             std::shared_ptr<clanguml::config::diagram> diagram_config{};
+            auto parent_path = node["__parent_path"].as<std::string>();
 
             if (has_key(d.second, "include!")) {
-                auto parent_path = node["__parent_path"].as<std::string>();
                 auto include_path = std::filesystem::path{parent_path};
                 include_path /= d.second["include!"].as<std::string>();
 
                 YAML::Node node = YAML::LoadFile(include_path.string());
+                node.force_insert("__parent_path", parent_path);
 
                 diagram_config = parse_diagram_config(node);
             }
             else {
+                d.second.force_insert("__parent_path", parent_path);
                 diagram_config = parse_diagram_config(d.second);
             }
 
@@ -584,6 +621,9 @@ template <> struct convert<config> {
                 diagram_config->name = name;
                 diagram_config->inherit(rhs);
                 rhs.diagrams[name] = diagram_config;
+            }
+            else {
+                return false;
             }
         }
 

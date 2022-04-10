@@ -34,16 +34,18 @@ type_safe::optional_ref<const common::model::diagram_element> diagram::get(
     return get_file(full_name);
 }
 
-void diagram::add_file(std::unique_ptr<include_diagram::model::source_file> &&f)
+void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 {
     LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
 
     files_.emplace_back(*f);
 
-    add_element(f->path(), std::move(f));
+    auto p = f->path();
+
+    add_element(p, std::move(f));
 }
 
-type_safe::optional_ref<const include_diagram::model::source_file>
+type_safe::optional_ref<const common::model::source_file>
 diagram::get_file(const std::string &name) const
 {
     for (const auto &p : files_) {

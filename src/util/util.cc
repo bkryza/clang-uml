@@ -198,5 +198,37 @@ bool replace_all(
     return replaced;
 }
 
+template <>
+bool starts_with(
+    const std::filesystem::path &path, const std::filesystem::path &prefix)
+{
+    if(path == prefix)
+        return true;
+
+    const int path_length = std::distance(std::begin(path), std::end(path));
+
+    auto last_nonempty_prefix_element = std::prev(std::find_if(
+        prefix.begin(), prefix.end(), [](auto &&n) { return n.empty(); }));
+
+    int prefix_length =
+        std::distance(std::begin(prefix), last_nonempty_prefix_element);
+
+    // Empty prefix always matches
+    if (prefix_length == 0)
+        return true;
+
+    // Prefix longer then path never matches
+    if (prefix_length >= path_length)
+        return false;
+
+    auto path_compare_end = path.begin();
+    std::advance(path_compare_end, prefix_length);
+
+    std::vector<std::string> pref(prefix.begin(), last_nonempty_prefix_element);
+    std::vector<std::string> pat(path.begin(), path_compare_end);
+
+    return pref == pat;
+}
+
 }
 }
