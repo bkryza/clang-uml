@@ -185,6 +185,10 @@ struct AliasMatcher {
             std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
             std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"file\\s\"?" + name + "\"?\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"folder\\s\"?" + name + "\"?\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 
@@ -260,10 +264,16 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
 
-    format_string += " {} : {}";
+    format_string += " {}";
 
-    return ContainsMatcher(CasedString(
-        fmt::format(format_string, from, to, label), caseSensitivity));
+    if (!label.empty()) {
+        format_string += " : {}";
+        return ContainsMatcher(CasedString(
+            fmt::format(format_string, from, to, label), caseSensitivity));
+    }
+    else
+        return ContainsMatcher(
+            CasedString(fmt::format(format_string, from, to), caseSensitivity));
 }
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
@@ -442,6 +452,18 @@ ContainsMatcher IsPackage(std::string const &str,
 {
     return ContainsMatcher(
         CasedString("package [" + str + "]", caseSensitivity));
+}
+
+ContainsMatcher IsFolder(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("folder " + str, caseSensitivity));
+}
+
+ContainsMatcher IsFile(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("file " + str, caseSensitivity));
 }
 
 ContainsMatcher IsDeprecated(std::string const &str,

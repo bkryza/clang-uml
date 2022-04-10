@@ -35,6 +35,14 @@ TEST_CASE("t40001", "[test-case][package]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
+    REQUIRE_THAT(puml, IsFolder("lib1"));
+    REQUIRE_THAT(puml, IsFile("lib1.h"));
+    REQUIRE_THAT(puml, IsFile("t40001.cc"));
+    REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
+
+    REQUIRE_THAT(puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
+    REQUIRE_THAT(puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

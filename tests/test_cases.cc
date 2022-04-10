@@ -155,6 +155,8 @@ std::string generate_package_puml(
 
     std::stringstream ss;
 
+    assert(config.get() != nullptr);
+
     ss << generator(
         dynamic_cast<clanguml::config::package_diagram &>(*config), model);
 
@@ -168,6 +170,8 @@ std::string generate_include_puml(
     using namespace clanguml::include_diagram::generators::plantuml;
 
     std::stringstream ss;
+
+    assert(config.get() != nullptr);
 
     ss << generator(
         dynamic_cast<clanguml::config::include_diagram &>(*config), model);

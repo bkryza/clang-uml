@@ -20,6 +20,8 @@
 #include "util/util.h"
 #include <cx/util.h>
 
+#include <filesystem>
+
 #include "catch.h"
 
 TEST_CASE("Test split", "[unit-test]")
@@ -45,6 +47,23 @@ TEST_CASE("Test abbreviate", "[unit-test]")
     CHECK(abbreviate("abcd", 10) == "abcd");
     CHECK(abbreviate("abcd", 2) == "ab");
     CHECK(abbreviate("abcdefg", 5) == "ab...");
+}
+
+TEST_CASE("Test starts_with", "[unit-test]")
+{
+    using clanguml::util::starts_with;
+    using std::filesystem::path;
+
+    CHECK(starts_with(path{"/a/b/c/d"}, path{"/"}));
+    CHECK(!starts_with(path{"/a/b/c/d"}, path{"/a/b/c/d/e"}));
+    CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d"}));
+    CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d/"}));
+    CHECK(!starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b"}));
+    CHECK(!starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b/"}));
+    CHECK(starts_with(path{"/a/b/c/d/file.h"}, path{"/a/b/c"}));
+    CHECK(starts_with(path{"/a/b/c/file.h"}, path{"/a/b/c/file.h"}));
+    CHECK(starts_with(path{"c/file.h"}, path{"c"}));
+    CHECK(starts_with(path{"c/file.h"}, path{"c/"}));
 }
 
 TEST_CASE("Test replace_all", "[unit-test]")
