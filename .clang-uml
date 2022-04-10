@@ -18,5 +18,5 @@ diagrams:
     include!: uml/sequence_model_class_diagram.yml
   package_model_class:
     include!: uml/package_model_class_diagram.yml
-  diagram_model_class:
-    include!: uml/diagram_model_class_diagram.yml
+  include_graph:
+    include!: uml/include_diagram.yml
