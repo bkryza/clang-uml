@@ -7,7 +7,7 @@
              the key of the diagram YAML node
 
 ### Diagram options
-* `type` - type of diagram, one of [`class`, `sequence`, `package`]
+* `type` - type of diagram, one of [`class`, `sequence`, `package`, `include`]
 * `glob` - list of glob patterns to match source code files for analysis
 * `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `generate_method_arguments` - determines whether the class diagrams methods contain full arguments (`full`), are abbreviated (`abbreviated`) or skipped (`none`)
