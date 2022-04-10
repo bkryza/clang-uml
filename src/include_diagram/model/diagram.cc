@@ -45,8 +45,8 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     add_element(p, std::move(f));
 }
 
-type_safe::optional_ref<const common::model::source_file>
-diagram::get_file(const std::string &name) const
+type_safe::optional_ref<const common::model::source_file> diagram::get_file(
+    const std::string &name) const
 {
     for (const auto &p : files_) {
         if (p.get().full_name(false) == name) {

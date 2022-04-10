@@ -52,8 +52,7 @@ public:
     }
 
     template <typename V = T>
-    void add_element(
-        const Path &path, std::unique_ptr<V> p)
+    void add_element(const Path &path, std::unique_ptr<V> p)
     {
         assert(p);
 

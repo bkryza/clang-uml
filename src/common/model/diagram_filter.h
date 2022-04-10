@@ -135,8 +135,8 @@ struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
         std::vector<std::filesystem::path> p);
 
-    tvl::value_t match(const diagram &d,
-        const common::model::source_file &r) const override;
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &r) const override;
 
 private:
     std::vector<std::filesystem::path> paths_;
@@ -162,9 +162,7 @@ public:
             return false;
 
         auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
-            [this, &e](const auto &in) {
-                return in->match(diagram_, e);
-            });
+            [this, &e](const auto &in) { return in->match(diagram_, e); });
 
         if (tvl::is_undefined(inc) || tvl::is_true(inc))
             return true;

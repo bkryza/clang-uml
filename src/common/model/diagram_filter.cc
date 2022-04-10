@@ -347,7 +347,6 @@ void diagram_filter::init_filters(const config::diagram &c)
         element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
 
-
         inclusive_.emplace_back(std::make_unique<anyof_filter>(
             filter_t::kInclusive, std::move(element_filters)));
     }

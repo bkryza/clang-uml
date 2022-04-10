@@ -145,6 +145,5 @@ void translation_unit_visitor::process_file(const std::string &file,
             ctx.diagram().add_file(std::move(f));
         }
     }
-
 }
 }

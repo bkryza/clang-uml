@@ -202,7 +202,7 @@ template <>
 bool starts_with(
     const std::filesystem::path &path, const std::filesystem::path &prefix)
 {
-    if(path == prefix)
+    if (path == prefix)
         return true;
 
     const int path_length = std::distance(std::begin(path), std::end(path));

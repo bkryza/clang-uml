@@ -17,17 +17,17 @@
  */
 #pragma once
 
+#include "common/model/enums.h"
+#include "common/model/package.h"
 #include "config/config.h"
 #include "cx/cursor.h"
 #include "include_diagram/model/diagram.h"
 #include "include_diagram/visitor/translation_unit_context.h"
-#include "common/model/enums.h"
-#include "common/model/package.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
-#include <cppast/visitor.hpp>
 #include <cppast/cpp_preprocessor.hpp>
+#include <cppast/visitor.hpp>
 #include <type_safe/reference.hpp>
 
 #include <functional>
