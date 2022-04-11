@@ -50,6 +50,13 @@ class source_file
 public:
     source_file() = default;
 
+    source_file(const std::filesystem::path &p)
+    {
+        set_path(p.parent_path().string());
+        set_name(p.filename());
+        is_absolute_ = p.is_absolute();
+    }
+
     void set_path(const filesystem_path &p) { path_ = p; }
 
     void set_absolute() { is_absolute_ = true; }
@@ -69,6 +76,8 @@ public:
     {
         return (path_ | name()).to_string();
     }
+
+    auto full_path() const { return path() | name(); }
 
     void add_file(std::unique_ptr<source_file> &&f)
     {

@@ -46,8 +46,10 @@ public:
     void operator()(const cppast::cpp_entity &file);
 
 private:
-    void process_file(const std::string &file, bool register_as_current = false,
-        std::optional<cppast::cpp_include_kind> include_kind = {});
+    void process_include_directive(
+        const cppast::cpp_include_directive &include_directive);
+
+    void process_source_file(const cppast::cpp_file &file);
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;

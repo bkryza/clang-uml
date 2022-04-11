@@ -42,6 +42,24 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 
     auto p = f->path();
 
+    if (!f->path().is_empty()) {
+        // If the parent path is not empty, ensure relative parent directories
+        // of this source_file are in the diagram
+        common::model::filesystem_path parent_path_so_far;
+        for (const auto &directory : f->path()) {
+            auto dir = std::make_unique<common::model::source_file>();
+            if (!parent_path_so_far.is_empty())
+                dir->set_path(parent_path_so_far);
+            dir->set_name(directory);
+            dir->set_type(common::model::source_file_t::kDirectory);
+
+            if (!get_element(parent_path_so_far | directory).has_value())
+                add_file(std::move(dir));
+
+            parent_path_so_far.append(directory);
+        }
+    }
+
     add_element(p, std::move(f));
 }
 

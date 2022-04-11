@@ -164,6 +164,8 @@ template <>
 bool starts_with(
     const std::filesystem::path &path, const std::filesystem::path &prefix);
 
+template <> bool starts_with(const std::string &s, const std::string &prefix);
+
 template <typename T>
 bool ends_with(const std::vector<T> &col, const std::vector<T> &suffix)
 {
@@ -175,7 +177,7 @@ bool ends_with(const std::vector<T> &col, const std::vector<T> &suffix)
 }
 
 /**
- * @brief Removes prefix sequence of elements from the beggining of col.
+ * @brief Removes prefix sequence of elements from the beginning of col.
  *
  * @tparam T
  * @param col

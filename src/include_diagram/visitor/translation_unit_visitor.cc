@@ -37,125 +37,132 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 {
     assert(file.kind() == cppast::cpp_entity_kind::file_t);
 
-    const auto &f = static_cast<const cppast::cpp_file &>(file);
-
-    auto file_path = f.name();
-
-    LOG_DBG("Processing source file {}", file_path);
-
-    process_file(file_path, true);
+    process_source_file(static_cast<const cppast::cpp_file &>(file));
 
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
             if (e.kind() == cppast::cpp_entity_kind::include_directive_t) {
-                assert(ctx.get_current_file().has_value());
-
-                auto file_path_cpy = file.name();
-
                 const auto &inc =
                     static_cast<const cppast::cpp_include_directive &>(e);
 
-                LOG_DBG("Processing include directive {} in file {}",
-                    inc.full_path(), ctx.get_current_file().value().name());
-
-                process_file(inc.full_path(), false, inc.include_kind());
+                process_include_directive(inc);
             }
         });
 }
 
-void translation_unit_visitor::process_file(const std::string &file,
-    bool register_as_current,
-    std::optional<cppast::cpp_include_kind> include_kind)
+void translation_unit_visitor::process_include_directive(
+    const cppast::cpp_include_directive &include_directive)
 {
-    auto include_path = std::filesystem::path(file);
+    using common::model::relationship;
+    using common::model::source_file;
+    using common::model::source_file_t;
 
-    const std::filesystem::path base_directory{ctx.config().base_directory()};
+    assert(ctx.get_current_file().has_value());
 
+    LOG_DBG("Processing include directive {} in file {}",
+        include_directive.full_path(), ctx.get_current_file().value().name());
+
+    auto include_path = std::filesystem::path(include_directive.full_path());
+
+    // Make sure the include_path is absolute with respect to the
+    // filesystem, and in normal form
     if (include_path.is_relative()) {
         include_path = ctx.config().base_directory() / include_path;
     }
 
     include_path = include_path.lexically_normal();
 
-    std::string full_file_path = include_path;
-    auto f_abs = std::make_unique<common::model::source_file>();
-
-    if (include_path.is_absolute())
-        f_abs->set_absolute();
-
-    f_abs->set_path(include_path.parent_path().string());
-    f_abs->set_name(include_path.filename().string());
-
-    if (ctx.diagram().should_include(*f_abs)) {
+    if (ctx.diagram().should_include(source_file{include_path})) {
+        // Relativize the path with respect to relative_to config option
+        auto relative_include_path = include_path;
         if (ctx.config().relative_to) {
             const std::filesystem::path relative_to{ctx.config().relative_to()};
-
-            include_path = std::filesystem::relative(include_path, relative_to);
+            relative_include_path =
+                std::filesystem::relative(include_path, relative_to);
         }
 
-        auto f = std::make_unique<common::model::source_file>();
-
-        auto parent_path_str = include_path.parent_path().string();
-        if (!parent_path_str.empty())
-            f->set_path(parent_path_str);
-        f->set_name(include_path.filename().string());
-        f->set_type(common::model::source_file_t::kHeader);
-
-        if (register_as_current &&
-            ctx.diagram().get_element(f->path() | f->name()).has_value()) {
-            // This file is already in the diagram (e.g. it was added through an
-            // include directive before it was visited by the parser)
-            ctx.set_current_file(
-                ctx.diagram().get_element(f->path() | f->name()));
-            return;
+        // Check if this source file is already registered in the diagram,
+        // if not add it
+        auto diagram_path = source_file{relative_include_path}.full_path();
+        if (!ctx.diagram().get_element(diagram_path).has_value()) {
+            ctx.diagram().add_file(
+                std::make_unique<source_file>(relative_include_path));
         }
 
-        if (!f->path().is_empty()) {
-            // Ensure parent path directories source_files
-            // are in the diagram
-            common::model::filesystem_path parent_path_so_far;
-            for (const auto &directory : f->path()) {
-                auto dir = std::make_unique<common::model::source_file>();
-                if (!parent_path_so_far.is_empty())
-                    dir->set_path(parent_path_so_far);
-                dir->set_name(directory);
-                dir->set_type(common::model::source_file_t::kDirectory);
+        auto &include_file = ctx.diagram().get_element(diagram_path).value();
 
-                if (!ctx.diagram()
-                         .get_element(parent_path_so_far | directory)
-                         .has_value())
-                    ctx.diagram().add_file(std::move(dir));
+        include_file.set_type(source_file_t::kHeader);
 
-                parent_path_so_far.append(directory);
-            }
+        // Add relationship from the currently parsed source file to this
+        // include file
+        auto relationship_type = common::model::relationship_t::kAssociation;
+        if (include_directive.include_kind() ==
+            cppast::cpp_include_kind::system)
+            relationship_type = common::model::relationship_t::kDependency;
+
+        ctx.get_current_file().value().add_relationship(
+            relationship{relationship_type, include_file.alias()});
+
+        include_file.set_file(std::filesystem::absolute(include_path)
+                                  .lexically_normal()
+                                  .string());
+        include_file.set_line(0);
+    }
+    else {
+        LOG_DBG("Skipping include directive to file {}", include_path.string());
+    }
+}
+
+void translation_unit_visitor::process_source_file(const cppast::cpp_file &file)
+{
+    using common::model::relationship;
+    using common::model::source_file;
+    using common::model::source_file_t;
+
+    LOG_DBG("Processing source file {}", file.name());
+
+    auto file_path = std::filesystem::path(file.name());
+
+    // Make sure the file_path is absolute with respect to the
+    // filesystem, and in normal form
+    if (file_path.is_relative()) {
+        file_path = ctx.config().base_directory() / file_path;
+    }
+
+    file_path = file_path.lexically_normal();
+
+    if (ctx.diagram().should_include(source_file{file_path})) {
+        // Relativize the path with respect to relative_to config option
+        auto relative_file_path = file_path;
+        if (ctx.config().relative_to) {
+            const std::filesystem::path relative_to{ctx.config().relative_to()};
+            relative_file_path =
+                std::filesystem::relative(file_path, relative_to);
         }
 
-        auto diagram_file_path = f->path() | f->name();
-
-        if (!ctx.diagram().get_element(diagram_file_path).has_value()) {
-            ctx.diagram().add_file(std::move(f));
+        // Check if this source file is already registered in the diagram,
+        // if not add it
+        auto diagram_path = source_file{relative_file_path}.full_path();
+        if (!ctx.diagram().get_element(diagram_path).has_value()) {
+            ctx.diagram().add_file(
+                std::make_unique<source_file>(relative_file_path));
         }
 
-        auto &diagram_source_file =
-            ctx.diagram().get_element(diagram_file_path).value();
+        auto &source_file = ctx.diagram().get_element(diagram_path).value();
 
-        if (!register_as_current) {
-            auto relationship_type =
-                common::model::relationship_t::kAssociation;
-            if (include_kind.has_value() &&
-                include_kind.value() == cppast::cpp_include_kind::system)
-                relationship_type = common::model::relationship_t::kDependency;
-
-            ctx.get_current_file().value().add_relationship(
-                common::model::relationship{
-                    relationship_type, diagram_source_file.alias()});
-
-            auto fp = std::filesystem::absolute(file).lexically_normal();
-            diagram_source_file.set_file(fp.string());
-            diagram_source_file.set_line(0);
+        const std::string implementation_suffix_prefix{".c"};
+        if (file_path.has_extension() &&
+            util::starts_with(
+                file_path.extension().string(), implementation_suffix_prefix)) {
+            source_file.set_type(source_file_t::kImplementation);
         }
+        else
+            source_file.set_type(source_file_t::kHeader);
 
-        ctx.set_current_file(type_safe::opt_ref(diagram_source_file));
+        ctx.set_current_file(type_safe::opt_ref(source_file));
+    }
+    else {
+        LOG_DBG("Skipping source file {}", file_path.string());
     }
 }
 }
