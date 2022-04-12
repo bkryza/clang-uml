@@ -48,6 +48,20 @@ TEST_CASE("t40002", "[test-case][package]")
     REQUIRE_THAT(puml, IsAssociation(_A("lib1.cc"), _A("lib1.h")));
     REQUIRE_THAT(puml, IsAssociation(_A("lib2.cc"), _A("lib2.h")));
 
+    REQUIRE_THAT(puml,
+        HasLink(_A("lib1.h"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t40002/include/lib1/lib1.h#L0",
+                clanguml::util::get_git_commit()),
+            "lib1.h"));
+
+    REQUIRE_THAT(puml,
+        HasLink(_A("lib2.h"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t40002/include/lib2/lib2.h#L0",
+                clanguml::util::get_git_commit()),
+            "lib2.h"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

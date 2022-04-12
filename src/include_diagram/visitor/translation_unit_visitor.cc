@@ -64,7 +64,7 @@ void translation_unit_visitor::process_include_directive(
 
     auto include_path = std::filesystem::path(include_directive.full_path());
 
-    // Make sure the include_path is absolute with respect to the
+    // Make sure the file_path is absolute with respect to the
     // filesystem, and in normal form
     if (include_path.is_relative()) {
         include_path = ctx.config().base_directory() / include_path;
@@ -103,9 +103,10 @@ void translation_unit_visitor::process_include_directive(
         ctx.get_current_file().value().add_relationship(
             relationship{relationship_type, include_file.alias()});
 
-        include_file.set_file(std::filesystem::absolute(include_path)
-                                  .lexically_normal()
-                                  .string());
+        include_file.set_file(
+            std::filesystem::absolute(include_directive.full_path())
+                .lexically_normal()
+                .string());
         include_file.set_line(0);
     }
     else {

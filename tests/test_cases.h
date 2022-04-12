@@ -373,6 +373,14 @@ ContainsMatcher HasNote(std::string const &cls, std::string const &position,
         fmt::format("note {} of {}", position, cls), caseSensitivity));
 }
 
+ContainsMatcher HasLink(std::string const &alias, std::string const &link,
+    std::string const &tooltip,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("{} [[{}{{{}}}]]", alias, link, tooltip), caseSensitivity));
+}
+
 template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
     std::string const &type = "void",
