@@ -160,6 +160,10 @@ void translation_unit_visitor::process_source_file(const cppast::cpp_file &file)
         else
             source_file.set_type(source_file_t::kHeader);
 
+        source_file.set_file(
+            std::filesystem::absolute(file.name()).lexically_normal().string());
+        source_file.set_line(0);
+
         ctx.set_current_file(type_safe::opt_ref(source_file));
     }
     else {
