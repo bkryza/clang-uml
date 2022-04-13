@@ -59,6 +59,20 @@ TEST_CASE("t00002", "[test-case][class]")
     REQUIRE_THAT(puml, HasNote(_A("A"), "left", "This is class A"));
     REQUIRE_THAT(puml, HasNote(_A("B"), "top", "This is class B"));
 
+    REQUIRE_THAT(puml,
+        HasLink(_A("A"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00002/t00002.cc#L7",
+                clanguml::util::get_git_commit()),
+            "This is class A"));
+
+    REQUIRE_THAT(puml,
+        HasLink(_A("B"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t00002/t00002.cc#L16",
+                clanguml::util::get_git_commit()),
+            "This is class B"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

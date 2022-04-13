@@ -48,6 +48,20 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE_THAT(
         puml, HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
 
+    REQUIRE_THAT(puml,
+        HasLink(_A("AAA"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t30001/t30001.cc#L6",
+                clanguml::util::get_git_commit()),
+            "AAA"));
+
+    REQUIRE_THAT(puml,
+        HasLink(_A("BBB"),
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t30001/t30001.cc#L8",
+                clanguml::util::get_git_commit()),
+            "BBB"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }
