@@ -190,8 +190,7 @@ void generator::generate(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            relstr << m_model.to_alias(uns.relative(c.full_name())) << " "
-                   << puml_relation << " "
+            relstr << c.alias() << " " << puml_relation << " "
                    << m_model.to_alias(uns.relative(destination));
 
             if (!r.label().empty()) {
@@ -249,7 +248,7 @@ void generator::generate(
             std::stringstream relstr;
             try {
                 relstr << m_model.to_alias(uns.relative(b.name())) << " <|-- "
-                       << m_model.to_alias(uns.relative(c.full_name())) << '\n';
+                       << c.alias() << '\n';
                 all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
@@ -295,9 +294,7 @@ void generator::generate(
         try {
             destination = r.destination();
 
-            relstr << m_model.to_alias(
-                          m_config.using_namespace().relative(e.name()))
-                   << " "
+            relstr << e.alias() << " "
                    << clanguml::common::generators::plantuml::to_plantuml(
                           r.type(), r.style())
                    << " "
