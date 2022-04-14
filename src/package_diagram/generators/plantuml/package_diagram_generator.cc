@@ -39,8 +39,7 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << p.alias()
-                       << " ..> "
+                relstr << p.alias() << " ..> "
                        << m_model.to_alias(uns.relative(r.destination()))
                        << '\n';
                 ostr << relstr.str();
