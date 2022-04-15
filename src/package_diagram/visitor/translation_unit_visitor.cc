@@ -375,6 +375,9 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
 {
     bool found{false};
 
+    if (t_.kind() == cppast::cpp_type_kind::template_parameter_t)
+        return false;
+
     const auto fn = cx::util::full_name(
         resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
     auto t_ns = common::model::namespace_{fn};

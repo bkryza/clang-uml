@@ -197,24 +197,31 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 void translation_unit_visitor::process_type_alias_template(
     const cppast::cpp_alias_template &at)
 {
-    if (at.type_alias().underlying_type().kind() ==
-        cppast::cpp_type_kind::unexposed_t) {
+    auto alias_kind = at.type_alias().underlying_type().kind();
+    if (alias_kind == cppast::cpp_type_kind::unexposed_t) {
         LOG_DBG("Template alias has unexposed underlying type: {}",
             static_cast<const cppast::cpp_unexposed_type &>(
                 at.type_alias().underlying_type())
                 .name());
     }
     else {
-        auto tinst = build_template_instantiation(
-            static_cast<const cppast::cpp_template_instantiation_type &>(
-                resolve_alias(at.type_alias().underlying_type())));
+        if (at.type_alias().underlying_type().kind() ==
+            cppast::cpp_type_kind::template_instantiation_t) {
+            auto tinst = build_template_instantiation(
+                static_cast<const cppast::cpp_template_instantiation_type &>(
+                    resolve_alias(at.type_alias().underlying_type())));
 
-        ctx.add_type_alias_template(
-            cx::util::full_name(ctx.get_namespace(), at),
-            type_safe::ref(at.type_alias().underlying_type()));
+            ctx.add_type_alias_template(
+                cx::util::full_name(ctx.get_namespace(), at),
+                type_safe::ref(at.type_alias().underlying_type()));
 
-        if (ctx.diagram().should_include(tinst->get_namespace(), tinst->name()))
-            ctx.diagram().add_class(std::move(tinst));
+            if (ctx.diagram().should_include(
+                    tinst->get_namespace(), tinst->name()))
+                ctx.diagram().add_class(std::move(tinst));
+        }
+        else {
+            LOG_DBG("Unsupported alias target...");
+        }
     }
 }
 
@@ -1150,6 +1157,9 @@ void translation_unit_visitor::
 
             for (const auto &template_argument :
                 template_instantiation_type.arguments().value()) {
+                if (!template_argument.type().has_value())
+                    continue;
+
                 const auto template_argument_name =
                     cppast::to_string(template_argument.type().value());
                 if (template_parameter_names.count(template_argument_name) >
