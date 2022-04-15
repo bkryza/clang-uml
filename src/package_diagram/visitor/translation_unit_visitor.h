@@ -55,7 +55,8 @@ public:
         type_safe::optional_ref<const cppast::cpp_template_specialization>
             tspec = nullptr);
 
-    void process_function(const cppast::cpp_function &f);
+    void process_function(
+        const cppast::cpp_function &f, bool skip_return_type = false);
 
     bool find_relationships(const cppast::cpp_type &t_,
         std::vector<std::pair<std::string, common::model::relationship_t>>

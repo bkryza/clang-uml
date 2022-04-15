@@ -65,6 +65,12 @@ access_t cpp_access_specifier_to_access(
 
     return access;
 }
+
+bool is_constructor(const cppast::cpp_entity &e)
+{
+    return dynamic_cast<const cppast::cpp_constructor *>(
+               dynamic_cast<const cppast::cpp_function_base *>(&e)) != nullptr;
+}
 }
 
 translation_unit_visitor::translation_unit_visitor(
@@ -79,6 +85,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 {
     cppast::visit(file,
         [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
+            auto name = e.name();
             if (e.kind() == cppast::cpp_entity_kind::namespace_t) {
                 if (info.event ==
                     cppast::visitor_info::container_entity_enter) {
@@ -201,11 +208,13 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                     cx::util::full_name(ctx.get_namespace(), e),
                     cppast::to_string(e.kind()));
 
-                auto &f = static_cast<const cppast::cpp_function &>(
-                    static_cast<const cppast::cpp_function_template &>(e)
-                        .function());
+                auto &function_template =
+                    static_cast<const cppast::cpp_function_template &>(e);
 
-                process_function(f);
+                auto &f = static_cast<const cppast::cpp_function &>(
+                    function_template.function());
+
+                process_function(f, detail::is_constructor(f));
             }
             else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
                 LOG_DBG("========== Visiting '{}' - {}",
@@ -247,6 +256,7 @@ void translation_unit_visitor::process_class_declaration(
 
     // Process class elements
     for (auto &child : cls) {
+        auto name = child.name();
         if (child.kind() == cppast::cpp_entity_kind::access_specifier_t) {
             auto &as = static_cast<const cppast::cpp_access_specifier &>(child);
             last_access_specifier = as.access_specifier();
@@ -260,6 +270,14 @@ void translation_unit_visitor::process_class_declaration(
             auto &mv = static_cast<const cppast::cpp_variable &>(child);
             find_relationships(
                 mv.type(), relationships, relationship_t::kDependency);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
+            auto &mc = static_cast<const cppast::cpp_function &>(child);
+            process_function(mc, true);
+        }
+        else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
+            // Skip - destructor won't have any interesting candidates
+            // for relationships
         }
         else if (child.kind() == cppast::cpp_entity_kind::member_function_t) {
             auto &mf = static_cast<const cppast::cpp_member_function &>(child);
@@ -319,7 +337,8 @@ void translation_unit_visitor::process_class_declaration(
     }
 }
 
-void translation_unit_visitor::process_function(const cppast::cpp_function &f)
+void translation_unit_visitor::process_function(
+    const cppast::cpp_function &f, bool skip_return_type)
 {
     std::vector<std::pair<std::string, relationship_t>> relationships;
     auto current_package = ctx.get_current_package();
@@ -331,17 +350,20 @@ void translation_unit_visitor::process_function(const cppast::cpp_function &f)
         find_relationships(
             param.type(), relationships, relationship_t::kDependency);
 
-    find_relationships(
-        f.return_type(), relationships, relationship_t::kDependency);
+    if (!skip_return_type) {
+        find_relationships(
+            f.return_type(), relationships, relationship_t::kDependency);
 
-    for (const auto &dependency : relationships) {
-        auto destination = common::model::namespace_{std::get<0>(dependency)};
+        for (const auto &dependency : relationships) {
+            auto destination =
+                common::model::namespace_{std::get<0>(dependency)};
 
-        if (!ctx.get_namespace().starts_with(destination) &&
-            !destination.starts_with(ctx.get_namespace())) {
-            relationship r{
-                relationship_t::kDependency, std::get<0>(dependency)};
-            current_package.value().add_relationship(std::move(r));
+            if (!ctx.get_namespace().starts_with(destination) &&
+                !destination.starts_with(ctx.get_namespace())) {
+                relationship r{
+                    relationship_t::kDependency, std::get<0>(dependency)};
+                current_package.value().add_relationship(std::move(r));
+            }
         }
     }
 }
