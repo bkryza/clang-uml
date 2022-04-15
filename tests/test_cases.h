@@ -186,9 +186,9 @@ struct AliasMatcher {
         patterns.push_back(
             std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
         patterns.push_back(
-            std::regex{"file\\s\"?" + name + "\"?\\sas\\s" + alias_regex});
+            std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
-            std::regex{"folder\\s\"?" + name + "\"?\\sas\\s" + alias_regex});
+            std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 
@@ -465,13 +465,15 @@ ContainsMatcher IsPackage(std::string const &str,
 ContainsMatcher IsFolder(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString("folder " + str, caseSensitivity));
+    return ContainsMatcher(
+        CasedString("folder \"" + str + "\"", caseSensitivity));
 }
 
 ContainsMatcher IsFile(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString("file " + str, caseSensitivity));
+    return ContainsMatcher(
+        CasedString("file \"" + str + "\"", caseSensitivity));
 }
 
 ContainsMatcher IsDeprecated(std::string const &str,

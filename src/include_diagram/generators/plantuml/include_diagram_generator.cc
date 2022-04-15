@@ -56,8 +56,8 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
     LOG_DBG("Generating source_file {}", f.name());
 
     if (f.type() == common::model::source_file_t::kDirectory) {
-        ostr << "folder " << f.name();
-        ostr << " as " << f.alias();
+        ostr << "folder \"" << f.name();
+        ostr << "\" as " << f.alias();
         ostr << " {\n";
         for (const auto &file : f) {
             generate(dynamic_cast<const source_file &>(*file), ostr);
@@ -65,7 +65,7 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
         ostr << "}" << '\n';
     }
     else {
-        ostr << "file " << f.name() << " as " << f.alias();
+        ostr << "file \"" << f.name() << "\" as " << f.alias();
 
         if (m_config.generate_links) {
             generate_link(ostr, f);
