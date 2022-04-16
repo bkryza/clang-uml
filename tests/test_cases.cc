@@ -40,17 +40,6 @@ load_config(const std::string &test_name)
     return std::make_pair(std::move(config), std::move(db));
 }
 
-std::pair<clanguml::config::config, compilation_database> load_config2(
-    const std::string &test_name)
-{
-    auto config = clanguml::config::load(test_name + "/.clang-uml");
-
-    auto db = clanguml::cx::compilation_database::from_directory(
-        config.compilation_database_dir());
-
-    return std::make_pair(std::move(config), std::move(db));
-}
-
 std::unique_ptr<clanguml::sequence_diagram::model::diagram>
 generate_sequence_diagram(cppast::libclang_compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)

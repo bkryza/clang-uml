@@ -19,6 +19,7 @@
 #include "translation_unit_visitor.h"
 
 #include "common/model/namespace.h"
+#include "cx/util.h"
 #include "translation_unit_context.h"
 
 #include <cppast/cpp_function.hpp>

@@ -20,7 +20,6 @@
 #include "common/model/enums.h"
 #include "common/model/package.h"
 #include "config/config.h"
-#include "cx/cursor.h"
 #include "include_diagram/model/diagram.h"
 #include "include_diagram/visitor/translation_unit_context.h"
 

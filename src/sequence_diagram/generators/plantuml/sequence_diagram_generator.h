@@ -19,7 +19,6 @@
 
 #include "common/generators/plantuml/generator.h"
 #include "config/config.h"
-#include "cx/compilation_database.h"
 #include "sequence_diagram/model/diagram.h"
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"

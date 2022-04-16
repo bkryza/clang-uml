@@ -32,54 +32,6 @@ namespace clanguml {
 namespace cx {
 namespace util {
 
-std::string to_string(CXString &&cxs)
-{
-    std::string r{clang_getCString(cxs)};
-    clang_disposeString(cxs);
-    return r;
-}
-
-std::string to_string(cppast::cpp_type_kind t)
-{
-    using namespace cppast;
-    switch (t) {
-    case cpp_type_kind::builtin_t:
-        return "builtin";
-    case cpp_type_kind::user_defined_t:
-        return "user_defined";
-    case cpp_type_kind::auto_t:
-        return "auto";
-    case cpp_type_kind::decltype_t:
-        return "decltype";
-    case cpp_type_kind::decltype_auto_t:
-        return "decltype_auto";
-    case cpp_type_kind::cv_qualified_t:
-        return "cv_qualified";
-    case cpp_type_kind::pointer_t:
-        return "pointer";
-    case cpp_type_kind::reference_t:
-        return "reference";
-    case cpp_type_kind::array_t:
-        return "array";
-    case cpp_type_kind::function_t:
-        return "function";
-    case cpp_type_kind::member_function_t:
-        return "member_function";
-    case cpp_type_kind::member_object_t:
-        return "member_object";
-    case cpp_type_kind::template_parameter_t:
-        return "template_parameter";
-    case cpp_type_kind::template_instantiation_t:
-        return "template_instantiation";
-    case cpp_type_kind::dependent_t:
-        return "dependent";
-    case cpp_type_kind::unexposed_t:
-        return "unexposed";
-    default:
-        return "invalid";
-    }
-}
-
 std::string full_name(
     const common::model::namespace_ &current_ns, const cppast::cpp_entity &e)
 {

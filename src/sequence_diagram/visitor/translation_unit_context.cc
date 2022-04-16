@@ -62,14 +62,4 @@ const cppast::cpp_entity_index &translation_unit_context::entity_index() const
     return entity_index_;
 }
 
-void translation_unit_context::set_current_method(cx::cursor method)
-{
-    current_method_ = method;
-}
-
-cx::cursor &translation_unit_context::current_method()
-{
-    return current_method_;
-}
-
 }

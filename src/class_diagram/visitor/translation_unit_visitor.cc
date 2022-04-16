@@ -18,6 +18,8 @@
 
 #include "translation_unit_visitor.h"
 
+#include "cx/util.h"
+
 #include <cppast/cpp_alias_template.hpp>
 #include <cppast/cpp_array_type.hpp>
 #include <cppast/cpp_class_template.hpp>
@@ -789,7 +791,7 @@ void translation_unit_visitor::process_field(
     auto tr_declaration = cppast::to_string(tr);
 
     LOG_DBG("Processing field {} with unreferenced type of kind {}", mv.name(),
-        cx::to_string(tr.kind()));
+        cppast::to_string(tr.kind()));
 
     if (tr.kind() == cppast::cpp_type_kind::builtin_t) {
         LOG_DBG("Builtin type found for field: {}", m.name());
@@ -1323,7 +1325,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
         cx::util::full_name(cppast::remove_cv(t_), ctx.entity_index(), false);
 
     LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
-        cx::to_string(t_.kind()), fn);
+        cppast::to_string(t_.kind()), fn);
 
     relationship_t relationship_type = relationship_hint;
     const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));

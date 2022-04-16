@@ -18,7 +18,6 @@
 
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "config/config.h"
-#include "cx/compilation_database.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
@@ -38,7 +37,6 @@
 
 using namespace clanguml;
 using config::config;
-using cx::compilation_database;
 
 void print_diagrams_list(const clanguml::config::config &cfg);
 

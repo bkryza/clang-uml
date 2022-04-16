@@ -22,7 +22,6 @@
 #include "common/model/relationship.h"
 #include "common/model/source_file.h"
 #include "config/config.h"
-#include "cx/compilation_database.h"
 #include "include_diagram/model/diagram.h"
 #include "include_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"

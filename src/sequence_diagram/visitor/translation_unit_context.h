@@ -18,7 +18,6 @@
 #pragma once
 
 #include "config/config.h"
-#include "cx/cursor.h"
 #include "sequence_diagram/model/diagram.h"
 
 #include <cppast/cpp_entity_index.hpp>
@@ -47,10 +46,6 @@ public:
 
     clanguml::sequence_diagram::model::diagram &diagram();
 
-    void set_current_method(cx::cursor method);
-
-    cx::cursor &current_method();
-
 private:
     // Reference to the cppast entity index
     cppast::cpp_entity_index &entity_index_;
@@ -58,7 +53,6 @@ private:
     const clanguml::config::sequence_diagram &config_;
 
     std::vector<std::string> namespace_;
-    cx::cursor current_method_;
 };
 
 }

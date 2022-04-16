@@ -24,7 +24,6 @@
 #include "common/generators/plantuml/generator.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
-#include "cx/compilation_database.h"
 #include "util/util.h"
 
 #include <cppast/cpp_entity_index.hpp>

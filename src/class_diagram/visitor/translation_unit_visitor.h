@@ -20,7 +20,6 @@
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_context.h"
 #include "config/config.h"
-#include "cx/cursor.h"
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>

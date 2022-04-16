@@ -18,7 +18,6 @@
 #pragma once
 
 #include "config/config.h"
-#include "cx/cursor.h"
 #include "package_diagram/model/diagram.h"
 #include "package_diagram/visitor/translation_unit_context.h"
 
