@@ -202,32 +202,22 @@ template <>
 bool starts_with(
     const std::filesystem::path &path, const std::filesystem::path &prefix)
 {
-    if (path == prefix)
-        return true;
+    auto normal_path = std::filesystem::path();
+    auto normal_prefix = std::filesystem::path();
 
-    const int path_length = std::distance(std::begin(path), std::end(path));
+    for (const auto &element : path.lexically_normal()) {
+        if (!element.empty())
+            normal_path /= element;
+    }
 
-    auto last_nonempty_prefix_element = std::prev(std::find_if(
-        prefix.begin(), prefix.end(), [](auto &&n) { return n.empty(); }));
+    for (const auto &element : prefix.lexically_normal()) {
+        if (!element.empty())
+            normal_prefix /= element;
+    }
 
-    int prefix_length =
-        std::distance(std::begin(prefix), last_nonempty_prefix_element);
-
-    // Empty prefix always matches
-    if (prefix_length == 0)
-        return true;
-
-    // Prefix longer then path never matches
-    if (prefix_length >= path_length)
-        return false;
-
-    auto path_compare_end = path.begin();
-    std::advance(path_compare_end, prefix_length);
-
-    std::vector<std::string> pref(prefix.begin(), last_nonempty_prefix_element);
-    std::vector<std::string> pat(path.begin(), path_compare_end);
-
-    return pref == pat;
+    return std::search(normal_path.begin(), normal_path.end(),
+               normal_prefix.begin(),
+               normal_prefix.end()) == normal_path.begin();
 }
 
 template <> bool starts_with(const std::string &s, const std::string &prefix)

@@ -55,15 +55,16 @@ TEST_CASE("Test starts_with", "[unit-test]")
     using std::filesystem::path;
 
     CHECK(starts_with(path{"/a/b/c/d"}, path{"/"}));
-    CHECK(!starts_with(path{"/a/b/c/d"}, path{"/a/b/c/d/e"}));
+    CHECK_FALSE(starts_with(path{"/a/b/c/d"}, path{"/a/b/c/d/e"}));
     CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d"}));
     CHECK(starts_with(path{"/a/b/c/d/e"}, path{"/a/b/c/d/"}));
-    CHECK(!starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b"}));
-    CHECK(!starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b/"}));
+    CHECK_FALSE(starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b"}));
+    CHECK_FALSE(starts_with(path{"/e/f/c/d/file.h"}, path{"/a/b/"}));
     CHECK(starts_with(path{"/a/b/c/d/file.h"}, path{"/a/b/c"}));
     CHECK(starts_with(path{"/a/b/c/file.h"}, path{"/a/b/c/file.h"}));
     CHECK(starts_with(path{"c/file.h"}, path{"c"}));
     CHECK(starts_with(path{"c/file.h"}, path{"c/"}));
+    CHECK_FALSE(starts_with(path{"c/file1.h"}, path{"c/file2.h"}));
 }
 
 TEST_CASE("Test replace_all", "[unit-test]")

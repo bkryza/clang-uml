@@ -39,6 +39,7 @@ TEST_CASE("t40002", "[test-case][package]")
     REQUIRE_THAT(puml, IsFolder("lib2"));
     REQUIRE_THAT(puml, IsFile("lib1.h"));
     REQUIRE_THAT(puml, IsFile("lib2.h"));
+    REQUIRE_THAT(puml, !IsFile("lib2_detail.h"));
     REQUIRE_THAT(puml, IsFile("t40002.cc"));
     REQUIRE_THAT(puml, IsFile("lib1.cc"));
     REQUIRE_THAT(puml, IsFile("lib2.cc"));

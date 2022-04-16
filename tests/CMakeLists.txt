@@ -48,6 +48,14 @@ set(CLANG_UML_TEST_CONFIG_HEADER
         catch.h
         )
 
+set(CLANG_UML_TEST_FILTERS_SRC
+        test_filters.cc
+        ${TEST_FILTERS_SOURCES}
+        )
+set(CLANG_UML_TEST_FILTERS_HEADER
+        catch.h
+        )
+
 set(CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC
         test_thread_pool_executor.cc
         )
@@ -90,6 +98,16 @@ add_executable(test_config
         ${CLANG_UML_TEST_CONFIG_HEADER})
 
 target_link_libraries(test_config
+        PRIVATE
+        ${LIBCLANG_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        spdlog::spdlog clang-umllib cppast)
+
+add_executable(test_filters
+        ${CLANG_UML_TEST_FILTERS_SRC}
+        ${CLANG_UML_TEST_FILTERS_HEADER})
+
+target_link_libraries(test_filters
         PRIVATE
         ${LIBCLANG_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
@@ -145,3 +163,4 @@ add_test(NAME test_config COMMAND test_config)
 add_test(NAME test_model COMMAND test_model)
 add_test(NAME test_thread_pool_executor COMMAND test_thread_pool_executor)
 add_test(NAME test_cases COMMAND test_cases)
+add_test(NAME test_filters COMMAND test_filters)

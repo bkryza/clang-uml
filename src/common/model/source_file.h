@@ -90,9 +90,11 @@ public:
     {
         std::filesystem::path res;
 
-        for (const auto &pe : path_) {
-            res /= pe;
+        for (const auto &path_element : path_) {
+            res /= path_element;
         }
+
+        res /= name();
 
         if (is_absolute_)
             res = "/" / res;

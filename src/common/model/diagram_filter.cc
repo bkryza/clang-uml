@@ -329,13 +329,13 @@ void diagram_filter::init_filters(const config::diagram &c)
 {
     // Process inclusive filters
     if (c.include) {
-        inclusive_.emplace_back(std::make_unique<namespace_filter>(
+        add_inclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kInclusive, c.include().namespaces));
-        inclusive_.emplace_back(std::make_unique<relationship_filter>(
+        add_inclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kInclusive, c.include().relationships));
-        inclusive_.emplace_back(std::make_unique<access_filter>(
+        add_inclusive_filter(std::make_unique<access_filter>(
             filter_t::kInclusive, c.include().access));
-        inclusive_.emplace_back(std::make_unique<paths_filter>(
+        add_inclusive_filter(std::make_unique<paths_filter>(
             filter_t::kInclusive, c.base_directory(), c.include().paths));
 
         // Include any of these matches even if one them does not match
@@ -347,26 +347,26 @@ void diagram_filter::init_filters(const config::diagram &c)
         element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
 
-        inclusive_.emplace_back(std::make_unique<anyof_filter>(
+        add_inclusive_filter(std::make_unique<anyof_filter>(
             filter_t::kInclusive, std::move(element_filters)));
     }
 
     // Process exclusive filters
     if (c.exclude) {
-        exclusive_.emplace_back(std::make_unique<namespace_filter>(
+        add_exclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kExclusive, c.exclude().namespaces));
-        exclusive_.emplace_back(std::make_unique<element_filter>(
+        add_exclusive_filter(std::make_unique<paths_filter>(
+            filter_t::kExclusive, c.base_directory(), c.exclude().paths));
+        add_exclusive_filter(std::make_unique<element_filter>(
             filter_t::kExclusive, c.exclude().elements));
-        exclusive_.emplace_back(std::make_unique<relationship_filter>(
+        add_exclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kExclusive, c.exclude().relationships));
-        exclusive_.emplace_back(std::make_unique<access_filter>(
+        add_exclusive_filter(std::make_unique<access_filter>(
             filter_t::kExclusive, c.exclude().access));
-        exclusive_.emplace_back(std::make_unique<subclass_filter>(
+        add_exclusive_filter(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));
-        exclusive_.emplace_back(std::make_unique<context_filter>(
+        add_exclusive_filter(std::make_unique<context_filter>(
             filter_t::kExclusive, c.exclude().context));
-        exclusive_.emplace_back(std::make_unique<paths_filter>(
-            filter_t::kInclusive, c.base_directory(), c.exclude().paths));
     }
 }
 

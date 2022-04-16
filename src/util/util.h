@@ -144,20 +144,20 @@ template <typename T> void append(std::vector<T> &l, const std::vector<T> &r)
 }
 
 /**
- * @brief Checks if container starts with a prefix.
+ * @brief Checks if collection starts with a prefix.
  *
  * @tparam T e.g. std::vector<std::string>
- * @param con Container to be checked against prefix
+ * @param col Collection to be checked against prefix
  * @param prefix Container, which specifies the prefix
- * @return true if first prefix.size() elements of con are equal to prefix
+ * @return true if first prefix.size() elements of col are equal to prefix
  */
-template <typename T> bool starts_with(const T &con, const T &prefix)
+template <typename T> bool starts_with(const T &col, const T &prefix)
 {
-    if (prefix.size() > con.size())
+    if (prefix.size() > col.size())
         return false;
 
-    return T(prefix.begin(), prefix.end()) ==
-        T(con.begin(), con.begin() + prefix.size());
+    return std::search(col.begin(), col.end(), prefix.begin(), prefix.end()) ==
+        col.begin();
 }
 
 template <>
