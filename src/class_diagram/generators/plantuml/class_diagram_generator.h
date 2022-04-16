@@ -65,14 +65,17 @@ public:
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const;
 
-    void generate(const class_ &c, std::ostream &ostr,
-        std::ostream &relationships_ostr) const;
+    void generate(const class_ &c, std::ostream &ostr) const;
 
-    void generate(const enum_ &e, std::ostream &ostr,
-        std::ostream &relationships_ostr) const;
+    void generate_relationships(const class_ &c, std::ostream &ostr) const;
 
-    void generate(const package &p, std::ostream &ostr,
-        std::ostream &relationships_ostr) const;
+    void generate(const enum_ &e, std::ostream &ostr) const;
+
+    void generate_relationships(const enum_ &c, std::ostream &ostr) const;
+
+    void generate(const package &p, std::ostream &ostr) const;
+
+    void generate_relationships(const package &p, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const override;
 };

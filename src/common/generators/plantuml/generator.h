@@ -82,6 +82,7 @@ private:
 protected:
     ConfigType &m_config;
     DiagramType &m_model;
+    mutable std::set<std::string> m_generated_aliases;
     inja::json m_context;
     mutable inja::Environment m_env;
 };
