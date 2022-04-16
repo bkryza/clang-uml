@@ -106,7 +106,7 @@ struct inheritable_diagram_options {
         "include_relations_also_as_members", true};
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
-    option<plantuml> puml{"plantuml", option_inherit_mode::append};
+    option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
     option<bool> generate_packages{"generate_packages", false};
