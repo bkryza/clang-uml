@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="350px" preserveAspectRatio="none" style="width:300px;height:350px;background:#FFFFFF;" version="1.1" viewBox="0 0 300 350" width="300px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="fvmjgdymatsj7" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f1i2tshh96ugvh" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,35 +9,35 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L4" target="_top" title="ns1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L4" xlink:show="new" xlink:title="ns1" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="16,231.602,46,231.602,53,256.6699,283,256.6699,283,343.602,16,343.602,16,231.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L4" target="_top" title="ns1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L4" xlink:show="new" xlink:title="ns1" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="16,231.602,46,231.602,53,256.6699,283,256.6699,283,343.602,16,343.602,16,231.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="16" x2="53" y1="256.6699" y2="256.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="24" x="20" y="248.5679">ns1</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L21" target="_top" title="ns3" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L21" xlink:show="new" xlink:title="ns3" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="158,6.602,188,6.602,195,31.6699,282,31.6699,282,207.602,158,207.602,158,6.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L21" target="_top" title="ns3" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L21" xlink:show="new" xlink:title="ns3" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="158,6.602,188,6.602,195,31.6699,282,31.6699,282,207.602,158,207.602,158,6.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="158" x2="195" y1="31.6699" y2="31.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="24" x="162" y="23.5679">ns3</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="84" x="182" y="48.6358">«deprecated»</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L23" target="_top" title="ns1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L23" xlink:show="new" xlink:title="ns1" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="182,71.602,212,71.602,219,96.6699,258,96.6699,258,183.602,182,183.602,182,71.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L23" target="_top" title="ns1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L23" xlink:show="new" xlink:title="ns1" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="182,71.602,212,71.602,219,96.6699,258,96.6699,258,183.602,182,183.602,182,71.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="182" x2="219" y1="96.6699" y2="96.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="24" x="186" y="88.5679">ns1</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L5" target="_top" title="ns2_v1_0_0" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L5" xlink:show="new" xlink:title="ns2_v1_0_0" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="173,269.602,253,269.602,260,294.6699,267,294.6699,267,327.7378,173,327.7378,173,269.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L5" target="_top" title="ns2_v1_0_0" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L5" xlink:show="new" xlink:title="ns2_v1_0_0" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="173,269.602,253,269.602,260,294.6699,267,294.6699,267,327.7378,173,327.7378,173,269.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="173" x2="260" y1="294.6699" y2="294.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="74" x="177" y="286.5679">ns2_v1_0_0</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L10" target="_top" title="ns2_v0_9_0" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L10" xlink:show="new" xlink:title="ns2_v0_9_0" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="32,269.602,112,269.602,119,294.6699,138,294.6699,138,327.7378,32,327.7378,32,269.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L10" target="_top" title="ns2_v0_9_0" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L10" xlink:show="new" xlink:title="ns2_v0_9_0" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="32,269.602,112,269.602,119,294.6699,138,294.6699,138,327.7378,32,327.7378,32,269.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="32" x2="119" y1="294.6699" y2="294.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="74" x="36" y="286.5679">ns2_v0_9_0</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacing" textLength="84" x="47" y="311.6358">«deprecated»</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L23" target="_top" title="ns2" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/bc8bb5c44aeb6449567e007c03548c4fc25e4295/tests/t30003/t30003.cc#L23" xlink:show="new" xlink:title="ns2" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvmjgdymatsj7)" points="198,109.602,228,109.602,235,134.6699,242,134.6699,242,167.7378,198,167.7378,198,109.602" style="stroke:#000000;stroke-width:1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L23" target="_top" title="ns2" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/58fa6539bf8dd481415ad12538ed2f684fc9a7fc/tests/t30003/t30003.cc#L23" xlink:show="new" xlink:title="ns2" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1i2tshh96ugvh)" points="198,109.602,228,109.602,235,134.6699,242,134.6699,242,167.7378,198,167.7378,198,109.602" style="stroke:#000000;stroke-width:1.5;"/>
       <line style="stroke:#000000;stroke-width:1.5;" x1="198" x2="235" y1="134.6699" y2="134.6699"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="24" x="202" y="126.5679">ns2</text>
     </a>
