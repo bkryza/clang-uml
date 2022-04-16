@@ -81,7 +81,7 @@ clang-format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
 
 .PHONY: format
-clang-format:
+format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
 
 .PHONY: iwyu_fixes
