@@ -11,6 +11,9 @@ diagrams:
     include:
       subclasses:
         - clanguml::t00039::A
+        - clanguml::t00039::C
+        - clanguml::t00039::D
+        - clanguml::t00039::E
         - clanguml::t00039::ns3::F<T>
       relationships:
         - inheritance

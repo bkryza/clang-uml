@@ -4,10 +4,28 @@ namespace clanguml::t00039 {
 struct B {
 };
 
+struct C {
+};
+
+struct D {
+};
+
+struct E {
+};
+
 namespace ns1 {
 struct BB : public B {
 };
 } // namespace ns1
+
+struct CD : public C, public D {
+};
+
+struct DE : public D, public E {
+};
+
+struct CDE : public C, public D, public E {
+};
 
 struct A {
 };

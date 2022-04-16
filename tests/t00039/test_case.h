@@ -46,6 +46,17 @@ TEST_CASE("t00039", "[test-case][class]")
     REQUIRE_THAT(puml, !IsClass(_A("B")));
     REQUIRE_THAT(puml, !IsClass(_A("ns1::BB")));
 
+    REQUIRE_THAT(puml, IsClass(_A("C")));
+    REQUIRE_THAT(puml, IsClass(_A("D")));
+    REQUIRE_THAT(puml, IsClass(_A("E")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("CD")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("D"), _A("CD")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("D"), _A("DE")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("E"), _A("DE")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("CDE")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("D"), _A("CDE")));
+    REQUIRE_THAT(puml, IsBaseClass(_A("E"), _A("CDE")));
+
     REQUIRE_THAT(puml, IsClassTemplate("ns3::F", "T"));
     REQUIRE_THAT(puml, IsClassTemplate("ns3::FF", "T,M"));
     REQUIRE_THAT(puml, IsClassTemplate("ns3::FE", "T,M"));
