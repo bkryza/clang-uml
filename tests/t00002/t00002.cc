@@ -58,12 +58,7 @@ private:
     std::vector<A *> as;
 };
 
-//
-// NOTE: libclang fails on:
-//
-//   class D : public virtual B, public virtual C {
-//
-class E : virtual public B, virtual public C {
+class E : virtual public B, public virtual C {
 public:
     ///
     /// Forward foo_a
