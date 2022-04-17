@@ -102,6 +102,21 @@ private:
     std::vector<std::string> roots_;
 };
 
+struct specialization_filter : public filter_visitor {
+    specialization_filter(filter_t type, std::vector<std::string> roots);
+
+    tvl::value_t match(const diagram &d, const element &e) const override;
+
+private:
+    void init(const class_diagram::model::diagram &d) const;
+
+    std::vector<std::string> roots_;
+    mutable bool initialized_{false};
+    mutable std::unordered_set<
+        type_safe::object_ref<const class_diagram::model::class_, false>>
+        templates_;
+};
+
 struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);

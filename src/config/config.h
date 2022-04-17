@@ -70,6 +70,8 @@ struct filter {
 
     std::vector<std::string> subclasses;
 
+    std::vector<std::string> specializations;
+
     std::vector<std::string> context;
 
     std::vector<std::filesystem::path> paths;

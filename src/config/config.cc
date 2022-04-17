@@ -408,6 +408,10 @@ template <> struct convert<filter> {
         if (node["subclasses"])
             rhs.subclasses = node["subclasses"].as<decltype(rhs.subclasses)>();
 
+        if (node["specializations"])
+            rhs.specializations =
+                node["specializations"].as<decltype(rhs.specializations)>();
+
         if (node["context"])
             rhs.context = node["context"].as<decltype(rhs.context)>();
 

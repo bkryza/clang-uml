@@ -120,6 +120,8 @@ test_cases:
     - name: t00041
       title: Context diagram filter test
       description:
+    - name: t00042
+      title: Specialization class template diagram filter test
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

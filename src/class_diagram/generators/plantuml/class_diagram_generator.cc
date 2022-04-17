@@ -498,7 +498,6 @@ void generator::generate(std::ostream &ostr) const
                 generate(dynamic_cast<enum_ &>(*p), ostr);
             }
         }
-        ostr << '\n';
     }
 
     for (const auto &p : m_model) {
@@ -515,7 +514,6 @@ void generator::generate(std::ostream &ostr) const
                 generate_relationships(dynamic_cast<enum_ &>(*p), ostr);
             }
         }
-        ostr << '\n';
     }
 
     generate_config_layout_hints(ostr);

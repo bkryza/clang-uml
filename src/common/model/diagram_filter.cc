@@ -174,6 +174,85 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     return false;
 }
 
+specialization_filter::specialization_filter(
+    filter_t type, std::vector<std::string> roots)
+    : filter_visitor{type}
+    , roots_{roots}
+{
+}
+
+void specialization_filter::init(const class_diagram::model::diagram &cd) const
+{
+    if (initialized_)
+        return;
+
+    // First get all templates specified in the configuration
+    for (const auto &template_root : roots_) {
+        auto template_ref = cd.get_class(template_root);
+        if (template_ref.has_value())
+            templates_.emplace(template_ref.value());
+    }
+
+    // Iterate over the templates set, until no new template instantiations or
+    // specializations are found
+    bool found_new_template{true};
+    while (found_new_template) {
+        found_new_template = false;
+        for (const auto &t : cd.classes()) {
+            auto tfn = t->full_name(false);
+            auto tfn_relative = t->full_name(true);
+            for (const auto &r : t->relationships()) {
+                if (r.type() == relationship_t::kInstantiation) {
+                    auto r_dest = r.destination();
+                    for (const auto &t_dest : templates_) {
+                        auto t_dest_full = t_dest->full_name(true);
+                        if (r_dest == t_dest_full) {
+                            auto inserted = templates_.insert(t);
+                            if (inserted.second)
+                                found_new_template = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    initialized_ = true;
+}
+
+tvl::value_t specialization_filter::match(
+    const diagram &d, const element &e) const
+{
+    if (d.type() != diagram_t::kClass)
+        return {};
+
+    if (roots_.empty())
+        return {};
+
+    if (!d.complete())
+        return {};
+
+    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+    init(cd);
+
+    const auto &fn = e.full_name(false);
+    auto class_ref = cd.get_class(fn);
+
+    if (!class_ref.has_value())
+        // Couldn't find the element in the diagram
+        return false;
+
+    // Now check if the e element is contained in the calculated set
+    const auto &e_full_name = e.full_name(true);
+    bool res = std::find_if(templates_.begin(), templates_.end(),
+                   [&e_full_name](const auto &te) {
+                       return te->full_name(true) == e_full_name;
+                   }) != templates_.end();
+
+    return res;
+}
+
 relationship_filter::relationship_filter(
     filter_t type, std::vector<relationship_t> relationships)
     : filter_visitor{type}
@@ -280,7 +359,6 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
 tvl::value_t paths_filter::match(
     const diagram &d, const common::model::source_file &p) const
 {
-
     if (paths_.empty()) {
         return {};
     }
@@ -344,6 +422,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().elements));
         element_filters.emplace_back(std::make_unique<subclass_filter>(
             filter_t::kInclusive, c.include().subclasses));
+        element_filters.emplace_back(std::make_unique<specialization_filter>(
+            filter_t::kInclusive, c.include().specializations));
         element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
 
@@ -365,6 +445,8 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, c.exclude().access));
         add_exclusive_filter(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));
+        add_exclusive_filter(std::make_unique<specialization_filter>(
+            filter_t::kExclusive, c.exclude().specializations));
         add_exclusive_filter(std::make_unique<context_filter>(
             filter_t::kExclusive, c.exclude().context));
     }
@@ -377,5 +459,4 @@ bool diagram_filter::should_include<std::string>(const std::string &name) const
 
     return should_include(ns, n);
 }
-
 }

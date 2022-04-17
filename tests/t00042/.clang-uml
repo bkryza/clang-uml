@@ -1,0 +1,19 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00042_class:
+    type: class
+    generate_packages: false
+    glob:
+      - ../../tests/t00042/t00042.cc
+    using_namespace:
+      - clanguml::t00042
+    include:
+      specializations:
+        - clanguml::t00042::A<T>
+        - clanguml::t00042::B<T,K>
+      relationships:
+        - instantiation
+    exclude:
+      specializations:
+        - clanguml::t00042::C<T>
