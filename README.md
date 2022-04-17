@@ -351,6 +351,9 @@ include:
   # Include all subclasses of ClassA (including ClassA)
   subclasses:
     - clanguml::common::ClassA
+  # and specializations of template Class<T> (including Class<T>)
+  specializations:
+    - clanguml::common::ClassT<T>
   # and classes in direct relation to ClassB (including ClassB)
   context:
     - clanguml::common::ClassB
