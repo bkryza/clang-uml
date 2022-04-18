@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/stylable_element.h
+ * src/common/model/stylable_element.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *

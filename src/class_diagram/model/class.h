@@ -26,6 +26,8 @@
 #include "common/model/stylable_element.h"
 #include "type_alias.h"
 
+#include <type_safe/reference.hpp>
+
 #include <string>
 #include <vector>
 
@@ -89,4 +91,18 @@ private:
     std::string full_name_;
 };
 
+}
+
+namespace std {
+template <>
+struct hash<
+    type_safe::object_ref<const clanguml::class_diagram::model::class_>> {
+    std::size_t operator()(const type_safe::object_ref<
+        const clanguml::class_diagram::model::class_> &key) const
+    {
+        using clanguml::class_diagram::model::class_;
+
+        return std::hash<std::string>{}(key.get().full_name(false));
+    }
+};
 }

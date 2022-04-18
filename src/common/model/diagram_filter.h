@@ -125,12 +125,15 @@ struct tree_element_filter : public filter_visitor {
 
     tvl::value_t match(const diagram &d, const element &e) const override
     {
-        if (roots_.empty())
-            return {};
-
         // This filter should only be run on the completely generated diagram
         // model by visitor
         if (!d.complete())
+            return {};
+
+        if (!check_diagram_type<DiagramT>(d.type()))
+            return {};
+
+        if (roots_.empty())
             return {};
 
         const auto &cd = dynamic_cast<const DiagramT &>(d);
@@ -146,14 +149,10 @@ struct tree_element_filter : public filter_visitor {
             return false;
 
         // Now check if the e element is contained in the calculated set
-        const auto &e_full_name = e.full_name(false);
-        bool res =
-            std::find_if(matching_elements_.begin(), matching_elements_.end(),
-                [&e_full_name](const auto &te) {
-                    return te->full_name(false) == e_full_name;
-                }) != matching_elements_.end();
-
-        return res;
+        return std::any_of(matching_elements_.begin(), matching_elements_.end(),
+            [&e](const auto &te) {
+                return te->full_name(false) == e.full_name(false);
+            });
     }
 
 private:
@@ -204,6 +203,27 @@ private:
                 if (match_tree_rel(
                         detail::view<ElementT>(cd), matching_elements_))
                     keep_looking = true;
+            }
+        }
+
+        if constexpr (std::is_same_v<ElementT, common::model::package>) {
+            if (type() == filter_t::kInclusive) {
+                // For package diagrams, add also all parents of matching
+                // packages
+                decltype(matching_elements_) parents;
+                util::for_each(matching_elements_,
+                    [this, &cd, &parents](const auto &package) {
+                        auto parent_path = package.get().path();
+                        auto parent = cd.get_package(parent_path.to_string());
+                        while (parent.has_value()) {
+                            parents.emplace(type_safe::ref(parent.value()));
+                            parent = cd.get_package(
+                                parent.value().path().to_string());
+                        }
+                    });
+
+                matching_elements_.insert(
+                    std::begin(parents), std::end(parents));
             }
         }
 

@@ -28,7 +28,7 @@ TEST_CASE("Test config simple", "[unit-test]")
 
     CHECK(cfg.diagrams.size() == 1);
     auto &diagram = *cfg.diagrams["class_main"];
-    CHECK(diagram.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(diagram.type() == clanguml::common::model::diagram_t::kClass);
     CHECK(diagram.glob().size() == 2);
     CHECK(clanguml::util::contains(diagram.using_namespace(), "clanguml"));
     CHECK(diagram.generate_method_arguments() ==
@@ -47,7 +47,7 @@ TEST_CASE("Test config inherited", "[unit-test]")
 
     CHECK(cfg.diagrams.size() == 2);
     auto &def = *cfg.diagrams["class_default"];
-    CHECK(def.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
     CHECK(def.glob().size() == 2);
     CHECK(def.glob()[0] == "src/**/*.cc");
     CHECK(def.glob()[1] == "src/**/*.h");
@@ -56,7 +56,7 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(def.generate_links == false);
 
     auto &cus = *cfg.diagrams["class_custom"];
-    CHECK(cus.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(cus.type() == clanguml::common::model::diagram_t::kClass);
     CHECK(cus.glob().size() == 1);
     CHECK(cus.glob()[0] == "src/main.cc");
     CHECK(cus.using_namespace().starts_with({"clanguml::ns1"}));
@@ -71,7 +71,7 @@ TEST_CASE("Test config includes", "[unit-test]")
 
     CHECK(cfg.diagrams.size() == 2);
     auto &def = *cfg.diagrams["class_1"];
-    CHECK(def.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(def.type() == clanguml::common::model::diagram_t::kClass);
     CHECK(def.glob().size() == 2);
     CHECK(def.glob()[0] == "src/**/*.cc");
     CHECK(def.glob()[1] == "src/**/*.h");
@@ -80,7 +80,7 @@ TEST_CASE("Test config includes", "[unit-test]")
         clanguml::config::method_arguments::none);
 
     auto &cus = *cfg.diagrams["class_2"];
-    CHECK(cus.type() == clanguml::config::diagram_type::class_diagram);
+    CHECK(cus.type() == clanguml::common::model::diagram_t::kClass);
     CHECK(cus.glob().size() == 1);
     CHECK(cus.glob()[0] == "src/main.cc");
     CHECK(cus.using_namespace().starts_with({"clanguml::ns1"}));
@@ -99,7 +99,7 @@ TEST_CASE("Test config layout", "[unit-test]")
         *cfg.diagrams["class_main"]);
 
     auto check_layout = [](const auto &diagram,
-                            const clanguml::config::diagram_type type) {
+                            const clanguml::common::model::diagram_t type) {
         CHECK(diagram.type() == type);
 
         CHECK(diagram.layout().at("ABCD").size() == 2);
@@ -123,9 +123,9 @@ TEST_CASE("Test config layout", "[unit-test]")
 
     check_layout(static_cast<clanguml::config::class_diagram &>(
                      *cfg.diagrams["class_main"]),
-        clanguml::config::diagram_type::class_diagram);
+        clanguml::common::model::diagram_t::kClass);
 
     check_layout(static_cast<clanguml::config::package_diagram &>(
                      *cfg.diagrams["package_main"]),
-        clanguml::config::diagram_type::package_diagram);
+        clanguml::common::model::diagram_t::kPackage);
 }

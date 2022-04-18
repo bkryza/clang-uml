@@ -130,8 +130,8 @@ void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const cppast::libclang_compilation_database &db, bool verbose)
 {
+    using clanguml::common::model::diagram_t;
     using clanguml::config::class_diagram;
-    using clanguml::config::diagram_type;
     using clanguml::config::include_diagram;
     using clanguml::config::package_diagram;
     using clanguml::config::sequence_diagram;
@@ -140,7 +140,7 @@ void generate_diagram(const std::string &od, const std::string &name,
     std::ofstream ofs;
     ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
-    if (diagram->type() == diagram_type::class_diagram) {
+    if (diagram->type() == diagram_t::kClass) {
         using diagram_config = class_diagram;
         using diagram_model = clanguml::class_diagram::model::diagram;
         using diagram_visitor =
@@ -154,7 +154,7 @@ void generate_diagram(const std::string &od, const std::string &name,
         ofs << clanguml::class_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);
     }
-    else if (diagram->type() == diagram_type::sequence_diagram) {
+    else if (diagram->type() == diagram_t::kSequence) {
         using diagram_config = sequence_diagram;
         using diagram_model = clanguml::sequence_diagram::model::diagram;
         using diagram_visitor =
@@ -169,7 +169,7 @@ void generate_diagram(const std::string &od, const std::string &name,
             dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
             *model);
     }
-    else if (diagram->type() == diagram_type::package_diagram) {
+    else if (diagram->type() == diagram_t::kPackage) {
         using diagram_config = package_diagram;
         using diagram_model = clanguml::package_diagram::model::diagram;
         using diagram_visitor =
@@ -183,7 +183,7 @@ void generate_diagram(const std::string &od, const std::string &name,
         ofs << clanguml::package_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);
     }
-    else if (diagram->type() == diagram_type::include_diagram) {
+    else if (diagram->type() == diagram_t::kInclude) {
         using diagram_config = include_diagram;
         using diagram_model = clanguml::include_diagram::model::diagram;
         using diagram_visitor =

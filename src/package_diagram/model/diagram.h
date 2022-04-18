@@ -41,6 +41,9 @@ public:
 
     common::model::diagram_t type() const override;
 
+    const std::vector<type_safe::object_ref<const common::model::package>> &
+    packages() const;
+
     type_safe::optional_ref<const common::model::diagram_element> get(
         const std::string &full_name) const;
 
@@ -55,4 +58,9 @@ private:
     std::vector<type_safe::object_ref<const common::model::package, false>>
         packages_;
 };
+}
+
+namespace clanguml::common::model {
+template <>
+bool check_diagram_type<clanguml::package_diagram::model::diagram>(diagram_t t);
 }

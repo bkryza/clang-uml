@@ -85,7 +85,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
     }
 
     for (const auto &subpackage : p) {
-        generate(dynamic_cast<const package &>(*subpackage), ostr);
+        if (m_model.should_include(dynamic_cast<package &>(*subpackage)))
+            generate(dynamic_cast<const package &>(*subpackage), ostr);
     }
 
     if (!uns.starts_with(p.full_name(false))) {
@@ -102,14 +103,14 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
-        generate(dynamic_cast<package &>(*p), ostr);
-        ostr << '\n';
+        if (m_model.should_include(dynamic_cast<package &>(*p)))
+            generate(dynamic_cast<package &>(*p), ostr);
     }
 
     // Process package relationships
     for (const auto &p : m_model) {
-        generate_relationships(dynamic_cast<package &>(*p), ostr);
-        ostr << '\n';
+        if (m_model.should_include(dynamic_cast<package &>(*p)))
+            generate_relationships(dynamic_cast<package &>(*p), ostr);
     }
 
     generate_config_layout_hints(ostr);

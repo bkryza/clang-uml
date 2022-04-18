@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/enums.h
+ * src/common/model/enums.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -21,7 +21,7 @@
 
 namespace clanguml::common::model {
 
-enum class diagram_t { kClass, kSequence, kPackage };
+enum class diagram_t { kClass, kSequence, kPackage, kInclude };
 
 enum class access_t { kPublic, kProtected, kPrivate };
 
@@ -46,5 +46,7 @@ std::string to_string(relationship_t r);
 std::string to_string(access_t r);
 
 std::string to_string(message_t r);
+
+std::string to_string(diagram_t r);
 
 }

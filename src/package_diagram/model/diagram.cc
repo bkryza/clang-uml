@@ -28,6 +28,12 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kPackage;
 }
 
+const std::vector<type_safe::object_ref<const common::model::package>> &
+diagram::packages() const
+{
+    return packages_;
+}
+
 void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
@@ -43,7 +49,8 @@ type_safe::optional_ref<const common::model::package> diagram::get_package(
     const std::string &name) const
 {
     for (const auto &p : packages_) {
-        if (p.get().full_name(false) == name) {
+        auto p_full_name = p.get().full_name(false);
+        if (p_full_name == name) {
             return {p};
         }
     }
@@ -74,5 +81,13 @@ std::string diagram::to_alias(const std::string &full_name) const
             fmt::format("Missing alias for '{}'", path.to_string()));
 
     return package.value().alias();
+}
+}
+
+namespace clanguml::common::model {
+template <>
+bool check_diagram_type<clanguml::package_diagram::model::diagram>(diagram_t t)
+{
+    return t == diagram_t::kPackage;
 }
 }

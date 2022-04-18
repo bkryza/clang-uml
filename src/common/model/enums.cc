@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/enums.cc
+ * src/common/model/enums.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -74,4 +74,21 @@ std::string to_string(message_t r)
         assert(false);
     }
 }
+
+std::string to_string(const diagram_t t)
+{
+    switch (t) {
+    case diagram_t::kClass:
+        return "class";
+    case diagram_t::kSequence:
+        return "sequence";
+    case diagram_t::kPackage:
+        return "package";
+    case diagram_t::kInclude:
+        return "include";
+    default:
+        assert(false);
+    }
+}
+
 }

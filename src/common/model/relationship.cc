@@ -1,5 +1,5 @@
 /**
- * src/common/model/class_relationship.cc
+ * src/common/model/relationship.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *

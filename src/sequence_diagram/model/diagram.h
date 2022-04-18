@@ -47,3 +47,9 @@ public:
 };
 
 }
+
+namespace clanguml::common::model {
+template <>
+bool check_diagram_type<clanguml::sequence_diagram::model::diagram>(
+    diagram_t t);
+}

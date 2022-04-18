@@ -83,17 +83,7 @@ private:
 };
 }
 
-namespace std {
-
+namespace clanguml::common::model {
 template <>
-struct hash<
-    type_safe::object_ref<const clanguml::class_diagram::model::class_>> {
-    std::size_t operator()(const type_safe::object_ref<
-        const clanguml::class_diagram::model::class_> &key) const
-    {
-        using clanguml::class_diagram::model::class_;
-
-        return std::hash<std::string>{}(key.get().full_name(false));
-    }
-};
+bool check_diagram_type<clanguml::class_diagram::model::diagram>(diagram_t t);
 }

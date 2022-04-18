@@ -1,5 +1,5 @@
 /**
- * src/common/model/class.h
+ * src/common/model/package.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -18,8 +18,6 @@
 
 #include "package.h"
 
-#include "util/util.h"
-
 #include <sstream>
 
 namespace clanguml::common::model {
@@ -35,11 +33,11 @@ std::string package::full_name(bool relative) const
         return res.to_string();
     }
 
-    return (get_namespace().relative_to(using_namespace()) | name())
-        .to_string();
+    return (get_namespace() | name()).to_string();
 }
 
 bool package::is_deprecated() const { return is_deprecated_; }
 
 void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
+
 }

@@ -60,22 +60,6 @@ config load(const std::string &config_file)
     }
 }
 
-std::string to_string(const diagram_type t)
-{
-    switch (t) {
-    case diagram_type::class_diagram:
-        return "class";
-    case diagram_type::sequence_diagram:
-        return "sequence";
-    case diagram_type::package_diagram:
-        return "package";
-    case diagram_type::include_diagram:
-        return "include";
-    default:
-        assert(false);
-    }
-}
-
 std::string to_string(const hint_t t)
 {
     switch (t) {
@@ -115,7 +99,10 @@ void inheritable_diagram_options::inherit(
     relative_to.override(parent.relative_to);
 }
 
-diagram_type class_diagram::type() const { return diagram_type::class_diagram; }
+common::model::diagram_t class_diagram::type() const
+{
+    return common::model::diagram_t::kClass;
+}
 
 bool class_diagram::has_class(std::string clazz)
 {
@@ -133,19 +120,19 @@ bool class_diagram::has_class(std::string clazz)
     return false;
 }
 
-diagram_type sequence_diagram::type() const
+common::model::diagram_t sequence_diagram::type() const
 {
-    return diagram_type::sequence_diagram;
+    return common::model::diagram_t::kSequence;
 }
 
-diagram_type package_diagram::type() const
+common::model::diagram_t package_diagram::type() const
 {
-    return diagram_type::package_diagram;
+    return common::model::diagram_t::kPackage;
 }
 
-diagram_type include_diagram::type() const
+common::model::diagram_t include_diagram::type() const
 {
-    return diagram_type::include_diagram;
+    return common::model::diagram_t::kInclude;
 }
 
 template <>

@@ -57,3 +57,8 @@ private:
         files_;
 };
 }
+
+namespace clanguml::common::model {
+template <>
+bool check_diagram_type<clanguml::include_diagram::model::diagram>(diagram_t t);
+}

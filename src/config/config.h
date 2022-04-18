@@ -35,13 +35,6 @@
 namespace clanguml {
 namespace config {
 
-enum class diagram_type {
-    class_diagram,
-    sequence_diagram,
-    package_diagram,
-    include_diagram
-};
-
 enum class method_arguments { full, abbreviated, none };
 
 struct plantuml {
@@ -102,7 +95,6 @@ struct git_config {
     std::string toplevel;
 };
 
-std::string to_string(const diagram_type t);
 std::string to_string(const hint_t t);
 
 struct inheritable_diagram_options {
@@ -127,7 +119,7 @@ struct inheritable_diagram_options {
 struct diagram : public inheritable_diagram_options {
     virtual ~diagram() = default;
 
-    virtual diagram_type type() const = 0;
+    virtual common::model::diagram_t type() const = 0;
 
     std::string name;
 };
@@ -141,7 +133,7 @@ struct source_location {
 struct class_diagram : public diagram {
     virtual ~class_diagram() = default;
 
-    diagram_type type() const override;
+    common::model::diagram_t type() const override;
 
     option<std::vector<std::string>> classes{"classes"};
     option<layout_hints> layout{"layout"};
@@ -152,7 +144,7 @@ struct class_diagram : public diagram {
 struct sequence_diagram : public diagram {
     virtual ~sequence_diagram() = default;
 
-    diagram_type type() const override;
+    common::model::diagram_t type() const override;
 
     option<std::vector<source_location>> start_from{"start_from"};
 };
@@ -160,7 +152,7 @@ struct sequence_diagram : public diagram {
 struct package_diagram : public diagram {
     virtual ~package_diagram() = default;
 
-    diagram_type type() const override;
+    common::model::diagram_t type() const override;
 
     option<layout_hints> layout{"layout"};
 };
@@ -168,7 +160,7 @@ struct package_diagram : public diagram {
 struct include_diagram : public diagram {
     virtual ~include_diagram() = default;
 
-    diagram_type type() const override;
+    common::model::diagram_t type() const override;
 
     option<layout_hints> layout{"layout"};
 };

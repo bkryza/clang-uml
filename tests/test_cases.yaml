@@ -124,7 +124,7 @@ test_cases:
       title: Specialization class template diagram filter test
       description:
     - name: t00043
-      title: Dependants and dependencies diagram filter test
+      title: Dependants and dependencies class diagram filter test
       description:
   Sequence diagrams:
     - name: t20001
@@ -154,6 +154,9 @@ test_cases:
       description:
     - name: t30007
       title: Package diagram layout hints test case
+      description:
+    - name: t30008
+      title: Dependants and dependencies package diagram filter test
       description:
   Include diagrams:
     - name: t40001

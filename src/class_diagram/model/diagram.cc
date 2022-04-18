@@ -192,3 +192,11 @@ std::string diagram::to_alias(const std::string &full_name) const
 }
 
 }
+
+namespace clanguml::common::model {
+template <>
+bool check_diagram_type<clanguml::class_diagram::model::diagram>(diagram_t t)
+{
+    return t == diagram_t::kClass;
+}
+}

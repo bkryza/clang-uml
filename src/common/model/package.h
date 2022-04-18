@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/class.h
+ * src/common/model/package.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -52,5 +52,19 @@ public:
 
 private:
     bool is_deprecated_{false};
+};
+}
+
+namespace std {
+template <>
+struct hash<type_safe::object_ref<const clanguml::common::model::package>> {
+    std::size_t operator()(
+        const type_safe::object_ref<const clanguml::common::model::package>
+            &key) const
+    {
+        using clanguml::common::model::package;
+
+        return std::hash<std::string>{}(key.get().full_name(false));
+    }
 };
 }
