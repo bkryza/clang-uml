@@ -218,5 +218,11 @@ bool contains(const T &container, const E &element)
     }
 }
 
+template <typename T, typename F> void for_each(const T &collection, F &&func)
+{
+    std::for_each(std::begin(collection), std::end(collection),
+        std::forward<decltype(func)>(func));
+}
+
 } // namespace util
 } // namespace clanguml

@@ -169,59 +169,43 @@ private:
                 matching_elements_.emplace(template_ref.value());
         }
 
-        // Iterate over the templates set, until no new template instantiations
-        // or specializations are found
-        bool found_new_template{true};
+        auto match_tree_rel = [&, this](const auto &from, const auto &to) {
+            bool added_new_element{false};
 
-        auto reverse_relationship_match = [&found_new_template, this](
-                                              const relationship &rel,
-                                              const auto &el) {
-            if (rel.type() == relationship_) {
-                for (const auto &already_matching : matching_elements_) {
-                    if (rel.destination() ==
-                        already_matching->full_name(false)) {
-                        auto inserted = matching_elements_.insert(el);
-                        if (inserted.second)
-                            found_new_template = true;
-                    }
-                }
-            }
-        };
-
-        if (!forward_)
-            while (found_new_template) {
-                found_new_template = false;
-                // For each element of type ElementT in the diagram
-                for (const auto &el : detail::view<ElementT>(cd)) {
-                    //  Check if any of its relationships of type relationship_
-                    //  points to an element already in the matching_elements_
-                    //  set
-                    for (const auto &rel : el->relationships()) {
-                        reverse_relationship_match(rel, el);
-                    }
-                }
-            }
-        else
-            while (found_new_template) {
-                found_new_template = false;
-                // For each of the already matched elements
-                for (const auto &already_matching : matching_elements_)
-                    //  Check if any of its relationships of type relationship_
-                    //  points to an element already in the matching_elements_
-                    //  set
-                    for (const auto &rel : already_matching->relationships()) {
-                        if (rel.type() == relationship_) {
-                            for (const auto &el : detail::view<ElementT>(cd)) {
-                                if (rel.destination() == el->full_name(false)) {
-                                    auto inserted =
-                                        matching_elements_.insert(el);
-                                    if (inserted.second)
-                                        found_new_template = true;
-                                }
+            for (const auto &from_el : from) {
+                //  Check if any of its relationships of type relationship_
+                //  points to an element already in the matching_elements_
+                //  set
+                for (const auto &rel : from_el->relationships()) {
+                    if (rel.type() == relationship_) {
+                        for (const auto &to_el : to) {
+                            if (rel.destination() == to_el->full_name(false)) {
+                                const auto &to_add = forward_ ? to_el : from_el;
+                                if (matching_elements_.insert(to_add).second)
+                                    added_new_element = true;
                             }
                         }
                     }
+                }
             }
+
+            return added_new_element;
+        };
+
+        bool keep_looking{true};
+        while (keep_looking) {
+            keep_looking = false;
+            if (forward_) {
+                if (match_tree_rel(
+                        matching_elements_, detail::view<ElementT>(cd)))
+                    keep_looking = true;
+            }
+            else {
+                if (match_tree_rel(
+                        detail::view<ElementT>(cd), matching_elements_))
+                    keep_looking = true;
+            }
+        }
 
         initialized_ = true;
     }
