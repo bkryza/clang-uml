@@ -18,6 +18,9 @@
     * `elements` - list of elements, i.e. specific classes, enums, templates to include
     * `access` - list of visibility scopes to include (e.g. `private`)
     * `subclasses` - include only subclasses of specified classes (and themselves)
+    * `specializations` - include all specializations or instantiations of a given template
+    * `dependants` - include all classes, which depend on the specified class
+    * `dependencies` - include all classes, which are dependencies of the specified class
     * `context` - include only entities in direct relationship with specified classes
 * `exclude` - definition of excqlusion patterns:
     * `namespaces` - list of namespaces to exclude
@@ -25,6 +28,9 @@
     * `elements` - list of elements, i.e. specific classes, enums, templates to exclude
     * `access` - list of visibility scopes to exclude (e.g. `private`)
     * `subclasses` - exclude subclasses of specified classes (and themselves)
+    * `specializations` - exclude all specializations or instantiations of a given template
+    * `dependants` - exclude all classes, which depend on the specified class
+    * `dependencies` - exclude all classes, which are dependencies of the specified class
     * `context` - exclude only entities in direct relationship with specified classes
 * `layout` - add layout hints for entities (classes, packages)
 * `plantuml` - verbatim PlantUML directives which should be added to a diagram

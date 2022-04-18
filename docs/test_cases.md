@@ -41,6 +41,7 @@
  * [t00040](./test_cases/t00040.md) - Relationship and access filter test
  * [t00041](./test_cases/t00041.md) - Context diagram filter test
  * [t00042](./test_cases/t00042.md) - Specialization class template diagram filter test
+ * [t00043](./test_cases/t00043.md) - Dependants and dependencies diagram filter test
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

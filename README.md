@@ -354,6 +354,12 @@ include:
   # and specializations of template Class<T> (including Class<T>)
   specializations:
     - clanguml::common::ClassT<T>
+  # and all classes depending on Class D
+  dependants:
+    - clanguml::common::ClassD
+  # and all dependencies of ClassE
+  dependencies:
+    - clanguml::common::ClassE
   # and classes in direct relation to ClassB (including ClassB)
   context:
     - clanguml::common::ClassB
