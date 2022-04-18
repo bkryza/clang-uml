@@ -35,6 +35,7 @@ TEST_CASE("t00043", "[test-case][class]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
+    // Check dependants filter
     REQUIRE_THAT(puml, IsClass(_A("A")));
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("BB")));
@@ -47,6 +48,19 @@ TEST_CASE("t00043", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
     REQUIRE_THAT(puml, IsDependency(_A("D"), _A("C")));
     REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
+
+    // Check dependencies filter
+    REQUIRE_THAT(puml, IsClass(_A("G")));
+    REQUIRE_THAT(puml, IsClass(_A("GG")));
+    REQUIRE_THAT(puml, IsClass(_A("H")));
+    REQUIRE_THAT(puml, !IsClass(_A("HH")));
+    REQUIRE_THAT(puml, IsClass(_A("I")));
+    REQUIRE_THAT(puml, IsClass(_A("J")));
+
+    REQUIRE_THAT(puml, IsDependency(_A("H"), _A("G")));
+    REQUIRE_THAT(puml, IsDependency(_A("H"), _A("GG")));
+    REQUIRE_THAT(puml, IsDependency(_A("I"), _A("H")));
+    REQUIRE_THAT(puml, IsDependency(_A("J"), _A("I")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

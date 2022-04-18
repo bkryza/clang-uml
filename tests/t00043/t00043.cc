@@ -29,4 +29,30 @@ struct F {
 };
 } // namespace dependants
 
+namespace dependencies {
+
+struct G {
+};
+
+struct GG {
+};
+
+struct H {
+    void h(G *g) { }
+    void hh(GG *gg) { }
+};
+
+struct HH {
+    void hh(G *g) { }
+};
+
+struct I {
+    void i(H *h) { }
+};
+
+struct J {
+    void i(I *i) { }
+};
+
+} // namespace dependencies
 } // namespace clanguml::t00043

@@ -115,10 +115,11 @@ private:
 template <typename DiagramT, typename ElementT>
 struct tree_element_filter : public filter_visitor {
     tree_element_filter(filter_t type, relationship_t relationship,
-        std::vector<std::string> roots)
+        std::vector<std::string> roots, bool forward = false)
         : filter_visitor{type}
         , relationship_{relationship}
         , roots_{roots}
+        , forward_{forward}
     {
     }
 
@@ -187,17 +188,40 @@ private:
             }
         };
 
-        while (found_new_template) {
-            found_new_template = false;
-            // For each element of type ElementT in the diagram
-            for (const auto &el : detail::view<ElementT>(cd)) {
-                //  Check if any of its relationships of type relationship_
-                //  points to an element already in the matching_elements_ set
-                for (const auto &rel : el->relationships()) {
-                    reverse_relationship_match(rel, el);
+        if (!forward_)
+            while (found_new_template) {
+                found_new_template = false;
+                // For each element of type ElementT in the diagram
+                for (const auto &el : detail::view<ElementT>(cd)) {
+                    //  Check if any of its relationships of type relationship_
+                    //  points to an element already in the matching_elements_
+                    //  set
+                    for (const auto &rel : el->relationships()) {
+                        reverse_relationship_match(rel, el);
+                    }
                 }
             }
-        }
+        else
+            while (found_new_template) {
+                found_new_template = false;
+                // For each of the already matched elements
+                for (const auto &already_matching : matching_elements_)
+                    //  Check if any of its relationships of type relationship_
+                    //  points to an element already in the matching_elements_
+                    //  set
+                    for (const auto &rel : already_matching->relationships()) {
+                        if (rel.type() == relationship_) {
+                            for (const auto &el : detail::view<ElementT>(cd)) {
+                                if (rel.destination() == el->full_name(false)) {
+                                    auto inserted =
+                                        matching_elements_.insert(el);
+                                    if (inserted.second)
+                                        found_new_template = true;
+                                }
+                            }
+                        }
+                    }
+            }
 
         initialized_ = true;
     }
@@ -207,6 +231,7 @@ private:
     mutable bool initialized_{false};
     mutable std::unordered_set<type_safe::object_ref<const ElementT, false>>
         matching_elements_;
+    bool forward_;
 };
 
 struct relationship_filter : public filter_visitor {

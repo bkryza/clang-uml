@@ -381,6 +381,11 @@ void diagram_filter::init_filters(const config::diagram &c)
                 class_diagram::model::class_>>(filter_t::kInclusive,
                 relationship_t::kDependency, c.include().dependants));
 
+        element_filters.emplace_back(
+            std::make_unique<tree_element_filter<class_diagram::model::diagram,
+                class_diagram::model::class_>>(filter_t::kInclusive,
+                relationship_t::kDependency, c.include().dependencies, true));
+
         element_filters.emplace_back(std::make_unique<context_filter>(
             filter_t::kInclusive, c.include().context));
 
@@ -410,6 +415,10 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::make_unique<tree_element_filter<class_diagram::model::diagram,
                 class_diagram::model::class_>>(filter_t::kExclusive,
                 relationship_t::kDependency, c.exclude().dependants));
+        add_exclusive_filter(
+            std::make_unique<tree_element_filter<class_diagram::model::diagram,
+                class_diagram::model::class_>>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependencies, true));
         add_exclusive_filter(std::make_unique<context_filter>(
             filter_t::kExclusive, c.exclude().context));
     }

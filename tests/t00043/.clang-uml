@@ -11,5 +11,7 @@ diagrams:
     include:
       dependants:
         - clanguml::t00043::dependants::A
+      dependencies:
+        - clanguml::t00043::dependencies::J
       relationships:
         - dependency
