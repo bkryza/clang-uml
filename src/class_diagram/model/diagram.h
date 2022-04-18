@@ -47,9 +47,9 @@ public:
     type_safe::optional_ref<const clanguml::common::model::diagram_element> get(
         const std::string &full_name) const override;
 
-    const std::vector<type_safe::object_ref<const class_>> classes() const;
+    const std::vector<type_safe::object_ref<const class_>> &classes() const;
 
-    const std::vector<type_safe::object_ref<const enum_>> enums() const;
+    const std::vector<type_safe::object_ref<const enum_>> &enums() const;
 
     bool has_class(const class_ &c) const;
 

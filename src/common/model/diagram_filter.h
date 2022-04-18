@@ -34,6 +34,16 @@ namespace clanguml::common::model {
 
 enum filter_t { kInclusive, kExclusive };
 
+namespace detail {
+template <typename ElementT, typename DiagramT>
+const std::vector<type_safe::object_ref<const ElementT>> &view(
+    const DiagramT &d);
+
+template <typename ElementT, typename DiagramT>
+const type_safe::optional_ref<const ElementT> get(
+    const DiagramT &d, const std::string &full_name);
+} // namespace detail
+
 class filter_visitor {
 public:
     filter_visitor(filter_t type);
@@ -102,19 +112,101 @@ private:
     std::vector<std::string> roots_;
 };
 
-struct specialization_filter : public filter_visitor {
-    specialization_filter(filter_t type, std::vector<std::string> roots);
+template <typename DiagramT, typename ElementT>
+struct tree_element_filter : public filter_visitor {
+    tree_element_filter(filter_t type, relationship_t relationship,
+        std::vector<std::string> roots)
+        : filter_visitor{type}
+        , relationship_{relationship}
+        , roots_{roots}
+    {
+    }
 
-    tvl::value_t match(const diagram &d, const element &e) const override;
+    tvl::value_t match(const diagram &d, const element &e) const override
+    {
+        if (roots_.empty())
+            return {};
+
+        // This filter should only be run on the completely generated diagram
+        // model by visitor
+        if (!d.complete())
+            return {};
+
+        const auto &cd = dynamic_cast<const DiagramT &>(d);
+
+        // Calculate the set of matching elements
+        init(cd);
+
+        const auto &fn = e.full_name(false);
+        auto element_ref = detail::get<ElementT>(cd, fn);
+
+        if (!element_ref.has_value())
+            // Couldn't find the element in the diagram
+            return false;
+
+        // Now check if the e element is contained in the calculated set
+        const auto &e_full_name = e.full_name(false);
+        bool res =
+            std::find_if(matching_elements_.begin(), matching_elements_.end(),
+                [&e_full_name](const auto &te) {
+                    return te->full_name(false) == e_full_name;
+                }) != matching_elements_.end();
+
+        return res;
+    }
 
 private:
-    void init(const class_diagram::model::diagram &d) const;
+    void init(const DiagramT &cd) const
+    {
+        if (initialized_)
+            return;
+
+        // First get all elements specified in the filter configuration
+        for (const auto &template_root : roots_) {
+            auto template_ref = detail::get<ElementT>(cd, template_root);
+            if (template_ref.has_value())
+                matching_elements_.emplace(template_ref.value());
+        }
+
+        // Iterate over the templates set, until no new template instantiations
+        // or specializations are found
+        bool found_new_template{true};
+
+        auto reverse_relationship_match = [&found_new_template, this](
+                                              const relationship &rel,
+                                              const auto &el) {
+            if (rel.type() == relationship_) {
+                for (const auto &already_matching : matching_elements_) {
+                    if (rel.destination() ==
+                        already_matching->full_name(false)) {
+                        auto inserted = matching_elements_.insert(el);
+                        if (inserted.second)
+                            found_new_template = true;
+                    }
+                }
+            }
+        };
+
+        while (found_new_template) {
+            found_new_template = false;
+            // For each element of type ElementT in the diagram
+            for (const auto &el : detail::view<ElementT>(cd)) {
+                //  Check if any of its relationships of type relationship_
+                //  points to an element already in the matching_elements_ set
+                for (const auto &rel : el->relationships()) {
+                    reverse_relationship_match(rel, el);
+                }
+            }
+        }
+
+        initialized_ = true;
+    }
 
     std::vector<std::string> roots_;
+    relationship_t relationship_;
     mutable bool initialized_{false};
-    mutable std::unordered_set<
-        type_safe::object_ref<const class_diagram::model::class_, false>>
-        templates_;
+    mutable std::unordered_set<type_safe::object_ref<const ElementT, false>>
+        matching_elements_;
 };
 
 struct relationship_filter : public filter_visitor {

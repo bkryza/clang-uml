@@ -412,6 +412,9 @@ template <> struct convert<filter> {
             rhs.specializations =
                 node["specializations"].as<decltype(rhs.specializations)>();
 
+        if (node["dependants"])
+            rhs.dependants = node["dependants"].as<decltype(rhs.dependants)>();
+
         if (node["context"])
             rhs.context = node["context"].as<decltype(rhs.context)>();
 

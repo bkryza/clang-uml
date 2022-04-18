@@ -22,16 +22,15 @@
 #include "util/util.h"
 
 #include <cassert>
-#include <iostream>
 
 namespace clanguml::class_diagram::model {
 
-const std::vector<type_safe::object_ref<const class_>> diagram::classes() const
+const std::vector<type_safe::object_ref<const class_>> &diagram::classes() const
 {
     return classes_;
 }
 
-const std::vector<type_safe::object_ref<const enum_>> diagram::enums() const
+const std::vector<type_safe::object_ref<const enum_>> &diagram::enums() const
 {
     return enums_;
 }

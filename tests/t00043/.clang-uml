@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00043_class:
+    type: class
+    generate_packages: true
+    glob:
+      - ../../tests/t00043/t00043.cc
+    using_namespace:
+      - clanguml::t00043
+    include:
+      dependants:
+        - clanguml::t00043::dependants::A
+      relationships:
+        - dependency
