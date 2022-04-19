@@ -249,6 +249,7 @@ using namespace clanguml::test::matchers;
 //
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
+#include "t40003/test_case.h"
 
 //
 // Other tests (e.g. configuration file)
