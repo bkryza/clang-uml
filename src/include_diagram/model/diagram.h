@@ -52,6 +52,10 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
+    const std::vector<
+        type_safe::object_ref<const common::model::source_file, false>> &
+    files() const;
+
 private:
     std::vector<type_safe::object_ref<const common::model::source_file, false>>
         files_;

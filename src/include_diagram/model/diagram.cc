@@ -25,7 +25,7 @@ namespace clanguml::include_diagram::model {
 
 common::model::diagram_t diagram::type() const
 {
-    return common::model::diagram_t::kPackage;
+    return common::model::diagram_t::kInclude;
 }
 
 type_safe::optional_ref<const common::model::diagram_element> diagram::get(
@@ -94,11 +94,18 @@ std::string diagram::to_alias(const std::string &full_name) const
     return source_file.value().alias();
 }
 
+const std::vector<
+    type_safe::object_ref<const common::model::source_file, false>> &
+diagram::files() const
+{
+    return files_;
+}
+
 }
 
 namespace clanguml::common::model {
 template <>
-bool check_diagram_type<clanguml::include_diagram::model::diagram>(diagram_t t)
+bool check_diagram_type<include_diagram::model::diagram>(diagram_t t)
 {
     return t == diagram_t::kInclude;
 }

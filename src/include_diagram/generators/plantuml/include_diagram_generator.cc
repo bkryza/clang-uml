@@ -42,7 +42,11 @@ void generator::generate_relationships(
     }
     else {
         for (const auto &r : f.relationships()) {
-            if (m_model.should_include(r.type())) {
+            if (m_model.should_include(r.type()) &&
+                // make sure we only generate relationships for elements
+                // included in the diagram
+                util::contains(m_generated_aliases, r.destination()) &&
+                util::contains(m_generated_aliases, f.alias())) {
                 ostr << f.alias() << " "
                      << plantuml_common::to_plantuml(r.type(), r.style()) << " "
                      << r.destination() << '\n';
@@ -63,15 +67,21 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
             generate(dynamic_cast<const source_file &>(*file), ostr);
         }
         ostr << "}" << '\n';
+
+        m_generated_aliases.emplace(f.alias());
     }
     else {
-        ostr << "file \"" << f.name() << "\" as " << f.alias();
+        if (m_model.should_include(f)) {
+            ostr << "file \"" << f.name() << "\" as " << f.alias();
 
-        if (m_config.generate_links) {
-            generate_link(ostr, f);
+            if (m_config.generate_links) {
+                generate_link(ostr, f);
+            }
+
+            ostr << '\n';
+
+            m_generated_aliases.emplace(f.alias());
         }
-
-        ostr << '\n';
     }
 }
 
@@ -83,7 +93,9 @@ void generator::generate(std::ostream &ostr) const
 
     // Generate files and folders
     for (const auto &p : m_model) {
-        generate(dynamic_cast<source_file &>(*p), ostr);
+        if (p->type() == common::model::source_file_t::kDirectory ||
+            m_model.should_include(*p))
+            generate(dynamic_cast<source_file &>(*p), ostr);
     }
 
     // Process file include relationships

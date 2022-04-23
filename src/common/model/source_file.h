@@ -129,4 +129,15 @@ template <> struct hash<clanguml::common::model::filesystem_path> {
     }
 };
 
+template <>
+struct hash<type_safe::object_ref<const clanguml::common::model::source_file>> {
+    std::size_t operator()(
+        const type_safe::object_ref<const clanguml::common::model::source_file>
+            &key) const
+    {
+        using clanguml::common::model::source_file;
+
+        return std::hash<std::string>{}(key.get().full_name(false));
+    }
+};
 }

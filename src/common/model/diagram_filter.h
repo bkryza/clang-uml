@@ -25,6 +25,7 @@
 #include "config/config.h"
 #include "cx/util.h"
 #include "diagram.h"
+#include "include_diagram/model/diagram.h"
 #include "source_file.h"
 #include "tvl.h"
 
@@ -79,6 +80,9 @@ struct anyof_filter : public filter_visitor {
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
 
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &e) const override;
+
 private:
     std::vector<std::unique_ptr<filter_visitor>> filters_;
 };
@@ -112,7 +116,8 @@ private:
     std::vector<std::string> roots_;
 };
 
-template <typename DiagramT, typename ElementT>
+template <typename DiagramT, typename ElementT,
+    typename MatchOverrideT = common::model::element>
 struct tree_element_filter : public filter_visitor {
     tree_element_filter(filter_t type, relationship_t relationship,
         std::vector<std::string> roots, bool forward = false)
@@ -123,7 +128,7 @@ struct tree_element_filter : public filter_visitor {
     {
     }
 
-    tvl::value_t match(const diagram &d, const element &e) const override
+    tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
         // This filter should only be run on the completely generated diagram
         // model by visitor
@@ -168,41 +173,92 @@ private:
                 matching_elements_.emplace(template_ref.value());
         }
 
-        auto match_tree_rel = [&, this](const auto &from, const auto &to) {
-            bool added_new_element{false};
+        assert(!matching_elements_.empty());
 
-            for (const auto &from_el : from) {
-                //  Check if any of its relationships of type relationship_
-                //  points to an element already in the matching_elements_
-                //  set
-                for (const auto &rel : from_el->relationships()) {
-                    if (rel.type() == relationship_) {
-                        for (const auto &to_el : to) {
-                            if (rel.destination() == to_el->full_name(false)) {
-                                const auto &to_add = forward_ ? to_el : from_el;
-                                if (matching_elements_.insert(to_add).second)
-                                    added_new_element = true;
+        if constexpr (std::is_same_v<ElementT, common::model::source_file>) {
+            auto match_tree_rel = [&, this](const auto &from, const auto &to) {
+                bool added_new_element{false};
+
+                for (const auto &from_el : from) {
+                    //  Check if any of its relationships of type relationship_
+                    //  points to an element already in the matching_elements_
+                    //  set
+                    for (const auto &rel : from_el->relationships()) {
+                        if (rel.type() == relationship_) {
+                            for (const auto &to_el : to) {
+                                auto dest = rel.destination();
+                                auto alias = to_el->alias();
+                                if (dest == alias) {
+                                    const auto &to_add =
+                                        forward_ ? to_el : from_el;
+                                    if (matching_elements_.insert(to_add)
+                                            .second)
+                                        added_new_element = true;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            return added_new_element;
-        };
+                return added_new_element;
+            };
 
-        bool keep_looking{true};
-        while (keep_looking) {
-            keep_looking = false;
-            if (forward_) {
-                if (match_tree_rel(
-                        matching_elements_, detail::view<ElementT>(cd)))
-                    keep_looking = true;
+            bool keep_looking{true};
+            while (keep_looking) {
+                keep_looking = false;
+                if (forward_) {
+                    if (match_tree_rel(
+                            matching_elements_, detail::view<ElementT>(cd)))
+                        keep_looking = true;
+                }
+                else {
+                    if (match_tree_rel(
+                            detail::view<ElementT>(cd), matching_elements_))
+                        keep_looking = true;
+                }
             }
-            else {
-                if (match_tree_rel(
-                        detail::view<ElementT>(cd), matching_elements_))
-                    keep_looking = true;
+        }
+        else {
+            auto match_tree_rel = [&, this](const auto &from, const auto &to) {
+                bool added_new_element{false};
+
+                for (const auto &from_el : from) {
+                    //  Check if any of its relationships of type relationship_
+                    //  points to an element already in the matching_elements_
+                    //  set
+                    for (const auto &rel : from_el->relationships()) {
+                        if (rel.type() == relationship_) {
+                            for (const auto &to_el : to) {
+                                auto dest = rel.destination();
+                                auto to_el_fn = to_el->full_name(false);
+                                if (dest == to_el_fn) {
+                                    const auto &to_add =
+                                        forward_ ? to_el : from_el;
+                                    if (matching_elements_.insert(to_add)
+                                            .second)
+                                        added_new_element = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return added_new_element;
+            };
+
+            bool keep_looking{true};
+            while (keep_looking) {
+                keep_looking = false;
+                if (forward_) {
+                    if (match_tree_rel(
+                            matching_elements_, detail::view<ElementT>(cd)))
+                        keep_looking = true;
+                }
+                else {
+                    if (match_tree_rel(
+                            detail::view<ElementT>(cd), matching_elements_))
+                        keep_looking = true;
+                }
             }
         }
 
