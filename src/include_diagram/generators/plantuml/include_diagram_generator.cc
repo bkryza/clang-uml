@@ -30,28 +30,31 @@ generator::generator(diagram_config &config, diagram_model &model)
 void generator::generate_relationships(
     const source_file &f, std::ostream &ostr) const
 {
+    if (!util::contains(m_generated_aliases, f.alias()))
+        return;
+
     LOG_DBG("Generating relationships for file {}", f.full_name(true));
 
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
     if (f.type() == common::model::source_file_t::kDirectory) {
-        for (const auto &file : f) {
+        util::for_each(f, [this, &ostr](const auto &file) {
             generate_relationships(
                 dynamic_cast<const source_file &>(*file), ostr);
-        }
+        });
     }
     else {
-        for (const auto &r : f.relationships()) {
-            if (m_model.should_include(r.type()) &&
-                // make sure we only generate relationships for elements
-                // included in the diagram
-                util::contains(m_generated_aliases, r.destination()) &&
-                util::contains(m_generated_aliases, f.alias())) {
+        util::for_each_if(
+            f.relationships(),
+            [this, &f](const auto &r) {
+                return m_model.should_include(r.type()) &&
+                    util::contains(m_generated_aliases, r.destination());
+            },
+            [this, &f, &ostr](const auto &r) {
                 ostr << f.alias() << " "
                      << plantuml_common::to_plantuml(r.type(), r.style()) << " "
                      << r.destination() << '\n';
-            }
-        }
+            });
     }
 }
 
@@ -63,9 +66,11 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
         ostr << "folder \"" << f.name();
         ostr << "\" as " << f.alias();
         ostr << " {\n";
-        for (const auto &file : f) {
+
+        util::for_each(f, [this, &ostr](const auto &file) {
             generate(dynamic_cast<const source_file &>(*file), ostr);
-        }
+        });
+
         ostr << "}" << '\n';
 
         m_generated_aliases.emplace(f.alias());
@@ -92,16 +97,20 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     // Generate files and folders
-    for (const auto &p : m_model) {
-        if (p->type() == common::model::source_file_t::kDirectory ||
-            m_model.should_include(*p))
-            generate(dynamic_cast<source_file &>(*p), ostr);
-    }
+    util::for_each_if(
+        m_model,
+        [this](const auto &f) {
+            return f->type() == common::model::source_file_t::kDirectory ||
+                m_model.should_include(*f);
+        },
+        [this, &ostr](const auto &f) {
+            generate(dynamic_cast<source_file &>(*f), ostr);
+        });
 
     // Process file include relationships
-    for (const auto &p : m_model) {
-        generate_relationships(dynamic_cast<source_file &>(*p), ostr);
-    }
+    util::for_each(m_model, [this, &ostr](const auto &f) {
+        generate_relationships(dynamic_cast<source_file &>(*f), ostr);
+    });
 
     generate_config_layout_hints(ostr);
 

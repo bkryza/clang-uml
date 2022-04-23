@@ -224,5 +224,16 @@ template <typename T, typename F> void for_each(const T &collection, F &&func)
         std::forward<decltype(func)>(func));
 }
 
+template <typename T, typename C, typename F>
+void for_each_if(const T &collection, C &&cond, F &&func)
+{
+    std::for_each(std::begin(collection), std::end(collection),
+        [cond = std::forward<decltype(cond)>(cond),
+            func = std::forward<decltype(func)>(func)](const auto &e) {
+            if (cond(e))
+                func(e);
+        });
+}
+
 } // namespace util
 } // namespace clanguml
