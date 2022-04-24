@@ -47,7 +47,7 @@ debug: debug/CMakeLists.txt
 	make -C debug -j$(NUMPROC)
 
 release: release/CMakeLists.txt
-	make -C release -j
+	make -C release -j$(NUMPROC)
 
 test: debug
 	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
