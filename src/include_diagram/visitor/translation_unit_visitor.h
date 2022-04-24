@@ -50,6 +50,13 @@ private:
 
     void process_source_file(const cppast::cpp_file &file);
 
+    void process_external_system_header(
+        const cppast::cpp_include_directive &include_directive);
+
+    void process_internal_header(
+        const cppast::cpp_include_directive &include_directive,
+        const std::filesystem::path &include_path);
+
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
 };

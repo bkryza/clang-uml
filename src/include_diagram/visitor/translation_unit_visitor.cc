@@ -73,59 +73,73 @@ void translation_unit_visitor::process_include_directive(
     include_path = include_path.lexically_normal();
 
     if (ctx.diagram().should_include(source_file{include_path})) {
-        // Relativize the path with respect to relative_to config option
-        auto relative_include_path = include_path;
-        if (ctx.config().relative_to) {
-            const std::filesystem::path relative_to{ctx.config().relative_to()};
-            relative_include_path =
-                std::filesystem::relative(include_path, relative_to);
-        }
-
-        // Check if this source file is already registered in the diagram,
-        // if not add it
-        auto diagram_path = source_file{relative_include_path}.full_path();
-        if (!ctx.diagram().get_element(diagram_path).has_value()) {
-            ctx.diagram().add_file(
-                std::make_unique<source_file>(relative_include_path));
-        }
-
-        auto &include_file = ctx.diagram().get_element(diagram_path).value();
-
-        include_file.set_type(source_file_t::kHeader);
-
-        // Add relationship from the currently parsed source file to this
-        // include file
-        auto relationship_type = common::model::relationship_t::kAssociation;
-        if (include_directive.include_kind() ==
-            cppast::cpp_include_kind::system)
-            relationship_type = common::model::relationship_t::kDependency;
-
-        ctx.get_current_file().value().add_relationship(
-            relationship{relationship_type, include_file.alias()});
-
-        include_file.set_file(
-            std::filesystem::absolute(include_directive.full_path())
-                .lexically_normal()
-                .string());
-        include_file.set_line(0);
+        process_internal_header(include_directive, include_path);
     }
     else if (ctx.config().generate_system_headers() &&
         include_directive.include_kind() == cppast::cpp_include_kind::system) {
-        auto directive_target = include_directive.name();
-        auto f = std::make_unique<source_file>();
-        f->set_name(include_directive.name());
-        f->set_type(source_file_t::kHeader);
-        ctx.diagram().add_element(std::move(f));
-
-        ctx.get_current_file().value().add_relationship(
-            relationship{common::model::relationship_t::kDependency,
-                ctx.diagram().get_element(directive_target).value().alias()});
-
-        return;
+        process_external_system_header(include_directive);
     }
     else {
         LOG_DBG("Skipping include directive to file {}", include_path.string());
     }
+}
+
+void translation_unit_visitor::process_internal_header(
+    const cppast::cpp_include_directive &include_directive,
+    const std::filesystem::path &include_path)
+{
+    // Relativize the path with respect to relative_to config option
+    auto relative_include_path = include_path;
+    if (ctx.config().relative_to) {
+        const std::filesystem::path relative_to{ctx.config().relative_to()};
+        relative_include_path =
+            std::filesystem::relative(include_path, relative_to);
+    }
+
+    // Check if this source file is already registered in the diagram,
+    // if not add it
+    auto diagram_path =
+        common::model::source_file{relative_include_path}.full_path();
+    if (!ctx.diagram().get_element(diagram_path).has_value()) {
+        ctx.diagram().add_file(std::make_unique<common::model::source_file>(
+            relative_include_path));
+    }
+
+    auto &include_file = ctx.diagram().get_element(diagram_path).value();
+
+    include_file.set_type(common::model::source_file_t::kHeader);
+
+    // Add relationship from the currently parsed source file to this
+    // include file
+    auto relationship_type = common::model::relationship_t::kAssociation;
+    if (include_directive.include_kind() == cppast::cpp_include_kind::system)
+        relationship_type = common::model::relationship_t::kDependency;
+
+    ctx.get_current_file().value().add_relationship(
+        common::model::relationship{relationship_type, include_file.alias()});
+
+    include_file.set_file(
+        std::filesystem::absolute(include_directive.full_path())
+            .lexically_normal()
+            .string());
+    include_file.set_line(0);
+}
+
+void translation_unit_visitor::process_external_system_header(
+    const cppast::cpp_include_directive &include_directive)
+{
+    auto f = std::make_unique<common::model::source_file>();
+    f->set_name(include_directive.name());
+    f->set_type(common::model::source_file_t::kHeader);
+
+    ctx.diagram().add_element(std::move(f));
+
+    auto dependency_relationship = common::model::relationship{
+        common::model::relationship_t::kDependency,
+        ctx.diagram().get_element(include_directive.name()).value().alias()};
+
+    ctx.get_current_file().value().add_relationship(
+        std::move(dependency_relationship));
 }
 
 void translation_unit_visitor::process_source_file(const cppast::cpp_file &file)
@@ -184,4 +198,5 @@ void translation_unit_visitor::process_source_file(const cppast::cpp_file &file)
         LOG_DBG("Skipping source file {}", file_path.string());
     }
 }
+
 }
