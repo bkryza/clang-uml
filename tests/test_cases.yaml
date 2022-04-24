@@ -165,6 +165,9 @@ test_cases:
     - name: t40002
       title: Cyclic include graph diagram test case
       description:
+    - name: t40003
+      title: Dependants and dependencies include diagram filter test
+      description:
   Configuration diagrams:
     - name: t90000
       title: Basic config test

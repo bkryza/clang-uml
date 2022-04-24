@@ -57,5 +57,6 @@
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case
+ * [t40003](./test_cases/t40003.md) - Dependants and dependencies include diagram filter test
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="372px" preserveAspectRatio="none" style="width:476px;height:372px;background:#FFFFFF;" version="1.1" viewBox="0 0 476 372" width="476px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="377px" preserveAspectRatio="none" style="width:507px;height:377px;" version="1.1" viewBox="0 0 507 377" width="507px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1ia5pht8ptopk" width="300%" x="-1" y="-1">
+    <filter height="300%" id="fk7qn2gv09zqb" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,40 +9,40 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <polygon fill="#FFFFFF" filter="url(#f1ia5pht8ptopk)" points="60,6.602,86,6.602,93,31.6699,176,31.6699,176,99.602,60,99.602,60,6.602" style="stroke:#000000;stroke-width:1.5;"/>
-    <line style="stroke:#000000;stroke-width:1.5;" x1="60" x2="93" y1="31.6699" y2="31.6699"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="20" x="64" y="23.5679">src</text>
-    <polygon fill="#FFFFFF" filter="url(#f1ia5pht8ptopk)" points="16,123.602,72,123.602,79,148.6699,205,148.6699,205,365.602,16,365.602,16,123.602" style="stroke:#000000;stroke-width:1.5;"/>
-    <line style="stroke:#000000;stroke-width:1.5;" x1="16" x2="79" y1="148.6699" y2="148.6699"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="50" x="20" y="140.5679">include</text>
-    <polygon fill="#FFFFFF" filter="url(#f1ia5pht8ptopk)" points="48,224.602,79,224.602,86,249.6699,173,249.6699,173,333.602,48,333.602,48,224.602" style="stroke:#000000;stroke-width:1.5;"/>
-    <line style="stroke:#000000;stroke-width:1.5;" x1="48" x2="86" y1="249.6699" y2="249.6699"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="25" x="52" y="241.5679">lib1</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/src/t40001.cc#L0" target="_top" title="t40001.cc" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/src/t40001.cc#L0" xlink:show="new" xlink:title="t40001.cc" xlink:type="simple">
-      <polygon fill="#FEFECE" filter="url(#f1ia5pht8ptopk)" points="76.5,44.602,76.5,83.6699,159.5,83.6699,159.5,54.602,149.5,44.602,76.5,44.602" style="stroke:#000000;stroke-width:1.5;"/>
-      <path d="M149.5,44.602 L149.5,54.602 L159.5,54.602 " fill="#FEFECE" style="stroke:#000000;stroke-width:1.5;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="63" x="86.5" y="69.5679">t40001.cc</text>
+    <polygon fill="#FFFFFF" filter="url(#fk7qn2gv09zqb)" points="60,24,91,24,98,46.2969,182,46.2969,182,111,60,111,60,24" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="60" x2="98" y1="46.2969" y2="46.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="25" x="64" y="38.9951">src</text>
+    <polygon fill="#FFFFFF" filter="url(#fk7qn2gv09zqb)" points="22,135,85,135,92,157.2969,211,157.2969,211,365,22,365,22,135" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="92" y1="157.2969" y2="157.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="57" x="26" y="149.9951">include</text>
+    <polygon fill="#FFFFFF" filter="url(#fk7qn2gv09zqb)" points="54,230,88,230,95,252.2969,179,252.2969,179,333,54,333,54,230" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="54" x2="95" y1="252.2969" y2="252.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="58" y="244.9951">lib1</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/src/t40001.cc#L0" target="_top" title="t40001.cc" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/src/t40001.cc#L0" xlink:show="new" xlink:title="t40001.cc" xlink:type="simple">
+      <polygon fill="#FEFECE" filter="url(#fk7qn2gv09zqb)" points="76,59,76,95.2969,166,95.2969,166,69,156,59,76,59" style="stroke: #000000; stroke-width: 1.5;"/>
+      <path d="M156,59 L156,69 L166,69 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="70" x="86" y="81.9951">t40001.cc</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/include/t40001_include1.h#L0" target="_top" title="t40001_include1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/include/t40001_include1.h#L0" xlink:show="new" xlink:title="t40001_include1.h" xlink:type="simple">
-      <polygon fill="#FEFECE" filter="url(#f1ia5pht8ptopk)" points="47,161.602,47,200.6699,189,200.6699,189,171.602,179,161.602,47,161.602" style="stroke:#000000;stroke-width:1.5;"/>
-      <path d="M179,161.602 L179,171.602 L189,171.602 " fill="#FEFECE" style="stroke:#000000;stroke-width:1.5;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="122" x="57" y="186.5679">t40001_include1.h</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/include/t40001_include1.h#L0" target="_top" title="t40001_include1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/include/t40001_include1.h#L0" xlink:show="new" xlink:title="t40001_include1.h" xlink:type="simple">
+      <polygon fill="#FEFECE" filter="url(#fk7qn2gv09zqb)" points="46.5,170,46.5,206.2969,195.5,206.2969,195.5,180,185.5,170,46.5,170" style="stroke: #000000; stroke-width: 1.5;"/>
+      <path d="M185.5,170 L185.5,180 L195.5,180 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="129" x="56.5" y="192.9951">t40001_include1.h</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/include/lib1/lib1.h#L0" target="_top" title="lib1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/5b8e40c1eb6d56297203c1642a344ab724202e06/tests/t40001/include/lib1/lib1.h#L0" xlink:show="new" xlink:title="lib1.h" xlink:type="simple">
-      <polygon fill="#FEFECE" filter="url(#f1ia5pht8ptopk)" points="91,270.602,91,309.6699,149,309.6699,149,280.602,139,270.602,91,270.602" style="stroke:#000000;stroke-width:1.5;"/>
-      <path d="M139,270.602 L139,280.602 L149,280.602 " fill="#FEFECE" style="stroke:#000000;stroke-width:1.5;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="38" x="101" y="295.5679">lib1.h</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/include/lib1/lib1.h#L0" target="_top" title="lib1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b6390d91063025d9b8f3a02b731b2a998baf4e1c/tests/t40001/include/lib1/lib1.h#L0" xlink:show="new" xlink:title="lib1.h" xlink:type="simple">
+      <polygon fill="#FEFECE" filter="url(#fk7qn2gv09zqb)" points="97.5,273,97.5,309.2969,154.5,309.2969,154.5,283,144.5,273,97.5,273" style="stroke: #000000; stroke-width: 1.5;"/>
+      <path d="M144.5,273 L144.5,283 L154.5,283 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="37" x="107.5" y="295.9951">lib1.h</text>
     </a>
-    <path d="M221,276.102 L221,303.808 L377,303.808 L377,286.102 L367,276.102 L221,276.102 " fill="#FBFB77" filter="url(#f1ia5pht8ptopk)" style="stroke:#A80036;stroke-width:1.0;"/>
-    <path d="M367,276.102 L367,286.102 L377,286.102 L367,276.102 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="135" x="227" y="294.999">This is a lib1 include dir</text>
-    <path d="M224.5,167.102 L224.5,177.102 L189.25,181.102 L224.5,185.102 L224.5,194.808 A0,0 0 0 0 224.5,194.808 L467.5,194.808 A0,0 0 0 0 467.5,194.808 L467.5,177.102 L457.5,167.102 L224.5,167.102 A0,0 0 0 0 224.5,167.102 " fill="#FBFB77" filter="url(#f1ia5pht8ptopk)" style="stroke:#A80036;stroke-width:1.0;"/>
-    <path d="M457.5,167.102 L457.5,177.102 L467.5,177.102 L457.5,167.102 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="222" x="230.5" y="185.999">This is a t40001_include1.h include file</text>
-    <path d="M118,83.832 C118,103.552 118,134.642 118,156.132 " fill="none" id="C_0000001899-to-C_0000001905" style="stroke:#A80036;stroke-width:1.0;"/>
-    <polygon fill="#A80036" points="118,161.382,122,152.382,118,156.382,114,152.382,118,161.382" style="stroke:#A80036;stroke-width:1.0;"/>
-    <path d="M118.35,200.742 C118.68,218.582 119.19,245.582 119.55,265.042 " fill="none" id="C_0000001905-to-C_0000001911" style="stroke:#A80036;stroke-width:1.0;"/>
-    <polygon fill="#A80036" points="119.65,270.322,123.4692,261.2438,119.55,265.323,115.4708,261.4038,119.65,270.322" style="stroke:#A80036;stroke-width:1.0;"/>
-    <path d="M64.177,224.3009 C64.2354,224.1774 64.2943,224.054 64.3535,223.9309 C64.4719,223.6846 64.5917,223.4391 64.713,223.1945 C64.9556,222.7051 65.2039,222.2191 65.4583,221.7367 C65.9669,220.7718 66.4993,219.8212 67.0566,218.8871 C69.2855,215.1506 71.9113,211.677 75,208.602 C86.82,196.832 120.54,201.562 147.5,204.602 C203.32,210.902 258,253.182 283.73,275.832 " fill="none" id="C_0000001913-GMN817" style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+    <path d="M226.5,278.5 L226.5,303.6328 L393.5,303.6328 L393.5,288.5 L383.5,278.5 L226.5,278.5 " fill="#FBFB77" filter="url(#fk7qn2gv09zqb)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M383.5,278.5 L383.5,288.5 L393.5,288.5 L383.5,278.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="146" x="232.5" y="295.5669">This is a lib1 include dir</text>
+    <path d="M231,175.5 L231,184 L195.68,188 L231,192 L231,200.6328 A0,0 0 0 0 231,200.6328 L495,200.6328 A0,0 0 0 0 495,200.6328 L495,185.5 L485,175.5 L231,175.5 A0,0 0 0 0 231,175.5 " fill="#FBFB77" filter="url(#fk7qn2gv09zqb)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M485,175.5 L485,185.5 L495,185.5 L485,175.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="243" x="237" y="192.5669">This is a t40001_include1.h include file</text>
+    <path d="M121,95.03 C121,113.8 121,144.05 121,164.7 " fill="none" id="C_0000001899-&gt;C_0000001905" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="#A80036" points="121,169.73,125,160.73,121,164.73,117,160.73,121,169.73" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M121.85,206.13 C122.69,223.11 123.98,249.19 124.9,267.76 " fill="none" id="C_0000001905-&gt;C_0000001911" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="#A80036" points="125.15,272.78,128.6825,263.5864,124.8932,267.7866,120.693,263.9973,125.15,272.78" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M70.1058,229.8551 C70.2152,229.6198 70.326,229.3851 70.4381,229.1512 C71.3346,227.28 72.316,225.4553 73.3896,223.6932 C75.537,220.1689 78.0538,216.895 81,214 C92.96,202.24 126.96,207.01 153.5,210 C210.65,216.45 268.26,257.11 294.84,278.26 " fill="none" id="C_0000001913-GMN817" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
   </g>
 </svg>
