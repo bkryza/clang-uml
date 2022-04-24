@@ -94,6 +94,7 @@ void inheritable_diagram_options::inherit(
     puml.override(parent.puml);
     generate_method_arguments.override(parent.generate_method_arguments);
     generate_links.override(parent.generate_links);
+    generate_system_headers.override(parent.generate_system_headers);
     git.override(parent.git);
     base_directory.override(parent.base_directory);
     relative_to.override(parent.relative_to);
@@ -527,6 +528,7 @@ template <> struct convert<include_diagram> {
 
         get_option(node, rhs.layout);
         get_option(node, rhs.relative_to);
+        get_option(node, rhs.generate_system_headers);
 
         // Convert the path in relative_to to an absolute path, with respect
         // to the directory where the `.clang-uml` configuration file is located
@@ -588,6 +590,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.generate_links);
+        get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);

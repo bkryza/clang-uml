@@ -112,6 +112,7 @@ struct inheritable_diagram_options {
     option<git_config> git{"git"};
     option<std::filesystem::path> base_directory{"__parent_path"};
     option<std::filesystem::path> relative_to{"relative_to"};
+    option<bool> generate_system_headers{"generate_system_headers", false};
 
     void inherit(const inheritable_diagram_options &parent);
 };

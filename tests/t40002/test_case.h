@@ -44,6 +44,8 @@ TEST_CASE("t40002", "[test-case][package]")
     REQUIRE_THAT(puml, IsFile("lib1.cc"));
     REQUIRE_THAT(puml, IsFile("lib2.cc"));
 
+    REQUIRE_THAT(puml, !IsFile("string"));
+
     REQUIRE_THAT(puml, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
     REQUIRE_THAT(puml, IsAssociation(_A("lib1.h"), _A("lib2.h")));
     REQUIRE_THAT(puml, IsAssociation(_A("lib1.cc"), _A("lib1.h")));

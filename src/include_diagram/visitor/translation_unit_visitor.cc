@@ -109,6 +109,20 @@ void translation_unit_visitor::process_include_directive(
                 .string());
         include_file.set_line(0);
     }
+    else if (ctx.config().generate_system_headers() &&
+        include_directive.include_kind() == cppast::cpp_include_kind::system) {
+        auto directive_target = include_directive.name();
+        auto f = std::make_unique<source_file>();
+        f->set_name(include_directive.name());
+        f->set_type(source_file_t::kHeader);
+        ctx.diagram().add_element(std::move(f));
+
+        ctx.get_current_file().value().add_relationship(
+            relationship{common::model::relationship_t::kDependency,
+                ctx.diagram().get_element(directive_target).value().alias()});
+
+        return;
+    }
     else {
         LOG_DBG("Skipping include directive to file {}", include_path.string());
     }

@@ -40,8 +40,13 @@ TEST_CASE("t40001", "[test-case][package]")
     REQUIRE_THAT(puml, IsFile("t40001.cc"));
     REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
 
+    REQUIRE_THAT(puml, IsFile("string"));
+    REQUIRE_THAT(puml, IsFile("cppast/cpp_preprocessor.hpp"));
+
     REQUIRE_THAT(puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
     REQUIRE_THAT(puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
+
+    REQUIRE_THAT(puml, IsDependency(_A("t40001_include1.h"), _A("string")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
