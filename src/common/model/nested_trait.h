@@ -85,8 +85,9 @@ public:
             return type_safe::optional_ref<V>{};
         }
 
-        if (path.size() == 1)
+        if (path.size() == 1) {
             return get_element<V>(path[0]);
+        }
 
         auto p = get_element<T>(path[0]);
 
@@ -96,6 +97,18 @@ public:
         if (dynamic_cast<nested_trait<T, Path> *>(&p.value()))
             return dynamic_cast<nested_trait<T, Path> &>(p.value())
                 .get_element<V>(Path{path.begin() + 1, path.end()});
+
+        return type_safe::optional_ref<V>{};
+    }
+
+    template <typename V = T> auto get_element_parent(const T &element) const
+    {
+        auto path = element.path();
+        auto parent = get_element(path);
+
+        if (parent.has_value())
+            return type_safe::optional_ref<V>{
+                type_safe::ref<V>(dynamic_cast<V &>(parent.value()))};
 
         return type_safe::optional_ref<V>{};
     }

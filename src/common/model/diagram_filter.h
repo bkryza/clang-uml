@@ -43,6 +43,15 @@ const std::vector<type_safe::object_ref<const ElementT>> &view(
 template <typename ElementT, typename DiagramT>
 const type_safe::optional_ref<const ElementT> get(
     const DiagramT &d, const std::string &full_name);
+
+template <typename ElementT>
+std::string destination_comparator(const ElementT &e)
+{
+    return e.full_name(false);
+}
+
+template <>
+std::string destination_comparator(const common::model::source_file &f);
 } // namespace detail
 
 class filter_visitor {
@@ -118,8 +127,8 @@ private:
 
 template <typename DiagramT, typename ElementT,
     typename MatchOverrideT = common::model::element>
-struct tree_element_filter : public filter_visitor {
-    tree_element_filter(filter_t type, relationship_t relationship,
+struct edge_traversal_filter : public filter_visitor {
+    edge_traversal_filter(filter_t type, relationship_t relationship,
         std::vector<std::string> roots, bool forward = false)
         : filter_visitor{type}
         , relationship_{relationship}
@@ -161,126 +170,88 @@ struct tree_element_filter : public filter_visitor {
     }
 
 private:
+    template <typename C, typename D>
+    bool add_adjacent(const C &from, const D &to,
+        const std::vector<relationship_t> &relationships) const
+    {
+        bool added_new_element{false};
+
+        for (const auto &from_el : from) {
+            //  Check if any of its relationships of type relationship_
+            //  points to an element already in the matching_elements_
+            //  set
+            for (const auto &rel : from_el->relationships()) {
+                // Consider only if connected by one of specified relationships
+                if (util::contains(relationships, rel.type())) {
+                    for (const auto &to_el : to) {
+                        if (rel.destination() ==
+                            detail::destination_comparator(*to_el)) {
+                            const auto &to_add = forward_ ? to_el : from_el;
+                            if (matching_elements_.insert(to_add).second)
+                                added_new_element = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return added_new_element;
+    }
+
+    void add_parents(const DiagramT &cd) const
+    {
+        decltype(matching_elements_) parents;
+
+        util::for_each(
+            matching_elements_, [this, &cd, &parents](const auto &element) {
+                auto parent = detail::get<ElementT, DiagramT>(
+                    cd, element.get().path().to_string());
+
+                while (parent.has_value()) {
+                    parents.emplace(type_safe::ref(parent.value()));
+                    parent = detail::get<ElementT, DiagramT>(
+                        cd, parent.value().path().to_string());
+                }
+            });
+
+        matching_elements_.insert(std::begin(parents), std::end(parents));
+    }
+
     void init(const DiagramT &cd) const
     {
         if (initialized_)
             return;
 
         // First get all elements specified in the filter configuration
+        // which will serve as starting points for the search
+        // of matching elements
         for (const auto &template_root : roots_) {
             auto template_ref = detail::get<ElementT>(cd, template_root);
             if (template_ref.has_value())
                 matching_elements_.emplace(template_ref.value());
         }
 
-        assert(!matching_elements_.empty());
+        assert(roots_.empty() == matching_elements_.empty());
 
-        if constexpr (std::is_same_v<ElementT, common::model::source_file>) {
-            auto match_tree_rel = [&, this](const auto &from, const auto &to) {
-                bool added_new_element{false};
-
-                for (const auto &from_el : from) {
-                    //  Check if any of its relationships of type relationship_
-                    //  points to an element already in the matching_elements_
-                    //  set
-                    for (const auto &rel : from_el->relationships()) {
-                        if (rel.type() == relationship_) {
-                            for (const auto &to_el : to) {
-                                auto dest = rel.destination();
-                                auto alias = to_el->alias();
-                                if (dest == alias) {
-                                    const auto &to_add =
-                                        forward_ ? to_el : from_el;
-                                    if (matching_elements_.insert(to_add)
-                                            .second)
-                                        added_new_element = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return added_new_element;
-            };
-
-            bool keep_looking{true};
-            while (keep_looking) {
-                keep_looking = false;
-                if (forward_) {
-                    if (match_tree_rel(
-                            matching_elements_, detail::view<ElementT>(cd)))
-                        keep_looking = true;
-                }
-                else {
-                    if (match_tree_rel(
-                            detail::view<ElementT>(cd), matching_elements_))
-                        keep_looking = true;
-                }
+        bool keep_looking{true};
+        while (keep_looking) {
+            keep_looking = false;
+            if (forward_) {
+                if (add_adjacent(matching_elements_, detail::view<ElementT>(cd),
+                        {relationship_}))
+                    keep_looking = true;
             }
-        }
-        else {
-            auto match_tree_rel = [&, this](const auto &from, const auto &to) {
-                bool added_new_element{false};
-
-                for (const auto &from_el : from) {
-                    //  Check if any of its relationships of type relationship_
-                    //  points to an element already in the matching_elements_
-                    //  set
-                    for (const auto &rel : from_el->relationships()) {
-                        if (rel.type() == relationship_) {
-                            for (const auto &to_el : to) {
-                                auto dest = rel.destination();
-                                auto to_el_fn = to_el->full_name(false);
-                                if (dest == to_el_fn) {
-                                    const auto &to_add =
-                                        forward_ ? to_el : from_el;
-                                    if (matching_elements_.insert(to_add)
-                                            .second)
-                                        added_new_element = true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return added_new_element;
-            };
-
-            bool keep_looking{true};
-            while (keep_looking) {
-                keep_looking = false;
-                if (forward_) {
-                    if (match_tree_rel(
-                            matching_elements_, detail::view<ElementT>(cd)))
-                        keep_looking = true;
-                }
-                else {
-                    if (match_tree_rel(
-                            detail::view<ElementT>(cd), matching_elements_))
-                        keep_looking = true;
-                }
+            else {
+                if (add_adjacent(detail::view<ElementT>(cd), matching_elements_,
+                        {relationship_}))
+                    keep_looking = true;
             }
         }
 
-        if constexpr (std::is_same_v<ElementT, common::model::package>) {
-            if (type() == filter_t::kInclusive) {
-                // For package diagrams, add also all parents of matching
-                // packages
-                decltype(matching_elements_) parents;
-                util::for_each(matching_elements_,
-                    [this, &cd, &parents](const auto &package) {
-                        auto parent_path = package.get().path();
-                        auto parent = cd.get_package(parent_path.to_string());
-                        while (parent.has_value()) {
-                            parents.emplace(type_safe::ref(parent.value()));
-                            parent = cd.get_package(
-                                parent.value().path().to_string());
-                        }
-                    });
-
-                matching_elements_.insert(
-                    std::begin(parents), std::end(parents));
-            }
+        // For nested diagrams, include also parent elements
+        if ((type() == filter_t::kInclusive) &&
+            (cd.type() == common::model::diagram_t::kPackage)) {
+            add_parents(cd);
         }
 
         initialized_ = true;
