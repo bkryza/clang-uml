@@ -17,3 +17,20 @@ diagrams:
       namespaces:
         - clanguml
         - ABCD
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - inheritance
+        - composition
+        - aggregation
+        - containment
+        - ownership
+        - association
+        - instantiation
+        - friendship
+        - dependency
+    exclude:
+      relationships:
+        - none

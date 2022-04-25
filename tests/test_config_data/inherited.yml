@@ -10,7 +10,11 @@ include:
 glob:
   - src/**/*.cc
   - src/**/*.h
-
+plantuml:
+  before:
+    - This is a common header
+  after:
+    - This is a common footnote
 diagrams:
   class_default:
     type: class
@@ -21,4 +25,8 @@ diagrams:
     include_relations_also_as_members: true
     glob:
       - src/main.cc
-
+    plantuml:
+      before:
+        - title This is diagram A
+      after:
+        - "note left of A: This is a note"

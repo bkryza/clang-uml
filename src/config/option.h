@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include <string>
+
 namespace clanguml {
 namespace config {
 
@@ -29,6 +31,7 @@ template <typename T> struct option {
         option_inherit_mode im = option_inherit_mode::kOverride)
         : name{name_}
         , value{}
+        , inheritance_mode{im}
     {
     }
     option(const std::string &name_, const T &initial_value,
@@ -36,6 +39,7 @@ template <typename T> struct option {
         : name{name_}
         , value{initial_value}
         , has_value{true}
+        , inheritance_mode{im}
     {
     }
 
@@ -48,12 +52,13 @@ template <typename T> struct option {
 
     void override(const option<T> &o)
     {
-        if (!is_declared && o.is_declared) {
-            if (inheritance_mode == option_inherit_mode::kAppend)
-                append_value(value, o.value);
-            else
-                value = o.value;
-
+        if (o.is_declared && inheritance_mode == option_inherit_mode::kAppend) {
+            append_value(value, o.value);
+            is_declared = true;
+            has_value = true;
+        }
+        else if (!is_declared && o.is_declared) {
+            value = o.value;
             is_declared = true;
             has_value = true;
         }

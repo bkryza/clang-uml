@@ -105,22 +105,6 @@ common::model::diagram_t class_diagram::type() const
     return common::model::diagram_t::kClass;
 }
 
-bool class_diagram::has_class(std::string clazz)
-{
-    for (const auto &c : classes()) {
-        for (const auto &ns : using_namespace()) {
-            std::string prefix{};
-            if (!ns.empty()) {
-                prefix = ns + "::";
-            }
-            if (prefix + c == clazz)
-                return true;
-        }
-    }
-
-    return false;
-}
-
 common::model::diagram_t sequence_diagram::type() const
 {
     return common::model::diagram_t::kSequence;
@@ -134,13 +118,6 @@ common::model::diagram_t package_diagram::type() const
 common::model::diagram_t include_diagram::type() const
 {
     return common::model::diagram_t::kInclude;
-}
-
-template <>
-void append_value<std::vector<std::string>>(
-    std::vector<std::string> &l, const std::vector<std::string> &r)
-{
-    l.insert(l.end(), r.begin(), r.end());
 }
 
 template <> void append_value<plantuml>(plantuml &l, const plantuml &r)

@@ -24,6 +24,10 @@
 
 TEST_CASE("Test config simple", "[unit-test]")
 {
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::relationship_t;
+    using clanguml::util::contains;
+
     auto cfg = clanguml::config::load("./test_config_data/simple.yml");
 
     CHECK(cfg.diagrams.size() == 1);
@@ -39,6 +43,31 @@ TEST_CASE("Test config simple", "[unit-test]")
         "https://github.com/bkryza/clang-uml/blob/{{ git.branch }}/{{ "
         "element.source.file }}#L{{ element.source.line }}");
     CHECK(diagram.generate_links().tooltip == "{{ element.comment }}");
+
+    CHECK(contains(diagram.include().access, access_t::kPublic));
+    CHECK(contains(diagram.include().access, access_t::kProtected));
+    CHECK(contains(diagram.include().access, access_t::kPrivate));
+
+    CHECK(
+        contains(diagram.include().relationships, relationship_t::kExtension));
+    CHECK(contains(
+        diagram.include().relationships, relationship_t::kAggregation));
+    CHECK(contains(
+        diagram.include().relationships, relationship_t::kAssociation));
+    CHECK(contains(
+        diagram.include().relationships, relationship_t::kComposition));
+    CHECK(contains(
+        diagram.include().relationships, relationship_t::kContainment));
+    CHECK(
+        contains(diagram.include().relationships, relationship_t::kDependency));
+    CHECK(
+        contains(diagram.include().relationships, relationship_t::kFriendship));
+    CHECK(contains(
+        diagram.include().relationships, relationship_t::kInstantiation));
+    CHECK(
+        contains(diagram.include().relationships, relationship_t::kOwnership));
+
+    CHECK(contains(diagram.exclude().relationships, relationship_t::kNone));
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")
@@ -63,6 +92,12 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(cus.include_relations_also_as_members());
     CHECK(cus.generate_packages() == false);
     CHECK(cus.generate_links == false);
+    CHECK(cus.puml().before.size() == 2);
+    CHECK(cus.puml().before.at(0) == "title This is diagram A");
+    CHECK(cus.puml().before.at(1) == "This is a common header");
+    CHECK(cus.puml().after.size() == 2);
+    CHECK(cus.puml().after.at(0) == "note left of A: This is a note");
+    CHECK(cus.puml().after.at(1) == "This is a common footnote");
 }
 
 TEST_CASE("Test config includes", "[unit-test]")
