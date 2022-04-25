@@ -46,26 +46,6 @@ using clanguml::common::model::relationship_t;
 using clanguml::package_diagram::model::diagram;
 
 namespace detail {
-access_t cpp_access_specifier_to_access(
-    cppast::cpp_access_specifier_kind access_specifier)
-{
-    access_t access = access_t::kPublic;
-    switch (access_specifier) {
-    case cppast::cpp_access_specifier_kind::cpp_public:
-        access = access_t::kPublic;
-        break;
-    case cppast::cpp_access_specifier_kind::cpp_private:
-        access = access_t::kPrivate;
-        break;
-    case cppast::cpp_access_specifier_kind::cpp_protected:
-        access = access_t::kProtected;
-        break;
-    default:
-        break;
-    }
-
-    return access;
-}
 
 bool is_constructor(const cppast::cpp_entity &e)
 {
@@ -354,17 +334,16 @@ void translation_unit_visitor::process_function(
     if (!skip_return_type) {
         find_relationships(
             f.return_type(), relationships, relationship_t::kDependency);
+    }
 
-        for (const auto &dependency : relationships) {
-            auto destination =
-                common::model::namespace_{std::get<0>(dependency)};
+    for (const auto &dependency : relationships) {
+        auto destination = common::model::namespace_{std::get<0>(dependency)};
 
-            if (!ctx.get_namespace().starts_with(destination) &&
-                !destination.starts_with(ctx.get_namespace())) {
-                relationship r{
-                    relationship_t::kDependency, std::get<0>(dependency)};
-                current_package.value().add_relationship(std::move(r));
-            }
+        if (!ctx.get_namespace().starts_with(destination) &&
+            !destination.starts_with(ctx.get_namespace())) {
+            relationship r{
+                relationship_t::kDependency, std::get<0>(dependency)};
+            current_package.value().add_relationship(std::move(r));
         }
     }
 }

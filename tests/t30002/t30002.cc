@@ -1,3 +1,4 @@
+#include <array>
 #include <map>
 #include <memory>
 #include <vector>
@@ -57,15 +58,27 @@ namespace A13 {
 struct CM {
 };
 }
+namespace A14 {
+struct CN {
+};
+}
+namespace A15 {
+struct CO {
+};
+}
 }
 namespace B::BB::BBB {
-struct CBA : public A::AA::A6::CF {
+class CBA : public A::AA::A6::CF {
+public:
     A::AA::A1::CA *ca_;
     A::AA::A2::CB cb_;
     std::shared_ptr<A::AA::A3::CC> cc_;
-    std::map<std::string, std::unique_ptr<A::AA::A4::CD>> cd_;
+    std::map<std::string, std::unique_ptr<A::AA::A4::CD>> *cd_;
+    std::array<A::AA::A15::CO, 5> co_;
 
     CBA() = default;
+
+    CBA(A::AA::A14::CN *cn) { }
 
     template <typename... Item> CBA(std::tuple<Item...> &items) { }
 
@@ -78,7 +91,8 @@ struct CBA : public A::AA::A6::CF {
     {
     }
 
-    template <typename T> std::map<T, std::shared_ptr<A::AA::A9::CI>> ci()
+    template <typename T>
+    std::map<T, std::shared_ptr<A::AA::A9::CI>> ci(T * /*t*/)
     {
         return {};
     }
