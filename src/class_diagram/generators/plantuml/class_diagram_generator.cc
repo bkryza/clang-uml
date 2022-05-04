@@ -64,6 +64,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     else
         full_name = c.full_name();
 
+    //util::replace_all(full_name, "std::basic_string<char>", "std::string");
+
     if (full_name.empty())
         full_name = "<<anonymous>>";
 

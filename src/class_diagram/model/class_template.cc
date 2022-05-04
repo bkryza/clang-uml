@@ -24,16 +24,21 @@ namespace clanguml::class_diagram::model {
 
 class_template::class_template(const std::string &type, const std::string &name,
     const std::string &default_value, bool is_variadic)
-    : type_{type}
-    , name_{name}
+    : name_{name}
     , default_value_{default_value}
     , is_variadic_{is_variadic}
 {
+    set_type(type);
     if (is_variadic)
         name_ = name_ + "...";
 }
 
-void class_template::set_type(const std::string &type) { type_ = type; }
+void class_template::set_type(const std::string &type) {
+    type_ = type;
+    // TODO: Add a configurable mapping for simplifying non-interesting
+    //       std templates
+    util::replace_all(type_, "std::basic_string<char>", "std::string");
+}
 
 std::string class_template::type() const { return type_; }
 
@@ -58,6 +63,11 @@ bool class_template::is_variadic() const noexcept { return is_variadic_; }
 bool operator==(const class_template &l, const class_template &r)
 {
     return (l.name() == r.name()) && (l.type() == r.type());
+}
+
+bool operator!=(const class_template &l, const class_template &r)
+{
+    return !(l == r);
 }
 
 std::string class_template::to_string(

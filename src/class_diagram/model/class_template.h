@@ -42,8 +42,16 @@ public:
     bool is_variadic() const noexcept;
 
     friend bool operator==(const class_template &l, const class_template &r);
+    friend bool operator!=(const class_template &l, const class_template &r);
 
     std::vector<class_template> template_params_;
+
+    bool is_template_parameter() const { return is_template_parameter_; }
+
+    void is_template_parameter(bool is_template_parameter)
+    {
+        is_template_parameter_ = is_template_parameter;
+    }
 
     std::string to_string(
         const clanguml::common::model::namespace_ &using_namespace) const;
@@ -52,6 +60,7 @@ private:
     std::string type_;
     std::string name_;
     std::string default_value_;
+    bool is_template_parameter_{false};
     bool is_variadic_{false};
 };
 }

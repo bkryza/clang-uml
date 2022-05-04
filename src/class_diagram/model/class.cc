@@ -139,10 +139,13 @@ std::ostringstream &class_::render_template_params(
 
     if (!templates_.empty()) {
         std::vector<std::string> tnames;
+        std::vector<std::string> tnames_simplified;
+
         std::transform(templates_.cbegin(), templates_.cend(),
-            std::back_inserter(tnames), [this](const auto &tmplt) {
-                return tmplt.to_string(using_namespace());
-            });
+            std::back_inserter(tnames),
+            [ns = using_namespace()](
+                const auto &tmplt) { return tmplt.to_string(ns); });
+
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
     return ostr;

@@ -75,12 +75,17 @@ public:
 
     bool is_abstract() const;
 
+    bool is_alias() const { return is_alias_; }
+
+    void is_alias(bool alias) { is_alias_ = alias; }
+
 private:
     std::ostringstream &render_template_params(std::ostringstream &ostr) const;
 
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
+    bool is_alias_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;

@@ -35,6 +35,7 @@ enum class relationship_t {
     kAssociation,
     kInstantiation,
     kFriendship,
+    kAlias,
     kDependency
 };
 

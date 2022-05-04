@@ -200,8 +200,9 @@ void translation_unit_visitor::process_type_alias_template(
     const cppast::cpp_alias_template &at)
 {
     auto alias_kind = at.type_alias().underlying_type().kind();
+
     if (alias_kind == cppast::cpp_type_kind::unexposed_t) {
-        LOG_DBG("Template alias has unexposed underlying type: {}",
+        LOG_DBG("Template alias has unexposed underlying type - ignoring: {}",
             static_cast<const cppast::cpp_unexposed_type &>(
                 at.type_alias().underlying_type())
                 .name());
@@ -209,9 +210,16 @@ void translation_unit_visitor::process_type_alias_template(
     else {
         if (at.type_alias().underlying_type().kind() ==
             cppast::cpp_type_kind::template_instantiation_t) {
+            found_relationships_t nested_relationships;
             auto tinst = build_template_instantiation(
                 static_cast<const cppast::cpp_template_instantiation_type &>(
-                    resolve_alias(at.type_alias().underlying_type())));
+                    resolve_alias(at.type_alias().underlying_type())),
+                nested_relationships);
+
+            tinst->is_alias(true);
+
+            if (tinst->get_namespace().is_empty())
+                tinst->set_namespace(ctx.get_namespace());
 
             ctx.add_type_alias_template(
                 cx::util::full_name(ctx.get_namespace(), at),
@@ -708,10 +716,20 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     auto tr_unaliased_declaration = cppast::to_string(unaliased);
 
     std::unique_ptr<class_> tinst_ptr;
-    if (util::contains(tr_declaration, "<"))
-        tinst_ptr = build_template_instantiation(template_instantiation_type);
+    // if (util::contains(tr_declaration, "<"))
+    // tinst_ptr = build_template_instantiation(template_instantiation_type);
+    // auto t_canon = cppast::to_string(tr.canonical());
+    //(void)t_canon;
+    // else
+    found_relationships_t nested_relationships;
+    if (tr_declaration == tr_unaliased_declaration)
+        tinst_ptr =
+            build_template_instantiation(unaliased, nested_relationships);
     else
-        tinst_ptr = build_template_instantiation(unaliased);
+        tinst_ptr = build_template_instantiation(
+            static_cast<const cppast::cpp_template_instantiation_type &>(
+                tr.canonical()),
+            nested_relationships);
 
     auto &tinst = *tinst_ptr;
 
@@ -739,6 +757,8 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         }
     }
 
+    // Add instantiation relationship from the generated template instantiation
+    // of the field type to its primary template
     if (ctx.diagram().should_include(tinst.get_namespace(), tinst.name())) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
             rr.destination(), clanguml::common::model::to_string(rr.type()),
@@ -746,17 +766,19 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
         c.add_relationship(std::move(rr));
 
-        if (tr_declaration != tr_unaliased_declaration) {
-            // Add template instantiation/specialization relationship;
-            tinst.add_relationship(
-                {relationship_t::kInstantiation, tr_unaliased_declaration});
-        }
-
         res = true;
 
         LOG_DBG("Created template instantiation: {}", tinst.full_name());
 
         ctx.diagram().add_class(std::move(tinst_ptr));
+    }
+    else if (!nested_relationships.empty()) {
+        for (const auto &rel : nested_relationships) {
+            c.add_relationship({relationship_type, std::get<0>(rel),
+                detail::cpp_access_specifier_to_access(as), mv.name()});
+        }
+
+        res = true;
     }
 
     return res;
@@ -805,6 +827,8 @@ void translation_unit_visitor::process_field(
                 process_field_with_template_instantiation(mv, tr, c, m, as);
     }
     else if (tr.kind() == cppast::cpp_type_kind::template_instantiation_t) {
+        // This can be either template instantiation or an alias template
+        // instantiation
         template_instantiation_added_as_aggregation =
             process_field_with_template_instantiation(mv, tr, c, m, as);
     }
@@ -1203,9 +1227,10 @@ void translation_unit_visitor::
             c.add_relationship(std::move(rr));
         }
         else {
+            found_relationships_t nested_relationships;
             // First check if tinst already exists
-            auto tinst_ptr =
-                build_template_instantiation(template_instantiation_type);
+            auto tinst_ptr = build_template_instantiation(
+                template_instantiation_type, nested_relationships);
             auto &tinst = *tinst_ptr;
             relationship rr{relationship_t::kDependency, tinst.full_name()};
 
@@ -1539,6 +1564,7 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
 
 std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
+    found_relationships_t &nested_relationships,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
     // Create class_ instance to hold the template instantiation
@@ -1546,13 +1572,31 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     auto &tinst = *tinst_ptr;
     std::string full_template_name;
 
+    auto tr_declaration = cppast::to_string(t);
+
+    // If this is an alias - resolve the alias target
+    const auto &unaliased =
+        static_cast<const cppast::cpp_template_instantiation_type &>(
+            resolve_alias(t));
+    auto t_unaliased_declaration = cppast::to_string(unaliased);
+
+    bool t_is_alias = t_unaliased_declaration != tr_declaration;
+
+    // Here we'll hold the template base params to replace with the instantiated
+    // values
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};
 
     tinst.set_namespace(ctx.get_namespace());
 
     auto tinst_full_name = cppast::to_string(t);
 
+    // Typically, every template instantiation should have a primary_template()
+    // which should also be generated here if it doesn't exist yet in the model
+    // However if this is a template alias, then it does not have a primary
+    // template
     if (t.primary_template().get(ctx.entity_index()).size()) {
+        auto size = t.primary_template().get(ctx.entity_index()).size();
+        (void)size;
         build_template_instantiation_primary_template(
             t, tinst, template_base_params, parent, full_template_name);
     }
@@ -1573,11 +1617,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     else
         tinst.set_namespace(ns);
 
-    if (tinst_full_name.find('<') != std::string::npos) {
-        tinst.set_name(tinst_full_name.substr(0, tinst_full_name.find('<')));
-    }
-
     tinst.is_template_instantiation(true);
+    tinst.is_alias(t_is_alias);
 
     if (tinst.full_name().substr(0, tinst.full_name().find('<')).find("::") ==
         std::string::npos) {
@@ -1596,7 +1637,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             class_template ct;
             if (targ.type()) {
                 build_template_instantiation_process_type_argument(
-                    parent, tinst, targ, ct);
+                    parent, tinst, targ, ct, nested_relationships);
             }
             else if (targ.expression()) {
                 build_template_instantiation_process_expression_argument(
@@ -1631,8 +1672,43 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         destination = cppast::to_string(ctx.get_type_alias(fn).get());
     }
     else {
-        // Otherwise point to the base template
-        destination = tinst.base_template();
+        std::string tmp_destination{};
+
+        int best_match = 0;
+        // First try to find the best match for this template in partially
+        // specialized templates
+        for (const auto &c : ctx.diagram().classes()) {
+            if (c->name_and_ns() == full_template_name &&
+                // TODO: handle variadic templates
+                c->templates().size() == tinst.templates().size()) {
+                int tmp_match = 0;
+                for (int i = 0; i < c->templates().size(); i++) {
+                    const auto& tinst_i = tinst.templates().at(i);
+                    const auto& c_i = c->templates().at(i);
+                    if ((c_i == tinst_i) && !c_i.is_template_parameter()) {
+                        tmp_match++;
+                    }
+                    else if(c_i.is_template_parameter() || tinst_i.is_template_parameter()) {
+                        // continue
+                    }
+                    else {
+                        // Non-free types are not compatible
+                        tmp_match = 0;
+                        break;
+                    }
+                }
+                if (tmp_match > best_match) {
+                    best_match = tmp_match;
+                    tmp_destination = c->full_name(false);
+                }
+            }
+        }
+
+        if (!tmp_destination.empty())
+            destination = tmp_destination;
+        else
+            // Otherwise point to the base template
+            destination = tinst.base_template();
     }
     relationship r{relationship_t::kInstantiation, destination};
     tinst.add_relationship(std::move(r));
@@ -1691,7 +1767,7 @@ void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         class_ &tinst, const cppast::cpp_template_argument &targ,
-        class_template &ct)
+        class_template &ct, found_relationships_t &nested_relationships)
 {
     ct.set_type(cppast::to_string(targ.type().value()));
 
@@ -1702,7 +1778,10 @@ void translation_unit_visitor::
 
     auto [fn_ns, fn_name] = cx::util::split_ns(fn);
 
-    if (targ.type().value().kind() ==
+    if(targ.type().value().kind() == cppast::cpp_type_kind::template_parameter_t) {
+        ct.is_template_parameter(true);
+    }
+    else if (targ.type().value().kind() ==
         cppast::cpp_type_kind::template_instantiation_t) {
 
         const auto &nested_template_parameter =
@@ -1716,18 +1795,23 @@ void translation_unit_visitor::
         auto [tinst_ns, tinst_name] =
             cx::util::split_ns(tinst.full_name(false));
 
-        auto nested_tinst =
-            build_template_instantiation(nested_template_parameter,
-                ctx.diagram().should_include(tinst_ns, tinst_name)
-                    ? std::make_optional(&tinst)
-                    : parent);
+        auto nested_tinst = build_template_instantiation(
+            nested_template_parameter, nested_relationships,
+            ctx.diagram().should_include(tinst_ns, tinst_name)
+                ? std::make_optional(&tinst)
+                : parent);
 
         relationship tinst_dependency{
             relationship_t::kDependency, nested_tinst->full_name()};
 
-        auto nested_tinst_full_name = nested_tinst->full_name();
+        auto nested_tinst_full_name = nested_tinst->full_name(false);
 
-        if (ctx.diagram().should_include(fn_ns, fn_name)) {
+        auto [nested_tinst_ns, nested_tinst_name] =
+            cx::util::split_ns(nested_tinst_full_name);
+
+        if (ctx.diagram().should_include(nested_tinst_ns, nested_tinst_name)) {
+            nested_relationships.push_back(
+                {nested_tinst->full_name(false), relationship_t::kAggregation});
             ctx.diagram().add_class(std::move(nested_tinst));
         }
 
@@ -1769,6 +1853,8 @@ void translation_unit_visitor::
 
         if (ctx.diagram().should_include(fn_ns, fn_name)) {
             tinst.add_relationship(std::move(tinst_dependency));
+            nested_relationships.push_back(
+                {tinst_dependency.destination(), relationship_t::kAggregation});
         }
         else if (parent) {
             (*parent)->add_relationship(std::move(tinst_dependency));
@@ -1870,8 +1956,16 @@ const cppast::cpp_type &translation_unit_visitor::resolve_alias(
     if (util::contains(type_full_name, "<"))
         type_full_name = util::split(type_full_name, "<")[0];
 
+    auto type_full_name_in_current_ns = ctx.get_namespace();
+    type_full_name_in_current_ns |= common::model::namespace_{type_full_name};
+
     if (ctx.has_type_alias_template(type_full_name)) {
         return ctx.get_type_alias(type_full_name).get();
+    }
+    else if (ctx.has_type_alias_template(
+                 type_full_name_in_current_ns.to_string())) {
+        return ctx.get_type_alias(type_full_name_in_current_ns.to_string())
+            .get();
     }
     else if (ctx.has_type_alias(type_full_name)) {
         return ctx.get_type_alias_final(raw_type).get();

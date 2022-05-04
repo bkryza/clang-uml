@@ -36,31 +36,53 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::unique_ptr<std::string>"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "double,T"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "long,U"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "long,T"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "long,bool"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "double,bool"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "long,float"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "double,float"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
-    REQUIRE_THAT(puml, IsClassTemplate("AString", "float"));
-    REQUIRE_THAT(puml, IsClassTemplate("AString", "int"));
-    REQUIRE_THAT(puml, IsClassTemplate("AString", "std::string"));
+    REQUIRE_THAT(puml, IsClass(_A("B")));
+
     REQUIRE_THAT(
         puml, !IsClassTemplate("std::std::function", "void(T...,int),int)"));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<int>")));
-    REQUIRE_THAT(
-        puml, !IsInstantiation(_A("AString<int>"), _A("AString<int>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("A<T,std::string>"), _A("AString<std::string>")));
-    REQUIRE_THAT(puml,
-        !IsInstantiation(
-            _A("AString<std::string>"), _A("AString<std::string>")));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("R"), _A("AString<float>"), "-floatstring"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "#bs"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+bs2"));
+//    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
+//    REQUIRE_THAT(
+//        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<float>")));
+//    REQUIRE_THAT(
+//        puml, IsInstantiation(_A("A<T,std::string>"), _A("AString<int>")));
+//    REQUIRE_THAT(
+//        puml, !IsInstantiation(_A("AString<int>"), _A("AString<int>")));
+//    REQUIRE_THAT(puml,
+//        IsInstantiation(_A("A<T,std::string>"), _A("AString<std::string>")));
+//    REQUIRE_THAT(
+//        puml, IsInstantiation(_A("A<T,std::string>"), _A("A<double,bool>")));
+//
+//    REQUIRE_THAT(puml,
+//        !IsInstantiation(
+//            _A("AString<std::string>"), _A("AString<std::string>")));
+
+
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+vps"));
+    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "-bapair"));
+
+//    REQUIRE_THAT(
+//        puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
+//
+//
+//
+//    REQUIRE_THAT(
+//        puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
+//    REQUIRE_THAT(
+//        puml, IsAggregation(_A("R"), _A("AString<float>"), "-floatstring"));
+//    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "#bs"));
+//    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+bs2"));
+//    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+vsp"));
+//    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A<double,bool>"), "+bvsp"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

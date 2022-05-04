@@ -162,8 +162,9 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
                     .get(idx)[0]
                     .get());
         }
-        else
-            return "";
+        else {
+            return {};
+        }
     }
     else {
         auto canon = cppast::to_string(t.canonical());
