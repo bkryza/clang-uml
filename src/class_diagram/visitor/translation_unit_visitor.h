@@ -19,6 +19,7 @@
 
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_context.h"
+#include "common/model/enums.h"
 #include "config/config.h"
 
 #include <clang-c/CXCompilationDatabase.h>
@@ -164,13 +165,9 @@ private:
     build_template_instantiation(
         const cppast::cpp_template_instantiation_type &t,
         found_relationships_t &relationships,
+        common::model::relationship_t nested_relationship_hint =
+            common::model::relationship_t::kAggregation,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
-
-    // std::vector<std::unique_ptr<clanguml::class_diagram::model::class_>>
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_alias_template_instantiation(
-        const cppast::cpp_template_instantiation_type &alias_templ,
-        std::optional<clanguml::class_diagram::model::class_ *> parent);
 
     /**
      * Try to resolve a type instance into a type referenced through an alias.
@@ -215,7 +212,10 @@ private:
     void build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         model::class_ &tinst, const cppast::cpp_template_argument &targ,
-        model::class_template &ct, found_relationships_t &relationships);
+        class_diagram::model::class_template &ct,
+        found_relationships_t &relationships,
+        common::model::relationship_t relationship_hint =
+            common::model::relationship_t::kAggregation);
 
     void build_template_instantiation_process_expression_argument(
         const cppast::cpp_template_argument &targ,
