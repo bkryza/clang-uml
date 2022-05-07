@@ -24,27 +24,33 @@ namespace clanguml::class_diagram::model {
 
 class_template::class_template(const std::string &type, const std::string &name,
     const std::string &default_value, bool is_variadic)
-    : name_{name}
-    , default_value_{default_value}
+    : default_value_{default_value}
     , is_variadic_{is_variadic}
 {
+    set_name(name);
     set_type(type);
-    if (is_variadic)
-        name_ = name_ + "...";
 }
 
-void class_template::set_type(const std::string &type) {
-    type_ = type;
-    // TODO: Add a configurable mapping for simplifying non-interesting
-    //       std templates
-    util::replace_all(type_, "std::basic_string<char>", "std::string");
-}
+void class_template::set_type(const std::string &type) { type_ = type; }
 
 std::string class_template::type() const { return type_; }
 
-void class_template::set_name(const std::string &name) { name_ = name; }
+void class_template::set_name(const std::string &name)
+{
+    name_ = name;
+    // TODO: Add a configurable mapping for simplifying non-interesting
+    //       std templates
+    util::replace_all(name_, "std::basic_string<char>", "std::string");
+    util::replace_all(name_, "std::basic_string<wchar_t>", "std::wstring");
+}
 
-std::string class_template::name() const { return name_; }
+std::string class_template::name() const
+{
+    if (is_variadic_)
+        return name_ + "...";
+
+    return name_;
+}
 
 void class_template::set_default_value(const std::string &value)
 {
@@ -60,9 +66,33 @@ void class_template::is_variadic(bool is_variadic) noexcept
 
 bool class_template::is_variadic() const noexcept { return is_variadic_; }
 
+bool class_template::is_specialization_of(const class_template &ct) const
+{
+    if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
+        !is_template_parameter())
+        return true;
+
+    return false;
+}
+
 bool operator==(const class_template &l, const class_template &r)
 {
-    return (l.name() == r.name()) && (l.type() == r.type());
+    bool res{false};
+
+    if (l.is_template_parameter() != r.is_template_parameter())
+        return res;
+
+    if (l.is_template_parameter()) {
+        // If this is a template parameter (e.g. 'typename T' or 'typename U'
+        // we don't actually care what it is called
+        res = (l.is_variadic() == r.is_variadic()) &&
+            (l.default_value() == r.default_value());
+    }
+    else
+        res = (l.name() == r.name()) && (l.type() == r.type()) &&
+            (l.default_value() == r.default_value());
+
+    return res && (l.template_params_ == r.template_params_);
 }
 
 bool operator!=(const class_template &l, const class_template &r)

@@ -39,7 +39,7 @@ public:
         std::copy(begin, end, std::back_inserter(path_));
     }
 
-    path(const path &right) noexcept = default;
+    path(const path &right) { path_ = right.path_; }
 
     path &operator=(const path &right) noexcept = default;
 

@@ -56,8 +56,8 @@ public:
     {
         assert(p);
 
-        LOG_DBG(
-            "Adding nested element {} at path {}", p->name(), path.to_string());
+        LOG_DBG("Adding nested element {} at path '{}'", p->name(),
+            path.to_string());
 
         if (path.is_empty()) {
             add_element(std::move(p));

@@ -38,7 +38,7 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::unique_ptr<std::string>"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "double,T"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "long,U"));
+    REQUIRE_THAT(puml, !IsClassTemplate("A", "long,U"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "long,T"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "long,bool"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "double,bool"));
@@ -53,10 +53,9 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<long,T>"), _A("A<long,float>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<long,T>"), _A("A<long,bool>")));
-    // TODO: Fix matching partial template specializations with differently
-    //       named template paremeters
-    // REQUIRE_THAT(
-    //        puml, IsInstantiation(_A("A<T,P>"), _A("A<long,T>")));
+
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<long,T>")));
+    REQUIRE_THAT(puml, !IsInstantiation(_A("A<long,T>"), _A("A<long,U>")));
     REQUIRE_THAT(
         puml, IsInstantiation(_A("A<double,T>"), _A("A<double,float>")));
     REQUIRE_THAT(
@@ -79,7 +78,8 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A<long,bool>"), "-bapair"));
     REQUIRE_THAT(
         puml, IsAggregation(_A("R"), _A("A<double,bool>"), "-aboolfloat"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("A<double,float>"), "-afloat"));
+    REQUIRE_THAT(
+        puml, IsAssociation(_A("R"), _A("A<double,float>"), "-afloat"));
     REQUIRE_THAT(
         puml, IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
     REQUIRE_THAT(puml,

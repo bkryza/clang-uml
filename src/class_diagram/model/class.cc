@@ -87,7 +87,8 @@ std::string class_::base_template() const { return base_template_full_name_; }
 
 bool operator==(const class_ &l, const class_ &r)
 {
-    return l.full_name() == r.full_name();
+    return (l.name_and_ns() == r.name_and_ns()) &&
+        (l.templates_ == r.templates_);
 }
 
 void class_::add_type_alias(type_alias &&ta)
@@ -148,6 +149,7 @@ std::ostringstream &class_::render_template_params(
 
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
+
     return ostr;
 }
 
