@@ -181,6 +181,9 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
             return fmt::format(
                 "{}", fmt::join(ns_toks.begin(), ns_toks.end(), "::"));
         }
+        else if (canon.find("type-parameter-") == 0) {
+            return "";
+        }
         else {
             // This is a bug/feature in libclang, where canonical representation
             // of a template type with incomplete specialization doesn't have a
