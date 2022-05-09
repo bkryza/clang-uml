@@ -199,7 +199,7 @@ private:
         common::model::relationship_t relationship_type) const;
 
     bool find_relationships_in_unexposed_template_params(
-        const model::class_template &ct,
+        const model::template_parameter &ct,
         found_relationships_t &relationships) const;
 
     void build_template_instantiation_primary_template(
@@ -212,19 +212,19 @@ private:
     void build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         model::class_ &tinst, const cppast::cpp_template_argument &targ,
-        class_diagram::model::class_template &ct,
+        class_diagram::model::template_parameter &ct,
         found_relationships_t &relationships,
         common::model::relationship_t relationship_hint =
             common::model::relationship_t::kAggregation);
 
     void build_template_instantiation_process_expression_argument(
         const cppast::cpp_template_argument &targ,
-        model::class_template &ct) const;
+        model::template_parameter &ct) const;
 
     bool build_template_instantiation_add_base_classes(model::class_ &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         int arg_index, bool variadic_params,
-        const model::class_template &ct) const;
+        const model::template_parameter &ct) const;
 
     void process_function_parameter_find_relationships_in_template(
         model::class_ &c, const std::set<std::string> &template_parameter_names,

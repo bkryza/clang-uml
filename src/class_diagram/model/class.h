@@ -20,10 +20,10 @@
 #include "class_member.h"
 #include "class_method.h"
 #include "class_parent.h"
-#include "class_template.h"
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/stylable_element.h"
+#include "template_parameter.h"
 #include "type_alias.h"
 
 #include <type_safe/reference.hpp>
@@ -55,12 +55,12 @@ public:
     void add_member(class_member &&member);
     void add_method(class_method &&method);
     void add_parent(class_parent &&parent);
-    void add_template(class_template tmplt);
+    void add_template(template_parameter tmplt);
 
     const std::vector<class_member> &members() const;
     const std::vector<class_method> &methods() const;
     const std::vector<class_parent> &parents() const;
-    const std::vector<class_template> &templates() const;
+    const std::vector<template_parameter> &templates() const;
 
     void set_base_template(const std::string &full_name);
     std::string base_template() const;
@@ -89,7 +89,7 @@ private:
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;
-    std::vector<class_template> templates_;
+    std::vector<template_parameter> templates_;
     std::string base_template_full_name_;
     std::map<std::string, type_alias> type_aliases_;
 

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_template.cc
+ * src/class_diagram/model/template_parameter.cc
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-#include "class_template.h"
+#include "template_parameter.h"
 #include <common/model/namespace.h>
 #include <fmt/format.h>
 
 namespace clanguml::class_diagram::model {
 
-class_template::class_template(const std::string &type, const std::string &name,
-    const std::string &default_value, bool is_variadic)
+template_parameter::template_parameter(const std::string &type,
+    const std::string &name, const std::string &default_value, bool is_variadic)
     : default_value_{default_value}
     , is_variadic_{is_variadic}
 {
@@ -31,11 +31,11 @@ class_template::class_template(const std::string &type, const std::string &name,
     set_type(type);
 }
 
-void class_template::set_type(const std::string &type) { type_ = type; }
+void template_parameter::set_type(const std::string &type) { type_ = type; }
 
-std::string class_template::type() const { return type_; }
+std::string template_parameter::type() const { return type_; }
 
-void class_template::set_name(const std::string &name)
+void template_parameter::set_name(const std::string &name)
 {
     name_ = name;
     // TODO: Add a configurable mapping for simplifying non-interesting
@@ -44,7 +44,7 @@ void class_template::set_name(const std::string &name)
     util::replace_all(name_, "std::basic_string<wchar_t>", "std::wstring");
 }
 
-std::string class_template::name() const
+std::string template_parameter::name() const
 {
     if (is_variadic_)
         return name_ + "...";
@@ -52,21 +52,22 @@ std::string class_template::name() const
     return name_;
 }
 
-void class_template::set_default_value(const std::string &value)
+void template_parameter::set_default_value(const std::string &value)
 {
     default_value_ = value;
 }
 
-std::string class_template::default_value() const { return default_value_; }
+std::string template_parameter::default_value() const { return default_value_; }
 
-void class_template::is_variadic(bool is_variadic) noexcept
+void template_parameter::is_variadic(bool is_variadic) noexcept
 {
     is_variadic_ = is_variadic;
 }
 
-bool class_template::is_variadic() const noexcept { return is_variadic_; }
+bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 
-bool class_template::is_specialization_of(const class_template &ct) const
+bool template_parameter::is_specialization_of(
+    const template_parameter &ct) const
 {
     if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
         !is_template_parameter())
@@ -75,7 +76,18 @@ bool class_template::is_specialization_of(const class_template &ct) const
     return false;
 }
 
-bool operator==(const class_template &l, const class_template &r)
+void template_parameter::add_template_param(template_parameter &&ct)
+{
+    template_params_.emplace_back(std::move(ct));
+}
+
+const std::vector<template_parameter> &
+template_parameter::template_params() const
+{
+    return template_params_;
+}
+
+bool operator==(const template_parameter &l, const template_parameter &r)
 {
     bool res{false};
 
@@ -95,12 +107,12 @@ bool operator==(const class_template &l, const class_template &r)
     return res && (l.template_params_ == r.template_params_);
 }
 
-bool operator!=(const class_template &l, const class_template &r)
+bool operator!=(const template_parameter &l, const template_parameter &r)
 {
     return !(l == r);
 }
 
-std::string class_template::to_string(
+std::string template_parameter::to_string(
     const clanguml::common::model::namespace_ &using_namespace) const
 {
     using clanguml::common::model::namespace_;

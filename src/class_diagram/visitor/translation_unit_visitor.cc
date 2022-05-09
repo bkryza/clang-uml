@@ -40,10 +40,10 @@ using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::class_parent;
-using clanguml::class_diagram::model::class_template;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
+using clanguml::class_diagram::model::template_parameter;
 using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
 using clanguml::common::model::relationship;
@@ -1272,7 +1272,7 @@ void translation_unit_visitor::
 void translation_unit_visitor::process_template_type_parameter(
     const cppast::cpp_template_type_parameter &t, class_ &parent)
 {
-    class_template ct;
+    template_parameter ct;
     ct.set_type("");
     ct.is_template_parameter(true);
     ct.set_name(t.name());
@@ -1285,7 +1285,7 @@ void translation_unit_visitor::process_template_type_parameter(
 void translation_unit_visitor::process_template_nontype_parameter(
     const cppast::cpp_non_type_template_parameter &t, class_ &parent)
 {
-    class_template ct;
+    template_parameter ct;
     ct.set_type(cppast::to_string(t.type()));
     ct.is_template_parameter(false);
     ct.set_name(t.name());
@@ -1298,7 +1298,7 @@ void translation_unit_visitor::process_template_nontype_parameter(
 void translation_unit_visitor::process_template_template_parameter(
     const cppast::cpp_template_template_parameter &t, class_ &parent)
 {
-    class_template ct;
+    template_parameter ct;
     ct.set_type("");
     ct.is_template_template_parameter(true);
     ct.set_name(t.name() + "<>");
@@ -1577,7 +1577,7 @@ bool translation_unit_visitor::find_relationships_in_array(
 }
 
 bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
-    const class_template &ct, found_relationships_t &relationships) const
+    const template_parameter &ct, found_relationships_t &relationships) const
 {
     bool found{false};
     LOG_DBG("Finding relationships in user defined type: {}",
@@ -1596,7 +1596,7 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
         found = true;
     }
 
-    for (const auto &nested_template_params : ct.template_params_) {
+    for (const auto &nested_template_params : ct.template_params()) {
         found = find_relationships_in_unexposed_template_params(
                     nested_template_params, relationships) ||
             found;
@@ -1670,7 +1670,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         auto has_variadic_params = false;
 
         for (const auto &targ : t.arguments().value()) {
-            class_template ct;
+            template_parameter ct;
             if (targ.type()) {
                 build_template_instantiation_process_type_argument(parent,
                     tinst, targ, ct, nested_relationships,
@@ -1755,7 +1755,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 bool translation_unit_visitor::build_template_instantiation_add_base_classes(
     class_ &tinst,
     std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-    int arg_index, bool variadic_params, const class_template &ct) const
+    int arg_index, bool variadic_params, const template_parameter &ct) const
 {
     bool add_template_argument_as_base_class = false;
 
@@ -1785,7 +1785,7 @@ bool translation_unit_visitor::build_template_instantiation_add_base_classes(
 
 void translation_unit_visitor::
     build_template_instantiation_process_expression_argument(
-        const cppast::cpp_template_argument &targ, class_template &ct) const
+        const cppast::cpp_template_argument &targ, template_parameter &ct) const
 {
     const auto &exp = targ.expression().value();
     if (exp.kind() == cppast::cpp_expression_kind::literal_t)
@@ -1803,7 +1803,7 @@ void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         class_ &tinst, const cppast::cpp_template_argument &targ,
-        class_template &ct, found_relationships_t &nested_relationships,
+        template_parameter &ct, found_relationships_t &nested_relationships,
         common::model::relationship_t relationship_hint)
 {
     ct.set_name(cppast::to_string(targ.type().value()));

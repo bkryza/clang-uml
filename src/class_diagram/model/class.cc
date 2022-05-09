@@ -62,7 +62,7 @@ void class_::add_parent(class_parent &&parent)
     bases_.emplace_back(std::move(parent));
 }
 
-void class_::add_template(class_template tmplt)
+void class_::add_template(template_parameter tmplt)
 {
     templates_.emplace_back(std::move(tmplt));
 }
@@ -73,7 +73,7 @@ const std::vector<class_method> &class_::methods() const { return methods_; }
 
 const std::vector<class_parent> &class_::parents() const { return bases_; }
 
-const std::vector<class_template> &class_::templates() const
+const std::vector<template_parameter> &class_::templates() const
 {
     return templates_;
 }

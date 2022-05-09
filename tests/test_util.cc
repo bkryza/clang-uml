@@ -99,9 +99,9 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
         int_template_str, [](const auto &n) { return n; });
 
     CHECK(int_template.size() == 1);
-    CHECK(int_template[0].template_params_.size() == 1);
+    CHECK(int_template[0].template_params().size() == 1);
     CHECK(int_template[0].type() == "ns1::ns2::class1");
-    CHECK(int_template[0].template_params_[0].type() == "int");
+    CHECK(int_template[0].template_params()[0].type() == "int");
 
     const std::string int_int_template_str{"ns1::ns2::class1<int, int>"};
 
@@ -109,10 +109,10 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
         int_int_template_str, [](const auto &n) { return n; });
 
     CHECK(int_int_template.size() == 1);
-    CHECK(int_int_template[0].template_params_.size() == 2);
+    CHECK(int_int_template[0].template_params().size() == 2);
     CHECK(int_int_template[0].type() == "ns1::ns2::class1");
-    CHECK(int_int_template[0].template_params_[0].type() == "int");
-    CHECK(int_int_template[0].template_params_[1].type() == "int");
+    CHECK(int_int_template[0].template_params()[0].type() == "int");
+    CHECK(int_int_template[0].template_params()[1].type() == "int");
 
     const std::string nested_template_str{
         "class1<int, ns1::class2<int, std::vector<std::string>>>"};
@@ -121,13 +121,13 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
         nested_template_str, [](const auto &n) { return n; });
 
     CHECK(nested_template.size() == 1);
-    CHECK(nested_template[0].template_params_.size() == 2);
+    CHECK(nested_template[0].template_params().size() == 2);
     CHECK(nested_template[0].type() == "class1");
-    CHECK(nested_template[0].template_params_[0].type() == "int");
-    const auto &class2 = nested_template[0].template_params_[1];
+    CHECK(nested_template[0].template_params()[0].type() == "int");
+    const auto &class2 = nested_template[0].template_params()[1];
     CHECK(class2.type() == "ns1::class2");
-    CHECK(class2.template_params_[0].type() == "int");
-    CHECK(class2.template_params_[1].type() == "std::vector");
-    CHECK(
-        class2.template_params_[1].template_params_[0].type() == "std::string");
+    CHECK(class2.template_params()[0].type() == "int");
+    CHECK(class2.template_params()[1].type() == "std::vector");
+    CHECK(class2.template_params()[1].template_params()[0].type() ==
+        "std::string");
 }

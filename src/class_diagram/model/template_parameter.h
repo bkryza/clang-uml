@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_template.h
+ * src/class_diagram/model/template_parameter.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,10 +24,16 @@
 
 namespace clanguml::class_diagram::model {
 
-class class_template {
+/// @brief Represents template parameter or template parameter instantiation
+///
+/// This class can represent both template parameter and template parameter
+/// instantiation, including variadic parameters and instantiations with
+/// nested templates
+class template_parameter {
 public:
-    class_template(const std::string &type = "", const std::string &name = "",
-        const std::string &default_value = "", bool is_variadic = false);
+    template_parameter(const std::string &type = "",
+        const std::string &name = "", const std::string &default_value = "",
+        bool is_variadic = false);
 
     void set_type(const std::string &type);
     std::string type() const;
@@ -41,10 +47,12 @@ public:
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
 
-    bool is_specialization_of(const class_template &ct) const;
+    bool is_specialization_of(const template_parameter &ct) const;
 
-    friend bool operator==(const class_template &l, const class_template &r);
-    friend bool operator!=(const class_template &l, const class_template &r);
+    friend bool operator==(
+        const template_parameter &l, const template_parameter &r);
+    friend bool operator!=(
+        const template_parameter &l, const template_parameter &r);
 
     bool is_template_parameter() const { return is_template_parameter_; }
 
@@ -66,7 +74,9 @@ public:
     std::string to_string(
         const clanguml::common::model::namespace_ &using_namespace) const;
 
-    std::vector<class_template> template_params_;
+    void add_template_param(template_parameter &&ct);
+
+    const std::vector<template_parameter> &template_params() const;
 
 private:
     /// Represents the type of non-type template parameters
@@ -89,5 +99,8 @@ private:
 
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
+
+    // Nested template parameters
+    std::vector<template_parameter> template_params_;
 };
 }
