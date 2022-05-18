@@ -40,6 +40,9 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("B")));
     REQUIRE_THAT(puml, IsClass(_A("C")));
     REQUIRE_THAT(puml, IsClass(_A("D")));
+    REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
+    REQUIRE_THAT(puml, IsClassTemplate("G", "T,Args..."));
+
     REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("R")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
@@ -55,6 +58,9 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("F<int>")));
+
+    REQUIRE_THAT(puml,
+        IsInstantiation(_A("G<T,Args...>"), _A("G<int,float,std::string>")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

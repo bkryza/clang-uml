@@ -34,6 +34,11 @@ template <typename T> struct E {
     T e;
 };
 
+template <typename T, typename... Args> struct G {
+    T g;
+    std::tuple<Args...> args;
+};
+
 using namespace ABCD;
 class R {
 public:
@@ -51,6 +56,8 @@ public:
 
     template <typename T> T get_f(const F<T> &f) { return f.f; }
     int get_int_f(const F<int> &f) { return f.f; }
+
+    G<int, float, std::string> gintstring;
 
 private:
     mutable E<std::string> estring;
