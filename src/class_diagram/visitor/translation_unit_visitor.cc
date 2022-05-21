@@ -2077,20 +2077,8 @@ const cppast::cpp_type &translation_unit_visitor::resolve_alias_template(
 bool translation_unit_visitor::simplify_system_template(
     template_parameter &ct, const std::string &full_name)
 {
-    if (full_name == "std::basic_string<char>") {
-        ct.set_name("std::string");
-        return true;
-    }
-    else if (full_name == "std::basic_string<wchar_t>") {
-        ct.set_name("std::wstring");
-        return true;
-    }
-    else if (full_name == "std::basic_string<char16_t>") {
-        ct.set_name("std::u16string");
-        return true;
-    }
-    else if (full_name == "std::basic_string<char32_t>") {
-        ct.set_name("std::u32string");
+    if (ctx.config().template_aliases().count(full_name) > 0) {
+        ct.set_name(ctx.config().template_aliases().at(full_name));
         return true;
     }
     else

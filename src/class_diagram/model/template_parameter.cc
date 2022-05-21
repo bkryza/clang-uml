@@ -36,14 +36,7 @@ void template_parameter::set_type(const std::string &type) { type_ = type; }
 
 std::string template_parameter::type() const { return type_; }
 
-void template_parameter::set_name(const std::string &name)
-{
-    name_ = name;
-    // TODO: Add a configurable mapping for simplifying non-interesting
-    //       std templates
-    util::replace_all(name_, "std::basic_string<char>", "std::string");
-    util::replace_all(name_, "std::basic_string<wchar_t>", "std::wstring");
-}
+void template_parameter::set_name(const std::string &name) { name_ = name; }
 
 std::string template_parameter::name() const
 {
@@ -156,10 +149,6 @@ std::string template_parameter::to_string(
         res += "=";
         res += default_value();
     }
-
-    // TODO: Refactor this to external configurable class
-    util::replace_all(res, "std::basic_string<char>", "std::string");
-    util::replace_all(res, "std::basic_string<wchar_t>", "std::wstring");
 
     return res;
 }

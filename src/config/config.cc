@@ -148,6 +148,25 @@ void class_diagram::initialize_relationship_hints()
     }
 }
 
+void class_diagram::initialize_template_aliases()
+{
+    if (!template_aliases().count("std::basic_string<char>")) {
+        template_aliases().insert({"std::basic_string<char>", "std::string"});
+    }
+    if (!template_aliases().count("std::basic_string<wchar_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<wchar_t>", "std::wstring"});
+    }
+    if (!template_aliases().count("std::basic_string<char16_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<char16_t>", "std::u16string"});
+    }
+    if (!template_aliases().count("std::basic_string<char32_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<char32_t>", "std::u32string"});
+    }
+}
+
 template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
@@ -489,8 +508,10 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.relationship_hints);
+        get_option(node, rhs.template_aliases);
 
         rhs.initialize_relationship_hints();
+        rhs.initialize_template_aliases();
 
         return true;
     }
