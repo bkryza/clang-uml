@@ -204,7 +204,7 @@ generates the following diagram (via PlantUML):
 
 ![class_diagram_example](docs/test_cases/t00014_class.svg)
 
-> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00009_class.svg),
+> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00014_class.svg),
 > and checkout the hover tooltips and hyperlinks to classes and methods.
 
 ### Sequence diagrams
