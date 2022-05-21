@@ -68,6 +68,27 @@ TEST_CASE("Test config simple", "[unit-test]")
         contains(diagram.include().relationships, relationship_t::kOwnership));
 
     CHECK(contains(diagram.exclude().relationships, relationship_t::kNone));
+
+    CHECK(diagram.relationship_hints().at("std::vector").get(0) ==
+        relationship_t::kComposition);
+    CHECK(diagram.relationship_hints().at("std::tuple").get(10) ==
+        relationship_t::kAggregation);
+    CHECK(diagram.relationship_hints().at("std::map").get(0) ==
+        relationship_t::kNone);
+    CHECK(diagram.relationship_hints().at("std::map").get(1) ==
+        relationship_t::kComposition);
+    CHECK(diagram.relationship_hints().at("std::shared_ptr").get(0) ==
+        relationship_t::kAssociation);
+    CHECK(diagram.relationship_hints().at("std::weak_ptr").get(0) ==
+        relationship_t::kAssociation);
+    CHECK(diagram.relationship_hints().at("std::unique_ptr").get(0) ==
+        relationship_t::kAggregation);
+    CHECK(diagram.relationship_hints().at("ns1::n2::some_template").get(0) ==
+        relationship_t::kAssociation);
+    CHECK(diagram.relationship_hints().at("ns1::n2::some_template").get(2) ==
+        relationship_t::kComposition);
+    CHECK(diagram.relationship_hints().at("ns1::n2::some_template").get(10) ==
+        relationship_t::kAggregation);
 }
 
 TEST_CASE("Test config inherited", "[unit-test]")

@@ -1487,30 +1487,9 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
 
     auto full_name = fmt::format("{}", fmt::join(ns_and_name, "::"));
 
-    // Try to match common containers
-    // TODO: Refactor to a separate class with configurable
-    //       container list
-    if (full_name.find("std::unique_ptr") == 0) {
-        found = find_relationships(args[0u].type().value(), relationships,
-            relationship_t::kAggregation);
-    }
-    else if (full_name.find("std::shared_ptr") == 0) {
-        found = find_relationships(args[0u].type().value(), relationships,
-            relationship_t::kAssociation);
-    }
-    else if (full_name.find("std::weak_ptr") == 0) {
-        found = find_relationships(args[0u].type().value(), relationships,
-            relationship_t::kAssociation);
-    }
-    else if (full_name.find("std::vector") == 0) {
-        if (args[0u].type().has_value())
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kAggregation);
-        else
-            LOG_DBG("Failed to process template argument of std::vector at: {}",
-                fn);
-    }
-    else if (ctx.diagram().should_include(ns, name)) {
+    auto full_base_name = full_name.substr(0, full_name.find('<'));
+
+    if (ctx.diagram().should_include(ns, name)) {
         LOG_DBG("User defined template instantiation: {} | {}",
             cppast::to_string(t_), cppast::to_string(t_.canonical()));
 
@@ -1529,11 +1508,23 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
         }
     }
     else {
+        int argument_index = 0;
+        auto relationship_hint = relationship_type;
         for (const auto &arg : args) {
-            if (arg.type().has_value()) {
-                found = find_relationships(
-                    arg.type().value(), relationships, relationship_type);
+            if (ctx.config().relationship_hints().count(full_base_name) > 0) {
+                relationship_hint = ctx.config()
+                                        .relationship_hints()
+                                        .at(full_base_name)
+                                        .get(argument_index);
             }
+
+            if (arg.type().has_value()) {
+                found = found ||
+                    find_relationships(
+                        arg.type().value(), relationships, relationship_hint);
+            }
+
+            argument_index++;
         }
     }
 
@@ -1659,8 +1650,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     bool t_is_alias = t_unaliased_declaration != tr_declaration;
 
     //
-    // Here we'll hold the template base params to replace with the instantiated
-    // values
+    // Here we'll hold the template base params to replace with the
+    // instantiated values
     //
     std::deque<std::tuple<std::string, int, bool>> template_base_params{};
 
@@ -1669,8 +1660,9 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     auto tinst_full_name = cppast::to_string(t);
 
     //
-    // Typically, every template instantiation should have a primary_template()
-    // which should also be generated here if it doesn't exist yet in the model
+    // Typically, every template instantiation should have a
+    // primary_template() which should also be generated here if it doesn't
+    // exist yet in the model
     //
     if (t.primary_template().get(ctx.entity_index()).size()) {
         auto size = t.primary_template().get(ctx.entity_index()).size();

@@ -95,6 +95,27 @@ struct git_config {
     std::string toplevel;
 };
 
+struct relationship_hint_t {
+    std::map<unsigned int, common::model::relationship_t> argument_hints;
+    common::model::relationship_t default_hint;
+
+    relationship_hint_t(common::model::relationship_t def =
+                            common::model::relationship_t::kAggregation)
+        : default_hint{def}
+    {
+    }
+
+    common::model::relationship_t get(unsigned int argument_index) const
+    {
+        if (argument_hints.count(argument_index) > 0)
+            return argument_hints.at(argument_index);
+
+        return default_hint;
+    }
+};
+
+using relationship_hints_t = std::map<std::string, relationship_hint_t>;
+
 std::string to_string(const hint_t t);
 
 struct inheritable_diagram_options {
@@ -113,6 +134,7 @@ struct inheritable_diagram_options {
     option<std::filesystem::path> base_directory{"__parent_path"};
     option<std::filesystem::path> relative_to{"relative_to"};
     option<bool> generate_system_headers{"generate_system_headers", false};
+    option<relationship_hints_t> relationship_hints{"relationship_hints"};
 
     void inherit(const inheritable_diagram_options &parent);
 };
@@ -139,7 +161,7 @@ struct class_diagram : public diagram {
     option<std::vector<std::string>> classes{"classes"};
     option<layout_hints> layout{"layout"};
 
-    bool has_class(std::string clazz);
+    void initialize_relationship_hints();
 };
 
 struct sequence_diagram : public diagram {
