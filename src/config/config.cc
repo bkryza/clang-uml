@@ -120,6 +120,53 @@ common::model::diagram_t include_diagram::type() const
     return common::model::diagram_t::kInclude;
 }
 
+void class_diagram::initialize_relationship_hints()
+{
+    using common::model::relationship_t;
+
+    if (!relationship_hints().count("std::vector")) {
+        relationship_hints().insert({"std::vector", {}});
+    }
+    if (!relationship_hints().count("std::unique_ptr")) {
+        relationship_hints().insert({"std::unique_ptr", {}});
+    }
+    if (!relationship_hints().count("std::shared_ptr")) {
+        relationship_hints().insert(
+            {"std::shared_ptr", {relationship_t::kAssociation}});
+    }
+    if (!relationship_hints().count("std::weak_ptr")) {
+        relationship_hints().insert(
+            {"std::weak_ptr", {relationship_t::kAssociation}});
+    }
+    if (!relationship_hints().count("std::tuple")) {
+        relationship_hints().insert({"std::tuple", {}});
+    }
+    if (!relationship_hints().count("std::map")) {
+        relationship_hint_t hint{relationship_t::kNone};
+        hint.argument_hints.insert({1, relationship_t::kAggregation});
+        relationship_hints().insert({"std::tuple", std::move(hint)});
+    }
+}
+
+void class_diagram::initialize_template_aliases()
+{
+    if (!template_aliases().count("std::basic_string<char>")) {
+        template_aliases().insert({"std::basic_string<char>", "std::string"});
+    }
+    if (!template_aliases().count("std::basic_string<wchar_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<wchar_t>", "std::wstring"});
+    }
+    if (!template_aliases().count("std::basic_string<char16_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<char16_t>", "std::u16string"});
+    }
+    if (!template_aliases().count("std::basic_string<char32_t>")) {
+        template_aliases().insert(
+            {"std::basic_string<char32_t>", "std::u32string"});
+    }
+}
+
 template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
@@ -141,6 +188,7 @@ using clanguml::config::layout_hint;
 using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
 using clanguml::config::plantuml;
+using clanguml::config::relationship_hint_t;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
 
@@ -459,6 +507,11 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.relationship_hints);
+        get_option(node, rhs.template_aliases);
+
+        rhs.initialize_relationship_hints();
+        rhs.initialize_template_aliases();
 
         return true;
     }
@@ -546,6 +599,42 @@ template <> struct convert<layout_hint> {
         }
         else
             return false;
+
+        return true;
+    }
+};
+
+//
+// relationship_hint_t Yaml decoder
+//
+template <> struct convert<relationship_hint_t> {
+    static bool decode(const Node &node, relationship_hint_t &rhs)
+    {
+        assert(node.Type() == NodeType::Map || node.Type() == NodeType::Scalar);
+
+        if (node.Type() == NodeType::Scalar) {
+            // This will be default relationship hint for all arguments
+            // of this template (useful for instance for tuples)
+            rhs.default_hint = node.as<relationship_t>();
+        }
+        else {
+            for (const auto &it : node) {
+                auto key = it.first.as<std::string>();
+                if (key == "default") {
+                    rhs.default_hint = node["default"].as<relationship_t>();
+                }
+                else {
+                    try {
+                        auto index = stoul(key);
+                        rhs.argument_hints[index] =
+                            it.second.as<relationship_t>();
+                    }
+                    catch (std::exception &e) {
+                        return false;
+                    }
+                }
+            }
+        }
 
         return true;
     }

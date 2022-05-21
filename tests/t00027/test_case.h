@@ -36,14 +36,14 @@ TEST_CASE("t00027", "[test-case][class]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsAbstractClass(_A("Shape")));
     REQUIRE_THAT(puml, IsAbstractClass(_A("ShapeDecorator")));
-    REQUIRE_THAT(puml, IsClassTemplate("Line", "T<>"));
-    REQUIRE_THAT(puml, IsClassTemplate("Text", "T<>"));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Line<T<>>"), _A("Line<Color>")));
+    REQUIRE_THAT(puml, IsClassTemplate("Line", "T<>..."));
+    REQUIRE_THAT(puml, IsClassTemplate("Text", "T<>..."));
+    REQUIRE_THAT(puml, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color>")));
     REQUIRE_THAT(
-        puml, IsInstantiation(_A("Line<T<>>"), _A("Line<Color,Weight>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Text<T<>>"), _A("Text<Color>")));
+        puml, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color,Weight>")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color>")));
     REQUIRE_THAT(
-        puml, IsInstantiation(_A("Text<T<>>"), _A("Text<Color,Weight>")));
+        puml, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color,Weight>")));
 
     REQUIRE_THAT(
         puml, IsAggregation(_A("Window"), _A("Line<Color,Weight>"), "+border"));

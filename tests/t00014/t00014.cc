@@ -1,10 +1,7 @@
-#include <algorithm>
 #include <functional>
-#include <ios>
 #include <map>
-#include <numeric>
+#include <memory>
 #include <string>
-#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -26,14 +23,24 @@ template <typename T, typename P> struct A {
     P p;
 };
 
-template <typename T> using AString = A<T, std::string>;
-
-template <typename... T> using GeneralCallback = std::function<void(T..., int)>;
-using VoidCallback = GeneralCallback<>;
-
 struct B {
     std::string value;
 };
+
+template <typename T> using AString = A<T, std::string>;
+template <typename T> using AStringPtr = A<T, std::unique_ptr<std::string>>;
+
+template <typename T>
+using PairPairBA = std::pair<std::pair<B, A<long, T>>, long>;
+
+template <class T> using VectorPtr = std::unique_ptr<std::vector<T>>;
+template <class T> using APtr = std::unique_ptr<A<double, T>>;
+template <class T> using ASharedPtr = std::shared_ptr<A<double, T>>;
+template <class T, class U>
+using AAPtr = std::unique_ptr<std::pair<A<double, T>, A<long, U>>>;
+
+template <typename... T> using GeneralCallback = std::function<void(T..., int)>;
+using VoidCallback = GeneralCallback<>;
 
 using BVector = std::vector<B>;
 using BVector2 = BVector;
@@ -43,11 +50,16 @@ using AStringString = AString<std::string>;
 using BStringString = AStringString;
 
 class R {
-    // clang-uml: tinst A<T, std::string>
+    PairPairBA<bool> bapair;
+
+    APtr<bool> abool;
+    AAPtr<bool, float> aboolfloat;
+    ASharedPtr<float> afloat;
     A<bool, std::string> boolstring;
-    AString<float> floatstring;
+    AStringPtr<float> floatstring;
     AIntString intstring;
     AStringString stringstring;
+    BStringString bstringstring;
 
 protected:
     BVector bs;
@@ -56,6 +68,7 @@ public:
     BVector2 bs2;
     GeneralCallback<AIntString> cb;
     VoidCallback vcb;
+    VectorPtr<B> vps;
 };
 }
 }

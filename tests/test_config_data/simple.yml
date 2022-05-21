@@ -34,3 +34,13 @@ diagrams:
     exclude:
       relationships:
         - none
+    relationship_hints:
+      std::vector: composition
+      std::map:
+        default: none
+        1: composition
+      std::tuple: aggregation
+      ns1::n2::some_template:
+        default: association
+        2: composition
+        10: aggregation

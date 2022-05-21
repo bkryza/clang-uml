@@ -58,7 +58,7 @@ diagram::get(const std::string &full_name) const
 bool diagram::has_class(const class_ &c) const
 {
     return std::any_of(classes_.cbegin(), classes_.cend(),
-        [&c](const auto &cc) { return cc.get().full_name() == c.full_name(); });
+        [&c](const auto &cc) { return cc.get() == c; });
 }
 
 bool diagram::has_enum(const enum_ &e) const
@@ -109,30 +109,37 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 
 void diagram::add_class(std::unique_ptr<class_> &&c)
 {
+    const auto base_name = c->name();
+    const auto full_name = c->full_name(false);
+
     LOG_DBG("Adding class: {}::{}, {}", c->get_namespace().to_string(),
-        c->name(), c->full_name());
+        base_name, full_name);
 
-    if (util::contains(c->name(), "::"))
-        throw std::runtime_error("Name cannot contain namespace: " + c->name());
+    if (util::contains(base_name, "::"))
+        throw std::runtime_error("Name cannot contain namespace: " + base_name);
 
-    if (util::contains(c->name(), "<"))
-        throw std::runtime_error("Name cannot contain <: " + c->name());
+    if (util::contains(base_name, "<"))
+        throw std::runtime_error("Name cannot contain <: " + base_name);
 
-    if (util::contains(c->name(), "*"))
-        throw std::runtime_error("Name cannot contain *: " + c->name());
+    if (util::contains(base_name, "*"))
+        throw std::runtime_error("Name cannot contain *: " + base_name);
+
+    const auto ns = c->get_relative_namespace();
+    auto name = base_name;
+    auto name_with_ns = c->name_and_ns();
+    auto name_and_ns = ns | name;
 
     if (!has_class(*c)) {
-        classes_.emplace_back(*c);
-        auto ns = c->get_relative_namespace();
-        auto name = c->name();
+        classes_.push_back(type_safe::ref(*c));
+
         add_element(ns, std::move(c));
-        ns |= name;
-        const auto ccc = get_element<class_>(ns);
-        assert(ccc.value().name() == name);
+
+        const auto &el = get_element<class_>(name_and_ns).value();
+        assert(el.name() == name);
+        assert(el.get_relative_namespace() == ns);
     }
     else
-        LOG_DBG(
-            "Class {} ({}) already in the model", c->name(), c->full_name());
+        LOG_DBG("Class {} ({}) already in the model", base_name, full_name);
 }
 
 void diagram::add_enum(std::unique_ptr<enum_> &&e)

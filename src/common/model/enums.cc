@@ -44,6 +44,8 @@ std::string to_string(relationship_t r)
         return "friendship";
     case relationship_t::kDependency:
         return "dependency";
+    case relationship_t::kAlias:
+        return "alias";
     default:
         assert(false);
     }

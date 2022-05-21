@@ -19,6 +19,7 @@
 
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_context.h"
+#include "common/model/enums.h"
 #include "config/config.h"
 
 #include <clang-c/CXCompilationDatabase.h>
@@ -48,6 +49,11 @@ namespace clanguml::class_diagram::visitor {
 using found_relationships_t =
     std::vector<std::pair<std::string, common::model::relationship_t>>;
 
+// class nested_template_relationships {
+//
+//    std::vector<std::unique_ptr<nested_template_relationships>> children;
+//};
+
 class translation_unit_visitor {
 public:
     translation_unit_visitor(cppast::cpp_entity_index &idx,
@@ -71,9 +77,9 @@ public:
         cppast::cpp_access_specifier_kind as);
 
     bool process_field_with_template_instantiation(
-        const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
+        const cppast::cpp_member_variable &mv, const cppast::cpp_type &type,
         clanguml::class_diagram::model::class_ &c,
-        clanguml::class_diagram::model::class_member &m,
+        clanguml::class_diagram::model::class_member &member,
         cppast::cpp_access_specifier_kind as);
 
     void process_static_field(const cppast::cpp_variable &mv,
@@ -195,7 +201,7 @@ private:
         common::model::relationship_t relationship_type) const;
 
     bool find_relationships_in_unexposed_template_params(
-        const model::class_template &ct,
+        const model::template_parameter &ct,
         found_relationships_t &relationships) const;
 
     void build_template_instantiation_primary_template(
@@ -208,16 +214,16 @@ private:
     void build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         model::class_ &tinst, const cppast::cpp_template_argument &targ,
-        model::class_template &ct);
+        class_diagram::model::template_parameter &ct);
 
     void build_template_instantiation_process_expression_argument(
         const cppast::cpp_template_argument &targ,
-        model::class_template &ct) const;
+        model::template_parameter &ct) const;
 
     bool build_template_instantiation_add_base_classes(model::class_ &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         int arg_index, bool variadic_params,
-        const model::class_template &ct) const;
+        const model::template_parameter &ct) const;
 
     void process_function_parameter_find_relationships_in_template(
         model::class_ &c, const std::set<std::string> &template_parameter_names,
@@ -225,5 +231,15 @@ private:
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
+    bool simplify_system_template(
+        model::template_parameter &parameter, const std::string &basicString);
+
+    bool add_nested_template_relationships(
+        const cppast::cpp_member_variable &mv, model::class_ &c,
+        model::class_member &m, cppast::cpp_access_specifier_kind &as,
+        const model::class_ &tinst,
+        common::model::relationship_t &relationship_type,
+        common::model::relationship_t &decorator_rtype,
+        std::string &decorator_rmult);
 };
 }

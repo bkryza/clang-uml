@@ -25,7 +25,7 @@
 #include <cppast/cpp_template.hpp>
 #include <spdlog/spdlog.h>
 
-#include <class_diagram/model/class_template.h>
+#include <class_diagram/model/template_parameter.h>
 #include <list>
 
 namespace clanguml {
@@ -162,8 +162,9 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
                     .get(idx)[0]
                     .get());
         }
-        else
-            return "";
+        else {
+            return {};
+        }
     }
     else {
         auto canon = cppast::to_string(t.canonical());
@@ -179,6 +180,9 @@ std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx)
                 ns_toks.pop_back();
             return fmt::format(
                 "{}", fmt::join(ns_toks.begin(), ns_toks.end(), "::"));
+        }
+        else if (canon.find("type-parameter-") == 0) {
+            return "";
         }
         else {
             // This is a bug/feature in libclang, where canonical representation
@@ -250,19 +254,19 @@ const cppast::cpp_type &unreferenced(const cppast::cpp_type &t)
     return t;
 }
 
-std::vector<class_diagram::model::class_template>
+std::vector<class_diagram::model::template_parameter>
 parse_unexposed_template_params(const std::string &params,
     std::function<std::string(const std::string &)> ns_resolve)
 {
-    using class_diagram::model::class_template;
+    using class_diagram::model::template_parameter;
 
-    std::vector<class_template> res;
+    std::vector<template_parameter> res;
 
     int nested_template_level{0};
     auto it = params.begin();
 
     std::string type{};
-    std::vector<class_template> nested_params;
+    std::vector<template_parameter> nested_params;
     bool complete_class_template{false};
 
     while (it != params.end()) {
@@ -289,7 +293,8 @@ parse_unexposed_template_params(const std::string &params,
             nested_params =
                 parse_unexposed_template_params(nested_params_str, ns_resolve);
             if (nested_params.empty())
-                nested_params.emplace_back(class_template{nested_params_str});
+                nested_params.emplace_back(
+                    template_parameter{nested_params_str});
             it = bracket_match_end - 1;
         }
         else if (*it == '>') {
@@ -302,10 +307,11 @@ parse_unexposed_template_params(const std::string &params,
             type += *it;
         }
         if (complete_class_template) {
-            class_template t;
+            template_parameter t;
             t.set_type(ns_resolve(clanguml::util::trim(type)));
             type = "";
-            t.template_params_ = std::move(nested_params);
+            for (auto &&param : nested_params)
+                t.add_template_param(std::move(param));
 
             res.emplace_back(std::move(t));
             complete_class_template = false;
@@ -314,10 +320,11 @@ parse_unexposed_template_params(const std::string &params,
     }
 
     if (!type.empty()) {
-        class_template t;
+        template_parameter t;
         t.set_type(ns_resolve(clanguml::util::trim(type)));
         type = "";
-        t.template_params_ = std::move(nested_params);
+        for (auto &&param : nested_params)
+            t.add_template_param(std::move(param));
 
         res.emplace_back(std::move(t));
         complete_class_template = false;

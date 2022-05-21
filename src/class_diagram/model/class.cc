@@ -62,7 +62,7 @@ void class_::add_parent(class_parent &&parent)
     bases_.emplace_back(std::move(parent));
 }
 
-void class_::add_template(class_template tmplt)
+void class_::add_template(template_parameter tmplt)
 {
     templates_.emplace_back(std::move(tmplt));
 }
@@ -73,7 +73,7 @@ const std::vector<class_method> &class_::methods() const { return methods_; }
 
 const std::vector<class_parent> &class_::parents() const { return bases_; }
 
-const std::vector<class_template> &class_::templates() const
+const std::vector<template_parameter> &class_::templates() const
 {
     return templates_;
 }
@@ -87,7 +87,8 @@ std::string class_::base_template() const { return base_template_full_name_; }
 
 bool operator==(const class_ &l, const class_ &r)
 {
-    return l.full_name() == r.full_name();
+    return (l.name_and_ns() == r.name_and_ns()) &&
+        (l.templates_ == r.templates_);
 }
 
 void class_::add_type_alias(type_alias &&ta)
@@ -104,7 +105,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr);
+    render_template_params(ostr, false);
 
     return ostr.str();
 }
@@ -117,7 +118,7 @@ std::string class_::full_name(bool relative) const
     std::ostringstream ostr;
 
     ostr << name_and_ns();
-    render_template_params(ostr);
+    render_template_params(ostr, relative);
 
     std::string res;
 
@@ -133,18 +134,22 @@ std::string class_::full_name(bool relative) const
 }
 
 std::ostringstream &class_::render_template_params(
-    std::ostringstream &ostr) const
+    std::ostringstream &ostr, bool relative) const
 {
     using clanguml::common::model::namespace_;
 
     if (!templates_.empty()) {
         std::vector<std::string> tnames;
+        std::vector<std::string> tnames_simplified;
+
         std::transform(templates_.cbegin(), templates_.cend(),
-            std::back_inserter(tnames), [this](const auto &tmplt) {
-                return tmplt.to_string(using_namespace());
-            });
+            std::back_inserter(tnames),
+            [ns = using_namespace(), relative](
+                const auto &tmplt) { return tmplt.to_string(ns, relative); });
+
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
+
     return ostr;
 }
 
@@ -154,5 +159,37 @@ bool class_::is_abstract() const
     // with non-abstract methods
     return std::any_of(methods_.begin(), methods_.end(),
         [](const auto &method) { return method.is_pure_virtual(); });
+}
+
+int class_::calculate_template_specialization_match(
+    const class_ &other, const std::string &full_name) const
+{
+    int res{};
+
+    std::string left = name_and_ns();
+    // TODO: handle variadic templates
+    if ((name_and_ns() != full_name) ||
+        (templates().size() != other.templates().size())) {
+        return res;
+    }
+
+    // Iterate over all template arguments
+    for (int i = 0; i < other.templates().size(); i++) {
+        const auto &template_arg = templates().at(i);
+        const auto &other_template_arg = other.templates().at(i);
+
+        if (template_arg == other_template_arg) {
+            res++;
+        }
+        else if (other_template_arg.is_specialization_of(template_arg)) {
+            continue;
+        }
+        else {
+            res = 0;
+            break;
+        }
+    }
+
+    return res;
 }
 }

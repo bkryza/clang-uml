@@ -146,32 +146,65 @@ and checkout the SVG diagrams in `docs/diagrams` folder.
 Source code:
 
 ```cpp
-#include <string>
-#include <vector>
-
-namespace clanguml {
-namespace t00009 {
-
-template <typename T> class A {
-public:
-    T value;
+template <typename T, typename P> struct A {
+    T t;
+    P p;
 };
 
-class B {
-public:
-    A<int> aint;
-    A<std::string> *astring;
-    A<std::vector<std::string>> &avector;
+struct B {
+    std::string value;
 };
-}
-}
+
+template <typename T> using AString = A<T, std::string>;
+template <typename T> using AStringPtr = A<T, std::unique_ptr<std::string>>;
+
+template <typename T>
+using PairPairBA = std::pair<std::pair<B, A<long, T>>, long>;
+
+template <class T> using VectorPtr = std::unique_ptr<std::vector<T>>;
+template <class T> using APtr = std::unique_ptr<A<double, T>>;
+template <class T> using ASharedPtr = std::shared_ptr<A<double, T>>;
+template <class T, class U>
+using AAPtr = std::unique_ptr<std::pair<A<double, T>, A<long, U>>>;
+
+template <typename... T> using GeneralCallback = std::function<void(T..., int)>;
+using VoidCallback = GeneralCallback<>;
+
+using BVector = std::vector<B>;
+using BVector2 = BVector;
+
+using AIntString = AString<int>;
+using AStringString = AString<std::string>;
+using BStringString = AStringString;
+
+class R {
+    PairPairBA<bool> bapair;
+
+    APtr<bool> abool;
+    AAPtr<bool, float> aboolfloat;
+    ASharedPtr<float> afloat;
+    A<bool, std::string> boolstring;
+    AStringPtr<float> floatstring;
+    AIntString intstring;
+    AStringString stringstring;
+    BStringString bstringstring;
+
+protected:
+    BVector bs;
+
+public:
+    BVector2 bs2;
+    GeneralCallback<AIntString> cb;
+    VoidCallback vcb;
+    VectorPtr<B> vps;
+};
 ```
 
 generates the following diagram (via PlantUML):
 
-![class_diagram_example](docs/test_cases/t00009_class.svg)
+![class_diagram_example](docs/test_cases/t00014_class.svg)
 
-> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00009_class.svg),
+> Open the raw image [here](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00014_class.svg),
 > and checkout the hover tooltips and hyperlinks to classes and methods.
 
 ### Sequence diagrams
