@@ -101,6 +101,17 @@ diagrams:
       ClassA:
         - up: ClassB
         - left: ClassC
+    # Specify customized relationship hints for types which are
+    # arguments in template instantiations
+    relationship_hints:
+      # All tuple arguments should be treated as aggregation
+      std::tuple: aggregation
+      # All some_template arguments should be treated as associations
+      # except for arguments with indexes 2 and 10
+      ns1::n2::some_template:
+        default: association
+        2: composition
+        10: aggregation          
     # Entities from this namespace will be shortened
     # (can only contain one element at the moment)
     using_namespace:
