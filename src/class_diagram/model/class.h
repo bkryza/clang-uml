@@ -79,8 +79,13 @@ public:
 
     void is_alias(bool alias) { is_alias_ = alias; }
 
+    void find_relationships(
+        std::vector<std::pair<std::string, common::model::relationship_t>>
+            &nested_relationships);
+
 private:
-    std::ostringstream &render_template_params(std::ostringstream &ostr) const;
+    std::ostringstream &render_template_params(
+        std::ostringstream &ostr, bool relative) const;
 
     bool is_struct_{false};
     bool is_template_{false};

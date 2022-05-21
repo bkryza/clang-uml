@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/model/enums.h"
 #include "common/model/namespace.h"
 
 #include <string>
@@ -24,16 +25,18 @@
 
 namespace clanguml::class_diagram::model {
 
-/// @brief Represents template parameter or template parameter instantiation
+/// @brief Represents template parameter or template argument
 ///
-/// This class can represent both template parameter and template parameter
-/// instantiation, including variadic parameters and instantiations with
+/// This class can represent both template parameter and template arguments,
+/// including variadic parameters and instantiations with
 /// nested templates
 class template_parameter {
 public:
     template_parameter(const std::string &type = "",
         const std::string &name = "", const std::string &default_value = "",
         bool is_variadic = false);
+
+    template_parameter(const template_parameter &right) = default;
 
     void set_type(const std::string &type);
     std::string type() const;
@@ -72,11 +75,20 @@ public:
     }
 
     std::string to_string(
-        const clanguml::common::model::namespace_ &using_namespace) const;
+        const clanguml::common::model::namespace_ &using_namespace,
+        bool relative) const;
 
     void add_template_param(template_parameter &&ct);
 
+    void add_template_param(const template_parameter &ct);
+
     const std::vector<template_parameter> &template_params() const;
+
+    void find_nested_relationships(
+        std::vector<std::pair<std::string, common::model::relationship_t>>
+            &nested_relationships,
+        common::model::relationship_t hint,
+        std::function<bool(const std::string &full_name)> condition) const;
 
 private:
     /// Represents the type of non-type template parameters

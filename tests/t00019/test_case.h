@@ -44,6 +44,16 @@ TEST_CASE("t00019", "[test-case][class]")
         IsBaseClass(
             _A("Layer2<Layer3<Base>>"), _A("Layer1<Layer2<Layer3<Base>>>")));
 
+    REQUIRE_THAT(puml,
+        IsAggregation(_A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
+
+    REQUIRE_THAT(
+        puml, !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));
+
+    REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Layer3<Base>"), "+layers"));
+
+    REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Base"), "+layers"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

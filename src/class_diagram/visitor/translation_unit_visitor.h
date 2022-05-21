@@ -49,6 +49,11 @@ namespace clanguml::class_diagram::visitor {
 using found_relationships_t =
     std::vector<std::pair<std::string, common::model::relationship_t>>;
 
+// class nested_template_relationships {
+//
+//    std::vector<std::unique_ptr<nested_template_relationships>> children;
+//};
+
 class translation_unit_visitor {
 public:
     translation_unit_visitor(cppast::cpp_entity_index &idx,
@@ -232,5 +237,7 @@ private:
 
     // ctx allows to track current visitor context, e.g. current namespace
     translation_unit_context ctx;
+    bool simplify_system_template(
+        model::template_parameter &parameter, const std::string &basicString);
 };
 }

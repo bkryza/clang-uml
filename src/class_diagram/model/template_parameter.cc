@@ -17,6 +17,7 @@
  */
 
 #include "template_parameter.h"
+#include "common/model/enums.h"
 #include <common/model/namespace.h>
 #include <fmt/format.h>
 
@@ -81,6 +82,11 @@ void template_parameter::add_template_param(template_parameter &&ct)
     template_params_.emplace_back(std::move(ct));
 }
 
+void template_parameter::add_template_param(const template_parameter &ct)
+{
+    template_params_.push_back(ct);
+}
+
 const std::vector<template_parameter> &
 template_parameter::template_params() const
 {
@@ -113,28 +119,37 @@ bool operator!=(const template_parameter &l, const template_parameter &r)
 }
 
 std::string template_parameter::to_string(
-    const clanguml::common::model::namespace_ &using_namespace) const
+    const clanguml::common::model::namespace_ &using_namespace,
+    bool relative) const
 {
     using clanguml::common::model::namespace_;
 
     std::string res;
-    if (!type().empty())
-        res += namespace_{type()}.relative_to(using_namespace).to_string();
-
-    // Render nested template params
-    if (!template_params_.empty()) {
-        std::vector<std::string> params;
-        for (const auto &template_param : template_params_) {
-            params.push_back(template_param.to_string(using_namespace));
-        }
-
-        res += fmt::format("<{}>", fmt::join(params, ","));
+    if (!type().empty()) {
+        if (!relative)
+            res += namespace_{type()}.to_string();
+        else
+            res += namespace_{type()}.relative_to(using_namespace).to_string();
     }
 
     if (!name().empty()) {
         if (!type().empty())
             res += " ";
-        res += namespace_{name()}.relative_to(using_namespace).to_string();
+        if (!relative)
+            res += namespace_{name()}.to_string();
+        else
+            res += namespace_{name()}.relative_to(using_namespace).to_string();
+    }
+
+    // Render nested template params
+    if (!template_params_.empty()) {
+        std::vector<std::string> params;
+        for (const auto &template_param : template_params_) {
+            params.push_back(
+                template_param.to_string(using_namespace, relative));
+        }
+
+        res += fmt::format("<{}>", fmt::join(params, ","));
     }
 
     if (!default_value().empty()) {
@@ -142,7 +157,38 @@ std::string template_parameter::to_string(
         res += default_value();
     }
 
+    // TODO: Refactor this to external configurable class
+    util::replace_all(res, "std::basic_string<char>", "std::string");
+    util::replace_all(res, "std::basic_string<wchar_t>", "std::wstring");
+
     return res;
+}
+
+void template_parameter::find_nested_relationships(
+    std::vector<std::pair<std::string, common::model::relationship_t>>
+        &nested_relationships,
+    common::model::relationship_t hint,
+    std::function<bool(const std::string &full_name)> condition) const
+{
+    // If this type argument should be included in the relationship
+    // just add it and skip recursion (e.g. this is a user defined type)
+    if (condition(name())) {
+        nested_relationships.push_back({to_string({}, false), hint});
+    }
+    // Otherwise (e.g. this is a std::shared_ptr) and we're actually
+    // interested what is stored inside it
+    else {
+        for (const auto &template_argument : template_params()) {
+            if (condition(template_argument.name())) {
+                nested_relationships.push_back(
+                    {template_argument.to_string({}, false), hint});
+            }
+            else {
+                template_argument.find_nested_relationships(
+                    nested_relationships, hint, condition);
+            }
+        }
+    }
 }
 
 }

@@ -105,7 +105,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr);
+    render_template_params(ostr, false);
 
     return ostr.str();
 }
@@ -118,7 +118,7 @@ std::string class_::full_name(bool relative) const
     std::ostringstream ostr;
 
     ostr << name_and_ns();
-    render_template_params(ostr);
+    render_template_params(ostr, relative);
 
     std::string res;
 
@@ -134,7 +134,7 @@ std::string class_::full_name(bool relative) const
 }
 
 std::ostringstream &class_::render_template_params(
-    std::ostringstream &ostr) const
+    std::ostringstream &ostr, bool relative) const
 {
     using clanguml::common::model::namespace_;
 
@@ -144,8 +144,8 @@ std::ostringstream &class_::render_template_params(
 
         std::transform(templates_.cbegin(), templates_.cend(),
             std::back_inserter(tnames),
-            [ns = using_namespace()](
-                const auto &tmplt) { return tmplt.to_string(ns); });
+            [ns = using_namespace(), relative](
+                const auto &tmplt) { return tmplt.to_string(ns, relative); });
 
         ostr << fmt::format("<{}>", fmt::join(tnames, ","));
     }
@@ -160,4 +160,5 @@ bool class_::is_abstract() const
     return std::any_of(methods_.begin(), methods_.end(),
         [](const auto &method) { return method.is_pure_virtual(); });
 }
+
 }
