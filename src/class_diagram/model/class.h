@@ -83,6 +83,9 @@ public:
         std::vector<std::pair<std::string, common::model::relationship_t>>
             &nested_relationships);
 
+    int calculate_template_specialization_match(
+        const class_ &other, const std::string &full_name) const;
+
 private:
     std::ostringstream &render_template_params(
         std::ostringstream &ostr, bool relative) const;

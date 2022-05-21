@@ -77,9 +77,9 @@ public:
         cppast::cpp_access_specifier_kind as);
 
     bool process_field_with_template_instantiation(
-        const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
+        const cppast::cpp_member_variable &mv, const cppast::cpp_type &type,
         clanguml::class_diagram::model::class_ &c,
-        clanguml::class_diagram::model::class_member &m,
+        clanguml::class_diagram::model::class_member &member,
         cppast::cpp_access_specifier_kind as);
 
     void process_static_field(const cppast::cpp_variable &mv,
@@ -169,9 +169,6 @@ private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     build_template_instantiation(
         const cppast::cpp_template_instantiation_type &t,
-        found_relationships_t &relationships,
-        common::model::relationship_t nested_relationship_hint =
-            common::model::relationship_t::kAggregation,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     /**
@@ -217,10 +214,7 @@ private:
     void build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         model::class_ &tinst, const cppast::cpp_template_argument &targ,
-        class_diagram::model::template_parameter &ct,
-        found_relationships_t &relationships,
-        common::model::relationship_t relationship_hint =
-            common::model::relationship_t::kAggregation);
+        class_diagram::model::template_parameter &ct);
 
     void build_template_instantiation_process_expression_argument(
         const cppast::cpp_template_argument &targ,
@@ -239,5 +233,13 @@ private:
     translation_unit_context ctx;
     bool simplify_system_template(
         model::template_parameter &parameter, const std::string &basicString);
+
+    bool add_nested_template_relationships(
+        const cppast::cpp_member_variable &mv, model::class_ &c,
+        model::class_member &m, cppast::cpp_access_specifier_kind &as,
+        const model::class_ &tinst,
+        common::model::relationship_t &relationship_type,
+        common::model::relationship_t &decorator_rtype,
+        std::string &decorator_rmult);
 };
 }

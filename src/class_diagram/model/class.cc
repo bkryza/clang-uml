@@ -161,4 +161,35 @@ bool class_::is_abstract() const
         [](const auto &method) { return method.is_pure_virtual(); });
 }
 
+int class_::calculate_template_specialization_match(
+    const class_ &other, const std::string &full_name) const
+{
+    int res{};
+
+    std::string left = name_and_ns();
+    // TODO: handle variadic templates
+    if ((name_and_ns() != full_name) ||
+        (templates().size() != other.templates().size())) {
+        return res;
+    }
+
+    // Iterate over all template arguments
+    for (int i = 0; i < other.templates().size(); i++) {
+        const auto &template_arg = templates().at(i);
+        const auto &other_template_arg = other.templates().at(i);
+
+        if (template_arg == other_template_arg) {
+            res++;
+        }
+        else if (other_template_arg.is_specialization_of(template_arg)) {
+            continue;
+        }
+        else {
+            res = 0;
+            break;
+        }
+    }
+
+    return res;
+}
 }

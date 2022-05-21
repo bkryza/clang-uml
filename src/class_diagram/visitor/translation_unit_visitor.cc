@@ -210,11 +210,9 @@ void translation_unit_visitor::process_type_alias_template(
     else {
         if (at.type_alias().underlying_type().kind() ==
             cppast::cpp_type_kind::template_instantiation_t) {
-            found_relationships_t nested_relationships;
             auto tinst = build_template_instantiation(
                 static_cast<const cppast::cpp_template_instantiation_type &>(
-                    resolve_alias(at.type_alias().underlying_type())),
-                nested_relationships);
+                    resolve_alias(at.type_alias().underlying_type())));
 
             assert(tinst);
 
@@ -698,18 +696,18 @@ void translation_unit_visitor::process_class_children(
 }
 
 bool translation_unit_visitor::process_field_with_template_instantiation(
-    const cppast::cpp_member_variable &mv, const cppast::cpp_type &tr,
-    class_ &c, class_member &m, cppast::cpp_access_specifier_kind as)
+    const cppast::cpp_member_variable &mv, const cppast::cpp_type &type,
+    class_ &c, class_member &member, cppast::cpp_access_specifier_kind as)
 {
     LOG_DBG("Processing field with template instantiation type {}",
-        cppast::to_string(tr));
+        cppast::to_string(type));
 
     bool res = false;
 
-    auto tr_declaration = cppast::to_string(tr);
+    auto tr_declaration = cppast::to_string(type);
 
     const auto &template_instantiation_type =
-        static_cast<const cppast::cpp_template_instantiation_type &>(tr);
+        static_cast<const cppast::cpp_template_instantiation_type &>(type);
 
     const auto &unaliased =
         static_cast<const cppast::cpp_template_instantiation_type &>(
@@ -718,6 +716,21 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     auto tr_unaliased_declaration = cppast::to_string(unaliased);
 
     std::unique_ptr<class_> tinst_ptr;
+
+    found_relationships_t nested_relationships;
+    if (tr_declaration == tr_unaliased_declaration)
+        tinst_ptr = build_template_instantiation(unaliased);
+    else
+        tinst_ptr = build_template_instantiation(
+            static_cast<const cppast::cpp_template_instantiation_type &>(
+                type.canonical()));
+
+    auto &tinst = *tinst_ptr;
+
+    //
+    // Infer the relationship of this field to the template
+    // instantiation
+    // TODO: Refactor this to a configurable mapping
     relationship_t nested_relationship_hint = relationship_t::kAggregation;
 
     if (tr_unaliased_declaration.find("std::shared_ptr") == 0) {
@@ -727,20 +740,6 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         nested_relationship_hint = relationship_t::kAssociation;
     }
 
-    found_relationships_t nested_relationships;
-    if (tr_declaration == tr_unaliased_declaration)
-        tinst_ptr = build_template_instantiation(
-            unaliased, nested_relationships, nested_relationship_hint);
-    else
-        tinst_ptr = build_template_instantiation(
-            static_cast<const cppast::cpp_template_instantiation_type &>(
-                tr.canonical()),
-            nested_relationships, nested_relationship_hint);
-
-    auto &tinst = *tinst_ptr;
-
-    // Infer the relationship of this field to the template
-    // instantiation
     relationship_t relationship_type{};
     if (mv.type().kind() == cppast::cpp_type_kind::pointer_t ||
         mv.type().kind() == cppast::cpp_type_kind::reference_t)
@@ -750,10 +749,10 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
     relationship rr{relationship_type, tinst.full_name(),
         detail::cpp_access_specifier_to_access(as), mv.name()};
-    rr.set_style(m.style_spec());
+    rr.set_style(member.style_spec());
 
     // Process field decorators
-    auto [decorator_rtype, decorator_rmult] = m.get_relationship();
+    auto [decorator_rtype, decorator_rmult] = member.get_relationship();
     if (decorator_rtype != relationship_t::kNone) {
         rr.set_type(decorator_rtype);
         auto mult = util::split(decorator_rmult, ":");
@@ -781,19 +780,38 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         ctx.diagram().add_class(std::move(tinst_ptr));
     }
 
-    found_relationships_t nested_relationships2;
-    if (!ctx.diagram().should_include(tinst.get_namespace(), tinst.name()))
-        for (const auto &template_argument : tinst.templates()) {
-            template_argument.find_nested_relationships(nested_relationships2,
-                relationship_type,
-                [&d = ctx.diagram()](const std::string &full_name) {
-                    auto [ns, name] = cx::util::split_ns(full_name);
-                    return d.should_include(ns, name);
-                });
-        }
+    //
+    // Only add nested template relationships to this class if the top level
+    // template is not in the diagram (e.g. it is a std::shared_ptr<>)
+    //
+    if (!ctx.diagram().should_include(tinst.get_namespace(), tinst.name())) {
+        res = add_nested_template_relationships(mv, c, member, as, tinst,
+            relationship_type, decorator_rtype, decorator_rmult);
+    }
 
-    if (!nested_relationships2.empty()) {
-        for (const auto &rel : nested_relationships2) {
+    return res;
+}
+
+bool translation_unit_visitor::add_nested_template_relationships(
+    const cppast::cpp_member_variable &mv, class_ &c, class_member &m,
+    cppast::cpp_access_specifier_kind &as, const class_ &tinst,
+    relationship_t &relationship_type, relationship_t &decorator_rtype,
+    std::string &decorator_rmult)
+{
+    bool res{false};
+    found_relationships_t nested_relationships;
+
+    for (const auto &template_argument : tinst.templates()) {
+        template_argument.find_nested_relationships(nested_relationships,
+            relationship_type,
+            [&d = ctx.diagram()](const std::string &full_name) {
+                auto [ns, name] = cx::util::split_ns(full_name);
+                return d.should_include(ns, name);
+            });
+    }
+
+    if (!nested_relationships.empty()) {
+        for (const auto &rel : nested_relationships) {
             relationship nested_relationship{std::get<1>(rel), std::get<0>(rel),
                 detail::cpp_access_specifier_to_access(as), mv.name()};
             nested_relationship.set_style(m.style_spec());
@@ -868,9 +886,11 @@ void translation_unit_visitor::process_field(
         // TODO
     }
 
+    //
     // Try to find relationships in the type of the member, unless it has
     // been already added as part of template processing or it is marked
     // to be skipped in the comment
+    //
     if (!m.skip_relationship() &&
         !template_instantiation_added_as_aggregation &&
         (tr.kind() != cppast::cpp_type_kind::builtin_t) &&
@@ -1261,10 +1281,9 @@ void translation_unit_visitor::
             c.add_relationship(std::move(rr));
         }
         else {
-            found_relationships_t nested_relationships;
             // First check if tinst already exists
-            auto tinst_ptr = build_template_instantiation(
-                template_instantiation_type, nested_relationships);
+            auto tinst_ptr =
+                build_template_instantiation(template_instantiation_type);
             const auto &tinst = *tinst_ptr;
             relationship rr{relationship_t::kDependency, tinst.full_name()};
 
@@ -1618,8 +1637,6 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
 
 std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const cppast::cpp_template_instantiation_type &t,
-    found_relationships_t &nested_relationships,
-    relationship_t nested_relationship_hint,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
     //
@@ -1697,9 +1714,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         for (const auto &targ : t.arguments().value()) {
             template_parameter ct;
             if (targ.type()) {
-                build_template_instantiation_process_type_argument(parent,
-                    tinst, targ, ct, nested_relationships,
-                    nested_relationship_hint);
+                build_template_instantiation_process_type_argument(
+                    parent, tinst, targ, ct);
             }
             else if (targ.expression()) {
                 build_template_instantiation_process_expression_argument(
@@ -1715,10 +1731,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                         ct);
             }
 
-            LOG_DBG("Adding template argument '{}'",
-                ct.to_string(ctx.config().using_namespace(), false));
-
-            // assert(!ct.name().empty() || !ct.type().empty());
+            LOG_DBG("Adding template argument '{}'", ct.to_string({}, false));
 
             tinst.add_template(std::move(ct));
         }
@@ -1730,7 +1743,6 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     auto fn = cx::util::full_name(tt, ctx.entity_index(), false);
     fn = util::split(fn, "<")[0];
 
-    // TODO: Refactor template instantiation search to a separate method
     std::string destination;
     if (ctx.has_type_alias(fn)) {
         // If this is a template alias - set the instantiation
@@ -1738,46 +1750,31 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         destination = cppast::to_string(ctx.get_type_alias(fn).get());
     }
     else {
-        std::string tmp_destination{};
+        std::string best_match_full_name{};
 
         int best_match = 0;
         // First try to find the best match for this template in partially
         // specialized templates
         for (const auto c : ctx.diagram().classes()) {
-            std::string left = c->name_and_ns();
-            auto left_count = c->templates().size();
-            auto right_count = tinst.templates().size();
-            if (c != tinst && left == full_template_name &&
-                // TODO: handle variadic templates
-                left_count == right_count) {
-                int tmp_match = 0;
-                for (int i = 0; i < tinst.templates().size(); i++) {
-                    const auto &tinst_i = tinst.templates().at(i);
-                    const auto &c_i = c->templates().at(i);
-                    if (c_i == tinst_i) {
-                        tmp_match++;
-                    }
-                    else if (tinst_i.is_specialization_of(c_i)) {
-                        continue;
-                    }
-                    else {
-                        tmp_match = 0;
-                        break;
-                    }
-                }
-                if (tmp_match > best_match) {
-                    best_match = tmp_match;
-                    tmp_destination = c->full_name(false);
-                }
+            if (c == tinst)
+                continue;
+
+            auto match = c->calculate_template_specialization_match(
+                tinst, full_template_name);
+
+            if (match > best_match) {
+                best_match = match;
+                best_match_full_name = c->full_name(false);
             }
         }
 
-        if (!tmp_destination.empty())
-            destination = tmp_destination;
+        if (!best_match_full_name.empty())
+            destination = best_match_full_name;
         else
             // Otherwise point to the base template
             destination = tinst.base_template();
     }
+
     relationship r{relationship_t::kInstantiation, destination};
     tinst.add_relationship(std::move(r));
 
@@ -1836,8 +1833,7 @@ void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
         class_ &tinst, const cppast::cpp_template_argument &targ,
-        template_parameter &ct, found_relationships_t &nested_relationships,
-        common::model::relationship_t relationship_hint)
+        template_parameter &ct)
 {
     auto full_name = cx::util::full_name(
         cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
@@ -1890,10 +1886,8 @@ void translation_unit_visitor::
 
         assert(!ct.name().empty());
 
-        found_relationships_t sub_nested_relationships;
         auto nested_tinst =
             build_template_instantiation(nested_template_parameter,
-                sub_nested_relationships, relationship_hint,
                 ctx.diagram().should_include(tinst_ns, tinst_name)
                     ? std::make_optional(&tinst)
                     : parent);
@@ -1912,13 +1906,8 @@ void translation_unit_visitor::
             cx::util::split_ns(nested_tinst_full_name);
 
         if (ctx.diagram().should_include(nested_tinst_ns, nested_tinst_name)) {
-            nested_relationships.push_back(
-                {nested_tinst->full_name(false), relationship_hint});
+
             ctx.diagram().add_class(std::move(nested_tinst));
-        }
-        else {
-            if (!sub_nested_relationships.empty())
-                nested_relationships.push_back(sub_nested_relationships[0]);
         }
 
         if (ctx.diagram().should_include(tinst_ns, tinst_name)
@@ -1961,8 +1950,6 @@ void translation_unit_visitor::
 
         if (ctx.diagram().should_include(fn_ns, fn_name)) {
             tinst.add_relationship(std::move(tinst_dependency));
-            nested_relationships.push_back(
-                {tinst_dependency.destination(), relationship_hint});
         }
         else if (parent) {
             (*parent)->add_relationship(std::move(tinst_dependency));
