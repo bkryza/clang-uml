@@ -47,6 +47,21 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
     REQUIRE_THAT(puml, IsClass(_A("B")));
 
+    REQUIRE_THAT(puml, IsField<Private>("bapair", "PairPairBA<bool>"));
+    REQUIRE_THAT(puml, IsField<Private>("abool", "APtr<bool>"));
+    REQUIRE_THAT(puml, IsField<Private>("aboolfloat", "AAPtr<bool,float>"));
+    REQUIRE_THAT(puml, IsField<Private>("afloat", "ASharedPtr<float>"));
+    REQUIRE_THAT(puml, IsField<Private>("boolstring", "A<bool,std::string>"));
+    REQUIRE_THAT(puml, IsField<Private>("floatstring", "AStringPtr<float>"));
+    REQUIRE_THAT(puml, IsField<Private>("intstring", "AIntString"));
+    REQUIRE_THAT(puml, IsField<Private>("stringstring", "AStringString"));
+    REQUIRE_THAT(puml, IsField<Private>("bstringstring", "BStringString"));
+
+    REQUIRE_THAT(puml, IsField<Protected>("bs", "BVector"));
+
+    REQUIRE_THAT(puml, IsField<Public>("cb", "GeneralCallback<AIntString>"));
+    REQUIRE_THAT(puml, IsField<Public>("vcb", "VoidCallback"));
+
     REQUIRE_THAT(
         puml, !IsClassTemplate("std::std::function", "void(T...,int),int)"));
 
