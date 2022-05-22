@@ -1867,10 +1867,6 @@ void translation_unit_visitor::
             static_cast<const cppast::cpp_template_instantiation_type &>(
                 targ.type().value());
 
-        std::string nnn{"empty"};
-        if (parent)
-            nnn = (*parent)->name();
-
         auto [tinst_ns, tinst_name] =
             cx::util::split_ns(tinst.full_name(false));
 
