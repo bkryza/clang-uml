@@ -60,7 +60,8 @@ TEST_CASE("t00014", "[test-case][class]")
 
     REQUIRE_THAT(puml, IsField<Protected>("bs", "BVector"));
 
-    REQUIRE_THAT(puml, IsField<Public>("cb", "GeneralCallback<ACharString>"));
+    REQUIRE_THAT(puml, IsField<Public>("cb", "SimpleCallback<ACharString>"));
+    REQUIRE_THAT(puml, IsField<Public>("gcb", "GenericCallback<AWCharString>"));
     REQUIRE_THAT(puml, IsField<Public>("vcb", "VoidCallback"));
 
     REQUIRE_THAT(
@@ -82,6 +83,8 @@ TEST_CASE("t00014", "[test-case][class]")
         IsInstantiation(_A("A<T,std::string>"), _A("A<bool,std::string>")));
     REQUIRE_THAT(puml,
         IsInstantiation(_A("A<T,std::string>"), _A("A<char,std::string>")));
+    REQUIRE_THAT(puml,
+        IsInstantiation(_A("A<T,std::string>"), _A("A<wchar_t,std::string>")));
 
     REQUIRE_THAT(puml,
         IsInstantiation(_A("A<T,std::unique_ptr<std::string>>"),
@@ -104,6 +107,7 @@ TEST_CASE("t00014", "[test-case][class]")
         IsAggregation(_A("R"), _A("A<float,std::unique_ptr<std::string>>"),
             "-floatstring"));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<char,std::string>")));
+    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<wchar_t,std::string>")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
