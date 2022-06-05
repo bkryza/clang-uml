@@ -14,3 +14,6 @@ diagrams:
       namespaces:
         - std
         - clanguml::t00014::std
+    plantuml:
+      before:
+        - left to right direction
