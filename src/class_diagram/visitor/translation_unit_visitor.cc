@@ -18,6 +18,7 @@
 
 #include "translation_unit_visitor.h"
 
+#include "cppast/cpp_function_type.hpp"
 #include "cx/util.h"
 
 #include <cppast/cpp_alias_template.hpp>
@@ -26,6 +27,7 @@
 #include <cppast/cpp_entity_kind.hpp>
 #include <cppast/cpp_enum.hpp>
 #include <cppast/cpp_friend.hpp>
+#include <cppast/cpp_function_type.hpp>
 #include <cppast/cpp_member_function.hpp>
 #include <cppast/cpp_member_variable.hpp>
 #include <cppast/cpp_namespace.hpp>
@@ -719,11 +721,12 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
 
     found_relationships_t nested_relationships;
     if (tr_declaration == tr_unaliased_declaration)
-        tinst_ptr = build_template_instantiation(unaliased);
+        tinst_ptr = build_template_instantiation(unaliased, {&c});
     else
         tinst_ptr = build_template_instantiation(
             static_cast<const cppast::cpp_template_instantiation_type &>(
-                type.canonical()));
+                type.canonical()),
+            {&c});
 
     auto &tinst = *tinst_ptr;
 
@@ -1707,7 +1710,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             template_parameter ct;
             if (targ.type()) {
                 build_template_instantiation_process_type_argument(
-                    parent, tinst, targ, ct);
+                    parent, tinst, targ.type().value(), ct);
             }
             else if (targ.expression()) {
                 build_template_instantiation_process_expression_argument(
@@ -1824,15 +1827,15 @@ void translation_unit_visitor::
 void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        class_ &tinst, const cppast::cpp_template_argument &targ,
+        class_ &tinst, const cppast::cpp_type &targ_type,
         template_parameter &ct)
 {
     auto full_name = cx::util::full_name(
-        cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
+        cppast::remove_cv(cx::util::unreferenced(targ_type)),
         ctx.entity_index(), false);
 
     auto [fn_ns, fn_name] = cx::util::split_ns(full_name);
-    auto template_argument_kind = targ.type().value().kind();
+    auto template_argument_kind = targ_type.kind();
 
     if (template_argument_kind == cppast::cpp_type_kind::unexposed_t) {
         // Here we're on our own - just make a best guess
@@ -1858,14 +1861,14 @@ void translation_unit_visitor::
 
         // Check if this template should be simplified (e.g. system
         // template aliases such as std:basic_string<char> should be simply
-        // std::string
+        // std::string)
         if (simplify_system_template(ct, full_name)) {
             return;
         }
 
         const auto &nested_template_parameter =
             static_cast<const cppast::cpp_template_instantiation_type &>(
-                targ.type().value());
+                targ_type);
 
         auto [tinst_ns, tinst_name] =
             cx::util::split_ns(tinst.full_name(false));
@@ -1924,10 +1927,27 @@ void translation_unit_visitor::
                 full_name, tinst.full_name(), tinst_dependency.destination());
         }
     }
+    else if (template_argument_kind == cppast::cpp_type_kind::function_t) {
+        const auto &function_argument =
+            static_cast<const cppast::cpp_function_type &>(targ_type);
+
+        const auto &rt = function_argument.return_type();
+
+        // Search for relationships in argument return type
+        // TODO...
+
+        // Build instantiations of each of the arguments
+        for (const auto &arg : function_argument.parameter_types()) {
+            template_parameter ctt;
+
+            build_template_instantiation_process_type_argument(
+                parent, tinst, arg, ctt);
+        }
+    }
     else if (template_argument_kind == cppast::cpp_type_kind::user_defined_t) {
         relationship tinst_dependency{relationship_t::kDependency,
             cx::util::full_name(
-                cppast::remove_cv(cx::util::unreferenced(targ.type().value())),
+                cppast::remove_cv(cx::util::unreferenced(targ_type)),
                 ctx.entity_index(), false)};
 
         LOG_DBG("Creating nested template dependency to user defined "

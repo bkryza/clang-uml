@@ -213,7 +213,7 @@ private:
 
     void build_template_instantiation_process_type_argument(
         const std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        model::class_ &tinst, const cppast::cpp_template_argument &targ,
+        model::class_ &tinst, const cppast::cpp_type &targ_type,
         class_diagram::model::template_parameter &ct);
 
     void build_template_instantiation_process_expression_argument(

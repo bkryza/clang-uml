@@ -39,13 +39,14 @@ template <class T> using ASharedPtr = std::shared_ptr<A<double, T>>;
 template <class T, class U>
 using AAPtr = std::unique_ptr<std::pair<A<double, T>, A<long, U>>>;
 
-template <typename... T> using GeneralCallback = std::function<void(T..., int)>;
-using VoidCallback = GeneralCallback<>;
+template <typename T> using GeneralCallback = std::function<void(T, int)>;
+using VoidCallback = GeneralCallback<void *>;
 
 using BVector = std::vector<B>;
 using BVector2 = BVector;
 
 using AIntString = AString<int>;
+using ACharString = AString<char>;
 using AStringString = AString<std::string>;
 using BStringString = AStringString;
 
@@ -66,7 +67,7 @@ protected:
 
 public:
     BVector2 bs2;
-    GeneralCallback<AIntString> cb;
+    GeneralCallback<ACharString> cb;
     VoidCallback vcb;
     VectorPtr<B> vps;
 };
