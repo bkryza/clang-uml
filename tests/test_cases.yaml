@@ -126,6 +126,9 @@ test_cases:
     - name: t00043
       title: Dependants and dependencies class diagram filter test
       description:
+    - name: t00044
+      title: Test case for inner type aliases with parent class template args
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

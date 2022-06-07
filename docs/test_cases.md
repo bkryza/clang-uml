@@ -42,6 +42,7 @@
  * [t00041](./test_cases/t00041.md) - Context diagram filter test
  * [t00042](./test_cases/t00042.md) - Specialization class template diagram filter test
  * [t00043](./test_cases/t00043.md) - Dependants and dependencies class diagram filter test
+ * [t00044](./test_cases/t00044.md) - Test case for inner type aliases with parent class template args
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
