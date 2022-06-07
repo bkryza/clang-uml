@@ -99,15 +99,16 @@ void diagram::add_type_alias(std::unique_ptr<type_alias> &&ta)
     type_aliases_[ta->alias()] = std::move(ta);
 }
 
-void diagram::add_package(std::unique_ptr<common::model::package> &&p)
+bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
 
     auto ns = p->get_relative_namespace();
-    add_element(ns, std::move(p));
+
+    return add_element(ns, std::move(p));
 }
 
-void diagram::add_class(std::unique_ptr<class_> &&c)
+bool diagram::add_class(std::unique_ptr<class_> &&c)
 {
     const auto base_name = c->name();
     const auto full_name = c->full_name(false);
@@ -128,33 +129,48 @@ void diagram::add_class(std::unique_ptr<class_> &&c)
     auto name = base_name;
     auto name_with_ns = c->name_and_ns();
     auto name_and_ns = ns | name;
+    const auto &cc = *c;
 
-    if (!has_class(*c)) {
-        classes_.push_back(type_safe::ref(*c));
+    auto cc_ref = type_safe::ref(cc);
 
-        add_element(ns, std::move(c));
+    if (!has_class(cc)) {
+        if (add_element(ns, std::move(c)))
+            classes_.push_back(std::move(cc_ref));
 
         const auto &el = get_element<class_>(name_and_ns).value();
+
         assert(el.name() == name);
         assert(el.get_relative_namespace() == ns);
+
+        return true;
     }
-    else
-        LOG_DBG("Class {} ({}) already in the model", base_name, full_name);
+
+    LOG_DBG("Class {} ({}) already in the model", base_name, full_name);
+
+    return false;
 }
 
-void diagram::add_enum(std::unique_ptr<enum_> &&e)
+bool diagram::add_enum(std::unique_ptr<enum_> &&e)
 {
-    LOG_DBG("Adding enum: {}", e->name());
+    const auto full_name = e->name();
+
+    LOG_DBG("Adding enum: {}", full_name);
 
     assert(!util::contains(e->name(), "::"));
 
+    auto e_ref = type_safe::ref(*e);
+    auto ns = e->get_relative_namespace();
+
     if (!has_enum(*e)) {
-        enums_.emplace_back(*e);
-        auto ns = e->get_relative_namespace();
-        add_element(ns, std::move(e));
+        if (add_element(ns, std::move(e))) {
+            enums_.emplace_back(std::move(e_ref));
+            return true;
+        }
     }
-    else
-        LOG_DBG("Enum {} already in the model", e->name());
+
+    LOG_DBG("Enum {} already in the model", full_name);
+
+    return false;
 }
 
 void diagram::get_parents(

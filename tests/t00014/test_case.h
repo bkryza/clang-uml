@@ -61,7 +61,8 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsField<Protected>("bs", "BVector"));
 
     REQUIRE_THAT(puml, IsField<Public>("cb", "SimpleCallback<ACharString>"));
-    REQUIRE_THAT(puml, IsField<Public>("gcb", "GenericCallback<AWCharString>"));
+    REQUIRE_THAT(
+        puml, IsField<Public>("gcb", "GenericCallback<R::AWCharString>"));
     REQUIRE_THAT(puml, IsField<Public>("vcb", "VoidCallback"));
 
     REQUIRE_THAT(

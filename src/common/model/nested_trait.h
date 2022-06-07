@@ -38,21 +38,24 @@ public:
 
     virtual ~nested_trait() = default;
 
-    template <typename V = T> void add_element(std::unique_ptr<V> p)
+    template <typename V = T>
+    [[nodiscard]] bool add_element(std::unique_ptr<V> p)
     {
         auto it = std::find_if(elements_.begin(), elements_.end(),
             [&p](const auto &e) { return *e == *p; });
 
         if (it != elements_.end()) {
-            (*it)->append(*p);
+            // Element already in element tree
+            return false;
         }
-        else {
-            elements_.emplace_back(std::move(p));
-        }
+
+        elements_.emplace_back(std::move(p));
+
+        return true;
     }
 
     template <typename V = T>
-    void add_element(const Path &path, std::unique_ptr<V> p)
+    bool add_element(const Path &path, std::unique_ptr<V> p)
     {
         assert(p);
 
@@ -60,14 +63,13 @@ public:
             path.to_string());
 
         if (path.is_empty()) {
-            add_element(std::move(p));
-            return;
+            return add_element(std::move(p));
         }
 
         auto parent = get_element(path);
 
         if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
-            dynamic_cast<nested_trait<T, Path> &>(parent.value())
+            return dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
         else {
             spdlog::error("No parent element found at: {}", path.to_string());

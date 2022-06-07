@@ -132,7 +132,8 @@ void translation_unit_visitor::process_external_system_header(
     f->set_name(include_directive.name());
     f->set_type(common::model::source_file_t::kHeader);
 
-    ctx.diagram().add_element(std::move(f));
+    if (!ctx.diagram().add_element(std::move(f)))
+        LOG_DBG("Include {} already in the model", include_directive.name());
 
     auto dependency_relationship = common::model::relationship{
         common::model::relationship_t::kDependency,

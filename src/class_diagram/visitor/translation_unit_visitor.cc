@@ -765,9 +765,12 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
         }
     }
 
+    const auto tinst_namespace = tinst.get_namespace();
+    const auto tinst_name = tinst.name();
+
     // Add instantiation relationship from the generated template instantiation
     // of the field type to its primary template
-    if (ctx.diagram().should_include(tinst.get_namespace(), tinst.name())) {
+    if (ctx.diagram().should_include(tinst_namespace, tinst_name)) {
         LOG_DBG("Adding field instantiation relationship {} {} {} : {}",
             rr.destination(), clanguml::common::model::to_string(rr.type()),
             c.full_name(), rr.label());
@@ -787,7 +790,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     // Only add nested template relationships to this class if the top level
     // template is not in the diagram (e.g. it is a std::shared_ptr<>)
     //
-    if (!ctx.diagram().should_include(tinst.get_namespace(), tinst.name())) {
+    if (!ctx.diagram().should_include(tinst_namespace, tinst_name)) {
         res = add_nested_template_relationships(mv, c, member, as, tinst,
             relationship_type, decorator_rtype, decorator_rmult);
     }
@@ -1660,16 +1663,21 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     tinst.set_namespace(ctx.get_namespace());
 
-    auto tinst_full_name = cppast::to_string(t);
+    std::string tinst_full_name;
 
     //
     // Typically, every template instantiation should have a
-    // primary_template() which should also be generated here if it doesn't
+    // primary_template(), which should also be generated here if it doesn't
     // exist yet in the model
     //
-    if (t.primary_template().get(ctx.entity_index()).size()) {
-        auto size = t.primary_template().get(ctx.entity_index()).size();
-        (void)size;
+    if (t_is_alias &&
+        unaliased.primary_template().get(ctx.entity_index()).size()) {
+        tinst_full_name = cppast::to_string(unaliased);
+        build_template_instantiation_primary_template(
+            unaliased, tinst, template_base_params, parent, full_template_name);
+    }
+    else if (t.primary_template().get(ctx.entity_index()).size()) {
+        tinst_full_name = cppast::to_string(t);
         build_template_instantiation_primary_template(
             t, tinst, template_base_params, parent, full_template_name);
     }
@@ -1677,6 +1685,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         LOG_DBG("Template instantiation {} has no primary template?",
             cppast::to_string(t));
 
+        tinst_full_name = cppast::to_string(t);
         full_template_name = cppast::to_string(t);
     }
 

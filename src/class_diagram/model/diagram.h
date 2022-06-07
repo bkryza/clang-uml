@@ -63,11 +63,11 @@ public:
 
     void add_type_alias(std::unique_ptr<type_alias> &&ta);
 
-    void add_class(std::unique_ptr<class_> &&c);
+    bool add_class(std::unique_ptr<class_> &&c);
 
-    void add_enum(std::unique_ptr<enum_> &&e);
+    bool add_enum(std::unique_ptr<enum_> &&e);
 
-    void add_package(std::unique_ptr<common::model::package> &&p);
+    bool add_package(std::unique_ptr<common::model::package> &&p);
 
     std::string to_alias(const std::string &full_name) const;
 
