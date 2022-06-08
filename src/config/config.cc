@@ -73,6 +73,7 @@ std::string to_string(const hint_t t)
         return "right";
     default:
         assert(false);
+        return "";
     }
 }
 

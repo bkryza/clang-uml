@@ -250,6 +250,7 @@ void generator::generate_relationships(
 
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
+
     for (const auto &r : c.relationships()) {
         if (!m_model.should_include(r.type()))
             continue;

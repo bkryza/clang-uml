@@ -48,6 +48,7 @@ std::string to_string(relationship_t r)
         return "alias";
     default:
         assert(false);
+        return "";
     }
 }
 
@@ -62,6 +63,7 @@ std::string to_string(access_t a)
         return "private";
     default:
         assert(false);
+        return "";
     }
 }
 
@@ -74,6 +76,7 @@ std::string to_string(message_t r)
         return "return";
     default:
         assert(false);
+        return "";
     }
 }
 
@@ -90,6 +93,7 @@ std::string to_string(const diagram_t t)
         return "include";
     default:
         assert(false);
+        return "";
     }
 }
 

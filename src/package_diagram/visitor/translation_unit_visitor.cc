@@ -434,7 +434,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
         }
     }
     else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        auto &tinst =
+        const auto &tinst =
             static_cast<const cppast::cpp_template_instantiation_type &>(t);
 
         if (!tinst.arguments_exposed()) {
@@ -443,7 +443,7 @@ bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
             return found;
         }
 
-        const auto &args = tinst.arguments().value();
+        const auto args = tinst.arguments().value();
 
         // Try to match common containers
         // TODO: Refactor to a separate class with configurable

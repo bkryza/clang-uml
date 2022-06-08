@@ -139,8 +139,9 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
 
         const auto &el = get_element<class_>(name_and_ns).value();
 
-        assert(el.name() == name);
-        assert(el.get_relative_namespace() == ns);
+        if ((el.name() != name) || !(el.get_relative_namespace() == ns))
+            throw std::runtime_error(
+                "Invalid element stored in the diagram tree");
 
         return true;
     }
