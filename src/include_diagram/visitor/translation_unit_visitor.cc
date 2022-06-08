@@ -40,7 +40,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
     process_source_file(static_cast<const cppast::cpp_file &>(file));
 
     cppast::visit(file,
-        [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
+        [&, this](const cppast::cpp_entity &e, cppast::visitor_info /*info*/) {
             if (e.kind() == cppast::cpp_entity_kind::include_directive_t) {
                 const auto &inc =
                     static_cast<const cppast::cpp_include_directive &>(e);

@@ -24,6 +24,7 @@ NUMPROC ?= $(shell nproc)
 
 LLVM_CONFIG_PATH ?=
 CMAKE_CXX_FLAGS ?=
+CMAKE_EXE_LINKER_FLAGS ?=
 
 .PHONY: clean
 clean:
@@ -34,12 +35,15 @@ debug/CMakeLists.txt:
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
+		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
 		-DLLVM_CONFIG_PATH=$(LLVM_CONFIG_PATH)
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
+		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
 		-DLLVM_CONFIG_PATH=$(LLVM_CONFIG_PATH)
 
 debug: debug/CMakeLists.txt
@@ -51,6 +55,9 @@ release: release/CMakeLists.txt
 
 test: debug
 	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
+
+test_release: release
+	CTEST_OUTPUT_ON_FAILURE=1 make -C release test
 
 test_plantuml: test
 	plantuml -tsvg debug/tests/puml/*.puml

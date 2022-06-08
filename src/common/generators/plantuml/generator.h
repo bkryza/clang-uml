@@ -261,7 +261,7 @@ std::unique_ptr<DiagramModel> generate(
 
     diagram->set_complete(true);
 
-    return std::move(diagram);
+    return diagram;
 }
 
 template <typename C, typename D> void generator<C, D>::init_context()

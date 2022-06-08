@@ -138,7 +138,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
     using cppast::cpp_member_function_call;
     using cppast::visitor_info;
 
-    cppast::visit(file, [&, this](const cpp_entity &e, visitor_info info) {
+    cppast::visit(file, [&, this](const cpp_entity &e, visitor_info /*info*/) {
         if (e.kind() == cpp_entity_kind::function_t) {
             const auto &function = static_cast<const cpp_function &>(e);
             process_activities(function);

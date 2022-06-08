@@ -174,7 +174,7 @@ int class_::calculate_template_specialization_match(
     }
 
     // Iterate over all template arguments
-    for (int i = 0; i < other.templates().size(); i++) {
+    for (auto i = 0U; i < other.templates().size(); i++) {
         const auto &template_arg = templates().at(i);
         const auto &other_template_arg = other.templates().at(i);
 

@@ -55,7 +55,7 @@ public:
 
     const namespace_ &path() const { return ns_; }
 
-    std::string full_name(bool relative) const override
+    std::string full_name(bool /*relative*/) const override
     {
         return name_and_ns();
     }

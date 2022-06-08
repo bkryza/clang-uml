@@ -40,10 +40,10 @@ that you have the following dependencies installed:
 
 ```bash
 # Ubuntu
-apt install ccache cmake libyaml-cpp-dev libfmt-dev libspdlog-dev clang-12 libclang-12-dev libclang-cpp12-dev
+apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
 
 # macos
-brew install ccache cmake llvm fmt spdlog yaml-cpp
+brew install ccache cmake llvm yaml-cpp
 ```
 
 Then proceed with building the sources:

@@ -262,7 +262,6 @@ parse_unexposed_template_params(const std::string &params,
 
     std::vector<template_parameter> res;
 
-    int nested_template_level{0};
     auto it = params.begin();
 
     std::string type{};

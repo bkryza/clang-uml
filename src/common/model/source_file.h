@@ -72,7 +72,7 @@ public:
 
     const filesystem_path &path() const { return path_; }
 
-    std::string full_name(bool relative) const override
+    std::string full_name(bool /*relative*/) const override
     {
         return (path_ | name()).to_string();
     }

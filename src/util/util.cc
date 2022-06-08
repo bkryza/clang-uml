@@ -109,7 +109,7 @@ std::vector<std::string> split(std::string str, std::string_view delimiter)
         result.push_back(str);
     else
         while (str.size()) {
-            int index = str.find(delimiter);
+            auto index = str.find(delimiter);
             if (index != std::string::npos) {
                 result.push_back(str.substr(0, index));
                 str = str.substr(index + delimiter.size());

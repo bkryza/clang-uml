@@ -42,7 +42,7 @@ public:
 
     std::string name() const { return name_; }
 
-    virtual std::string full_name(bool relative) const { return name(); }
+    virtual std::string full_name(bool /*relative*/) const { return name(); }
 
     std::vector<relationship> &relationships();
 

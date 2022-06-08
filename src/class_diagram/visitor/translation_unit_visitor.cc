@@ -139,7 +139,7 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 
                 auto &cls = static_cast<const cppast::cpp_class &>(e);
                 if (cppast::get_definition(ctx.entity_index(), cls)) {
-                    auto &clsdef = static_cast<const cppast::cpp_class &>(
+                    const auto &clsdef = static_cast<const cppast::cpp_class &>(
                         cppast::get_definition(ctx.entity_index(), cls)
                             .value());
                     if (&cls != &clsdef) {
@@ -862,7 +862,7 @@ void translation_unit_visitor::process_field(
     if (m.skip())
         return;
 
-    auto &tr = cx::util::unreferenced(cppast::remove_cv(mv.type()));
+    const auto &tr = cx::util::unreferenced(cppast::remove_cv(mv.type()));
 
     auto tr_declaration = cppast::to_string(tr);
 
@@ -901,10 +901,10 @@ void translation_unit_visitor::process_field(
         !template_instantiation_added_as_aggregation &&
         (tr.kind() != cppast::cpp_type_kind::builtin_t) &&
         (tr.kind() != cppast::cpp_type_kind::template_parameter_t)) {
-        const auto &ttt = resolve_alias(mv.type());
-
         found_relationships_t relationships;
-        auto found = find_relationships(ttt, relationships);
+
+        const auto &unaliased_type = resolve_alias(mv.type());
+        find_relationships(unaliased_type, relationships);
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
@@ -995,7 +995,8 @@ void translation_unit_visitor::process_method(
     if (m.skip())
         return;
 
-    for (auto &param : mf.parameters())
+    const auto params = mf.parameters();
+    for (auto &param : params)
         process_function_parameter(param, m, c);
 
     LOG_DBG("Adding method: {}", m.name());
@@ -1040,11 +1041,13 @@ void translation_unit_visitor::process_template_method(
         return;
 
     std::set<std::string> template_parameter_names;
-    for (const auto &template_parameter : mf.parameters()) {
+    const auto template_params = mf.parameters();
+    for (const auto &template_parameter : template_params) {
         template_parameter_names.emplace(template_parameter.name());
     }
 
-    for (auto &param : mf.function().parameters())
+    const auto params = mf.function().parameters();
+    for (auto &param : params)
         process_function_parameter(param, m, c, template_parameter_names);
 
     LOG_DBG("Adding template method: {}", m.name());
@@ -1229,6 +1232,9 @@ void translation_unit_visitor::
     auto &template_instantiation_type =
         static_cast<const cppast::cpp_template_instantiation_type &>(t);
 
+    const auto &full_name =
+        cx::util::full_name(cppast::remove_cv(t), ctx.entity_index(), false);
+
     if (template_instantiation_type.primary_template()
             .get(ctx.entity_index())
             .size()) {
@@ -1241,8 +1247,8 @@ void translation_unit_visitor::
             LOG_DBG("Processing template method argument exposed "
                     "parameters...");
 
-            for (const auto &template_argument :
-                template_instantiation_type.arguments().value()) {
+            const auto targs = template_instantiation_type.arguments();
+            for (const auto &template_argument : targs.value()) {
                 if (!template_argument.type().has_value())
                     continue;
 
@@ -1272,18 +1278,18 @@ void translation_unit_visitor::
         }
 
         if (template_is_not_instantiation) {
+            relationship rr{relationship_t::kDependency, full_name};
+
             LOG_DBG("Template is not an instantiation - "
                     "only adding reference to template {}",
-                cx::util::full_name(
-                    cppast::remove_cv(t), ctx.entity_index(), false));
-            relationship rr{relationship_t::kDependency,
-                cx::util::full_name(
-                    cppast::remove_cv(t), ctx.entity_index(), false)};
+                full_name);
+
             LOG_DBG("Adding field template dependency relationship "
                     "{} {} {} "
                     ": {}",
                 rr.destination(), common::model::to_string(rr.type()),
                 c.full_name(), rr.label());
+
             c.add_relationship(std::move(rr));
         }
         else {
@@ -1350,9 +1356,9 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
 {
     // Only process friends to other classes or class templates
     if (!f.entity() ||
-        (f.entity().value().kind() != cppast::cpp_entity_kind::class_t) &&
+        ((f.entity().value().kind() != cppast::cpp_entity_kind::class_t) &&
             (f.entity().value().kind() !=
-                cppast::cpp_entity_kind::class_template_t))
+                cppast::cpp_entity_kind::class_template_t)))
         return;
 
     relationship r{relationship_t::kFriendship, "",
@@ -1384,11 +1390,11 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
                 f.entity().value());
             const auto &class_ = ft.class_();
             auto scope = cppast::cpp_scope_name(type_safe::ref(ft));
-            if (ft.class_().user_data() == nullptr) {
+            if (class_.user_data() == nullptr) {
                 spdlog::warn(
                     "Empty user data in friend class template: {}, {}, {}",
                     ft.name(),
-                    fmt::ptr(reinterpret_cast<const void *>(&ft.class_())),
+                    fmt::ptr(reinterpret_cast<const void *>(&class_)),
                     scope.name());
                 return;
             }
@@ -1483,8 +1489,6 @@ bool translation_unit_visitor::find_relationships_in_template_instantiation(
     assert(tinst.arguments().has_value());
     assert(tinst.arguments().value().size() > 0u);
 
-    [[maybe_unused]] const auto args_count = tinst.arguments().value().size();
-
     const auto args = tinst.arguments().value();
 
     const auto [ns, base_name] = cx::util::split_ns(fn);
@@ -1542,7 +1546,8 @@ bool translation_unit_visitor::find_relationships_in_user_defined_type(
     const std::string &fn, relationship_t &relationship_type,
     const cppast::cpp_type &t) const
 {
-    bool found;
+    bool found{false};
+
     LOG_DBG("Finding relationships in user defined type: {} | {}",
         cppast::to_string(t_), cppast::to_string(t_.canonical()));
 
@@ -1715,7 +1720,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         // to the variadic tuple
         auto has_variadic_params = false;
 
-        for (const auto &targ : t.arguments().value()) {
+        const auto targs = t.arguments().value();
+        for (const auto &targ : targs) {
             template_parameter ct;
             if (targ.type()) {
                 build_template_instantiation_process_type_argument(
@@ -1821,14 +1827,16 @@ void translation_unit_visitor::
     build_template_instantiation_process_expression_argument(
         const cppast::cpp_template_argument &targ, template_parameter &ct) const
 {
-    const auto &exp = targ.expression().value();
-    if (exp.kind() == cppast::cpp_expression_kind::literal_t)
+    const auto exp = targ.expression();
+    if (exp.value().kind() == cppast::cpp_expression_kind::literal_t)
         ct.set_type(
-            static_cast<const cppast::cpp_literal_expression &>(exp).value());
-    else if (exp.kind() == cppast::cpp_expression_kind::unexposed_t)
-        ct.set_type(static_cast<const cppast::cpp_unexposed_expression &>(exp)
-                        .expression()
-                        .as_string());
+            static_cast<const cppast::cpp_literal_expression &>(exp.value())
+                .value());
+    else if (exp.value().kind() == cppast::cpp_expression_kind::unexposed_t)
+        ct.set_type(
+            static_cast<const cppast::cpp_unexposed_expression &>(exp.value())
+                .expression()
+                .as_string());
 
     LOG_DBG("Template argument is an expression {}", ct.name());
 }
@@ -1939,8 +1947,6 @@ void translation_unit_visitor::
     else if (template_argument_kind == cppast::cpp_type_kind::function_t) {
         const auto &function_argument =
             static_cast<const cppast::cpp_function_type &>(targ_type);
-
-        const auto &rt = function_argument.return_type();
 
         // Search for relationships in argument return type
         // TODO...

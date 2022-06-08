@@ -26,10 +26,10 @@ relationship::relationship(relationship_t type, const std::string &destination,
     const std::string &multiplicity_destination)
     : type_{type}
     , destination_{destination}
-    , access_{access}
-    , label_{label}
     , multiplicity_source_{multiplicity_source}
     , multiplicity_destination_{multiplicity_destination}
+    , label_{label}
+    , access_{access}
 {
 }
 

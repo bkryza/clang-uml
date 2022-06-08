@@ -19,7 +19,6 @@
 #include "template_parameter.h"
 #include "common/model/enums.h"
 #include <common/model/namespace.h>
-#include <fmt/format.h>
 
 namespace clanguml::class_diagram::model {
 

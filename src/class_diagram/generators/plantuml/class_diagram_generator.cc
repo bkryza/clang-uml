@@ -250,6 +250,7 @@ void generator::generate_relationships(
 
     std::stringstream all_relations_str;
     std::set<std::string> unique_relations;
+
     for (const auto &r : c.relationships()) {
         if (!m_model.should_include(r.type()))
             continue;
@@ -450,8 +451,6 @@ void generator::generate(const package &p, std::ostream &ostr) const
 void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
-    const auto &uns = m_config.using_namespace();
-
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get())) {
             // TODO: add option - generate_empty_packages

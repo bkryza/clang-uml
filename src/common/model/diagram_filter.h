@@ -131,8 +131,8 @@ struct edge_traversal_filter : public filter_visitor {
     edge_traversal_filter(filter_t type, relationship_t relationship,
         std::vector<std::string> roots, bool forward = false)
         : filter_visitor{type}
-        , relationship_{relationship}
         , roots_{roots}
+        , relationship_{relationship}
         , forward_{forward}
     {
     }

@@ -90,31 +90,31 @@ filter_visitor::filter_visitor(filter_t type)
 }
 
 tvl::value_t filter_visitor::match(
-    const diagram &d, const common::model::element &e) const
+    const diagram & /*d*/, const common::model::element & /*e*/) const
 {
     return {};
 }
 
 tvl::value_t filter_visitor::match(
-    const diagram &d, const common::model::relationship_t &r) const
+    const diagram & /*d*/, const common::model::relationship_t & /*r*/) const
 {
     return {};
 }
 
 tvl::value_t filter_visitor::match(
-    const diagram &d, const common::model::access_t &a) const
+    const diagram & /*d*/, const common::model::access_t & /*a*/) const
 {
     return {};
 }
 
 tvl::value_t filter_visitor::match(
-    const diagram &d, const common::model::namespace_ &ns) const
+    const diagram & /*d*/, const common::model::namespace_ & /*ns*/) const
 {
     return {};
 }
 
 tvl::value_t filter_visitor::match(
-    const diagram &d, const common::model::source_file &f) const
+    const diagram & /*d*/, const common::model::source_file & /*f*/) const
 {
     return {};
 }
@@ -160,7 +160,7 @@ namespace_filter::namespace_filter(
 }
 
 tvl::value_t namespace_filter::match(
-    const diagram &d, const namespace_ &ns) const
+    const diagram & /*d*/, const namespace_ &ns) const
 {
     if (ns.is_empty())
         return {};
@@ -169,7 +169,8 @@ tvl::value_t namespace_filter::match(
         [&ns](const auto &nsit) { return ns.starts_with(nsit) || ns == nsit; });
 }
 
-tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
+tvl::value_t namespace_filter::match(
+    const diagram & /*d*/, const element &e) const
 {
     if (dynamic_cast<const package *>(&e) != nullptr) {
         return tvl::any_of(
@@ -193,7 +194,8 @@ element_filter::element_filter(filter_t type, std::vector<std::string> elements)
 {
 }
 
-tvl::value_t element_filter::match(const diagram &d, const element &e) const
+tvl::value_t element_filter::match(
+    const diagram & /*d*/, const element &e) const
 {
     return tvl::any_of(elements_.begin(), elements_.end(),
         [&e](const auto &el) { return e.full_name(false) == el; });
@@ -253,7 +255,7 @@ relationship_filter::relationship_filter(
 }
 
 tvl::value_t relationship_filter::match(
-    const diagram &d, const relationship_t &r) const
+    const diagram & /*d*/, const relationship_t &r) const
 {
     return tvl::any_of(relationships_.begin(), relationships_.end(),
         [&r](const auto &rel) { return r == rel; });
@@ -265,7 +267,8 @@ access_filter::access_filter(filter_t type, std::vector<access_t> access)
 {
 }
 
-tvl::value_t access_filter::match(const diagram &d, const access_t &a) const
+tvl::value_t access_filter::match(
+    const diagram & /*d*/, const access_t &a) const
 {
     return tvl::any_of(access_.begin(), access_.end(),
         [&a](const auto &access) { return a == access; });
@@ -349,7 +352,7 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
 }
 
 tvl::value_t paths_filter::match(
-    const diagram &d, const common::model::source_file &p) const
+    const diagram & /*d*/, const common::model::source_file &p) const
 {
     if (paths_.empty()) {
         return {};
