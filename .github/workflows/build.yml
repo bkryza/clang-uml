@@ -20,7 +20,7 @@ jobs:
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
     - name: Build and unit test
       run: |
-        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" make test
+        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" make test
     - name: Run coverage
       run: |
         lcov -c -d debug -o coverage.info
