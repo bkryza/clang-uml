@@ -119,12 +119,13 @@ std::shared_ptr<decorator> note::from_string(std::string_view c)
     return res;
 }
 
-std::shared_ptr<decorator> skip::from_string(std::string_view c)
+std::shared_ptr<decorator> skip::from_string(std::string_view /*c*/)
 {
     return std::make_shared<skip>();
 }
 
-std::shared_ptr<decorator> skip_relationship::from_string(std::string_view c)
+std::shared_ptr<decorator> skip_relationship::from_string(
+    std::string_view /*c*/)
 {
     return std::make_shared<skip_relationship>();
 }

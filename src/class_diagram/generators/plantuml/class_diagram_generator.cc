@@ -450,8 +450,6 @@ void generator::generate(const package &p, std::ostream &ostr) const
 void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
-    const auto &uns = m_config.using_namespace();
-
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get())) {
             // TODO: add option - generate_empty_packages

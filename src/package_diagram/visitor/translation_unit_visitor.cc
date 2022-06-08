@@ -215,34 +215,26 @@ void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
                 LOG_DBG("========== Visiting '{}' - {}",
                     cx::util::full_name(ctx.get_namespace(), e),
                     cppast::to_string(e.kind()));
-
-                auto &at = static_cast<const cppast::cpp_alias_template &>(e);
             }
         });
 }
 
 void translation_unit_visitor::process_class_declaration(
     const cppast::cpp_class &cls,
-    type_safe::optional_ref<const cppast::cpp_template_specialization> tspec)
+    type_safe::optional_ref<
+        const cppast::cpp_template_specialization> /*tspec*/)
 {
     auto current_package = ctx.get_current_package();
 
     if (!current_package)
         return;
 
-    cppast::cpp_access_specifier_kind last_access_specifier =
-        cppast::cpp_access_specifier_kind::cpp_private;
-
     std::vector<std::pair<std::string, relationship_t>> relationships;
 
     // Process class elements
     for (auto &child : cls) {
         auto name = child.name();
-        if (child.kind() == cppast::cpp_entity_kind::access_specifier_t) {
-            auto &as = static_cast<const cppast::cpp_access_specifier &>(child);
-            last_access_specifier = as.access_specifier();
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
+        if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
             auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
             find_relationships(
                 mv.type(), relationships, relationship_t::kDependency);

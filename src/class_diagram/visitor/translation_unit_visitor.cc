@@ -901,10 +901,10 @@ void translation_unit_visitor::process_field(
         !template_instantiation_added_as_aggregation &&
         (tr.kind() != cppast::cpp_type_kind::builtin_t) &&
         (tr.kind() != cppast::cpp_type_kind::template_parameter_t)) {
-        const auto &ttt = resolve_alias(mv.type());
-
         found_relationships_t relationships;
-        auto found = find_relationships(ttt, relationships);
+
+        const auto &unaliased_type = resolve_alias(mv.type());
+        find_relationships(unaliased_type, relationships);
 
         for (const auto &[type, relationship_type] : relationships) {
             if (relationship_type != relationship_t::kNone) {
@@ -1350,9 +1350,9 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
 {
     // Only process friends to other classes or class templates
     if (!f.entity() ||
-        (f.entity().value().kind() != cppast::cpp_entity_kind::class_t) &&
+        ((f.entity().value().kind() != cppast::cpp_entity_kind::class_t) &&
             (f.entity().value().kind() !=
-                cppast::cpp_entity_kind::class_template_t))
+                cppast::cpp_entity_kind::class_template_t)))
         return;
 
     relationship r{relationship_t::kFriendship, "",
@@ -1384,11 +1384,11 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
                 f.entity().value());
             const auto &class_ = ft.class_();
             auto scope = cppast::cpp_scope_name(type_safe::ref(ft));
-            if (ft.class_().user_data() == nullptr) {
+            if (class_.user_data() == nullptr) {
                 spdlog::warn(
                     "Empty user data in friend class template: {}, {}, {}",
                     ft.name(),
-                    fmt::ptr(reinterpret_cast<const void *>(&ft.class_())),
+                    fmt::ptr(reinterpret_cast<const void *>(&class_)),
                     scope.name());
                 return;
             }
@@ -1939,8 +1939,6 @@ void translation_unit_visitor::
     else if (template_argument_kind == cppast::cpp_type_kind::function_t) {
         const auto &function_argument =
             static_cast<const cppast::cpp_function_type &>(targ_type);
-
-        const auto &rt = function_argument.return_type();
 
         // Search for relationships in argument return type
         // TODO...

@@ -56,11 +56,11 @@ public:
     friend bool operator==(const relationship &l, const relationship &r);
 
 private:
-    relationship_t type_{relationship_t::kAssociation};
+    relationship_t type_;
     std::string destination_;
     std::string multiplicity_source_;
     std::string multiplicity_destination_;
     std::string label_;
-    access_t access_{access_t::kPublic};
+    access_t access_;
 };
 }

@@ -29,7 +29,7 @@ common::model::diagram_t diagram::type() const
 }
 
 type_safe::optional_ref<const common::model::diagram_element> diagram::get(
-    const std::string &full_name) const
+    const std::string & /*full_name*/) const
 {
     return {};
 }

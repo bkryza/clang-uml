@@ -46,7 +46,8 @@ set(LLVM_PREFERRED_VERSION 12.0.0)
 # to use custom LLVM version
 find_package(LibClang REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${LIBCLANG_CXXFLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 ${LIBCLANG_CXXFLAGS}")
+
 message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # Thirdparty sources
