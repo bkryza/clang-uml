@@ -73,17 +73,17 @@ target_link_libraries(test_util
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    spdlog::spdlog clang-umllib cppast)
+    clang-umllib cppast)
 
 add_executable(test_model
-        ${CLANG_UML_TEST_MODEL_SRC}
-        ${CLANG_UML_TEST_MODEL_HEADER})
+    ${CLANG_UML_TEST_MODEL_SRC}
+    ${CLANG_UML_TEST_MODEL_HEADER})
 
 target_link_libraries(test_model
-        PRIVATE
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
-        spdlog::spdlog clang-umllib cppast)
+    PRIVATE
+    ${LIBCLANG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+    clang-umllib cppast)
 
 add_executable(test_decorator_parser
     ${CLANG_UML_TEST_DECORATOR_PARSER_SRC}
@@ -93,37 +93,37 @@ target_link_libraries(test_decorator_parser
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    spdlog::spdlog clang-umllib cppast)
+    clang-umllib cppast)
 
 add_executable(test_config
-        ${CLANG_UML_TEST_CONFIG_SRC}
-        ${CLANG_UML_TEST_CONFIG_HEADER})
+    ${CLANG_UML_TEST_CONFIG_SRC}
+    ${CLANG_UML_TEST_CONFIG_HEADER})
 
 target_link_libraries(test_config
-        PRIVATE
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
-        spdlog::spdlog clang-umllib cppast)
+    PRIVATE
+    ${LIBCLANG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+    clang-umllib cppast)
 
 add_executable(test_filters
-        ${CLANG_UML_TEST_FILTERS_SRC}
-        ${CLANG_UML_TEST_FILTERS_HEADER})
+    ${CLANG_UML_TEST_FILTERS_SRC}
+    ${CLANG_UML_TEST_FILTERS_HEADER})
 
 target_link_libraries(test_filters
-        PRIVATE
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
-        spdlog::spdlog clang-umllib cppast)
+    PRIVATE
+    ${LIBCLANG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+    clang-umllib cppast)
 
 add_executable(test_thread_pool_executor
-        ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC}
-        ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_HEADER})
+    ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC}
+    ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_HEADER})
 
 target_link_libraries(test_thread_pool_executor
-        PRIVATE
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
-        spdlog::spdlog clang-umllib cppast)
+    PRIVATE
+    ${LIBCLANG_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
+    clang-umllib cppast)
 
 add_executable(test_cases
     ${CLANG_UML_TEST_CASES_SRC}
@@ -133,7 +133,7 @@ target_link_libraries(test_cases
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    spdlog::spdlog clang-umllib cppast)
+    clang-umllib cppast)
 
 foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
     file(RELATIVE_PATH
