@@ -56,6 +56,16 @@ std::string get_process_output(const std::string &command)
     return result;
 }
 
+std::string get_env(const std::string &name)
+{
+    const char *value = std::getenv(name.c_str());
+
+    if (value == nullptr)
+        return {};
+
+    return std::string{value};
+}
+
 bool is_git_repository()
 {
 #if defined(_WIN32) || defined(_WIN64)
@@ -84,6 +94,11 @@ std::string get_git_commit()
 
 std::string get_git_toplevel_dir()
 {
+    const auto env_toplevel_dir = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
+
+    if (!env_toplevel_dir.empty())
+        return env_toplevel_dir;
+
     return trim(get_process_output("git rev-parse --show-toplevel"));
 }
 
