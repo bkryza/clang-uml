@@ -1,0 +1,19 @@
+Source: clang-uml
+Maintainer: Bartek Kryza <bkryza@gmail.com>
+Section: devel
+Priority: optional
+Build-Depends: debhelper, make, gcc, g++, cmake, libyaml-cpp-dev, clang, libclang-dev, libclang-cpp-dev
+Standards-Version: 4.3.0
+Vcs-Browser: https://github.com/bkryza/clang-uml
+Vcs-Git: https://github.com/bkryza/clang-uml.git
+Homepage: https://github.com/bkryza/clang-uml
+
+Package: clang-uml
+Architecture: any
+#Multi-Arch: same
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Automatic C++ UML diagram generator based on Clang.
+ .
+ This package provides the clang-uml binary.
