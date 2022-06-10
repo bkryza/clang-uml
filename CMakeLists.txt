@@ -75,9 +75,7 @@ target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppa
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
 install(
-        FILES
-        # add include after DESTINATION, then it works
-        DESTINATION include ${CMAKE_INSTALL_INCLUDEDIR}
+        TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 # Enable testing via CTest
