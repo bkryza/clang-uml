@@ -26,12 +26,15 @@ LLVM_CONFIG_PATH ?=
 CMAKE_CXX_FLAGS ?=
 CMAKE_EXE_LINKER_FLAGS ?=
 
+GIT_VERSION	?= $(shell git describe --tags --always --abbrev=7)
+
 .PHONY: clean
 clean:
 	rm -rf debug release
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
+		-DGIT_VERSION=$(GIT_VERSION) \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
@@ -40,6 +43,7 @@ debug/CMakeLists.txt:
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
+		-DGIT_VERSION=$(GIT_VERSION) \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \

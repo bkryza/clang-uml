@@ -21,8 +21,8 @@
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
-
 #include "util/util.h"
+#include "version.h"
 
 #include <cli11/CLI11.hpp>
 #include <cppast/libclang_parser.hpp>
@@ -37,6 +37,8 @@
 
 using namespace clanguml;
 using config::config;
+
+void print_version();
 
 void print_diagrams_list(const clanguml::config::config &cfg);
 
@@ -55,6 +57,7 @@ int main(int argc, const char *argv[])
     std::vector<std::string> diagram_names{};
     std::optional<std::string> output_directory;
     unsigned int thread_count{0};
+    bool show_version{false};
     bool verbose{false};
     bool list_diagrams{false};
 
@@ -68,11 +71,17 @@ int main(int argc, const char *argv[])
         "Override output directory specified in config file");
     app.add_option("-t,--thread-count", thread_count,
         "Thread pool size (0 = hardware concurrency)");
+    app.add_flag("-V,--version", show_version, "Print version and exit");
     app.add_flag("-v,--verbose", verbose, "Verbose logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
 
     CLI11_PARSE(app, argc, argv);
+
+    if (show_version) {
+        print_version();
+        return 0;
+    }
 
     clanguml::util::setup_logging(verbose);
 
@@ -221,6 +230,15 @@ bool check_output_directory(const std::string &dir)
     }
 
     return true;
+}
+
+void print_version()
+{
+    std::cout << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
+    std::cout << "Copyright (C) 2021-2022 Bartek Kryza <bkryza@gmail.com>"
+              << '\n';
+    std::cout << "Built with libclang: "
+              << clanguml::version::CLANG_UML_LIBCLANG_VERSION << std::endl;
 }
 
 void print_diagrams_list(const clanguml::config::config &cfg)
