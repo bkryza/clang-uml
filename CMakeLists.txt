@@ -8,8 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 set(CLANG_UML_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -78,14 +76,15 @@ list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
-install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
 target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib)
 
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
-install(
-        TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+include(GNUInstallDirs)
+
+install(TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 # Enable testing via CTest
 enable_testing()
