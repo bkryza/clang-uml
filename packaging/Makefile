@@ -17,7 +17,7 @@
 SHELL := /bin/bash
 .ONESHELL:
 
-.PHONY: download deb clean
+.PHONY: download deb clean conda
 
 NAME ?= clang-uml
 REBUILD ?= 1
@@ -31,6 +31,8 @@ TAR_EXT ?= gz
 build_dir = _BUILD/$(NAME)/$(OS)/$(DIST)
 
 VERSION	?= $(shell git describe --tags --always --abbrev=7)
+COMMIT ?= $(shell git rev-parse HEAD)
+BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 #
 # Replace mustache template variable in all files in directory recursively,
@@ -41,6 +43,9 @@ define subst_template_dir
         find $(3) -type f -exec sed -i "s/{{$(1)}}/$(2)/g" {} \;
 endef
 
+define subst_conda_meta_yaml
+        find $(3) -name meta.yaml -exec sed -i "s/{{$(1)}}/$(2)/g" {} \;
+endef
 
 deb:
 		rm -rf $(build_dir)
@@ -67,3 +72,13 @@ deb:
 		debuild -S -sa -us -d -k$(GPG_KEY) #--source-option=--include-binaries --source-option=--include-removal --source-option=-isession
 		# BUILD LOCALLY BINARY PACKAGE
 		#debuild -us -uc #--source-option=--include-binaries --source-option=--include-removal --source-option=-isession
+
+conda:
+		mkdir -p _BUILD/conda
+		git-archive-all --prefix=clang-uml-$(VERSION)/ _BUILD/conda/clang-uml-$(VERSION).tar.$(TAR_EXT)
+		cp conda/meta.yaml.in conda/meta.yaml
+		$(call subst_conda_meta_yaml,PKG_VERSION,${VERSION},conda)
+		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/conda\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
+		$(call subst_conda_meta_yaml,GIT_COMMIT,${COMMIT},conda)
+		$(call subst_conda_meta_yaml,GIT_BRANCH,${BRANCH},conda)
+		conda build conda
