@@ -68,6 +68,11 @@ std::string get_env(const std::string &name)
 
 bool is_git_repository()
 {
+    const auto env = get_env("CLANGUML_GIT_COMMIT");
+
+    if (!env.empty())
+        return true;
+
 #if defined(_WIN32) || defined(_WIN64)
     return false;
 #else
@@ -79,25 +84,40 @@ bool is_git_repository()
 
 std::string get_git_branch()
 {
+    const auto env = get_env("CLANGUML_GIT_BRANCH");
+
+    if (!env.empty())
+        return env;
+
     return trim(get_process_output("git rev-parse --abbrev-ref HEAD"));
 }
 
 std::string get_git_revision()
 {
+    const auto env = get_env("CLANGUML_GIT_REVISION");
+
+    if (!env.empty())
+        return env;
+
     return trim(get_process_output("git describe --tags --always"));
 }
 
 std::string get_git_commit()
 {
+    const auto env = get_env("CLANGUML_GIT_COMMIT");
+
+    if (!env.empty())
+        return env;
+
     return trim(get_process_output("git rev-parse HEAD"));
 }
 
 std::string get_git_toplevel_dir()
 {
-    const auto env_toplevel_dir = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
+    const auto env = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
 
-    if (!env_toplevel_dir.empty())
-        return env_toplevel_dir;
+    if (!env.empty())
+        return env;
 
     return trim(get_process_output("git rev-parse --show-toplevel"));
 }
