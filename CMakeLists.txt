@@ -24,6 +24,8 @@ if(LLVM_CONFIG_PATH)
     set(LLVM_CONFIG_BINARY ${LLVM_CONFIG_PATH})
 endif(LLVM_CONFIG_PATH)
 
+find_package(Threads REQUIRED)
+
 message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp REQUIRED)
 
