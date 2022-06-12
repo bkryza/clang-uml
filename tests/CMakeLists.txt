@@ -73,7 +73,7 @@ target_link_libraries(test_util
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_model
     ${CLANG_UML_TEST_MODEL_SRC}
@@ -83,7 +83,7 @@ target_link_libraries(test_model
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_decorator_parser
     ${CLANG_UML_TEST_DECORATOR_PARSER_SRC}
@@ -93,7 +93,7 @@ target_link_libraries(test_decorator_parser
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_config
     ${CLANG_UML_TEST_CONFIG_SRC}
@@ -103,7 +103,7 @@ target_link_libraries(test_config
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_filters
     ${CLANG_UML_TEST_FILTERS_SRC}
@@ -113,7 +113,7 @@ target_link_libraries(test_filters
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_thread_pool_executor
     ${CLANG_UML_TEST_THREAD_POOL_EXECUTOR_SRC}
@@ -123,7 +123,7 @@ target_link_libraries(test_thread_pool_executor
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 add_executable(test_cases
     ${CLANG_UML_TEST_CASES_SRC}
@@ -133,7 +133,7 @@ target_link_libraries(test_cases
     PRIVATE
     ${LIBCLANG_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    clang-umllib cppast Threads::Threads)
+    clang-umllib cppast ${CMAKE_THREAD_LIBS_INIT})
 
 foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
     file(RELATIVE_PATH
