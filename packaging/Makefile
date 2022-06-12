@@ -28,7 +28,7 @@ OS ?= ubuntu
 DIST ?= focal
 TAR_EXT ?= gz
 
-build_dir = _BUILD/$(NAME)/$(OS)/$(DIST)
+build_dir = _BUILD/$(OS)/$(DIST)
 
 VERSION	?= $(shell git describe --tags --always --abbrev=7)
 COMMIT ?= $(shell git rev-parse HEAD)
@@ -57,7 +57,7 @@ deb:
 		mkdir $(NAME)-$(VERSION)
 		echo "Extracting source archive..."
 		tar xf $(NAME)-$(VERSION).tar.$(TAR_EXT) -C $(NAME)-$(VERSION) --strip-components 1
-		cp -R ../../../../debian $(NAME)-$(VERSION)/debian
+		cp -R ../../../debian $(NAME)-$(VERSION)/debian
 		cd $(NAME)-$(VERSION)
 		$(call subst_template_dir,DATETIME,$(shell date -R),debian)
 		$(call subst_template_dir,OS,${OS},debian)
@@ -68,6 +68,7 @@ deb:
 		$(call subst_template_dir,MAINTAINER_NAME,${MAINTAINER_NAME},debian)
 		$(call subst_template_dir,MAINTAINER_EMAIL,${MAINTAINER_EMAIL},debian)
 		mk-origtargz ../$(NAME)-$(VERSION).tar.$(TAR_EXT)
+		cp debian/control.$(DIST) debian/control
 		# BUILD SOURCE PACKAGE FOR LAUNCHPAD
 		debuild -S -sa -us -d -k$(GPG_KEY) #--source-option=--include-binaries --source-option=--include-removal --source-option=-isession
 		# BUILD LOCALLY BINARY PACKAGE
