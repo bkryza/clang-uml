@@ -7,12 +7,8 @@
 
 ```bash
 cd packaging
-make DIST=bionic REBUILD=1 deb
-make DIST=focal REBUILD=1 deb
-make DIST=jammy REBUILD=1 deb
-
-cd _BUILD/ubuntu/bionic
-dput ppa:bkryza/clang-uml *.changes
+make DIST=focal deb
+make DIST=jammy deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes

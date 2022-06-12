@@ -33,6 +33,7 @@ build_dir = _BUILD/$(OS)/$(DIST)
 VERSION	?= $(shell git describe --tags --always --abbrev=7)
 COMMIT ?= $(shell git rev-parse HEAD)
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
+SOURCE_ARCHIVE ?= $(NAME)-$(VERSION).tar.$(TAR_EXT)
 
 #
 # Replace mustache template variable in all files in directory recursively,
@@ -47,16 +48,27 @@ define subst_conda_meta_yaml
         find $(3) -name meta.yaml -exec sed -i "s/{{$(1)}}/$(2)/g" {} \;
 endef
 
-deb:
+
+
+_BUILD/$(SOURCE_ARCHIVE):
+		echo "############################"
+		echo "Creating source archive from latest commit $(COMMIT) - $(SOURCE_ARCHIVE)"
+		echo "############################"
+		mkdir -p $(build_dir)
+		git-archive-all --prefix=$(NAME)-$(VERSION)/ _BUILD/$(SOURCE_ARCHIVE)
+
+deb: _BUILD/$(SOURCE_ARCHIVE)
+		echo "############################"
+		echo "Creating deb source package for $(OS) $(DIST)"
+		echo "Creating directory: ", $(build_dir)/$(NAME)-$(VERSION)
+		echo "Extracting source archive..."
+		echo "############################"
 		rm -rf $(build_dir)
 		mkdir -p $(build_dir)
-		git-archive-all --prefix=clang-uml-$(VERSION)/ $(build_dir)/clang-uml-$(VERSION).tar.$(TAR_EXT)
+		cp _BUILD/$(SOURCE_ARCHIVE) $(build_dir)
 		cd $(build_dir)
-		echo "Creating archive from current source"
-		echo "Creating directory: ", $(NAME)-$(VERSION)
-		mkdir $(NAME)-$(VERSION)
-		echo "Extracting source archive..."
-		tar xf $(NAME)-$(VERSION).tar.$(TAR_EXT) -C $(NAME)-$(VERSION) --strip-components 1
+		mkdir -p $(NAME)-$(VERSION)
+		tar xf $(SOURCE_ARCHIVE) -C $(NAME)-$(VERSION) --strip-components 1
 		cp -R ../../../debian $(NAME)-$(VERSION)/debian
 		cd $(NAME)-$(VERSION)
 		$(call subst_template_dir,DATETIME,$(shell date -R),debian)
@@ -67,16 +79,21 @@ deb:
 		$(call subst_template_dir,DISTRIBUTION,${DIST},debian)
 		$(call subst_template_dir,MAINTAINER_NAME,${MAINTAINER_NAME},debian)
 		$(call subst_template_dir,MAINTAINER_EMAIL,${MAINTAINER_EMAIL},debian)
+		$(call subst_template_dir,GIT_COMMIT,${COMMIT},debian)
+		$(call subst_template_dir,GIT_BRANCH,${BRANCH},debian)
 		mk-origtargz ../$(NAME)-$(VERSION).tar.$(TAR_EXT)
 		cp debian/control.$(DIST) debian/control
 		# BUILD SOURCE PACKAGE FOR LAUNCHPAD
-		debuild -S -sa -us -d -k$(GPG_KEY) #--source-option=--include-binaries --source-option=--include-removal --source-option=-isession
+		debuild -S -sa -us -d -k$(GPG_KEY)
 		# BUILD LOCALLY BINARY PACKAGE
-		#debuild -us -uc #--source-option=--include-binaries --source-option=--include-removal --source-option=-isession
+		# debuild -us -uc
 
-conda:
+conda: _BUILD/$(SOURCE_ARCHIVE)
+		echo "############################"
+		echo "Creating conda archive from source file $(SOURCE_ARCHIVE)"
+		echo "############################"
 		mkdir -p _BUILD/conda
-		git-archive-all --prefix=clang-uml-$(VERSION)/ _BUILD/conda/clang-uml-$(VERSION).tar.$(TAR_EXT)
+		cp $(SOURCE_ARCHIVE) _BUILD/conda/
 		cp conda/meta.yaml.in conda/meta.yaml
 		$(call subst_conda_meta_yaml,PKG_VERSION,${VERSION},conda)
 		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/conda\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
