@@ -79,7 +79,7 @@ list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib Threads::Threads)
 
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
