@@ -55,7 +55,7 @@ generate_sequence_diagram(cppast::libclang_compilation_database &db,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
 
-    return std::move(model);
+    return model;
 }
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
@@ -73,7 +73,7 @@ std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
         diagram_config, diagram_visitor>(
         db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
 
-    return std::move(model);
+    return model;
 }
 
 std::unique_ptr<clanguml::package_diagram::model::diagram>
