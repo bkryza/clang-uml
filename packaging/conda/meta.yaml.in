@@ -1,0 +1,46 @@
+{% set name = "clang-uml" %}
+{% set version = "{{PKG_VERSION}}" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version|replace('-', '.') }}
+
+source:
+  url: "{{PKG_SOURCE}}"
+
+build:
+  binary_relocation: true
+  script_env:
+    - PKG_VERSION
+    - GIT_VERSION={{PKG_VERSION}}
+    - CLANGUML_GIT_REVISION={{PKG_VERSION}}
+    - CLANGUML_GIT_BRANCH={{GIT_BRANCH}}
+    - CLANGUML_GIT_COMMIT={{GIT_COMMIT}}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - conda-forge::pkg-config
+    - conda-forge::yaml-cpp 0.7.0
+    - conda-forge::clangdev 14.0.4
+    - conda-forge::libclang 14.0.4
+    - conda-forge::cmake
+    - conda-forge::git
+    - conda-forge::make # [unix]
+  run:
+    - conda-forge::yaml-cpp 0.7.0
+    - conda-forge::libclang 14.0.4
+
+test:
+  commands:
+    - $PREFIX/bin/clang-uml --version
+
+about:
+  home: https://github.com/bkryza/clang-uml
+  license: Apache 2.0
+  summary: clang-uml is an automatic C++ UML diagram generator based on Clang.
+
+extra:
+  recipe-maintainers:
+    - bkryza

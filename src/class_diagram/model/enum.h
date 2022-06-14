@@ -30,9 +30,9 @@ public:
     enum_(const common::model::namespace_ &using_namespaces);
 
     enum_(const enum_ &) = delete;
-    enum_(enum_ &&) = default;
+    enum_(enum_ &&) = delete;
     enum_ &operator=(const enum_ &) = delete;
-    enum_ &operator=(enum_ &&) = default;
+    enum_ &operator=(enum_ &&) = delete;
 
     // TODO: Do we need this?
     friend bool operator==(const enum_ &l, const enum_ &r);

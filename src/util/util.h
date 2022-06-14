@@ -62,6 +62,8 @@ void setup_logging(bool verbose);
 
 std::string get_process_output(const std::string &command);
 
+std::string get_env(const std::string &name);
+
 bool is_git_repository();
 
 std::string get_git_branch();

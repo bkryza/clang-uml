@@ -1,6 +1,6 @@
 #include <algorithm>
+#include <array>
 #include <map>
-#include <numeric>
 #include <string>
 #include <variant>
 #include <vector>

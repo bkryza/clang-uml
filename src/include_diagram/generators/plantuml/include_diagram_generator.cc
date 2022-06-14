@@ -46,11 +46,11 @@ void generator::generate_relationships(
     else {
         util::for_each_if(
             f.relationships(),
-            [this, &f](const auto &r) {
+            [this](const auto &r) {
                 return m_model.should_include(r.type()) &&
                     util::contains(m_generated_aliases, r.destination());
             },
-            [this, &f, &ostr](const auto &r) {
+            [&f, &ostr](const auto &r) {
                 ostr << f.alias() << " "
                      << plantuml_common::to_plantuml(r.type(), r.style()) << " "
                      << r.destination() << '\n';

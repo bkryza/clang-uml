@@ -58,6 +58,8 @@ class filter_visitor {
 public:
     filter_visitor(filter_t type);
 
+    virtual ~filter_visitor() = default;
+
     virtual tvl::value_t match(
         const diagram &d, const common::model::element &e) const;
 
@@ -86,6 +88,8 @@ struct anyof_filter : public filter_visitor {
     anyof_filter(
         filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
 
+    virtual ~anyof_filter() = default;
+
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
 
@@ -99,6 +103,8 @@ private:
 struct namespace_filter : public filter_visitor {
     namespace_filter(filter_t type, std::vector<namespace_> namespaces);
 
+    virtual ~namespace_filter() = default;
+
     tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
@@ -110,6 +116,8 @@ private:
 struct element_filter : public filter_visitor {
     element_filter(filter_t type, std::vector<std::string> elements);
 
+    virtual ~element_filter() = default;
+
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
@@ -118,6 +126,8 @@ private:
 
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<std::string> roots);
+
+    virtual ~subclass_filter() = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -136,6 +146,8 @@ struct edge_traversal_filter : public filter_visitor {
         , forward_{forward}
     {
     }
+
+    virtual ~edge_traversal_filter() = default;
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
@@ -203,7 +215,7 @@ private:
         decltype(matching_elements_) parents;
 
         util::for_each(
-            matching_elements_, [this, &cd, &parents](const auto &element) {
+            matching_elements_, [&cd, &parents](const auto &element) {
                 auto parent = detail::get<ElementT, DiagramT>(
                     cd, element.get().path().to_string());
 
@@ -269,6 +281,8 @@ struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);
 
+    virtual ~relationship_filter() = default;
+
     tvl::value_t match(
         const diagram &d, const relationship_t &r) const override;
 
@@ -279,6 +293,8 @@ private:
 struct access_filter : public filter_visitor {
     access_filter(filter_t type, std::vector<access_t> access);
 
+    virtual ~access_filter() = default;
+
     tvl::value_t match(const diagram &d, const access_t &a) const override;
 
 private:
@@ -287,6 +303,8 @@ private:
 
 struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<std::string> context);
+
+    virtual ~context_filter() = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
@@ -297,6 +315,8 @@ private:
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
         std::vector<std::filesystem::path> p);
+
+    virtual ~paths_filter() = default;
 
     tvl::value_t match(
         const diagram &d, const common::model::source_file &r) const override;

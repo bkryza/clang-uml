@@ -2,6 +2,7 @@
 
 [![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/bkryza/clang-uml/releases)
 
 `clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
 and package diagram generator, driven by YAML configuration files. The main idea behind the
@@ -34,17 +35,34 @@ To see what `clang-uml` can do so far, checkout the diagrams generated for unit 
 
 ## Installation
 
+### Distribution packages
+
+#### Ubuntu
+```bash
+sudo add-apt-repository ppa:bkryza/clang-uml
+sudo apt update
+sudo apt install clang-uml
+```
+
+#### Conda
+```bash
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+conda install -c bkryza/label/clang-uml clang-uml
+```
+
 ### Building from source
-Currently, the only method to install `clang-uml` is from source. First make sure
-that you have the following dependencies installed:
+First make sure that you have the following dependencies installed:
 
 ```bash
-# Ubuntu
+# Ubuntu (clang version will vary depending on Ubuntu version)
 apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
 
 # macos
 brew install ccache cmake llvm yaml-cpp
 ```
+> Please note that on macos this tool is not fully functional, i.e. several test cases fail. The build instructions are
+> provided for development purposes only.
 
 Then proceed with building the sources:
 

@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+export CLANGUML_GIT_TOPLEVEL_DIR=$(CURDIR)
+export CLANGUML_GIT_REVISION={{VERSION}}
+export CLANGUML_GIT_BRANCH={{GIT_BRANCH}}
+export CLANGUML_GIT_COMMIT={{GIT_COMMIT}}
+
+override_dh_auto_configure:
+	dh_auto_configure --buildsystem=cmake -- -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX=/usr -DGIT_VERSION={{VERSION}}
+
+
+%:
+	dh $@

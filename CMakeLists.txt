@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 project(clang-uml)
 
@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
@@ -17,11 +17,16 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 
 option(LLVM_CONFIG_PATH "Path to custom llvm-config executable")
 
+option(GIT_VERSION "clang-uml version" "0.1.0")
+
 if(LLVM_CONFIG_PATH)
     message(STATUS "Using llvm-config from ${LLVM_CONFIG_PATH}")
     set(LIBCLANG_LLVM_CONFIG_EXECUTABLE ${LLVM_CONFIG_PATH})
     set(LLVM_CONFIG_BINARY ${LLVM_CONFIG_PATH})
 endif(LLVM_CONFIG_PATH)
+
+#set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp REQUIRED)
@@ -45,6 +50,10 @@ find_package(LLVM REQUIRED CONFIG)
 set(CLANG_INCLUDE_DIRS "llvm/clang/include")
 set(CLANG_LIBS clang)
 
+# Configure executable version
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/src/version)
+configure_file(src/version.h.in ${PROJECT_BINARY_DIR}/src/version/version.h)
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     execute_process(COMMAND gcc --print-file-name=include
                     OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -61,6 +70,8 @@ include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/include)
 include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/include)
 include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/external/debug_assert)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
+include_directories(${PROJECT_BINARY_DIR}/src/version)
+
 
 file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
 set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
@@ -69,16 +80,15 @@ list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
-install(TARGETS clang-uml DESTINATION ${CLANG_UML_INSTALL_BIN_DIR})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib)
+target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib Threads::Threads)
 
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
-install(
-        FILES
-        # add include after DESTINATION, then it works
-        DESTINATION include ${CMAKE_INSTALL_INCLUDEDIR}
-)
+include(GNUInstallDirs)
+
+install(TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 # Enable testing via CTest
 enable_testing()

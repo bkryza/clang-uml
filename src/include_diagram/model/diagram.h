@@ -43,7 +43,7 @@ public:
     common::model::diagram_t type() const override;
 
     type_safe::optional_ref<const common::model::diagram_element> get(
-        const std::string &full_name) const;
+        const std::string &full_name) const override;
 
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 

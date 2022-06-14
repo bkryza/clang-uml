@@ -41,11 +41,11 @@ public:
 
     path(const path &right) { path_ = right.path_; }
 
-    path &operator=(const path &right) noexcept = default;
+    path &operator=(const path &right) = default;
 
     path(path &&right) noexcept = default;
 
-    path &operator=(path &&right) noexcept = default;
+    path &operator=(path &&right) = default;
 
     path(std::initializer_list<std::string> ns)
     {
