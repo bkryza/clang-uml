@@ -12,6 +12,7 @@ build:
   binary_relocation: true
   script_env:
     - PKG_VERSION
+    - GIT_VERSION={{PKG_VERSION}}
     - CLANGUML_GIT_REVISION={{PKG_VERSION}}
     - CLANGUML_GIT_BRANCH={{GIT_BRANCH}}
     - CLANGUML_GIT_COMMIT={{GIT_COMMIT}}
