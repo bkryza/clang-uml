@@ -92,11 +92,13 @@ conda: _BUILD/$(SOURCE_ARCHIVE)
 		echo "############################"
 		echo "Creating conda archive from source file $(SOURCE_ARCHIVE)"
 		echo "############################"
+		conda config --add channels conda-forge
+		conda config --set channel_priority strict
 		mkdir -p _BUILD/conda
 		cp $(SOURCE_ARCHIVE) _BUILD/conda/
 		cp conda/meta.yaml.in conda/meta.yaml
 		$(call subst_conda_meta_yaml,PKG_VERSION,${VERSION},conda)
-		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/conda\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
+		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
 		$(call subst_conda_meta_yaml,GIT_COMMIT,${COMMIT},conda)
 		$(call subst_conda_meta_yaml,GIT_BRANCH,${BRANCH},conda)
 		conda build conda
