@@ -34,6 +34,7 @@ VERSION	?= $(shell git describe --tags --always --abbrev=7)
 COMMIT ?= $(shell git rev-parse HEAD)
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 SOURCE_ARCHIVE ?= $(NAME)-$(VERSION).tar.$(TAR_EXT)
+CONDA_TOKEN ?=
 
 #
 # Replace mustache template variable in all files in directory recursively,
@@ -95,10 +96,10 @@ conda: _BUILD/$(SOURCE_ARCHIVE)
 		conda config --add channels conda-forge
 		conda config --set channel_priority strict
 		mkdir -p _BUILD/conda
-		cp $(SOURCE_ARCHIVE) _BUILD/conda/
+		cp _BUILD/$(SOURCE_ARCHIVE) _BUILD/conda/
 		cp conda/meta.yaml.in conda/meta.yaml
 		$(call subst_conda_meta_yaml,PKG_VERSION,${VERSION},conda)
 		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
 		$(call subst_conda_meta_yaml,GIT_COMMIT,${COMMIT},conda)
 		$(call subst_conda_meta_yaml,GIT_BRANCH,${BRANCH},conda)
-		conda build conda
+		conda build --user bkryza --token $(CONDA_TOKEN) conda
