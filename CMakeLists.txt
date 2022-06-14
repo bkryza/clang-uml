@@ -16,6 +16,7 @@ set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 
 option(LLVM_CONFIG_PATH "Path to custom llvm-config executable")
+
 option(GIT_VERSION "clang-uml version" "0.1.0")
 
 if(LLVM_CONFIG_PATH)
