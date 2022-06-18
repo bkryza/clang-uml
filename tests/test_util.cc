@@ -33,6 +33,11 @@ TEST_CASE("Test split", "[unit-test]")
 
     CHECK(split("", " ") == C{""});
     CHECK(split("ABCD", " ") == C{"ABCD"});
+    CHECK(split("::A", "::") == C{"A"});
+    CHECK(split("::", "::") == C{});
+    CHECK(split("A::", "::") == C{"A"});
+    CHECK(split(":1", ":") == C{"1"});
+    CHECK(split(":1", ":", false) == C{"", "1"});
 
     CHECK(split("std::vector::detail", "::") == C{"std", "vector", "detail"});
 
