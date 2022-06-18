@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="253px" preserveAspectRatio="none" style="width:614px;height:253px;" version="1.1" viewBox="0 0 614 253" width="614px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="fstti7geo5gkt" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f1osyq82bfmi6x" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,46 +9,46 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L5" target="_top" title="@uml{style[#green]}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L5" xlink:show="new" xlink:title="@uml{style[#green]}" xlink:type="simple">
-      <polygon fill="#008000" filter="url(#fstti7geo5gkt)" points="22,24,39,24,46,46.2969,592,46.2969,592,241,22,241,22,24" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L5" target="_top" title="@uml{style[#green]}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L5" xlink:show="new" xlink:title="@uml{style[#green]}" xlink:type="simple">
+      <polygon fill="#008000" filter="url(#f1osyq82bfmi6x)" points="22,24,39,24,46,46.2969,592,46.2969,592,241,22,241,22,24" style="stroke: #000000; stroke-width: 1.5;"/>
       <line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="46" y1="46.2969" y2="46.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="11" x="26" y="38.9951">A</text>
     </a>
-    <path d="M225,186 L225,211.1328 L335,211.1328 L335,196 L325,186 L225,186 " fill="#FBFB77" filter="url(#fstti7geo5gkt)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M225,186 L225,211.1328 L335,211.1328 L335,196 L325,186 L225,186 " fill="#FBFB77" filter="url(#f1osyq82bfmi6x)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M325,186 L325,196 L335,196 L325,186 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="89" x="231" y="203.0669">Package AAA.</text>
-    <path d="M466,73 L466,98.1328 L576,98.1328 L576,83 L566,73 L466,73 " fill="#FBFB77" filter="url(#fstti7geo5gkt)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M466,73 L466,98.1328 L576,98.1328 L576,83 L566,73 L466,73 " fill="#FBFB77" filter="url(#f1osyq82bfmi6x)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M566,73 L566,83 L576,83 L566,73 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="89" x="472" y="90.0669">Package BBB.</text>
-    <path d="M38,186 L38,211.1328 L190,211.1328 L190,196 L180,186 L38,186 " fill="#FBFB77" filter="url(#fstti7geo5gkt)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M38,186 L38,211.1328 L190,211.1328 L190,196 L180,186 L38,186 " fill="#FBFB77" filter="url(#f1osyq82bfmi6x)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M180,186 L180,196 L190,196 L180,186 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="131" x="44" y="203.0669">CCCC package note.</text>
-    <path d="M214.5,73 L214.5,98.1328 L345.5,98.1328 L345.5,83 L335.5,73 L214.5,73 " fill="#FBFB77" filter="url(#fstti7geo5gkt)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M214.5,73 L214.5,98.1328 L345.5,98.1328 L345.5,83 L335.5,73 L214.5,73 " fill="#FBFB77" filter="url(#f1osyq82bfmi6x)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M335.5,73 L335.5,83 L345.5,83 L335.5,73 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="110" x="220.5" y="90.0669">We skipped DDD.</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L8" target="_top" title="@uml{note[ bottom ] Package AAA.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L8" xlink:show="new" xlink:title="@uml{note[ bottom ] Package AAA.}" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fstti7geo5gkt)" points="126.5,59,165.5,59,172.5,81.2969,179.5,81.2969,179.5,111.5938,126.5,111.5938,126.5,59" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L8" target="_top" title="@uml{note[ bottom ] Package AAA.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L8" xlink:show="new" xlink:title="@uml{note[ bottom ] Package AAA.}" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1osyq82bfmi6x)" points="126.5,59,165.5,59,172.5,81.2969,179.5,81.2969,179.5,111.5938,126.5,111.5938,126.5,59" style="stroke: #000000; stroke-width: 1.5;"/>
       <line style="stroke: #000000; stroke-width: 1.5;" x1="126.5" x2="172.5" y1="81.2969" y2="81.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="33" x="130.5" y="73.9951">AAA</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L12" target="_top" title="\uml{note[right] Package BBB.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L12" xlink:show="new" xlink:title="\uml{note[right] Package BBB.}" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fstti7geo5gkt)" points="381,59,417,59,424,81.2969,431,81.2969,431,111.5938,381,111.5938,381,59" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L12" target="_top" title="\uml{note[right] Package BBB.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L12" xlink:show="new" xlink:title="\uml{note[right] Package BBB.}" xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1osyq82bfmi6x)" points="381,59,417,59,424,81.2969,431,81.2969,431,111.5938,381,111.5938,381,59" style="stroke: #000000; stroke-width: 1.5;"/>
       <line style="stroke: #000000; stroke-width: 1.5;" x1="381" x2="424" y1="81.2969" y2="81.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="30" x="385" y="73.9951">BBB</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L18" target="_top" title="@uml{note:t30004_package[bottom] CCCC package note.} This is package CCC." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L18" xlink:show="new" xlink:title="@uml{note:t30004_package[bottom] CCCC package note.} This is package CCC." xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fstti7geo5gkt)" points="38.5,59,77.5,59,84.5,81.2969,91.5,81.2969,91.5,111.5938,38.5,111.5938,38.5,59" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L18" target="_top" title="@uml{note:t30004_package[bottom] CCCC package note.} This is package CCC." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L18" xlink:show="new" xlink:title="@uml{note:t30004_package[bottom] CCCC package note.} This is package CCC." xlink:type="simple">
+      <polygon fill="#FFFFFF" filter="url(#f1osyq82bfmi6x)" points="38.5,59,77.5,59,84.5,81.2969,91.5,81.2969,91.5,111.5938,38.5,111.5938,38.5,59" style="stroke: #000000; stroke-width: 1.5;"/>
       <line style="stroke: #000000; stroke-width: 1.5;" x1="38.5" x2="84.5" y1="81.2969" y2="81.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="33" x="42.5" y="73.9951">CCC</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L27" target="_top" title="@uml{style[#pink;line:red;line.bold;text:red]} \uml{note[top] We skipped DDD.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/01a93211bbdc66f2440d455a709c80e3b8e0531f/tests/t30004/t30004.cc#L27" xlink:show="new" xlink:title="@uml{style[#pink;line:red;line.bold;text:red]} \uml{note[top] We skipped DDD.}" xlink:type="simple">
-      <polygon fill="#FFC0CB" filter="url(#fstti7geo5gkt)" points="370.5,172,403.5,172,410.5,194.2969,417.5,194.2969,417.5,224.5938,370.5,224.5938,370.5,172" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L27" target="_top" title="@uml{style[#pink;line:red;line.bold;text:red]} \uml{note[top] We skipped DDD.}" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/fd8f13135252262867013036fec10e8cc75b3b0b/tests/t30004/t30004.cc#L27" xlink:show="new" xlink:title="@uml{style[#pink;line:red;line.bold;text:red]} \uml{note[top] We skipped DDD.}" xlink:type="simple">
+      <polygon fill="#FFC0CB" filter="url(#f1osyq82bfmi6x)" points="370.5,172,403.5,172,410.5,194.2969,417.5,194.2969,417.5,224.5938,370.5,224.5938,370.5,172" style="stroke: #000000; stroke-width: 1.5;"/>
       <line style="stroke: #000000; stroke-width: 1.5;" x1="370.5" x2="410.5" y1="194.2969" y2="194.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="27" x="374.5" y="186.9951">EEE</text>
     </a>
-    <path d="M179.62,109.77 C206.24,133.04 246.1,167.87 266.66,185.84 " fill="none" id="C_0000002189-GMN790" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <path d="M431.16,85.5 C442.74,85.5 454.32,85.5 465.9,85.5 " fill="none" id="C_0000002190-GMN794" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <path d="M76.36,112.24 C86.6,135.43 101.18,168.45 108.84,185.8 " fill="none" id="C_0000002191-GMN798" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <path d="M292.2,98.38 C310.81,116.5 346.63,151.38 370.43,174.55 " fill="none" id="GMN802-C_0000002193" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <path d="M179.62,109.77 C206.24,133.04 246.1,167.87 266.66,185.84 " fill="none" id="C_0000002230-GMN810" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <path d="M431.16,85.5 C442.74,85.5 454.32,85.5 465.9,85.5 " fill="none" id="C_0000002231-GMN814" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <path d="M76.36,112.24 C86.6,135.43 101.18,168.45 108.84,185.8 " fill="none" id="C_0000002232-GMN818" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <path d="M292.2,98.38 C310.81,116.5 346.63,151.38 370.43,174.55 " fill="none" id="GMN822-C_0000002234" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
   </g>
 </svg>
