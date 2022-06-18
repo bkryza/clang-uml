@@ -596,7 +596,7 @@ void translation_unit_visitor::process_class_bases(
         class_parent cp;
         auto ns = cx::util::ns(base.type(), ctx.entity_index());
         common::model::namespace_ base_ns;
-        if(!ns.empty())
+        if (!ns.empty())
             base_ns = common::model::namespace_{ns};
         base_ns = base_ns | common::model::namespace_{base.name()}.name();
         cp.set_name(base_ns.to_string());
@@ -811,7 +811,7 @@ bool translation_unit_visitor::add_nested_template_relationships(
         template_argument.find_nested_relationships(nested_relationships,
             relationship_type,
             [&d = ctx.diagram()](const std::string &full_name) {
-                if(full_name.empty())
+                if (full_name.empty())
                     return false;
                 auto [ns, name] = cx::util::split_ns(full_name);
                 return d.should_include(ns, name);

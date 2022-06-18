@@ -1,22 +1,30 @@
-class A { };
+class A {
+};
 
-class AA { };
+class AA {
+};
 
 namespace ns1 {
 
-class A { };
+class A {
+};
 
 namespace ns2 {
 
-class A { };
+class A {
+};
 
-class B : public A { };
+class B : public A {
+};
 
-class C : public ns1::A { };
+class C : public ns1::A {
+};
 
-class D : public ns1::ns2::A { };
+class D : public ns1::ns2::A {
+};
 
-class E : public ::A { };
+class E : public ::A {
+};
 
 class R {
 public:

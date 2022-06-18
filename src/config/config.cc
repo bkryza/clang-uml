@@ -217,8 +217,8 @@ void get_option<clanguml::common::model::namespace_>(const Node &node,
         if (node[option.name].Type() == NodeType::Scalar)
             option.set({node[option.name].template as<std::string>()});
         else if (node[option.name].Type() == NodeType::Sequence)
-            option.set({
-                node[option.name].template as<std::vector<std::string>>()[0]});
+            option.set(
+                {node[option.name].template as<std::vector<std::string>>()[0]});
         else
             throw std::runtime_error("Invalid using_namespace value");
     }
