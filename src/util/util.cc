@@ -136,7 +136,8 @@ std::string rtrim(const std::string &s)
 
 std::string trim(const std::string &s) { return rtrim(ltrim(s)); }
 
-std::vector<std::string> split(std::string str, std::string_view delimiter)
+std::vector<std::string> split(
+    std::string str, std::string_view delimiter, bool skip_empty)
 {
     std::vector<std::string> result;
 
@@ -146,11 +147,13 @@ std::vector<std::string> split(std::string str, std::string_view delimiter)
         while (str.size()) {
             auto index = str.find(delimiter);
             if (index != std::string::npos) {
-                result.push_back(str.substr(0, index));
+                auto tok = str.substr(0, index);
+                if (!tok.empty() || !skip_empty)
+                    result.push_back(std::move(tok));
                 str = str.substr(index + delimiter.size());
             }
             else {
-                if (!str.empty())
+                if (!str.empty() || !skip_empty)
                     result.push_back(str);
                 str = "";
             }

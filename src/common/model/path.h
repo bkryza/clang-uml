@@ -31,7 +31,13 @@ public:
 
     path() = default;
 
-    path(const std::string &ns) { path_ = util::split(ns, Sep::value); }
+    explicit path(const std::string &ns)
+    {
+        if (ns.empty())
+            return;
+
+        path_ = util::split(ns, Sep::value);
+    }
 
     path(container_type::const_iterator begin,
         container_type::const_iterator end)
@@ -49,16 +55,22 @@ public:
 
     path(std::initializer_list<std::string> ns)
     {
-        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value))
+        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value)) {
             path_ = util::split(*ns.begin(), Sep::value);
+        }
+        else if ((ns.size() == 1) && ns.begin()->empty()) {
+        }
         else
             path_ = ns;
     }
 
     explicit path(const std::vector<std::string> &ns)
     {
-        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value))
+        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value)) {
             path_ = util::split(*ns.begin(), Sep::value);
+        }
+        else if ((ns.size() == 1) && ns.begin()->empty()) {
+        }
         else
             path_ = ns;
     }

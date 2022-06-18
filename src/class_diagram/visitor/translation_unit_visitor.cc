@@ -594,12 +594,12 @@ void translation_unit_visitor::process_class_bases(
 {
     for (auto &base : cls.bases()) {
         class_parent cp;
-        auto base_ns = common::model::namespace_{
-            cx::util::ns(base.type(), ctx.entity_index())};
+        auto ns = cx::util::ns(base.type(), ctx.entity_index());
+        common::model::namespace_ base_ns;
+        if(!ns.empty())
+            base_ns = common::model::namespace_{ns};
         base_ns = base_ns | common::model::namespace_{base.name()}.name();
-        cp.set_name(
-            // base_ns.relative_to(ctx.config().using_namespace()).to_string());
-            base_ns.to_string());
+        cp.set_name(base_ns.to_string());
         cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {
@@ -758,7 +758,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     auto [decorator_rtype, decorator_rmult] = member.get_relationship();
     if (decorator_rtype != relationship_t::kNone) {
         rr.set_type(decorator_rtype);
-        auto mult = util::split(decorator_rmult, ":");
+        auto mult = util::split(decorator_rmult, ":", false);
         if (mult.size() == 2) {
             rr.set_multiplicity_source(mult[0]);
             rr.set_multiplicity_destination(mult[1]);
@@ -811,6 +811,8 @@ bool translation_unit_visitor::add_nested_template_relationships(
         template_argument.find_nested_relationships(nested_relationships,
             relationship_type,
             [&d = ctx.diagram()](const std::string &full_name) {
+                if(full_name.empty())
+                    return false;
                 auto [ns, name] = cx::util::split_ns(full_name);
                 return d.should_include(ns, name);
             });
@@ -823,7 +825,7 @@ bool translation_unit_visitor::add_nested_template_relationships(
             nested_relationship.set_style(m.style_spec());
             if (decorator_rtype != relationship_t::kNone) {
                 nested_relationship.set_type(decorator_rtype);
-                auto mult = util::split(decorator_rmult, ":");
+                auto mult = util::split(decorator_rmult, ":", false);
                 if (mult.size() == 2) {
                     nested_relationship.set_multiplicity_source(mult[0]);
                     nested_relationship.set_multiplicity_destination(mult[1]);
@@ -914,7 +916,7 @@ void translation_unit_visitor::process_field(
                 auto [decorator_rtype, decorator_rmult] = m.get_relationship();
                 if (decorator_rtype != relationship_t::kNone) {
                     r.set_type(decorator_rtype);
-                    auto mult = util::split(decorator_rmult, ":");
+                    auto mult = util::split(decorator_rmult, ":", false);
                     if (mult.size() == 2) {
                         r.set_multiplicity_source(mult[0]);
                         r.set_multiplicity_destination(mult[1]);

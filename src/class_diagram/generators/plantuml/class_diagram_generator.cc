@@ -184,6 +184,11 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         try {
             destination = r.destination();
 
+            // TODO: Refactor destination to a namespace qualified entity
+            //       name
+            if (util::starts_with(destination, std::string{"::"}))
+                destination = destination.substr(2, destination.size());
+
             LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
@@ -262,6 +267,11 @@ void generator::generate_relationships(
         std::string destination;
         try {
             destination = r.destination();
+
+            // TODO: Refactor destination to a namespace qualified entity
+            //       name
+            if (util::starts_with(destination, std::string{"::"}))
+                destination = destination.substr(2, destination.size());
 
             LOG_DBG("=== Destination is: {}", destination);
 
@@ -402,7 +412,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
         // Don't generate packages from namespaces filtered out by
         // using_namespace
-        if (!uns.starts_with(p.full_name(false))) {
+        if (!uns.starts_with({p.full_name(false)})) {
             ostr << "package [" << p.name() << "] ";
             ostr << "as " << p.alias();
 
@@ -440,7 +450,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
     if (m_config.generate_packages()) {
         // Don't generate packages from namespaces filtered out by
         // using_namespace
-        if (!uns.starts_with(p.full_name(false))) {
+        if (!uns.starts_with({p.full_name(false)})) {
             ostr << "}" << '\n';
         }
     }

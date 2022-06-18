@@ -83,10 +83,12 @@ std::string get_git_toplevel_dir();
  *
  * @param str String to split
  * @param delimiter Delimiter string
+ * @param skip_empty Skip empty toks between delimiters if true
  *
  * @return Vector of string tokens.
  */
-std::vector<std::string> split(std::string str, std::string_view delimiter);
+std::vector<std::string> split(
+    std::string str, std::string_view delimiter, bool skip_empty = true);
 
 std::string join(
     const std::vector<std::string> &toks, std::string_view delimiter);
