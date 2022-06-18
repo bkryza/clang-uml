@@ -132,6 +132,9 @@ test_cases:
     - name: t00045
       title: Test case for root namespace handling
       description:
+    - name: t00046
+      title: Test case for root namespace handling with packages
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
