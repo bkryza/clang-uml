@@ -1,0 +1,10 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  {{ name }}_{{ type }}:
+    type: {{ type }}
+    glob:
+      - ../../tests/{{ name }}/{{ name }}.cc
+    include:
+      namespaces:
+        - clanguml::{{ name }}
