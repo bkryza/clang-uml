@@ -1,3 +1,6 @@
+#include <cstdint>
+#include <vector>
+
 class A {
 };
 
@@ -32,6 +35,7 @@ public:
     ns1::A *ns1_a;
     ns1::ns2::A *ns1_ns2_a;
     ::A *root_a;
+    std::vector<std::uint8_t> i;
 
     void foo(::AA &aa) { (void)aa; }
 };
