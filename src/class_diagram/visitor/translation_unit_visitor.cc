@@ -1101,7 +1101,7 @@ void translation_unit_visitor::process_constructor(
     m.is_virtual(false);
     m.is_const(false);
     m.is_defaulted(false);
-    m.is_static(true);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.set_comment(mf.comment().value());
@@ -1133,7 +1133,7 @@ void translation_unit_visitor::process_destructor(
     m.is_virtual(cppast::is_virtual(mf.virtual_info()));
     m.is_const(false);
     m.is_defaulted(false);
-    m.is_static(true);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.set_comment(mf.comment().value());
