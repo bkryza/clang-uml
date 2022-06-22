@@ -58,6 +58,12 @@ TEST_CASE("t00045", "[test-case][class]")
 
     REQUIRE_THAT(puml, IsDependency(_A("ns1::ns2::R"), _A("AA")));
 
+    REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
+    REQUIRE_THAT(
+        puml, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
+    // TODO:
+    // REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAAA<T>")));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }
