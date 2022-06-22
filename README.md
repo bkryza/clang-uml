@@ -426,7 +426,7 @@ exclude:
   namespaces:
     - clanguml::common::detail
   # and also exclude ClassF
-  exclude:
+  elements:
     - clanguml::common::ClassF
 ```
 
