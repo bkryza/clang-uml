@@ -129,6 +129,8 @@ bool is_inside_class(const cppast::cpp_entity &e)
 std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name)
 {
+    assert(!full_name.empty());
+
     auto name_before_template = ::clanguml::util::split(full_name, "<")[0];
     auto ns = common::model::namespace_{
         ::clanguml::util::split(name_before_template, "::")};

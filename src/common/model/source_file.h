@@ -52,7 +52,7 @@ public:
 
     source_file(const std::filesystem::path &p)
     {
-        set_path(p.parent_path().string());
+        set_path({p.parent_path().string()});
         set_name(p.filename());
         is_absolute_ = p.is_absolute();
     }

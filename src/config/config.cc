@@ -215,10 +215,10 @@ void get_option<clanguml::common::model::namespace_>(const Node &node,
 {
     if (node[option.name]) {
         if (node[option.name].Type() == NodeType::Scalar)
-            option.set(node[option.name].template as<std::string>());
+            option.set({node[option.name].template as<std::string>()});
         else if (node[option.name].Type() == NodeType::Sequence)
             option.set(
-                node[option.name].template as<std::vector<std::string>>()[0]);
+                {node[option.name].template as<std::vector<std::string>>()[0]});
         else
             throw std::runtime_error("Invalid using_namespace value");
     }
@@ -406,7 +406,7 @@ template <> struct convert<filter> {
             auto namespace_list =
                 node["namespaces"].as<std::vector<std::string>>();
             for (const auto &ns : namespace_list)
-                rhs.namespaces.push_back(ns);
+                rhs.namespaces.push_back({ns});
         }
 
         if (node["relationships"])

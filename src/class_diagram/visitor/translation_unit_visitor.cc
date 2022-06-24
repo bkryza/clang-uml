@@ -594,12 +594,12 @@ void translation_unit_visitor::process_class_bases(
 {
     for (auto &base : cls.bases()) {
         class_parent cp;
-        auto base_ns = common::model::namespace_{
-            cx::util::ns(base.type(), ctx.entity_index())};
+        auto ns = cx::util::ns(base.type(), ctx.entity_index());
+        common::model::namespace_ base_ns;
+        if (!ns.empty())
+            base_ns = common::model::namespace_{ns};
         base_ns = base_ns | common::model::namespace_{base.name()}.name();
-        cp.set_name(
-            // base_ns.relative_to(ctx.config().using_namespace()).to_string());
-            base_ns.to_string());
+        cp.set_name(base_ns.to_string());
         cp.is_virtual(base.is_virtual());
 
         switch (base.access_specifier()) {
@@ -758,7 +758,7 @@ bool translation_unit_visitor::process_field_with_template_instantiation(
     auto [decorator_rtype, decorator_rmult] = member.get_relationship();
     if (decorator_rtype != relationship_t::kNone) {
         rr.set_type(decorator_rtype);
-        auto mult = util::split(decorator_rmult, ":");
+        auto mult = util::split(decorator_rmult, ":", false);
         if (mult.size() == 2) {
             rr.set_multiplicity_source(mult[0]);
             rr.set_multiplicity_destination(mult[1]);
@@ -811,6 +811,8 @@ bool translation_unit_visitor::add_nested_template_relationships(
         template_argument.find_nested_relationships(nested_relationships,
             relationship_type,
             [&d = ctx.diagram()](const std::string &full_name) {
+                if (full_name.empty())
+                    return false;
                 auto [ns, name] = cx::util::split_ns(full_name);
                 return d.should_include(ns, name);
             });
@@ -823,7 +825,7 @@ bool translation_unit_visitor::add_nested_template_relationships(
             nested_relationship.set_style(m.style_spec());
             if (decorator_rtype != relationship_t::kNone) {
                 nested_relationship.set_type(decorator_rtype);
-                auto mult = util::split(decorator_rmult, ":");
+                auto mult = util::split(decorator_rmult, ":", false);
                 if (mult.size() == 2) {
                     nested_relationship.set_multiplicity_source(mult[0]);
                     nested_relationship.set_multiplicity_destination(mult[1]);
@@ -914,7 +916,7 @@ void translation_unit_visitor::process_field(
                 auto [decorator_rtype, decorator_rmult] = m.get_relationship();
                 if (decorator_rtype != relationship_t::kNone) {
                     r.set_type(decorator_rtype);
-                    auto mult = util::split(decorator_rmult, ":");
+                    auto mult = util::split(decorator_rmult, ":", false);
                     if (mult.size() == 2) {
                         r.set_multiplicity_source(mult[0]);
                         r.set_multiplicity_destination(mult[1]);
@@ -1099,7 +1101,7 @@ void translation_unit_visitor::process_constructor(
     m.is_virtual(false);
     m.is_const(false);
     m.is_defaulted(false);
-    m.is_static(true);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.set_comment(mf.comment().value());
@@ -1131,7 +1133,7 @@ void translation_unit_visitor::process_destructor(
     m.is_virtual(cppast::is_virtual(mf.virtual_info()));
     m.is_const(false);
     m.is_defaulted(false);
-    m.is_static(true);
+    m.is_static(false);
 
     if (mf.comment().has_value())
         m.set_comment(mf.comment().value());
@@ -1382,7 +1384,7 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
         r.set_destination(name);
     }
     else if (f.entity()) {
-        std::string name;
+        std::string name = f.entity().value().name();
 
         if (f.entity().value().kind() ==
             cppast::cpp_entity_kind::class_template_t) {
@@ -1409,7 +1411,17 @@ void translation_unit_visitor::process_friend(const cppast::cpp_friend &f,
                 cppast::is_templated(f.entity().value()),
                 cppast::to_string(f.entity().value().kind()));
 
-            name = cx::util::full_name(ctx.get_namespace(), f.entity().value());
+            const auto &maybe_definition =
+                cppast::get_definition(ctx.entity_index(), f.entity().value());
+
+            if (maybe_definition.has_value()) {
+                const auto &friend_class = maybe_definition.value();
+
+                auto entity_ns =
+                    common::model::namespace_{cx::util::ns(friend_class)};
+
+                name = cx::util::full_name(entity_ns, f.entity().value());
+            }
         }
 
         if (!ctx.diagram().should_include(ctx.get_namespace(), name))

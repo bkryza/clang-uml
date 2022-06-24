@@ -1,0 +1,11 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00046_class:
+    type: class
+    generate_packages: true
+    glob:
+      - ../../tests/t00046/t00046.cc
+    exclude:
+      namespaces:
+        - std

@@ -67,7 +67,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     // Don't generate packages from namespaces filtered out by
     // using_namespace
-    if (!uns.starts_with(p.full_name(false))) {
+    if (!uns.starts_with({p.full_name(false)})) {
         ostr << "package [" << p.name() << "] ";
         ostr << "as " << p.alias();
 
@@ -89,7 +89,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
             generate(dynamic_cast<const package &>(*subpackage), ostr);
     }
 
-    if (!uns.starts_with(p.full_name(false))) {
+    if (!uns.starts_with({p.full_name(false)})) {
         ostr << "}" << '\n';
     }
 
