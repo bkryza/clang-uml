@@ -1199,6 +1199,9 @@ void translation_unit_visitor::process_function_parameter(
             relationship_t::kDependency);
 
         for (const auto &[type, relationship_type] : relationships) {
+            if (type.empty())
+                continue;
+
             auto [type_ns, type_name] = cx::util::split_ns(type);
             if (ctx.diagram().should_include(type_ns, type_name) &&
                 (relationship_type != relationship_t::kNone) &&

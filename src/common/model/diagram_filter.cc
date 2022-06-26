@@ -582,6 +582,9 @@ void diagram_filter::init_filters(const config::diagram &c)
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const
 {
+    if (name.empty())
+        return false;
+
     auto [ns, n] = cx::util::split_ns(name);
 
     return should_include(ns, n);
