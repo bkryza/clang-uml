@@ -31,7 +31,8 @@ Main features supported so far include:
 * **Include graph diagram generation**
     * Show include graph for selected files
   
-To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md).
+To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md)
+and examples in [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
 ## Installation
 
