@@ -1,0 +1,1 @@
+The examples directory has been moved to a separate repository [clang-uml-examples](https://github.com/bkryza/clang-uml-examples).
