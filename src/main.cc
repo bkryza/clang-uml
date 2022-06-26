@@ -219,14 +219,13 @@ bool check_output_directory(const std::string &dir)
 
     fs::path output_dir{dir};
 
-    if (!fs::exists(output_dir)) {
-        cout << "ERROR: Output directory " << dir << " doesn't exist...\n";
+    if (fs::exists(output_dir) && !fs::is_directory(output_dir)) {
+        cout << "ERROR: " << dir << " is not a directory...\n";
         return false;
     }
 
-    if (!fs::is_directory(output_dir)) {
-        cout << "ERROR: " << dir << " is not a directory...\n";
-        return false;
+    if (!fs::exists(output_dir)) {
+        return fs::create_directories(output_dir);
     }
 
     return true;
