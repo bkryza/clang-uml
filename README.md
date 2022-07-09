@@ -30,7 +30,7 @@ Main features supported so far include:
     * Interactive links to online code to packages
 * **Include graph diagram generation**
     * Show include graph for selected files
-  
+
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md)
 and examples in [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
@@ -360,6 +360,9 @@ generates the following diagram (via PlantUML):
 ![package_diagram_example](docs/test_cases/t30003_package.svg)
 
 ### Include diagrams
+
+> In case you're looking for a simpler tool to visualize and analyze include graphs
+> checkout my other tool - [clang-include-graph](https://github.com/bkryza/clang-include-graph)
 
 #### Example
 
