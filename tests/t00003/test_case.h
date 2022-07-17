@@ -28,7 +28,7 @@ TEST_CASE("t00003", "[test-case][class]")
 
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00003_class");
     REQUIRE(model->should_include(std::string("clanguml::t00003::A")));
@@ -54,11 +54,11 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Protected>("protected_member", "int")));
     REQUIRE_THAT(puml, (IsField<Private>("private_member", "int")));
     REQUIRE_THAT(
-        puml, (IsField<Public, Static>("auto_member", "unsigned long const")));
+        puml, (IsField<Public, Static>("auto_member", "const unsigned long")));
 
-    REQUIRE_THAT(puml, (IsField<Private>("a", "int")));
-    REQUIRE_THAT(puml, (IsField<Private>("b", "int")));
-    REQUIRE_THAT(puml, (IsField<Private>("c", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("a_", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("b_", "int")));
+    REQUIRE_THAT(puml, (IsField<Private>("c_", "int")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

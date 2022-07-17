@@ -22,7 +22,10 @@
 #include "util/error.h"
 #include "util/util.h"
 
-#include <cppast/libclang_parser.hpp>
+//#include <cppast/libclang_parser.hpp>
+#include <clang/Tooling/CompilationDatabase.h>
+#include <clang/Tooling/Tooling.h>
+#include <clang/Frontend/CompilerInstance.h>
 #include <glob/glob.hpp>
 #include <inja/inja.hpp>
 
@@ -226,9 +229,75 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 }
 
 template <typename DiagramModel, typename DiagramConfig,
+    typename TranslationUnitVisitor>
+class diagram_ast_consumer : public clang::ASTConsumer {
+    TranslationUnitVisitor visitor_;
+
+public:
+    explicit diagram_ast_consumer(clang::CompilerInstance &ci,
+        DiagramModel &diagram, const DiagramConfig &config)
+        : visitor_{ci.getSourceManager(), diagram, config}
+    {
+    }
+
+    virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
+    {
+//        const auto* tud = ast_context.getTranslationUnitDecl();
+////        tud->dump();
+        visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
+    }
+};
+
+template <typename DiagramModel, typename DiagramConfig,
+    typename DiagramVisitor>
+class diagram_fronted_action : public clang::ASTFrontendAction {
+public:
+    explicit diagram_fronted_action(
+        DiagramModel &diagram, const DiagramConfig &config)
+        : diagram_{diagram}
+        , config_{config}
+    {
+    }
+    virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+        clang::CompilerInstance &CI, clang::StringRef file)
+    {
+        return std::make_unique<
+            diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
+            CI, diagram_, config_);
+    }
+
+private:
+    DiagramModel &diagram_;
+    const DiagramConfig &config_;
+};
+
+template <typename DiagramModel, typename DiagramConfig,
+    typename DiagramVisitor>
+class diagram_action_visitor_factory
+    : public clang::tooling::FrontendActionFactory {
+public:
+    explicit diagram_action_visitor_factory(
+        DiagramModel &diagram, const DiagramConfig &config)
+        : diagram_{diagram}
+        , config_{config}
+    {
+    }
+
+    std::unique_ptr<clang::FrontendAction> create() override
+    {
+        return std::make_unique<diagram_fronted_action<DiagramModel,
+            DiagramConfig, DiagramVisitor>>(diagram_, config_);
+    }
+
+private:
+    DiagramModel &diagram_;
+    const DiagramConfig &config_;
+};
+
+template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 std::unique_ptr<DiagramModel> generate(
-    const cppast::libclang_compilation_database &db, const std::string &name,
+    const clang::tooling::CompilationDatabase &db, const std::string &name,
     DiagramConfig &config, bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
@@ -247,6 +316,15 @@ std::unique_ptr<DiagramModel> generate(
             std::back_inserter(translation_units));
     }
 
+    //    DiagramVisitor visitor(db, *diagram, config);
+
+    clang::tooling::ClangTool clang_tool(db, translation_units);
+    auto action_factory =
+        std::make_unique<diagram_action_visitor_factory<DiagramModel,
+            DiagramConfig, DiagramVisitor>>(*diagram, config);
+    clang_tool.run(action_factory.get());
+
+    /*
     cppast::cpp_entity_index idx;
     auto logger =
         verbose ? cppast::default_logger() : cppast::default_quiet_logger();
@@ -258,6 +336,7 @@ std::unique_ptr<DiagramModel> generate(
     cppast::parse_files(parser, translation_units, db);
     for (auto &file : parser.files())
         ctx(file);
+    */
 
     diagram->set_complete(true);
 

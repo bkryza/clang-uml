@@ -23,11 +23,8 @@
 #include "include_diagram/model/diagram.h"
 #include "include_diagram/visitor/translation_unit_context.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <cppast/cpp_preprocessor.hpp>
-#include <cppast/visitor.hpp>
-#include <type_safe/reference.hpp>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
 #include <functional>
 #include <map>
@@ -36,28 +33,22 @@
 
 namespace clanguml::include_diagram::visitor {
 
-class translation_unit_visitor {
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    translation_unit_visitor(clang::SourceManager &sm,
         clanguml::include_diagram::model::diagram &diagram,
         const clanguml::config::include_diagram &config);
 
     void operator()(const cppast::cpp_entity &file);
 
 private:
-    void process_include_directive(
-        const cppast::cpp_include_directive &include_directive);
+    clang::SourceManager &source_manager_;
 
-    void process_source_file(const cppast::cpp_file &file);
+    // Reference to the output diagram model
+    clanguml::include_diagram::model::diagram &diagram_;
 
-    void process_external_system_header(
-        const cppast::cpp_include_directive &include_directive);
-
-    void process_internal_header(
-        const cppast::cpp_include_directive &include_directive,
-        const std::filesystem::path &include_path);
-
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    // Reference to class diagram config
+    const clanguml::config::include_diagram &config_;
 };
 }

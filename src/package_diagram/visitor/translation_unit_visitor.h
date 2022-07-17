@@ -21,17 +21,8 @@
 #include "package_diagram/model/diagram.h"
 #include "package_diagram/visitor/translation_unit_context.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <cppast/cpp_friend.hpp>
-#include <cppast/cpp_function_template.hpp>
-#include <cppast/cpp_member_function.hpp>
-#include <cppast/cpp_member_variable.hpp>
-#include <cppast/cpp_template.hpp>
-#include <cppast/cpp_template_parameter.hpp>
-#include <cppast/cpp_type.hpp>
-#include <cppast/visitor.hpp>
-#include <type_safe/reference.hpp>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
 #include <common/model/enums.h>
 #include <common/model/package.h>
@@ -42,34 +33,21 @@
 
 namespace clanguml::package_diagram::visitor {
 
-class translation_unit_visitor {
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor>{
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    translation_unit_visitor(clang::SourceManager &sm,
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
 
-    void operator()(const cppast::cpp_entity &file);
-
-    void process_class_declaration(const cppast::cpp_class &cls,
-        type_safe::optional_ref<const cppast::cpp_template_specialization>
-            tspec = nullptr);
-
-    void process_function(
-        const cppast::cpp_function &f, bool skip_return_type = false);
-
-    bool find_relationships(const cppast::cpp_type &t_,
-        std::vector<std::pair<std::string, common::model::relationship_t>>
-            &relationships,
-        common::model::relationship_t relationship_hint);
 
 private:
-    /**
-     * Try to resolve a type instance into a type referenced through an alias.
-     * If t does not represent an alias, returns t.
-     */
-    const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
+    clang::SourceManager &source_manager_;
 
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    // Reference to the output diagram model
+    clanguml::package_diagram::model::diagram &diagram_;
+
+    // Reference to class diagram config
+    const clanguml::config::package_diagram &config_;
 };
 }

@@ -27,7 +27,7 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE(diagram->include().namespaces.size() == 1);
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00004_class");
     REQUIRE(!model->should_include("std::vector"));

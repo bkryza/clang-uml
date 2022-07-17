@@ -32,7 +32,7 @@ message(STATUS "Checking for yaml-cpp...")
 find_package(yaml-cpp REQUIRED)
 
 message(STATUS "Checking for libclang...")
-set(LLVM_PREFERRED_VERSION 12.0.0)
+set(LLVM_PREFERRED_VERSION 14.0.0)
 # Add
 #   -DLLVM_CONFIG_PATH=/path/to/llvm-config
 # to use custom LLVM version
@@ -60,8 +60,18 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                     OUTPUT_VARIABLE GCC_STDDEF_INCLUDE)
     message(STATUS "FOUND GCC STDDEF INCLUDE ${GCC_STDDEF_INCLUDE}")
     include_directories(${GCC_STDDEF_INCLUDE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE} -Wno-unused-parameter ")
 endif()
+
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS_LIST})
+link_directories(/usr/lib/llvm-14/lib)
+
+include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
@@ -77,10 +87,42 @@ file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
 set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 
+set(LIBTOOLING_LIBS
+        clangFrontend
+        clangSerialization
+        clangDriver
+        clangParse
+        clangSema
+        clangAnalysis
+        clangAST
+        clangBasic
+        clangEdit
+        clangLex
+        clangTooling
+        LLVMipo
+        LLVMScalarOpts
+        LLVMInstCombine
+        LLVMTransformUtils
+        LLVMAnalysis
+        LLVMTarget
+        LLVMOption # Support
+        LLVMMCParser # MC, Support
+        LLVMMC # Object, Support
+        LLVMObject # BitReader, Core, Support
+        LLVMBitReader # Core, Support
+        LLVMCore # Support
+        LLVMSupport)
+
 add_library(clang-umllib OBJECT ${SOURCES})
 
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
-target_link_libraries(clang-uml ${LIBCLANG_LIBRARIES} ${YAML_CPP_LIBRARIES} cppast clang-umllib Threads::Threads)
+target_link_libraries(clang-uml
+        ${LIBCLANG_LIBRARIES}
+        ${YAML_CPP_LIBRARIES}
+        ${LIBTOOLING_LIBS}
+        cppast
+        clang-umllib
+        Threads::Threads)
 
 target_compile_features(clang-uml PRIVATE cxx_std_17)
 
