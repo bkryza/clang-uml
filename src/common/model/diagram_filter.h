@@ -37,21 +37,20 @@ enum filter_t { kInclusive, kExclusive };
 
 namespace detail {
 template <typename ElementT, typename DiagramT>
-const std::vector<type_safe::object_ref<const ElementT>> &view(
-    const DiagramT &d);
+const clanguml::common::reference_vector<ElementT> &view(const DiagramT &d);
 
 template <typename ElementT, typename DiagramT>
-const type_safe::optional_ref<const ElementT> get(
+const clanguml::common::optional_ref<ElementT> get(
     const DiagramT &d, const std::string &full_name);
 
-template <typename ElementT>
-std::string destination_comparator(const ElementT &e)
+template <typename ElementT> int64_t destination_comparator(const ElementT &e)
 {
-    return e.full_name(false);
+    return e.id();
 }
 
 template <>
-std::string destination_comparator(const common::model::source_file &f);
+clanguml::common::id_t destination_comparator(
+    const common::model::source_file &f);
 } // namespace detail
 
 class filter_visitor {
@@ -177,7 +176,7 @@ struct edge_traversal_filter : public filter_visitor {
         // Now check if the e element is contained in the calculated set
         return std::any_of(matching_elements_.begin(), matching_elements_.end(),
             [&e](const auto &te) {
-                return te->full_name(false) == e.full_name(false);
+                return te.get().full_name(false) == e.full_name(false);
             });
     }
 
@@ -192,12 +191,12 @@ private:
             //  Check if any of its relationships of type relationship_
             //  points to an element already in the matching_elements_
             //  set
-            for (const auto &rel : from_el->relationships()) {
+            for (const auto &rel : from_el.get().relationships()) {
                 // Consider only if connected by one of specified relationships
                 if (util::contains(relationships, rel.type())) {
                     for (const auto &to_el : to) {
                         if (rel.destination() ==
-                            detail::destination_comparator(*to_el)) {
+                            detail::destination_comparator(to_el.get())) {
                             const auto &to_add = forward_ ? to_el : from_el;
                             if (matching_elements_.insert(to_add).second)
                                 added_new_element = true;
@@ -220,9 +219,9 @@ private:
                     cd, element.get().path().to_string());
 
                 while (parent.has_value()) {
-                    parents.emplace(type_safe::ref(parent.value()));
+                    parents.emplace(std::ref(parent.value()));
                     parent = detail::get<ElementT, DiagramT>(
-                        cd, parent.value().path().to_string());
+                        cd, parent.value().get().path().to_string());
                 }
             });
 
@@ -272,8 +271,7 @@ private:
     std::vector<std::string> roots_;
     relationship_t relationship_;
     mutable bool initialized_{false};
-    mutable std::unordered_set<type_safe::object_ref<const ElementT, false>>
-        matching_elements_;
+    mutable clanguml::common::reference_set<ElementT> matching_elements_;
     bool forward_;
 };
 

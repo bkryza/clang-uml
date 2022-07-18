@@ -28,7 +28,7 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kInclude;
 }
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
+common::optional_ref<common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
     return get_file(full_name);
@@ -63,7 +63,7 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     add_element(p, std::move(f));
 }
 
-type_safe::optional_ref<const common::model::source_file> diagram::get_file(
+common::optional_ref<common::model::source_file> diagram::get_file(
     const std::string &name) const
 {
     for (const auto &p : files_) {
@@ -72,7 +72,7 @@ type_safe::optional_ref<const common::model::source_file> diagram::get_file(
         }
     }
 
-    return type_safe::nullopt;
+    return {};
 }
 
 std::string diagram::to_alias(const std::string &full_name) const
@@ -94,8 +94,7 @@ std::string diagram::to_alias(const std::string &full_name) const
     return source_file.value().alias();
 }
 
-const std::vector<
-    type_safe::object_ref<const common::model::source_file, false>> &
+const common::reference_vector<const common::model::source_file> &
 diagram::files() const
 {
     return files_;

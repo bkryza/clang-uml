@@ -32,9 +32,15 @@ namespace clanguml::common::model {
 
 class diagram_element : public decorated_element {
 public:
+    using id_t = int64_t;
+
     diagram_element();
 
     virtual ~diagram_element() = default;
+
+    id_t id() const;
+
+    void set_id(id_t id);
 
     std::string alias() const;
 
@@ -59,10 +65,8 @@ public:
 
     virtual inja::json context() const;
 
-protected:
-    const uint64_t m_id{0};
-
 private:
+    id_t id_;
     std::string name_;
     std::vector<relationship> relationships_;
 

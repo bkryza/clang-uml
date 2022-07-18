@@ -246,7 +246,7 @@ void generator::generate_relationships(
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    const auto &uns = m_config.using_namespace();
+//    const auto &uns = m_config.using_namespace();
 
     //
     // Process relationships
@@ -264,14 +264,14 @@ void generator::generate_relationships(
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::stringstream relstr;
-        std::string destination;
+        clanguml::common::id_t destination;
         try {
             destination = r.destination();
 
             // TODO: Refactor destination to a namespace qualified entity
             //       name
-            if (util::starts_with(destination, std::string{"::"}))
-                destination = destination.substr(2, destination.size());
+//            if (util::starts_with(destination, std::string{"::"}))
+//                destination = destination.substr(2, destination.size());
 
             LOG_DBG("=== Destination is: {}", destination);
 
@@ -284,8 +284,7 @@ void generator::generate_relationships(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            auto target_alias = m_model.to_alias(
-                m_config.using_namespace().relative(destination));
+            auto target_alias = m_model.to_alias(destination);
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())
@@ -321,7 +320,7 @@ void generator::generate_relationships(
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                auto target_alias = m_model.to_alias(uns.relative(b.name()));
+                auto target_alias = m_model.to_alias(b.id());
 
                 if (m_generated_aliases.find(target_alias) ==
                     m_generated_aliases.end())
@@ -369,13 +368,12 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        std::string destination;
+        clanguml::common::id_t destination;
         std::stringstream relstr;
         try {
             destination = r.destination();
 
-            auto target_alias = m_model.to_alias(
-                m_config.using_namespace().relative(destination));
+            auto target_alias = m_model.to_alias(destination);
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())

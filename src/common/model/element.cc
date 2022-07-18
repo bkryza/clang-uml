@@ -29,10 +29,6 @@ element::element(const namespace_ &using_namespace)
 {
 }
 
-element::id_t element::id() const { return id_; }
-
-void element::set_id(element::id_t id) { id_ = id; }
-
 void element::set_using_namespaces(const namespace_ &un)
 {
     using_namespace_ = un;

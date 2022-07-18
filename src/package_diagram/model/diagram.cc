@@ -28,7 +28,8 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kPackage;
 }
 
-const std::vector<type_safe::object_ref<const common::model::package>> &
+const std::vector<
+    std::reference_wrapper<const clanguml::common::model::package>> &
 diagram::packages() const
 {
     return packages_;
@@ -45,8 +46,8 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
     add_element(ns, std::move(p));
 }
 
-type_safe::optional_ref<const common::model::package> diagram::get_package(
-    const std::string &name) const
+std::optional<std::reference_wrapper<const common::model::package>>
+diagram::get_package(const std::string &name) const
 {
     for (const auto &p : packages_) {
         auto p_full_name = p.get().full_name(false);
@@ -55,11 +56,12 @@ type_safe::optional_ref<const common::model::package> diagram::get_package(
         }
     }
 
-    return type_safe::nullopt;
+    return {};
 }
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
-    const std::string &full_name) const
+std::optional<
+    std::reference_wrapper<const clanguml::common::model::diagram_element>>
+diagram::get(const std::string &full_name) const
 {
     return get_package(full_name);
 }

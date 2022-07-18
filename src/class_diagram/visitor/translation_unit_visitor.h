@@ -17,28 +17,14 @@
  */
 #pragma once
 
+#include "class_diagram/model/class.h"
 #include "class_diagram/model/diagram.h"
-//#include "class_diagram/visitor/translation_unit_context.h"
 #include "common/model/enums.h"
 #include "config/config.h"
 
-//#include <clang-c/CXCompilationDatabase.h>
-//#include <clang-c/Index.h>
-//#include <cppast/cpp_friend.hpp>
-//#include <cppast/cpp_function_template.hpp>
-//#include <cppast/cpp_member_function.hpp>
-//#include <cppast/cpp_member_variable.hpp>
-//#include <cppast/cpp_template.hpp>
-//#include <cppast/cpp_template_parameter.hpp>
-//#include <cppast/cpp_type.hpp>
-//#include <cppast/visitor.hpp>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
-#include <class_diagram/model/class.h>
-#include <common/model/enums.h>
-#include <type_safe/reference.hpp>
-//#include <cppast/cpp_alias_template.hpp>
-//#include <cppast/cpp_type_alias.hpp>
+
 #include <deque>
 #include <functional>
 #include <map>
@@ -48,7 +34,7 @@
 namespace clanguml::class_diagram::visitor {
 
 using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::element::id_t,
+    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
         common::model::relationship_t>>;
 
 class translation_unit_visitor
@@ -62,15 +48,25 @@ public:
 
     virtual bool VisitEnumDecl(clang::EnumDecl *e);
 
+    virtual bool VisitClassTemplateDecl(
+        clang::ClassTemplateDecl *class_template_declaration);
+
     //    virtual bool VisitVarDecl(clang::VarDecl *variable_declaration);
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
     //    void operator()();
 
 private:
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    process_class_declaration(clang::CXXRecordDecl *cls);
+
     void process_class_bases(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c) const;
 
     void process_class_children(const clang::CXXRecordDecl *cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    bool process_template_parameters(
+        const clang::ClassTemplateDecl &template_declaration,
         clanguml::class_diagram::model::class_ &c);
 
     void process_record_containment(const clang::TagDecl &record,
@@ -90,7 +86,8 @@ private:
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names = {});
 
-    bool find_relationships(const clang::QualType &type, &,
+    bool find_relationships(const clang::QualType &type,
+        found_relationships_t &,
         clanguml::common::model::relationship_t relationship_hint);
 
     void add_relationships(clanguml::class_diagram::model::class_ &c,
@@ -100,6 +97,10 @@ private:
 
     void set_source_location(const clang::Decl &decl,
         clanguml::common::model::source_location &element);
+
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    build_template_instantiation(const clang::TemplateSpecializationType& template_type,
+        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     template <typename ClangDecl>
     void process_comment(

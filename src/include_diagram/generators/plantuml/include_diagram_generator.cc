@@ -37,25 +37,25 @@ void generator::generate_relationships(
 
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    if (f.type() == common::model::source_file_t::kDirectory) {
-        util::for_each(f, [this, &ostr](const auto &file) {
-            generate_relationships(
-                dynamic_cast<const source_file &>(*file), ostr);
-        });
-    }
-    else {
-        util::for_each_if(
-            f.relationships(),
-            [this](const auto &r) {
-                return m_model.should_include(r.type()) &&
-                    util::contains(m_generated_aliases, r.destination());
-            },
-            [&f, &ostr](const auto &r) {
-                ostr << f.alias() << " "
-                     << plantuml_common::to_plantuml(r.type(), r.style()) << " "
-                     << r.destination() << '\n';
-            });
-    }
+//    if (f.type() == common::model::source_file_t::kDirectory) {
+//        util::for_each(f, [this, &ostr](const auto &file) {
+//            generate_relationships(
+//                dynamic_cast<const source_file &>(*file), ostr);
+//        });
+//    }
+//    else {
+//        util::for_each_if(
+//            f.relationships(),
+//            [this](const auto &r) {
+//                return m_model.should_include(r.type()) &&
+//                    util::contains(m_generated_aliases, r.destination());
+//            },
+//            [&f, &ostr](const auto &r) {
+//                ostr << f.alias() << " "
+//                     << plantuml_common::to_plantuml(r.type(), r.style()) << " "
+//                     << r.destination() << '\n';
+//            });
+//    }
 }
 
 void generator::generate(const source_file &f, std::ostream &ostr) const

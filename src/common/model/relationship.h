@@ -19,6 +19,7 @@
 
 #include "common/model/decorated_element.h"
 #include "common/model/stylable_element.h"
+#include "common/types.h"
 
 #include <string>
 
@@ -27,7 +28,7 @@ namespace clanguml::common::model {
 class relationship : public common::model::decorated_element,
                      public common::model::stylable_element {
 public:
-    relationship(relationship_t type, const std::string &destination,
+    relationship(relationship_t type, int64_t destination,
         access_t access = access_t::kPublic, const std::string &label = "",
         const std::string &multiplicity_source = "",
         const std::string &multiplicity_destination = "");
@@ -37,8 +38,8 @@ public:
     void set_type(relationship_t type) noexcept;
     relationship_t type() const noexcept;
 
-    void set_destination(const std::string &destination);
-    std::string destination() const;
+    void set_destination(int64_t destination);
+    clanguml::common::id_t destination() const;
 
     void set_multiplicity_source(const std::string &multiplicity_source);
     std::string multiplicity_source() const;
@@ -57,7 +58,7 @@ public:
 
 private:
     relationship_t type_;
-    std::string destination_;
+    int64_t destination_;
     std::string multiplicity_source_;
     std::string multiplicity_destination_;
     std::string label_;

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "common/model/enums.h"
+#include "common/types.h"
 
 #include <string>
 
@@ -28,6 +29,11 @@ public:
     void set_name(const std::string &name);
     std::string name() const;
 
+    clanguml::common::id_t id() const noexcept { return id_; }
+    void set_id(clanguml::common::id_t id) { id_ = id; }
+
+    void set_id(id_t id);
+
     void is_virtual(bool is_virtual);
     bool is_virtual() const;
 
@@ -35,6 +41,7 @@ public:
     common::model::access_t access() const;
 
 private:
+    clanguml::common::id_t id_;
     std::string name_;
     bool is_virtual_{false};
     common::model::access_t access_;

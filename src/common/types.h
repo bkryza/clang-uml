@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/model/visitor/element_visitor_context.cc
+ * src/class_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,29 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
-#include "element_visitor_context.h"
+#include <cstdint>
+#include <optional>
+#include <unordered_set>
+#include <vector>
 
-#include "translation_unit_context.h"
+namespace clanguml::common {
 
-namespace clanguml::include_diagram::visitor {
-
-template <typename T>
-element_visitor_context<T>::element_visitor_context(
-    clanguml::include_diagram::model::diagram &diagram, T &element)
-    : element_{element}
-    , diagram_{diagram}
-{
-}
-
-template <typename T> T &element_visitor_context<T>::element()
-{
-    return element_;
-}
+using id_t = int64_t;
 
 template <typename T>
-clanguml::include_diagram::model::diagram &element_visitor_context<T>::diagram()
-{
-    return diagram_;
-}
-}
+using optional_ref = std::optional<std::reference_wrapper<const T>>;
+
+template <typename T>
+using reference_vector = std::vector<std::reference_wrapper<const T>>;
+
+template <typename T>
+using reference_set = std::unordered_set<std::reference_wrapper<const T>>;
+
+} // namespace clang::common

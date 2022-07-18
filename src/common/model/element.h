@@ -34,15 +34,11 @@ namespace clanguml::common::model {
 
 class element : public diagram_element, public source_location {
 public:
-    using id_t = int64_t;
+
 
     element(const namespace_ &using_namespace);
 
     virtual ~element() = default;
-
-    id_t id() const;
-
-    void set_id(id_t id);
 
     std::string name_and_ns() const
     {
@@ -77,7 +73,6 @@ public:
     inja::json context() const override;
 
 private:
-    id_t id_;
     namespace_ ns_;
     namespace_ using_namespace_;
 };

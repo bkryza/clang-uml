@@ -22,6 +22,7 @@
 #include "common/model/path.h"
 #include "common/model/source_location.h"
 #include "common/model/stylable_element.h"
+#include "common/types.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>
@@ -129,15 +130,19 @@ template <> struct hash<clanguml::common::model::filesystem_path> {
     }
 };
 
+}
+
+namespace std {
 template <>
-struct hash<type_safe::object_ref<const clanguml::common::model::source_file>> {
+struct hash<
+    std::reference_wrapper<const clanguml::common::model::source_file>> {
     std::size_t operator()(
-        const type_safe::object_ref<const clanguml::common::model::source_file>
+        const std::reference_wrapper<const clanguml::common::model::source_file>
             &key) const
     {
-        using clanguml::common::model::source_file;
+        using clanguml::common::id_t;
 
-        return std::hash<std::string>{}(key.get().full_name(false));
+        return std::hash<id_t>{}(key.get().id());
     }
 };
 }

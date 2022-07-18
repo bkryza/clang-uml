@@ -25,12 +25,13 @@
 
 namespace clanguml::class_diagram::model {
 
-const std::vector<type_safe::object_ref<const class_>> &diagram::classes() const
+const std::vector<std::reference_wrapper<const class_>> &
+diagram::classes() const
 {
     return classes_;
 }
 
-const std::vector<type_safe::object_ref<const enum_>> &diagram::enums() const
+const std::vector<std::reference_wrapper<const enum_>> &diagram::enums() const
 {
     return enums_;
 }
@@ -40,10 +41,15 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kClass;
 }
 
-type_safe::optional_ref<const clanguml::common::model::diagram_element>
+std::optional<
+    std::reference_wrapper<const clanguml::common::model::diagram_element>>
 diagram::get(const std::string &full_name) const
 {
-    type_safe::optional_ref<const clanguml::common::model::diagram_element> res;
+    // type_safe::optional_ref<const clanguml::common::model::diagram_element>
+    // res;
+    std::optional<
+        std::reference_wrapper<const clanguml::common::model::diagram_element>>
+        res;
 
     res = get_class(full_name);
 
@@ -67,7 +73,7 @@ bool diagram::has_enum(const enum_ &e) const
         [&e](const auto &ee) { return ee.get().full_name() == e.full_name(); });
 }
 
-type_safe::optional_ref<const class_> diagram::get_class(
+std::optional<std::reference_wrapper<const class_>> diagram::get_class(
     const std::string &name) const
 {
     for (const auto &c : classes_) {
@@ -76,10 +82,10 @@ type_safe::optional_ref<const class_> diagram::get_class(
         }
     }
 
-    return type_safe::nullopt;
+    return {};
 }
 
-type_safe::optional_ref<const enum_> diagram::get_enum(
+std::optional<std::reference_wrapper<const enum_>> diagram::get_enum(
     const std::string &name) const
 {
     for (const auto &e : enums_) {
@@ -88,7 +94,7 @@ type_safe::optional_ref<const enum_> diagram::get_enum(
         }
     }
 
-    return type_safe::nullopt;
+    return {};
 }
 
 void diagram::add_type_alias(std::unique_ptr<type_alias> &&ta)
@@ -131,7 +137,7 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     auto name_and_ns = ns | name;
     const auto &cc = *c;
 
-    auto cc_ref = type_safe::ref(cc);
+    auto cc_ref = std::ref(cc);
 
     if (!has_class(cc)) {
         if (add_element(ns, std::move(c)))
@@ -159,7 +165,7 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
 
     assert(!util::contains(e->name(), "::"));
 
-    auto e_ref = type_safe::ref(*e);
+    auto e_ref = std::ref(*e);
     auto ns = e->get_relative_namespace();
 
     if (!has_enum(*e)) {
@@ -175,9 +181,9 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
 }
 
 void diagram::get_parents(
-    std::unordered_set<type_safe::object_ref<const class_>> &parents) const
+    clanguml::common::reference_set<class_> &parents) const
 {
-    bool found_new = false;
+    bool found_new{false};
     for (const auto &parent : parents) {
         for (const auto &pp : parent.get().parents()) {
             const auto p = get_class(pp.name());
@@ -194,25 +200,39 @@ void diagram::get_parents(
     }
 }
 
-std::string diagram::to_alias(const std::string &full_name) const
+bool diagram::has_element(
+    clanguml::common::model::diagram_element::id_t id) const
 {
-    LOG_DBG("Looking for alias for {}", full_name);
+    for (const auto &c : classes_) {
+        if (c.get().id() == id)
+            return true;
+    }
+
+    for (const auto &c : enums_) {
+        if (c.get().id() == id)
+            return true;
+    }
+
+    return false;
+}
+
+std::string diagram::to_alias(
+    clanguml::common::model::diagram_element::id_t id) const
+{
+    LOG_DBG("Looking for alias for {}", id);
 
     for (const auto &c : classes_) {
-        const auto &cc = c.get();
-        if (cc.full_name() == full_name) {
-            return c->alias();
+        if (c.get().id() == id) {
+            return c.get().alias();
         }
     }
 
     for (const auto &e : enums_) {
-        if (e.get().full_name() == full_name) {
-            return e->alias();
-        }
+        if (e.get().id() == id)
+            return e.get().alias();
     }
 
-    throw error::uml_alias_missing(
-        fmt::format("Missing alias for {}", full_name));
+    throw error::uml_alias_missing(fmt::format("Missing alias for {}", id));
 }
 
 }

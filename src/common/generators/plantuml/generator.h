@@ -23,9 +23,9 @@
 #include "util/util.h"
 
 //#include <cppast/libclang_parser.hpp>
+#include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
-#include <clang/Frontend/CompilerInstance.h>
 #include <glob/glob.hpp>
 #include <inja/inja.hpp>
 
@@ -146,23 +146,28 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
 {
     using namespace clanguml::util;
 
-    const auto &uns = m_config.using_namespace();
+    //    const auto &uns = m_config.using_namespace();
 
     // Generate layout hints
-    for (const auto &[entity, hints] : m_config.layout()) {
+    for (const auto &[entity_name, hints] : m_config.layout()) {
         for (const auto &hint : hints) {
             std::stringstream hint_str;
             try {
-                hint_str << m_model.to_alias(uns.relative(entity))
-                         << " -[hidden]"
+                auto element_opt = m_model.get(
+                    m_config.using_namespace().relative(entity_name));
+                auto hint_element_opt = m_model.get(
+                    m_config.using_namespace().relative(hint.entity));
+                if (!element_opt || !hint_element_opt)
+                    continue;
+                hint_str << element_opt.value().get().alias() << " -[hidden]"
                          << clanguml::config::to_string(hint.hint) << "- "
-                         << m_model.to_alias(uns.relative(hint.entity)) << '\n';
+                         << hint_element_opt.value().get().alias() << '\n';
                 ostr << hint_str.str();
             }
             catch (clanguml::error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping layout hint from {} to {} due "
                         "to: {}",
-                    entity, hint.entity, e.what());
+                    entity_name, hint.entity, e.what());
             }
         }
     }
@@ -181,10 +186,17 @@ void generator<C, D>::generate_plantuml_directives(
         // Now search for alias @A() directives in the text
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(directive, alias_match)) {
-            auto alias = m_model.to_alias(
-                m_config.using_namespace().relative(std::get<0>(alias_match)));
-            directive.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
+            const auto full_name =
+                m_config.using_namespace() | std::get<0>(alias_match);
+            auto element_opt = m_model.get(full_name.to_string());
+
+            if (element_opt)
+                directive.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match),
+                    element_opt.value().get().alias());
+            else
+                directive.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match), "UNKNOWN_ALIAS");
         }
         ostr << directive << '\n';
     }
@@ -242,8 +254,8 @@ public:
 
     virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
     {
-//        const auto* tud = ast_context.getTranslationUnitDecl();
-////        tud->dump();
+        //        const auto* tud = ast_context.getTranslationUnitDecl();
+        ////        tud->dump();
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
     }
 };
@@ -402,9 +414,11 @@ template <typename C, typename D> void generator<C, D>::init_env()
     // is equivalent to the old syntax:
     //   "note left of @A(ClassA): This is a note"
     m_env.add_callback("alias", 1, [this](inja::Arguments &args) {
-        auto alias_match = args[0]->get<std::string>();
-        return m_model.to_alias(
-            m_config.using_namespace().relative(alias_match));
+        auto alias_match =
+            m_config.using_namespace() | args[0]->get<std::string>();
+        auto element_opt = m_model.get(alias_match.to_string());
+
+        return element_opt.value().get().alias();
     });
 
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
@@ -419,7 +433,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
         }
 
         if (element.has_value()) {
-            auto comment = element.value().comment();
+            auto comment = element.value().get().comment();
 
             if (comment.has_value())
                 res = comment.value();

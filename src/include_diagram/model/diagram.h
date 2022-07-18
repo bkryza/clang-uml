@@ -20,8 +20,7 @@
 #include "common/model/diagram.h"
 #include "common/model/package.h"
 #include "common/model/source_file.h"
-
-#include <type_safe/optional_ref.hpp>
+#include "common/types.h"
 
 #include <string>
 #include <vector>
@@ -42,23 +41,21 @@ public:
 
     common::model::diagram_t type() const override;
 
-    type_safe::optional_ref<const common::model::diagram_element> get(
+    common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
 
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 
-    type_safe::optional_ref<const common::model::source_file> get_file(
+    common::optional_ref<common::model::source_file> get_file(
         const std::string &name) const;
 
     std::string to_alias(const std::string &full_name) const;
 
-    const std::vector<
-        type_safe::object_ref<const common::model::source_file, false>> &
+    const common::reference_vector<const common::model::source_file> &
     files() const;
 
 private:
-    std::vector<type_safe::object_ref<const common::model::source_file, false>>
-        files_;
+    common::reference_vector<const common::model::source_file> files_;
 };
 }
 

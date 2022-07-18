@@ -27,26 +27,25 @@ namespace clanguml::common::model {
 std::atomic_uint64_t diagram_element::m_nextId = 1;
 
 diagram_element::diagram_element()
-    : m_id{m_nextId++}
+    : id_{0}
 {
 }
 
+diagram_element::id_t diagram_element::id() const { return id_; }
+
+void diagram_element::set_id(diagram_element::id_t id) { id_ = id; }
+
 std::string diagram_element::alias() const
 {
-    return fmt::format("C_{:010}", m_id);
+    assert(id_ >= 0);
+
+    return fmt::format("C_{:022}", id_);
 }
 
 void diagram_element::add_relationship(relationship &&cr)
 {
-    if (cr.destination().empty()) {
-        LOG_DBG("Skipping relationship '{}' - {} - '{}' due empty "
-                "destination",
-            cr.destination(), to_string(cr.type()), full_name(true));
-        return;
-    }
-
     if ((cr.type() == relationship_t::kInstantiation) &&
-        (cr.destination() == full_name(true))) {
+        (cr.destination() == id())) {
         LOG_DBG("Skipping self instantiation relationship for {}",
             cr.destination());
         return;
@@ -86,7 +85,8 @@ inja::json diagram_element::context() const
 
 bool operator==(const diagram_element &l, const diagram_element &r)
 {
-    return l.full_name(false) == r.full_name(false);
+    return l.id() == r.id();
+    //return l.full_name(false) == r.full_name(false);
 }
 
 std::ostream &operator<<(std::ostream &out, const diagram_element &rhs)
