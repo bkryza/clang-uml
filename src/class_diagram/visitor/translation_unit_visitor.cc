@@ -410,7 +410,6 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     clanguml::common::model::relationship_t relationship_hint)
 {
     bool result = false;
-
     std::string type_name = type.getAsString();
     (void)type_name;
 
@@ -433,14 +432,21 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         find_relationships(type->getAsArrayTypeUnsafe()->getElementType(),
             relationships, relationship_t::kAggregation);
     }
-    else if (type->isClassType()) {
+    else if (type->isRecordType()) {
+        if(type_name.find("std::shared_ptr") == 0)
+            relationship_hint = relationship_t::kAssociation;
+        if(type_name.find("std::weak_ptr") == 0)
+            relationship_hint = relationship_t::kAssociation;
+
         const auto *type_instantiation_decl =
             type->getAs<clang::TemplateSpecializationType>();
 
         if (type_instantiation_decl != nullptr) {
             for (const auto &template_argument : *type_instantiation_decl) {
-                result = find_relationships(template_argument.getAsType(),
-                    relationships, relationship_hint);
+                if (template_argument.getKind() ==
+                    clang::TemplateArgument::ArgKind::Type)
+                    result = find_relationships(template_argument.getAsType(),
+                        relationships, relationship_hint);
             }
         }
         else {
@@ -600,12 +606,12 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     for (const auto &arg : template_type) {
         auto argument_kind = arg.getKind();
         if (argument_kind == clang::TemplateArgument::ArgKind::Type) {
-            const auto *argument_record_decl =
-                arg.getAsType()->getAsRecordDecl();
+//            const auto *argument_record_decl =
+//                arg.getAsType()->getAsRecordDecl();
             template_parameter argument;
             argument.is_template_parameter(false);
             argument.set_name(to_string(
-                arg.getAsType(), argument_record_decl->getASTContext()));
+                arg.getAsType(), template_record->getASTContext()));
 
             template_instantiation.add_template(std::move(argument));
 
@@ -630,36 +636,55 @@ void translation_unit_visitor::process_field(
         detail::access_specifier_to_access_t(field_declaration.getAccess()),
         field_declaration.getNameAsString(), type_name};
 
-    if (field.name() == "e") {
-        LOG_DBG("EEEEEEEEE");
-    }
-
     process_comment(field_declaration, field);
     set_source_location(field_declaration, field);
 
     if (field.skip())
         return;
 
-    if (!field.skip_relationship()) {
-        found_relationships_t relationships;
-        // find relationship for the type
-        find_relationships(field_declaration.getType(), relationships,
-            relationship_t::kAggregation);
+    if (field_type->getAs<clang::TemplateSpecializationType>()) {
+        if (diagram().should_include(type_name)) {
+            auto template_specialization_ptr = build_template_instantiation(
+                *field_type->getAs<clang::TemplateSpecializationType>());
 
-        add_relationships(c, relationships,
-            detail::access_specifier_to_access_t(field_declaration.getAccess()),
-            field_declaration.getNameAsString());
+            relationship r{relationship_t::kAggregation,
+                template_specialization_ptr->id()};
+            r.set_label(field_declaration.getNameAsString());
+            r.set_access(detail::access_specifier_to_access_t(
+                field_declaration.getAccess()));
+
+            diagram().add_class(std::move(template_specialization_ptr));
+
+            LOG_DBG("ADDED TEMPLATE SPECIALIZATION TO DIAGRAM");
+
+            c.add_relationship(std::move(r));
+        }
+        else {
+            if (!field.skip_relationship()) {
+                found_relationships_t relationships;
+                // find relationship for the type
+                find_relationships(field_declaration.getType(), relationships,
+                    relationship_t::kAggregation);
+
+                add_relationships(c, relationships,
+                    detail::access_specifier_to_access_t(
+                        field_declaration.getAccess()),
+                    field_declaration.getNameAsString());
+            }
+        }
     }
+    else {
+        if (!field.skip_relationship()) {
+            found_relationships_t relationships;
+            // find relationship for the type
+            find_relationships(field_declaration.getType(), relationships,
+                relationship_t::kAggregation);
 
-    if (field_type->getAs<clang::TemplateSpecializationType>() &&
-        diagram().should_include(type_name)) {
-
-        auto template_specialization_ptr = build_template_instantiation(
-            *field_type->getAs<clang::TemplateSpecializationType>());
-
-        diagram().add_class(std::move(template_specialization_ptr));
-
-        LOG_DBG("ADDED TEMPLATE SPECIALIZATION TO DIAGRAM");
+            add_relationships(c, relationships,
+                detail::access_specifier_to_access_t(
+                    field_declaration.getAccess()),
+                field_declaration.getNameAsString());
+        }
     }
 
     /*
