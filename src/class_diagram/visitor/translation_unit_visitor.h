@@ -86,6 +86,9 @@ private:
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names = {});
 
+    void process_friend(
+        const clang::FriendDecl &f, clanguml::class_diagram::model::class_ &c);
+
     bool find_relationships(const clang::QualType &type,
         found_relationships_t &,
         clanguml::common::model::relationship_t relationship_hint);
@@ -99,7 +102,8 @@ private:
         clanguml::common::model::source_location &element);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_template_instantiation(const clang::TemplateSpecializationType& template_type,
+    build_template_instantiation(
+        const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     template <typename ClangDecl>

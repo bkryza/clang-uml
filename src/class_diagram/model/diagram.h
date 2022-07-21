@@ -60,6 +60,9 @@ public:
     std::optional<std::reference_wrapper<const class_>> get_class(
         const std::string &name) const;
 
+    std::optional<std::reference_wrapper<const class_>> get_class(
+        clanguml::common::model::diagram_element::id_t id) const;
+
     std::optional<std::reference_wrapper<const enum_>> get_enum(
         const std::string &name) const;
 

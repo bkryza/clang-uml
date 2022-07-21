@@ -24,7 +24,7 @@ TEST_CASE("t00010", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00010_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00010_class");
 
@@ -36,7 +36,7 @@ TEST_CASE("t00010", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
 
-    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<T,std::string>")));
+    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<T, std::string>")));
     REQUIRE_THAT(puml, (IsField<Public>("aintstring", "B<int>")));
 
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));

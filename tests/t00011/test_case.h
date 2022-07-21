@@ -24,7 +24,7 @@ TEST_CASE("t00011", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00011_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00011_class");
 
@@ -35,9 +35,11 @@ TEST_CASE("t00011", "[test-case][class]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
     REQUIRE_THAT(puml, IsClass(_A("A")));
     REQUIRE_THAT(puml, IsClass(_A("B")));
+    REQUIRE_THAT(puml, !IsClass(_A("external::C")));
     REQUIRE_THAT(puml, IsClass(_A("D<T>")));
 
-    REQUIRE_THAT(puml, IsFriend<Private>(_A("A"), _A("B")));
+    REQUIRE_THAT(puml, IsAssociation(_A("B"), _A("A")));
+    REQUIRE_THAT(puml, IsFriend<Public>(_A("A"), _A("B")));
     // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
     save_puml(

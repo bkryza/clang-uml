@@ -85,6 +85,18 @@ std::optional<std::reference_wrapper<const class_>> diagram::get_class(
     return {};
 }
 
+std::optional<std::reference_wrapper<const class_>> diagram::get_class(
+    clanguml::common::model::diagram_element::id_t id) const
+{
+    for (const auto &c : classes_) {
+        if (c.get().id() == id) {
+            return {c};
+        }
+    }
+
+    return {};
+}
+
 std::optional<std::reference_wrapper<const enum_>> diagram::get_enum(
     const std::string &name) const
 {
