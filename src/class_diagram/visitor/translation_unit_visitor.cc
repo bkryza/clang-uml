@@ -140,6 +140,9 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
 
 bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
+    if (ns->isAnonymousNamespace() || ns->isInline())
+        return true;
+
     auto package_path = namespace_{ns->getQualifiedNameAsString()};
     auto package_parent = package_path;
 
@@ -181,6 +184,11 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
 bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 {
+    // Anonymous enum values should be rendered as class fields
+    // with type enum
+    if (enm->getNameAsString().empty())
+        return true;
+
     auto e_ptr = std::make_unique<enum_>(config_.using_namespace());
     auto &e = *e_ptr;
 
@@ -218,6 +226,43 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     return true;
 }
 
+bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
+    clang::ClassTemplateSpecializationDecl *cls)
+{
+    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
+
+    // Skip forward declarations
+    if (!cls->isCompleteDefinition())
+        return true;
+
+    // Check if the class was already processed within VisitClassTemplateDecl()
+    if (diagram_.has_element(cls->getID()))
+        return true;
+
+    // TODO: Add support for classes defined in function/method bodies
+    if (cls->isLocalClass())
+        return true;
+
+    auto template_specialization_ptr = process_template_specialization(cls);
+
+    if (!template_specialization_ptr)
+        return true;
+
+    auto &template_specialization = *template_specialization_ptr;
+
+    process_template_specialization_children(cls, template_specialization);
+
+    template_specialization.add_relationship({relationship_t::kInstantiation,
+        cls->getSpecializedTemplate()->getID()});
+
+    if (diagram_.should_include(template_specialization)) {
+        diagram_.add_class(std::move(template_specialization_ptr));
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitClassTemplateDecl(
     clang::ClassTemplateDecl *cls)
 {
@@ -247,7 +292,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         return true;
 
     // Templated records are handled by VisitClassTemplateDecl()
-    if (cls->isTemplated())
+    if (cls->isTemplated() || cls->isTemplateDecl())
         return true;
 
     // Skip forward declarations
@@ -280,7 +325,12 @@ std::unique_ptr<class_> translation_unit_visitor::process_class_declaration(
     auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
     auto &c = *c_ptr;
 
-    namespace_ ns{cls->getQualifiedNameAsString()};
+    // TODO: refactor to method get_qualified_name()
+    auto qualified_name = cls->getQualifiedNameAsString();
+    util::replace_all(qualified_name, "(anonymous namespace)", "");
+    util::replace_all(qualified_name, "::::", "::");
+
+    namespace_ ns{qualified_name};
     ns.pop_back();
     c.set_name(cls->getNameAsString());
     c.set_namespace(ns);
@@ -400,8 +450,19 @@ void translation_unit_visitor::process_class_bases(
             to_string(base.getType(), cls->getASTContext())};
 
         cp.set_name(name_and_ns.to_string());
-        cp.set_id(
-            base.getType()->getAs<clang::RecordType>()->getDecl()->getID());
+
+        if (base.getType()->getAs<clang::RecordType>() != nullptr)
+            cp.set_id(
+                base.getType()->getAs<clang::RecordType>()->getDecl()->getID());
+        else if (base.getType()->getAs<clang::TemplateSpecializationType>() !=
+            nullptr) {
+            cp.set_id(base.getType()
+                          ->getAs<clang::TemplateSpecializationType>()
+                          ->getTemplateName()
+                          .getAsTemplateDecl()
+                          ->getID());
+        }
+
         cp.is_virtual(base.isVirtual());
 
         cp.set_access(
@@ -413,15 +474,14 @@ void translation_unit_visitor::process_class_bases(
     }
 }
 
-void translation_unit_visitor::process_class_children(
-    const clang::CXXRecordDecl *cls, class_ &c)
+void translation_unit_visitor::process_template_specialization_children(
+    const clang::ClassTemplateSpecializationDecl *cls, class_ &c)
 {
     assert(cls != nullptr);
 
     // Iterate over class methods (both regular and static)
     for (const auto *method : cls->methods()) {
         if (method != nullptr) {
-
             process_method(*method, c);
         }
     }
@@ -452,6 +512,83 @@ void translation_unit_visitor::process_class_children(
             if (variable_declaration &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, c);
+            }
+        }
+        else if (decl->getKind() == clang::Decl::Enum) {
+            const auto *enum_decl =
+                clang::dyn_cast_or_null<clang::EnumDecl>(decl);
+            if (enum_decl == nullptr)
+                continue;
+
+            if (enum_decl->getNameAsString().empty()) {
+                for (const auto *enum_const : enum_decl->enumerators()) {
+                    class_member m{detail::access_specifier_to_access_t(
+                                       enum_decl->getAccess()),
+                        enum_const->getNameAsString(), "enum"};
+                    c.add_member(std::move(m));
+                }
+            }
+        }
+    }
+
+    for (const auto *friend_declaration : cls->friends()) {
+        process_friend(*friend_declaration, c);
+    }
+}
+
+void translation_unit_visitor::process_class_children(
+    const clang::CXXRecordDecl *cls, class_ &c)
+{
+    assert(cls != nullptr);
+
+    // Iterate over class methods (both regular and static)
+    for (const auto *method : cls->methods()) {
+        if (method != nullptr) {
+            process_method(*method, c);
+        }
+    }
+
+    // Iterate over class template methods
+    for (auto const *decl_iterator :
+        clang::dyn_cast_or_null<clang::DeclContext>(cls)->decls()) {
+        auto const *method_template =
+            llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl_iterator);
+        if (method_template == nullptr)
+            continue;
+
+        process_template_method(*method_template, c);
+    }
+
+    // Iterate over regular class fields
+    for (const auto *field : cls->fields()) {
+        if (field != nullptr)
+            process_field(*field, c);
+    }
+
+    // Static fields have to be processed by iterating over variable
+    // declarations
+    for (const auto *decl : cls->decls()) {
+        if (decl->getKind() == clang::Decl::Var) {
+            const clang::VarDecl *variable_declaration{
+                dynamic_cast<const clang::VarDecl *>(decl)};
+            if (variable_declaration &&
+                variable_declaration->isStaticDataMember()) {
+                process_static_field(*variable_declaration, c);
+            }
+        }
+        else if (decl->getKind() == clang::Decl::Enum) {
+            const auto *enum_decl =
+                clang::dyn_cast_or_null<clang::EnumDecl>(decl);
+            if (enum_decl == nullptr)
+                continue;
+
+            if (enum_decl->getNameAsString().empty()) {
+                for (const auto *enum_const : enum_decl->enumerators()) {
+                    class_member m{detail::access_specifier_to_access_t(
+                                       enum_decl->getAccess()),
+                        enum_const->getNameAsString(), "enum"};
+                    c.add_member(std::move(m));
+                }
             }
         }
     }
@@ -636,7 +773,7 @@ void translation_unit_visitor::process_function_parameter(
             p.getType(), relationships, relationship_t::kDependency);
 
         for (const auto &[type_element_id, relationship_type] : relationships) {
-            if (/*diagram().has_element(type_element_id) &&*/
+            if (type_element_id != c.id() &&
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
 
@@ -709,9 +846,7 @@ void translation_unit_visitor::add_relationships(class_ &c,
     std::optional<std::string> label)
 {
     for (const auto &[target, relationship_type] : relationships) {
-        if (diagram().has_element(target) &&
-            (relationship_type != relationship_t::kNone) /*&&
-            (target != c.name_and_ns())*/) {
+        if (relationship_type != relationship_t::kNone) {
             relationship r{relationship_type, target};
             if (label)
                 r.set_label(label.value());
@@ -760,6 +895,98 @@ void translation_unit_visitor::process_static_field(
     c.add_member(std::move(field));
 }
 
+std::unique_ptr<class_>
+translation_unit_visitor::process_template_specialization(
+    clang::ClassTemplateSpecializationDecl *cls)
+{
+    auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
+    auto &template_instantiation = *c_ptr;
+
+    // TODO: refactor to method get_qualified_name()
+    auto qualified_name = cls->getQualifiedNameAsString();
+    util::replace_all(qualified_name, "(anonymous namespace)", "");
+    util::replace_all(qualified_name, "::::", "::");
+
+    namespace_ ns{qualified_name};
+    ns.pop_back();
+    template_instantiation.set_name(cls->getNameAsString());
+    template_instantiation.set_namespace(ns);
+    template_instantiation.set_id(cls->getID());
+
+    template_instantiation.is_struct(cls->isStruct());
+
+    process_comment(*cls, template_instantiation);
+    set_source_location(*cls, template_instantiation);
+
+    if (template_instantiation.skip())
+        return {};
+
+    const auto template_args_count = cls->getTemplateArgs().size();
+    for (auto arg_it = 0U; arg_it < template_args_count; arg_it++) {
+        const auto arg = cls->getTemplateArgs().get(arg_it);
+        const auto argument_kind = arg.getKind();
+        if (argument_kind == clang::TemplateArgument::ArgKind::Type) {
+            template_parameter argument;
+            argument.is_template_parameter(false);
+
+            // If this is a nested template type - add nested templates as
+            // template arguments
+            if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+
+                const auto *nested_template_type =
+                    arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+
+                const auto nested_template_name =
+                    nested_template_type->getTemplateName()
+                        .getAsTemplateDecl()
+                        ->getQualifiedNameAsString();
+
+                argument.set_name(nested_template_name);
+
+                auto nested_template_instantiation =
+                    build_template_instantiation(
+                        *arg.getAsType()
+                             ->getAs<clang::TemplateSpecializationType>());
+
+                for (const auto &t : nested_template_instantiation->templates())
+                    argument.add_template_param(t);
+
+                // Check if this template should be simplified (e.g. system
+                // template aliases such as 'std:basic_string<char>' should be
+                // simply 'std::string')
+                simplify_system_template(argument,
+                    argument.to_string(config().using_namespace(), false));
+            }
+            else {
+                argument.set_name(
+                    to_string(arg.getAsType(), cls->getASTContext()));
+            }
+
+            template_instantiation.add_template(std::move(argument));
+        }
+        else if (argument_kind == clang::TemplateArgument::ArgKind::Integral) {
+            template_parameter argument;
+            argument.is_template_parameter(false);
+            argument.set_type(
+                std::to_string(arg.getAsIntegral().getExtValue()));
+            template_instantiation.add_template(std::move(argument));
+        }
+        else if (argument_kind ==
+            clang::TemplateArgument::ArgKind::Expression) {
+            template_parameter argument;
+            argument.is_template_parameter(false);
+            argument.set_type(get_source_text(
+                arg.getAsExpr()->getSourceRange(), source_manager_));
+            template_instantiation.add_template(std::move(argument));
+        }
+        else {
+            LOG_ERROR("UNSUPPORTED ARGUMENT KIND FOR ARG {}", arg.getKind());
+        }
+    }
+
+    return c_ptr;
+}
+
 std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const clang::TemplateSpecializationType &template_type,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
@@ -797,7 +1024,6 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             // If this is a nested template type - add nested templates as
             // template arguments
             if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
-
                 const auto *nested_template_type =
                     arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -822,6 +1048,14 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                 // simply 'std::string')
                 simplify_system_template(argument,
                     argument.to_string(config().using_namespace(), false));
+
+                auto nested_template_instantiation_full_name =
+                    nested_template_instantiation->full_name(false);
+                if (diagram().should_include(
+                        nested_template_instantiation_full_name)) {
+                    diagram().add_class(
+                        std::move(nested_template_instantiation));
+                }
             }
             else {
                 argument.set_name(
@@ -848,6 +1082,16 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         else {
             LOG_ERROR("UNSUPPORTED ARGUMENT KIND FOR ARG {}", arg.getKind());
         }
+
+        // In case any of the template arguments are base classes, add
+        // them as parents of the current template instantiation class
+        // TODO: Add to fix t000019
+        //        if (template_decl.) {
+        //            has_variadic_params =
+        //                build_template_instantiation_add_base_classes(tinst,
+        //                    template_base_params, arg_index,
+        //                    has_variadic_params, ct);
+        //        }
     }
 
     if (diagram().has_element(
@@ -880,6 +1124,9 @@ void translation_unit_visitor::process_field(
     if (field.skip())
         return;
 
+    if (field_name == "divider")
+        LOG_ERROR("EEEEEEEEEEEEEEEEEEEEEEE");
+
     if (field_type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;
         field_type = field_type->getPointeeType();
@@ -900,19 +1147,24 @@ void translation_unit_visitor::process_field(
             template_field_type->getTemplateName()
                 .getAsTemplateDecl()
                 ->getQualifiedNameAsString();
-        if (diagram().should_include(template_field_decl_name)) {
-            auto template_specialization_ptr = build_template_instantiation(
-                *field_type->getAs<clang::TemplateSpecializationType>());
 
+        auto template_specialization_ptr = build_template_instantiation(
+            *field_type->getAs<clang::TemplateSpecializationType>());
+
+        if (diagram().should_include(template_field_decl_name)) {
             relationship r{
                 relationship_hint, template_specialization_ptr->id()};
             r.set_label(field_declaration.getNameAsString());
             r.set_access(detail::access_specifier_to_access_t(
                 field_declaration.getAccess()));
 
-            diagram().add_class(std::move(template_specialization_ptr));
+            bool added =
+                diagram().add_class(std::move(template_specialization_ptr));
 
-            LOG_DBG("ADDED TEMPLATE SPECIALIZATION TO DIAGRAM");
+            if (added)
+                LOG_DBG("ADDED TEMPLATE SPECIALIZATION TO DIAGRAM");
+            else
+                LOG_ERROR("NOT ADDED ");
 
             c.add_relationship(std::move(r));
         }

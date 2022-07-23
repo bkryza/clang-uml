@@ -53,6 +53,9 @@ public:
     virtual bool VisitClassTemplateDecl(
         clang::ClassTemplateDecl *class_template_declaration);
 
+    virtual bool VisitClassTemplateSpecializationDecl(
+        clang::ClassTemplateSpecializationDecl *cls);
+
     //    virtual bool VisitVarDecl(clang::VarDecl *variable_declaration);
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
@@ -64,10 +67,18 @@ private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     process_class_declaration(clang::CXXRecordDecl *cls);
 
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    process_template_specialization(
+        clang::ClassTemplateSpecializationDecl *cls);
+
     void process_class_bases(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c) const;
 
     void process_class_children(const clang::CXXRecordDecl *cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_template_specialization_children(
+        const clang::ClassTemplateSpecializationDecl *cls,
         clanguml::class_diagram::model::class_ &c);
 
     bool process_template_parameters(

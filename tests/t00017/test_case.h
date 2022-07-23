@@ -24,7 +24,7 @@ TEST_CASE("t00017", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00017_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00017_class");
 
@@ -47,8 +47,8 @@ TEST_CASE("t00017", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("R")));
 
     REQUIRE_THAT(puml, (IsField<Private>("some_int", "int")));
-    REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer", "int*")));
-    REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer_pointer", "int**")));
+    REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer", "int *")));
+    REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer_pointer", "int **")));
 
     // Relationship members should not be rendered as part of this testcase
     REQUIRE_THAT(puml, !(IsField<Private>("a", _A("A"))));
