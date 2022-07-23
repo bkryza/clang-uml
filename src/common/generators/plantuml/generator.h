@@ -194,9 +194,12 @@ void generator<C, D>::generate_plantuml_directives(
                 directive.replace(std::get<1>(alias_match),
                     std::get<2>(alias_match),
                     element_opt.value().get().alias());
-            else
+            else {
+                LOG_ERROR(
+                    "CANNOT FIND ALIAS TO ELEMENT {}", full_name.to_string());
                 directive.replace(std::get<1>(alias_match),
                     std::get<2>(alias_match), "UNKNOWN_ALIAS");
+            }
         }
         ostr << directive << '\n';
     }

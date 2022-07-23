@@ -44,6 +44,8 @@ public:
         clanguml::class_diagram::model::diagram &diagram,
         const clanguml::config::class_diagram &config);
 
+    virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
+
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *d);
 
     virtual bool VisitEnumDecl(clang::EnumDecl *e);
@@ -53,6 +55,9 @@ public:
 
     //    virtual bool VisitVarDecl(clang::VarDecl *variable_declaration);
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
+
+    const clanguml::config::class_diagram &config() const { return config_; }
+
     //    void operator()();
 
 private:
@@ -73,6 +78,9 @@ private:
         clanguml::common::model::element &c) const;
 
     void process_method(const clang::CXXMethodDecl &mf,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_template_method(const clang::FunctionTemplateDecl &mf,
         clanguml::class_diagram::model::class_ &c);
 
     void process_static_field(const clang::VarDecl &field_declaration,
@@ -106,6 +114,11 @@ private:
         const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
+    void process_function_parameter_find_relationships_in_template(
+        clanguml::class_diagram::model::class_ &c,
+        const std::set<std::string> &template_parameter_names,
+        const clang::TemplateSpecializationType &template_instantiation_type);
+
     template <typename ClangDecl>
     void process_comment(
         const ClangDecl &decl, clanguml::common::model::decorated_element &e)
@@ -124,6 +137,9 @@ private:
             e.add_decorators(decorators::parse(e.comment().value()));
         }
     }
+
+    bool simplify_system_template(
+        model::template_parameter &ct, const std::string &full_name);
 
     clang::SourceManager &source_manager_;
 

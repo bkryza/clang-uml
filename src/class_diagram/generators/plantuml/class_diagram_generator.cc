@@ -246,7 +246,7 @@ void generator::generate_relationships(
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-//    const auto &uns = m_config.using_namespace();
+    //    const auto &uns = m_config.using_namespace();
 
     //
     // Process relationships
@@ -270,8 +270,9 @@ void generator::generate_relationships(
 
             // TODO: Refactor destination to a namespace qualified entity
             //       name
-//            if (util::starts_with(destination, std::string{"::"}))
-//                destination = destination.substr(2, destination.size());
+            //            if (util::starts_with(destination, std::string{"::"}))
+            //                destination = destination.substr(2,
+            //                destination.size());
 
             LOG_DBG("=== Destination is: {}", destination);
 
@@ -284,7 +285,14 @@ void generator::generate_relationships(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            auto target_alias = m_model.to_alias(destination);
+            std::string target_alias;
+            try {
+                target_alias = m_model.to_alias(destination);
+            }
+            catch (...) {
+                LOG_ERROR("Failed to find alias to {}", destination);
+                continue;
+            }
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())

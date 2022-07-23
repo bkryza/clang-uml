@@ -77,7 +77,13 @@ std::optional<std::reference_wrapper<const class_>> diagram::get_class(
     const std::string &name) const
 {
     for (const auto &c : classes_) {
-        if (c.get().full_name(false) == name) {
+        const auto full_name = c.get().full_name(false);
+        if (name ==
+            "clanguml::t00012::C<std::map<int,std::vector<std::vector<std::"
+            "vector<std::string>>>>,3,3,3>")
+            LOG_ERROR("Comparing {} with {}", full_name, name);
+
+        if (full_name == name) {
             return {c};
         }
     }

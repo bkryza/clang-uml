@@ -22,13 +22,14 @@ template <typename T, int... Is> class C {
 };
 
 class R {
-    A<int, std::string, float> a1;
-    A<int, std::string, bool> a2;
+    [[maybe_unused]] A<int, std::string, float> a1;
+    [[maybe_unused]] A<int, std::string, bool> a2;
 
-    B<3, 2, 1> b1;
-    B<1, 1, 1, 1> b2;
+    [[maybe_unused]] B<3, 2, 1> b1;
+    [[maybe_unused]] B<1, 1, 1, 1> b2;
 
-    C<std::map<int, std::vector<std::vector<std::vector<std::string>>>>, 3, 3,
+    [[maybe_unused]] C<
+        std::map<int, std::vector<std::vector<std::vector<std::string>>>>, 3, 3,
         3>
         c1;
 };

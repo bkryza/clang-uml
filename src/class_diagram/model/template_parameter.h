@@ -84,6 +84,8 @@ public:
 
     const std::vector<template_parameter> &template_params() const;
 
+    void clear_params() { template_params_.clear(); }
+
     void find_nested_relationships(
         std::vector<std::pair<std::string, common::model::relationship_t>>
             &nested_relationships,
