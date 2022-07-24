@@ -271,6 +271,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     auto c_ptr = process_class_declaration(cls->getTemplatedDecl());
 
+    if (!c_ptr)
+        return true;
+
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
     c_ptr->set_id(cls->getID());
@@ -715,6 +718,11 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         find_relationships(type->getAsArrayTypeUnsafe()->getElementType(),
             relationships, relationship_t::kAggregation);
     }
+    else if (type->isEnumeralType()) {
+        relationships.emplace_back(
+            type->getAs<clang::EnumType>()->getDecl()->getID(),
+            relationship_hint);
+    }
     else if (type->isRecordType()) {
         if (type_name.find("std::shared_ptr") == 0)
             relationship_hint = relationship_t::kAssociation;
@@ -842,15 +850,24 @@ void translation_unit_visitor::
 }
 
 void translation_unit_visitor::add_relationships(class_ &c,
-    const found_relationships_t &relationships, access_t access,
-    std::optional<std::string> label)
+    const class_member &field, const found_relationships_t &relationships)
 {
+    auto [decorator_rtype, decorator_rmult] = field.get_relationship();
+
     for (const auto &[target, relationship_type] : relationships) {
         if (relationship_type != relationship_t::kNone) {
             relationship r{relationship_type, target};
-            if (label)
-                r.set_label(label.value());
-            r.set_access(access);
+            r.set_label(field.name());
+            r.set_access(field.access());
+            if (decorator_rtype != relationship_t::kNone) {
+                r.set_type(decorator_rtype);
+                auto mult = util::split(decorator_rmult, ":", false);
+                if (mult.size() == 2) {
+                    r.set_multiplicity_source(mult[0]);
+                    r.set_multiplicity_destination(mult[1]);
+                }
+            }
+            r.set_style(field.style_spec());
 
             LOG_DBG("Adding field relationship {} {} {} : {}", r.destination(),
                 clanguml::common::model::to_string(r.type()), c.full_name(),
@@ -887,9 +904,7 @@ void translation_unit_visitor::process_static_field(
         find_relationships(field_declaration.getType(), relationships,
             relationship_t::kAssociation);
 
-        add_relationships(c, relationships,
-            detail::access_specifier_to_access_t(field_declaration.getAccess()),
-            field_declaration.getNameAsString());
+        add_relationships(c, field, relationships);
     }
 
     c.add_member(std::move(field));
@@ -1017,7 +1032,17 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     for (const auto &arg : template_type) {
         const auto argument_kind = arg.getKind();
-        if (argument_kind == clang::TemplateArgument::ArgKind::Type) {
+
+        if (argument_kind == clang::TemplateArgument::ArgKind::Template) {
+            template_parameter argument;
+            argument.is_template_parameter(true);
+            auto arg_name = arg.getAsTemplate()
+                                .getAsTemplateDecl()
+                                ->getQualifiedNameAsString();
+            argument.set_type(arg_name);
+            template_instantiation.add_template(std::move(argument));
+        }
+        else if (argument_kind == clang::TemplateArgument::ArgKind::Type) {
             template_parameter argument;
             argument.is_template_parameter(false);
 
@@ -1124,9 +1149,6 @@ void translation_unit_visitor::process_field(
     if (field.skip())
         return;
 
-    if (field_name == "divider")
-        LOG_ERROR("EEEEEEEEEEEEEEEEEEEEEEE");
-
     if (field_type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;
         field_type = field_type->getPointeeType();
@@ -1139,8 +1161,11 @@ void translation_unit_visitor::process_field(
         field_type = field_type.getNonReferenceType();
     }
 
+    // Process field decorators
     const auto *template_field_type =
         field_type->getAs<clang::TemplateSpecializationType>();
+
+    found_relationships_t relationships;
 
     if (template_field_type != nullptr) {
         const auto template_field_decl_name =
@@ -1151,48 +1176,25 @@ void translation_unit_visitor::process_field(
         auto template_specialization_ptr = build_template_instantiation(
             *field_type->getAs<clang::TemplateSpecializationType>());
 
-        if (diagram().should_include(template_field_decl_name)) {
-            relationship r{
-                relationship_hint, template_specialization_ptr->id()};
-            r.set_label(field_declaration.getNameAsString());
-            r.set_access(detail::access_specifier_to_access_t(
-                field_declaration.getAccess()));
+        if (template_specialization_ptr &&
+            diagram().should_include(template_field_decl_name)) {
+            found_relationships_t::value_type r{
+                template_specialization_ptr->id(), relationship_hint};
 
             bool added =
                 diagram().add_class(std::move(template_specialization_ptr));
 
-            if (added)
-                LOG_DBG("ADDED TEMPLATE SPECIALIZATION TO DIAGRAM");
-            else
-                LOG_ERROR("NOT ADDED ");
-
-            c.add_relationship(std::move(r));
-        }
-        else {
-            if (!field.skip_relationship()) {
-                found_relationships_t relationships;
-                // find relationship for the type
-                find_relationships(
-                    field_type, relationships, relationship_hint);
-
-                add_relationships(c, relationships,
-                    detail::access_specifier_to_access_t(
-                        field_declaration.getAccess()),
-                    field_declaration.getNameAsString());
+            if (added) {
+                relationships.emplace_back(std::move(r));
             }
         }
     }
-    else {
-        if (!field.skip_relationship()) {
-            found_relationships_t relationships;
-            // find relationship for the type
-            find_relationships(field_type, relationships, relationship_hint);
 
-            add_relationships(c, relationships,
-                detail::access_specifier_to_access_t(
-                    field_declaration.getAccess()),
-                field_declaration.getNameAsString());
-        }
+    if (!field.skip_relationship()) {
+        // find relationship for the type
+        find_relationships(field_type, relationships, relationship_hint);
+
+        add_relationships(c, field, relationships);
     }
 
     c.add_member(std::move(field));

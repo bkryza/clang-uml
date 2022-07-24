@@ -58,7 +58,7 @@ decorated_element::get_relationship() const
     return {relationship_t::kNone, ""};
 }
 
-std::string decorated_element::style_spec()
+std::string decorated_element::style_spec() const
 {
     for (auto d : decorators_)
         if (std::dynamic_pointer_cast<decorators::style>(d))

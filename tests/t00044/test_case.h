@@ -25,7 +25,7 @@ TEST_CASE("t00044", "[test-case][class]")
     REQUIRE(diagram->name == "t00044_class");
     REQUIRE(diagram->generate_packages() == true);
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00044_class");
 

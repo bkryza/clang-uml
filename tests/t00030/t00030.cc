@@ -4,17 +4,15 @@
 namespace clanguml {
 namespace t00030 {
 
-class A {
-};
+class A { };
 
-class B {
-};
+class B { };
 
-class C {
-};
+class C { };
 
-class D {
-};
+class D { };
+
+class E { };
 
 struct R {
     /// @uml{association[]}
@@ -28,6 +26,9 @@ struct R {
 
     /// @uml{association[:1]}
     D ddd;
+
+    /// @uml{aggregation[:1]}
+    E *eee;
 };
 
 } // namespace t00030

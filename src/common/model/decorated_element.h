@@ -36,7 +36,7 @@ public:
 
     std::pair<relationship_t, std::string> get_relationship() const;
 
-    std::string style_spec();
+    std::string style_spec() const;
 
     const std::vector<std::shared_ptr<decorators::decorator>> &
     decorators() const;
