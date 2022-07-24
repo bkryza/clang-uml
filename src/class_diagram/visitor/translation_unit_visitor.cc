@@ -233,12 +233,17 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         return true;
 
     // Skip forward declarations
-    if (!cls->isCompleteDefinition())
+    if (!cls->isCompleteDefinition()) {
+        // Register this forward declaration in case there is no complete
+        // definition (see t00036)
         return true;
+    }
+    else
 
-    // Check if the class was already processed within VisitClassTemplateDecl()
-    if (diagram_.has_element(cls->getID()))
-        return true;
+        // Check if the class was already processed within
+        // VisitClassTemplateDecl()
+        if (diagram_.has_element(cls->getID()))
+            return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -252,6 +257,9 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     auto &template_specialization = *template_specialization_ptr;
 
     process_template_specialization_children(cls, template_specialization);
+
+    // Process template specialization bases
+    process_class_bases(cls, template_specialization);
 
     template_specialization.add_relationship({relationship_t::kInstantiation,
         cls->getSpecializedTemplate()->getID()});
@@ -269,6 +277,10 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    // Skip forward declarations
+    if (!cls->getTemplatedDecl()->isCompleteDefinition())
+        return true;
+
     auto c_ptr = process_class_declaration(cls->getTemplatedDecl());
 
     if (!c_ptr)
@@ -278,7 +290,16 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     // underlying templated class id
     c_ptr->set_id(cls->getID());
 
+    auto id = c_ptr->id();
+
     process_template_parameters(*cls, *c_ptr);
+
+    if(!cls->getTemplatedDecl()->isCompleteDefinition()) {
+        forward_declarations_.emplace(id, std::move(c_ptr));
+        return true;
+    }
+    else
+        forward_declarations_.erase(id);
 
     if (diagram_.should_include(*c_ptr)) {
         LOG_DBG("Adding class {} with id {}", c_ptr->full_name(), c_ptr->id());
@@ -298,10 +319,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isTemplated() || cls->isTemplateDecl())
         return true;
 
-    // Skip forward declarations
-    if (!cls->isCompleteDefinition())
-        return true;
-
     // Check if the class was already processed within VisitClassTemplateDecl()
     if (diagram_.has_element(cls->getID()))
         return true;
@@ -314,6 +331,14 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     if (!c_ptr)
         return true;
+
+    auto id = c_ptr->id();
+    if(!cls->isCompleteDefinition()) {
+        forward_declarations_.emplace(id, std::move(c_ptr));
+        return true;
+    }
+    else
+        forward_declarations_.erase(id);
 
     if (diagram_.should_include(*c_ptr)) {
         diagram_.add_class(std::move(c_ptr));
@@ -348,6 +373,9 @@ std::unique_ptr<class_> translation_unit_visitor::process_class_declaration(
         return {};
 
     c.set_style(c.style_spec());
+
+    if (!cls->isCompleteDefinition())
+        return c_ptr;
 
     // Process class child entities
     process_class_children(cls, c);
@@ -597,7 +625,8 @@ void translation_unit_visitor::process_class_children(
     }
 
     for (const auto *friend_declaration : cls->friends()) {
-        process_friend(*friend_declaration, c);
+        if (friend_declaration != nullptr)
+            process_friend(*friend_declaration, c);
     }
 }
 
@@ -947,7 +976,6 @@ translation_unit_visitor::process_template_specialization(
             // If this is a nested template type - add nested templates as
             // template arguments
             if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
-
                 const auto *nested_template_type =
                     arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -973,8 +1001,17 @@ translation_unit_visitor::process_template_specialization(
                     argument.to_string(config().using_namespace(), false));
             }
             else {
-                argument.set_name(
-                    to_string(arg.getAsType(), cls->getASTContext()));
+                auto type_name =
+                    to_string(arg.getAsType(), cls->getASTContext());
+                // Sometimes template instantiation is reported as RecordType in
+                // the AST and getAs to TemplateSpecializationType returns null
+                // pointer so we have to at least make sure it's properly
+                // formatted
+                // TODO: Change this to manual parsing of the template
+                // instantiation
+                if (type_name.find('<') != std::string::npos)
+                    util::replace_all(type_name, ", ", ",");
+                argument.set_name(type_name);
             }
 
             template_instantiation.add_template(std::move(argument));
@@ -1208,6 +1245,19 @@ void translation_unit_visitor::set_source_location(
         element.set_line(
             source_manager_.getSpellingLineNumber(decl.getLocation()));
     }
+}
+
+void translation_unit_visitor::add_incomplete_forward_declarations() {
+    for(auto & [id, c] : forward_declarations_) {
+        if(diagram().should_include(c->full_name(false))) {
+            diagram().add_class(std::move(c));
+        }
+    }
+    forward_declarations_.clear();
+}
+
+void translation_unit_visitor::finalize() {
+    add_incomplete_forward_declarations();
 }
 
 bool translation_unit_visitor::simplify_system_template(

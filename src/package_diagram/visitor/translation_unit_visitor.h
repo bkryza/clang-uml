@@ -40,7 +40,7 @@ public:
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
 
-
+    void finalize() {}
 private:
     clang::SourceManager &source_manager_;
 

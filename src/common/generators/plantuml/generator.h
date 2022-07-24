@@ -260,6 +260,7 @@ public:
         //        const auto* tud = ast_context.getTranslationUnitDecl();
         ////        tud->dump();
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
+        visitor_.finalize();
     }
 };
 
@@ -273,6 +274,7 @@ public:
         , config_{config}
     {
     }
+
     virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
         clang::CompilerInstance &CI, clang::StringRef file)
     {

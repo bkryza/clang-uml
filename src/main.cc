@@ -46,7 +46,7 @@ bool check_output_directory(const std::string &dir);
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const cppast::libclang_compilation_database &db, bool verbose);
+    const clang::tooling::CompilationDatabase &db, bool verbose);
 
 int main(int argc, const char *argv[])
 {
@@ -104,7 +104,17 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir());
 
-    cppast::libclang_compilation_database db{config.compilation_database_dir()};
+    std::string err{};
+
+    auto db =
+        clang::tooling::CompilationDatabase::autoDetectFromDirectory(
+            config.compilation_database_dir(), err);
+
+    if (!err.empty()) {
+        LOG_ERROR("Failed to load compilation database from {}",
+            config.compilation_database_dir());
+        return 1;
+    }
 
     auto od = config.output_directory();
     if (output_directory)
@@ -124,7 +134,7 @@ int main(int argc, const char *argv[])
 
         futs.emplace_back(generator_executor.add(
             [&od, &name = name, &diagram = diagram, &db = db, verbose]() {
-                generate_diagram(od, name, diagram, db, verbose);
+                generate_diagram(od, name, diagram, *db, verbose);
             }));
     }
 
@@ -137,7 +147,7 @@ int main(int argc, const char *argv[])
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const cppast::libclang_compilation_database &db, bool verbose)
+    const clang::tooling::CompilationDatabase &db, bool verbose)
 {
     using clanguml::common::model::diagram_t;
     using clanguml::config::class_diagram;

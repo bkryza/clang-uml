@@ -42,6 +42,7 @@ public:
 
     void operator()(const cppast::cpp_entity &file);
 
+    void finalize() {}
 private:
     clang::SourceManager &source_manager_;
 

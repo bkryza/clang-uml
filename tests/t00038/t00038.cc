@@ -32,7 +32,7 @@ struct key_t {
     std::string key;
 };
 
-template <typename T> struct map;
+template <typename T> struct map {};
 
 using namespace thirdparty::ns1;
 

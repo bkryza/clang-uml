@@ -63,6 +63,8 @@ public:
 
     //    void operator()();
 
+    void finalize();
+
 private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     process_class_declaration(clang::CXXRecordDecl *cls);
@@ -143,6 +145,8 @@ private:
         }
     }
 
+    void add_incomplete_forward_declarations();
+
     bool simplify_system_template(
         model::template_parameter &ct, const std::string &full_name);
 
@@ -153,5 +157,9 @@ private:
 
     // Reference to class diagram config
     const clanguml::config::class_diagram &config_;
+
+    std::map<common::model::diagram_element::id_t,
+        std::unique_ptr<clanguml::class_diagram::model::class_>>
+        forward_declarations_;
 };
 }
