@@ -20,6 +20,7 @@
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,9 @@ public:
 
     void set_type(const std::string &type);
     std::string type() const;
+
+    void set_id(const int64_t id) { id_ = id; }
+    std::optional<int64_t> id() const { return id_; }
 
     void set_name(const std::string &name);
     std::string name() const;
@@ -87,7 +91,7 @@ public:
     void clear_params() { template_params_.clear(); }
 
     void find_nested_relationships(
-        std::vector<std::pair<std::string, common::model::relationship_t>>
+        std::vector<std::pair<int64_t, common::model::relationship_t>>
             &nested_relationships,
         common::model::relationship_t hint,
         std::function<bool(const std::string &full_name)> condition) const;
@@ -116,5 +120,7 @@ private:
 
     // Nested template parameters
     std::vector<template_parameter> template_params_;
+
+    std::optional<int64_t> id_;
 };
 }

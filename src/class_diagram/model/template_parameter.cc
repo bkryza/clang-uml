@@ -153,7 +153,7 @@ std::string template_parameter::to_string(
 }
 
 void template_parameter::find_nested_relationships(
-    std::vector<std::pair<std::string, common::model::relationship_t>>
+    std::vector<std::pair<int64_t, common::model::relationship_t>>
         &nested_relationships,
     common::model::relationship_t hint,
     std::function<bool(const std::string &full_name)> condition) const
@@ -161,15 +161,16 @@ void template_parameter::find_nested_relationships(
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
     if (condition(name())) {
-        nested_relationships.push_back({to_string({}, false), hint});
+        if(id())
+            nested_relationships.push_back({id().value(), hint});
     }
     // Otherwise (e.g. this is a std::shared_ptr) and we're actually
     // interested what is stored inside it
     else {
         for (const auto &template_argument : template_params()) {
-            if (condition(template_argument.name())) {
+            if (condition(template_argument.name()) && template_argument.id()) {
                 nested_relationships.push_back(
-                    {template_argument.to_string({}, false), hint});
+                    {template_argument.id().value(), hint});
             }
             else {
                 template_argument.find_nested_relationships(

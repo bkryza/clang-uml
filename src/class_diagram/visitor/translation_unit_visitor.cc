@@ -271,6 +271,38 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     return true;
 }
 
+bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
+    clang::TypeAliasTemplateDecl *cls)
+{
+    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
+
+    auto *template_type_specialization_ptr =
+        cls->getTemplatedDecl()
+            ->getUnderlyingType()
+            ->getAs<clang::TemplateSpecializationType>();
+
+    if (template_type_specialization_ptr == nullptr)
+        return true;
+
+    //    cls->dump();
+
+    auto template_specialization_ptr =
+        build_template_instantiation(*template_type_specialization_ptr);
+
+    if (!template_specialization_ptr)
+        return true;
+
+    if (diagram_.should_include(*template_specialization_ptr)) {
+        LOG_DBG("Adding class {} with id {}",
+            template_specialization_ptr->full_name(),
+            template_specialization_ptr->id());
+        diagram_.add_class(std::move(template_specialization_ptr));
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitClassTemplateDecl(
     clang::ClassTemplateDecl *cls)
 {
@@ -281,7 +313,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (!cls->getTemplatedDecl()->isCompleteDefinition())
         return true;
 
-    auto c_ptr = process_class_declaration(cls->getTemplatedDecl());
+    auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
 
     if (!c_ptr)
         return true;
@@ -294,7 +326,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     process_template_parameters(*cls, *c_ptr);
 
-    if(!cls->getTemplatedDecl()->isCompleteDefinition()) {
+    process_class_declaration(*cls->getTemplatedDecl(), *c_ptr);
+
+    if (!cls->getTemplatedDecl()->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
@@ -327,13 +361,15 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isLocalClass())
         return true;
 
-    auto c_ptr = process_class_declaration(cls);
+    auto c_ptr = create_class_declaration(cls);
 
     if (!c_ptr)
         return true;
 
+    process_class_declaration(*cls, *c_ptr);
+
     auto id = c_ptr->id();
-    if(!cls->isCompleteDefinition()) {
+    if (!cls->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
@@ -347,7 +383,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     return true;
 }
 
-std::unique_ptr<class_> translation_unit_visitor::process_class_declaration(
+std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     clang::CXXRecordDecl *cls)
 {
     auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
@@ -377,17 +413,21 @@ std::unique_ptr<class_> translation_unit_visitor::process_class_declaration(
     if (!cls->isCompleteDefinition())
         return c_ptr;
 
+    return c_ptr;
+}
+
+void translation_unit_visitor::process_class_declaration(
+    const clang::CXXRecordDecl &cls, class_ &c)
+{
     // Process class child entities
-    process_class_children(cls, c);
+    process_class_children(&cls, c);
 
     // Process class bases
-    process_class_bases(cls, c);
+    process_class_bases(&cls, c);
 
-    if (cls->getParent()->isRecord()) {
-        process_record_containment(*cls, c);
+    if (cls.getParent()->isRecord()) {
+        process_record_containment(cls, c);
     }
-
-    return c_ptr;
 }
 
 bool translation_unit_visitor::process_template_parameters(
@@ -443,7 +483,7 @@ bool translation_unit_visitor::process_template_parameters(
         }
         else {
             LOG_DBG("============= UNKNOWN TEMPLATE PARAMETER TYPE:");
-            parameter->dump();
+            //            parameter->dump();
         }
     }
 
@@ -762,11 +802,56 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             type->getAs<clang::TemplateSpecializationType>();
 
         if (type_instantiation_decl != nullptr) {
+            if (type_instantiation_decl->isTypeAlias())
+                type_instantiation_decl =
+                    type_instantiation_decl->getAliasedType()
+                        ->getAs<clang::TemplateSpecializationType>();
+            //            if(type_instantiation_decl != nullptr)
+            //                type_instantiation_decl->dump();
+        }
+
+        if (type_instantiation_decl != nullptr) {
             for (const auto &template_argument : *type_instantiation_decl) {
-                if (template_argument.getKind() ==
-                    clang::TemplateArgument::ArgKind::Type)
+                const auto template_argument_kind = template_argument.getKind();
+                if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Integral) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Null) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Expression) {
+                    // pass
+                }
+                else if (template_argument.getKind() ==
+                    clang::TemplateArgument::ArgKind::NullPtr) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Template) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::TemplateExpansion) {
+                    // pass
+                }
+                else if (template_argument.getAsType()
+                             ->getAs<clang::FunctionProtoType>()) {
+                    for (const auto &param_type :
+                        template_argument.getAsType()
+                            ->getAs<clang::FunctionProtoType>()
+                            ->param_types()) {
+                        result = find_relationships(param_type, relationships,
+                            relationship_t::kDependency);
+                    }
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Type) {
                     result = find_relationships(template_argument.getAsType(),
                         relationships, relationship_hint);
+                }
             }
         }
         else {
@@ -991,6 +1076,8 @@ translation_unit_visitor::process_template_specialization(
                         *arg.getAsType()
                              ->getAs<clang::TemplateSpecializationType>());
 
+                argument.set_id(nested_template_instantiation->id());
+
                 for (const auto &t : nested_template_instantiation->templates())
                     argument.add_template_param(t);
 
@@ -1040,10 +1127,17 @@ translation_unit_visitor::process_template_specialization(
 }
 
 std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
-    const clang::TemplateSpecializationType &template_type,
+    const clang::TemplateSpecializationType &template_type_decl,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
     // TODO: Make sure we only build instantiation once
+
+    auto *template_type_ptr = &template_type_decl;
+    if (template_type_decl.isTypeAlias())
+        template_type_ptr = template_type_decl.getAliasedType()
+                                ->getAs<clang::TemplateSpecializationType>();
+
+    auto &template_type = *template_type_ptr;
 
     //
     // Create class_ instance to hold the template instantiation
@@ -1085,7 +1179,49 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
             // If this is a nested template type - add nested templates as
             // template arguments
-            if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+            if (arg.getAsType()->getAs<clang::FunctionProtoType>()) {
+                for (const auto &param_type :
+                    arg.getAsType()
+                        ->getAs<clang::FunctionProtoType>()
+                        ->param_types()) {
+
+                    std::string param_type_name;
+                    if(param_type->isRecordType()) {
+                        param_type_name =
+                            param_type->getAsRecordDecl()
+                                ->getQualifiedNameAsString();
+//                        param_type.getDesugaredType()dump();
+
+                        LOG_ERROR("### {}", param_type_name);
+                    }
+
+
+                    const auto* nested_template_type =
+                        param_type->getAs<clang::TemplateSpecializationType>();
+
+                    if(nested_template_type) {
+                        const auto nested_template_name =
+                            nested_template_type->getTemplateName()
+                                .getAsTemplateDecl()
+                                ->getQualifiedNameAsString();
+
+                        auto [tinst_ns, tinst_name] =
+                            cx::util::split_ns(nested_template_name);
+
+                        auto nested_template_instantiation =
+                            build_template_instantiation(
+                                *param_type
+                                     ->getAs<
+                                         clang::TemplateSpecializationType>(),
+                                diagram().should_include(tinst_ns, tinst_name)
+                                    ? std::make_optional(
+                                          &template_instantiation)
+                                    : parent);
+                    }
+                }
+            }
+            else if (arg.getAsType()
+                         ->getAs<clang::TemplateSpecializationType>()) {
                 const auto *nested_template_type =
                     arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -1094,13 +1230,20 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                         .getAsTemplateDecl()
                         ->getQualifiedNameAsString();
 
+                auto [tinst_ns, tinst_name] =
+                    cx::util::split_ns(nested_template_name);
+
                 argument.set_name(nested_template_name);
 
                 auto nested_template_instantiation =
                     build_template_instantiation(
                         *arg.getAsType()
                              ->getAs<clang::TemplateSpecializationType>(),
-                        parent);
+                        diagram().should_include(tinst_ns, tinst_name)
+                            ? std::make_optional(&template_instantiation)
+                            : parent);
+
+                argument.set_id(nested_template_instantiation->id());
 
                 for (const auto &t : nested_template_instantiation->templates())
                     argument.add_template_param(t);
@@ -1119,7 +1262,14 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                         std::move(nested_template_instantiation));
                 }
             }
+            else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+                argument.is_template_parameter(true);
+                argument.set_name(
+                    to_string(arg.getAsType(), template_decl->getASTContext()));
+            }
             else {
+                // This is just a regular type
+                argument.is_template_parameter(false);
                 argument.set_name(
                     to_string(arg.getAsType(), template_decl->getASTContext()));
             }
@@ -1142,7 +1292,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             template_instantiation.add_template(std::move(argument));
         }
         else {
-            LOG_ERROR("UNSUPPORTED ARGUMENT KIND FOR ARG {}", arg.getKind());
+            LOG_ERROR("Unsupported argument type {}", arg.getKind());
         }
 
         // In case any of the template arguments are base classes, add
@@ -1156,8 +1306,40 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         //        }
     }
 
-    if (diagram().has_element(
-            template_type.getTemplateName().getAsTemplateDecl()->getID())) {
+    // First try to find the best match for this template in partially
+    // specialized templates
+    std::string destination{};
+    std::string best_match_full_name{};
+    auto full_template_name = template_instantiation.full_name(false);
+    int best_match{};
+    common::model::diagram_element::id_t best_match_id{};
+
+    for (const auto c : diagram().classes()) {
+        if (c.get() == template_instantiation)
+            continue;
+
+        auto c_full_name = c.get().full_name(false);
+        auto match = c.get().calculate_template_specialization_match(
+            template_instantiation, template_instantiation.name_and_ns());
+
+        if (match > best_match) {
+            best_match = match;
+            best_match_full_name = c_full_name;
+            best_match_id = c.get().id();
+        }
+    }
+
+    if (!best_match_full_name.empty()) {
+        destination = best_match_full_name;
+        template_instantiation.add_relationship(
+            {relationship_t::kInstantiation, best_match_id});
+    }
+
+    // If we can't find optimal match for parent template specialization, just
+    // use whatever clang suggests
+    else if (diagram().has_element(template_type.getTemplateName()
+                                       .getAsTemplateDecl()
+                                       ->getID())) {
         template_instantiation.add_relationship({relationship_t::kInstantiation,
             template_type.getTemplateName().getAsTemplateDecl()->getID()});
     }
@@ -1198,31 +1380,86 @@ void translation_unit_visitor::process_field(
         field_type = field_type.getNonReferenceType();
     }
 
-    // Process field decorators
     const auto *template_field_type =
         field_type->getAs<clang::TemplateSpecializationType>();
 
     found_relationships_t relationships;
 
+    // TODO: Refactor to an unalias_type() method
+    if (template_field_type != nullptr)
+        if (template_field_type->isTypeAlias())
+            template_field_type =
+                template_field_type->getAliasedType()
+                    ->getAs<clang::TemplateSpecializationType>();
+
+    bool field_type_is_template_template_parameter{false};
     if (template_field_type != nullptr) {
+        // Skip types which are templatetemplate parameters of the parent
+        // template
+        for (const auto &class_template_param : c.templates()) {
+            if (class_template_param.name() ==
+                template_field_type->getTemplateName()
+                        .getAsTemplateDecl()
+                        ->getNameAsString() +
+                    "<>") {
+                field_type_is_template_template_parameter = true;
+            }
+        }
+    }
+
+    // Process the type which is template instantiation of some sort
+    if (template_field_type != nullptr &&
+        !field_type_is_template_template_parameter) {
         const auto template_field_decl_name =
             template_field_type->getTemplateName()
                 .getAsTemplateDecl()
                 ->getQualifiedNameAsString();
 
         auto template_specialization_ptr = build_template_instantiation(
-            *field_type->getAs<clang::TemplateSpecializationType>());
+            *field_type->getAs<clang::TemplateSpecializationType>(), {&c});
 
-        if (template_specialization_ptr &&
-            diagram().should_include(template_field_decl_name)) {
-            found_relationships_t::value_type r{
-                template_specialization_ptr->id(), relationship_hint};
+        if (template_specialization_ptr) {
+            if (diagram().should_include(
+                    template_specialization_ptr->full_name(false))) {
+                found_relationships_t::value_type r{
+                    template_specialization_ptr->id(), relationship_hint};
 
-            bool added =
-                diagram().add_class(std::move(template_specialization_ptr));
+                bool added =
+                    diagram().add_class(std::move(template_specialization_ptr));
 
-            if (added) {
-                relationships.emplace_back(std::move(r));
+                if (added) {
+                    relationships.emplace_back(std::move(r));
+                }
+            }
+            else if (!field.skip_relationship()) {
+                found_relationships_t nested_relationships;
+
+                //                for (const auto &cref : diagram().classes()) {
+                //                    LOG_ERROR("#### {} -> {}",
+                //                    cref.get().id(),
+                //                        cref.get().full_name(false));
+                //                }
+
+                for (const auto &template_argument :
+                    template_specialization_ptr->templates()) {
+                    template_argument.find_nested_relationships(
+                        nested_relationships, relationship_hint,
+                        [&d = diagram()](const std::string &full_name) {
+                            if (full_name.empty())
+                                return false;
+                            auto [ns, name] = cx::util::split_ns(full_name);
+                            return d.should_include(ns, name);
+                        });
+                }
+
+                add_relationships(c, field, nested_relationships);
+
+                //                // find relationship for the type
+                //                find_relationships(
+                //                    field_type, relationships,
+                //                    relationship_hint);
+                //
+                //                add_relationships(c, field, relationships);
             }
         }
     }
@@ -1247,16 +1484,18 @@ void translation_unit_visitor::set_source_location(
     }
 }
 
-void translation_unit_visitor::add_incomplete_forward_declarations() {
-    for(auto & [id, c] : forward_declarations_) {
-        if(diagram().should_include(c->full_name(false))) {
+void translation_unit_visitor::add_incomplete_forward_declarations()
+{
+    for (auto &[id, c] : forward_declarations_) {
+        if (diagram().should_include(c->full_name(false))) {
             diagram().add_class(std::move(c));
         }
     }
     forward_declarations_.clear();
 }
 
-void translation_unit_visitor::finalize() {
+void translation_unit_visitor::finalize()
+{
     add_incomplete_forward_declarations();
 }
 
