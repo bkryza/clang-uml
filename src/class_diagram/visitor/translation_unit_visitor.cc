@@ -78,13 +78,14 @@ std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
 }
 }
 
-std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx)
+std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
+    bool try_canonical = true)
 {
     const clang::PrintingPolicy print_policy(ctx.getLangOpts());
 
     auto result{type.getAsString(print_policy)};
 
-    if (result.find('<') != std::string::npos) {
+    if (try_canonical && result.find('<') != std::string::npos) {
         auto canonical_type_name =
             type.getCanonicalType().getAsString(print_policy);
 
@@ -103,6 +104,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx)
                 canonical_qualified_template_name + result_template_arguments;
         }
     }
+
+    util::replace_all(result, ", ", ",");
 
     return result;
 }
@@ -239,7 +242,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         return true;
     }
     else
-
         // Check if the class was already processed within
         // VisitClassTemplateDecl()
         if (diagram_.has_element(cls->getID()))
@@ -664,10 +666,11 @@ void translation_unit_visitor::process_class_children(
         }
     }
 
-    for (const auto *friend_declaration : cls->friends()) {
-        if (friend_declaration != nullptr)
-            process_friend(*friend_declaration, c);
-    }
+    if (cls->isCompleteDefinition())
+        for (const auto *friend_declaration : cls->friends()) {
+            if (friend_declaration != nullptr)
+                process_friend(*friend_declaration, c);
+        }
 }
 
 void translation_unit_visitor::process_friend(
@@ -765,8 +768,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     clanguml::common::model::relationship_t relationship_hint)
 {
     bool result = false;
-    std::string type_name = type.getAsString();
-    (void)type_name;
+    //    std::string type_name =
 
     if (type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;
@@ -793,10 +795,10 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationship_hint);
     }
     else if (type->isRecordType()) {
-        if (type_name.find("std::shared_ptr") == 0)
-            relationship_hint = relationship_t::kAssociation;
-        if (type_name.find("std::weak_ptr") == 0)
-            relationship_hint = relationship_t::kAssociation;
+        //        if (type_name.find("std::shared_ptr") == 0)
+        //            relationship_hint = relationship_t::kAssociation;
+        //        if (type_name.find("std::weak_ptr") == 0)
+        //            relationship_hint = relationship_t::kAssociation;
 
         const auto *type_instantiation_decl =
             type->getAs<clang::TemplateSpecializationType>();
@@ -1132,6 +1134,12 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 {
     // TODO: Make sure we only build instantiation once
 
+    //
+    // Here we'll hold the template base params to replace with the
+    // instantiated values
+    //
+    std::deque<std::tuple<std::string, int, bool>> template_base_params{};
+
     auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias())
         template_type_ptr = template_type_decl.getAliasedType()
@@ -1161,45 +1169,82 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     template_instantiation.set_id(template_decl->getID() +
         (std::hash<std::string>{}(full_template_specialization_name) >> 4));
 
+    // TODO: Refactor handling of base parameters to a separate method
+
+    // We need this to match any possible base classes coming from template
+    // arguments
+    std::vector<std::pair<std::string, bool>> template_parameter_names{};
+
+    for (const auto &parameter : *template_decl->getTemplateParameters()) {
+        template_parameter_names.emplace_back(
+            parameter->getNameAsString(), false);
+    }
+
+    // Check if the primary template has any base classes
+    int base_index = 0;
+    const auto *templated_class_decl =
+        clang::dyn_cast_or_null<clang::CXXRecordDecl>(
+            template_decl->getTemplatedDecl());
+    if (templated_class_decl && templated_class_decl->hasDefinition())
+        for (const auto &base : templated_class_decl->bases()) {
+            const auto base_class_name = to_string(
+                base.getType(), templated_class_decl->getASTContext(), false);
+
+            LOG_DBG("Found template instantiation base: {}, {}",
+                base_class_name, base_index);
+
+            // Check if any of the primary template arguments has a
+            // parameter equal to this type
+            auto it = std::find_if(template_parameter_names.begin(),
+                template_parameter_names.end(),
+                [&base_class_name](
+                    const auto &p) { return p.first == base_class_name; });
+
+            if (it != template_parameter_names.end()) {
+                // Found base class which is a template parameter
+                LOG_DBG("Found base class which is a template parameter "
+                        "{}, {}, {}",
+                    it->first, it->second,
+                    std::distance(template_parameter_names.begin(), it));
+
+                template_base_params.emplace_back(it->first, it->second,
+                    std::distance(template_parameter_names.begin(), it));
+            }
+            else {
+                // This is a regular base class - it is handled by
+                // process_template
+            }
+            //            }
+            base_index++;
+        }
+
+    // TODO: Refactor handling of template arguments to a separate method
+    auto arg_index = 0U;
     for (const auto &arg : template_type) {
         const auto argument_kind = arg.getKind();
-
+        template_parameter argument;
         if (argument_kind == clang::TemplateArgument::ArgKind::Template) {
-            template_parameter argument;
             argument.is_template_parameter(true);
             auto arg_name = arg.getAsTemplate()
                                 .getAsTemplateDecl()
                                 ->getQualifiedNameAsString();
             argument.set_type(arg_name);
-            template_instantiation.add_template(std::move(argument));
         }
         else if (argument_kind == clang::TemplateArgument::ArgKind::Type) {
-            template_parameter argument;
             argument.is_template_parameter(false);
 
             // If this is a nested template type - add nested templates as
             // template arguments
-            if (arg.getAsType()->getAs<clang::FunctionProtoType>()) {
+            if (arg.getAsType()->getAs<clang::FunctionType>()) {
                 for (const auto &param_type :
                     arg.getAsType()
                         ->getAs<clang::FunctionProtoType>()
                         ->param_types()) {
 
-                    std::string param_type_name;
-                    if(param_type->isRecordType()) {
-                        param_type_name =
-                            param_type->getAsRecordDecl()
-                                ->getQualifiedNameAsString();
-//                        param_type.getDesugaredType()dump();
-
-                        LOG_ERROR("### {}", param_type_name);
-                    }
-
-
-                    const auto* nested_template_type =
+                    const auto *nested_template_type =
                         param_type->getAs<clang::TemplateSpecializationType>();
 
-                    if(nested_template_type) {
+                    if (nested_template_type) {
                         const auto nested_template_name =
                             nested_template_type->getTemplateName()
                                 .getAsTemplateDecl()
@@ -1210,9 +1255,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
                         auto nested_template_instantiation =
                             build_template_instantiation(
-                                *param_type
-                                     ->getAs<
-                                         clang::TemplateSpecializationType>(),
+                                *param_type->getAs<
+                                    clang::TemplateSpecializationType>(),
                                 diagram().should_include(tinst_ns, tinst_name)
                                     ? std::make_optional(
                                           &template_instantiation)
@@ -1270,40 +1314,50 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             else {
                 // This is just a regular type
                 argument.is_template_parameter(false);
+                if (arg.getAsType()->getAs<clang::RecordType>() &&
+                    arg.getAsType()
+                        ->getAs<clang::RecordType>()
+                        ->getAsRecordDecl())
+                    argument.set_id(arg.getAsType()
+                                        ->getAs<clang::RecordType>()
+                                        ->getAsRecordDecl()
+                                        ->getID());
                 argument.set_name(
                     to_string(arg.getAsType(), template_decl->getASTContext()));
             }
-
-            template_instantiation.add_template(std::move(argument));
         }
         else if (argument_kind == clang::TemplateArgument::ArgKind::Integral) {
-            template_parameter argument;
             argument.is_template_parameter(false);
             argument.set_type(
                 std::to_string(arg.getAsIntegral().getExtValue()));
-            template_instantiation.add_template(std::move(argument));
         }
         else if (argument_kind ==
             clang::TemplateArgument::ArgKind::Expression) {
-            template_parameter argument;
             argument.is_template_parameter(false);
             argument.set_type(get_source_text(
                 arg.getAsExpr()->getSourceRange(), source_manager_));
-            template_instantiation.add_template(std::move(argument));
         }
         else {
             LOG_ERROR("Unsupported argument type {}", arg.getKind());
         }
 
+        // We can figure this only when we encounter variadic param in
+        // the list of template params, from then this variable is true
+        // and we can process following template parameters as belonging
+        // to the variadic tuple
+        auto has_variadic_params = false;
+
         // In case any of the template arguments are base classes, add
         // them as parents of the current template instantiation class
-        // TODO: Add to fix t000019
-        //        if (template_decl.) {
-        //            has_variadic_params =
-        //                build_template_instantiation_add_base_classes(tinst,
-        //                    template_base_params, arg_index,
-        //                    has_variadic_params, ct);
-        //        }
+        if (template_base_params.size() > 0) {
+            has_variadic_params = build_template_instantiation_add_base_classes(
+                template_instantiation, template_base_params, arg_index,
+                has_variadic_params, argument);
+        }
+
+        template_instantiation.add_template(std::move(argument));
+
+        arg_index++;
     }
 
     // First try to find the best match for this template in partially
@@ -1334,7 +1388,6 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         template_instantiation.add_relationship(
             {relationship_t::kInstantiation, best_match_id});
     }
-
     // If we can't find optimal match for parent template specialization, just
     // use whatever clang suggests
     else if (diagram().has_element(template_type.getTemplateName()
@@ -1347,11 +1400,44 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     return template_instantiation_ptr;
 }
 
+bool translation_unit_visitor::build_template_instantiation_add_base_classes(
+    class_ &tinst,
+    std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+    int arg_index, bool variadic_params, const template_parameter &ct) const
+{
+    bool add_template_argument_as_base_class = false;
+
+    auto [arg_name, is_variadic, index] = template_base_params.front();
+    if (variadic_params)
+        add_template_argument_as_base_class = true;
+    else {
+        variadic_params = is_variadic;
+        if (arg_index == index) {
+            add_template_argument_as_base_class = true;
+            template_base_params.pop_front();
+        }
+    }
+
+    if (add_template_argument_as_base_class && ct.id()) {
+        LOG_DBG("Adding template argument as base class '{}'",
+            ct.to_string({}, false));
+
+        class_parent cp;
+        cp.set_access(access_t::kPublic);
+        cp.set_name(ct.to_string({}, false));
+        cp.set_id(ct.id().value());
+
+        tinst.add_parent(std::move(cp));
+    }
+
+    return variadic_params;
+}
+
 void translation_unit_visitor::process_field(
     const clang::FieldDecl &field_declaration, class_ &c)
 {
     auto relationship_hint = relationship_t::kAggregation;
-    //    bool template_instantiation_added_as_aggregation{false};
+    bool template_instantiation_added_as_aggregation{false};
     auto field_type = field_declaration.getType();
     const auto field_name = field_declaration.getNameAsString();
     auto type_name = to_string(field_type, field_declaration.getASTContext());
@@ -1360,7 +1446,8 @@ void translation_unit_visitor::process_field(
 
     class_member field{
         detail::access_specifier_to_access_t(field_declaration.getAccess()),
-        field_name, type_name};
+        field_name,
+        to_string(field_type, field_declaration.getASTContext(), false)};
 
     process_comment(field_declaration, field);
     set_source_location(field_declaration, field);
@@ -1379,6 +1466,11 @@ void translation_unit_visitor::process_field(
     else if (field_type->isRValueReferenceType()) {
         field_type = field_type.getNonReferenceType();
     }
+
+    if (type_name.find("std::shared_ptr") == 0)
+        relationship_hint = relationship_t::kAssociation;
+    if (type_name.find("std::weak_ptr") == 0)
+        relationship_hint = relationship_t::kAssociation;
 
     const auto *template_field_type =
         field_type->getAs<clang::TemplateSpecializationType>();
@@ -1434,12 +1526,6 @@ void translation_unit_visitor::process_field(
             else if (!field.skip_relationship()) {
                 found_relationships_t nested_relationships;
 
-                //                for (const auto &cref : diagram().classes()) {
-                //                    LOG_ERROR("#### {} -> {}",
-                //                    cref.get().id(),
-                //                        cref.get().full_name(false));
-                //                }
-
                 for (const auto &template_argument :
                     template_specialization_ptr->templates()) {
                     template_argument.find_nested_relationships(
@@ -1452,19 +1538,15 @@ void translation_unit_visitor::process_field(
                         });
                 }
 
+                template_instantiation_added_as_aggregation =
+                    !nested_relationships.empty();
                 add_relationships(c, field, nested_relationships);
-
-                //                // find relationship for the type
-                //                find_relationships(
-                //                    field_type, relationships,
-                //                    relationship_hint);
-                //
-                //                add_relationships(c, field, relationships);
             }
         }
     }
 
-    if (!field.skip_relationship()) {
+    if (!field.skip_relationship() &&
+        !template_instantiation_added_as_aggregation) {
         // find relationship for the type
         find_relationships(field_type, relationships, relationship_hint);
 

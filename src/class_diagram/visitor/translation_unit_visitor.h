@@ -131,6 +131,12 @@ private:
         const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
+    bool build_template_instantiation_add_base_classes(
+        clanguml::class_diagram::model::class_ &tinst,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        int arg_index, bool variadic_params,
+        const clanguml::class_diagram::model::template_parameter &ct) const;
+
     void process_function_parameter_find_relationships_in_template(
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names,
