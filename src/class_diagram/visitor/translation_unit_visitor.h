@@ -121,7 +121,8 @@ private:
 
     void add_relationships(clanguml::class_diagram::model::class_ &c,
         const clanguml::class_diagram::model::class_member &field,
-        const found_relationships_t &relationships);
+        const found_relationships_t &relationships,
+        bool break_on_first_aggregation = false);
 
     void set_source_location(const clang::Decl &decl,
         clanguml::common::model::source_location &element);
@@ -141,6 +142,14 @@ private:
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names,
         const clang::TemplateSpecializationType &template_instantiation_type);
+
+    void process_unexposed_template_specialization_parameters(
+        const std::string &tspec, clanguml::class_diagram::model::template_parameter &tp,
+        clanguml::class_diagram::model::class_ &c);
+
+    bool find_relationships_in_unexposed_template_params(
+        const clanguml::class_diagram::model::template_parameter &ct,
+        found_relationships_t &relationships);
 
     template <typename ClangDecl>
     void process_comment(

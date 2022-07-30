@@ -47,6 +47,10 @@ TEST_CASE("t00025", "[test-case][class]")
         puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
     REQUIRE_THAT(
         puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
+    REQUIRE_THAT(
+        puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
+    REQUIRE_THAT(
+        puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

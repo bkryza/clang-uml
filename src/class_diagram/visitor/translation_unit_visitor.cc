@@ -267,6 +267,10 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         cls->getSpecializedTemplate()->getID()});
 
     if (diagram_.should_include(template_specialization)) {
+        LOG_DBG("Adding class template specialization {} with id {}",
+            template_specialization.full_name(false),
+            template_specialization.id());
+
         diagram_.add_class(std::move(template_specialization_ptr));
     }
 
@@ -287,8 +291,6 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     if (template_type_specialization_ptr == nullptr)
         return true;
 
-    //    cls->dump();
-
     auto template_specialization_ptr =
         build_template_instantiation(*template_type_specialization_ptr);
 
@@ -299,6 +301,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         LOG_DBG("Adding class {} with id {}",
             template_specialization_ptr->full_name(),
             template_specialization_ptr->id());
+
         diagram_.add_class(std::move(template_specialization_ptr));
     }
 
@@ -338,7 +341,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         forward_declarations_.erase(id);
 
     if (diagram_.should_include(*c_ptr)) {
-        LOG_DBG("Adding class {} with id {}", c_ptr->full_name(), c_ptr->id());
+        LOG_DBG("Adding class template {} with id {}", c_ptr->full_name(),
+            c_ptr->id());
+
         diagram_.add_class(std::move(c_ptr));
     }
 
@@ -352,7 +357,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         return true;
 
     // Templated records are handled by VisitClassTemplateDecl()
-    if (cls->isTemplated() || cls->isTemplateDecl())
+    if (cls->isTemplated() || cls->isTemplateDecl() ||
+        (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(cls) !=
+            nullptr))
         return true;
 
     // Check if the class was already processed within VisitClassTemplateDecl()
@@ -368,9 +375,11 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (!c_ptr)
         return true;
 
-    process_class_declaration(*cls, *c_ptr);
+    auto &class_model = *c_ptr;
 
-    auto id = c_ptr->id();
+    process_class_declaration(*cls, class_model);
+
+    auto id = class_model.id();
     if (!cls->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
@@ -378,7 +387,10 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     else
         forward_declarations_.erase(id);
 
-    if (diagram_.should_include(*c_ptr)) {
+    if (diagram_.should_include(class_model)) {
+        LOG_DBG("Adding class {} with id {}", class_model.full_name(),
+            class_model.id());
+
         diagram_.add_class(std::move(c_ptr));
     }
 
@@ -484,8 +496,7 @@ bool translation_unit_visitor::process_template_parameters(
             c.add_template(std::move(ct));
         }
         else {
-            LOG_DBG("============= UNKNOWN TEMPLATE PARAMETER TYPE:");
-            //            parameter->dump();
+            // pass
         }
     }
 
@@ -535,13 +546,17 @@ void translation_unit_visitor::process_class_bases(
                           .getAsTemplateDecl()
                           ->getID());
         }
+        else
+            // This could be a template parameter - we don't want it here
+            continue;
 
         cp.is_virtual(base.isVirtual());
 
         cp.set_access(
             detail::access_specifier_to_access_t(base.getAccessSpecifier()));
 
-        LOG_DBG("Found base class {} for class {}", cp.name(), c.name());
+        LOG_DBG("Found base class {} [{}] for class {}", cp.name(), cp.id(),
+            c.name());
 
         c.add_parent(std::move(cp));
     }
@@ -795,11 +810,6 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationship_hint);
     }
     else if (type->isRecordType()) {
-        //        if (type_name.find("std::shared_ptr") == 0)
-        //            relationship_hint = relationship_t::kAssociation;
-        //        if (type_name.find("std::weak_ptr") == 0)
-        //            relationship_hint = relationship_t::kAssociation;
-
         const auto *type_instantiation_decl =
             type->getAs<clang::TemplateSpecializationType>();
 
@@ -808,8 +818,6 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 type_instantiation_decl =
                     type_instantiation_decl->getAliasedType()
                         ->getAs<clang::TemplateSpecializationType>();
-            //            if(type_instantiation_decl != nullptr)
-            //                type_instantiation_decl->dump();
         }
 
         if (type_instantiation_decl != nullptr) {
@@ -901,9 +909,9 @@ void translation_unit_visitor::process_function_parameter(
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
 
-                LOG_DBG("Adding field relationship {} {} {} : {}",
-                    r.destination(),
-                    clanguml::common::model::to_string(r.type()), c.full_name(),
+                LOG_DBG(
+                    "Adding function parameter relationship from {} to {}: {}",
+                    c.full_name(), clanguml::common::model::to_string(r.type()),
                     r.label());
 
                 c.add_relationship(std::move(r));
@@ -966,7 +974,8 @@ void translation_unit_visitor::
 }
 
 void translation_unit_visitor::add_relationships(class_ &c,
-    const class_member &field, const found_relationships_t &relationships)
+    const class_member &field, const found_relationships_t &relationships,
+    bool break_on_first_aggregation)
 {
     auto [decorator_rtype, decorator_rmult] = field.get_relationship();
 
@@ -985,11 +994,15 @@ void translation_unit_visitor::add_relationships(class_ &c,
             }
             r.set_style(field.style_spec());
 
-            LOG_DBG("Adding field relationship {} {} {} : {}", r.destination(),
-                clanguml::common::model::to_string(r.type()), c.full_name(),
-                r.label());
+            LOG_DBG("Adding relationship from {} to {} with label {}",
+                c.full_name(false), r.destination(),
+                clanguml::common::model::to_string(r.type()), r.label());
 
             c.add_relationship(std::move(r));
+
+            if (break_on_first_aggregation &&
+                relationship_type == relationship_t::kAggregation)
+                break;
         }
     }
 }
@@ -1076,7 +1089,8 @@ translation_unit_visitor::process_template_specialization(
                 auto nested_template_instantiation =
                     build_template_instantiation(
                         *arg.getAsType()
-                             ->getAs<clang::TemplateSpecializationType>());
+                             ->getAs<clang::TemplateSpecializationType>(),
+                        {&template_instantiation});
 
                 argument.set_id(nested_template_instantiation->id());
 
@@ -1092,16 +1106,28 @@ translation_unit_visitor::process_template_specialization(
             else {
                 auto type_name =
                     to_string(arg.getAsType(), cls->getASTContext());
-                // Sometimes template instantiation is reported as RecordType in
-                // the AST and getAs to TemplateSpecializationType returns null
-                // pointer so we have to at least make sure it's properly
-                // formatted
-                // TODO: Change this to manual parsing of the template
-                // instantiation
-                if (type_name.find('<') != std::string::npos)
-                    util::replace_all(type_name, ", ", ",");
-                argument.set_name(type_name);
+                if (type_name.find('<') != std::string::npos) {
+                    // Sometimes template instantiation is reported as
+                    // RecordType in the AST and getAs to
+                    // TemplateSpecializationType returns null pointer so we
+                    // have to at least make sure it's properly formatted
+                    // (e.g. std:integral_constant, or any template
+                    // specialization which contains it - see t00038)
+                    process_unexposed_template_specialization_parameters(
+                        type_name.substr(type_name.find('<') + 1,
+                            type_name.size() - (type_name.find('<') + 2)),
+                        argument, template_instantiation);
+
+                    argument.set_name(type_name.substr(0, type_name.find('<')));
+                }
+                else
+                    // Otherwise just set the name for the template argument to
+                    // whatever clang says
+                    argument.set_name(type_name);
             }
+
+            LOG_DBG("Adding template instantiation argument {}",
+                argument.to_string(config().using_namespace(), false));
 
             template_instantiation.add_template(std::move(argument));
         }
@@ -1128,6 +1154,81 @@ translation_unit_visitor::process_template_specialization(
     return c_ptr;
 }
 
+void translation_unit_visitor::
+    process_unexposed_template_specialization_parameters(
+        const std::string &type_name, template_parameter &tp, class_ &c)
+{
+    auto template_params = cx::util::parse_unexposed_template_params(
+        type_name, [this](const std::string &t) {
+            //            auto full_type = ctx.get_name_with_namespace(t);
+            //            if (full_type.has_value())
+            //                return full_type.value().to_string();
+            return t;
+        });
+
+    found_relationships_t relationships;
+    for (auto &param : template_params) {
+        find_relationships_in_unexposed_template_params(param, relationships);
+        tp.add_template_param(param);
+    }
+
+    for (auto &r : relationships) {
+        c.add_relationship({std::get<1>(r), std::get<0>(r)});
+    }
+
+    //    const auto &primary_template_ref =
+    //        static_cast<const cppast::cpp_class_template &>(
+    //            tspec.value().primary_template().get(ctx.entity_index())[0].get())
+    //            .class_();
+
+    //    if (primary_template_ref.user_data()) {
+    //        auto base_template_full_name =
+    //            static_cast<const char *>(primary_template_ref.user_data());
+    //        LOG_DBG("Primary template ref set to: {}",
+    //        base_template_full_name);
+    //        // Add template specialization/instantiation
+    //        // relationship
+    //        c.add_relationship(
+    //            {relationship_t::kInstantiation, base_template_full_name});
+    //    }
+    //    else {
+    //        LOG_DBG(
+    //            "No user data for base template {}",
+    //            primary_template_ref.name());
+    //    }
+}
+
+bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
+    const template_parameter &ct, found_relationships_t &relationships)
+{
+    bool found{false};
+    LOG_DBG("Finding relationships in user defined type: {}",
+        ct.to_string(config().using_namespace(), false));
+
+    //    auto type_with_namespace = ctx.get_name_with_namespace(ct.type());
+    auto type_with_namespace =
+        std::make_optional<common::model::namespace_>(ct.type());
+
+    if (!type_with_namespace.has_value()) {
+        // Couldn't find declaration of this type
+        type_with_namespace = common::model::namespace_{ct.type()};
+    }
+
+    auto element_opt = diagram().get(type_with_namespace.value().to_string());
+    if (element_opt) {
+        relationships.emplace_back(
+            element_opt.value().get().id(), relationship_t::kDependency);
+        found = true;
+    }
+
+    for (const auto &nested_template_params : ct.template_params()) {
+        found = find_relationships_in_unexposed_template_params(
+                    nested_template_params, relationships) ||
+            found;
+    }
+    return found;
+}
+
 std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const clang::TemplateSpecializationType &template_type_decl,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
@@ -1138,7 +1239,9 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     // Here we'll hold the template base params to replace with the
     // instantiated values
     //
-    std::deque<std::tuple<std::string, int, bool>> template_base_params{};
+    std::deque<std::tuple</*parameter name*/ std::string, /* position */ int,
+        /*is variadic */ bool>>
+        template_base_params{};
 
     auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias())
@@ -1173,11 +1276,19 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     // We need this to match any possible base classes coming from template
     // arguments
-    std::vector<std::pair<std::string, bool>> template_parameter_names{};
-
-    for (const auto &parameter : *template_decl->getTemplateParameters()) {
-        template_parameter_names.emplace_back(
-            parameter->getNameAsString(), false);
+    std::vector<
+        std::pair</* parameter name */ std::string, /* is variadic */ bool>>
+        template_parameter_names{};
+    for (const auto *parameter : *template_decl->getTemplateParameters()) {
+        if (parameter->isTemplateParameter() &&
+            (parameter->isTemplateParameterPack() ||
+                parameter->isParameterPack())) {
+            template_parameter_names.emplace_back(
+                parameter->getNameAsString(), true);
+        }
+        else
+            template_parameter_names.emplace_back(
+                parameter->getNameAsString(), false);
     }
 
     // Check if the primary template has any base classes
@@ -1201,20 +1312,22 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                     const auto &p) { return p.first == base_class_name; });
 
             if (it != template_parameter_names.end()) {
+                const auto &parameter_name = it->first;
+                const bool is_variadic = it->second;
                 // Found base class which is a template parameter
                 LOG_DBG("Found base class which is a template parameter "
                         "{}, {}, {}",
-                    it->first, it->second,
+                    parameter_name, is_variadic,
                     std::distance(template_parameter_names.begin(), it));
 
-                template_base_params.emplace_back(it->first, it->second,
-                    std::distance(template_parameter_names.begin(), it));
+                template_base_params.emplace_back(parameter_name,
+                    std::distance(template_parameter_names.begin(), it),
+                    is_variadic);
             }
             else {
                 // This is a regular base class - it is handled by
                 // process_template
             }
-            //            }
             base_index++;
         }
 
@@ -1257,10 +1370,29 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                             build_template_instantiation(
                                 *param_type->getAs<
                                     clang::TemplateSpecializationType>(),
-                                diagram().should_include(tinst_ns, tinst_name)
+                                diagram().should_include(
+                                    full_template_specialization_name)
                                     ? std::make_optional(
                                           &template_instantiation)
                                     : parent);
+
+                        if (nested_template_instantiation &&
+                            diagram().should_include(
+                                full_template_specialization_name)) {
+                            if (diagram().should_include(
+                                    tinst_ns, tinst_name)) {
+                                template_instantiation.add_relationship(
+                                    {relationship_t::kDependency,
+                                        nested_template_instantiation->id()});
+                            }
+                            else {
+                                if (parent.has_value())
+                                    parent.value()->add_relationship(
+                                        {relationship_t::kDependency,
+                                            nested_template_instantiation
+                                                ->id()});
+                            }
+                        }
                     }
                 }
             }
@@ -1283,7 +1415,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                     build_template_instantiation(
                         *arg.getAsType()
                              ->getAs<clang::TemplateSpecializationType>(),
-                        diagram().should_include(tinst_ns, tinst_name)
+                        diagram().should_include(
+                            full_template_specialization_name)
                             ? std::make_optional(&template_instantiation)
                             : parent);
 
@@ -1297,6 +1430,23 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
                 // simply 'std::string')
                 simplify_system_template(argument,
                     argument.to_string(config().using_namespace(), false));
+
+                if (nested_template_instantiation &&
+                    diagram().should_include(
+                        nested_template_instantiation->full_name(false))) {
+                    if (diagram().should_include(
+                            full_template_specialization_name)) {
+                        template_instantiation.add_relationship(
+                            {relationship_t::kDependency,
+                                nested_template_instantiation->id()});
+                    }
+                    else {
+                        if (parent.has_value())
+                            parent.value()->add_relationship(
+                                {relationship_t::kDependency,
+                                    nested_template_instantiation->id()});
+                    }
+                }
 
                 auto nested_template_instantiation_full_name =
                     nested_template_instantiation->full_name(false);
@@ -1314,16 +1464,42 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
             else {
                 // This is just a regular type
                 argument.is_template_parameter(false);
+
+                argument.set_name(
+                    to_string(arg.getAsType(), template_decl->getASTContext()));
+
                 if (arg.getAsType()->getAs<clang::RecordType>() &&
                     arg.getAsType()
                         ->getAs<clang::RecordType>()
-                        ->getAsRecordDecl())
+                        ->getAsRecordDecl()) {
                     argument.set_id(arg.getAsType()
                                         ->getAs<clang::RecordType>()
                                         ->getAsRecordDecl()
                                         ->getID());
-                argument.set_name(
-                    to_string(arg.getAsType(), template_decl->getASTContext()));
+
+                    if (diagram().should_include(
+                            full_template_specialization_name)) {
+                        // Add dependency relationship to the parent template
+                        template_instantiation.add_relationship(
+                            {relationship_t::kDependency,
+                                arg.getAsType()
+                                    ->getAs<clang::RecordType>()
+                                    ->getAsRecordDecl()
+                                    ->getID()});
+                    }
+                }
+                else if (arg.getAsType()->getAs<clang::EnumType>()) {
+                    if (arg.getAsType()
+                            ->getAs<clang::EnumType>()
+                            ->getAsTagDecl()) {
+                        template_instantiation.add_relationship(
+                            {relationship_t::kDependency,
+                                arg.getAsType()
+                                    ->getAs<clang::EnumType>()
+                                    ->getAsTagDecl()
+                                    ->getID()});
+                    }
+                }
             }
         }
         else if (argument_kind == clang::TemplateArgument::ArgKind::Integral) {
@@ -1345,16 +1521,22 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         // the list of template params, from then this variable is true
         // and we can process following template parameters as belonging
         // to the variadic tuple
-        auto has_variadic_params = false;
+        auto variadic_params = false;
 
         // In case any of the template arguments are base classes, add
         // them as parents of the current template instantiation class
         if (template_base_params.size() > 0) {
-            has_variadic_params = build_template_instantiation_add_base_classes(
+            variadic_params = build_template_instantiation_add_base_classes(
                 template_instantiation, template_base_params, arg_index,
-                has_variadic_params, argument);
+                variadic_params, argument);
         }
 
+        LOG_DBG("Adding template argument {} to template "
+                "specialization/instantiation {}",
+            argument.name(), template_instantiation.name());
+
+        simplify_system_template(
+            argument, argument.to_string(config().using_namespace(), false));
         template_instantiation.add_template(std::move(argument));
 
         arg_index++;
@@ -1407,14 +1589,17 @@ bool translation_unit_visitor::build_template_instantiation_add_base_classes(
 {
     bool add_template_argument_as_base_class = false;
 
-    auto [arg_name, is_variadic, index] = template_base_params.front();
+    auto [arg_name, index, is_variadic] = template_base_params.front();
     if (variadic_params)
         add_template_argument_as_base_class = true;
     else {
         variadic_params = is_variadic;
-        if (arg_index == index) {
+        if ((arg_index == index) || (is_variadic && arg_index >= index)) {
             add_template_argument_as_base_class = true;
-            template_base_params.pop_front();
+            if (!is_variadic) {
+                // Don't remove the remaining variadic parameter
+                template_base_params.pop_front();
+            }
         }
     }
 
@@ -1436,11 +1621,20 @@ bool translation_unit_visitor::build_template_instantiation_add_base_classes(
 void translation_unit_visitor::process_field(
     const clang::FieldDecl &field_declaration, class_ &c)
 {
+    // Default hint for relationship is aggregation
     auto relationship_hint = relationship_t::kAggregation;
-    bool template_instantiation_added_as_aggregation{false};
+    // If the first type of the template instantiation of this field type
+    // has been added as aggregation relationship with class 'c', don't
+    // add it's nested template types as aggregation
+    [[maybe_unused]] bool template_instantiation_added_as_aggregation{false};
+    // The actual field type
     auto field_type = field_declaration.getType();
-    const auto field_name = field_declaration.getNameAsString();
+    // String representation of the field type
     auto type_name = to_string(field_type, field_declaration.getASTContext());
+    // The field name
+    const auto field_name = field_declaration.getNameAsString();
+    // If for any reason clang reports the type as empty string, make sure it
+    // has some default name
     if (type_name.empty())
         type_name = "<<anonymous>>";
 
@@ -1449,9 +1643,12 @@ void translation_unit_visitor::process_field(
         field_name,
         to_string(field_type, field_declaration.getASTContext(), false)};
 
+    // Parse the field comment
     process_comment(field_declaration, field);
+    // Register the source location of the field declaration
     set_source_location(field_declaration, field);
 
+    // If the comment contains a skip directive, just return
     if (field.skip())
         return;
 
@@ -1507,48 +1704,75 @@ void translation_unit_visitor::process_field(
                 .getAsTemplateDecl()
                 ->getQualifiedNameAsString();
 
+        // Build the template instantiation for the field type
         auto template_specialization_ptr = build_template_instantiation(
             *field_type->getAs<clang::TemplateSpecializationType>(), {&c});
 
-        if (template_specialization_ptr) {
+        if (!field.skip_relationship() && template_specialization_ptr) {
+            const auto &template_specialization = *template_specialization_ptr;
+
+            // Check if this template instantiation should be added to the
+            // current diagram. Even if the top level template type for
+            // this instantiation should not be part of the diagram, e.g. it's
+            // a std::vector<>, it's nested types might be added
+            bool add_template_instantiation_to_diargam{false};
             if (diagram().should_include(
-                    template_specialization_ptr->full_name(false))) {
+                    template_specialization.full_name(false))) {
+
                 found_relationships_t::value_type r{
-                    template_specialization_ptr->id(), relationship_hint};
+                    template_specialization.id(), relationship_hint};
 
-                bool added =
-                    diagram().add_class(std::move(template_specialization_ptr));
+                add_template_instantiation_to_diargam = true;
 
-                if (added) {
-                    relationships.emplace_back(std::move(r));
-                }
-            }
-            else if (!field.skip_relationship()) {
-                found_relationships_t nested_relationships;
-
-                for (const auto &template_argument :
-                    template_specialization_ptr->templates()) {
-                    template_argument.find_nested_relationships(
-                        nested_relationships, relationship_hint,
-                        [&d = diagram()](const std::string &full_name) {
-                            if (full_name.empty())
-                                return false;
-                            auto [ns, name] = cx::util::split_ns(full_name);
-                            return d.should_include(ns, name);
-                        });
-                }
-
+                // If the template instantiation for the build type has been
+                // added as aggregation, skip its nested templates
                 template_instantiation_added_as_aggregation =
-                    !nested_relationships.empty();
-                add_relationships(c, field, nested_relationships);
+                    relationship_hint == relationship_t::kAggregation;
+                relationships.emplace_back(std::move(r));
             }
+
+            // Try to find relationships to types nested in the template
+            // instantiation
+            found_relationships_t nested_relationships;
+            if (!template_instantiation_added_as_aggregation) {
+                for (const auto &template_argument :
+                    template_specialization.templates()) {
+
+                    LOG_DBG("Looking for nested relationships from {}:{} in "
+                            "template {}",
+                        c.full_name(false), field_name,
+                        template_argument.to_string(
+                            config().using_namespace(), false));
+
+                    template_instantiation_added_as_aggregation =
+                        template_argument.find_nested_relationships(
+                            nested_relationships, relationship_hint,
+                            [&d = diagram()](const std::string &full_name) {
+                                if (full_name.empty())
+                                    return false;
+                                auto [ns, name] = cx::util::split_ns(full_name);
+                                return d.should_include(ns, name);
+                            });
+                }
+
+                // Add any relationships to the class 'c' to the diagram, unless
+                // the top level type has been added as aggregation
+                add_relationships(c, field, nested_relationships,
+                    /* break on first aggregation */ false);
+            }
+
+            // Add the template instantiation object to the diagram if it
+            // matches the include pattern
+            if (add_template_instantiation_to_diargam)
+                diagram().add_class(std::move(template_specialization_ptr));
         }
     }
 
-    if (!field.skip_relationship() &&
-        !template_instantiation_added_as_aggregation) {
-        // find relationship for the type
-        find_relationships(field_type, relationships, relationship_hint);
+    if (!field.skip_relationship()) {
+        // Find relationship for the type if the type has not been added
+        // as aggregation
+        if (!template_instantiation_added_as_aggregation)
+            find_relationships(field_type, relationships, relationship_hint);
 
         add_relationships(c, field, relationships);
     }

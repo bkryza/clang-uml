@@ -152,32 +152,45 @@ std::string template_parameter::to_string(
     return res;
 }
 
-void template_parameter::find_nested_relationships(
+bool template_parameter::find_nested_relationships(
     std::vector<std::pair<int64_t, common::model::relationship_t>>
         &nested_relationships,
     common::model::relationship_t hint,
-    std::function<bool(const std::string &full_name)> condition) const
+    std::function<bool(const std::string &full_name)> should_include) const
 {
+    bool added_aggregation_relationship{false};
+
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
-    if (condition(name())) {
-        if(id())
+    if (should_include(name())) {
+        if (id()) {
             nested_relationships.push_back({id().value(), hint});
+            added_aggregation_relationship =
+                (hint == common::model::relationship_t::kAggregation);
+        }
     }
     // Otherwise (e.g. this is a std::shared_ptr) and we're actually
     // interested what is stored inside it
     else {
         for (const auto &template_argument : template_params()) {
-            if (condition(template_argument.name()) && template_argument.id()) {
+            if (should_include(template_argument.name()) &&
+                template_argument.id()) {
+
                 nested_relationships.push_back(
                     {template_argument.id().value(), hint});
+
+                added_aggregation_relationship =
+                    (hint == common::model::relationship_t::kAggregation);
             }
             else {
-                template_argument.find_nested_relationships(
-                    nested_relationships, hint, condition);
+                added_aggregation_relationship =
+                    template_argument.find_nested_relationships(
+                        nested_relationships, hint, should_include);
             }
         }
     }
+
+    return added_aggregation_relationship;
 }
 
 }

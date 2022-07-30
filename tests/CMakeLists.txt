@@ -13,12 +13,13 @@ file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 
 set(CLANG_UML_TEST_LIBRARIES
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
-        ${LIBTOOLING_LIBS}
         clang-umllib
         cppast
+        ${YAML_CPP_LIBRARIES}
+        ${LIBTOOLING_LIBS}
+        ${LIBCLANG_LIBRARIES}
         Threads::Threads)
+
 
 set(CLANG_UML_TEST_UTIL_SRC test_util.cc ${TEST_UTIL_SOURCES})
 set(CLANG_UML_TEST_UTIL_HEADER catch.h)

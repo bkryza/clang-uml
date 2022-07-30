@@ -45,6 +45,7 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("A", "long,float"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "double,float"));
     REQUIRE_THAT(puml, IsClassTemplate("A", "bool,std::string"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "std::string,std::string"));
 //    REQUIRE_THAT(puml, IsClassTemplate("A", "char,std::string"));
     REQUIRE_THAT(puml, IsClass(_A("B")));
 

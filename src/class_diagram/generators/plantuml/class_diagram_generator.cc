@@ -177,7 +177,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}",
+        LOG_DBG("Processing relationship {}",
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::string destination;
@@ -188,8 +188,6 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             //       name
             if (util::starts_with(destination, std::string{"::"}))
                 destination = destination.substr(2, destination.size());
-
-            LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
             if (!r.multiplicity_source().empty())
@@ -205,7 +203,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             }
         }
         catch (error::uml_alias_missing &e) {
-            LOG_DBG("=== Skipping {} relation from {} to {} due "
+            LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
                 plantuml_common::to_plantuml(r.type(), r.style()),
                 c.full_name(), destination, e.what());
@@ -267,14 +265,6 @@ void generator::generate_relationships(
         clanguml::common::id_t destination;
         try {
             destination = r.destination();
-
-            // TODO: Refactor destination to a namespace qualified entity
-            //       name
-            //            if (util::starts_with(destination, std::string{"::"}))
-            //                destination = destination.substr(2,
-            //                destination.size());
-
-            LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
             if (!r.multiplicity_source().empty())

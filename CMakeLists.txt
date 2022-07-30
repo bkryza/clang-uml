@@ -88,6 +88,7 @@ set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 
 set(LIBTOOLING_LIBS
+        clangLex
         clangFrontend
         clangSerialization
         clangDriver
@@ -105,13 +106,14 @@ set(LIBTOOLING_LIBS
         LLVMTransformUtils
         LLVMAnalysis
         LLVMTarget
-        LLVMOption # Support
-        LLVMMCParser # MC, Support
-        LLVMMC # Object, Support
-        LLVMObject # BitReader, Core, Support
-        LLVMBitReader # Core, Support
-        LLVMCore # Support
-        LLVMSupport)
+        LLVMOption
+        LLVMMCParser
+        LLVMMC
+        LLVMObject
+        LLVMBitReader
+        LLVMCore
+        LLVMSupport
+        )
 
 add_library(clang-umllib OBJECT ${SOURCES})
 

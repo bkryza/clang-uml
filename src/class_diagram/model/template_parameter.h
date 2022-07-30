@@ -90,11 +90,11 @@ public:
 
     void clear_params() { template_params_.clear(); }
 
-    void find_nested_relationships(
+    bool find_nested_relationships(
         std::vector<std::pair<int64_t, common::model::relationship_t>>
             &nested_relationships,
         common::model::relationship_t hint,
-        std::function<bool(const std::string &full_name)> condition) const;
+        std::function<bool(const std::string &full_name)> should_include) const;
 
 private:
     /// Represents the type of non-type template parameters

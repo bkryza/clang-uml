@@ -146,17 +146,22 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
 {
     using namespace clanguml::util;
 
-    //    const auto &uns = m_config.using_namespace();
+    const auto &uns = m_config.using_namespace();
 
     // Generate layout hints
     for (const auto &[entity_name, hints] : m_config.layout()) {
         for (const auto &hint : hints) {
             std::stringstream hint_str;
             try {
-                auto element_opt = m_model.get(
-                    m_config.using_namespace().relative(entity_name));
-                auto hint_element_opt = m_model.get(
-                    m_config.using_namespace().relative(hint.entity));
+                auto element_opt = m_model.get(entity_name);
+                if (!element_opt)
+                    element_opt = m_model.get((uns | entity_name).to_string());
+
+                auto hint_element_opt = m_model.get(hint.entity);
+                if (!hint_element_opt)
+                    hint_element_opt =
+                        m_model.get((uns | hint.entity).to_string());
+
                 if (!element_opt || !hint_element_opt)
                     continue;
                 hint_str << element_opt.value().get().alias() << " -[hidden]"
