@@ -67,7 +67,8 @@ public:
         return false;
     }
 
-    virtual bool should_include(const namespace_ &ns, const std::string &name) const;
+    virtual bool should_include(
+        const namespace_ &ns, const std::string &name) const;
 
 private:
     std::string name_;

@@ -25,7 +25,8 @@ namespace ns2 {
 namespace ns22 {
 
 // TODO: Fix for incomplete struct C declaration "struct C;"
-struct C {};
+struct C {
+};
 
 }
 }

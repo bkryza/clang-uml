@@ -144,7 +144,8 @@ private:
         const clang::TemplateSpecializationType &template_instantiation_type);
 
     void process_unexposed_template_specialization_parameters(
-        const std::string &tspec, clanguml::class_diagram::model::template_parameter &tp,
+        const std::string &tspec,
+        clanguml::class_diagram::model::template_parameter &tp,
         clanguml::class_diagram::model::class_ &c);
 
     bool find_relationships_in_unexposed_template_params(

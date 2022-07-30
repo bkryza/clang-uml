@@ -48,7 +48,8 @@ TEST_CASE("t00017", "[test-case][class]")
 
     REQUIRE_THAT(puml, (IsField<Private>("some_int", "int")));
     REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer", "int *")));
-    REQUIRE_THAT(puml, (IsField<Private>("some_int_pointer_pointer", "int **")));
+    REQUIRE_THAT(
+        puml, (IsField<Private>("some_int_pointer_pointer", "int **")));
 
     // Relationship members should not be rendered as part of this testcase
     REQUIRE_THAT(puml, !(IsField<Private>("a", _A("A"))));

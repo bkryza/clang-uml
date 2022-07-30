@@ -37,8 +37,8 @@
 
 #include "catch.h"
 
-#include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/CompilationDatabase.h>
+#include <clang/Tooling/Tooling.h>
 
 #include <algorithm>
 #include <complex>
@@ -52,7 +52,8 @@ using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
 using namespace clanguml::util;
 
-std::pair<clanguml::config::config, std::unique_ptr<clang::tooling::CompilationDatabase>>
+std::pair<clanguml::config::config,
+    std::unique_ptr<clang::tooling::CompilationDatabase>>
 load_config(const std::string &test_name);
 
 std::string generate_sequence_puml(

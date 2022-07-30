@@ -106,9 +106,8 @@ int main(int argc, const char *argv[])
 
     std::string err{};
 
-    auto db =
-        clang::tooling::CompilationDatabase::autoDetectFromDirectory(
-            config.compilation_database_dir(), err);
+    auto db = clang::tooling::CompilationDatabase::autoDetectFromDirectory(
+        config.compilation_database_dir(), err);
 
     if (!err.empty()) {
         LOG_ERROR("Failed to load compilation database from {}",

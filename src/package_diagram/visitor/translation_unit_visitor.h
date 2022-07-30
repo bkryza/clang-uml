@@ -34,13 +34,14 @@
 namespace clanguml::package_diagram::visitor {
 
 class translation_unit_visitor
-    : public clang::RecursiveASTVisitor<translation_unit_visitor>{
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
     translation_unit_visitor(clang::SourceManager &sm,
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
 
-    void finalize() {}
+    void finalize() { }
+
 private:
     clang::SourceManager &source_manager_;
 

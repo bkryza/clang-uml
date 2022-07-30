@@ -86,7 +86,7 @@ inja::json diagram_element::context() const
 bool operator==(const diagram_element &l, const diagram_element &r)
 {
     return l.id() == r.id();
-    //return l.full_name(false) == r.full_name(false);
+    // return l.full_name(false) == r.full_name(false);
 }
 
 std::ostream &operator<<(std::ostream &out, const diagram_element &rhs)

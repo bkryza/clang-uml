@@ -41,7 +41,7 @@ load_config(const std::string &test_name)
         clang::tooling::CompilationDatabase::autoDetectFromDirectory(
             config.compilation_database_dir(), err);
 
-    if(!err.empty())
+    if (!err.empty())
         throw std::runtime_error{err};
 
     return std::make_pair(std::move(config), std::move(compilation_database));

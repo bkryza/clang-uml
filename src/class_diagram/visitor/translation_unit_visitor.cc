@@ -245,7 +245,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         // Check if the class was already processed within
         // VisitClassTemplateDecl()
         if (diagram_.has_element(cls->getID()))
-            return true;
+        return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())

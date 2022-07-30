@@ -46,8 +46,8 @@ TEST_CASE("t00016", "[test-case][class]")
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<bool>")));
     REQUIRE_THAT(
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<char>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

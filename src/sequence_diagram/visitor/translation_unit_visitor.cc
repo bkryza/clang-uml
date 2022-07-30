@@ -22,7 +22,6 @@
 #include "cx/util.h"
 #include "translation_unit_context.h"
 
-
 namespace clanguml::sequence_diagram::visitor {
 
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
@@ -33,7 +32,6 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     , config_{config}
 {
 }
-
 
 /*
 void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
