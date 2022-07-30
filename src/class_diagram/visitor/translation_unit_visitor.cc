@@ -163,6 +163,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     p->set_name(name);
     p->set_namespace(package_parent);
+    p->set_id(ns->getID());
 
     if (diagram().should_include(*p)) {
         process_comment(*ns, *p);
