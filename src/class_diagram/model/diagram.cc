@@ -25,8 +25,7 @@
 
 namespace clanguml::class_diagram::model {
 
-const std::vector<std::reference_wrapper<class_>> &
-diagram::classes() const
+const std::vector<std::reference_wrapper<class_>> &diagram::classes() const
 {
     return classes_;
 }

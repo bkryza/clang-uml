@@ -83,7 +83,7 @@ public:
     std::shared_ptr<A::AA::A3::CC> cc_;
     std::map<std::string, std::unique_ptr<A::AA::A4::CD>> *cd_;
     std::array<A::AA::A15::CO, 5> co_;
-    static A::AA::A16::CP* cp_;
+    static A::AA::A16::CP *cp_;
 
     CBA() = default;
 
@@ -98,7 +98,7 @@ public:
     std::shared_ptr<A::AA::A7::CG> cg() { return {}; }
 
     template <typename T>
-    void ch(std::map<T, std::shared_ptr<A::AA::A8::CH>> & ch_)
+    void ch(std::map<T, std::shared_ptr<A::AA::A8::CH>> &ch_)
     {
     }
 

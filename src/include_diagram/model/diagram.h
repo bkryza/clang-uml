@@ -54,8 +54,7 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
-    const common::reference_vector<common::model::source_file> &
-    files() const;
+    const common::reference_vector<common::model::source_file> &files() const;
 
 private:
     common::reference_vector<common::model::source_file> files_;

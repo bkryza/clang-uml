@@ -39,10 +39,8 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << p.alias()
-                       << " ..> "
-                       << m_model.to_alias(r.destination())
-                       << '\n';
+                relstr << p.alias() << " ..> "
+                       << m_model.to_alias(r.destination()) << '\n';
                 ostr << relstr.str();
             }
             catch (error::uml_alias_missing &e) {

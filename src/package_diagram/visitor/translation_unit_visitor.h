@@ -86,7 +86,8 @@ private:
         common::model::relationship_t relationship_hint =
             common::model::relationship_t::kDependency);
 
-    void add_relationships(clang::DeclContext *cls, found_relationships_t &relationships);
+    void add_relationships(
+        clang::DeclContext *cls, found_relationships_t &relationships);
 
     template <typename ClangDecl>
     void process_comment(
