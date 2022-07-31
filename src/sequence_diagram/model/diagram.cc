@@ -34,6 +34,12 @@ common::optional_ref<common::model::diagram_element> diagram::get(
     return {};
 }
 
+common::optional_ref<common::model::diagram_element> diagram::get(
+    const common::model::diagram_element::id_t /*id*/) const
+{
+    return {};
+}
+
 std::string diagram::to_alias(const std::string &full_name) const
 {
     return full_name;

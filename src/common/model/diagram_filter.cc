@@ -63,14 +63,14 @@ const clanguml::common::optional_ref<class_diagram::model::class_> get(
 }
 
 template <>
-const clanguml::common::optional_ref<const common::model::package> get(
+const clanguml::common::optional_ref<common::model::package> get(
     const package_diagram::model::diagram &d, const std::string &full_name)
 {
     return d.get_package(full_name);
 }
 
 template <>
-const clanguml::common::optional_ref<const common::model::source_file> get(
+const clanguml::common::optional_ref<common::model::source_file> get(
     const include_diagram::model::diagram &d, const std::string &full_name)
 {
     return d.get_file(full_name);

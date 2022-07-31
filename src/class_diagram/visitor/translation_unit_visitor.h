@@ -58,12 +58,9 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
-    //    virtual bool VisitVarDecl(clang::VarDecl *variable_declaration);
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
     const clanguml::config::class_diagram &config() const { return config_; }
-
-    //    void operator()();
 
     void finalize();
 

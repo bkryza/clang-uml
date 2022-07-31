@@ -783,8 +783,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     found_relationships_t &relationships,
     clanguml::common::model::relationship_t relationship_hint)
 {
-    bool result = false;
-    //    std::string type_name =
+    bool result{false};
 
     if (type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;

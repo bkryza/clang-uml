@@ -27,10 +27,10 @@ namespace clanguml::common {
 using id_t = int64_t;
 
 template <typename T>
-using optional_ref = std::optional<std::reference_wrapper<const T>>;
+using optional_ref = std::optional<std::reference_wrapper<T>>;
 
 template <typename T>
-using reference_vector = std::vector<std::reference_wrapper<const T>>;
+using reference_vector = std::vector<std::reference_wrapper<T>>;
 
 template <typename T>
 using reference_set = std::unordered_set<std::reference_wrapper<const T>>;

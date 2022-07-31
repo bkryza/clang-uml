@@ -44,6 +44,9 @@ public:
     common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
 
+    common::optional_ref<common::model::diagram_element> get(
+        const common::model::diagram_element::id_t id) const override;
+
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 
     common::optional_ref<common::model::source_file> get_file(
@@ -51,11 +54,11 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
-    const common::reference_vector<const common::model::source_file> &
+    const common::reference_vector<common::model::source_file> &
     files() const;
 
 private:
-    common::reference_vector<const common::model::source_file> files_;
+    common::reference_vector<common::model::source_file> files_;
 };
 }
 

@@ -28,8 +28,7 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kPackage;
 }
 
-const std::vector<
-    std::reference_wrapper<const clanguml::common::model::package>> &
+const std::vector<std::reference_wrapper<clanguml::common::model::package>> &
 diagram::packages() const
 {
     return packages_;
@@ -46,7 +45,7 @@ void diagram::add_package(std::unique_ptr<common::model::package> &&p)
     add_element(ns, std::move(p));
 }
 
-std::optional<std::reference_wrapper<const common::model::package>>
+std::optional<std::reference_wrapper<common::model::package>>
 diagram::get_package(const std::string &name) const
 {
     for (const auto &p : packages_) {
@@ -59,30 +58,42 @@ diagram::get_package(const std::string &name) const
     return {};
 }
 
-std::optional<
-    std::reference_wrapper<const clanguml::common::model::diagram_element>>
+std::optional<std::reference_wrapper<common::model::package>>
+diagram::get_package(
+    const clanguml::common::model::diagram_element::id_t id) const
+{
+    for (const auto &p : packages_) {
+        if (p.get().id() == id) {
+            return {p};
+        }
+    }
+
+    return {};
+}
+
+std::optional<std::reference_wrapper<clanguml::common::model::diagram_element>>
 diagram::get(const std::string &full_name) const
 {
     return get_package(full_name);
 }
 
-std::string diagram::to_alias(const std::string &full_name) const
+std::optional<std::reference_wrapper<clanguml::common::model::diagram_element>>
+diagram::get(const clanguml::common::model::diagram_element::id_t id) const
 {
-    LOG_DBG("Looking for alias for {}", full_name);
+    return get_package(id);
+}
 
-    auto path = common::model::namespace_{full_name};
+std::string diagram::to_alias(
+    const clanguml::common::model::diagram_element::id_t id) const
+{
+    LOG_DBG("Looking for alias for {}", id);
 
-    if (path.is_empty())
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", path.to_string()));
+    for (const auto &p : packages_) {
+        if (p.get().id() == id)
+            return p.get().alias();
+    }
 
-    auto package = get_element<common::model::package>(path);
-
-    if (!package)
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", path.to_string()));
-
-    return package.value().alias();
+    return {};
 }
 }
 

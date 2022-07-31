@@ -245,14 +245,14 @@ using namespace clanguml::test::matchers;
 ////
 //// Package diagram tests
 ////
-//#include "t30001/test_case.h"
-//#include "t30002/test_case.h"
-//#include "t30003/test_case.h"
-//#include "t30004/test_case.h"
-//#include "t30005/test_case.h"
-//#include "t30006/test_case.h"
-//#include "t30007/test_case.h"
-//#include "t30008/test_case.h"
+#include "t30001/test_case.h"
+#include "t30002/test_case.h"
+#include "t30003/test_case.h"
+#include "t30004/test_case.h"
+#include "t30005/test_case.h"
+#include "t30006/test_case.h"
+#include "t30007/test_case.h"
+#include "t30008/test_case.h"
 //
 ////
 //// Include diagram tests

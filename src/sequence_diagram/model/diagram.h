@@ -40,6 +40,9 @@ public:
     common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
 
+    common::optional_ref<common::model::diagram_element> get(
+        const common::model::diagram_element::id_t id) const override;
+
     std::string to_alias(const std::string &full_name) const;
 
     bool started{false};

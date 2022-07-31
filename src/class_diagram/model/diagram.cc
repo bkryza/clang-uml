@@ -25,13 +25,13 @@
 
 namespace clanguml::class_diagram::model {
 
-const std::vector<std::reference_wrapper<const class_>> &
+const std::vector<std::reference_wrapper<class_>> &
 diagram::classes() const
 {
     return classes_;
 }
 
-const std::vector<std::reference_wrapper<const enum_>> &diagram::enums() const
+const std::vector<std::reference_wrapper<enum_>> &diagram::enums() const
 {
     return enums_;
 }
@@ -41,14 +41,11 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kClass;
 }
 
-std::optional<
-    std::reference_wrapper<const clanguml::common::model::diagram_element>>
+std::optional<std::reference_wrapper<clanguml::common::model::diagram_element>>
 diagram::get(const std::string &full_name) const
 {
-    // type_safe::optional_ref<const clanguml::common::model::diagram_element>
-    // res;
     std::optional<
-        std::reference_wrapper<const clanguml::common::model::diagram_element>>
+        std::reference_wrapper<clanguml::common::model::diagram_element>>
         res;
 
     res = get_class(full_name);
@@ -57,6 +54,23 @@ diagram::get(const std::string &full_name) const
         return res;
 
     res = get_enum(full_name);
+
+    return res;
+}
+
+std::optional<std::reference_wrapper<clanguml::common::model::diagram_element>>
+diagram::get(const clanguml::common::model::diagram_element::id_t id) const
+{
+    std::optional<
+        std::reference_wrapper<clanguml::common::model::diagram_element>>
+        res;
+
+    res = get_class(id);
+
+    if (res.has_value())
+        return res;
+
+    res = get_enum(id);
 
     return res;
 }
@@ -73,7 +87,7 @@ bool diagram::has_enum(const enum_ &e) const
         [&e](const auto &ee) { return ee.get().full_name() == e.full_name(); });
 }
 
-std::optional<std::reference_wrapper<const class_>> diagram::get_class(
+std::optional<std::reference_wrapper<class_>> diagram::get_class(
     const std::string &name) const
 {
     for (const auto &c : classes_) {
@@ -87,7 +101,7 @@ std::optional<std::reference_wrapper<const class_>> diagram::get_class(
     return {};
 }
 
-std::optional<std::reference_wrapper<const class_>> diagram::get_class(
+std::optional<std::reference_wrapper<class_>> diagram::get_class(
     clanguml::common::model::diagram_element::id_t id) const
 {
     for (const auto &c : classes_) {
@@ -99,11 +113,23 @@ std::optional<std::reference_wrapper<const class_>> diagram::get_class(
     return {};
 }
 
-std::optional<std::reference_wrapper<const enum_>> diagram::get_enum(
+std::optional<std::reference_wrapper<enum_>> diagram::get_enum(
     const std::string &name) const
 {
     for (const auto &e : enums_) {
         if (e.get().full_name(false) == name) {
+            return {e};
+        }
+    }
+
+    return {};
+}
+
+std::optional<std::reference_wrapper<enum_>> diagram::get_enum(
+    clanguml::common::model::diagram_element::id_t id) const
+{
+    for (const auto &e : enums_) {
+        if (e.get().id() == id) {
             return {e};
         }
     }
@@ -149,7 +175,7 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     auto name = base_name;
     auto name_with_ns = c->name_and_ns();
     auto name_and_ns = ns | name;
-    const auto &cc = *c;
+    auto &cc = *c;
 
     auto cc_ref = std::ref(cc);
 

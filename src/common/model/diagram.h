@@ -34,13 +34,18 @@ class relationship;
 class diagram {
 public:
     diagram();
+
     virtual ~diagram();
 
     virtual diagram_t type() const = 0;
 
     virtual std::optional<
-        std::reference_wrapper<const clanguml::common::model::diagram_element>>
+        std::reference_wrapper<clanguml::common::model::diagram_element>>
     get(const std::string &full_name) const = 0;
+
+    virtual std::optional<
+        std::reference_wrapper<clanguml::common::model::diagram_element>>
+    get(const diagram_element::id_t id) const = 0;
 
     diagram(const diagram &) = delete;
     diagram(diagram &&);
@@ -62,6 +67,7 @@ public:
     bool should_include(const relationship r) const;
     bool should_include(const relationship_t r) const;
     bool should_include(const access_t s) const;
+
     virtual bool has_element(const diagram_element::id_t id) const
     {
         return false;

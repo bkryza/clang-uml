@@ -41,7 +41,7 @@ void generator::generate_relationships(
             try {
                 relstr << p.alias()
                        << " ..> "
-                       //<< m_model.get_ to_alias(uns.relative(r.destination()))
+                       << m_model.to_alias(r.destination())
                        << '\n';
                 ostr << relstr.str();
             }
