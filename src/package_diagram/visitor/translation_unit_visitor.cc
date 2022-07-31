@@ -18,6 +18,7 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/clang_utils.h"
 #include "common/model/namespace.h"
 #include "cx/util.h"
 
@@ -35,15 +36,6 @@ using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::package_diagram::model::diagram;
 
-int64_t to_id(const clang::NamespaceDecl *ns)
-{
-    auto qualified_name = ns->getQualifiedNameAsString();
-    util::replace_all(qualified_name, "(anonymous namespace)", "");
-    util::replace_all(qualified_name, "::::", "::");
-
-    return std::hash<std::string>{}(qualified_name) >> 3;
-}
-
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::package_diagram::model::diagram &diagram,
     const clanguml::config::package_diagram &config)
@@ -55,12 +47,12 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
 
 bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
+    assert(ns != nullptr);
+
     if (ns->isAnonymousNamespace() || ns->isInline())
         return true;
 
-    auto qualified_name = ns->getQualifiedNameAsString();
-    util::replace_all(qualified_name, "(anonymous namespace)", "");
-    util::replace_all(qualified_name, "::::", "::");
+    auto qualified_name = common::get_qualified_name(*ns);
 
     LOG_DBG("Visiting namespace declaration: {}", qualified_name);
 
@@ -81,7 +73,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     p->set_name(name);
     p->set_namespace(package_parent);
-    p->set_id(to_id(ns));
+    p->set_id(common::to_id(*ns));
 
     assert(p->id() > 0);
 
@@ -160,7 +152,7 @@ void translation_unit_visitor::add_relationships(
     const auto *namespace_context = cls->getEnclosingNamespaceContext();
     if (namespace_context != nullptr && namespace_context->isNamespace()) {
         current_package_id =
-            to_id(llvm::cast<clang::NamespaceDecl>(namespace_context));
+            common::to_id(*llvm::cast<clang::NamespaceDecl>(namespace_context));
     }
 
     assert(current_package_id != 0);
@@ -333,8 +325,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     }
     else if (type->isEnumeralType()) {
         relationships.emplace_back(
-            type->getAs<clang::EnumType>()->getDecl()->getID(),
-            relationship_hint);
+            common::to_id(*type->getAs<clang::EnumType>()), relationship_hint);
     }
     else if (auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>()) {
@@ -398,10 +389,11 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             const auto *namespace_declaration =
                 clang::cast<clang::NamespaceDecl>(namespace_context);
 
-            if (diagram().should_include(
-                    namespace_declaration->getQualifiedNameAsString())) {
-                const auto target_id =
-                    to_id(clang::cast<clang::NamespaceDecl>(namespace_context));
+            if (namespace_declaration != nullptr &&
+                diagram().should_include(
+                    common::get_qualified_name(*namespace_declaration))) {
+                const auto target_id = common::to_id(
+                    *clang::cast<clang::NamespaceDecl>(namespace_context));
                 relationships.emplace_back(target_id, relationship_hint);
                 result = true;
             }

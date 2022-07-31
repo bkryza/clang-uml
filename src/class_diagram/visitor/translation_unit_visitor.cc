@@ -17,6 +17,7 @@
  */
 
 #include "translation_unit_visitor.h"
+#include "common/clang_utils.h"
 #include "cx/util.h"
 
 #include <clang/Basic/FileManager.h>
@@ -74,7 +75,7 @@ std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
         return {};
     }
 
-    return namespace_{namespace_declaration->getQualifiedNameAsString()};
+    return namespace_{common::get_qualified_name(*namespace_declaration)};
 }
 }
 
@@ -143,10 +144,12 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
 
 bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
+    assert(ns != nullptr);
+
     if (ns->isAnonymousNamespace() || ns->isInline())
         return true;
 
-    auto package_path = namespace_{ns->getQualifiedNameAsString()};
+    auto package_path = namespace_{common::get_qualified_name(*ns)};
     auto package_parent = package_path;
 
     std::string name;
@@ -163,9 +166,9 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     p->set_name(name);
     p->set_namespace(package_parent);
-    p->set_id(ns->getID());
+    p->set_id(common::to_id(*ns));
 
-    if (diagram().should_include(*p)) {
+    if (diagram().should_include(*p) && !diagram().get(p->id())) {
         process_comment(*ns, *p);
         set_source_location(*ns, *p);
 
@@ -188,6 +191,8 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
 bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 {
+    assert(enm != nullptr);
+
     // Anonymous enum values should be rendered as class fields
     // with type enum
     if (enm->getNameAsString().empty())
@@ -196,7 +201,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     auto e_ptr = std::make_unique<enum_>(config_.using_namespace());
     auto &e = *e_ptr;
 
-    std::string qualified_name = enm->getQualifiedNameAsString();
+    std::string qualified_name = common::get_qualified_name(*enm);
     namespace_ ns{qualified_name};
     ns.pop_back();
     e.set_name(enm->getNameAsString());
@@ -401,19 +406,19 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     clang::CXXRecordDecl *cls)
 {
+    assert(cls != nullptr);
+
     auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
     auto &c = *c_ptr;
 
     // TODO: refactor to method get_qualified_name()
-    auto qualified_name = cls->getQualifiedNameAsString();
-    util::replace_all(qualified_name, "(anonymous namespace)", "");
-    util::replace_all(qualified_name, "::::", "::");
+    auto qualified_name = common::get_qualified_name(*cls);
 
     namespace_ ns{qualified_name};
     ns.pop_back();
     c.set_name(cls->getNameAsString());
     c.set_namespace(ns);
-    c.set_id(cls->getID());
+    c.set_id(common::to_id(*cls));
 
     c.is_struct(cls->isStruct());
 
@@ -449,7 +454,7 @@ bool translation_unit_visitor::process_template_parameters(
     const clang::ClassTemplateDecl &template_declaration, class_ &c)
 {
     LOG_DBG("Processing class {} template parameters...",
-        template_declaration.getQualifiedNameAsString());
+        common::get_qualified_name(template_declaration));
 
     if (template_declaration.getTemplateParameters() == nullptr)
         return false;
@@ -520,8 +525,8 @@ void translation_unit_visitor::process_record_containment(
         element.set_namespace(namespace_declaration.value());
     }
 
-    const auto id =
-        static_cast<const clang::RecordDecl *>(record.getParent())->getID();
+    const auto id = common::to_id(
+        *static_cast<const clang::RecordDecl *>(record.getParent()));
 
     element.add_relationship({relationship_t::kContainment, id});
 }
@@ -541,11 +546,8 @@ void translation_unit_visitor::process_class_bases(
                 base.getType()->getAs<clang::RecordType>()->getDecl()->getID());
         else if (base.getType()->getAs<clang::TemplateSpecializationType>() !=
             nullptr) {
-            cp.set_id(base.getType()
-                          ->getAs<clang::TemplateSpecializationType>()
-                          ->getTemplateName()
-                          .getAsTemplateDecl()
-                          ->getID());
+            cp.set_id(common::to_id(
+                *base.getType()->getAs<clang::TemplateSpecializationType>()));
         }
         else
             // This could be a template parameter - we don't want it here
