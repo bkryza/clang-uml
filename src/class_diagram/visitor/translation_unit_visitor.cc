@@ -1161,9 +1161,7 @@ void translation_unit_visitor::
         const std::string &type_name, template_parameter &tp, class_ &c)
 {
     auto template_params = cx::util::parse_unexposed_template_params(
-        type_name, [this](const std::string &t) {
-            return t;
-        });
+        type_name, [this](const std::string &t) { return t; });
 
     found_relationships_t relationships;
     for (auto &param : template_params) {

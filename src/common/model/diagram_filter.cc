@@ -358,7 +358,7 @@ tvl::value_t paths_filter::match(
     }
 
     // Matching source paths doesn't make sens if they are not absolute
-    if(!p.is_absolute())
+    if (!p.is_absolute())
         return {};
 
     auto pp = p.fs_path(root_);

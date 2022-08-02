@@ -22,8 +22,8 @@
 
 #include <clang/AST/RecursiveASTVisitor.h>
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 namespace clang {
 class NamespaceDecl;

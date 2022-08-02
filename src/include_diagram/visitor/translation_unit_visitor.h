@@ -52,14 +52,16 @@ public:
             clang::StringRef relative_path, const clang::Module *imported,
             clang::SrcMgr::CharacteristicKind file_type) override;
 
-        std::optional<common::id_t> process_internal_header(const std::filesystem::path &include_path,
-            bool is_system, const common::id_t current_file_id);
+        std::optional<common::id_t> process_internal_header(
+            const std::filesystem::path &include_path, bool is_system,
+            const common::id_t current_file_id);
 
         std::optional<common::id_t> process_external_system_header(
             const std::filesystem::path &include_path,
             const common::id_t current_file_id);
 
-        std::optional<common::id_t> process_source_file(const std::filesystem::path &file);
+        std::optional<common::id_t> process_source_file(
+            const std::filesystem::path &file);
 
         clanguml::include_diagram::model::diagram &diagram()
         {
