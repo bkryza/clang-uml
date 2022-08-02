@@ -24,7 +24,7 @@ TEST_CASE("t40001", "[test-case][package]")
 
     REQUIRE(diagram->name == "t40001_include");
 
-    auto model = generate_include_diagram(db, diagram);
+    auto model = generate_include_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t40001_include");
 

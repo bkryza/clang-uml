@@ -31,4 +31,10 @@ template <> id_t to_id(const clang::TemplateSpecializationType &t)
 {
     return t.getTemplateName().getAsTemplateDecl()->getID();
 }
+
+template <> id_t to_id(const std::filesystem::path &file)
+{
+    return std::hash<std::string>{}(file.lexically_normal()) >> 3;
+}
+
 }

@@ -52,6 +52,9 @@ public:
     common::optional_ref<common::model::source_file> get_file(
         const std::string &name) const;
 
+    common::optional_ref<common::model::source_file> get_file(
+        const common::model::diagram_element::id_t id) const;
+
     std::string to_alias(const std::string &full_name) const;
 
     const common::reference_vector<common::model::source_file> &files() const;

@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/clang_utils.h"
 #include "common/model/diagram_element.h"
 #include "common/model/nested_trait.h"
 #include "common/model/path.h"
@@ -51,16 +52,19 @@ class source_file
 public:
     source_file() = default;
 
-    source_file(const std::filesystem::path &p)
+    explicit source_file(const std::filesystem::path &p)
     {
         set_path({p.parent_path().string()});
         set_name(p.filename());
         is_absolute_ = p.is_absolute();
+        set_id(common::to_id(p));
     }
 
     void set_path(const filesystem_path &p) { path_ = p; }
 
     void set_absolute() { is_absolute_ = true; }
+
+    bool is_absolute() const { return is_absolute_; }
 
     void set_type(source_file_t type) { type_ = type; }
 
@@ -70,6 +74,12 @@ public:
     source_file(source_file &&) = default;
     source_file &operator=(const source_file &) = delete;
     source_file &operator=(source_file &&) = delete;
+
+    bool operator==(const source_file &right) const
+    {
+        return (path_ == right.path_) && (name() == right.name()) &&
+            (type_ == right.type_);
+    }
 
     const filesystem_path &path() const { return path_; }
 

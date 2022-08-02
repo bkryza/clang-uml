@@ -22,7 +22,6 @@
 #include "util/error.h"
 #include "util/util.h"
 
-//#include <cppast/libclang_parser.hpp>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
@@ -262,8 +261,6 @@ public:
 
     virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
     {
-        //        const auto* tud = ast_context.getTranslationUnitDecl();
-        ////        tud->dump();
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();
     }
@@ -280,12 +277,29 @@ public:
     {
     }
 
-    virtual std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-        clang::CompilerInstance &CI, clang::StringRef file)
+    std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+        clang::CompilerInstance &CI, clang::StringRef file) override
     {
         return std::make_unique<
             diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
             CI, diagram_, config_);
+    }
+
+protected:
+    bool BeginSourceFileAction(clang::CompilerInstance &ci) override
+    {
+        if constexpr (std::is_same_v<DiagramModel,
+                          clanguml::include_diagram::model::diagram>) {
+            auto find_includes_callback =
+                std::make_unique<typename DiagramVisitor::include_visitor>(
+                    ci.getSourceManager(), diagram_, config_);
+
+            clang::Preprocessor &pp = ci.getPreprocessor();
+
+            pp.addPPCallbacks(std::move(find_includes_callback));
+        }
+
+        return true;
     }
 
 private:
@@ -338,27 +352,11 @@ std::unique_ptr<DiagramModel> generate(
             std::back_inserter(translation_units));
     }
 
-    //    DiagramVisitor visitor(db, *diagram, config);
-
     clang::tooling::ClangTool clang_tool(db, translation_units);
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
             DiagramConfig, DiagramVisitor>>(*diagram, config);
     clang_tool.run(action_factory.get());
-
-    /*
-    cppast::cpp_entity_index idx;
-    auto logger =
-        verbose ? cppast::default_logger() : cppast::default_quiet_logger();
-    cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx), std::move(logger)};
-
-    // Process all matching translation units
-    DiagramVisitor ctx(idx, *diagram, config);
-    cppast::parse_files(parser, translation_units, db);
-    for (auto &file : parser.files())
-        ctx(file);
-    */
 
     diagram->set_complete(true);
 

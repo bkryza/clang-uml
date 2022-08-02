@@ -1162,9 +1162,6 @@ void translation_unit_visitor::
 {
     auto template_params = cx::util::parse_unexposed_template_params(
         type_name, [this](const std::string &t) {
-            //            auto full_type = ctx.get_name_with_namespace(t);
-            //            if (full_type.has_value())
-            //                return full_type.value().to_string();
             return t;
         });
 
@@ -1177,27 +1174,6 @@ void translation_unit_visitor::
     for (auto &r : relationships) {
         c.add_relationship({std::get<1>(r), std::get<0>(r)});
     }
-
-    //    const auto &primary_template_ref =
-    //        static_cast<const cppast::cpp_class_template &>(
-    //            tspec.value().primary_template().get(ctx.entity_index())[0].get())
-    //            .class_();
-
-    //    if (primary_template_ref.user_data()) {
-    //        auto base_template_full_name =
-    //            static_cast<const char *>(primary_template_ref.user_data());
-    //        LOG_DBG("Primary template ref set to: {}",
-    //        base_template_full_name);
-    //        // Add template specialization/instantiation
-    //        // relationship
-    //        c.add_relationship(
-    //            {relationship_t::kInstantiation, base_template_full_name});
-    //    }
-    //    else {
-    //        LOG_DBG(
-    //            "No user data for base template {}",
-    //            primary_template_ref.name());
-    //    }
 }
 
 bool translation_unit_visitor::find_relationships_in_unexposed_template_params(

@@ -37,33 +37,36 @@ void generator::generate_relationships(
 
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    //    if (f.type() == common::model::source_file_t::kDirectory) {
-    //        util::for_each(f, [this, &ostr](const auto &file) {
-    //            generate_relationships(
-    //                dynamic_cast<const source_file &>(*file), ostr);
-    //        });
-    //    }
-    //    else {
-    //        util::for_each_if(
-    //            f.relationships(),
-    //            [this](const auto &r) {
-    //                return m_model.should_include(r.type()) &&
-    //                    util::contains(m_generated_aliases, r.destination());
-    //            },
-    //            [&f, &ostr](const auto &r) {
-    //                ostr << f.alias() << " "
-    //                     << plantuml_common::to_plantuml(r.type(), r.style())
-    //                     << " "
-    //                     << r.destination() << '\n';
-    //            });
-    //    }
+    if (f.type() == common::model::source_file_t::kDirectory) {
+        util::for_each(f, [this, &ostr](const auto &file) {
+            generate_relationships(
+                dynamic_cast<const source_file &>(*file), ostr);
+        });
+    }
+    else {
+        util::for_each_if(
+            f.relationships(),
+            [this](const auto &r) {
+                return m_model.should_include(r.type()) &&
+                    util::contains(m_generated_aliases,
+                        m_model.get(r.destination()).value().get().alias());
+            },
+            [&f, &ostr, this](const auto &r) {
+                ostr << f.alias() << " "
+                     << plantuml_common::to_plantuml(r.type(), r.style()) << " "
+                     << m_model.get(r.destination()).value().get().alias()
+                     << '\n';
+            });
+    }
 }
 
 void generator::generate(const source_file &f, std::ostream &ostr) const
 {
-    LOG_DBG("Generating source_file {}", f.name());
+
 
     if (f.type() == common::model::source_file_t::kDirectory) {
+        LOG_DBG("Generating directory {}", f.name());
+
         ostr << "folder \"" << f.name();
         ostr << "\" as " << f.alias();
         ostr << " {\n";
@@ -77,6 +80,8 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
         m_generated_aliases.emplace(f.alias());
     }
     else {
+        LOG_DBG("Generating file {}", f.name());
+
         if (m_model.should_include(f)) {
             ostr << "file \"" << f.name() << "\" as " << f.alias();
 
@@ -95,14 +100,14 @@ void generator::generate(std::ostream &ostr) const
 {
     ostr << "@startuml" << '\n';
 
-    generate_plantuml_directives(ostr, m_config.puml().before);
+    if (m_config.puml)
+        generate_plantuml_directives(ostr, m_config.puml().before);
 
     // Generate files and folders
     util::for_each_if(
         m_model,
         [this](const auto &f) {
-            return f->type() == common::model::source_file_t::kDirectory ||
-                m_model.should_include(*f);
+            return true;
         },
         [this, &ostr](const auto &f) {
             generate(dynamic_cast<source_file &>(*f), ostr);
@@ -115,7 +120,8 @@ void generator::generate(std::ostream &ostr) const
 
     generate_config_layout_hints(ostr);
 
-    generate_plantuml_directives(ostr, m_config.puml().after);
+    if (m_config.puml)
+        generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << '\n';
 }

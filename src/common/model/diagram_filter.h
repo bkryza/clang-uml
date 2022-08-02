@@ -238,8 +238,9 @@ private:
         // of matching elements
         for (const auto &template_root : roots_) {
             auto template_ref = detail::get<ElementT>(cd, template_root);
-            if (template_ref.has_value())
+            if (template_ref.has_value()) {
                 matching_elements_.emplace(template_ref.value());
+            }
         }
 
         assert(roots_.empty() == matching_elements_.empty());
