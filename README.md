@@ -70,7 +70,6 @@ Then proceed with building the sources:
 ```bash
 git clone https://github.com/bkryza/clang-uml
 cd clang-uml
-make submodules
 # Please note that top level Makefile is just a convenience wrapper for CMake
 make release
 release/clang-uml --help
@@ -466,8 +465,7 @@ The build-in test cases used for unit testing of the `clang-uml`, can be browsed
 
 ## Acknowledgements
 This project relies on the following great tools:
-  * [libclang](https://clang.llvm.org/) - a C/C++ frontend for LLVM
-  * [cppast](https://github.com/foonathan/cppast) - high-level C++ API for libclang
+  * [clang](https://clang.llvm.org/) - a C/C++ frontend for LLVM
   * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
   * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
   * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++

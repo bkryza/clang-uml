@@ -19,9 +19,8 @@
 
 #include "util/util.h"
 
-#include <type_safe/optional_ref.hpp>
-
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -84,7 +83,7 @@ public:
 
         if (path.is_empty() || !has_element(path[0])) {
             LOG_DBG("Nested element {} not found in element", path.to_string());
-            return type_safe::optional_ref<V>{};
+            return optional_ref<V>{};
         }
 
         if (path.size() == 1) {
@@ -94,13 +93,13 @@ public:
         auto p = get_element<T>(path[0]);
 
         if (!p)
-            return type_safe::optional_ref<V>{};
+            return optional_ref<V>{};
 
         if (dynamic_cast<nested_trait<T, Path> *>(&p.value()))
             return dynamic_cast<nested_trait<T, Path> &>(p.value())
                 .get_element<V>(Path{path.begin() + 1, path.end()});
 
-        return type_safe::optional_ref<V>{};
+        return optional_ref<V>{};
     }
 
     template <typename V = T> auto get_element_parent(const T &element) const
@@ -109,10 +108,10 @@ public:
         auto parent = get_element(path);
 
         if (parent.has_value())
-            return type_safe::optional_ref<V>{
-                type_safe::ref<V>(dynamic_cast<V &>(parent.value()))};
+            return optional_ref<V>{
+                std::ref<V>(dynamic_cast<V &>(parent.value()))};
 
-        return type_safe::optional_ref<V>{};
+        return optional_ref<V>{};
     }
 
     template <typename V = T> auto get_element(const std::string &name) const
@@ -123,15 +122,14 @@ public:
             [&](const auto &p) { return name == p->name(); });
 
         if (it == elements_.end())
-            return type_safe::optional_ref<V>{type_safe::nullopt};
+            return optional_ref<V>{};
 
         assert(it->get() != nullptr);
 
         if (dynamic_cast<V *>(it->get()))
-            return type_safe::optional_ref<V>{
-                type_safe::ref<V>(dynamic_cast<V &>(*it->get()))};
+            return optional_ref<V>{std::ref<V>(dynamic_cast<V &>(*it->get()))};
 
-        return type_safe::optional_ref<V>{type_safe::nullopt};
+        return optional_ref<V>{};
     }
 
     bool has_element(const std::string &name) const

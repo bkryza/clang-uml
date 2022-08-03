@@ -19,7 +19,6 @@
 
 #include "config/config.h"
 #include "sequence_diagram/model/diagram.h"
-#include "sequence_diagram/visitor/translation_unit_context.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>

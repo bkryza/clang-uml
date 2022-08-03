@@ -39,13 +39,11 @@ public:
 
     virtual diagram_t type() const = 0;
 
-    virtual std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const std::string &full_name) const = 0;
+    virtual common::optional_ref<clanguml::common::model::diagram_element> get(
+        const std::string &full_name) const = 0;
 
-    virtual std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const diagram_element::id_t id) const = 0;
+    virtual common::optional_ref<clanguml::common::model::diagram_element> get(
+        const diagram_element::id_t id) const = 0;
 
     diagram(const diagram &) = delete;
     diagram(diagram &&);

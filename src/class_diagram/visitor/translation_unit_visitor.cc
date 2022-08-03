@@ -1193,7 +1193,7 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
     auto element_opt = diagram().get(type_with_namespace.value().to_string());
     if (element_opt) {
         relationships.emplace_back(
-            element_opt.value().get().id(), relationship_t::kDependency);
+            element_opt.value().id(), relationship_t::kDependency);
         found = true;
     }
 

@@ -295,25 +295,25 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 
             if (context_root.has_value()) {
                 // This is a direct match to the context root
-                if (context_root.value().get().id() == e.id())
+                if (context_root.value().id() == e.id())
                     return true;
 
                 // Return a positive match if the element e is in a direct
                 // relationship with any of the context_root's
                 for (const relationship &rel :
-                    context_root.value().get().relationships()) {
+                    context_root.value().relationships()) {
                     if (rel.destination() == e.id())
                         return true;
                 }
                 for (const relationship &rel : e.relationships()) {
-                    if (rel.destination() == context_root.value().get().id())
+                    if (rel.destination() == context_root.value().id())
                         return true;
                 }
 
                 // Return a positive match if the context_root is a parent
                 // of the element
                 for (const class_diagram::model::class_parent &p :
-                    context_root.value().get().parents()) {
+                    context_root.value().parents()) {
                     if (p.name() == e.full_name(false))
                         return true;
                 }
@@ -322,8 +322,7 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
                     for (const class_diagram::model::class_parent &p :
                         static_cast<const class_diagram::model::class_ &>(e)
                             .parents()) {
-                        if (p.name() ==
-                            context_root.value().get().full_name(false))
+                        if (p.name() == context_root.value().full_name(false))
                             return true;
                     }
                 }

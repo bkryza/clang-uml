@@ -25,7 +25,6 @@
 #include "version.h"
 
 #include <cli11/CLI11.hpp>
-#include <cppast/libclang_parser.hpp>
 #include <spdlog/spdlog.h>
 
 #include <filesystem>

@@ -14,7 +14,6 @@ file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 
 set(CLANG_UML_TEST_LIBRARIES
         clang-umllib
-        cppast
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
         ${LIBCLANG_LIBRARIES}

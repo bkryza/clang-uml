@@ -18,18 +18,12 @@
 
 #include "sequence_diagram_generator.h"
 
-#include "sequence_diagram/visitor/translation_unit_context.h"
-
-#include <cppast/libclang_parser.hpp>
-#include <cppast/parser.hpp>
-
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using clanguml::common::model::message_t;
 using clanguml::config::source_location;
 using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
-using clanguml::sequence_diagram::visitor::translation_unit_context;
 using namespace clanguml::util;
 
 //

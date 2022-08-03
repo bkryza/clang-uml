@@ -164,7 +164,7 @@ void translation_unit_visitor::add_relationships(
             const auto destination_id = std::get<0>(dependency);
             relationship r{relationship_t::kDependency, destination_id};
             if (destination_id != current_package_id)
-                current_package.value().get().add_relationship(std::move(r));
+                current_package.value().add_relationship(std::move(r));
         }
     }
 }

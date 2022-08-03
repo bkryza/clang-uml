@@ -20,7 +20,6 @@
 
 #include "common/model/namespace.h"
 #include "cx/util.h"
-#include "translation_unit_context.h"
 
 namespace clanguml::sequence_diagram::visitor {
 
@@ -36,16 +35,6 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
 /*
 void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
 {
-    using clanguml::common::model::message_t;
-    using clanguml::sequence_diagram::model::activity;
-    using clanguml::sequence_diagram::model::diagram;
-    using clanguml::sequence_diagram::model::message;
-    using cppast::cpp_entity;
-    using cppast::cpp_entity_kind;
-    using cppast::cpp_function;
-    using cppast::cpp_member_function;
-    using cppast::cpp_member_function_call;
-    using cppast::visitor_info;
 
     for (const auto &function_call_ptr : e.function_calls()) {
         const auto &function_call =
@@ -129,12 +118,6 @@ void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
 
 void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
 {
-    using cppast::cpp_entity;
-    using cppast::cpp_entity_kind;
-    using cppast::cpp_function;
-    using cppast::cpp_member_function;
-    using cppast::cpp_member_function_call;
-    using cppast::visitor_info;
 
     cppast::visit(file, [&, this](const cpp_entity &e, visitor_info) {
         if (e.kind() == cpp_entity_kind::function_t) {

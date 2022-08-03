@@ -21,43 +21,17 @@
 
 #include <clang-c/CXCompilationDatabase.h>
 #include <clang-c/Index.h>
-#include <cppast/cpp_entity.hpp>
-#include <cppast/cpp_type.hpp>
 
 #include <class_diagram/model/template_parameter.h>
 #include <string>
 
-namespace clanguml {
-namespace cx {
-namespace util {
-
-std::string full_name(
-    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e);
-
-std::string full_name(const cppast::cpp_type &t,
-    const cppast::cpp_entity_index &idx, bool inside_class);
-
-std::string fully_prefixed(
-    const common::model::namespace_ &current_ns, const cppast::cpp_entity &e);
-
-const cppast::cpp_type &unreferenced(const cppast::cpp_type &t);
-
-std::string ns(const cppast::cpp_entity &e);
-
-type_safe::optional_ref<const cppast::cpp_namespace> entity_ns(
-    const cppast::cpp_entity &e);
-
-std::string ns(const cppast::cpp_type &t, const cppast::cpp_entity_index &idx);
+namespace clanguml::cx::util {
 
 std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name);
-
-bool is_inside_class(const cppast::cpp_entity &e);
 
 std::vector<class_diagram::model::template_parameter>
 parse_unexposed_template_params(const std::string &params,
     std::function<std::string(const std::string &)> ns_resolve);
 
-} // namespace util
-} // namespace cx
-} // namespace clanguml
+} // namespace clanguml::cx::util

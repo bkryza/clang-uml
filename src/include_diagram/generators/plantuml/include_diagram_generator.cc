@@ -49,13 +49,12 @@ void generator::generate_relationships(
             [this](const auto &r) {
                 return m_model.should_include(r.type()) &&
                     util::contains(m_generated_aliases,
-                        m_model.get(r.destination()).value().get().alias());
+                        m_model.get(r.destination()).value().alias());
             },
             [&f, &ostr, this](const auto &r) {
                 ostr << f.alias() << " "
                      << plantuml_common::to_plantuml(r.type(), r.style()) << " "
-                     << m_model.get(r.destination()).value().get().alias()
-                     << '\n';
+                     << m_model.get(r.destination()).value().alias() << '\n';
             });
     }
 }

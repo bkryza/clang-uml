@@ -39,31 +39,28 @@ public:
 
     common::model::diagram_t type() const override;
 
-    const std::vector<std::reference_wrapper<clanguml::common::model::package>>
-        &packages() const;
+    const common::reference_vector<clanguml::common::model::package> &
+    packages() const;
 
-    std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const std::string &full_name) const override;
+    common::optional_ref<clanguml::common::model::diagram_element> get(
+        const std::string &full_name) const override;
 
-    std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const clanguml::common::model::diagram_element::id_t id) const override;
+    common::optional_ref<clanguml::common::model::diagram_element> get(
+        const clanguml::common::model::diagram_element::id_t id) const override;
 
     void add_package(std::unique_ptr<common::model::package> &&p);
 
-    std::optional<std::reference_wrapper<clanguml::common::model::package>>
-    get_package(const std::string &name) const;
+    common::optional_ref<clanguml::common::model::package> get_package(
+        const std::string &name) const;
 
-    std::optional<std::reference_wrapper<common::model::package>> get_package(
+    common::optional_ref<common::model::package> get_package(
         const clanguml::common::model::diagram_element::id_t id) const;
 
     std::string to_alias(
         const clanguml::common::model::diagram_element::id_t) const;
 
 private:
-    std::vector<std::reference_wrapper<clanguml::common::model::package>>
-        packages_;
+    common::reference_vector<clanguml::common::model::package> packages_;
 };
 }
 

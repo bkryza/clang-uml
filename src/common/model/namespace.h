@@ -19,8 +19,8 @@
 
 #include "path.h"
 
+#include <optional>
 #include <string>
-#include <type_safe/optional.hpp>
 #include <vector>
 
 namespace clanguml::common::model {

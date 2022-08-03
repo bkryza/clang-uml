@@ -45,32 +45,28 @@ public:
 
     common::model::diagram_t type() const override;
 
-    std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const std::string &full_name) const override;
+    common::optional_ref<common::model::diagram_element> get(
+        const std::string &full_name) const override;
 
-    std::optional<
-        std::reference_wrapper<clanguml::common::model::diagram_element>>
-    get(const clanguml::common::model::diagram_element::id_t id) const override;
+    common::optional_ref<common::model::diagram_element> get(
+        const clanguml::common::model::diagram_element::id_t id) const override;
 
-    const std::vector<std::reference_wrapper<class_>> &classes() const;
+    const common::reference_vector<class_> &classes() const;
 
-    const std::vector<std::reference_wrapper<enum_>> &enums() const;
+    const common::reference_vector<enum_> &enums() const;
 
     bool has_class(const class_ &c) const;
 
     bool has_enum(const enum_ &e) const;
 
-    std::optional<std::reference_wrapper<class_>> get_class(
-        const std::string &name) const;
+    common::optional_ref<class_> get_class(const std::string &name) const;
 
-    std::optional<std::reference_wrapper<class_>> get_class(
+    common::optional_ref<class_> get_class(
         clanguml::common::model::diagram_element::id_t id) const;
 
-    std::optional<std::reference_wrapper<enum_>> get_enum(
-        const std::string &name) const;
+    common::optional_ref<enum_> get_enum(const std::string &name) const;
 
-    std::optional<std::reference_wrapper<enum_>> get_enum(
+    common::optional_ref<enum_> get_enum(
         clanguml::common::model::diagram_element::id_t id) const;
 
     void add_type_alias(std::unique_ptr<type_alias> &&ta);
@@ -92,9 +88,9 @@ public:
         const clanguml::common::model::diagram_element::id_t id) const override;
 
 private:
-    std::vector<std::reference_wrapper<class_>> classes_;
+    common::reference_vector<class_> classes_;
 
-    std::vector<std::reference_wrapper<enum_>> enums_;
+    common::reference_vector<enum_> enums_;
 
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };

@@ -44,7 +44,6 @@ message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 # Thirdparty sources
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
-add_subdirectory(thirdparty/cppast)
 
 find_package(LLVM REQUIRED CONFIG)
 set(CLANG_INCLUDE_DIRS "llvm/clang/include")
@@ -76,9 +75,6 @@ include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
 include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
-include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/include)
-include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/include)
-include_directories(${THIRDPARTY_HEADERS_DIR}/cppast/external/type_safe/external/debug_assert)
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 include_directories(${PROJECT_BINARY_DIR}/src/version)
 
@@ -122,7 +118,6 @@ target_link_libraries(clang-uml
         ${LIBCLANG_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
-        cppast
         clang-umllib
         Threads::Threads)
 

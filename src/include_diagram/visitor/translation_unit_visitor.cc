@@ -132,7 +132,6 @@ translation_unit_visitor::include_visitor::process_internal_header(
         diagram()
             .get(current_file_id)
             .value()
-            .get()
             .add_relationship(common::model::relationship{
                 relationship_type, include_file.id()});
     }
@@ -161,7 +160,6 @@ translation_unit_visitor::include_visitor::process_external_system_header(
         diagram()
             .get(current_file_id)
             .value()
-            .get()
             .add_relationship(common::model::relationship{
                 common::model::relationship_t::kDependency, f_id});
     }

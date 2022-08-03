@@ -21,7 +21,6 @@
 #include "common/model/package.h"
 #include "config/config.h"
 #include "include_diagram/model/diagram.h"
-#include "include_diagram/visitor/translation_unit_context.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>

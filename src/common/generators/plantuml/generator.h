@@ -163,9 +163,9 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
 
                 if (!element_opt || !hint_element_opt)
                     continue;
-                hint_str << element_opt.value().get().alias() << " -[hidden]"
+                hint_str << element_opt.value().alias() << " -[hidden]"
                          << clanguml::config::to_string(hint.hint) << "- "
-                         << hint_element_opt.value().get().alias() << '\n';
+                         << hint_element_opt.value().alias() << '\n';
                 ostr << hint_str.str();
             }
             catch (clanguml::error::uml_alias_missing &e) {
@@ -196,8 +196,7 @@ void generator<C, D>::generate_plantuml_directives(
 
             if (element_opt)
                 directive.replace(std::get<1>(alias_match),
-                    std::get<2>(alias_match),
-                    element_opt.value().get().alias());
+                    std::get<2>(alias_match), element_opt.value().alias());
             else {
                 LOG_ERROR(
                     "CANNOT FIND ALIAS TO ELEMENT {}", full_name.to_string());
@@ -426,7 +425,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
             m_config.using_namespace() | args[0]->get<std::string>();
         auto element_opt = m_model.get(alias_match.to_string());
 
-        return element_opt.value().get().alias();
+        return element_opt.value().alias();
     });
 
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
@@ -441,7 +440,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
         }
 
         if (element.has_value()) {
-            auto comment = element.value().get().comment();
+            auto comment = element.value().comment();
 
             if (comment.has_value())
                 res = comment.value();
