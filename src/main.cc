@@ -24,6 +24,8 @@
 #include "util/util.h"
 #include "version.h"
 
+#include <clang/Basic/Version.h>
+#include <clang/Config/config.h>
 #include <cli11/CLI11.hpp>
 #include <spdlog/spdlog.h>
 
@@ -244,8 +246,10 @@ void print_version()
     std::cout << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
     std::cout << "Copyright (C) 2021-2022 Bartek Kryza <bkryza@gmail.com>"
               << '\n';
-    std::cout << "Built with libclang: "
-              << clanguml::version::CLANG_UML_LIBCLANG_VERSION << std::endl;
+    std::cout << "Built with LLVM version: "
+              << std::string{BACKEND_PACKAGE_STRING}.substr(5) << std::endl;
+    std::cout << "Using LLVM version: " << clang::getClangFullVersion()
+              << std::endl;
 }
 
 void print_diagrams_list(const clanguml::config::config &cfg)
