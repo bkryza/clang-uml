@@ -20,6 +20,7 @@
 #include "config/config.h"
 #include "sequence_diagram/model/diagram.h"
 
+#include <clang/AST/Expr.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
 
@@ -32,6 +33,18 @@ public:
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
+    virtual bool VisitCallExpr(clang::CallExpr *expr);
+
+    virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
+
+    virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+
+    virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+
+    clanguml::sequence_diagram::model::diagram &diagram();
+
+    const clanguml::config::sequence_diagram &config() const;
+
     void finalize() { }
 
 private:
@@ -42,6 +55,10 @@ private:
 
     // Reference to class diagram config
     const clanguml::config::sequence_diagram &config_;
+
+    clang::CXXRecordDecl *current_class_decl_;
+    clang::CXXMethodDecl *current_method_decl_;
+    clang::FunctionDecl *current_function_decl_;
 };
 
 }

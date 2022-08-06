@@ -16,7 +16,6 @@ set(CLANG_UML_TEST_LIBRARIES
         clang-umllib
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
-#        ${LIBCLANG_LIBRARIES}
         Threads::Threads)
 
 

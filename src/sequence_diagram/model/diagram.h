@@ -47,7 +47,7 @@ public:
 
     bool started{false};
 
-    std::map<std::uint_least64_t, activity> sequences;
+    std::map<int64_t, activity> sequences;
 };
 
 }

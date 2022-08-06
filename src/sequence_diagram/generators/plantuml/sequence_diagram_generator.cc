@@ -44,6 +44,13 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     ostr << '"' << from << "\" "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
          << to << "\" : " << m.message << "()" << std::endl;
+
+    if (m.message == "add" && to == "A" && from == "A")
+        LOG_DBG("Generating call '{}' from {} [{}] to {} [{}]", m.message, from,
+            m.from_usr, to, m.to_usr);
+    else
+        LOG_DBG("Generating call '{}' from {} [{}] to {} [{}]", m.message, from,
+            m.from_usr, to, m.to_usr);
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
@@ -81,7 +88,7 @@ void generator::generate(std::ostream &ostr) const
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            std::uint_least64_t start_from;
+            std::int64_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
                 if (v.from == sf.location) {
                     start_from = k;

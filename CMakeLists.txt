@@ -154,7 +154,6 @@ add_library(clang-umllib OBJECT ${SOURCES})
 #
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
 target_link_libraries(clang-uml
-#        ${LIBCLANG_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
         clang-umllib

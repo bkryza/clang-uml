@@ -29,7 +29,7 @@ struct message {
     std::string from;
     std::uint_least64_t from_usr;
     std::string to;
-    std::uint_least64_t to_usr;
+    std::int64_t to_usr;
     std::string message;
     std::string return_type;
     unsigned int line;
