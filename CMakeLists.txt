@@ -22,10 +22,9 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 #
 # CMake build options
 #
-option(LLVM_CONFIG_PATH "Path to custom llvm-config executable")
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries or statically" ON)
-option(GIT_VERSION "clang-uml version" "0.1.0")
-
+set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
+set(GIT_VERSION "0.1.0" CACHE STRING "clang-uml version")
 
 #
 # Setup LLVM
@@ -37,7 +36,7 @@ if(LLVM_PREFIX)
     set(LLVM_CONFIG_BINARY ${LLVM_CONFIG_PATH})
 endif(LLVM_PREFIX)
 
-find_package(LLVM CONFIG REQUIRED)
+find_package(LLVM ${LLVM_VERSION} CONFIG REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH ${LLVM_DIR})
 include(AddLLVM)
