@@ -265,7 +265,7 @@ using namespace clanguml::test::matchers;
 ////
 //// Other tests (e.g. configuration file)
 ////
-//#include "t90000/test_case.h"
+#include "t90000/test_case.h"
 
 //
 // Main test function
