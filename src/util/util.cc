@@ -263,5 +263,12 @@ template <> bool starts_with(const std::string &s, const std::string &prefix)
     return s.rfind(prefix, 0) == 0;
 }
 
+template <> bool ends_with(const std::string &value, const std::string &suffix)
+{
+    if (suffix.size() > value.size())
+        return false;
+    return std::equal(suffix.rbegin(), suffix.rend(), value.rbegin());
+}
+
 }
 }

@@ -71,15 +71,15 @@ private:
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
 
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    process_template_specialization(
-        clang::ClassTemplateSpecializationDecl *cls);
-
     void process_class_bases(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c) const;
 
     void process_class_children(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c);
+
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    process_template_specialization(
+        clang::ClassTemplateSpecializationDecl *cls);
 
     void process_template_specialization_children(
         const clang::ClassTemplateSpecializationDecl *cls,
@@ -88,6 +88,12 @@ private:
     bool process_template_parameters(
         const clang::ClassTemplateDecl &template_declaration,
         clanguml::class_diagram::model::class_ &c);
+
+    void process_template_specialization_argument(
+        const clang::ClassTemplateSpecializationDecl *cls,
+        model::class_ &template_instantiation,
+        const clang::TemplateArgument &arg, size_t argument_index,
+        bool in_parameter_pack = false);
 
     void process_record_containment(const clang::TagDecl &record,
         clanguml::common::model::element &c) const;

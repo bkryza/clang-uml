@@ -54,6 +54,9 @@ public:
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
 
+    void is_pack(bool is_pack) noexcept;
+    bool is_pack() const noexcept;
+
     bool is_specialization_of(const template_parameter &ct) const;
 
     friend bool operator==(
@@ -117,6 +120,9 @@ private:
 
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
+
+    /// Whether the argument specializes argument pack from parent template
+    bool is_pack_{false};
 
     // Nested template parameters
     std::vector<template_parameter> template_params_;

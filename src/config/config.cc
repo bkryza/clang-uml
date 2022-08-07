@@ -166,6 +166,14 @@ void class_diagram::initialize_template_aliases()
         template_aliases().insert(
             {"std::basic_string<char32_t>", "std::u32string"});
     }
+    if (!template_aliases().count("std::integral_constant<bool,true>")) {
+        template_aliases().insert(
+            {"std::integral_constant<bool,true>", "std::true_type"});
+    }
+    if (!template_aliases().count("std::integral_constant<bool,false>")) {
+        template_aliases().insert(
+            {"std::integral_constant<bool,false>", "std::false_type"});
+    }
 }
 
 template <> void append_value<plantuml>(plantuml &l, const plantuml &r)

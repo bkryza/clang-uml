@@ -1,5 +1,5 @@
 /**
- * tests/t00012/test_case.cc
+ * tests/t00047/test_case.h
  *
  * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,32 +16,31 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00012", "[test-case][class]")
+TEST_CASE("t00047", "[test-case][class]")
 {
-    auto [config, db] = load_config("t00012");
+    auto [config, db] = load_config("t00047");
 
-    auto diagram = config.diagrams["t00012_class"];
+    auto diagram = config.diagrams["t00047_class"];
 
-    REQUIRE(diagram->name == "t00012_class");
+    REQUIRE(diagram->name == "t00047_class");
 
     auto model = generate_class_diagram(*db, diagram);
 
-    REQUIRE(model->name() == "t00012_class");
+    REQUIRE(model->name() == "t00047_class");
 
     auto puml = generate_class_puml(diagram, *model);
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T,Ts..."));
-    REQUIRE_THAT(puml, IsClassTemplate("B", "int... Is"));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<int... Is>"), _A("B<3,2,1>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<int... Is>"), _A("B<1,1,1,1>")));
+    // Check if class templates exist
+    REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Ts..."));
+    REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Else"));
     REQUIRE_THAT(puml,
-        IsInstantiation(_A("C<T,int... Is>"),
-            _A("C<std::map<int,"
-               "std::vector<std::vector<std::vector<std::string>>>>,3,3,3>")));
+        IsClassTemplate("conditional_t", "std::true_type,Result,Tail..."));
+    REQUIRE_THAT(puml,
+        IsClassTemplate("conditional_t", "std::false_type,Result,Tail..."));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

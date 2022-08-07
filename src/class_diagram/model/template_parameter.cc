@@ -31,15 +31,37 @@ template_parameter::template_parameter(const std::string &type,
     set_type(type);
 }
 
-void template_parameter::set_type(const std::string &type) { type_ = type; }
+void template_parameter::set_type(const std::string &type)
+{
+    if (util::ends_with(type, std::string{"..."})) {
+        type_ = type.substr(0, type.size() - 3);
+        is_variadic_ = true;
+    }
+    else
+        type_ = type;
+}
 
-std::string template_parameter::type() const { return type_; }
+std::string template_parameter::type() const
+{
+    if (is_variadic_ && !type_.empty())
+        return type_ + "...";
 
-void template_parameter::set_name(const std::string &name) { name_ = name; }
+    return type_;
+}
+
+void template_parameter::set_name(const std::string &name)
+{
+    if (util::ends_with(name, std::string{"..."})) {
+        name_ = name.substr(0, name.size() - 3);
+        is_variadic_ = true;
+    }
+    else
+        name_ = name;
+}
 
 std::string template_parameter::name() const
 {
-    if (is_variadic_)
+    if (is_variadic_ && type_.empty())
         return name_ + "...";
 
     return name_;

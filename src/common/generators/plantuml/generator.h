@@ -336,6 +336,7 @@ std::unique_ptr<DiagramModel> generate(
     DiagramConfig &config, bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
+
     auto diagram = std::make_unique<DiagramModel>();
     diagram->set_name(name);
     diagram->set_filter(
@@ -346,9 +347,13 @@ std::unique_ptr<DiagramModel> generate(
     std::vector<std::string> translation_units{};
     for (const auto &g : config.glob()) {
         LOG_DBG("Processing glob: {}", g);
+
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));
+
+        LOG_DBG(
+            "Found translation units: {}", fmt::join(translation_units, ", "));
     }
 
     clang::tooling::ClangTool clang_tool(db, translation_units);

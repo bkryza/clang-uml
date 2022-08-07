@@ -24,7 +24,7 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
 
     REQUIRE(diagram->name == "{{ name }}_{{ type }}");
 
-    auto model = generate_{{ type }}_diagram(db, diagram);
+    auto model = generate_{{ type }}_diagram(*db, diagram);
 
     REQUIRE(model->name() == "{{ name }}_{{ type }}");
 

@@ -170,6 +170,10 @@ bool starts_with(
 
 template <> bool starts_with(const std::string &s, const std::string &prefix);
 
+template <typename T> bool ends_with(const T &value, const T &suffix);
+
+template <> bool ends_with(const std::string &value, const std::string &suffix);
+
 template <typename T>
 bool ends_with(const std::vector<T> &col, const std::vector<T> &suffix)
 {
