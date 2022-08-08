@@ -143,11 +143,10 @@ template <> struct hash<clanguml::common::model::filesystem_path> {
 
 namespace std {
 template <>
-struct hash<
-    std::reference_wrapper<clanguml::common::model::source_file>> {
+struct hash<std::reference_wrapper<clanguml::common::model::source_file>> {
     std::size_t operator()(
-        const std::reference_wrapper<clanguml::common::model::source_file>
-            &key) const
+        const std::reference_wrapper<clanguml::common::model::source_file> &key)
+        const
     {
         using clanguml::common::id_t;
 

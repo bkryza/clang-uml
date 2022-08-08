@@ -59,8 +59,8 @@ namespace std {
 template <>
 struct hash<std::reference_wrapper<clanguml::common::model::package>> {
     std::size_t operator()(
-        const std::reference_wrapper<clanguml::common::model::package>
-            &key) const
+        const std::reference_wrapper<clanguml::common::model::package> &key)
+        const
     {
         using clanguml::common::id_t;
 
