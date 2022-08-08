@@ -75,11 +75,7 @@ make release
 release/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
-LLVM_CONFIG_PATH=/usr/bin/llvm-config-13 make release
-
-# To build on macos, it is necessary to provide also path to LLVM cmake directory, e.g.:
-export LLVM_PREFIX="/usr/local/Cellar/llvm@12/12.0.1_1"
-LLVM_CONFIG_PATH="${LLVM_PREFIX}/bin/llvm-config" CMAKE_PREFIX_PATH="${LLVM_PREFIX}/lib/cmake/llvm/" make test
+LLVM_VERSION=13 make release
 
 # Optionally
 make install
