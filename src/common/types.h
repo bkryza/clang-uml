@@ -115,6 +115,6 @@ template <typename T>
 using reference_vector = std::vector<std::reference_wrapper<T>>;
 
 template <typename T>
-using reference_set = std::unordered_set<std::reference_wrapper<const T>>;
+using reference_set = std::unordered_set<std::reference_wrapper<T>>;
 
 } // namespace clang::common

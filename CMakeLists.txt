@@ -11,6 +11,7 @@ project(clang-uml)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_FIND_DEBUG_MODE OFF)
 
 #
 # clang-uml custom defines
@@ -44,7 +45,6 @@ include(AddLLVM)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
-link_directories(${LLVM_LIBRARY_DIR})
 
 if(LINK_LLVM_SHARED)
     set(LIBTOOLING_LIBS clang-cpp LLVM)
@@ -86,18 +86,25 @@ find_package(Threads REQUIRED)
 # Setup yaml-cpp
 #
 message(STATUS "Checking for yaml-cpp...")
-find_package(yaml-cpp REQUIRED)
+if(APPLE)
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(YAML_CPP yaml-cpp)
+    find_path(YAML_CPP_INCLUDE_DIR
+            NAMES yaml.h
+	    PATHS ${YAML_CPP_INCLUDE_DIR} /usr/local/include/yaml-cpp)
+    find_library(YAML_CPP_LIBRARY
+            NAMES yaml-cpp
+	    PATHS ${YAML_CPP_LIBRARIES} /usr/local/lib)
+    set(YAML_CPP_LIBRARY_DIR /usr/local/lib)
+endif()
+else(APPLE)
+    find_package(yaml-cpp REQUIRED)
+endif(APPLE)
 
-#message(STATUS "Checking for libclang...")
-#set(LLVM_PREFERRED_VERSION 14.0.0)
-# Add
-#   -DLLVM_CONFIG_PATH=/path/to/llvm-config
-# to use custom LLVM version
-#find_package(LibClang REQUIRED)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17")
-
-message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
 
 #
 # Setup thirdparty sources
@@ -119,16 +126,17 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                     OUTPUT_VARIABLE GCC_STDDEF_INCLUDE)
     message(STATUS "FOUND GCC STDDEF INCLUDE ${GCC_STDDEF_INCLUDE}")
     include_directories(${GCC_STDDEF_INCLUDE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE} -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE}")
 endif()
 
+message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 #
 # Setup include directories
 #
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
-include_directories(${YAML_CPP_INCLUDE_DIR})
+include_directories(${YAML_CPP_INCLUDE_DIRS})
 include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)

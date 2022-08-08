@@ -57,9 +57,9 @@ private:
 
 namespace std {
 template <>
-struct hash<std::reference_wrapper<const clanguml::common::model::package>> {
+struct hash<std::reference_wrapper<clanguml::common::model::package>> {
     std::size_t operator()(
-        const std::reference_wrapper<const clanguml::common::model::package>
+        const std::reference_wrapper<clanguml::common::model::package>
             &key) const
     {
         using clanguml::common::id_t;

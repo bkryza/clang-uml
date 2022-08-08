@@ -213,9 +213,9 @@ void diagram::get_parents(
     bool found_new{false};
     for (const auto &parent : parents) {
         for (const auto &pp : parent.get().parents()) {
-            const auto p = get_class(pp.id());
+            auto p = get_class(pp.id());
             if (p.has_value()) {
-                auto [it, found] = parents.emplace(p.value());
+                auto [it, found] = parents.emplace(std::ref(p.value()));
                 if (found)
                     found_new = true;
             }

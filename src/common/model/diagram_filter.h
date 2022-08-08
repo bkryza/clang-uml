@@ -219,7 +219,7 @@ private:
                     cd, element.get().path().to_string());
 
                 while (parent.has_value()) {
-                    parents.emplace(std::ref(parent.value()));
+                    parents.emplace(parent.value());
                     parent = detail::get<ElementT, DiagramT>(
                         cd, parent.value().path().to_string());
                 }

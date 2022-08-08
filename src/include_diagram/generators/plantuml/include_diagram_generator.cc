@@ -103,7 +103,7 @@ void generator::generate(std::ostream &ostr) const
 
     // Generate files and folders
     util::for_each_if(
-        m_model, [this](const auto &f) { return true; },
+        m_model, [](const auto &f) { return true; },
         [this, &ostr](const auto &f) {
             generate(dynamic_cast<source_file &>(*f), ostr);
         });

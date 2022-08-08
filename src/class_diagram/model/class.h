@@ -108,9 +108,9 @@ private:
 namespace std {
 template <>
 struct hash<
-    std::reference_wrapper<const clanguml::class_diagram::model::class_>> {
+    std::reference_wrapper<clanguml::class_diagram::model::class_>> {
     std::size_t operator()(const std::reference_wrapper<
-        const clanguml::class_diagram::model::class_> &key) const
+        clanguml::class_diagram::model::class_> &key) const
     {
         using clanguml::common::id_t;
 

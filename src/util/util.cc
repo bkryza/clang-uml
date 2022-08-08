@@ -253,9 +253,11 @@ bool starts_with(
             normal_prefix /= element;
     }
 
-    return std::search(normal_path.begin(), normal_path.end(),
-               normal_prefix.begin(),
-               normal_prefix.end()) == normal_path.begin();
+    auto normal_path_str = normal_path.string();
+    auto normal_prefix_str = normal_prefix.string();
+    return std::search(normal_path_str.begin(), normal_path_str.end(),
+               normal_prefix_str.begin(),
+               normal_prefix_str.end()) == normal_path_str.begin();
 }
 
 template <> bool starts_with(const std::string &s, const std::string &prefix)
