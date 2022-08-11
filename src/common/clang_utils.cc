@@ -20,9 +20,34 @@
 
 namespace clanguml::common {
 
+template <> id_t to_id(const std::string &full_name)
+{
+    return std::hash<std::string>{}(full_name) >> 3;
+}
+
 template <> id_t to_id(const clang::NamespaceDecl &declaration)
 {
-    return std::hash<std::string>{}(get_qualified_name(declaration)) >> 3;
+    return to_id(get_qualified_name(declaration));
+}
+
+template <> id_t to_id(const clang::RecordDecl &declaration)
+{
+    return to_id(get_qualified_name(declaration));
+}
+
+template <> id_t to_id(const clang::EnumDecl &declaration)
+{
+    return to_id(get_qualified_name(declaration));
+}
+
+template <> id_t to_id(const clang::TagDecl &declaration)
+{
+    return to_id(get_qualified_name(declaration));
+}
+
+template <> id_t to_id(const clang::CXXRecordDecl &declaration)
+{
+    return to_id(get_qualified_name(declaration));
 }
 
 template <> id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
@@ -34,7 +59,7 @@ template <> id_t to_id(const clang::TemplateSpecializationType &t)
 
 template <> id_t to_id(const std::filesystem::path &file)
 {
-    return std::hash<std::string>{}(file.lexically_normal()) >> 3;
+    return to_id(file.lexically_normal());
 }
 
 }

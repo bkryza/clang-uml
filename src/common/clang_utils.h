@@ -39,12 +39,17 @@ template <typename T> std::string get_qualified_name(const T &declaration)
     return qualified_name;
 }
 
-template <typename T> id_t to_id(const T &declaration)
-{
-    return declaration.getID();
-}
+template <typename T> id_t to_id(const T &declaration);
+
+template <> id_t to_id(const std::string &full_name);
 
 template <> id_t to_id(const clang::NamespaceDecl &declaration);
+
+template <> id_t to_id(const clang::CXXRecordDecl &declaration);
+
+template <> id_t to_id(const clang::EnumDecl &declaration);
+
+template <> id_t to_id(const clang::TagDecl &declaration);
 
 template <> id_t to_id(const clang::EnumType &type);
 

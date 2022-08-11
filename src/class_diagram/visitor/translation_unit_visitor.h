@@ -174,6 +174,23 @@ private:
     bool simplify_system_template(
         model::template_parameter &ct, const std::string &full_name);
 
+    void set_ast_local_id(
+        int64_t local_id, common::model::diagram_element::id_t global_id)
+    {
+        LOG_DBG("{} >>>>>>>>>>>>>>>>>>>>>>>>> {}", local_id, global_id);
+
+        local_ast_id_map_[local_id] = global_id;
+    }
+
+    std::optional<common::model::diagram_element::id_t> get_ast_local_id(
+        int64_t local_id)
+    {
+        if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
+            return {};
+
+        return local_ast_id_map_.at(local_id);
+    }
+
     clang::SourceManager &source_manager_;
 
     // Reference to the output diagram model
@@ -185,5 +202,7 @@ private:
     std::map<common::model::diagram_element::id_t,
         std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
+
+    std::map<int64_t, common::model::diagram_element::id_t> local_ast_id_map_;
 };
 }
