@@ -48,6 +48,11 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, (IsMethod<Public>("basic_method")));
     REQUIRE_THAT(puml, (IsMethod<Public, Static>("static_method", "int")));
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("const_method")));
+    REQUIRE_THAT(puml, (IsMethod<Public>("default_int", "int", "int i = 12")));
+    REQUIRE_THAT(puml,
+        (IsMethod<Public>("default_string", "std::string",
+            "int i, std::string s = \"abc\"")));
+
     REQUIRE_THAT(puml, (IsMethod<Protected>("protected_method")));
     REQUIRE_THAT(puml, (IsMethod<Private>("private_method")));
     REQUIRE_THAT(puml, (IsField<Public>("public_member", "int")));

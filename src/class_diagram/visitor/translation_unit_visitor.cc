@@ -124,8 +124,6 @@ std::string get_source_text(
 {
     clang::LangOptions lo;
 
-    // NOTE: sm.getSpellingLoc() used in case the range corresponds to a
-    // macro/preprocessed source.
     auto start_loc = sm.getSpellingLoc(range.getBegin());
     auto last_token_loc = sm.getSpellingLoc(range.getEnd());
     auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
@@ -148,6 +146,10 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     if (ns->isAnonymousNamespace() || ns->isInline())
         return true;
+
+    LOG_DBG("= Visiting namespace declaration {} at {}",
+        ns->getQualifiedNameAsString(),
+        ns->getLocation().printToString(source_manager_));
 
     auto package_path = namespace_{common::get_qualified_name(*ns)};
     auto package_parent = package_path;
@@ -198,6 +200,10 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     if (enm->getNameAsString().empty())
         return true;
 
+    LOG_DBG("= Visiting enum declaration {} at {}",
+        enm->getQualifiedNameAsString(),
+        enm->getLocation().printToString(source_manager_));
+
     auto e_ptr = std::make_unique<enum_>(config_.using_namespace());
     auto &e = *e_ptr;
 
@@ -241,6 +247,10 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    LOG_DBG("= Visiting template specialization declaration {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager_));
+
     // Skip forward declarations
     if (!cls->isCompleteDefinition()) {
         // Register this forward declaration in case there is no complete
@@ -251,7 +261,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         // Check if the class was already processed within
         // VisitClassTemplateDecl()
         if (diagram_.has_element(cls->getID()))
-        return true;
+            return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -289,6 +299,10 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    LOG_DBG("= Visiting template type alias declaration {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager_));
+
     auto *template_type_specialization_ptr =
         cls->getTemplatedDecl()
             ->getUnderlyingType()
@@ -320,9 +334,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
-    // Skip forward declarations
-    //    if (!cls->getTemplatedDecl()->isCompleteDefinition())
-    //        return true;
+    LOG_DBG("= Visiting class template declaration {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager_));
 
     auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
 
@@ -362,9 +376,27 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    LOG_DBG("= Visiting class declaration {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager_));
+
     // Skip forward declarations
-    if (!cls->isCompleteDefinition())
-        return true;
+    //    if (!cls->isCompleteDefinition())
+    //        return true;
+
+    if (cls->getQualifiedNameAsString() == "cppast::cpp_function_parameter" &&
+        cls->getLocation().printToString(source_manager_) ==
+            "/home/bartek/devel/clang-uml-showcases/cppast/src/../include/"
+            "cppast/cpp_function.hpp:16:7") {
+        LOG_DBG("##############################################################"
+                "##########################");
+        for (const auto &c : diagram().classes()) {
+            LOG_DBG(" >> {} [{}]", c.get().full_name(false), c.get().id());
+        }
+        const auto &ccc = diagram().get_class(cls->getID());
+        if (ccc.has_value())
+            LOG_DBG("---------- {}", ccc.get()->full_name(false));
+    }
 
     // Templated records are handled by VisitClassTemplateDecl()
     if (cls->isTemplated() || cls->isTemplateDecl() ||
@@ -373,8 +405,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         return true;
 
     // Check if the class was already processed within VisitClassTemplateDecl()
-    if (diagram_.has_element(cls->getID()))
-        return true;
+    // auto cls_id = cls->getID();
+    // if (diagram_.has_element(cls_id))
+    //    return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -385,9 +418,12 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (!c_ptr)
         return true;
 
-    auto &class_model = *c_ptr;
+    auto &class_model = diagram().get_class(cls->getID()).has_value()
+        ? *diagram().get_class(cls->getID()).get()
+        : *c_ptr;
 
-    process_class_declaration(*cls, class_model);
+    if (cls->isCompleteDefinition())
+        process_class_declaration(*cls, class_model);
 
     auto id = class_model.id();
     if (!cls->isCompleteDefinition()) {
@@ -402,6 +438,10 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
             class_model.id());
 
         diagram_.add_class(std::move(c_ptr));
+    }
+    else {
+        LOG_DBG("Skipping class {} with id {}", class_model.full_name(),
+            class_model.id());
     }
 
     return true;
@@ -901,7 +941,7 @@ void translation_unit_visitor::process_function_parameter(
         const auto *default_arg = p.getDefaultArg();
         if (default_arg != nullptr) {
             auto default_arg_str =
-                default_arg->getSourceRange().printToString(source_manager_);
+                get_source_text(default_arg->getSourceRange(), source_manager_);
             parameter.set_default_value(default_arg_str);
         }
     }
@@ -1864,7 +1904,7 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
 
 void translation_unit_visitor::finalize()
 {
-    add_incomplete_forward_declarations();
+//    add_incomplete_forward_declarations();
 }
 
 bool translation_unit_visitor::simplify_system_template(

@@ -87,8 +87,9 @@ std::string class_::base_template() const { return base_template_full_name_; }
 
 bool operator==(const class_ &l, const class_ &r)
 {
-    return (l.name_and_ns() == r.name_and_ns()) &&
-        (l.templates_ == r.templates_);
+    return l.id() == r.id();
+    //(l.name_and_ns() == r.name_and_ns()) &&
+    //    (l.templates_ == r.templates_);
 }
 
 void class_::add_type_alias(type_alias &&ta)

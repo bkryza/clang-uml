@@ -262,6 +262,9 @@ public:
     {
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();
+
+//        LOG_DBG("= Finalized translation unit: {}",
+//            ast_context.getTranslationUnitDecl());
     }
 };
 
@@ -287,6 +290,8 @@ public:
 protected:
     bool BeginSourceFileAction(clang::CompilerInstance &ci) override
     {
+        LOG_DBG("Visiting source file: {}", getCurrentFile().str());
+
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {
             auto find_includes_callback =
@@ -351,10 +356,9 @@ std::unique_ptr<DiagramModel> generate(
         const auto matches = glob::rglob(g);
         std::copy(matches.begin(), matches.end(),
             std::back_inserter(translation_units));
-
-        LOG_DBG(
-            "Found translation units: {}", fmt::join(translation_units, ", "));
     }
+
+    LOG_DBG("Found translation units: {}", fmt::join(translation_units, ", "));
 
     clang::tooling::ClangTool clang_tool(db, translation_units);
     auto action_factory =

@@ -229,6 +229,14 @@ ContainsMatcher IsAbstractClass(std::string const &str,
     return ContainsMatcher(CasedString("abstract " + str, caseSensitivity));
 }
 
+ContainsMatcher IsAbstractClassTemplate(std::string const &str,
+    std::string const &tmplt,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("abstract \"{}<{}>\"", str, tmplt), caseSensitivity));
+}
+
 ContainsMatcher IsBaseClass(std::string const &base, std::string const &sub,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -376,7 +384,7 @@ ContainsMatcher HasLink(std::string const &alias, std::string const &link,
 
 template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
-    std::string const &type = "void",
+    std::string const &type = "void", std::string const &params = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     std::string pattern;
@@ -395,7 +403,7 @@ ContainsMatcher IsMethod(std::string const &name,
 
     pattern += name;
 
-    pattern += "()";
+    pattern += "(" + params + ")";
 
     if constexpr (has_type<Const, Ts...>())
         pattern += " const";

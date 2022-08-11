@@ -165,8 +165,11 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     auto name_with_ns = c->name_and_ns();
     auto name_and_ns = ns | name;
     auto &cc = *c;
+    auto id = cc.id();
 
     if (!has_class(cc)) {
+        if (base_name == "cpp_function_parameter")
+            LOG_DBG("AAAAAAAAAAAAAAAAAAAAAAA");
         if (add_element(ns, std::move(c)))
             classes_.push_back(std::ref(cc));
 
@@ -176,10 +179,13 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
             throw std::runtime_error(
                 "Invalid element stored in the diagram tree");
 
+        LOG_DBG("Added class {} ({} - [{}])", base_name, full_name, id);
+
         return true;
     }
 
-    LOG_DBG("Class {} ({}) already in the model", base_name, full_name);
+    LOG_DBG(
+        "Class {} ({} - [{}]) already in the model", base_name, full_name, id);
 
     return false;
 }
