@@ -146,20 +146,43 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     else if (const auto *function_call_expr =
                  clang::dyn_cast_or_null<clang::CallExpr>(expr);
              function_call_expr != nullptr) {
-        assert(function_call_expr->getCalleeDecl()->getAsFunction());
+        auto calleeDecl = function_call_expr->getCalleeDecl();
+        if (calleeDecl)
+        {
+            auto func = calleeDecl->getAsFunction();
+            if (func)
+            {
 
-        m.to = function_call_expr->getCalleeDecl()
-                   ->getAsFunction()
-                   ->getQualifiedNameAsString() +
-            "()";
-        m.message = function_call_expr->getCalleeDecl()
-                        ->getAsFunction()
-                        ->getNameAsString();
-        m.to_usr =
-            function_call_expr->getCalleeDecl()->getAsFunction()->getID();
-        m.return_type =
-            function_call_expr->getCallReturnType(current_ast_context)
-                .getAsString();
+                m.to = calleeDecl
+                           ->getAsFunction()
+                           ->getQualifiedNameAsString() +
+                    "()";
+                m.message = calleeDecl
+                                ->getAsFunction()
+                                ->getNameAsString();
+                m.to_usr =
+                    calleeDecl->getAsFunction()->getID();
+                auto retType = function_call_expr->getCallReturnType(current_ast_context);
+                if (!retType.isNull())
+                {
+                    m.return_type = retType.getAsString();
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                LOG_DBG("Not a function");
+                return true;
+            }
+        }
+        else
+        {
+            LOG_DBG("Callee not found");
+            return true;
+        }
     }
     else {
         return true;
