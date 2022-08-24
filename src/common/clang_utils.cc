@@ -59,7 +59,7 @@ template <> id_t to_id(const clang::TemplateSpecializationType &t)
 
 template <> id_t to_id(const std::filesystem::path &file)
 {
-    return to_id(file.lexically_normal());
+    return to_id(file.lexically_normal().string());
 }
 
 }

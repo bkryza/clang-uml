@@ -135,6 +135,12 @@ private:
         const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    build_template_instantiation_from_class_template_specialization(
+        const clang::ClassTemplateSpecializationDecl &template_specialization,
+        const clang::RecordType &record_type,
+        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
+
     bool build_template_instantiation_add_base_classes(
         clanguml::class_diagram::model::class_ &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
