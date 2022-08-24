@@ -3,7 +3,7 @@
 namespace clanguml {
 namespace t00048 {
 
-void A::foo() {}
+void A::foo() { }
 
 }
 }

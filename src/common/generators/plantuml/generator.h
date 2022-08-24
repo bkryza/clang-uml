@@ -263,8 +263,8 @@ public:
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();
 
-//        LOG_DBG("= Finalized translation unit: {}",
-//            ast_context.getTranslationUnitDecl());
+        //        LOG_DBG("= Finalized translation unit: {}",
+        //            ast_context.getTranslationUnitDecl());
     }
 };
 

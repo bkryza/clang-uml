@@ -14,7 +14,7 @@ struct B : public Base {
 template <typename T> struct BTemplate : public BaseTemplate<T> {
     T b;
 
-    void foo() override {}
+    void foo() override { }
 };
 
 }
