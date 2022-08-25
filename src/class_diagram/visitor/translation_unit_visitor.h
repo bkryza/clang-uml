@@ -147,6 +147,42 @@ private:
         int arg_index, bool variadic_params,
         const clanguml::class_diagram::model::template_parameter &ct) const;
 
+    void build_template_instantiation_process_template_arguments(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        //        const clang::TemplateSpecializationType &template_type,
+        const clang::ArrayRef<clang::TemplateArgument> &template_args,
+        model::class_ &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl);
+
+    void build_template_instantiation_process_tag_argument(
+        model::class_ &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument);
+
+    void build_template_instantiation_process_expression_argument(
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_type_argument(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::class_ &template_instantiation,
+        model::template_parameter &argument);
+
+    void build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
+
     void process_function_parameter_find_relationships_in_template(
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names,

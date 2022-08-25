@@ -62,4 +62,20 @@ template <> id_t to_id(const std::filesystem::path &file)
     return to_id(file.lexically_normal().string());
 }
 
+template <> id_t to_id(const clang::TemplateArgument &template_argument)
+{
+    if (template_argument.getKind() == clang::TemplateArgument::Type) {
+        if (template_argument.getAsType()->getAs<clang::EnumType>())
+            return to_id(*template_argument.getAsType()
+                              ->getAs<clang::EnumType>()
+                              ->getAsTagDecl());
+        else if (template_argument.getAsType()->getAs<clang::RecordType>())
+            return to_id(*template_argument.getAsType()
+                              ->getAs<clang::RecordType>()
+                              ->getAsRecordDecl());
+    }
+
+    throw std::runtime_error("Cannot generate id for template argument");
+}
+
 }
