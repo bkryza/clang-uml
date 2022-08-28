@@ -198,8 +198,8 @@ void generator<C, D>::generate_plantuml_directives(
                 directive.replace(std::get<1>(alias_match),
                     std::get<2>(alias_match), element_opt.value().alias());
             else {
-                LOG_ERROR(
-                    "CANNOT FIND ALIAS TO ELEMENT {}", full_name.to_string());
+                LOG_ERROR("Cannot find clang-uml alias for element {}",
+                    full_name.to_string());
                 directive.replace(std::get<1>(alias_match),
                     std::get<2>(alias_match), "UNKNOWN_ALIAS");
             }
@@ -262,9 +262,6 @@ public:
     {
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();
-
-        //        LOG_DBG("= Finalized translation unit: {}",
-        //            ast_context.getTranslationUnitDecl());
     }
 };
 

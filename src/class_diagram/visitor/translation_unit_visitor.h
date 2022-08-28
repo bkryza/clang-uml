@@ -150,7 +150,6 @@ private:
     void build_template_instantiation_process_template_arguments(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        //        const clang::TemplateSpecializationType &template_type,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::class_ &template_instantiation,
         const std::string &full_template_specialization_name,
@@ -216,22 +215,14 @@ private:
     bool simplify_system_template(
         model::template_parameter &ct, const std::string &full_name);
 
+    /// Store the mapping from local clang entity id (obtained using
+    /// getID()) method to clang-uml global id
     void set_ast_local_id(
-        int64_t local_id, common::model::diagram_element::id_t global_id)
-    {
-        LOG_DBG("{} >>>>>>>>>>>>>>>>>>>>>>>>> {}", local_id, global_id);
+        int64_t local_id, common::model::diagram_element::id_t global_id);
 
-        local_ast_id_map_[local_id] = global_id;
-    }
-
+    /// Retrieve the global clang-uml entity id based on the clang local id
     std::optional<common::model::diagram_element::id_t> get_ast_local_id(
-        int64_t local_id)
-    {
-        if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
-            return {};
-
-        return local_ast_id_map_.at(local_id);
-    }
+        int64_t local_id);
 
     clang::SourceManager &source_manager_;
 

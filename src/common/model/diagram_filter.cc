@@ -229,8 +229,6 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     if (!class_ref.has_value())
         return false;
 
-    LOG_DBG("====================== LOOKING FOR PARENTS OF {} ===========", fn);
-
     parents.emplace(class_ref.value());
 
     cd.get_parents(parents);
@@ -239,15 +237,11 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     for (const auto p : parents)
         parents_names.push_back(p.get().full_name(false));
 
-    LOG_DBG("====================== FOUND PARENTS {} ==========",
-        fmt::join(parents_names, ", "));
-
     // Now check if any of the parents matches the roots specified in the
     // filter config
     for (const auto &root : roots_) {
         for (const auto &parent : parents) {
             auto full_name = parent.get().full_name(false);
-            LOG_DBG("+++ COMPARING {} WITH {}", root, full_name);
             if (root == full_name)
                 return true;
         }

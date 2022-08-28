@@ -244,8 +244,6 @@ void generator::generate_relationships(
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    //    const auto &uns = m_config.using_namespace();
-
     //
     // Process relationships
     //

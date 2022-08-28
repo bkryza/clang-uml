@@ -61,80 +61,6 @@ access_t access_specifier_to_access_t(clang::AccessSpecifier access_specifier)
 
     return access;
 }
-
-std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
-    const clang::DeclContext *decl)
-{
-    if (!decl->getEnclosingNamespaceContext()->isNamespace())
-        return {};
-
-    const auto *namespace_declaration =
-        clang::cast<clang::NamespaceDecl>(decl->getEnclosingNamespaceContext());
-
-    if (namespace_declaration == nullptr) {
-        return {};
-    }
-
-    return namespace_{common::get_qualified_name(*namespace_declaration)};
-}
-}
-
-std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
-    bool try_canonical = true)
-{
-    const clang::PrintingPolicy print_policy(ctx.getLangOpts());
-
-    auto result{type.getAsString(print_policy)};
-
-    if (try_canonical && result.find('<') != std::string::npos) {
-        auto canonical_type_name =
-            type.getCanonicalType().getAsString(print_policy);
-
-        auto result_qualified_template_name =
-            result.substr(0, result.find('<'));
-        auto result_template_arguments = result.substr(result.find('<'));
-
-        auto canonical_qualified_template_name =
-            canonical_type_name.substr(0, canonical_type_name.find('<'));
-
-        // Choose the longer name (why do I have to do this?)
-        if (result_qualified_template_name.size() <
-            canonical_qualified_template_name.size()) {
-
-            result =
-                canonical_qualified_template_name + result_template_arguments;
-        }
-    }
-
-    util::replace_all(result, ", ", ",");
-
-    return result;
-}
-
-std::string to_string(const clang::RecordType &type,
-    const clang::ASTContext &ctx, bool try_canonical = true)
-{
-    return to_string(type.desugar(), ctx, try_canonical);
-}
-
-std::string get_source_text_raw(
-    clang::SourceRange range, const clang::SourceManager &sm)
-{
-    return clang::Lexer::getSourceText(
-        clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions())
-        .str();
-}
-
-std::string get_source_text(
-    clang::SourceRange range, const clang::SourceManager &sm)
-{
-    clang::LangOptions lo;
-
-    auto start_loc = sm.getSpellingLoc(range.getBegin());
-    auto last_token_loc = sm.getSpellingLoc(range.getEnd());
-    auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
-    auto printable_range = clang::SourceRange{start_loc, end_loc};
-    return get_source_text_raw(printable_range, sm);
 }
 
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
@@ -238,7 +164,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         process_record_containment(*enm, e);
     }
 
-    auto namespace_declaration = detail::get_enclosing_namespace(enm);
+    auto namespace_declaration = common::get_enclosing_namespace(enm);
     if (namespace_declaration.has_value()) {
         e.set_namespace(namespace_declaration.value());
     }
@@ -258,18 +184,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     LOG_DBG("= Visiting template specialization declaration {} at {}",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
-
-    // Skip forward declarations
-    if (!cls->isCompleteDefinition()) {
-        // Register this forward declaration in case there is no complete
-        // definition (see t00036)
-        return true;
-    }
-    //    else
-    //        // Check if the class was already processed within
-    //        // VisitClassTemplateDecl()
-    //        if (diagram_.has_element(cls->getID()))
-    //            return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -394,10 +308,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
 
-    // Skip forward declarations
-    //    if (!cls->isCompleteDefinition())
-    //        return true;
-
     const auto cls_id = common::to_id(*cls);
 
     set_ast_local_id(cls->getID(), cls_id);
@@ -407,11 +317,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(cls) !=
             nullptr))
         return true;
-
-    // Check if the class was already processed within VisitClassTemplateDecl()
-    // auto cls_id = cls->getID();
-    // if (diagram_.has_element(cls_id))
-    //    return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -480,9 +385,6 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
         return {};
 
     c.set_style(c.style_spec());
-
-    if (!cls->isCompleteDefinition())
-        return c_ptr;
 
     return c_ptr;
 }
@@ -571,7 +473,7 @@ void translation_unit_visitor::process_record_containment(
         static_cast<const clang::RecordDecl *>(record.getParent())
             ->getQualifiedNameAsString();
 
-    auto namespace_declaration = detail::get_enclosing_namespace(parent);
+    auto namespace_declaration = common::get_enclosing_namespace(parent);
     if (namespace_declaration.has_value()) {
         element.set_namespace(namespace_declaration.value());
     }
@@ -588,7 +490,7 @@ void translation_unit_visitor::process_class_bases(
     for (auto &base : cls->bases()) {
         class_parent cp;
         auto name_and_ns = common::model::namespace_{
-            to_string(base.getType(), cls->getASTContext())};
+            common::to_string(base.getType(), cls->getASTContext())};
 
         cp.set_name(name_and_ns.to_string());
 
@@ -948,8 +850,8 @@ void translation_unit_visitor::process_function_parameter(
     if (p.hasDefaultArg()) {
         const auto *default_arg = p.getDefaultArg();
         if (default_arg != nullptr) {
-            auto default_arg_str =
-                get_source_text(default_arg->getSourceRange(), source_manager_);
+            auto default_arg_str = common::get_source_text(
+                default_arg->getSourceRange(), source_manager_);
             parameter.set_default_value(default_arg_str);
         }
     }
@@ -1068,7 +970,8 @@ void translation_unit_visitor::process_static_field(
     const clang::VarDecl &field_declaration, class_ &c)
 {
     const auto field_type = field_declaration.getType();
-    auto type_name = to_string(field_type, field_declaration.getASTContext());
+    auto type_name =
+        common::to_string(field_type, field_declaration.getASTContext());
     if (type_name.empty())
         type_name = "<<anonymous>>";
 
@@ -1176,14 +1079,15 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.to_string(config().using_namespace(), false));
         }
         else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
-            auto type_name = to_string(arg.getAsType(), cls->getASTContext());
+            auto type_name =
+                common::to_string(arg.getAsType(), cls->getASTContext());
 
             // clang does not provide declared template parameter/argument names
             // in template specializations - so we have to extract them from
             // raw source code...
             if (type_name.find("type-parameter-") == 0) {
-                auto declaration_text =
-                    get_source_text_raw(cls->getSourceRange(), source_manager_);
+                auto declaration_text = common::get_source_text_raw(
+                    cls->getSourceRange(), source_manager_);
 
                 declaration_text = declaration_text.substr(
                     declaration_text.find(cls->getNameAsString()) +
@@ -1206,7 +1110,8 @@ void translation_unit_visitor::process_template_specialization_argument(
             argument.set_name(type_name);
         }
         else {
-            auto type_name = to_string(arg.getAsType(), cls->getASTContext());
+            auto type_name =
+                common::to_string(arg.getAsType(), cls->getASTContext());
             if (type_name.find('<') != std::string::npos) {
                 // Sometimes template instantiation is reported as
                 // RecordType in the AST and getAs to
@@ -1222,8 +1127,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.set_name(type_name.substr(0, type_name.find('<')));
             }
             else if (type_name.find("type-parameter-") == 0) {
-                auto declaration_text =
-                    get_source_text_raw(cls->getSourceRange(), source_manager_);
+                auto declaration_text = common::get_source_text_raw(
+                    cls->getSourceRange(), source_manager_);
 
                 declaration_text = declaration_text.substr(
                     declaration_text.find(cls->getNameAsString()) +
@@ -1267,7 +1172,7 @@ void translation_unit_visitor::process_template_specialization_argument(
     else if (argument_kind == clang::TemplateArgument::Expression) {
         template_parameter argument;
         argument.is_template_parameter(false);
-        argument.set_type(get_source_text(
+        argument.set_type(common::get_source_text(
             arg.getAsExpr()->getSourceRange(), source_manager_));
         template_instantiation.add_template(std::move(argument));
     }
@@ -1359,7 +1264,7 @@ std::unique_ptr<class_> translation_unit_visitor::
 
     auto &template_instantiation = *template_instantiation_ptr;
     std::string full_template_specialization_name =
-        to_string(record_type, template_specialization.getASTContext());
+        common::to_string(record_type, template_specialization.getASTContext());
 
     const auto *template_decl =
         template_specialization.getSpecializedTemplate();
@@ -1454,7 +1359,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     auto template_instantiation_ptr =
         std::make_unique<class_>(config_.using_namespace());
     auto &template_instantiation = *template_instantiation_ptr;
-    std::string full_template_specialization_name = to_string(
+    std::string full_template_specialization_name = common::to_string(
         template_type.desugar(),
         template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
 
@@ -1497,7 +1402,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     if (templated_class_decl && templated_class_decl->hasDefinition())
         for (const auto &base : templated_class_decl->bases()) {
-            const auto base_class_name = to_string(
+            const auto base_class_name = common::to_string(
                 base.getType(), templated_class_decl->getASTContext(), false);
 
             LOG_DBG("Found template instantiation base: {}, {}",
@@ -1589,7 +1494,6 @@ void translation_unit_visitor::
     build_template_instantiation_process_template_arguments(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        //        const clang::TemplateSpecializationType &template_type,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         class_ &template_instantiation,
         const std::string &full_template_specialization_name,
@@ -1772,7 +1676,7 @@ void translation_unit_visitor::
     else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
         argument.is_template_parameter(true);
         argument.set_name(
-            to_string(arg.getAsType(), template_decl->getASTContext()));
+            common::to_string(arg.getAsType(), template_decl->getASTContext()));
     }
     else {
         // This is just a regular record type
@@ -1799,8 +1703,8 @@ void translation_unit_visitor::
     assert(arg.getKind() == clang::TemplateArgument::Expression);
 
     argument.is_template_parameter(false);
-    argument.set_type(
-        get_source_text(arg.getAsExpr()->getSourceRange(), source_manager_));
+    argument.set_type(common::get_source_text(
+        arg.getAsExpr()->getSourceRange(), source_manager_));
 }
 
 void translation_unit_visitor::
@@ -1815,7 +1719,7 @@ void translation_unit_visitor::
     argument.is_template_parameter(false);
 
     argument.set_name(
-        to_string(arg.getAsType(), template_decl->getASTContext()));
+        common::to_string(arg.getAsType(), template_decl->getASTContext()));
 
     if (arg.getAsType()->getAs<clang::RecordType>() &&
         arg.getAsType()->getAs<clang::RecordType>()->getAsRecordDecl()) {
@@ -1884,7 +1788,8 @@ void translation_unit_visitor::process_field(
     // The actual field type
     auto field_type = field_declaration.getType();
     // String representation of the field type
-    auto type_name = to_string(field_type, field_declaration.getASTContext());
+    auto type_name =
+        common::to_string(field_type, field_declaration.getASTContext());
     // The field name
     const auto field_name = field_declaration.getNameAsString();
     // If for any reason clang reports the type as empty string, make sure
@@ -1895,7 +1800,8 @@ void translation_unit_visitor::process_field(
     class_member field{
         detail::access_specifier_to_access_t(field_declaration.getAccess()),
         field_name,
-        to_string(field_type, field_declaration.getASTContext(), false)};
+        common::to_string(
+            field_type, field_declaration.getASTContext(), false)};
 
     // Parse the field comment
     process_comment(field_declaration, field);
@@ -2070,4 +1976,20 @@ bool translation_unit_visitor::simplify_system_template(
     else
         return false;
 }
+
+void translation_unit_visitor::set_ast_local_id(
+    int64_t local_id, common::model::diagram_element::id_t global_id)
+{
+    local_ast_id_map_[local_id] = global_id;
+}
+
+std::optional<common::model::diagram_element::id_t>
+translation_unit_visitor::get_ast_local_id(int64_t local_id)
+{
+    if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
+        return {};
+
+    return local_ast_id_map_.at(local_id);
+}
+
 }

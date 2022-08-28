@@ -18,7 +18,85 @@
 
 #include "clang_utils.h"
 
+#include <clang/Lex/Preprocessor.h>
+
 namespace clanguml::common {
+
+std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
+    const clang::DeclContext *decl)
+{
+    if (!decl->getEnclosingNamespaceContext()->isNamespace())
+        return {};
+
+    const auto *namespace_declaration =
+        clang::cast<clang::NamespaceDecl>(decl->getEnclosingNamespaceContext());
+
+    if (namespace_declaration == nullptr) {
+        return {};
+    }
+
+    return clanguml::common::model::namespace_{
+        common::get_qualified_name(*namespace_declaration)};
+}
+
+std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
+    bool try_canonical)
+{
+    const clang::PrintingPolicy print_policy(ctx.getLangOpts());
+
+    auto result{type.getAsString(print_policy)};
+
+    if (try_canonical && result.find('<') != std::string::npos) {
+        auto canonical_type_name =
+            type.getCanonicalType().getAsString(print_policy);
+
+        auto result_qualified_template_name =
+            result.substr(0, result.find('<'));
+        auto result_template_arguments = result.substr(result.find('<'));
+
+        auto canonical_qualified_template_name =
+            canonical_type_name.substr(0, canonical_type_name.find('<'));
+
+        // Choose the longer name (why do I have to do this?)
+        if (result_qualified_template_name.size() <
+            canonical_qualified_template_name.size()) {
+
+            result =
+                canonical_qualified_template_name + result_template_arguments;
+        }
+    }
+
+    // Remove trailing spaces after commas in template arguments
+    clanguml::util::replace_all(result, ", ", ",");
+
+    return result;
+}
+
+std::string to_string(const clang::RecordType &type,
+    const clang::ASTContext &ctx, bool try_canonical)
+{
+    return to_string(type.desugar(), ctx, try_canonical);
+}
+
+std::string get_source_text_raw(
+    clang::SourceRange range, const clang::SourceManager &sm)
+{
+    return clang::Lexer::getSourceText(
+        clang::CharSourceRange::getCharRange(range), sm, clang::LangOptions())
+        .str();
+}
+
+std::string get_source_text(
+    clang::SourceRange range, const clang::SourceManager &sm)
+{
+    clang::LangOptions lo;
+
+    auto start_loc = sm.getSpellingLoc(range.getBegin());
+    auto last_token_loc = sm.getSpellingLoc(range.getEnd());
+    auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
+    auto printable_range = clang::SourceRange{start_loc, end_loc};
+    return get_source_text_raw(printable_range, sm);
+}
 
 template <> id_t to_id(const std::string &full_name)
 {
@@ -52,8 +130,6 @@ template <> id_t to_id(const clang::CXXRecordDecl &declaration)
 
 template <> id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
 
-// template <> id_t to_id(const clang::TemplateSpecializationType &t);
-
 template <> id_t to_id(const std::filesystem::path &file)
 {
     return to_id(file.lexically_normal().string());
@@ -74,5 +150,4 @@ template <> id_t to_id(const clang::TemplateArgument &template_argument)
 
     throw std::runtime_error("Cannot generate id for template argument");
 }
-
 }

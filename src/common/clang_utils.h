@@ -39,6 +39,21 @@ template <typename T> std::string get_qualified_name(const T &declaration)
     return qualified_name;
 }
 
+std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
+    const clang::DeclContext *decl);
+
+std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
+    bool try_canonical = true);
+
+std::string to_string(const clang::RecordType &type,
+    const clang::ASTContext &ctx, bool try_canonical = true);
+
+std::string get_source_text_raw(
+    clang::SourceRange range, const clang::SourceManager &sm);
+
+std::string get_source_text(
+    clang::SourceRange range, const clang::SourceManager &sm);
+
 template <typename T> id_t to_id(const T &declaration);
 
 template <> id_t to_id(const std::string &full_name);

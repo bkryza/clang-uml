@@ -168,8 +168,6 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     auto id = cc.id();
 
     if (!has_class(cc)) {
-        if (base_name == "cpp_function_parameter")
-            LOG_DBG("AAAAAAAAAAAAAAAAAAAAAAA");
         if (add_element(ns, std::move(c)))
             classes_.push_back(std::ref(cc));
 
@@ -219,17 +217,12 @@ void diagram::get_parents(
     bool found_new{false};
     for (const auto &parent : parents) {
         for (const auto &pp : parent.get().parents()) {
-            LOG_DBG("=-=-=-=-=-=-= {} HAS PARENT {} [{}]",
-                parent.get().full_name(false), pp.name(), pp.id());
             auto p = get_class(pp.id());
 
             if (p.has_value()) {
                 auto [it, found] = parents.emplace(std::ref(p.value()));
                 if (found)
                     found_new = true;
-            }
-            else {
-                LOG_DBG("=-=-=-=-=-=-= {} NOT FOUND IN DIAGRAM", pp.id());
             }
         }
     }
