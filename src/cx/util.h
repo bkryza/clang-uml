@@ -19,9 +19,6 @@
 
 #include "common/model/namespace.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-
 #include <class_diagram/model/template_parameter.h>
 #include <string>
 
