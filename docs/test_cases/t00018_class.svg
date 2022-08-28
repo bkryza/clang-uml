@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="371px" preserveAspectRatio="none" style="width:330px;height:371px;" version="1.1" viewBox="0 0 330 371" width="330px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="550px" preserveAspectRatio="none" style="width:330px;height:550px;" version="1.1" viewBox="0 0 330 550" width="330px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="fkb3tt7q2sylo" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f13hazsa2b15ne" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,65 +9,103 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L9" target="_top" title="widget" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L9" xlink:show="new" xlink:title="widget" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#fkb3tt7q2sylo)" height="99.2188" id="C_0000000000000001501988" style="stroke: #A80036; stroke-width: 1.5;" width="231" x="47" y="8"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L9" target="_top" title="widget" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L9" xlink:show="new" xlink:title="widget" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f13hazsa2b15ne)" height="150.4375" id="C_0000130502639682787993" style="stroke: #A80036; stroke-width: 1.5;" width="231" x="47" y="8"/>
       <ellipse cx="121.25" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
       <path d="M124.2188,29.6406 Q123.6406,29.9375 123,30.0781 Q122.3594,30.2344 121.6563,30.2344 Q119.1563,30.2344 117.8281,28.5938 Q116.5156,26.9375 116.5156,23.8125 Q116.5156,20.6875 117.8281,19.0313 Q119.1563,17.375 121.6563,17.375 Q122.3594,17.375 123,17.5313 Q123.6563,17.6875 124.2188,17.9844 L124.2188,20.7031 Q123.5938,20.125 123,19.8594 Q122.4063,19.5781 121.7813,19.5781 Q120.4375,19.5781 119.75,20.6563 Q119.0625,21.7188 119.0625,23.8125 Q119.0625,25.9063 119.75,26.9844 Q120.4375,28.0469 121.7813,28.0469 Q122.4063,28.0469 123,27.7813 Q123.5938,27.5 124.2188,26.9219 L124.2188,29.6406 Z "/>
       <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="74" x="141.75" y="28.1543">impl::widget</text>
       <line style="stroke: #A80036; stroke-width: 1.5;" x1="48" x2="277" y1="40" y2="40"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
       <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="53" y="46"/>
       <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="55" y="48"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
       <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="33" x="67" y="54.2104">n : int</text>
     </a>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="48" x2="277" y1="60.8047" y2="60.8047"/>
-    <ellipse cx="58" cy="71.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="205" x="67" y="75.0151">draw(const widget &amp; w) const : void</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
+      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="53" y="58.8047"/>
+      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="55" y="60.8047"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" target="_top" title="n" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018_impl.h#L10" xlink:show="new" xlink:title="n" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="33" x="67" y="67.0151">n : int</text>
+    </a>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="48" x2="277" y1="73.6094" y2="73.6094"/>
     <ellipse cx="58" cy="84.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="170" x="67" y="87.8198">draw(const widget &amp; w) : void</text>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="205" x="67" y="87.8198">draw(const widget &amp; w) const : void</text>
     <ellipse cx="58" cy="97.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="105" x="67" y="100.6245">widget(int n) : void</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L15" target="_top" title="widget" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L15" xlink:show="new" xlink:title="widget" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#fkb3tt7q2sylo)" height="176.0469" id="C_0000000000000001428508" style="stroke: #A80036; stroke-width: 1.5;" width="313" x="6" y="184"/>
-      <ellipse cx="137.75" cy="200" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M140.7188,205.6406 Q140.1406,205.9375 139.5,206.0781 Q138.8594,206.2344 138.1563,206.2344 Q135.6563,206.2344 134.3281,204.5938 Q133.0156,202.9375 133.0156,199.8125 Q133.0156,196.6875 134.3281,195.0313 Q135.6563,193.375 138.1563,193.375 Q138.8594,193.375 139.5,193.5313 Q140.1563,193.6875 140.7188,193.9844 L140.7188,196.7031 Q140.0938,196.125 139.5,195.8594 Q138.9063,195.5781 138.2813,195.5781 Q136.9375,195.5781 136.25,196.6563 Q135.5625,197.7188 135.5625,199.8125 Q135.5625,201.9063 136.25,202.9844 Q136.9375,204.0469 138.2813,204.0469 Q138.9063,204.0469 139.5,203.7813 Q140.0938,203.5 140.7188,202.9219 L140.7188,205.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="158.25" y="204.1543">widget</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="318" y1="216" y2="216"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="170" x="67" y="100.6245">draw(const widget &amp; w) : void</text>
+    <ellipse cx="58" cy="110.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="105" x="67" y="113.4292">widget(int n) : void</text>
+    <ellipse cx="58" cy="123.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="205" x="67" y="126.2339">draw(const widget &amp; w) const : void</text>
+    <ellipse cx="58" cy="135.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="170" x="67" y="139.0386">draw(const widget &amp; w) : void</text>
+    <ellipse cx="58" cy="148.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="105" x="67" y="151.8433">widget(int n) : void</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L15" target="_top" title="widget" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L15" xlink:show="new" xlink:title="widget" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f13hazsa2b15ne)" height="304.0938" id="C_0001005661284373854088" style="stroke: #A80036; stroke-width: 1.5;" width="313" x="6" y="235"/>
+      <ellipse cx="137.75" cy="251" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M140.7188,256.6406 Q140.1406,256.9375 139.5,257.0781 Q138.8594,257.2344 138.1563,257.2344 Q135.6563,257.2344 134.3281,255.5938 Q133.0156,253.9375 133.0156,250.8125 Q133.0156,247.6875 134.3281,246.0313 Q135.6563,244.375 138.1563,244.375 Q138.8594,244.375 139.5,244.5313 Q140.1563,244.6875 140.7188,244.9844 L140.7188,247.7031 Q140.0938,247.125 139.5,246.8594 Q138.9063,246.5781 138.2813,246.5781 Q136.9375,246.5781 136.25,247.6563 Q135.5625,248.7188 135.5625,250.8125 Q135.5625,252.9063 136.25,253.9844 Q136.9375,255.0469 138.2813,255.0469 Q138.9063,255.0469 139.5,254.7813 Q140.0938,254.5 140.7188,253.9219 L140.7188,256.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="41" x="158.25" y="255.1543">widget</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="318" y1="267" y2="267"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
-      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="12" y="222"/>
-      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="224"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
+      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="12" y="273"/>
+      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="275"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/ae7ef11e43f5fa5a1684f412eef67c0481dd4756/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="216" x="26" y="230.2104">pImpl : std::unique_ptr&lt;impl::widget&gt;</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="216" x="26" y="281.2104">pImpl : std::unique_ptr&lt;impl::widget&gt;</text>
     </a>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="318" y1="236.8047" y2="236.8047"/>
-    <ellipse cx="17" cy="247.8047" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="106" x="26" y="251.0151">draw() const : void</text>
-    <ellipse cx="17" cy="260.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="263.8198">draw() : void</text>
-    <ellipse cx="17" cy="273.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="123" x="26" y="276.6245">shown() const : _Bool</text>
-    <ellipse cx="17" cy="286.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="98" x="26" y="289.4292">widget(int ) : void</text>
-    <ellipse cx="17" cy="299.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="89" x="26" y="302.2339">~widget() : void</text>
-    <ellipse cx="17" cy="311.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="179" x="26" y="315.0386">widget(class widget &amp;&amp; ) : void</text>
-    <ellipse cx="17" cy="324.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="204" x="26" y="327.8433">widget(const class widget &amp; ) : void</text>
-    <ellipse cx="17" cy="337.4375" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="262" x="26" y="340.6479">operator=(class widget &amp;&amp; ) : class widget &amp;</text>
-    <ellipse cx="17" cy="350.2422" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="287" x="26" y="353.4526">operator=(const class widget &amp; ) : class widget &amp;</text>
-    <path d="M157.49,107.03 C156.66,116.94 155.93,127.29 155.5,137 C154.9,150.47 154.93,164.7 155.33,178.66 " fill="none" id="C_0000000000000001501988-&gt;C_0000000000000001428508" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="#A80036" points="155.5,183.79,159.2153,174.6688,155.3429,178.7925,151.2193,174.9201,155.5,183.79" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M162.5,170.43 C162.5,148.43 162.5,126.11 162.5,107.25 " fill="none" id="C_0000000000000001428508&lt;-C_0000000000000001501988" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <polygon fill="#FFFFFF" points="162.5,183.68,166.5,177.68,162.5,171.68,158.5,177.68,162.5,183.68" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="165.5" y="143.0664"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="35" x="175.5" y="150.0669">pImpl</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
+      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="12" y="285.8047"/>
+      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="14" y="287.8047"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" target="_top" title="pImpl" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/feb19c23c77e000ec4e0f6a2eea20e7096e661e8/tests/t00018/t00018.h#L16" xlink:show="new" xlink:title="pImpl" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="216" x="26" y="294.0151">pImpl : std::unique_ptr&lt;impl::widget&gt;</text>
+    </a>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="318" y1="300.6094" y2="300.6094"/>
+    <ellipse cx="17" cy="311.6094" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="106" x="26" y="314.8198">draw() const : void</text>
+    <ellipse cx="17" cy="324.4141" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="327.6245">draw() : void</text>
+    <ellipse cx="17" cy="337.2188" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="123" x="26" y="340.4292">shown() const : _Bool</text>
+    <ellipse cx="17" cy="350.0234" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="98" x="26" y="353.2339">widget(int ) : void</text>
+    <ellipse cx="17" cy="362.8281" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="89" x="26" y="366.0386">~widget() : void</text>
+    <ellipse cx="17" cy="375.6328" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="179" x="26" y="378.8433">widget(class widget &amp;&amp; ) : void</text>
+    <ellipse cx="17" cy="388.4375" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="204" x="26" y="391.6479">widget(const class widget &amp; ) : void</text>
+    <ellipse cx="17" cy="401.2422" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="262" x="26" y="404.4526">operator=(class widget &amp;&amp; ) : class widget &amp;</text>
+    <ellipse cx="17" cy="414.0469" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="287" x="26" y="417.2573">operator=(const class widget &amp; ) : class widget &amp;</text>
+    <ellipse cx="17" cy="426.8516" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="106" x="26" y="430.062">draw() const : void</text>
+    <ellipse cx="17" cy="439.6563" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="71" x="26" y="442.8667">draw() : void</text>
+    <ellipse cx="17" cy="452.4609" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="123" x="26" y="455.6714">shown() const : _Bool</text>
+    <ellipse cx="17" cy="465.2656" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="98" x="26" y="468.4761">widget(int ) : void</text>
+    <ellipse cx="17" cy="478.0703" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="89" x="26" y="481.2808">~widget() : void</text>
+    <ellipse cx="17" cy="490.875" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="179" x="26" y="494.0854">widget(class widget &amp;&amp; ) : void</text>
+    <ellipse cx="17" cy="503.6797" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="204" x="26" y="506.8901">widget(const class widget &amp; ) : void</text>
+    <ellipse cx="17" cy="516.4844" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="262" x="26" y="519.6948">operator=(class widget &amp;&amp; ) : class widget &amp;</text>
+    <ellipse cx="17" cy="529.2891" fill="#84BE84" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="287" x="26" y="532.4995">operator=(const class widget &amp; ) : class widget &amp;</text>
+    <path d="M156.9,158.11 C156.32,168.15 155.83,178.32 155.5,188 C155.04,201.55 154.9,215.62 154.97,229.73 " fill="none" id="C_0000130502639682787993-&gt;C_0001005661284373854088" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="155.01,234.92,158.9327,225.886,154.9671,229.9202,150.933,225.9546,155.01,234.92" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M162.5,221.77 C162.5,199.57 162.5,177.75 162.5,158.26 " fill="none" id="C_0001005661284373854088&lt;-C_0000130502639682787993" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <polygon fill="#FFFFFF" points="162.5,234.86,166.5,228.86,162.5,222.86,158.5,228.86,162.5,234.86" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="165.5" y="194.0664"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="35" x="175.5" y="201.0669">pImpl</text>
   </g>
 </svg>
