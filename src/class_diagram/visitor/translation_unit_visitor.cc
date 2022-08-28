@@ -583,7 +583,7 @@ void translation_unit_visitor::process_record_containment(
 }
 
 void translation_unit_visitor::process_class_bases(
-    const clang::CXXRecordDecl *cls, class_ &c) const
+    const clang::CXXRecordDecl *cls, class_ &c)
 {
     for (auto &base : cls->bases()) {
         class_parent cp;
@@ -597,8 +597,12 @@ void translation_unit_visitor::process_class_bases(
                 *base.getType()->getAs<clang::RecordType>()->getDecl()));
         else if (base.getType()->getAs<clang::TemplateSpecializationType>() !=
             nullptr) {
-            cp.set_id(common::to_id(
-                *base.getType()->getAs<clang::TemplateSpecializationType>()));
+            auto template_specialization_ptr = build_template_instantiation(
+                *base.getType()->getAs<clang::TemplateSpecializationType>(),
+                {});
+            if (template_specialization_ptr) {
+                cp.set_id(template_specialization_ptr->id());
+            }
         }
         else
             // This could be a template parameter - we don't want it here
@@ -1000,26 +1004,19 @@ void translation_unit_visitor::
             .getAsTemplateDecl()
             ->getQualifiedNameAsString();
 
+    auto template_specialization_ptr =
+        build_template_instantiation(template_instantiation_type);
+
     if (diagram().should_include(template_field_decl_name)) {
         if (template_instantiation_type.isDependentType()) {
-            if (get_ast_local_id(template_instantiation_type.getTemplateName()
-                                     .getAsTemplateDecl()
-                                     ->getID())
-                    .has_value()) {
+            if (template_specialization_ptr) {
                 relationship r{relationship_t::kDependency,
-                    get_ast_local_id(
-                        template_instantiation_type.getTemplateName()
-                            .getAsTemplateDecl()
-                            ->getID())
-                        .value()};
+                    template_specialization_ptr->id()};
 
                 c.add_relationship(std::move(r));
             }
         }
         else {
-            auto template_specialization_ptr =
-                build_template_instantiation(template_instantiation_type);
-
             if (template_specialization_ptr) {
                 relationship r{relationship_t::kDependency,
                     template_specialization_ptr->id()};
@@ -1470,8 +1467,6 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     ns.pop_back();
     template_instantiation.set_name(template_decl->getNameAsString());
     template_instantiation.set_namespace(ns);
-    template_instantiation.set_id(template_decl->getID() +
-        (std::hash<std::string>{}(full_template_specialization_name) >> 4));
 
     // TODO: Refactor handling of base parameters to a separate method
 
@@ -1583,6 +1578,9 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         LOG_DBG("Skipping instantiation relationship from {}",
             template_instantiation_ptr->full_name(false));
     }
+
+    template_instantiation.set_id(
+        common::to_id(template_instantiation_ptr->full_name(false)));
 
     return template_instantiation_ptr;
 }
@@ -2058,7 +2056,7 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
 
 void translation_unit_visitor::finalize()
 {
-    //    add_incomplete_forward_declarations();
+    add_incomplete_forward_declarations();
 }
 
 bool translation_unit_visitor::simplify_system_template(

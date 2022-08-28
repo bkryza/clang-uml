@@ -52,10 +52,7 @@ template <> id_t to_id(const clang::CXXRecordDecl &declaration)
 
 template <> id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
 
-template <> id_t to_id(const clang::TemplateSpecializationType &t)
-{
-    return t.getTemplateName().getAsTemplateDecl()->getID();
-}
+// template <> id_t to_id(const clang::TemplateSpecializationType &t);
 
 template <> id_t to_id(const std::filesystem::path &file)
 {

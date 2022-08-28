@@ -72,7 +72,7 @@ private:
         clanguml::class_diagram::model::class_ &c);
 
     void process_class_bases(const clang::CXXRecordDecl *cls,
-        clanguml::class_diagram::model::class_ &c) const;
+        clanguml::class_diagram::model::class_ &c);
 
     void process_class_children(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c);
