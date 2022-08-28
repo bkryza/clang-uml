@@ -12,6 +12,10 @@ type and contents of each generated diagram.
 
 `clang-uml` currently supports C++ up to version 17.
 
+> Current `master` version (and any release since `0.2.0`) has been refactored to use 
+> [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) instead of libclang.
+> Previous version is available in branch `0.1.x`, however it is not maintained.
+
 ## Features
 Main features supported so far include:
 
@@ -125,7 +129,6 @@ diagrams:
   myproject_class:
     type: class
     glob:
-      - src/*.h
       - src/*.cc
     using_namespace:
       - myproject
@@ -461,7 +464,7 @@ The build-in test cases used for unit testing of the `clang-uml`, can be browsed
 
 ## Acknowledgements
 This project relies on the following great tools:
-  * [clang](https://clang.llvm.org/) - a C/C++ frontend for LLVM
+  * [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
   * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
   * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
   * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
