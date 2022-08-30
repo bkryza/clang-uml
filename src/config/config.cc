@@ -154,6 +154,12 @@ void class_diagram::initialize_template_aliases()
     if (!template_aliases().count("std::basic_string<char>")) {
         template_aliases().insert({"std::basic_string<char>", "std::string"});
     }
+    if (!template_aliases().count("std::basic_string<char,std::char_traits<"
+                                  "char>,std::allocator<char>>")) {
+        template_aliases().insert({"std::basic_string<char,std::char_traits<"
+                                   "char>,std::allocator<char>>",
+            "std::string"});
+    }
     if (!template_aliases().count("std::basic_string<wchar_t>")) {
         template_aliases().insert(
             {"std::basic_string<wchar_t>", "std::wstring"});

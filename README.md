@@ -66,8 +66,6 @@ apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12
 # macos
 brew install ccache cmake llvm yaml-cpp
 ```
-> Please note that on macos this tool is not fully functional, i.e. several test cases fail. The build instructions are
-> provided for development purposes only.
 
 Then proceed with building the sources:
 
@@ -79,12 +77,17 @@ make release
 release/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
-LLVM_VERSION=13 make release
+LLVM_VERSION=14 make release
 
 # Optionally
 make install
 # or
 export PATH=$PATH:$PWD/release
+
+# On macos, it is necessary to build clang-uml using the same llvm against which it is linked, e.g.
+export CC=/usr/local/opt/llvm/bin/clang
+export CCX=/usr/local/opt/llvm/bin/clang++
+LLVM_VERSION=14 make release
 ```
 
 ## Usage

@@ -133,6 +133,9 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     if (enm->getNameAsString().empty())
         return true;
 
+    if (!diagram().should_include(enm->getQualifiedNameAsString()))
+        return true;
+
     LOG_DBG("= Visiting enum declaration {} at {}",
         enm->getQualifiedNameAsString(),
         enm->getLocation().printToString(source_manager_));
@@ -302,6 +305,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 {
     // Skip system headers
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
+
+    if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
     LOG_DBG("= Visiting class declaration {} at {}",

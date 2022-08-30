@@ -48,7 +48,6 @@ TEST_CASE("t00048", "[test-case][class]")
     REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("A")));
     REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("B")));
 
-
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }
