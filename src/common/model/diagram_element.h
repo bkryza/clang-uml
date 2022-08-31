@@ -65,10 +65,16 @@ public:
 
     virtual inja::json context() const;
 
+    bool complete() const;
+
+    void complete(bool completed);
+
 private:
     id_t id_;
     std::string name_;
     std::vector<relationship> relationships_;
+
+    bool complete_;
 
     static std::atomic_uint64_t m_nextId;
 };

@@ -184,6 +184,9 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+        return true;
+
     LOG_DBG("= Visiting template specialization declaration {} at {}",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
@@ -227,6 +230,9 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
+    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+        return true;
+
     LOG_DBG("= Visiting template type alias declaration {} at {}",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
@@ -260,6 +266,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     clang::ClassTemplateDecl *cls)
 {
     if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
+
+    if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
     LOG_DBG("= Visiting class template declaration {} at {}",
@@ -337,7 +346,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         ? *diagram().get_class(cls_id).get()
         : *c_ptr;
 
-    if (cls->isCompleteDefinition())
+    if (cls->isCompleteDefinition() && !class_model.complete())
         process_class_declaration(*cls, class_model);
 
     auto id = class_model.id();
@@ -407,6 +416,8 @@ void translation_unit_visitor::process_class_declaration(
     if (cls.getParent()->isRecord()) {
         process_record_containment(cls, c);
     }
+
+    c.complete(true);
 }
 
 bool translation_unit_visitor::process_template_parameters(

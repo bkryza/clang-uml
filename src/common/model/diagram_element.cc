@@ -28,6 +28,7 @@ std::atomic_uint64_t diagram_element::m_nextId = 1;
 
 diagram_element::diagram_element()
     : id_{0}
+    , complete_{false}
 {
 }
 
@@ -82,6 +83,10 @@ inja::json diagram_element::context() const
 
     return ctx;
 }
+
+bool diagram_element::complete() const { return complete_; }
+
+void diagram_element::complete(bool completed) { complete_ = completed; }
 
 bool operator==(const diagram_element &l, const diagram_element &r)
 {
