@@ -69,8 +69,14 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     include_path = include_path / file->getName().str();
     include_path = include_path.lexically_normal();
 
-    LOG_DBG("Processing include file {} in file {}", include_path.string(),
+    if (!diagram().should_include(source_file{include_path}) ||
+        visited_.find(include_path.string()) != visited_.end())
+        return;
+
+    LOG_INFO("Processing include file {} in file {}", include_path.string(),
         current_file.string());
+
+    visited_.emplace(include_path.string());
 
     auto relative_include_path = include_path;
     if (config().relative_to) {
