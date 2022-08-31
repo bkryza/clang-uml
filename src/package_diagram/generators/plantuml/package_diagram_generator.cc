@@ -37,9 +37,11 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << p.alias() << " ..> "
-                       << m_model.to_alias(r.destination()) << '\n';
-                ostr << relstr.str();
+                auto destination = m_model.to_alias(r.destination());
+                if (!destination.empty()) {
+                    relstr << p.alias() << " ..> " << destination << '\n';
+                    ostr << relstr.str();
+                }
             }
             catch (error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping dependency relation from {} to {} due "

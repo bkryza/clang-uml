@@ -54,6 +54,9 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     auto qualified_name = common::get_qualified_name(*ns);
 
+    if (!diagram().should_include(qualified_name))
+        return true;
+
     LOG_DBG("Visiting namespace declaration: {}", qualified_name);
 
     auto package_path = namespace_{qualified_name};
@@ -138,9 +141,10 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     found_relationships_t relationships;
 
-    process_class_declaration(*cls, relationships);
-
-    add_relationships(cls, relationships);
+    if(cls->isCompleteDefinition()) {
+        process_class_declaration(*cls, relationships);
+        add_relationships(cls, relationships);
+    }
 
     return true;
 }
@@ -154,6 +158,11 @@ void translation_unit_visitor::add_relationships(
         current_package_id =
             common::to_id(*llvm::cast<clang::NamespaceDecl>(namespace_context));
     }
+
+    if(current_package_id == 0)
+        // These are relationships to a global namespace, and we don't care
+        // about those
+        return;
 
     assert(current_package_id != 0);
 
