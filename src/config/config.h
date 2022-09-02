@@ -147,6 +147,9 @@ struct diagram : public inheritable_diagram_options {
 
     virtual common::model::diagram_t type() const = 0;
 
+    std::vector<std::string> get_translation_units(
+        const std::filesystem::path &root_directory) const;
+
     std::string name;
 };
 

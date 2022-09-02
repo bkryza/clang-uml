@@ -47,7 +47,8 @@ bool check_output_directory(const std::string &dir);
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const clang::tooling::CompilationDatabase &db, bool verbose);
+    const clang::tooling::CompilationDatabase &db,
+    const std::vector<std::string> &translation_units, bool verbose);
 
 int main(int argc, const char *argv[])
 {
@@ -105,17 +106,6 @@ int main(int argc, const char *argv[])
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir());
 
-    std::string err{};
-
-    auto db = clang::tooling::CompilationDatabase::autoDetectFromDirectory(
-        config.compilation_database_dir(), err);
-
-    if (!err.empty()) {
-        LOG_ERROR("Failed to load compilation database from {}",
-            config.compilation_database_dir());
-        return 1;
-    }
-
     auto od = config.output_directory();
     if (output_directory)
         od = output_directory.value();
@@ -126,15 +116,78 @@ int main(int argc, const char *argv[])
     util::thread_pool_executor generator_executor{thread_count};
     std::vector<std::future<void>> futs;
 
+    std::string err{};
+    auto db = clang::tooling::CompilationDatabase::autoDetectFromDirectory(
+        config.compilation_database_dir(), err);
+
+    if (!err.empty()) {
+        LOG_ERROR("Failed to load compilation database from {}",
+            config.compilation_database_dir());
+        return 1;
+    }
+
+    const auto compilation_database_files = db->getAllFiles();
+
+    const auto current_directory = std::filesystem::current_path();
+
+    std::map<std::string /* diagram name */,
+        std::vector<std::string> /*translation units*/>
+        translation_units_map;
+
+    // We have to generate the translation units list for each diagram before
+    // scheduling tasks, because std::filesystem::current_path cannot be trusted
+    // with multiple threads
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
         // and this diagram is not in that list - skip it
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
+        // Get all translation units matching the glob from diagram
+        // configuration
+        std::vector<std::string> translation_units =
+            diagram->get_translation_units(current_directory);
+
+        std::vector<std::string> valid_translation_units{};
+        std::copy_if(compilation_database_files.begin(),
+            compilation_database_files.end(),
+            std::back_inserter(valid_translation_units),
+            [&translation_units](const auto &tu) {
+                return std::find(translation_units.begin(),
+                           translation_units.end(),
+                           tu) != translation_units.end();
+            });
+
+        translation_units_map[name] = std::move(valid_translation_units);
+    }
+
+    for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
+            continue;
+
+        const auto& valid_translation_units = translation_units_map[name];
+
+        if (valid_translation_units.empty()) {
+            LOG_ERROR(
+                "Diagram {} generation failed: no translation units found",
+                name);
+            continue;
+        }
+
         futs.emplace_back(generator_executor.add(
-            [&od, &name = name, &diagram = diagram, &db = db, verbose]() {
-                generate_diagram(od, name, diagram, *db, verbose);
+            [&od, &name = name, &diagram = diagram, &config = config,
+                db = std::ref(*db),
+                translation_units = std::move(valid_translation_units),
+                verbose]() {
+                try {
+                    generate_diagram(
+                        od, name, diagram, db, translation_units, verbose);
+                }
+                catch (std::runtime_error &e) {
+                    LOG_ERROR(e.what());
+                }
             }));
     }
 
@@ -147,7 +200,8 @@ int main(int argc, const char *argv[])
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const clang::tooling::CompilationDatabase &db, bool verbose)
+    const clang::tooling::CompilationDatabase &db,
+    const std::vector<std::string> &translation_units, bool verbose)
 {
     using clanguml::common::model::diagram_t;
     using clanguml::config::class_diagram;
@@ -168,7 +222,8 @@ void generate_diagram(const std::string &od, const std::string &name,
         auto model =
             clanguml::common::generators::plantuml::generate<diagram_model,
                 diagram_config, diagram_visitor>(db, diagram->name,
-                dynamic_cast<diagram_config &>(*diagram), verbose);
+                dynamic_cast<diagram_config &>(*diagram), translation_units,
+                verbose);
 
         ofs << clanguml::class_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);
@@ -182,7 +237,8 @@ void generate_diagram(const std::string &od, const std::string &name,
         auto model =
             clanguml::common::generators::plantuml::generate<diagram_model,
                 diagram_config, diagram_visitor>(db, diagram->name,
-                dynamic_cast<diagram_config &>(*diagram), verbose);
+                dynamic_cast<diagram_config &>(*diagram), translation_units,
+                verbose);
 
         ofs << clanguml::sequence_diagram::generators::plantuml::generator(
             dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
@@ -197,7 +253,8 @@ void generate_diagram(const std::string &od, const std::string &name,
         auto model =
             clanguml::common::generators::plantuml::generate<diagram_model,
                 diagram_config, diagram_visitor>(db, diagram->name,
-                dynamic_cast<diagram_config &>(*diagram), verbose);
+                dynamic_cast<diagram_config &>(*diagram), translation_units,
+                verbose);
 
         ofs << clanguml::package_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);
@@ -211,7 +268,8 @@ void generate_diagram(const std::string &od, const std::string &name,
         auto model =
             clanguml::common::generators::plantuml::generate<diagram_model,
                 diagram_config, diagram_visitor>(db, diagram->name,
-                dynamic_cast<diagram_config &>(*diagram), verbose);
+                dynamic_cast<diagram_config &>(*diagram), translation_units,
+                verbose);
 
         ofs << clanguml::include_diagram::generators::plantuml::generator(
             dynamic_cast<diagram_config &>(*diagram), *model);

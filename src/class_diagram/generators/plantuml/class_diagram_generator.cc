@@ -278,7 +278,7 @@ void generator::generate_relationships(
                 target_alias = m_model.to_alias(destination);
             }
             catch (...) {
-                LOG_ERROR("Failed to find alias to {}", destination);
+                LOG_DBG("Failed to find alias to {}", destination);
                 continue;
             }
 

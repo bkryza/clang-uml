@@ -73,7 +73,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
         visited_.find(include_path.string()) != visited_.end())
         return;
 
-    LOG_INFO("Processing include file {} in file {}", include_path.string(),
+    LOG_DBG("Processing include file {} in file {}", include_path.string(),
         current_file.string());
 
     visited_.emplace(include_path.string());

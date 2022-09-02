@@ -60,7 +60,8 @@ generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
 
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<clanguml::config::sequence_diagram &>(*diagram));
+        dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
+        diagram->get_translation_units(std::filesystem::current_path()));
 
     return model;
 }
@@ -77,8 +78,9 @@ std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
     inject_diagram_options(diagram);
 
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(
-        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+        diagram_config, diagram_visitor>(db, diagram->name,
+        dynamic_cast<diagram_config &>(*diagram),
+        diagram->get_translation_units(std::filesystem::current_path()));
 
     return model;
 }
@@ -95,8 +97,9 @@ generate_package_diagram(clang::tooling::CompilationDatabase &db,
     inject_diagram_options(diagram);
 
     return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(
-        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+        diagram_config, diagram_visitor>(db, diagram->name,
+        dynamic_cast<diagram_config &>(*diagram),
+        diagram->get_translation_units(std::filesystem::current_path()));
 }
 
 std::unique_ptr<clanguml::include_diagram::model::diagram>
@@ -111,8 +114,9 @@ generate_include_diagram(clang::tooling::CompilationDatabase &db,
     inject_diagram_options(diagram);
 
     return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(
-        db, diagram->name, dynamic_cast<diagram_config &>(*diagram));
+        diagram_config, diagram_visitor>(db, diagram->name,
+        dynamic_cast<diagram_config &>(*diagram),
+        diagram->get_translation_units(std::filesystem::current_path()));
 }
 
 std::string generate_sequence_puml(

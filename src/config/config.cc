@@ -17,6 +17,7 @@
  */
 
 #include "config.h"
+#include "glob/glob.hpp"
 
 #include <filesystem>
 
@@ -99,6 +100,22 @@ void inheritable_diagram_options::inherit(
     git.override(parent.git);
     base_directory.override(parent.base_directory);
     relative_to.override(parent.relative_to);
+}
+
+std::vector<std::string> diagram::get_translation_units(
+    const std::filesystem::path &root_directory) const
+{
+    std::vector<std::string> translation_units{};
+
+    for (const auto &g : glob()) {
+        const auto matches = glob::glob(g, root_directory);
+        for (const auto &match : matches) {
+            const auto path = root_directory / match;
+            translation_units.emplace_back(path.string());
+        }
+    }
+
+    return translation_units;
 }
 
 common::model::diagram_t class_diagram::type() const

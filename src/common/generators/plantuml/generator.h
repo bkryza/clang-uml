@@ -335,7 +335,8 @@ template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 std::unique_ptr<DiagramModel> generate(
     const clang::tooling::CompilationDatabase &db, const std::string &name,
-    DiagramConfig &config, bool verbose = false)
+    DiagramConfig &config, const std::vector<std::string> &translation_units,
+    bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
 
@@ -344,24 +345,19 @@ std::unique_ptr<DiagramModel> generate(
     diagram->set_filter(
         std::make_unique<model::diagram_filter>(*diagram, config));
 
-    // Get all translation units matching the glob from diagram
-    // configuration
-    std::vector<std::string> translation_units{};
-    for (const auto &g : config.glob()) {
-        LOG_DBG("Processing glob: {}", g);
-
-        const auto matches = glob::rglob(g);
-        std::copy(matches.begin(), matches.end(),
-            std::back_inserter(translation_units));
-    }
-
-    LOG_DBG("Found translation units: {}", fmt::join(translation_units, ", "));
+    LOG_DBG("Found translation units for diagram {}: {}", name,
+        fmt::join(translation_units, ", "));
 
     clang::tooling::ClangTool clang_tool(db, translation_units);
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
             DiagramConfig, DiagramVisitor>>(*diagram, config);
-    clang_tool.run(action_factory.get());
+
+    auto res = clang_tool.run(action_factory.get());
+
+    if (res != 0) {
+        throw std::runtime_error("Diagram " + name + " generation failed");
+    }
 
     diagram->set_complete(true);
 
@@ -455,5 +451,4 @@ template <typename C, typename D> void generator<C, D>::init_env()
         return res;
     });
 }
-
 }
