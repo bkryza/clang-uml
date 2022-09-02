@@ -1,6 +1,5 @@
 type: include
 glob:
-  - src/**/*.h
   - src/**/*.cc
 relative_to: .
 include:
