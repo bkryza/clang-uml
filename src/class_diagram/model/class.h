@@ -23,10 +23,9 @@
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/stylable_element.h"
+#include "common/types.h"
 #include "template_parameter.h"
 #include "type_alias.h"
-
-#include <type_safe/reference.hpp>
 
 #include <string>
 #include <vector>
@@ -108,14 +107,14 @@ private:
 
 namespace std {
 template <>
-struct hash<
-    type_safe::object_ref<const clanguml::class_diagram::model::class_>> {
-    std::size_t operator()(const type_safe::object_ref<
-        const clanguml::class_diagram::model::class_> &key) const
+struct hash<std::reference_wrapper<clanguml::class_diagram::model::class_>> {
+    std::size_t operator()(
+        const std::reference_wrapper<clanguml::class_diagram::model::class_>
+            &key) const
     {
-        using clanguml::class_diagram::model::class_;
+        using clanguml::common::id_t;
 
-        return std::hash<std::string>{}(key.get().full_name(false));
+        return std::hash<id_t>{}(key.get().id());
     }
 };
 }

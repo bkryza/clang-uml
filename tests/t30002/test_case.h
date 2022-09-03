@@ -24,7 +24,7 @@ TEST_CASE("t30002", "[test-case][package]")
 
     REQUIRE(diagram->name == "t30002_package");
 
-    auto model = generate_package_diagram(db, diagram);
+    auto model = generate_package_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t30002_package");
 
@@ -48,6 +48,8 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, IsPackage("A13"));
     REQUIRE_THAT(puml, IsPackage("A14"));
     REQUIRE_THAT(puml, IsPackage("A15"));
+    REQUIRE_THAT(puml, IsPackage("A16"));
+    REQUIRE_THAT(puml, IsPackage("A17"));
 
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A1")));
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A2")));
@@ -64,6 +66,8 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A13")));
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A14")));
     REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A15")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A16")));
+    REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A17")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

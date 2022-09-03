@@ -22,7 +22,7 @@ TEST_CASE("t90000", "[test-case][config]")
 
     auto diagram = config.diagrams["t90000_class"];
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t90000_class");
 

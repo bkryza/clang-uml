@@ -12,6 +12,10 @@ type and contents of each generated diagram.
 
 `clang-uml` currently supports C++ up to version 17.
 
+> Current `master` version (and any release since `0.2.0`) has been refactored to use 
+> [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) instead of libclang.
+> Previous version is available in branch `0.1.x`, however it is not maintained.
+
 ## Features
 Main features supported so far include:
 
@@ -62,30 +66,28 @@ apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12
 # macos
 brew install ccache cmake llvm yaml-cpp
 ```
-> Please note that on macos this tool is not fully functional, i.e. several test cases fail. The build instructions are
-> provided for development purposes only.
 
 Then proceed with building the sources:
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
 cd clang-uml
-make submodules
 # Please note that top level Makefile is just a convenience wrapper for CMake
 make release
 release/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
-LLVM_CONFIG_PATH=/usr/bin/llvm-config-13 make release
-
-# To build on macos, it is necessary to provide also path to LLVM cmake directory, e.g.:
-export LLVM_PREFIX="/usr/local/Cellar/llvm@12/12.0.1_1"
-LLVM_CONFIG_PATH="${LLVM_PREFIX}/bin/llvm-config" CMAKE_PREFIX_PATH="${LLVM_PREFIX}/lib/cmake/llvm/" make test
+LLVM_VERSION=14 make release
 
 # Optionally
 make install
 # or
 export PATH=$PATH:$PWD/release
+
+# On macos, it is necessary to build clang-uml using the same llvm against which it is linked, e.g.
+export CC=/usr/local/opt/llvm/bin/clang
+export CCX=/usr/local/opt/llvm/bin/clang++
+LLVM_VERSION=14 make release
 ```
 
 ## Usage
@@ -130,7 +132,6 @@ diagrams:
   myproject_class:
     type: class
     glob:
-      - src/*.h
       - src/*.cc
     using_namespace:
       - myproject
@@ -466,8 +467,7 @@ The build-in test cases used for unit testing of the `clang-uml`, can be browsed
 
 ## Acknowledgements
 This project relies on the following great tools:
-  * [libclang](https://clang.llvm.org/) - a C/C++ frontend for LLVM
-  * [cppast](https://github.com/foonathan/cppast) - high-level C++ API for libclang
+  * [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
   * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
   * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
   * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++

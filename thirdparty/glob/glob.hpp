@@ -266,8 +266,8 @@ static inline std::vector<fs::path> rlistdir(
 
 // This helper function recursively yields relative pathnames inside a literal
 // directory.
-static inline std::vector<fs::path> glob2(
-    const fs::path &dirname, [[maybe_unused]] const std::string &pattern, bool dironly)
+static inline std::vector<fs::path> glob2(const fs::path &dirname,
+    [[maybe_unused]] const std::string &pattern, bool dironly)
 {
     // std::cout << "In glob2\n";
     std::vector<fs::path> result;
@@ -321,8 +321,9 @@ static inline std::vector<fs::path> glob0(
     return result;
 }
 
-static inline std::vector<fs::path> glob(
-    const std::string &pathname, bool recursive = false, bool dironly = false)
+static inline std::vector<fs::path> glob(const std::string &pathname,
+    bool recursive = false, bool dironly = false,
+    std::filesystem::path root_directory = std::filesystem::current_path())
 {
     std::vector<fs::path> result;
 
@@ -339,7 +340,12 @@ static inline std::vector<fs::path> glob(
     if (!has_magic(pathname)) {
         assert(!dironly);
         if (!basename.empty()) {
-            if (fs::exists(path)) {
+            if (!root_directory.empty() && !path.is_absolute()) {
+                if (fs::exists(root_directory / path)) {
+                    result.push_back(path);
+                }
+            }
+            else if (fs::exists(path)) {
                 result.push_back(path);
             }
         }
@@ -385,7 +391,7 @@ static inline std::vector<fs::path> glob(
     }
 
     for (auto &d : dirs) {
-        for (auto &name : glob_in_dir(d, basename.string(), dironly)) {
+        for (auto &name : glob_in_dir(root_directory / d, basename.string(), dironly)) {
             fs::path subresult = name;
             if (name.parent_path().empty()) {
                 subresult = d / name;
@@ -407,6 +413,12 @@ static inline std::vector<fs::path> glob(const std::string &pathname)
 static inline std::vector<fs::path> rglob(const std::string &pathname)
 {
     return glob(pathname, true);
+}
+
+static inline std::vector<fs::path> glob(
+    const std::string &pathname, const std::filesystem::path root_directory)
+{
+    return glob(pathname, true, false, root_directory);
 }
 
 static inline std::vector<std::filesystem::path> glob(

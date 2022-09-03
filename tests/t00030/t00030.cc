@@ -16,6 +16,9 @@ class C {
 class D {
 };
 
+class E {
+};
+
 struct R {
     /// @uml{association[]}
     A aaa;
@@ -28,6 +31,9 @@ struct R {
 
     /// @uml{association[:1]}
     D ddd;
+
+    /// @uml{aggregation[:1]}
+    E *eee;
 };
 
 } // namespace t00030

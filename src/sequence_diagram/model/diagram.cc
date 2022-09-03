@@ -28,8 +28,14 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kSequence;
 }
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
+common::optional_ref<common::model::diagram_element> diagram::get(
     const std::string & /*full_name*/) const
+{
+    return {};
+}
+
+common::optional_ref<common::model::diagram_element> diagram::get(
+    const common::model::diagram_element::id_t /*id*/) const
 {
     return {};
 }

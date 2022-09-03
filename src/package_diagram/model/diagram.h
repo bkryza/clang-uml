@@ -20,8 +20,6 @@
 #include "common/model/diagram.h"
 #include "common/model/package.h"
 
-#include <type_safe/optional_ref.hpp>
-
 #include <string>
 #include <vector>
 
@@ -41,22 +39,28 @@ public:
 
     common::model::diagram_t type() const override;
 
-    const std::vector<type_safe::object_ref<const common::model::package>> &
+    const common::reference_vector<clanguml::common::model::package> &
     packages() const;
 
-    type_safe::optional_ref<const common::model::diagram_element> get(
+    common::optional_ref<clanguml::common::model::diagram_element> get(
         const std::string &full_name) const override;
+
+    common::optional_ref<clanguml::common::model::diagram_element> get(
+        const clanguml::common::model::diagram_element::id_t id) const override;
 
     void add_package(std::unique_ptr<common::model::package> &&p);
 
-    type_safe::optional_ref<const common::model::package> get_package(
+    common::optional_ref<clanguml::common::model::package> get_package(
         const std::string &name) const;
 
-    std::string to_alias(const std::string &full_name) const;
+    common::optional_ref<common::model::package> get_package(
+        const clanguml::common::model::diagram_element::id_t id) const;
+
+    std::string to_alias(
+        const clanguml::common::model::diagram_element::id_t) const;
 
 private:
-    std::vector<type_safe::object_ref<const common::model::package, false>>
-        packages_;
+    common::reference_vector<clanguml::common::model::package> packages_;
 };
 }
 

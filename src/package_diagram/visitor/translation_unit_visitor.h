@@ -19,19 +19,9 @@
 
 #include "config/config.h"
 #include "package_diagram/model/diagram.h"
-#include "package_diagram/visitor/translation_unit_context.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <cppast/cpp_friend.hpp>
-#include <cppast/cpp_function_template.hpp>
-#include <cppast/cpp_member_function.hpp>
-#include <cppast/cpp_member_variable.hpp>
-#include <cppast/cpp_template.hpp>
-#include <cppast/cpp_template_parameter.hpp>
-#include <cppast/cpp_type.hpp>
-#include <cppast/visitor.hpp>
-#include <type_safe/reference.hpp>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
 #include <common/model/enums.h>
 #include <common/model/package.h>
@@ -42,34 +32,93 @@
 
 namespace clanguml::package_diagram::visitor {
 
-class translation_unit_visitor {
+using found_relationships_t =
+    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
+        common::model::relationship_t>>;
+
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    translation_unit_visitor(clang::SourceManager &sm,
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
 
-    void operator()(const cppast::cpp_entity &file);
+    virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
-    void process_class_declaration(const cppast::cpp_class &cls,
-        type_safe::optional_ref<const cppast::cpp_template_specialization>
-            tspec = nullptr);
+    virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
 
-    void process_function(
-        const cppast::cpp_function &f, bool skip_return_type = false);
+    virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
 
-    bool find_relationships(const cppast::cpp_type &t_,
-        std::vector<std::pair<std::string, common::model::relationship_t>>
-            &relationships,
-        common::model::relationship_t relationship_hint);
+    clanguml::package_diagram::model::diagram &diagram() { return diagram_; }
+
+    const clanguml::config::package_diagram &config() const { return config_; }
+
+    void finalize() { }
 
 private:
-    /**
-     * Try to resolve a type instance into a type referenced through an alias.
-     * If t does not represent an alias, returns t.
-     */
-    const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
+    void process_class_declaration(
+        const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
 
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    void process_class_children(
+        const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
+
+    void process_class_bases(
+        const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
+
+    void process_method(const clang::CXXMethodDecl &method,
+        found_relationships_t &relationships);
+
+    void process_template_method(const clang::FunctionTemplateDecl &method,
+        found_relationships_t &relationships);
+
+    void process_field(const clang::FieldDecl &field_declaration,
+        found_relationships_t &relationships);
+
+    void process_static_field(const clang::VarDecl &field_declaration,
+        found_relationships_t &relationships);
+
+    void process_friend(const clang::FriendDecl &friend_declaration,
+        found_relationships_t &relationships);
+
+    bool find_relationships(const clang::QualType &type,
+        found_relationships_t &relationships,
+        common::model::relationship_t relationship_hint =
+            common::model::relationship_t::kDependency);
+
+    void add_relationships(
+        clang::DeclContext *cls, found_relationships_t &relationships);
+
+    template <typename ClangDecl>
+    void process_comment(
+        const ClangDecl &decl, clanguml::common::model::decorated_element &e)
+    {
+        const auto *comment =
+            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+
+        if (comment != nullptr) {
+            e.set_comment(comment->getFormattedText(
+                source_manager_, decl.getASTContext().getDiagnostics()));
+            e.add_decorators(decorators::parse(e.comment().value()));
+        }
+    }
+
+    void set_source_location(const clang::Decl &decl,
+        clanguml::common::model::source_location &element)
+    {
+        if (decl.getLocation().isValid()) {
+            element.set_file(
+                source_manager_.getFilename(decl.getLocation()).str());
+            element.set_line(
+                source_manager_.getSpellingLineNumber(decl.getLocation()));
+        }
+    }
+
+    clang::SourceManager &source_manager_;
+
+    // Reference to the output diagram model
+    clanguml::package_diagram::model::diagram &diagram_;
+
+    // Reference to class diagram config
+    const clanguml::config::package_diagram &config_;
 };
 }

@@ -28,59 +28,59 @@ namespace clanguml::common::model {
 namespace detail {
 
 template <>
-const std::vector<type_safe::object_ref<const class_diagram::model::class_>> &
-view(const class_diagram::model::diagram &d)
+const clanguml::common::reference_vector<class_diagram::model::class_> &view(
+    const class_diagram::model::diagram &d)
 {
     return d.classes();
 }
 
 template <>
-const std::vector<type_safe::object_ref<const class_diagram::model::enum_>> &
-view(const class_diagram::model::diagram &d)
+const clanguml::common::reference_vector<class_diagram::model::enum_> &view(
+    const class_diagram::model::diagram &d)
 {
     return d.enums();
 }
 
 template <>
-const std::vector<type_safe::object_ref<const common::model::package>> &view(
+const clanguml::common::reference_vector<common::model::package> &view(
     const package_diagram::model::diagram &d)
 {
     return d.packages();
 }
 
 template <>
-const std::vector<type_safe::object_ref<const common::model::source_file>> &
-view(const include_diagram::model::diagram &d)
+const clanguml::common::reference_vector<common::model::source_file> &view(
+    const include_diagram::model::diagram &d)
 {
     return d.files();
 }
 
 template <>
-const type_safe::optional_ref<const class_diagram::model::class_> get(
+const clanguml::common::optional_ref<class_diagram::model::class_> get(
     const class_diagram::model::diagram &d, const std::string &full_name)
 {
     return d.get_class(full_name);
 }
 
 template <>
-const type_safe::optional_ref<const common::model::package> get(
+const clanguml::common::optional_ref<common::model::package> get(
     const package_diagram::model::diagram &d, const std::string &full_name)
 {
     return d.get_package(full_name);
 }
 
 template <>
-const type_safe::optional_ref<const common::model::source_file> get(
+const clanguml::common::optional_ref<common::model::source_file> get(
     const include_diagram::model::diagram &d, const std::string &full_name)
 {
     return d.get_file(full_name);
 }
 
 template <>
-std::string destination_comparator<common::model::source_file>(
+clanguml::common::id_t destination_comparator<common::model::source_file>(
     const common::model::source_file &f)
 {
-    return f.alias();
+    return f.id();
 }
 } // namespace detail
 
@@ -221,9 +221,7 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
 
     // First get all parents of element e
-    std::unordered_set<
-        type_safe::object_ref<const class_diagram::model::class_, false>>
-        parents;
+    clanguml::common::reference_set<class_diagram::model::class_> parents;
 
     const auto &fn = e.full_name(false);
     auto class_ref = cd.get_class(fn);
@@ -235,11 +233,16 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
 
     cd.get_parents(parents);
 
+    std::vector<std::string> parents_names;
+    for (const auto p : parents)
+        parents_names.push_back(p.get().full_name(false));
+
     // Now check if any of the parents matches the roots specified in the
     // filter config
     for (const auto &root : roots_) {
         for (const auto &parent : parents) {
-            if (root == parent.get().full_name(false))
+            auto full_name = parent.get().full_name(false);
+            if (root == full_name)
                 return true;
         }
     }
@@ -296,19 +299,18 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 
             if (context_root.has_value()) {
                 // This is a direct match to the context root
-                if (context_root.value().full_name(false) == e.full_name(false))
+                if (context_root.value().id() == e.id())
                     return true;
 
                 // Return a positive match if the element e is in a direct
                 // relationship with any of the context_root's
                 for (const relationship &rel :
                     context_root.value().relationships()) {
-                    if (rel.destination() == e.full_name(false))
+                    if (rel.destination() == e.id())
                         return true;
                 }
                 for (const relationship &rel : e.relationships()) {
-                    if (rel.destination() ==
-                        context_root.value().full_name(false))
+                    if (rel.destination() == context_root.value().id())
                         return true;
                 }
 
@@ -357,6 +359,10 @@ tvl::value_t paths_filter::match(
     if (paths_.empty()) {
         return {};
     }
+
+    // Matching source paths doesn't make sens if they are not absolute
+    if (!p.is_absolute())
+        return {};
 
     auto pp = p.fs_path(root_);
     for (const auto &path : paths_) {

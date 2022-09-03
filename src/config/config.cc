@@ -17,6 +17,7 @@
  */
 
 #include "config.h"
+#include "glob/glob.hpp"
 
 #include <filesystem>
 
@@ -101,6 +102,22 @@ void inheritable_diagram_options::inherit(
     relative_to.override(parent.relative_to);
 }
 
+std::vector<std::string> diagram::get_translation_units(
+    const std::filesystem::path &root_directory) const
+{
+    std::vector<std::string> translation_units{};
+
+    for (const auto &g : glob()) {
+        const auto matches = glob::glob(g, root_directory);
+        for (const auto &match : matches) {
+            const auto path = root_directory / match;
+            translation_units.emplace_back(path.string());
+        }
+    }
+
+    return translation_units;
+}
+
 common::model::diagram_t class_diagram::type() const
 {
     return common::model::diagram_t::kClass;
@@ -154,6 +171,12 @@ void class_diagram::initialize_template_aliases()
     if (!template_aliases().count("std::basic_string<char>")) {
         template_aliases().insert({"std::basic_string<char>", "std::string"});
     }
+    if (!template_aliases().count("std::basic_string<char,std::char_traits<"
+                                  "char>,std::allocator<char>>")) {
+        template_aliases().insert({"std::basic_string<char,std::char_traits<"
+                                   "char>,std::allocator<char>>",
+            "std::string"});
+    }
     if (!template_aliases().count("std::basic_string<wchar_t>")) {
         template_aliases().insert(
             {"std::basic_string<wchar_t>", "std::wstring"});
@@ -165,6 +188,14 @@ void class_diagram::initialize_template_aliases()
     if (!template_aliases().count("std::basic_string<char32_t>")) {
         template_aliases().insert(
             {"std::basic_string<char32_t>", "std::u32string"});
+    }
+    if (!template_aliases().count("std::integral_constant<bool,true>")) {
+        template_aliases().insert(
+            {"std::integral_constant<bool,true>", "std::true_type"});
+    }
+    if (!template_aliases().count("std::integral_constant<bool,false>")) {
+        template_aliases().insert(
+            {"std::integral_constant<bool,false>", "std::false_type"});
     }
 }
 

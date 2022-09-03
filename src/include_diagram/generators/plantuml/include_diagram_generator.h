@@ -26,9 +26,6 @@
 #include "include_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
-#include <cppast/cpp_entity_index.hpp>
-#include <cppast/libclang_parser.hpp>
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>

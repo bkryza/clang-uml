@@ -21,43 +21,85 @@
 #include "common/model/package.h"
 #include "config/config.h"
 #include "include_diagram/model/diagram.h"
-#include "include_diagram/visitor/translation_unit_context.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <cppast/cpp_preprocessor.hpp>
-#include <cppast/visitor.hpp>
-#include <type_safe/reference.hpp>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
+#include <clang/Lex/PPCallbacks.h>
 
 #include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 namespace clanguml::include_diagram::visitor {
 
-class translation_unit_visitor {
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    // This is an internal class for convenience to be able to access the
+    // include_visitor type from translation_unit_visitor type
+    class include_visitor : public clang::PPCallbacks {
+    public:
+        include_visitor(clang::SourceManager &sm,
+            clanguml::include_diagram::model::diagram &diagram,
+            const clanguml::config::include_diagram &config);
+
+        void InclusionDirective(clang::SourceLocation hash_loc,
+            const clang::Token &include_tok, clang::StringRef file_name,
+            bool is_angled, clang::CharSourceRange filename_range,
+            const clang::FileEntry *file, clang::StringRef search_path,
+            clang::StringRef relative_path, const clang::Module *imported,
+            clang::SrcMgr::CharacteristicKind file_type) override;
+
+        std::optional<common::id_t> process_internal_header(
+            const std::filesystem::path &include_path, bool is_system,
+            const common::id_t current_file_id);
+
+        std::optional<common::id_t> process_external_system_header(
+            const std::filesystem::path &include_path,
+            const common::id_t current_file_id);
+
+        std::optional<common::id_t> process_source_file(
+            const std::filesystem::path &file);
+
+        clanguml::include_diagram::model::diagram &diagram()
+        {
+            return diagram_;
+        }
+
+        const clanguml::config::include_diagram &config() const
+        {
+            return config_;
+        }
+
+    private:
+        clang::SourceManager &source_manager_;
+
+        // Reference to the output diagram model
+        clanguml::include_diagram::model::diagram &diagram_;
+
+        // Reference to class diagram config
+        const clanguml::config::include_diagram &config_;
+    };
+
+    translation_unit_visitor(clang::SourceManager &sm,
         clanguml::include_diagram::model::diagram &diagram,
         const clanguml::config::include_diagram &config);
 
-    void operator()(const cppast::cpp_entity &file);
+    clanguml::include_diagram::model::diagram &diagram() { return diagram_; }
+
+    const clanguml::config::include_diagram &config() const { return config_; }
+
+    void finalize() { }
 
 private:
-    void process_include_directive(
-        const cppast::cpp_include_directive &include_directive);
+    clang::SourceManager &source_manager_;
 
-    void process_source_file(const cppast::cpp_file &file);
+    // Reference to the output diagram model
+    clanguml::include_diagram::model::diagram &diagram_;
 
-    void process_external_system_header(
-        const cppast::cpp_include_directive &include_directive);
-
-    void process_internal_header(
-        const cppast::cpp_include_directive &include_directive,
-        const std::filesystem::path &include_path);
-
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    // Reference to class diagram config
+    const clanguml::config::include_diagram &config_;
 };
 }

@@ -24,7 +24,7 @@ TEST_CASE("t00025", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00025_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00025_class");
     REQUIRE(model->should_include("clanguml::t00025::A"));
@@ -47,6 +47,8 @@ TEST_CASE("t00025", "[test-case][class]")
         puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
     REQUIRE_THAT(
         puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
+    REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
+    REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

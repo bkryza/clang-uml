@@ -26,8 +26,6 @@
 #include "config/config.h"
 #include "util/util.h"
 
-#include <cppast/cpp_entity_index.hpp>
-#include <cppast/libclang_parser.hpp>
 #include <glob/glob.hpp>
 
 #include <filesystem>

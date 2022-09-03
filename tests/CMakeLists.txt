@@ -4,20 +4,24 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(TEST_DISABLE_WARNINGS "-Wno-unused-parameter -Wno-unused-variable -Wno-attributes")
+set(TEST_DISABLE_WARNINGS "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS}")
+if(APPLE)
+    # Without this, clang-uml test cases fail with error saying that clang cannot find stdarg.h
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
+endif(APPLE)
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 
 set(CLANG_UML_TEST_LIBRARIES
-        ${LIBCLANG_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
         clang-umllib
-        cppast
+        ${YAML_CPP_LIBRARIES}
+        ${LIBTOOLING_LIBS}
         Threads::Threads)
+
 
 set(CLANG_UML_TEST_UTIL_SRC test_util.cc ${TEST_UTIL_SOURCES})
 set(CLANG_UML_TEST_UTIL_HEADER catch.h)

@@ -20,133 +20,169 @@
 
 #include "common/model/namespace.h"
 #include "cx/util.h"
-#include "translation_unit_context.h"
-
-#include <cppast/cpp_function.hpp>
-#include <cppast/cpp_member_function.hpp>
-#include <cppast/visitor.hpp>
 
 namespace clanguml::sequence_diagram::visitor {
 
-translation_unit_visitor::translation_unit_visitor(
-    cppast::cpp_entity_index &idx,
+translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::sequence_diagram::model::diagram &diagram,
     const clanguml::config::sequence_diagram &config)
-    : ctx{idx, diagram, config}
+    : source_manager_{sm}
+    , diagram_{diagram}
+    , config_{config}
+    , current_class_decl_{nullptr}
+    , current_method_decl_{nullptr}
+    , current_function_decl_{nullptr}
 {
 }
 
-void translation_unit_visitor::process_activities(const cppast::cpp_function &e)
+clanguml::sequence_diagram::model::diagram &translation_unit_visitor::diagram()
+{
+    return diagram_;
+}
+
+const clanguml::config::sequence_diagram &
+translation_unit_visitor::config() const
+{
+    return config_;
+}
+
+bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
+{
+    current_class_decl_ = cls;
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *method)
+{
+    current_method_decl_ = method;
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitFunctionDecl(
+    clang::FunctionDecl *function_declaration)
+{
+    if (!function_declaration->isCXXClassMember())
+        current_class_decl_ = nullptr;
+
+    current_function_decl_ = function_declaration;
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
     using clanguml::sequence_diagram::model::activity;
-    using clanguml::sequence_diagram::model::diagram;
     using clanguml::sequence_diagram::model::message;
-    using cppast::cpp_entity;
-    using cppast::cpp_entity_kind;
-    using cppast::cpp_function;
-    using cppast::cpp_member_function;
-    using cppast::cpp_member_function_call;
-    using cppast::visitor_info;
 
-    for (const auto &function_call_ptr : e.function_calls()) {
-        const auto &function_call =
-            static_cast<const cpp_member_function_call &>(*function_call_ptr);
+    // Skip casts, moves and such
+    if (expr->isCallToStdMove())
+        return true;
 
-        message m;
-        m.type = message_t::kCall;
+    if (expr->isImplicitCXXThis())
+        return true;
 
-        if (!ctx.entity_index()
-                 .lookup_definition(function_call.get_caller_id())
-                 .has_value())
-            continue;
+    if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
+        return true;
 
-        if (!ctx.entity_index()
-                 .lookup_definition(function_call.get_caller_method_id())
-                 .has_value())
-            continue;
+    // Skip if current class was excluded in the config
+    if (current_class_decl_ &&
+        !diagram().should_include(
+            current_class_decl_->getQualifiedNameAsString()))
+        return true;
 
-        if (!ctx.entity_index()
-                 .lookup_definition(function_call.get_callee_id())
-                 .has_value())
-            continue;
+    // Skip if current function was excluded in the config
+    if (current_function_decl_ &&
+        !diagram().should_include(
+            current_function_decl_->getQualifiedNameAsString()))
+        return true;
 
-        if (!ctx.entity_index()
-                 .lookup_definition(function_call.get_callee_method_id())
-                 .has_value())
-            continue;
+    message m;
+    m.type = message_t::kCall;
 
-        const auto &caller =
-            ctx.entity_index()
-                .lookup_definition(function_call.get_caller_id())
-                .value();
-        m.from = cx::util::ns(caller) + "::" + caller.name();
-
-        if (!ctx.diagram().should_include(
-                common::model::namespace_{cx::util::ns(caller)}, caller.name()))
-            continue;
-
-        if (caller.kind() == cpp_entity_kind::function_t)
-            m.from += "()";
-
-        m.from_usr = type_safe::get(function_call.get_caller_method_id());
-
-        const auto &callee =
-            ctx.entity_index()
-                .lookup_definition(function_call.get_callee_id())
-                .value();
-        m.to = cx::util::ns(callee) + "::" + callee.name();
-        if (callee.kind() == cpp_entity_kind::function_t)
-            m.to += "()";
-
-        if (!ctx.diagram().should_include(
-                common::model::namespace_{cx::util::ns(callee)}, callee.name()))
-            continue;
-
-        m.to_usr = type_safe::get(function_call.get_callee_method_id());
-
-        const auto &callee_method =
-            static_cast<const cppast::cpp_member_function &>(
-                ctx.entity_index()
-                    .lookup_definition(function_call.get_callee_method_id())
-                    .value());
-
-        m.message = callee_method.name();
-
-        m.return_type = cppast::to_string(callee_method.return_type());
-
-        if (ctx.diagram().sequences.find(m.from_usr) ==
-            ctx.diagram().sequences.end()) {
-            activity a;
-            a.usr = m.from_usr;
-            a.from = m.from;
-            ctx.diagram().sequences.insert({m.from_usr, std::move(a)});
-        }
-
-        LOG_DBG("Adding sequence {} -{}()-> {}", m.from, m.message, m.to);
-
-        ctx.diagram().sequences[m.from_usr].messages.emplace_back(std::move(m));
+    if (current_class_decl_ != nullptr) {
+        // Handle call expression within some class method
+        assert(current_method_decl_ != nullptr);
+        m.from = current_class_decl_->getQualifiedNameAsString();
+        m.from_usr = current_method_decl_->getID();
     }
-}
+    else {
+        // Handle call expression within free function
+        m.from = current_function_decl_->getQualifiedNameAsString() + "()";
+        m.from_usr = current_function_decl_->getID();
+    }
 
-void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
-{
-    using cppast::cpp_entity;
-    using cppast::cpp_entity_kind;
-    using cppast::cpp_function;
-    using cppast::cpp_member_function;
-    using cppast::cpp_member_function_call;
-    using cppast::visitor_info;
+    const auto &current_ast_context = current_class_decl_
+        ? current_class_decl_->getASTContext()
+        : current_function_decl_->getASTContext();
 
-    cppast::visit(file, [&, this](const cpp_entity &e, visitor_info /*info*/) {
-        if (e.kind() == cpp_entity_kind::function_t) {
-            const auto &function = static_cast<const cpp_function &>(e);
-            process_activities(function);
-        }
-        else if (e.kind() == cpp_entity_kind::member_function_t) {
-            const auto &member_function = static_cast<const cpp_function &>(e);
-            process_activities(member_function);
-        }
-    });
+    if (const auto *operator_call_expr =
+            clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
+        operator_call_expr != nullptr) {
+        // TODO: Handle C++ operator calls
+    }
+    else if (const auto *method_call_expr =
+                 clang::dyn_cast_or_null<clang::CXXMemberCallExpr>(expr);
+             method_call_expr != nullptr) {
+
+        // Get callee declaration as methods parent
+        const auto *method_decl = method_call_expr->getMethodDecl();
+        const auto *callee_decl =
+            method_decl ? method_decl->getParent() : nullptr;
+
+        if (!(callee_decl &&
+                diagram().should_include(
+                    callee_decl->getQualifiedNameAsString())))
+            return true;
+
+        m.to = callee_decl->getQualifiedNameAsString();
+        m.to_usr = method_decl->getID();
+        m.message = method_decl->getNameAsString();
+        m.return_type = method_call_expr->getCallReturnType(current_ast_context)
+                            .getAsString();
+    }
+    else if (const auto *function_call_expr =
+                 clang::dyn_cast_or_null<clang::CallExpr>(expr);
+             function_call_expr != nullptr) {
+
+        const auto *callee_decl = function_call_expr->getCalleeDecl();
+
+        if (!callee_decl)
+            return true;
+
+        const auto *callee_function = callee_decl->getAsFunction();
+
+        if (!callee_function)
+            return true;
+
+        m.to = callee_function->getQualifiedNameAsString() + "()";
+        m.message = callee_function->getNameAsString();
+        m.to_usr = callee_function->getID();
+        m.return_type =
+            function_call_expr->getCallReturnType(current_ast_context)
+                .getAsString();
+    }
+    else {
+        return true;
+    }
+
+    if (diagram().sequences.find(m.from_usr) == diagram().sequences.end()) {
+        activity a;
+        a.usr = m.from_usr;
+        a.from = m.from;
+        diagram().sequences.insert({m.from_usr, std::move(a)});
+    }
+
+    LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message, m.from,
+        m.from_usr, m.to, m.to_usr);
+
+    diagram().sequences[m.from_usr].messages.emplace_back(std::move(m));
+
+    assert(!diagram().sequences.empty());
+
+    return true;
 }
 }

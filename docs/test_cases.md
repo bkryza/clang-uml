@@ -45,6 +45,8 @@
  * [t00044](./test_cases/t00044.md) - Test case for inner type aliases with parent class template args
  * [t00045](./test_cases/t00045.md) - Test case for root namespace handling
  * [t00046](./test_cases/t00046.md) - Test case for root namespace handling with packages
+ * [t00047](./test_cases/t00047.md) - Test case for recursive variadic template
+ * [t00048](./test_cases/t00048.md) - Test case for unique entity id with multiple translation units
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

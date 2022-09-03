@@ -18,18 +18,12 @@
 
 #include "sequence_diagram_generator.h"
 
-#include "sequence_diagram/visitor/translation_unit_context.h"
-
-#include <cppast/libclang_parser.hpp>
-#include <cppast/parser.hpp>
-
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using clanguml::common::model::message_t;
 using clanguml::config::source_location;
 using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
-using clanguml::sequence_diagram::visitor::translation_unit_context;
 using namespace clanguml::util;
 
 //
@@ -47,9 +41,21 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const auto from = m_config.using_namespace().relative(m.from);
     const auto to = m_config.using_namespace().relative(m.to);
 
+    if (from.empty() || to.empty()) {
+        LOG_DBG("Skipping empty call from '{}' to '{}'", from, to);
+        return;
+    }
+
+    auto message = m.message;
+    if (!message.empty())
+        message += "()";
+
     ostr << '"' << from << "\" "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
-         << to << "\" : " << m.message << "()" << std::endl;
+         << to << "\" : " << message << std::endl;
+
+    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
+        m.from_usr, to, m.to_usr);
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
@@ -70,11 +76,19 @@ void generator::generate_activity(const activity &a, std::ostream &ostr) const
 {
     for (const auto &m : a.messages) {
         const auto to = m_config.using_namespace().relative(m.to);
+
+        if (to.empty())
+            continue;
+
         generate_call(m, ostr);
+
         ostr << "activate " << '"' << to << '"' << std::endl;
+
         if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())
             generate_activity(m_model.sequences[m.to_usr], ostr);
+
         generate_return(m, ostr);
+
         ostr << "deactivate " << '"' << to << '"' << std::endl;
     }
 }
@@ -87,7 +101,7 @@ void generator::generate(std::ostream &ostr) const
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            std::uint_least64_t start_from;
+            std::int64_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
                 if (v.from == sf.location) {
                     start_from = k;

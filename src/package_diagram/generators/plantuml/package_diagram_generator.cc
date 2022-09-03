@@ -32,17 +32,16 @@ void generator::generate_relationships(
 {
     LOG_DBG("Generating relationships for package {}", p.full_name(true));
 
-    const auto &uns = m_config.using_namespace();
-
     // Generate this packages relationship
     if (m_model.should_include(relationship_t::kDependency)) {
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                relstr << p.alias() << " ..> "
-                       << m_model.to_alias(uns.relative(r.destination()))
-                       << '\n';
-                ostr << relstr.str();
+                auto destination = m_model.to_alias(r.destination());
+                if (!destination.empty()) {
+                    relstr << p.alias() << " ..> " << destination << '\n';
+                    ostr << relstr.str();
+                }
             }
             catch (error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping dependency relation from {} to {} due "

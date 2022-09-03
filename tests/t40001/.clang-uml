@@ -9,13 +9,13 @@ diagrams:
       - ../../tests/t40001/**/*.cc
       - ../../tests/t40001/**/*.h
     # Render the paths relative to this directory
-    relative_to: ../../tests/t40001
+    relative_to: ../../../tests/t40001
     # Include also external system headers
     generate_system_headers: true
     include:
       # Include only headers belonging to these paths
       paths:
-        - ../../tests/t40001
+        - ../../../tests/t40001
     plantuml:
       before:
         - "' t40001 test include diagram"

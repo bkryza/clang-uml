@@ -20,7 +20,7 @@
 
 namespace clanguml::common::model {
 
-relationship::relationship(relationship_t type, const std::string &destination,
+relationship::relationship(relationship_t type, int64_t destination,
     access_t access, const std::string &label,
     const std::string &multiplicity_source,
     const std::string &multiplicity_destination)
@@ -37,12 +37,15 @@ void relationship::set_type(relationship_t type) noexcept { type_ = type; }
 
 relationship_t relationship::type() const noexcept { return type_; }
 
-void relationship::set_destination(const std::string &destination)
+void relationship::set_destination(int64_t destination)
 {
     destination_ = destination;
 }
 
-std::string relationship::destination() const { return destination_; }
+clanguml::common::id_t relationship::destination() const
+{
+    return destination_;
+}
 
 void relationship::set_multiplicity_source(
     const std::string &multiplicity_source)

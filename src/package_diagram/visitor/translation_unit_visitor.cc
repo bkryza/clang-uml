@@ -18,20 +18,10 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/clang_utils.h"
 #include "common/model/namespace.h"
 #include "cx/util.h"
 
-#include <cppast/cpp_alias_template.hpp>
-#include <cppast/cpp_array_type.hpp>
-#include <cppast/cpp_class_template.hpp>
-#include <cppast/cpp_entity_kind.hpp>
-#include <cppast/cpp_enum.hpp>
-#include <cppast/cpp_member_function.hpp>
-#include <cppast/cpp_member_variable.hpp>
-#include <cppast/cpp_namespace.hpp>
-#include <cppast/cpp_template.hpp>
-#include <cppast/cpp_type_alias.hpp>
-#include <cppast/cpp_variable.hpp>
 #include <spdlog/spdlog.h>
 
 #include <deque>
@@ -40,472 +30,386 @@ namespace clanguml::package_diagram::visitor {
 
 using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
+using clanguml::common::model::namespace_;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::package_diagram::model::diagram;
 
-namespace detail {
-
-bool is_constructor(const cppast::cpp_entity &e)
-{
-    return dynamic_cast<const cppast::cpp_constructor *>(
-               dynamic_cast<const cppast::cpp_function_base *>(&e)) != nullptr;
-}
-}
-
-translation_unit_visitor::translation_unit_visitor(
-    cppast::cpp_entity_index &idx,
+translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::package_diagram::model::diagram &diagram,
     const clanguml::config::package_diagram &config)
-    : ctx{idx, diagram, config}
+    : source_manager_{sm}
+    , diagram_{diagram}
+    , config_{config}
 {
 }
 
-void translation_unit_visitor::operator()(const cppast::cpp_entity &file)
+bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
-    cppast::visit(file,
-        [&, this](const cppast::cpp_entity &e, cppast::visitor_info info) {
-            auto name = e.name();
-            if (e.kind() == cppast::cpp_entity_kind::namespace_t) {
-                if (info.event ==
-                    cppast::visitor_info::container_entity_enter) {
-                    LOG_DBG("========== Visiting '{}' - {}", e.name(),
-                        cppast::to_string(e.kind()));
+    assert(ns != nullptr);
 
-                    const auto &ns_declaration =
-                        static_cast<const cppast::cpp_namespace &>(e);
-                    if (!ns_declaration.is_anonymous() &&
-                        !ns_declaration.is_inline()) {
+    if (ns->isAnonymousNamespace() || ns->isInline())
+        return true;
 
-                        auto package_parent = ctx.get_namespace();
-                        auto package_path = package_parent | e.name();
-                        auto usn = ctx.config().using_namespace();
+    auto qualified_name = common::get_qualified_name(*ns);
 
-                        auto p = std::make_unique<package>(usn);
-                        package_path = package_path.relative_to(usn);
+    if (!diagram().should_include(qualified_name))
+        return true;
 
-                        if (e.location().has_value()) {
-                            p->set_file(e.location().value().file);
-                            p->set_line(e.location().value().line);
-                        }
+    LOG_DBG("Visiting namespace declaration: {}", qualified_name);
 
-                        p->set_name(e.name());
-                        p->set_namespace(package_parent);
+    auto package_path = namespace_{qualified_name};
+    auto package_parent = package_path;
 
-                        if (ctx.diagram().should_include(*p)) {
-                            if (ns_declaration.comment().has_value()) {
-                                p->set_comment(
-                                    ns_declaration.comment().value());
-                                p->add_decorators(decorators::parse(
-                                    ns_declaration.comment().value()));
-                            }
+    std::string name;
+    if (!package_path.is_empty())
+        name = package_path.name();
 
-                            p->set_style(p->style_spec());
+    if (!package_parent.is_empty())
+        package_parent.pop_back();
 
-                            for (const auto &attr :
-                                ns_declaration.attributes()) {
-                                if (attr.kind() ==
-                                    cppast::cpp_attribute_kind::deprecated) {
-                                    p->set_deprecated(true);
-                                    break;
-                                }
-                            }
+    const auto usn = config().using_namespace();
 
-                            if (!p->skip()) {
-                                auto rns = p->get_relative_namespace();
-                                ctx.diagram().add_package(std::move(p));
-                                ctx.set_current_package(
-                                    ctx.diagram().get_element<package>(
-                                        package_path));
-                            }
-                        }
+    auto p = std::make_unique<common::model::package>(usn);
+    package_path = package_path.relative_to(usn);
 
-                        ctx.push_namespace(e.name());
-                    }
-                }
-                else {
-                    LOG_DBG("========== Leaving '{}' - {}", e.name(),
-                        cppast::to_string(e.kind()));
+    p->set_name(name);
+    p->set_namespace(package_parent);
+    p->set_id(common::to_id(*ns));
 
-                    const auto &ns_declaration =
-                        static_cast<const cppast::cpp_namespace &>(e);
-                    if (!ns_declaration.is_anonymous() &&
-                        !ns_declaration.is_inline())
-                        ctx.pop_namespace();
-                }
+    assert(p->id() > 0);
+
+    if (diagram().should_include(*p) && !diagram().get(p->id())) {
+        process_comment(*ns, *p);
+        set_source_location(*ns, *p);
+
+        p->set_style(p->style_spec());
+
+        for (const auto *attr : ns->attrs()) {
+            if (attr->getKind() == clang::attr::Kind::Deprecated) {
+                p->set_deprecated(true);
+                break;
             }
-            else if (e.kind() == cppast::cpp_entity_kind::namespace_alias_t) {
-                auto &na = static_cast<const cppast::cpp_namespace_alias &>(e);
+        }
 
-                for (const auto &alias_target :
-                    na.target().get(ctx.entity_index())) {
-                    auto full_ns = cx::util::full_name(ctx.get_namespace(), na);
-                    ctx.add_namespace_alias(full_ns, alias_target);
-                }
-            }
-            else if (e.kind() ==
-                cppast::cpp_entity_kind::class_template_specialization_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
+        if (!p->skip()) {
+            diagram().add_package(std::move(p));
+        }
+    }
 
-                auto &tspec = static_cast<
-                    const cppast::cpp_class_template_specialization &>(e);
+    return true;
+}
 
-                process_class_declaration(
-                    tspec.class_(), type_safe::ref(tspec));
-            }
-            else if (e.kind() == cppast::cpp_entity_kind::class_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
+bool translation_unit_visitor::VisitFunctionDecl(
+    clang::FunctionDecl *function_declaration)
+{
+    assert(function_declaration != nullptr);
 
-                auto &cls = static_cast<const cppast::cpp_class &>(e);
-                if (cppast::get_definition(ctx.entity_index(), cls)) {
-                    auto &clsdef = static_cast<const cppast::cpp_class &>(
-                        cppast::get_definition(ctx.entity_index(), cls)
-                            .value());
-                    if (&cls != &clsdef) {
-                        LOG_DBG("Forward declaration of class {} - skipping...",
-                            cls.name());
-                        return;
-                    }
-                }
+    // Skip system headers
+    if (source_manager_.isInSystemHeader(
+            function_declaration->getSourceRange().getBegin()))
+        return true;
 
-                process_class_declaration(cls);
-            }
-            else if (e.kind() == cppast::cpp_entity_kind::function_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
+    found_relationships_t relationships;
 
-                auto &f = static_cast<const cppast::cpp_function &>(e);
+    find_relationships(function_declaration->getReturnType(), relationships);
 
-                process_function(f);
-            }
-            else if (e.kind() == cppast::cpp_entity_kind::function_template_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
+    for (const auto *param : function_declaration->parameters()) {
+        if (param != nullptr)
+            find_relationships(param->getType(), relationships);
+    }
 
-                auto &function_template =
-                    static_cast<const cppast::cpp_function_template &>(e);
+    add_relationships(function_declaration, relationships);
 
-                auto &f = static_cast<const cppast::cpp_function &>(
-                    function_template.function());
+    return true;
+}
 
-                process_function(f, detail::is_constructor(f));
-            }
-            else if (e.kind() == cppast::cpp_entity_kind::type_alias_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
+bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
+{
+    assert(cls != nullptr);
 
-                auto &ta = static_cast<const cppast::cpp_type_alias &>(e);
-                type_alias t;
-                t.set_alias(cx::util::full_name(ctx.get_namespace(), ta));
-                t.set_underlying_type(cx::util::full_name(ta.underlying_type(),
-                    ctx.entity_index(), cx::util::is_inside_class(e)));
+    // Skip system headers
+    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
 
-                ctx.add_type_alias(cx::util::full_name(ctx.get_namespace(), ta),
-                    type_safe::ref(ta.underlying_type()));
-            }
-            else if (e.kind() == cppast::cpp_entity_kind::alias_template_t) {
-                LOG_DBG("========== Visiting '{}' - {}",
-                    cx::util::full_name(ctx.get_namespace(), e),
-                    cppast::to_string(e.kind()));
-            }
-        });
+    // Templated records are handled by VisitClassTemplateDecl()
+    if (cls->isTemplated() || cls->isTemplateDecl() ||
+        (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(cls) !=
+            nullptr))
+        return true;
+
+    found_relationships_t relationships;
+
+    if (cls->isCompleteDefinition()) {
+        process_class_declaration(*cls, relationships);
+        add_relationships(cls, relationships);
+    }
+
+    return true;
+}
+void translation_unit_visitor::add_relationships(
+    clang::DeclContext *cls, found_relationships_t &relationships)
+{
+    int64_t current_package_id{0};
+
+    const auto *namespace_context = cls->getEnclosingNamespaceContext();
+    if (namespace_context != nullptr && namespace_context->isNamespace()) {
+        current_package_id =
+            common::to_id(*llvm::cast<clang::NamespaceDecl>(namespace_context));
+    }
+
+    if (current_package_id == 0)
+        // These are relationships to a global namespace, and we don't care
+        // about those
+        return;
+
+    assert(current_package_id != 0);
+
+    auto current_package = diagram().get(current_package_id);
+
+    if (current_package) {
+        for (const auto &dependency : relationships) {
+            const auto destination_id = std::get<0>(dependency);
+            relationship r{relationship_t::kDependency, destination_id};
+            if (destination_id != current_package_id)
+                current_package.value().add_relationship(std::move(r));
+        }
+    }
 }
 
 void translation_unit_visitor::process_class_declaration(
-    const cppast::cpp_class &cls,
-    type_safe::optional_ref<
-        const cppast::cpp_template_specialization> /*tspec*/)
+    const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
 {
-    auto current_package = ctx.get_current_package();
+    // Look for dependency relationships in class children (fields, methods)
+    process_class_children(cls, relationships);
 
-    if (!current_package)
-        return;
-
-    std::vector<std::pair<std::string, relationship_t>> relationships;
-
-    // Process class elements
-    for (auto &child : cls) {
-        auto name = child.name();
-        if (child.kind() == cppast::cpp_entity_kind::member_variable_t) {
-            auto &mv = static_cast<const cppast::cpp_member_variable &>(child);
-            find_relationships(
-                mv.type(), relationships, relationship_t::kDependency);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::variable_t) {
-            auto &mv = static_cast<const cppast::cpp_variable &>(child);
-            find_relationships(
-                mv.type(), relationships, relationship_t::kDependency);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
-            auto &mc = static_cast<const cppast::cpp_function &>(child);
-            process_function(mc, true);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::destructor_t) {
-            // Skip - destructor won't have any interesting candidates
-            // for relationships
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::member_function_t) {
-            auto &mf = static_cast<const cppast::cpp_member_function &>(child);
-            for (const auto &param : mf.parameters())
-                find_relationships(
-                    param.type(), relationships, relationship_t::kDependency);
-
-            find_relationships(
-                mf.return_type(), relationships, relationship_t::kDependency);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::function_t) {
-            auto &mf = static_cast<const cppast::cpp_function &>(child);
-            for (const auto &param : mf.parameters())
-                find_relationships(
-                    param.type(), relationships, relationship_t::kDependency);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::function_template_t) {
-            auto &tm = static_cast<const cppast::cpp_function_template &>(child)
-                           .function();
-            for (const auto &param : tm.parameters())
-                find_relationships(
-                    param.type(), relationships, relationship_t::kDependency);
-
-            if (tm.kind() == cppast::cpp_entity_kind::member_function_t)
-                find_relationships(
-                    static_cast<const cppast::cpp_member_function &>(tm)
-                        .return_type(),
-                    relationships, relationship_t::kDependency);
-        }
-        else if (child.kind() == cppast::cpp_entity_kind::constructor_t) {
-            auto &mc = static_cast<const cppast::cpp_constructor &>(child);
-            for (const auto &param : mc.parameters())
-                find_relationships(
-                    param.type(), relationships, relationship_t::kDependency);
-        }
-        else {
-            LOG_DBG("Found some other class child: {} ({})", child.name(),
-                cppast::to_string(child.kind()));
-        }
-    }
-
-    // Process class bases
-    for (auto &base : cls.bases()) {
-        find_relationships(
-            base.type(), relationships, relationship_t::kDependency);
-    }
-
-    for (const auto &dependency : relationships) {
-        auto destination = common::model::namespace_{std::get<0>(dependency)};
-
-        if (!ctx.get_namespace().starts_with(destination) &&
-            !destination.starts_with(ctx.get_namespace())) {
-            relationship r{
-                relationship_t::kDependency, std::get<0>(dependency)};
-            current_package.value().add_relationship(std::move(r));
-        }
-    }
+    // Look for dependency relationships in class bases
+    process_class_bases(cls, relationships);
 }
 
-void translation_unit_visitor::process_function(
-    const cppast::cpp_function &f, bool skip_return_type)
+void translation_unit_visitor::process_class_children(
+    const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
 {
-    std::vector<std::pair<std::string, relationship_t>> relationships;
-    auto current_package = ctx.get_current_package();
-
-    if (!current_package)
-        return;
-
-    for (const auto &param : f.parameters())
-        find_relationships(
-            param.type(), relationships, relationship_t::kDependency);
-
-    if (!skip_return_type) {
-        find_relationships(
-            f.return_type(), relationships, relationship_t::kDependency);
-    }
-
-    for (const auto &dependency : relationships) {
-        auto destination = common::model::namespace_{std::get<0>(dependency)};
-
-        if (!ctx.get_namespace().starts_with(destination) &&
-            !destination.starts_with(ctx.get_namespace())) {
-            relationship r{
-                relationship_t::kDependency, std::get<0>(dependency)};
-            current_package.value().add_relationship(std::move(r));
-        }
-    }
-}
-
-bool translation_unit_visitor::find_relationships(const cppast::cpp_type &t_,
-    std::vector<std::pair<std::string, common::model::relationship_t>>
-        &relationships,
-    relationship_t relationship_hint)
-{
-    bool found{false};
-
-    if (t_.kind() == cppast::cpp_type_kind::template_parameter_t)
-        return false;
-
-    const auto fn = cx::util::full_name(
-        resolve_alias(cppast::remove_cv(t_)), ctx.entity_index(), false);
-    auto t_ns = common::model::namespace_{fn};
-    auto t_name = t_ns.name();
-    t_ns.pop_back();
-
-    const auto &t_raw = resolve_alias(cppast::remove_cv(t_));
-
-    if (t_raw.kind() == cppast::cpp_type_kind::user_defined_t) {
-
-        auto t_raw_ns = cx::util::ns(t_raw, ctx.entity_index());
-
-        const auto &type_entities =
-            static_cast<const cppast::cpp_user_defined_type &>(t_raw)
-                .entity()
-                .get(ctx.entity_index());
-        if (type_entities.size() > 0) {
-            const auto &type_entity = type_entities[0];
-
-            const auto &t_raw_ns = cx::util::entity_ns(type_entity.get());
-
-            const auto &t_raw_ns_final = cx::util::ns(t_raw_ns.value()) +
-                "::" + cx::util::full_name({}, t_raw_ns.value());
-            t_ns = common::model::namespace_{t_raw_ns_final};
+    // Iterate over class methods (both regular and static)
+    for (const auto *method : cls.methods()) {
+        if (method != nullptr) {
+            process_method(*method, relationships);
         }
     }
 
-    std::vector<std::string> possible_matches;
+    // Iterate over class template methods
+    for (auto const *decl_iterator :
+        clang::dyn_cast_or_null<clang::DeclContext>(&cls)->decls()) {
+        auto const *method_template =
+            llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl_iterator);
+        if (method_template == nullptr)
+            continue;
 
-    possible_matches.push_back(t_ns.to_string());
-
-    const auto fn_ns = cx::util::ns(cppast::remove_cv(t_), ctx.entity_index());
-
-    LOG_DBG("Finding relationships for type {}, {}, {}", cppast::to_string(t_),
-        cppast::to_string(t_.kind()), fn);
-
-    relationship_t relationship_type = relationship_hint;
-    const auto &t = cppast::remove_cv(cx::util::unreferenced(t_));
-
-    if (t.kind() == cppast::cpp_type_kind::array_t) {
-        auto &a = static_cast<const cppast::cpp_array_type &>(t);
-        found = find_relationships(
-            a.value_type(), relationships, relationship_t::kDependency);
-        return found;
+        process_template_method(*method_template, relationships);
     }
 
-    auto name = cppast::to_string(t);
-
-    if (t_.kind() == cppast::cpp_type_kind::pointer_t) {
-        auto &p = static_cast<const cppast::cpp_pointer_type &>(t_);
-        auto rt = relationship_t::kAssociation;
-        if (relationship_hint == relationship_t::kDependency)
-            rt = relationship_hint;
-        found = find_relationships(p.pointee(), relationships, rt);
+    // Iterate over regular class fields
+    for (const auto *field : cls.fields()) {
+        if (field != nullptr)
+            process_field(*field, relationships);
     }
-    else if (t_.kind() == cppast::cpp_type_kind::reference_t) {
-        auto &r = static_cast<const cppast::cpp_reference_type &>(t_);
-        auto rt = relationship_t::kAssociation;
-        if (r.reference_kind() == cppast::cpp_reference::cpp_ref_rvalue) {
-            rt = relationship_t::kAggregation;
-        }
-        if (relationship_hint == relationship_t::kDependency)
-            rt = relationship_hint;
-        found = find_relationships(r.referee(), relationships, rt);
-    }
-    if (cppast::remove_cv(t_).kind() == cppast::cpp_type_kind::user_defined_t) {
-        LOG_DBG("User defined type: {} | {}", cppast::to_string(t_),
-            cppast::to_string(t_.canonical()));
 
-        // Check if t_ has an alias in the alias index
-        if (ctx.has_type_alias(fn)) {
-            LOG_DBG("Found relationship in alias of {} | {}", fn,
-                cppast::to_string(ctx.get_type_alias(fn).get()));
-            found = find_relationships(
-                ctx.get_type_alias(fn).get(), relationships, relationship_type);
-            if (found)
-                return found;
-        }
-
-        for (const auto &pm : possible_matches) {
-            relationships.emplace_back(pm, relationship_t::kDependency);
-        }
-    }
-    else if (t.kind() == cppast::cpp_type_kind::template_instantiation_t) {
-        const auto &tinst =
-            static_cast<const cppast::cpp_template_instantiation_type &>(t);
-
-        if (!tinst.arguments_exposed()) {
-            LOG_DBG("Template instantiation {} has no exposed arguments", name);
-
-            return found;
-        }
-
-        const auto args = tinst.arguments().value();
-
-        // Try to match common containers
-        // TODO: Refactor to a separate class with configurable
-        //       container list
-        if (name.find("std::unique_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kDependency);
-        }
-        else if (name.find("std::shared_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kDependency);
-        }
-        else if (name.find("std::weak_ptr") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kDependency);
-        }
-        else if (name.find("std::vector") == 0) {
-            found = find_relationships(args[0u].type().value(), relationships,
-                relationship_t::kDependency);
-        }
-        else if (ctx.diagram().should_include(t_ns, t_name)) {
-            LOG_DBG("User defined template instantiation: {} | {}",
-                cppast::to_string(t_), cppast::to_string(t_.canonical()));
-
-            relationships.emplace_back(
-                cppast::to_string(t), relationship_t::kDependency);
-
-            // Check if t_ has an alias in the alias index
-            if (ctx.has_type_alias(fn)) {
-                LOG_DBG("Find relationship in alias of {} | {}", fn,
-                    cppast::to_string(ctx.get_type_alias(fn).get()));
-                found = find_relationships(ctx.get_type_alias(fn).get(),
-                    relationships, relationship_type);
-                if (found)
-                    return found;
+    // Static fields have to be processed by iterating over variable
+    // declarations
+    for (const auto *decl : cls.decls()) {
+        if (decl->getKind() == clang::Decl::Var) {
+            const clang::VarDecl *variable_declaration{
+                dynamic_cast<const clang::VarDecl *>(decl)};
+            if (variable_declaration &&
+                variable_declaration->isStaticDataMember()) {
+                process_static_field(*variable_declaration, relationships);
             }
-
-            return found;
         }
-        else {
-            for (const auto &arg : args) {
-                if (arg.type()) {
-                    found = find_relationships(
-                        arg.type().value(), relationships, relationship_type);
+    }
+
+    if (cls.isCompleteDefinition())
+        for (const auto *friend_declaration : cls.friends()) {
+            if (friend_declaration != nullptr)
+                process_friend(*friend_declaration, relationships);
+        }
+}
+
+void translation_unit_visitor::process_class_bases(
+    const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
+{
+    for (auto &base : cls.bases()) {
+        find_relationships(base.getType(), relationships);
+    }
+}
+
+void translation_unit_visitor::process_method(
+    const clang::CXXMethodDecl &method, found_relationships_t &relationships)
+{
+    find_relationships(method.getReturnType(), relationships);
+
+    for (const auto *param : method.parameters()) {
+        if (param != nullptr)
+            find_relationships(param->getType(), relationships);
+    }
+}
+
+void translation_unit_visitor::process_template_method(
+    const clang::FunctionTemplateDecl &method,
+    found_relationships_t &relationships)
+{
+    // TODO: For now skip implicitly default methods
+    //       in the future, add config option to choose
+    if (method.getTemplatedDecl()->isDefaulted() &&
+        !method.getTemplatedDecl()->isExplicitlyDefaulted())
+        return;
+
+    find_relationships(
+        method.getTemplatedDecl()->getReturnType(), relationships);
+
+    for (const auto *param : method.getTemplatedDecl()->parameters()) {
+        if (param != nullptr) {
+            find_relationships(param->getType(), relationships);
+        }
+    }
+}
+
+void translation_unit_visitor::process_field(
+    const clang::FieldDecl &field_declaration,
+    found_relationships_t &relationships)
+{
+    find_relationships(field_declaration.getType(), relationships,
+        relationship_t::kDependency);
+}
+
+void translation_unit_visitor::process_static_field(
+    const clang::VarDecl &field_declaration,
+    found_relationships_t &relationships)
+{
+    find_relationships(field_declaration.getType(), relationships,
+        relationship_t::kDependency);
+}
+
+void translation_unit_visitor::process_friend(
+    const clang::FriendDecl &friend_declaration,
+    found_relationships_t &relationships)
+{
+    if (const auto *friend_type_declaration =
+            friend_declaration.getFriendDecl()) {
+        if (friend_type_declaration->isTemplateDecl()) {
+            // TODO
+        }
+    }
+    else if (const auto *friend_type = friend_declaration.getFriendType()) {
+        find_relationships(friend_type->getType(), relationships);
+    }
+}
+
+bool translation_unit_visitor::find_relationships(const clang::QualType &type,
+    found_relationships_t &relationships, relationship_t relationship_hint)
+{
+    bool result{false};
+
+    if (type->isVoidType() || type->isVoidPointerType()) {
+        // pass
+    }
+    else if (type->isPointerType()) {
+        relationship_hint = relationship_t::kAssociation;
+        find_relationships(
+            type->getPointeeType(), relationships, relationship_hint);
+    }
+    else if (type->isRValueReferenceType()) {
+        relationship_hint = relationship_t::kAggregation;
+        find_relationships(
+            type.getNonReferenceType(), relationships, relationship_hint);
+    }
+    else if (type->isLValueReferenceType()) {
+        relationship_hint = relationship_t::kAssociation;
+        find_relationships(
+            type.getNonReferenceType(), relationships, relationship_hint);
+    }
+    else if (type->isArrayType()) {
+        find_relationships(type->getAsArrayTypeUnsafe()->getElementType(),
+            relationships, relationship_t::kAggregation);
+    }
+    else if (type->isEnumeralType()) {
+        relationships.emplace_back(
+            common::to_id(*type->getAs<clang::EnumType>()), relationship_hint);
+    }
+    else if (auto *template_specialization_type =
+                 type->getAs<clang::TemplateSpecializationType>()) {
+        if (template_specialization_type != nullptr) {
+            if (template_specialization_type->isTypeAlias())
+                template_specialization_type =
+                    template_specialization_type->getAliasedType()
+                        ->getAs<clang::TemplateSpecializationType>();
+        }
+
+        if (template_specialization_type != nullptr) {
+            for (const auto &template_argument :
+                *template_specialization_type) {
+                const auto template_argument_kind = template_argument.getKind();
+                if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Integral) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Null) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Expression) {
+                    // pass
+                }
+                else if (template_argument.getKind() ==
+                    clang::TemplateArgument::ArgKind::NullPtr) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Template) {
+                    // pass
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::TemplateExpansion) {
+                    // pass
+                }
+                else if (template_argument.getAsType()
+                             ->getAs<clang::FunctionProtoType>()) {
+                    for (const auto &param_type :
+                        template_argument.getAsType()
+                            ->getAs<clang::FunctionProtoType>()
+                            ->param_types()) {
+                        result = find_relationships(param_type, relationships,
+                            relationship_t::kDependency);
+                    }
+                }
+                else if (template_argument_kind ==
+                    clang::TemplateArgument::ArgKind::Type) {
+                    result = find_relationships(template_argument.getAsType(),
+                        relationships, relationship_hint);
                 }
             }
         }
     }
+    else if (type->isRecordType()) {
+        const auto *namespace_context =
+            type->getAsCXXRecordDecl()->getEnclosingNamespaceContext();
+        if (namespace_context != nullptr && namespace_context->isNamespace()) {
+            const auto *namespace_declaration =
+                clang::cast<clang::NamespaceDecl>(namespace_context);
 
-    return found;
-}
-
-const cppast::cpp_type &translation_unit_visitor::resolve_alias(
-    const cppast::cpp_type &type)
-{
-    const auto &raw_type = cppast::remove_cv(cx::util::unreferenced(type));
-    const auto type_full_name =
-        cx::util::full_name(raw_type, ctx.entity_index(), false);
-    if (ctx.has_type_alias(type_full_name)) {
-        return ctx.get_type_alias_final(raw_type).get();
+            if (namespace_declaration != nullptr &&
+                diagram().should_include(
+                    common::get_qualified_name(*namespace_declaration))) {
+                const auto target_id = common::to_id(
+                    *clang::cast<clang::NamespaceDecl>(namespace_context));
+                relationships.emplace_back(target_id, relationship_hint);
+                result = true;
+            }
+        }
     }
 
-    return type;
+    return result;
 }
+
 }

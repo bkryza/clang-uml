@@ -22,7 +22,9 @@
 #include "util/error.h"
 #include "util/util.h"
 
-#include <cppast/libclang_parser.hpp>
+#include <clang/Frontend/CompilerInstance.h>
+#include <clang/Tooling/CompilationDatabase.h>
+#include <clang/Tooling/Tooling.h>
 #include <glob/glob.hpp>
 #include <inja/inja.hpp>
 
@@ -146,20 +148,30 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
     const auto &uns = m_config.using_namespace();
 
     // Generate layout hints
-    for (const auto &[entity, hints] : m_config.layout()) {
+    for (const auto &[entity_name, hints] : m_config.layout()) {
         for (const auto &hint : hints) {
             std::stringstream hint_str;
             try {
-                hint_str << m_model.to_alias(uns.relative(entity))
-                         << " -[hidden]"
+                auto element_opt = m_model.get(entity_name);
+                if (!element_opt)
+                    element_opt = m_model.get((uns | entity_name).to_string());
+
+                auto hint_element_opt = m_model.get(hint.entity);
+                if (!hint_element_opt)
+                    hint_element_opt =
+                        m_model.get((uns | hint.entity).to_string());
+
+                if (!element_opt || !hint_element_opt)
+                    continue;
+                hint_str << element_opt.value().alias() << " -[hidden]"
                          << clanguml::config::to_string(hint.hint) << "- "
-                         << m_model.to_alias(uns.relative(hint.entity)) << '\n';
+                         << hint_element_opt.value().alias() << '\n';
                 ostr << hint_str.str();
             }
             catch (clanguml::error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping layout hint from {} to {} due "
                         "to: {}",
-                    entity, hint.entity, e.what());
+                    entity_name, hint.entity, e.what());
             }
         }
     }
@@ -178,10 +190,19 @@ void generator<C, D>::generate_plantuml_directives(
         // Now search for alias @A() directives in the text
         std::tuple<std::string, size_t, size_t> alias_match;
         while (util::find_element_alias(directive, alias_match)) {
-            auto alias = m_model.to_alias(
-                m_config.using_namespace().relative(std::get<0>(alias_match)));
-            directive.replace(
-                std::get<1>(alias_match), std::get<2>(alias_match), alias);
+            const auto full_name =
+                m_config.using_namespace() | std::get<0>(alias_match);
+            auto element_opt = m_model.get(full_name.to_string());
+
+            if (element_opt)
+                directive.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match), element_opt.value().alias());
+            else {
+                LOG_ERROR("Cannot find clang-uml alias for element {}",
+                    full_name.to_string());
+                directive.replace(std::get<1>(alias_match),
+                    std::get<2>(alias_match), "UNKNOWN_ALIAS");
+            }
         }
         ostr << directive << '\n';
     }
@@ -226,38 +247,117 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 }
 
 template <typename DiagramModel, typename DiagramConfig,
+    typename TranslationUnitVisitor>
+class diagram_ast_consumer : public clang::ASTConsumer {
+    TranslationUnitVisitor visitor_;
+
+public:
+    explicit diagram_ast_consumer(clang::CompilerInstance &ci,
+        DiagramModel &diagram, const DiagramConfig &config)
+        : visitor_{ci.getSourceManager(), diagram, config}
+    {
+    }
+
+    virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
+    {
+        visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
+        visitor_.finalize();
+    }
+};
+
+template <typename DiagramModel, typename DiagramConfig,
+    typename DiagramVisitor>
+class diagram_fronted_action : public clang::ASTFrontendAction {
+public:
+    explicit diagram_fronted_action(
+        DiagramModel &diagram, const DiagramConfig &config)
+        : diagram_{diagram}
+        , config_{config}
+    {
+    }
+
+    std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+        clang::CompilerInstance &CI, clang::StringRef file) override
+    {
+        return std::make_unique<
+            diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
+            CI, diagram_, config_);
+    }
+
+protected:
+    bool BeginSourceFileAction(clang::CompilerInstance &ci) override
+    {
+        LOG_DBG("Visiting source file: {}", getCurrentFile().str());
+
+        if constexpr (std::is_same_v<DiagramModel,
+                          clanguml::include_diagram::model::diagram>) {
+            auto find_includes_callback =
+                std::make_unique<typename DiagramVisitor::include_visitor>(
+                    ci.getSourceManager(), diagram_, config_);
+
+            clang::Preprocessor &pp = ci.getPreprocessor();
+
+            pp.addPPCallbacks(std::move(find_includes_callback));
+        }
+
+        return true;
+    }
+
+private:
+    DiagramModel &diagram_;
+    const DiagramConfig &config_;
+};
+
+template <typename DiagramModel, typename DiagramConfig,
+    typename DiagramVisitor>
+class diagram_action_visitor_factory
+    : public clang::tooling::FrontendActionFactory {
+public:
+    explicit diagram_action_visitor_factory(
+        DiagramModel &diagram, const DiagramConfig &config)
+        : diagram_{diagram}
+        , config_{config}
+    {
+    }
+
+    std::unique_ptr<clang::FrontendAction> create() override
+    {
+        return std::make_unique<diagram_fronted_action<DiagramModel,
+            DiagramConfig, DiagramVisitor>>(diagram_, config_);
+    }
+
+private:
+    DiagramModel &diagram_;
+    const DiagramConfig &config_;
+};
+
+template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 std::unique_ptr<DiagramModel> generate(
-    const cppast::libclang_compilation_database &db, const std::string &name,
-    DiagramConfig &config, bool verbose = false)
+    const clang::tooling::CompilationDatabase &db, const std::string &name,
+    DiagramConfig &config, const std::vector<std::string> &translation_units,
+    bool verbose = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
+
     auto diagram = std::make_unique<DiagramModel>();
     diagram->set_name(name);
     diagram->set_filter(
         std::make_unique<model::diagram_filter>(*diagram, config));
 
-    // Get all translation units matching the glob from diagram
-    // configuration
-    std::vector<std::string> translation_units{};
-    for (const auto &g : config.glob()) {
-        LOG_DBG("Processing glob: {}", g);
-        const auto matches = glob::rglob(g);
-        std::copy(matches.begin(), matches.end(),
-            std::back_inserter(translation_units));
+    LOG_DBG("Found translation units for diagram {}: {}", name,
+        fmt::join(translation_units, ", "));
+
+    clang::tooling::ClangTool clang_tool(db, translation_units);
+    auto action_factory =
+        std::make_unique<diagram_action_visitor_factory<DiagramModel,
+            DiagramConfig, DiagramVisitor>>(*diagram, config);
+
+    auto res = clang_tool.run(action_factory.get());
+
+    if (res != 0) {
+        throw std::runtime_error("Diagram " + name + " generation failed");
     }
-
-    cppast::cpp_entity_index idx;
-    auto logger =
-        verbose ? cppast::default_logger() : cppast::default_quiet_logger();
-    cppast::simple_file_parser<cppast::libclang_parser> parser{
-        type_safe::ref(idx), std::move(logger)};
-
-    // Process all matching translation units
-    DiagramVisitor ctx(idx, *diagram, config);
-    cppast::parse_files(parser, translation_units, db);
-    for (auto &file : parser.files())
-        ctx(file);
 
     diagram->set_complete(true);
 
@@ -323,9 +423,11 @@ template <typename C, typename D> void generator<C, D>::init_env()
     // is equivalent to the old syntax:
     //   "note left of @A(ClassA): This is a note"
     m_env.add_callback("alias", 1, [this](inja::Arguments &args) {
-        auto alias_match = args[0]->get<std::string>();
-        return m_model.to_alias(
-            m_config.using_namespace().relative(alias_match));
+        auto alias_match =
+            m_config.using_namespace() | args[0]->get<std::string>();
+        auto element_opt = m_model.get(alias_match.to_string());
+
+        return element_opt.value().alias();
     });
 
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
@@ -349,5 +451,4 @@ template <typename C, typename D> void generator<C, D>::init_env()
         return res;
     });
 }
-
 }

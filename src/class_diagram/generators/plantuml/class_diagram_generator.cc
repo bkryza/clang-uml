@@ -177,7 +177,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}",
+        LOG_DBG("Processing relationship {}",
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::string destination;
@@ -188,8 +188,6 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             //       name
             if (util::starts_with(destination, std::string{"::"}))
                 destination = destination.substr(2, destination.size());
-
-            LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
             if (!r.multiplicity_source().empty())
@@ -205,7 +203,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             }
         }
         catch (error::uml_alias_missing &e) {
-            LOG_DBG("=== Skipping {} relation from {} to {} due "
+            LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
                 plantuml_common::to_plantuml(r.type(), r.style()),
                 c.full_name(), destination, e.what());
@@ -246,8 +244,6 @@ void generator::generate_relationships(
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    const auto &uns = m_config.using_namespace();
-
     //
     // Process relationships
     //
@@ -264,16 +260,9 @@ void generator::generate_relationships(
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::stringstream relstr;
-        std::string destination;
+        clanguml::common::id_t destination;
         try {
             destination = r.destination();
-
-            // TODO: Refactor destination to a namespace qualified entity
-            //       name
-            if (util::starts_with(destination, std::string{"::"}))
-                destination = destination.substr(2, destination.size());
-
-            LOG_DBG("=== Destination is: {}", destination);
 
             std::string puml_relation;
             if (!r.multiplicity_source().empty())
@@ -284,8 +273,14 @@ void generator::generate_relationships(
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
 
-            auto target_alias = m_model.to_alias(
-                m_config.using_namespace().relative(destination));
+            std::string target_alias;
+            try {
+                target_alias = m_model.to_alias(destination);
+            }
+            catch (...) {
+                LOG_DBG("Failed to find alias to {}", destination);
+                continue;
+            }
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())
@@ -321,7 +316,7 @@ void generator::generate_relationships(
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                auto target_alias = m_model.to_alias(uns.relative(b.name()));
+                auto target_alias = m_model.to_alias(b.id());
 
                 if (m_generated_aliases.find(target_alias) ==
                     m_generated_aliases.end())
@@ -369,13 +364,12 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        std::string destination;
+        clanguml::common::id_t destination;
         std::stringstream relstr;
         try {
             destination = r.destination();
 
-            auto target_alias = m_model.to_alias(
-                m_config.using_namespace().relative(destination));
+            auto target_alias = m_model.to_alias(destination);
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())

@@ -1,7 +1,6 @@
 type: class
 include_relations_also_as_members: false
 glob:
-  - src/decorators/decorators.h
   - src/decorators/decorators.cc
 include:
   namespaces:

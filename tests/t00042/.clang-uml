@@ -17,3 +17,5 @@ diagrams:
     exclude:
       specializations:
         - clanguml::t00042::C<T>
+      namespaces:
+        - std

@@ -135,4 +135,37 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
     CHECK(class2.template_params()[1].type() == "std::vector");
     CHECK(class2.template_params()[1].template_params()[0].type() ==
         "std::string");
+
+    const std::string empty_string = R"(
+            > {
+                using type = Result;
+            };)";
+
+    auto empty_template = parse_unexposed_template_params(
+        empty_string, [](const auto &n) { return n; });
+
+    CHECK(empty_template.size() == 0);
+
+    const std::string single_template_string = R"(Else> {
+            using type = Else;)";
+
+    auto single_template = parse_unexposed_template_params(
+        single_template_string, [](const auto &n) { return n; });
+
+    CHECK(single_template.size() == 1);
+    CHECK(single_template[0].type() == "Else");
+
+    const std::string declaration_string = R"(
+
+            std::true_type, Result, Tail> {
+                using type = Result;
+            };)";
+
+    auto declaration_template = parse_unexposed_template_params(
+        declaration_string, [](const auto &n) { return n; });
+
+    CHECK(declaration_template.size() == 3);
+    CHECK(declaration_template[0].type() == "std::true_type");
+    CHECK(declaration_template[1].type() == "Result");
+    CHECK(declaration_template[2].type() == "Tail");
 }

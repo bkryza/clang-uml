@@ -24,7 +24,7 @@ TEST_CASE("t00013", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00013_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00013_class");
     REQUIRE(model->should_include("clanguml::t00013::A"));
@@ -56,8 +56,8 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("F<int>")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
+    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
 
     REQUIRE_THAT(puml,
         IsInstantiation(_A("G<T,Args...>"), _A("G<int,float,std::string>")));

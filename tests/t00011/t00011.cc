@@ -13,7 +13,7 @@ template <typename T> class D {
 };
 
 class A {
-private:
+public:
     void foo() { }
     friend class B;
     friend class external::C;

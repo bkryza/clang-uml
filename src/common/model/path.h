@@ -19,8 +19,8 @@
 
 #include "util/util.h"
 
+#include <optional>
 #include <string>
-#include <type_safe/optional.hpp>
 #include <vector>
 
 namespace clanguml::common::model {
@@ -130,7 +130,7 @@ public:
 
     void pop_back() { path_.pop_back(); }
 
-    type_safe::optional<path> parent() const
+    std::optional<path> parent() const
     {
         if (size() <= 1) {
             return {};

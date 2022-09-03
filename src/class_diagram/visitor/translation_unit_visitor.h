@@ -17,27 +17,14 @@
  */
 #pragma once
 
+#include "class_diagram/model/class.h"
 #include "class_diagram/model/diagram.h"
-#include "class_diagram/visitor/translation_unit_context.h"
 #include "common/model/enums.h"
 #include "config/config.h"
 
-#include <clang-c/CXCompilationDatabase.h>
-#include <clang-c/Index.h>
-#include <cppast/cpp_friend.hpp>
-#include <cppast/cpp_function_template.hpp>
-#include <cppast/cpp_member_function.hpp>
-#include <cppast/cpp_member_variable.hpp>
-#include <cppast/cpp_template.hpp>
-#include <cppast/cpp_template_parameter.hpp>
-#include <cppast/cpp_type.hpp>
-#include <cppast/visitor.hpp>
-#include <type_safe/reference.hpp>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
-#include <class_diagram/model/class.h>
-#include <common/model/enums.h>
-#include <cppast/cpp_alias_template.hpp>
-#include <cppast/cpp_type_alias.hpp>
 #include <deque>
 #include <functional>
 #include <map>
@@ -47,199 +34,208 @@
 namespace clanguml::class_diagram::visitor {
 
 using found_relationships_t =
-    std::vector<std::pair<std::string, common::model::relationship_t>>;
+    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
+        common::model::relationship_t>>;
 
-// class nested_template_relationships {
-//
-//    std::vector<std::unique_ptr<nested_template_relationships>> children;
-//};
-
-class translation_unit_visitor {
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    explicit translation_unit_visitor(clang::SourceManager &sm,
         clanguml::class_diagram::model::diagram &diagram,
         const clanguml::config::class_diagram &config);
 
-    void operator()(const cppast::cpp_entity &file);
+    virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
-    void process_class_declaration(const cppast::cpp_class &cls,
-        type_safe::optional_ref<const cppast::cpp_template_specialization>
-            tspec = nullptr);
+    virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *d);
 
-    void process_enum_declaration(const cppast::cpp_enum &enm);
+    virtual bool VisitEnumDecl(clang::EnumDecl *e);
 
-    void process_anonymous_enum(const cppast::cpp_enum &en,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
+    virtual bool VisitClassTemplateDecl(
+        clang::ClassTemplateDecl *class_template_declaration);
 
-    void process_field(const cppast::cpp_member_variable &mv,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
+    virtual bool VisitClassTemplateSpecializationDecl(
+        clang::ClassTemplateSpecializationDecl *cls);
 
-    bool process_field_with_template_instantiation(
-        const cppast::cpp_member_variable &mv, const cppast::cpp_type &type,
-        clanguml::class_diagram::model::class_ &c,
-        clanguml::class_diagram::model::class_member &member,
-        cppast::cpp_access_specifier_kind as);
+    virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
-    void process_static_field(const cppast::cpp_variable &mv,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
+    clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
-    void process_method(const cppast::cpp_member_function &mf,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
+    const clanguml::config::class_diagram &config() const { return config_; }
 
-    void process_template_method(const cppast::cpp_function_template &mf,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
-
-    void process_static_method(const cppast::cpp_function &mf,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
-
-    void process_constructor(const cppast::cpp_constructor &mf,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
-
-    void process_destructor(const cppast::cpp_destructor &mf,
-        clanguml::class_diagram::model::class_ &c,
-        cppast::cpp_access_specifier_kind as);
-
-    void process_function_parameter(const cppast::cpp_function_parameter &param,
-        clanguml::class_diagram::model::class_method &m,
-        clanguml::class_diagram::model::class_ &c,
-        const std::set<std::string> &template_parameter_names = {});
-
-    bool find_relationships(const cppast::cpp_type &t,
-        found_relationships_t &relationships,
-        clanguml::common::model::relationship_t relationship_hint =
-            clanguml::common::model::relationship_t::kNone) const;
-
-    void process_template_type_parameter(
-        const cppast::cpp_template_type_parameter &t,
-        clanguml::class_diagram::model::class_ &parent);
-
-    void process_template_nontype_parameter(
-        const cppast::cpp_non_type_template_parameter &t,
-        clanguml::class_diagram::model::class_ &parent);
-
-    void process_template_template_parameter(
-        const cppast::cpp_template_template_parameter &t,
-        clanguml::class_diagram::model::class_ &parent);
-
-    void process_friend(const cppast::cpp_friend &t,
-        clanguml::class_diagram::model::class_ &parent,
-        cppast::cpp_access_specifier_kind as);
-
-    void process_namespace(const cppast::cpp_entity &e,
-        const cppast::cpp_namespace &ns_declaration);
-
-    void process_type_alias(const cppast::cpp_type_alias &ta);
-
-    void process_type_alias_template(const cppast::cpp_alias_template &at);
-
-    void process_class_children(const cppast::cpp_class &cls, model::class_ &c);
-
-    void process_class_bases(
-        const cppast::cpp_class &cls, model::class_ &c) const;
-
-    void process_unexposed_template_specialization_parameters(
-        const type_safe::optional_ref<const cppast::cpp_template_specialization>
-            &tspec,
-        model::class_ &c) const;
-
-    void process_exposed_template_specialization_parameters(
-        const type_safe::optional_ref<const cppast::cpp_template_specialization>
-            &tspec,
-        model::class_ &c);
-
-    void process_scope_template_parameters(
-        model::class_ &c, const cppast::cpp_scope_name &scope);
-
-    bool process_template_parameters(const cppast::cpp_class &cls,
-        model::class_ &c,
-        const type_safe::optional_ref<const cppast::cpp_template_specialization>
-            &tspec);
-
-    void process_class_containment(
-        const cppast::cpp_class &cls, model::class_ &c) const;
+    void finalize();
 
 private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
+    create_class_declaration(clang::CXXRecordDecl *cls);
+
+    void process_class_declaration(const clang::CXXRecordDecl &cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_class_bases(const clang::CXXRecordDecl *cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_class_children(const clang::CXXRecordDecl *cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    process_template_specialization(
+        clang::ClassTemplateSpecializationDecl *cls);
+
+    void process_template_specialization_children(
+        const clang::ClassTemplateSpecializationDecl *cls,
+        clanguml::class_diagram::model::class_ &c);
+
+    bool process_template_parameters(
+        const clang::ClassTemplateDecl &template_declaration,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_template_specialization_argument(
+        const clang::ClassTemplateSpecializationDecl *cls,
+        model::class_ &template_instantiation,
+        const clang::TemplateArgument &arg, size_t argument_index,
+        bool in_parameter_pack = false);
+
+    void process_record_containment(const clang::TagDecl &record,
+        clanguml::common::model::element &c) const;
+
+    void process_method(const clang::CXXMethodDecl &mf,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_template_method(const clang::FunctionTemplateDecl &mf,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_static_field(const clang::VarDecl &field_declaration,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_field(const clang::FieldDecl &field_declaration,
+        clanguml::class_diagram::model::class_ &c);
+
+    void process_function_parameter(const clang::ParmVarDecl &param,
+        clanguml::class_diagram::model::class_method &method,
+        clanguml::class_diagram::model::class_ &c,
+        const std::set<std::string> &template_parameter_names = {});
+
+    void process_friend(
+        const clang::FriendDecl &f, clanguml::class_diagram::model::class_ &c);
+
+    bool find_relationships(const clang::QualType &type,
+        found_relationships_t &,
+        clanguml::common::model::relationship_t relationship_hint);
+
+    void add_relationships(clanguml::class_diagram::model::class_ &c,
+        const clanguml::class_diagram::model::class_member &field,
+        const found_relationships_t &relationships,
+        bool break_on_first_aggregation = false);
+
+    void set_source_location(const clang::Decl &decl,
+        clanguml::common::model::source_location &element);
+
+    std::unique_ptr<clanguml::class_diagram::model::class_>
     build_template_instantiation(
-        const cppast::cpp_template_instantiation_type &t,
+        const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
-    /**
-     * Try to resolve a type instance into a type referenced through an alias.
-     * If t does not represent an alias, returns t.
-     */
-    const cppast::cpp_type &resolve_alias(const cppast::cpp_type &t);
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    build_template_instantiation_from_class_template_specialization(
+        const clang::ClassTemplateSpecializationDecl &template_specialization,
+        const clang::RecordType &record_type,
+        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
-    const cppast::cpp_type &resolve_alias_template(
-        const cppast::cpp_type &type);
-
-    bool find_relationships_in_array(
-        found_relationships_t &relationships, const cppast::cpp_type &t) const;
-
-    bool find_relationships_in_pointer(const cppast::cpp_type &t_,
-        found_relationships_t &relationships,
-        const common::model::relationship_t &relationship_hint) const;
-
-    bool find_relationships_in_reference(const cppast::cpp_type &t_,
-        found_relationships_t &relationships,
-        const common::model::relationship_t &relationship_hint) const;
-
-    bool find_relationships_in_user_defined_type(const cppast::cpp_type &t_,
-        found_relationships_t &relationships, const std::string &fn,
-        common::model::relationship_t &relationship_type,
-        const cppast::cpp_type &t) const;
-
-    bool find_relationships_in_template_instantiation(const cppast::cpp_type &t,
-        const std::string &fn, found_relationships_t &relationships,
-        common::model::relationship_t relationship_type) const;
-
-    bool find_relationships_in_unexposed_template_params(
-        const model::template_parameter &ct,
-        found_relationships_t &relationships) const;
-
-    void build_template_instantiation_primary_template(
-        const cppast::cpp_template_instantiation_type &t,
+    bool build_template_instantiation_add_base_classes(
         clanguml::class_diagram::model::class_ &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        std::string &full_template_name) const;
+        int arg_index, bool variadic_params,
+        const clanguml::class_diagram::model::template_parameter &ct) const;
 
-    void build_template_instantiation_process_type_argument(
-        const std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        model::class_ &tinst, const cppast::cpp_type &targ_type,
-        class_diagram::model::template_parameter &ct);
+    void build_template_instantiation_process_template_arguments(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        const clang::ArrayRef<clang::TemplateArgument> &template_args,
+        model::class_ &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl);
+
+    void build_template_instantiation_process_tag_argument(
+        model::class_ &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument);
 
     void build_template_instantiation_process_expression_argument(
-        const cppast::cpp_template_argument &targ,
-        model::template_parameter &ct) const;
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
 
-    bool build_template_instantiation_add_base_classes(model::class_ &tinst,
-        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        int arg_index, bool variadic_params,
-        const model::template_parameter &ct) const;
+    void build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_type_argument(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::class_ &template_instantiation,
+        model::template_parameter &argument);
+
+    void build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg,
+        model::template_parameter &argument) const;
 
     void process_function_parameter_find_relationships_in_template(
-        model::class_ &c, const std::set<std::string> &template_parameter_names,
-        const cppast::cpp_type &t);
+        clanguml::class_diagram::model::class_ &c,
+        const std::set<std::string> &template_parameter_names,
+        const clang::TemplateSpecializationType &template_instantiation_type);
 
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    void process_unexposed_template_specialization_parameters(
+        const std::string &tspec,
+        clanguml::class_diagram::model::template_parameter &tp,
+        clanguml::class_diagram::model::class_ &c);
+
+    bool find_relationships_in_unexposed_template_params(
+        const clanguml::class_diagram::model::template_parameter &ct,
+        found_relationships_t &relationships);
+
+    template <typename ClangDecl>
+    void process_comment(
+        const ClangDecl &decl, clanguml::common::model::decorated_element &e)
+    {
+        const auto *comment =
+            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+
+        if (comment != nullptr) {
+            e.set_comment(comment->getFormattedText(
+                source_manager_, decl.getASTContext().getDiagnostics()));
+            e.add_decorators(decorators::parse(e.comment().value()));
+        }
+    }
+
+    void add_incomplete_forward_declarations();
+
     bool simplify_system_template(
-        model::template_parameter &parameter, const std::string &basicString);
+        model::template_parameter &ct, const std::string &full_name);
 
-    bool add_nested_template_relationships(
-        const cppast::cpp_member_variable &mv, model::class_ &c,
-        model::class_member &m, cppast::cpp_access_specifier_kind &as,
-        const model::class_ &tinst,
-        common::model::relationship_t &relationship_type,
-        common::model::relationship_t &decorator_rtype,
-        std::string &decorator_rmult);
+    /// Store the mapping from local clang entity id (obtained using
+    /// getID()) method to clang-uml global id
+    void set_ast_local_id(
+        int64_t local_id, common::model::diagram_element::id_t global_id);
+
+    /// Retrieve the global clang-uml entity id based on the clang local id
+    std::optional<common::model::diagram_element::id_t> get_ast_local_id(
+        int64_t local_id);
+
+    clang::SourceManager &source_manager_;
+
+    // Reference to the output diagram model
+    clanguml::class_diagram::model::diagram &diagram_;
+
+    // Reference to class diagram config
+    const clanguml::config::class_diagram &config_;
+
+    std::map<common::model::diagram_element::id_t,
+        std::unique_ptr<clanguml::class_diagram::model::class_>>
+        forward_declarations_;
+
+    std::map<int64_t, common::model::diagram_element::id_t> local_ast_id_map_;
 };
 }

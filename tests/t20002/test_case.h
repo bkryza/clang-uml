@@ -24,7 +24,7 @@ TEST_CASE("t20002", "[test-case][sequence]")
 
     REQUIRE(diagram->name == "t20002_sequence");
 
-    auto model = generate_sequence_diagram(db, diagram);
+    auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20002_sequence");
 

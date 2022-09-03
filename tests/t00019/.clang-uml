@@ -4,7 +4,6 @@ diagrams:
   t00019_class:
     type: class
     glob:
-      - ../../tests/t00019/**.h
       - ../../tests/t00019/**.cc
     using_namespace:
       - clanguml::t00019

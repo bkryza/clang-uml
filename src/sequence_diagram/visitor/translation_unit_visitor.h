@@ -19,24 +19,46 @@
 
 #include "config/config.h"
 #include "sequence_diagram/model/diagram.h"
-#include "sequence_diagram/visitor/translation_unit_context.h"
 
-#include <cppast/cpp_function.hpp>
+#include <clang/AST/Expr.h>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
 
 namespace clanguml::sequence_diagram::visitor {
 
-class translation_unit_visitor {
+class translation_unit_visitor
+    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    translation_unit_visitor(cppast::cpp_entity_index &idx,
+    translation_unit_visitor(clang::SourceManager &sm,
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
-    void operator()(const cppast::cpp_entity &file);
+    virtual bool VisitCallExpr(clang::CallExpr *expr);
+
+    virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
+
+    virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+
+    virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+
+    clanguml::sequence_diagram::model::diagram &diagram();
+
+    const clanguml::config::sequence_diagram &config() const;
+
+    void finalize() { }
 
 private:
-    void process_activities(const cppast::cpp_function &e);
+    clang::SourceManager &source_manager_;
 
-    // ctx allows to track current visitor context, e.g. current namespace
-    translation_unit_context ctx;
+    // Reference to the output diagram model
+    clanguml::sequence_diagram::model::diagram &diagram_;
+
+    // Reference to class diagram config
+    const clanguml::config::sequence_diagram &config_;
+
+    clang::CXXRecordDecl *current_class_decl_;
+    clang::CXXMethodDecl *current_method_decl_;
+    clang::FunctionDecl *current_function_decl_;
 };
+
 }

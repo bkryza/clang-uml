@@ -8,19 +8,17 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      with:
-        submodules: recursive
     - name: Update package database
       run: sudo apt -y update
     - name: Install deps
-      run: sudo apt -y install git make gcc-10 g++-10 ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev lcov
+      run: sudo apt -y install git make gcc-10 g++-10 ccache cmake libyaml-cpp-dev llvm-12 clang-12 libclang-12-dev libclang-cpp12-dev lcov zlib1g-dev
     - name: Select g++ version
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
     - name: Build and unit test
       run: |
-        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" make test
+        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" LLVM_VERSION=12 make test
     - name: Run coverage
       run: |
         lcov -c -d debug -o coverage.info

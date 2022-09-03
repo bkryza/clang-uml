@@ -24,7 +24,7 @@ TEST_CASE("t00016", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00016_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00016_class");
     REQUIRE(model->should_include("clanguml::t00016::is_numeric"));
@@ -38,7 +38,7 @@ TEST_CASE("t00016", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "int"));
     REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "bool"));
     REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "char"));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "unsigned char"));
+    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "float"));
 
     REQUIRE_THAT(
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<int>")));
@@ -46,8 +46,8 @@ TEST_CASE("t00016", "[test-case][class]")
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<bool>")));
     REQUIRE_THAT(
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<char>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("is_numeric<>"), _A("is_numeric<unsigned char>")));
+    REQUIRE_THAT(
+        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

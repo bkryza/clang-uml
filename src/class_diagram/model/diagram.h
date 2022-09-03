@@ -21,6 +21,7 @@
 #include "common/model/diagram.h"
 #include "common/model/nested_trait.h"
 #include "common/model/package.h"
+#include "common/types.h"
 #include "enum.h"
 #include "type_alias.h"
 
@@ -44,22 +45,29 @@ public:
 
     common::model::diagram_t type() const override;
 
-    type_safe::optional_ref<const clanguml::common::model::diagram_element> get(
+    common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
 
-    const std::vector<type_safe::object_ref<const class_>> &classes() const;
+    common::optional_ref<common::model::diagram_element> get(
+        const clanguml::common::model::diagram_element::id_t id) const override;
 
-    const std::vector<type_safe::object_ref<const enum_>> &enums() const;
+    const common::reference_vector<class_> &classes() const;
+
+    const common::reference_vector<enum_> &enums() const;
 
     bool has_class(const class_ &c) const;
 
     bool has_enum(const enum_ &e) const;
 
-    type_safe::optional_ref<const class_> get_class(
-        const std::string &name) const;
+    common::optional_ref<class_> get_class(const std::string &name) const;
 
-    type_safe::optional_ref<const enum_> get_enum(
-        const std::string &name) const;
+    common::optional_ref<class_> get_class(
+        clanguml::common::model::diagram_element::id_t id) const;
+
+    common::optional_ref<enum_> get_enum(const std::string &name) const;
+
+    common::optional_ref<enum_> get_enum(
+        clanguml::common::model::diagram_element::id_t id) const;
 
     void add_type_alias(std::unique_ptr<type_alias> &&ta);
 
@@ -69,16 +77,21 @@ public:
 
     bool add_package(std::unique_ptr<common::model::package> &&p);
 
-    std::string to_alias(const std::string &full_name) const;
+    std::string to_alias(
+        clanguml::common::model::diagram_element::id_t id) const;
 
-    void get_parents(
-        std::unordered_set<type_safe::object_ref<const class_>> &parents) const;
+    void get_parents(clanguml::common::reference_set<class_> &parents) const;
 
     friend void print_diagram_tree(const diagram &d, const int level);
 
+    bool has_element(
+        const clanguml::common::model::diagram_element::id_t id) const override;
+
 private:
-    std::vector<type_safe::object_ref<const class_, false>> classes_;
-    std::vector<type_safe::object_ref<const enum_, false>> enums_;
+    common::reference_vector<class_> classes_;
+
+    common::reference_vector<enum_> enums_;
+
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
 }

@@ -1,6 +1,5 @@
 type: package
 glob:
-  - src/**/*.h
   - src/**/*.cc
 include:
   namespaces:

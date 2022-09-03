@@ -24,7 +24,7 @@ TEST_CASE("t30005", "[test-case][package]")
 
     REQUIRE(diagram->name == "t30005_package");
 
-    auto model = generate_package_diagram(db, diagram);
+    auto model = generate_package_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t30005_package");
 

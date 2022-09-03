@@ -59,6 +59,12 @@ void class_::add_method(class_method &&method)
 
 void class_::add_parent(class_parent &&parent)
 {
+    for (const auto &p : bases_) {
+        if (p.id() == parent.id()) {
+            return;
+        }
+    }
+
     bases_.emplace_back(std::move(parent));
 }
 
@@ -85,11 +91,7 @@ void class_::set_base_template(const std::string &full_name)
 
 std::string class_::base_template() const { return base_template_full_name_; }
 
-bool operator==(const class_ &l, const class_ &r)
-{
-    return (l.name_and_ns() == r.name_and_ns()) &&
-        (l.templates_ == r.templates_);
-}
+bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
 void class_::add_type_alias(type_alias &&ta)
 {

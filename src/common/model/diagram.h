@@ -22,8 +22,6 @@
 #include "namespace.h"
 #include "source_file.h"
 
-#include <type_safe/optional_ref.hpp>
-
 #include <memory>
 #include <string>
 
@@ -36,12 +34,16 @@ class relationship;
 class diagram {
 public:
     diagram();
+
     virtual ~diagram();
 
     virtual diagram_t type() const = 0;
 
-    virtual type_safe::optional_ref<const diagram_element> get(
+    virtual common::optional_ref<clanguml::common::model::diagram_element> get(
         const std::string &full_name) const = 0;
+
+    virtual common::optional_ref<clanguml::common::model::diagram_element> get(
+        const diagram_element::id_t id) const = 0;
 
     diagram(const diagram &) = delete;
     diagram(diagram &&);
@@ -64,7 +66,13 @@ public:
     bool should_include(const relationship_t r) const;
     bool should_include(const access_t s) const;
 
-    bool should_include(const namespace_ &ns, const std::string &name) const;
+    virtual bool has_element(const diagram_element::id_t id) const
+    {
+        return false;
+    }
+
+    virtual bool should_include(
+        const namespace_ &ns, const std::string &name) const;
 
 private:
     std::string name_;

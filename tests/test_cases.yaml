@@ -135,6 +135,12 @@ test_cases:
     - name: t00046
       title: Test case for root namespace handling with packages
       description:
+    - name: t00047
+      title: Test case for recursive variadic template
+      description:
+    - name: t00048
+      title: Test case for unique entity id with multiple translation units
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

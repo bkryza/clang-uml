@@ -20,10 +20,10 @@
 #include "common/model/element.h"
 #include "common/model/nested_trait.h"
 #include "common/model/stylable_element.h"
+#include "common/types.h"
 #include "util/util.h"
 
 #include <spdlog/spdlog.h>
-#include <type_safe/optional_ref.hpp>
 
 #include <set>
 #include <string>
@@ -57,14 +57,14 @@ private:
 
 namespace std {
 template <>
-struct hash<type_safe::object_ref<const clanguml::common::model::package>> {
+struct hash<std::reference_wrapper<clanguml::common::model::package>> {
     std::size_t operator()(
-        const type_safe::object_ref<const clanguml::common::model::package>
-            &key) const
+        const std::reference_wrapper<clanguml::common::model::package> &key)
+        const
     {
-        using clanguml::common::model::package;
+        using clanguml::common::id_t;
 
-        return std::hash<std::string>{}(key.get().full_name(false));
+        return std::hash<id_t>{}(key.get().id());
     }
 };
 }

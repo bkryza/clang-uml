@@ -24,7 +24,7 @@ TEST_CASE("t00005", "[test-case][class]")
 
     REQUIRE(diagram->name == "t00005_class");
 
-    auto model = generate_class_diagram(db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00005_class");
     REQUIRE(model->should_include("clanguml::t00005::A"));
@@ -51,8 +51,8 @@ TEST_CASE("t00005", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("R")));
 
     REQUIRE_THAT(puml, (IsField<Public>("some_int", "int")));
-    REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer", "int*")));
-    REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer_pointer", "int**")));
+    REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer", "int *")));
+    REQUIRE_THAT(puml, (IsField<Public>("some_int_pointer_pointer", "int **")));
 
     REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));

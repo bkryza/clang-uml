@@ -19,6 +19,7 @@
 
 #include "activity.h"
 #include "common/model/diagram.h"
+#include "common/types.h"
 
 #include <map>
 #include <string>
@@ -36,14 +37,17 @@ public:
 
     common::model::diagram_t type() const override;
 
-    type_safe::optional_ref<const common::model::diagram_element> get(
+    common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
+
+    common::optional_ref<common::model::diagram_element> get(
+        const common::model::diagram_element::id_t id) const override;
 
     std::string to_alias(const std::string &full_name) const;
 
     bool started{false};
 
-    std::map<std::uint_least64_t, activity> sequences;
+    std::map<int64_t, activity> sequences;
 };
 
 }

@@ -37,6 +37,9 @@
 
 #include "catch.h"
 
+#include <clang/Tooling/CompilationDatabase.h>
+#include <clang/Tooling/Tooling.h>
+
 #include <algorithm>
 #include <complex>
 #include <filesystem>
@@ -49,7 +52,8 @@ using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
 using namespace clanguml::util;
 
-std::pair<clanguml::config::config, cppast::libclang_compilation_database>
+std::pair<clanguml::config::config,
+    std::unique_ptr<clang::tooling::CompilationDatabase>>
 load_config(const std::string &test_name);
 
 std::string generate_sequence_puml(
@@ -225,6 +229,14 @@ ContainsMatcher IsAbstractClass(std::string const &str,
     return ContainsMatcher(CasedString("abstract " + str, caseSensitivity));
 }
 
+ContainsMatcher IsAbstractClassTemplate(std::string const &str,
+    std::string const &tmplt,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("abstract \"{}<{}>\"", str, tmplt), caseSensitivity));
+}
+
 ContainsMatcher IsBaseClass(std::string const &base, std::string const &sub,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -372,7 +384,7 @@ ContainsMatcher HasLink(std::string const &alias, std::string const &link,
 
 template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
-    std::string const &type = "void",
+    std::string const &type = "void", std::string const &params = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     std::string pattern;
@@ -391,13 +403,16 @@ ContainsMatcher IsMethod(std::string const &name,
 
     pattern += name;
 
-    pattern += "()";
+    pattern += "(" + params + ")";
 
     if constexpr (has_type<Const, Ts...>())
         pattern += " const";
 
     if constexpr (has_type<Abstract, Ts...>())
         pattern += " = 0";
+
+    if constexpr (has_type<Default, Ts...>())
+        pattern += " = default";
 
     pattern += " : " + type;
 

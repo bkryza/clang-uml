@@ -28,33 +28,56 @@ common::model::diagram_t diagram::type() const
     return common::model::diagram_t::kInclude;
 }
 
-type_safe::optional_ref<const common::model::diagram_element> diagram::get(
+common::optional_ref<common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
     return get_file(full_name);
 }
 
+common::optional_ref<common::model::diagram_element> diagram::get(
+    const common::model::diagram_element::id_t id) const
+{
+    return get_file(id);
+}
+
 void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 {
-    LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
+    // Don't add the same file more than once
+    if (get_file(f->id()))
+        return;
 
-    files_.emplace_back(*f);
+    LOG_DBG("Adding source file: {}, {}", f->name(), f->fs_path().string());
 
-    auto p = f->path();
+    auto &ff = *f;
+
+    assert(!ff.name().empty());
+    assert(ff.id() != 0);
+
+    files_.emplace_back(ff);
+
+    auto p = ff.path();
 
     if (!f->path().is_empty()) {
         // If the parent path is not empty, ensure relative parent directories
         // of this source_file are in the diagram
         common::model::filesystem_path parent_path_so_far;
         for (const auto &directory : f->path()) {
-            auto dir = std::make_unique<common::model::source_file>();
-            if (!parent_path_so_far.is_empty())
-                dir->set_path(parent_path_so_far);
-            dir->set_name(directory);
+            auto source_file_path = parent_path_so_far | directory;
+            if (parent_path_so_far.is_empty())
+                source_file_path = {directory};
+
+            auto dir = std::make_unique<common::model::source_file>(
+                std::filesystem::path{source_file_path.to_string()});
             dir->set_type(common::model::source_file_t::kDirectory);
 
-            if (!get_element(parent_path_so_far | directory).has_value())
+            assert(!dir->name().empty());
+
+            if (!get_element(source_file_path).has_value()) {
                 add_file(std::move(dir));
+
+                LOG_DBG("Added directory '{}' at path '{}'", directory,
+                    parent_path_so_far.to_string());
+            }
 
             parent_path_so_far.append(directory);
         }
@@ -63,7 +86,7 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     add_element(p, std::move(f));
 }
 
-type_safe::optional_ref<const common::model::source_file> diagram::get_file(
+common::optional_ref<common::model::source_file> diagram::get_file(
     const std::string &name) const
 {
     for (const auto &p : files_) {
@@ -72,7 +95,19 @@ type_safe::optional_ref<const common::model::source_file> diagram::get_file(
         }
     }
 
-    return type_safe::nullopt;
+    return {};
+}
+
+common::optional_ref<common::model::source_file> diagram::get_file(
+    const common::model::diagram_element::id_t id) const
+{
+    for (const auto &p : files_) {
+        if (p.get().id() == id) {
+            return {p};
+        }
+    }
+
+    return {};
 }
 
 std::string diagram::to_alias(const std::string &full_name) const
@@ -94,8 +129,7 @@ std::string diagram::to_alias(const std::string &full_name) const
     return source_file.value().alias();
 }
 
-const std::vector<
-    type_safe::object_ref<const common::model::source_file, false>> &
+const common::reference_vector<common::model::source_file> &
 diagram::files() const
 {
     return files_;
