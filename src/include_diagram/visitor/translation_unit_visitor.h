@@ -81,9 +81,6 @@ public:
 
         // Reference to class diagram config
         const clanguml::config::include_diagram &config_;
-
-        // Keep track of already visited headers and source files
-        std::set<std::string> visited_;
     };
 
     translation_unit_visitor(clang::SourceManager &sm,

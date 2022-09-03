@@ -69,14 +69,8 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     include_path = include_path / file->getName().str();
     include_path = include_path.lexically_normal();
 
-    if (!diagram().should_include(source_file{include_path}) ||
-        visited_.find(include_path.string()) != visited_.end())
-        return;
-
-    LOG_DBG("Processing include file {} in file {}", include_path.string(),
+    LOG_DBG("Processing include directive {} in file {}", include_path.string(),
         current_file.string());
-
-    visited_.emplace(include_path.string());
 
     auto relative_include_path = include_path;
     if (config().relative_to) {
@@ -181,8 +175,6 @@ translation_unit_visitor::include_visitor::process_source_file(
     using common::model::source_file;
     using common::model::source_file_t;
 
-    LOG_DBG("Processing source file {}", file.string());
-
     auto file_path = std::filesystem::path{file};
 
     // Make sure the file_path is absolute with respect to the
@@ -193,14 +185,17 @@ translation_unit_visitor::include_visitor::process_source_file(
 
     file_path = file_path.lexically_normal();
 
-    // Relativize the path with respect to relative_to config option
-    auto relative_file_path = file_path;
-    if (config().relative_to) {
-        const std::filesystem::path relative_to{config().relative_to()};
-        relative_file_path = std::filesystem::relative(file_path, relative_to);
-    }
-
     if (diagram().should_include(source_file{file_path})) {
+        LOG_DBG("Processing source file {}", file.string());
+
+        // Relativize the path with respect to relative_to config option
+        auto relative_file_path = file_path;
+        if (config().relative_to) {
+            const std::filesystem::path relative_to{config().relative_to()};
+            relative_file_path =
+                std::filesystem::relative(file_path, relative_to);
+        }
+
         [[maybe_unused]] const auto relative_file_path_str =
             relative_file_path.string();
 
@@ -230,8 +225,6 @@ translation_unit_visitor::include_visitor::process_source_file(
 
         return source_file.id();
     }
-
-    LOG_DBG("Skipping source file {}", file_path.string());
 
     return {};
 }

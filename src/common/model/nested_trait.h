@@ -79,8 +79,6 @@ public:
 
     template <typename V = T> auto get_element(const Path &path) const
     {
-        LOG_DBG("Getting nested element at path: {}", path.to_string());
-
         if (path.is_empty() || !has_element(path[0])) {
             LOG_DBG("Nested element {} not found in element", path.to_string());
             return optional_ref<V>{};
