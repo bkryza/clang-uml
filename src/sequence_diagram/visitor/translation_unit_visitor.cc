@@ -78,21 +78,23 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
+    // Skip casts, moves and such
     if (expr->isCallToStdMove())
         return true;
 
     if (expr->isImplicitCXXThis())
         return true;
 
-    if (/*clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr) ||*/
-        clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
+    if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
         return true;
 
+    // Skip if current class was excluded in the config
     if (current_class_decl_ &&
         !diagram().should_include(
             current_class_decl_->getQualifiedNameAsString()))
         return true;
 
+    // Skip if current function was excluded in the config
     if (current_function_decl_ &&
         !diagram().should_include(
             current_function_decl_->getQualifiedNameAsString()))
@@ -102,11 +104,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     m.type = message_t::kCall;
 
     if (current_class_decl_ != nullptr) {
+        // Handle call expression within some class method
         assert(current_method_decl_ != nullptr);
         m.from = current_class_decl_->getQualifiedNameAsString();
         m.from_usr = current_method_decl_->getID();
     }
     else {
+        // Handle call expression within free function
         m.from = current_function_decl_->getQualifiedNameAsString() + "()";
         m.from_usr = current_function_decl_->getID();
     }
@@ -118,45 +122,45 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
         operator_call_expr != nullptr) {
-        [[maybe_unused]] const auto *callee_method_decl =
-            operator_call_expr->getCalleeDecl();
+        // TODO: Handle C++ operator calls
     }
     else if (const auto *method_call_expr =
                  clang::dyn_cast_or_null<clang::CXXMemberCallExpr>(expr);
              method_call_expr != nullptr) {
-        const auto *callee_decl = method_call_expr->getMethodDecl()
-            ? method_call_expr->getMethodDecl()->getParent()
-            : nullptr;
 
-        if (!callee_decl ||
-            !diagram().should_include(
-                /*namespace_{*/ callee_decl->getQualifiedNameAsString()))
+        // Get callee declaration as methods parent
+        const auto *method_decl = method_call_expr->getMethodDecl();
+        const auto *callee_decl =
+            method_decl ? method_decl->getParent() : nullptr;
+
+        if (!(callee_decl &&
+                diagram().should_include(
+                    callee_decl->getQualifiedNameAsString())))
             return true;
 
-        m.to = method_call_expr->getMethodDecl()
-                   ->getParent()
-                   ->getQualifiedNameAsString();
-        m.to_usr = method_call_expr->getMethodDecl()->getID();
-
-        m.message = method_call_expr->getMethodDecl()->getNameAsString();
-
+        m.to = callee_decl->getQualifiedNameAsString();
+        m.to_usr = method_decl->getID();
+        m.message = method_decl->getNameAsString();
         m.return_type = method_call_expr->getCallReturnType(current_ast_context)
                             .getAsString();
     }
     else if (const auto *function_call_expr =
                  clang::dyn_cast_or_null<clang::CallExpr>(expr);
              function_call_expr != nullptr) {
-        assert(function_call_expr->getCalleeDecl()->getAsFunction());
 
-        m.to = function_call_expr->getCalleeDecl()
-                   ->getAsFunction()
-                   ->getQualifiedNameAsString() +
-            "()";
-        m.message = function_call_expr->getCalleeDecl()
-                        ->getAsFunction()
-                        ->getNameAsString();
-        m.to_usr =
-            function_call_expr->getCalleeDecl()->getAsFunction()->getID();
+        const auto *callee_decl = function_call_expr->getCalleeDecl();
+
+        if (!callee_decl)
+            return true;
+
+        const auto *callee_function = callee_decl->getAsFunction();
+
+        if (!callee_function)
+            return true;
+
+        m.to = callee_function->getQualifiedNameAsString() + "()";
+        m.message = callee_function->getNameAsString();
+        m.to_usr = callee_function->getID();
         m.return_type =
             function_call_expr->getCallReturnType(current_ast_context)
                 .getAsString();

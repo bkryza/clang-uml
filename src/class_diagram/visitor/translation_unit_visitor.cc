@@ -2008,5 +2008,4 @@ translation_unit_visitor::get_ast_local_id(int64_t local_id)
 
     return local_ast_id_map_.at(local_id);
 }
-
 }
