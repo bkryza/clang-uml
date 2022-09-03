@@ -141,7 +141,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     found_relationships_t relationships;
 
-    if(cls->isCompleteDefinition()) {
+    if (cls->isCompleteDefinition()) {
         process_class_declaration(*cls, relationships);
         add_relationships(cls, relationships);
     }
@@ -159,7 +159,7 @@ void translation_unit_visitor::add_relationships(
             common::to_id(*llvm::cast<clang::NamespaceDecl>(namespace_context));
     }
 
-    if(current_package_id == 0)
+    if (current_package_id == 0)
         // These are relationships to a global namespace, and we don't care
         // about those
         return;

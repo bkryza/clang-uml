@@ -167,7 +167,7 @@ int main(int argc, const char *argv[])
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
-        const auto& valid_translation_units = translation_units_map[name];
+        const auto &valid_translation_units = translation_units_map[name];
 
         if (valid_translation_units.empty()) {
             LOG_ERROR(
