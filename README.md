@@ -2,7 +2,7 @@
 
 [![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/bkryza/clang-uml/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue)](https://github.com/bkryza/clang-uml/releases)
 
 `clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
 and package diagram generator, driven by YAML configuration files. The main idea behind the
