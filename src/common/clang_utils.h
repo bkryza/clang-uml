@@ -22,6 +22,7 @@
 
 #include <clang/AST/RecursiveASTVisitor.h>
 
+#include <deque>
 #include <filesystem>
 #include <string>
 
@@ -30,12 +31,23 @@ class NamespaceDecl;
 }
 
 namespace clanguml::common {
+std::string get_tag_name(const clang::TagDecl &declaration);
 
 template <typename T> std::string get_qualified_name(const T &declaration)
 {
     auto qualified_name = declaration.getQualifiedNameAsString();
     util::replace_all(qualified_name, "(anonymous namespace)", "");
     util::replace_all(qualified_name, "::::", "::");
+
+    if constexpr (std::is_base_of_v<clang::TagDecl, T>) {
+        auto base_name = get_tag_name(declaration);
+        model::namespace_ ns{qualified_name};
+        ns.pop_back();
+        ns = ns | base_name;
+
+        return ns.to_string();
+    }
+
     return qualified_name;
 }
 

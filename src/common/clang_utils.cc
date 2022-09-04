@@ -39,6 +39,35 @@ std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
         common::get_qualified_name(*namespace_declaration)};
 }
 
+std::string get_tag_name(const clang::TagDecl &declaration)
+{
+    auto base_name = declaration.getNameAsString();
+    if (base_name.empty()) {
+        base_name =
+            fmt::format("(anonymous_{})", std::to_string(declaration.getID()));
+    }
+
+    if (declaration.getParent() && declaration.getParent()->isRecord()) {
+        // If the record is nested within another record (e.g. class or struct)
+        // we have to maintain a containment namespace in order to ensure
+        // unique names within the diagram
+        std::deque<std::string> record_parent_names;
+        record_parent_names.push_front(base_name);
+
+        auto *cls_parent{declaration.getParent()};
+        while (cls_parent->isRecord()) {
+            auto parent_name =
+                static_cast<const clang::RecordDecl *>(cls_parent)
+                    ->getNameAsString();
+            record_parent_names.push_front(parent_name);
+            cls_parent = cls_parent->getParent();
+        }
+        return fmt::format("{}", fmt::join(record_parent_names, "##"));
+    }
+
+    return base_name;
+}
+
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
@@ -64,6 +93,14 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
             result =
                 canonical_qualified_template_name + result_template_arguments;
         }
+    }
+
+    // If for any reason clang reports the type as empty string, make sure
+    // it has some default name
+    if (result.empty())
+        result = "(anonymous)";
+    else if (util::contains(result, "unnamed struct")) {
+        result = common::get_tag_name(*type->getAsTagDecl());
     }
 
     // Remove trailing spaces after commas in template arguments

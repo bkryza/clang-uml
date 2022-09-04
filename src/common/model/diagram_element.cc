@@ -28,6 +28,7 @@ std::atomic_uint64_t diagram_element::m_nextId = 1;
 
 diagram_element::diagram_element()
     : id_{0}
+    , nested_{false}
     , complete_{false}
 {
 }
@@ -83,6 +84,10 @@ inja::json diagram_element::context() const
 
     return ctx;
 }
+
+bool diagram_element::is_nested() const { return nested_; }
+
+void diagram_element::nested(bool nested) { nested_ = nested; }
 
 bool diagram_element::complete() const { return complete_; }
 

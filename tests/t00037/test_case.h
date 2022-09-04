@@ -37,7 +37,7 @@ TEST_CASE("t00037", "[test-case][class]")
 
     REQUIRE_THAT(puml, IsClass(_A("ST")));
     REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("ST"), _A("<<anonymous>>")));
+    REQUIRE_THAT(puml, IsClass(_A("ST::\\(anonymous_\\d+\\)")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

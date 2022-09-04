@@ -76,6 +76,9 @@ public:
     void generate_relationships(const package &p, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const override;
+
+private:
+    std::string render_name(std::string name) const;
 };
 
 }

@@ -1,6 +1,11 @@
 namespace clanguml {
 namespace t00004 {
 
+class B {
+public:
+    enum AA { AA_1, AA_2, AA_3 };
+};
+
 class A {
 public:
     void foo() const { }
@@ -15,5 +20,6 @@ public:
 
     void foo2() const { }
 };
+
 }
 }

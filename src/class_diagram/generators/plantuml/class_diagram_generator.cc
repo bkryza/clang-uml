@@ -52,6 +52,13 @@ void generator::generate_link(
     ostr << "]]]";
 }
 
+std::string generator::render_name(std::string name) const
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
 void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 {
     std::string class_type{"class"};
@@ -64,10 +71,9 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     else
         full_name = c.full_name();
 
-    if (full_name.empty())
-        full_name = "<<anonymous>>";
+    assert(!full_name.empty());
 
-    ostr << class_type << " \"" << full_name;
+    ostr << class_type << " \"" << render_name(full_name);
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -82,7 +88,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
              << " \"" << e.name();
     else
         ostr << "enum"
-             << " \"" << e.full_name();
+             << " \"" << render_name(e.full_name());
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -225,7 +231,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             ostr << "{static} ";
 
         ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
-             << uns.relative(m.type());
+             << render_name(uns.relative(m.type()));
 
         if (m_config.generate_links) {
             generate_link(ostr, m);

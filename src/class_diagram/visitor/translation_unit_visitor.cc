@@ -146,7 +146,8 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     std::string qualified_name = common::get_qualified_name(*enm);
     namespace_ ns{qualified_name};
     ns.pop_back();
-    e.set_name(enm->getNameAsString());
+
+    e.set_name(common::get_tag_name(*enm));
     e.set_namespace(ns);
     e.set_id(common::to_id(*enm));
     set_ast_local_id(enm->getID(), e.id());
@@ -358,7 +359,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         forward_declarations_.erase(id);
 
     if (diagram_.should_include(class_model)) {
-        LOG_DBG("Adding class {} with id {}", class_model.full_name(),
+        LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
             class_model.id());
 
         diagram_.add_class(std::move(c_ptr));
@@ -387,7 +388,8 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
     namespace_ ns{qualified_name};
     ns.pop_back();
-    c.set_name(cls->getNameAsString());
+
+    c.set_name(common::get_tag_name(*cls));
     c.set_namespace(ns);
     c.set_id(common::to_id(*cls));
 
@@ -415,6 +417,7 @@ void translation_unit_visitor::process_class_declaration(
 
     if (cls.getParent()->isRecord()) {
         process_record_containment(cls, c);
+        c.nested(true);
     }
 
     c.complete(true);
@@ -1809,10 +1812,6 @@ void translation_unit_visitor::process_field(
         common::to_string(field_type, field_declaration.getASTContext());
     // The field name
     const auto field_name = field_declaration.getNameAsString();
-    // If for any reason clang reports the type as empty string, make sure
-    // it has some default name
-    if (type_name.empty())
-        type_name = "<<anonymous>>";
 
     class_member field{
         detail::access_specifier_to_access_t(field_declaration.getAccess()),

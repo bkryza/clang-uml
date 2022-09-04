@@ -65,6 +65,10 @@ public:
 
     virtual inja::json context() const;
 
+    bool is_nested() const;
+
+    void nested(bool nested);
+
     bool complete() const;
 
     void complete(bool completed);
@@ -73,7 +77,7 @@ private:
     id_t id_;
     std::string name_;
     std::vector<relationship> relationships_;
-
+    bool nested_;
     bool complete_;
 
     static std::atomic_uint64_t m_nextId;
