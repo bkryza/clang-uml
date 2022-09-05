@@ -41,6 +41,9 @@ public:
 
     virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
 
+    bool VisitFunctionTemplateDecl(
+        clang::FunctionTemplateDecl *function_declaration);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::config::sequence_diagram &config() const;
@@ -59,6 +62,8 @@ private:
     clang::CXXRecordDecl *current_class_decl_;
     clang::CXXMethodDecl *current_method_decl_;
     clang::FunctionDecl *current_function_decl_;
+    clang::FunctionTemplateDecl *current_function_template_decl_;
+
 };
 
 }

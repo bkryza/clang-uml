@@ -71,6 +71,17 @@ bool translation_unit_visitor::VisitFunctionDecl(
     return true;
 }
 
+bool translation_unit_visitor::VisitFunctionTemplateDecl(
+    clang::FunctionTemplateDecl *function_declaration)
+{
+    if (!function_declaration->isCXXClassMember())
+        current_class_decl_ = nullptr;
+
+    current_function_template_decl_ = function_declaration;
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_t;
@@ -109,10 +120,19 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         m.from = current_class_decl_->getQualifiedNameAsString();
         m.from_usr = current_method_decl_->getID();
     }
-    else {
+    else if (current_function_decl_ != nullptr) {
         // Handle call expression within free function
         m.from = current_function_decl_->getQualifiedNameAsString() + "()";
         m.from_usr = current_function_decl_->getID();
+    }
+    else {
+        m.from = current_function_template_decl_->getQualifiedNameAsString();
+        std::vector<std::string> params;
+        for (const auto &template_parameter :
+            *current_function_template_decl_->getTemplateParameters()) {
+            params.push_back(template_parameter->getNameAsString());
+        }
+        m.from += fmt::format("<{}>", fmt::join(params, ","));
     }
 
     const auto &current_ast_context = current_class_decl_
@@ -152,6 +172,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
         if (!callee_decl)
             return true;
+
+        if (callee_decl->isTemplateDecl())
+            LOG_DBG("Call to template function!!!!");
 
         const auto *callee_function = callee_decl->getAsFunction();
 
