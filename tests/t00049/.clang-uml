@@ -4,7 +4,7 @@ diagrams:
   t00049_class:
     type: class
     using_namespace: clanguml::t00049
-    template_aliases:
+    type_aliases:
       "std::vector<std::string>": string_vector
       "std::basic_string<char>": thestring
       "std::map<int,int>": intmap

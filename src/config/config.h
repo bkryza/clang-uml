@@ -116,7 +116,7 @@ struct relationship_hint_t {
 
 using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
-using template_aliases_t = std::map<std::string, std::string>;
+using type_aliases_t = std::map<std::string, std::string>;
 
 std::string to_string(const hint_t t);
 
@@ -137,7 +137,7 @@ struct inheritable_diagram_options {
     option<std::filesystem::path> relative_to{"relative_to"};
     option<bool> generate_system_headers{"generate_system_headers", false};
     option<relationship_hints_t> relationship_hints{"relationship_hints"};
-    option<template_aliases_t> template_aliases{"template_aliases"};
+    option<type_aliases_t> type_aliases{"type_aliases"};
 
     void inherit(const inheritable_diagram_options &parent);
 
@@ -171,7 +171,7 @@ struct class_diagram : public diagram {
 
     void initialize_relationship_hints();
 
-    void initialize_template_aliases();
+    void initialize_type_aliases();
 };
 
 struct sequence_diagram : public diagram {

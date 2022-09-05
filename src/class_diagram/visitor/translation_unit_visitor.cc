@@ -1985,8 +1985,8 @@ void translation_unit_visitor::finalize()
 bool translation_unit_visitor::simplify_system_template(
     template_parameter &ct, const std::string &full_name)
 {
-    if (config().template_aliases().count(full_name) > 0) {
-        ct.set_name(config().template_aliases().at(full_name));
+    if (config().type_aliases().count(full_name) > 0) {
+        ct.set_name(config().type_aliases().at(full_name));
         ct.clear_params();
         return true;
     }

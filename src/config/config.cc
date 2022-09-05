@@ -105,7 +105,7 @@ void inheritable_diagram_options::inherit(
 std::string inheritable_diagram_options::simplify_template_type(
     std::string full_name) const
 {
-    const auto &aliases = template_aliases();
+    const auto &aliases = type_aliases();
 
     for (const auto &[pattern, replacement] : aliases) {
         util::replace_all(full_name, pattern, replacement);
@@ -178,35 +178,34 @@ void class_diagram::initialize_relationship_hints()
     }
 }
 
-void class_diagram::initialize_template_aliases()
+void class_diagram::initialize_type_aliases()
 {
-    if (!template_aliases().count("std::basic_string<char>")) {
-        template_aliases().insert({"std::basic_string<char>", "std::string"});
+    if (!type_aliases().count("std::basic_string<char>")) {
+        type_aliases().insert({"std::basic_string<char>", "std::string"});
     }
-    if (!template_aliases().count("std::basic_string<char,std::char_traits<"
-                                  "char>,std::allocator<char>>")) {
-        template_aliases().insert({"std::basic_string<char,std::char_traits<"
-                                   "char>,std::allocator<char>>",
+    if (!type_aliases().count("std::basic_string<char,std::char_traits<"
+                              "char>,std::allocator<char>>")) {
+        type_aliases().insert({"std::basic_string<char,std::char_traits<"
+                               "char>,std::allocator<char>>",
             "std::string"});
     }
-    if (!template_aliases().count("std::basic_string<wchar_t>")) {
-        template_aliases().insert(
-            {"std::basic_string<wchar_t>", "std::wstring"});
+    if (!type_aliases().count("std::basic_string<wchar_t>")) {
+        type_aliases().insert({"std::basic_string<wchar_t>", "std::wstring"});
     }
-    if (!template_aliases().count("std::basic_string<char16_t>")) {
-        template_aliases().insert(
+    if (!type_aliases().count("std::basic_string<char16_t>")) {
+        type_aliases().insert(
             {"std::basic_string<char16_t>", "std::u16string"});
     }
-    if (!template_aliases().count("std::basic_string<char32_t>")) {
-        template_aliases().insert(
+    if (!type_aliases().count("std::basic_string<char32_t>")) {
+        type_aliases().insert(
             {"std::basic_string<char32_t>", "std::u32string"});
     }
-    if (!template_aliases().count("std::integral_constant<bool,true>")) {
-        template_aliases().insert(
+    if (!type_aliases().count("std::integral_constant<bool,true>")) {
+        type_aliases().insert(
             {"std::integral_constant<bool,true>", "std::true_type"});
     }
-    if (!template_aliases().count("std::integral_constant<bool,false>")) {
-        template_aliases().insert(
+    if (!type_aliases().count("std::integral_constant<bool,false>")) {
+        type_aliases().insert(
             {"std::integral_constant<bool,false>", "std::false_type"});
     }
 }
@@ -552,10 +551,10 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.relationship_hints);
-        get_option(node, rhs.template_aliases);
+        get_option(node, rhs.type_aliases);
 
         rhs.initialize_relationship_hints();
-        rhs.initialize_template_aliases();
+        rhs.initialize_type_aliases();
 
         return true;
     }
