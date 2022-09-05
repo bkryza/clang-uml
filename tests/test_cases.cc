@@ -191,9 +191,9 @@ void save_puml(const std::string &path, const std::string &puml)
 
 using namespace clanguml::test::matchers;
 
-//
-// Class diagram tests
-//
+///
+/// Class diagram tests
+///
 #include "t00002/test_case.h"
 #include "t00003/test_case.h"
 #include "t00004/test_case.h"
@@ -241,13 +241,14 @@ using namespace clanguml::test::matchers;
 #include "t00046/test_case.h"
 #include "t00047/test_case.h"
 #include "t00048/test_case.h"
+#include "t00049/test_case.h"
 
 ////
 //// Sequence diagram tests
 ////
 #include "t20001/test_case.h"
 #include "t20002/test_case.h"
-//
+
 ////
 //// Package diagram tests
 ////
@@ -259,14 +260,14 @@ using namespace clanguml::test::matchers;
 #include "t30006/test_case.h"
 #include "t30007/test_case.h"
 #include "t30008/test_case.h"
-//
+
 ////
 //// Include diagram tests
 ////
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
-//
+
 ////
 //// Other tests (e.g. configuration file)
 ////

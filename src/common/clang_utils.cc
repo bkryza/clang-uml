@@ -105,6 +105,7 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 
     // Remove trailing spaces after commas in template arguments
     clanguml::util::replace_all(result, ", ", ",");
+    clanguml::util::replace_all(result, "> >", ">>");
 
     return result;
 }

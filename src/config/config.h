@@ -140,6 +140,8 @@ struct inheritable_diagram_options {
     option<template_aliases_t> template_aliases{"template_aliases"};
 
     void inherit(const inheritable_diagram_options &parent);
+
+    std::string simplify_template_type(std::string full_name) const;
 };
 
 struct diagram : public inheritable_diagram_options {

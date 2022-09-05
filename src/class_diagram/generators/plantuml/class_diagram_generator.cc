@@ -73,7 +73,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     assert(!full_name.empty());
 
-    ostr << class_type << " \"" << render_name(full_name);
+    ostr << class_type << " \""
+         << m_config.simplify_template_type(render_name(full_name));
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -130,7 +131,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (m.is_static())
             ostr << "{static} ";
 
-        std::string type{m.type()};
+        std::string type{
+            uns.relative(m_config.simplify_template_type(m.type()))};
 
         ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
@@ -140,7 +142,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             std::vector<std::string> params;
             std::transform(m.parameters().cbegin(), m.parameters().cend(),
                 std::back_inserter(params), [this](const auto &mp) {
-                    return mp.to_string(m_config.using_namespace());
+                    return m_config.simplify_template_type(
+                        mp.to_string(m_config.using_namespace()));
                 });
             auto args_string = fmt::format("{}", fmt::join(params, ", "));
             if (m_config.generate_method_arguments() ==
@@ -162,7 +165,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (m.is_defaulted())
             ostr << " = default";
 
-        ostr << " : " << uns.relative(type);
+        ostr << " : " << type;
 
         if (m_config.generate_links) {
             generate_link(ostr, m);
@@ -231,7 +234,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             ostr << "{static} ";
 
         ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
-             << render_name(uns.relative(m.type()));
+             << render_name(
+                    uns.relative(m_config.simplify_template_type(m.type())));
 
         if (m_config.generate_links) {
             generate_link(ostr, m);

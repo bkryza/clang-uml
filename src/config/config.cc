@@ -102,6 +102,18 @@ void inheritable_diagram_options::inherit(
     relative_to.override(parent.relative_to);
 }
 
+std::string inheritable_diagram_options::simplify_template_type(
+    std::string full_name) const
+{
+    const auto &aliases = template_aliases();
+
+    for (const auto &[pattern, replacement] : aliases) {
+        util::replace_all(full_name, pattern, replacement);
+    }
+
+    return full_name;
+}
+
 std::vector<std::string> diagram::get_translation_units(
     const std::filesystem::path &root_directory) const
 {

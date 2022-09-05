@@ -141,6 +141,9 @@ test_cases:
     - name: t00048
       title: Test case for unique entity id with multiple translation units
       description:
+    - name: t00049
+      title: Test case configurable type aliases
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

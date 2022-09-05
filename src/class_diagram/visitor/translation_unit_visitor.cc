@@ -701,7 +701,8 @@ void translation_unit_visitor::process_method(
         return;
 
     class_method method{detail::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()), mf.getReturnType().getAsString()};
+        util::trim(mf.getNameAsString()),
+        common::to_string(mf.getReturnType(), mf.getASTContext())};
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -865,7 +866,7 @@ void translation_unit_visitor::process_function_parameter(
     if (parameter.skip())
         return;
 
-    parameter.set_type(p.getType().getAsString());
+    parameter.set_type(common::to_string(p.getType(), p.getASTContext()));
 
     if (p.hasDefaultArg()) {
         const auto *default_arg = p.getDefaultArg();

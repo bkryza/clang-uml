@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00049_class:
+    type: class
+    using_namespace: clanguml::t00049
+    template_aliases:
+      "std::vector<std::string>": string_vector
+      "std::basic_string<char>": thestring
+      "std::map<int,int>": intmap
+    glob:
+      - ../../tests/t00049/t00049.cc
+    include:
+      namespaces:
+        - clanguml::t00049
