@@ -474,6 +474,10 @@ This project relies on the following great tools:
   * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
   * [inja](https://github.com/pantor/inja) - a template engine for modern C++
 
+## Contributing
+
+If you would like to contribute to the project, please checkout [contributing guidelines](./CONTRIBUTING.md).
+
 ## LICENSE
 
     Copyright 2021-present Bartek Kryza <bkryza@gmail.com>
