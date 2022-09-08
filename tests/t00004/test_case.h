@@ -52,6 +52,12 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo2")));
 
+    REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::AA")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::AAA")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::CC")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::CCC")));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }
