@@ -51,6 +51,8 @@ template <typename T> std::string get_qualified_name(const T &declaration)
     return qualified_name;
 }
 
+model::namespace_ get_tag_namespace(const clang::TagDecl &declaration);
+
 std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
     const clang::DeclContext *decl);
 

@@ -95,6 +95,9 @@ private:
         const clang::TemplateArgument &arg, size_t argument_index,
         bool in_parameter_pack = false);
 
+    void process_template_record_containment(const clang::TagDecl &record,
+        clanguml::common::model::element &c) const;
+
     void process_record_containment(const clang::TagDecl &record,
         clanguml::common::model::element &c) const;
 
@@ -222,7 +225,7 @@ private:
 
     /// Retrieve the global clang-uml entity id based on the clang local id
     std::optional<common::model::diagram_element::id_t> get_ast_local_id(
-        int64_t local_id);
+        int64_t local_id) const;
 
     clang::SourceManager &source_manager_;
 
@@ -237,5 +240,10 @@ private:
         forward_declarations_;
 
     std::map<int64_t, common::model::diagram_element::id_t> local_ast_id_map_;
+
+    std::map<int64_t /* local anonymous struct id */,
+        std::tuple<std::string /* field name */, common::model::relationship_t,
+            common::model::access_t>>
+        anonymous_struct_relationships_;
 };
 }

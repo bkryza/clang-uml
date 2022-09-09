@@ -39,6 +39,34 @@ std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
         common::get_qualified_name(*namespace_declaration)};
 }
 
+model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
+{
+    model::namespace_ ns;
+
+    auto *parent{declaration.getParent()};
+
+    // First walk up to the nearest namespace, e.g. from nested class or enum
+    while (parent && !parent->isNamespace()) {
+        parent = parent->getParent();
+    }
+
+    // Now build up the namespace
+    std::deque<std::string> namespace_tokens;
+    while (parent && parent->isNamespace()) {
+        const auto *ns_decl = static_cast<const clang::NamespaceDecl *>(parent);
+        if (!ns_decl->isInline() && !ns_decl->isAnonymousNamespace())
+            namespace_tokens.push_front(ns_decl->getNameAsString());
+
+        parent = parent->getParent();
+    }
+
+    for (const auto &ns_token : namespace_tokens) {
+        ns |= ns_token;
+    }
+
+    return ns;
+}
+
 std::string get_tag_name(const clang::TagDecl &declaration)
 {
     auto base_name = declaration.getNameAsString();

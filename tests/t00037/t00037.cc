@@ -1,7 +1,8 @@
 namespace clanguml {
 namespace t00037 {
 
-struct ST {
+class ST {
+public:
     struct {
         double t;
         double x;
@@ -9,22 +10,20 @@ struct ST {
         double z;
     } dimensions;
 
+private:
     struct {
-        double c;
-        double h;
+        double c{1.0};
+        double h{1.0};
     } units;
 };
 
 struct A {
     A()
     {
-        st.dimensions.t = -1;
-        st.dimensions.x = 1;
-        st.dimensions.y = 1;
-        st.dimensions.z = 1;
-
-        st.units.c = 1;
-        st.units.h = 1;
+        st.dimensions.t = -1.0;
+        st.dimensions.x = 1.0;
+        st.dimensions.y = 1.0;
+        st.dimensions.z = 1.0;
     }
 
     ST st;

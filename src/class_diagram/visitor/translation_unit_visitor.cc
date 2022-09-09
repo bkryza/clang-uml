@@ -144,12 +144,50 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     auto &e = *e_ptr;
 
     std::string qualified_name = common::get_qualified_name(*enm);
-    namespace_ ns{qualified_name};
-    ns.pop_back();
 
-    e.set_name(common::get_tag_name(*enm));
-    e.set_namespace(ns);
-    e.set_id(common::to_id(*enm));
+    auto ns{common::get_tag_namespace(*enm)};
+
+    const auto *parent = enm->getParent();
+
+    if (parent && parent->isRecord()) {
+        // Here we have 2 options, either:
+        //  - the parent is a regular C++ class/struct
+        //  - the parent is a class template declaration/specialization
+        std::optional<common::model::diagram_element::id_t> id_opt;
+        int64_t local_id =
+            static_cast<const clang::RecordDecl *>(parent)->getID();
+
+        id_opt = get_ast_local_id(local_id);
+
+        // If not, check if the parent template declaration is in the model
+        if (!id_opt) {
+            local_id = static_cast<const clang::RecordDecl *>(parent)
+                           ->getDescribedTemplate()
+                           ->getID();
+            if (static_cast<const clang::RecordDecl *>(parent)
+                    ->getDescribedTemplate())
+                id_opt = get_ast_local_id(local_id);
+        }
+
+        assert(id_opt);
+
+        auto parent_class = diagram_.get_class(*id_opt);
+
+        assert(parent_class);
+
+        e.set_namespace(ns);
+        e.set_name(parent_class.value().full_name(true) + "##" +
+            enm->getNameAsString());
+        e.set_id(common::to_id(e.full_name(false)));
+        e.add_relationship({relationship_t::kContainment, *id_opt});
+        e.nested(true);
+    }
+    else {
+        e.set_name(common::get_tag_name(*enm));
+        e.set_namespace(ns);
+        e.set_id(common::to_id(e.full_name(false)));
+    }
+
     set_ast_local_id(enm->getID(), e.id());
 
     process_comment(*enm, e);
@@ -162,10 +200,6 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     for (const auto &ev : enm->enumerators()) {
         e.constants().push_back(ev->getNameAsString());
-    }
-
-    if (enm->getParent()->isRecord()) {
-        process_record_containment(*enm, e);
     }
 
     auto namespace_declaration = common::get_enclosing_namespace(enm);
@@ -324,15 +358,13 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
 
-    const auto cls_id = common::to_id(*cls);
-
-    set_ast_local_id(cls->getID(), cls_id);
-
-    // Templated records are handled by VisitClassTemplateDecl()
-    if (cls->isTemplated() || cls->isTemplateDecl() ||
-        (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(cls) !=
-            nullptr))
-        return true;
+    if (!cls->getParent()->isRecord())
+        // Templated records are handled by VisitClassTemplateDecl()
+        // unless they are nested in template classes
+        if (cls->isTemplated() || cls->isTemplateDecl() ||
+            (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(
+                 cls) != nullptr))
+            return true;
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -342,6 +374,10 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     if (!c_ptr)
         return true;
+
+    const auto cls_id = c_ptr->id();
+
+    set_ast_local_id(cls->getID(), cls_id);
 
     auto &class_model = diagram().get_class(cls_id).has_value()
         ? *diagram().get_class(cls_id).get()
@@ -381,17 +417,82 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     auto &c = *c_ptr;
 
     // TODO: refactor to method get_qualified_name()
-    auto qualified_name = common::get_qualified_name(*cls);
+    auto qualified_name =
+        cls->getQualifiedNameAsString(); //  common::get_qualified_name(*cls);
 
     if (!diagram().should_include(qualified_name))
         return {};
 
-    namespace_ ns{qualified_name};
-    ns.pop_back();
+    auto ns = common::get_tag_namespace(*cls);
 
-    c.set_name(common::get_tag_name(*cls));
-    c.set_namespace(ns);
-    c.set_id(common::to_id(*cls));
+    const auto *parent = cls->getParent();
+
+    if (parent && parent->isRecord()) {
+        // Here we have 2 options, either:
+        //  - the parent is a regular C++ class/struct
+        //  - the parent is a class template declaration/specialization
+        std::optional<common::model::diagram_element::id_t> id_opt;
+        int64_t local_id =
+            static_cast<const clang::RecordDecl *>(parent)->getID();
+
+        // First check if the parent has been added to the diagram as regular
+        // class
+        id_opt = get_ast_local_id(local_id);
+
+        // If not, check if the parent template declaration is in the model
+        if (!id_opt) {
+            local_id = static_cast<const clang::RecordDecl *>(parent)
+                           ->getDescribedTemplate()
+                           ->getID();
+            if (static_cast<const clang::RecordDecl *>(parent)
+                    ->getDescribedTemplate())
+                id_opt = get_ast_local_id(local_id);
+        }
+
+        assert(id_opt);
+
+        auto parent_class = diagram_.get_class(*id_opt);
+
+        assert(parent_class);
+
+        c.set_namespace(ns);
+        if (cls->getNameAsString().empty()) {
+            // Nested structs can be anonymous
+            if (anonymous_struct_relationships_.count(cls->getID()) > 0) {
+                const auto &[label, hint, access] =
+                    anonymous_struct_relationships_[cls->getID()];
+
+                c.set_name(parent_class.value().full_name(true) + "##" +
+                    fmt::format("({})", label));
+
+                parent_class.value().add_relationship(
+                    {hint, common::to_id(c.full_name(false)), access, label});
+            }
+            else
+                c.set_name(parent_class.value().full_name(true) + "##" +
+                    fmt::format(
+                        "(anonymous_{})", std::to_string(cls->getID())));
+        }
+        else {
+            c.set_name(parent_class.value().full_name(true) + "##" +
+                cls->getNameAsString());
+        }
+
+        c.set_id(common::to_id(c.full_name(false)));
+
+        if (!cls->getNameAsString().empty()) {
+            // Don't add anonymous structs as contained in the class
+            // as they are already added as aggregations
+            c.add_relationship({relationship_t::kContainment, *id_opt});
+        }
+
+        c.nested(true);
+    }
+    else {
+        c.set_name(common::get_tag_name(*cls));
+        c.set_namespace(ns);
+        c.set_id(common::to_id(c.full_name(false)));
+    }
 
     c.is_struct(cls->isStruct());
 
@@ -414,11 +515,6 @@ void translation_unit_visitor::process_class_declaration(
 
     // Process class bases
     process_class_bases(&cls, c);
-
-    if (cls.getParent()->isRecord()) {
-        process_record_containment(cls, c);
-        c.nested(true);
-    }
 
     c.complete(true);
 }
@@ -482,6 +578,28 @@ bool translation_unit_visitor::process_template_parameters(
     return false;
 }
 
+void translation_unit_visitor::process_template_record_containment(
+    const clang::TagDecl &record,
+    clanguml::common::model::element &element) const
+{
+    assert(record.getParent()->isRecord());
+
+    const auto *parent = record.getParent(); //->getOuterLexicalRecordContext();
+
+    if (parent &&
+        static_cast<const clang::RecordDecl *>(parent)
+            ->getDescribedTemplate()) {
+        auto id_opt =
+            get_ast_local_id(static_cast<const clang::RecordDecl *>(parent)
+                                 ->getDescribedTemplate()
+                                 ->getID());
+
+        if (id_opt) {
+            element.add_relationship({relationship_t::kContainment, *id_opt});
+        }
+    }
+}
+
 void translation_unit_visitor::process_record_containment(
     const clang::TagDecl &record,
     clanguml::common::model::element &element) const
@@ -489,9 +607,8 @@ void translation_unit_visitor::process_record_containment(
     assert(record.getParent()->isRecord());
 
     const auto *parent = record.getParent()->getOuterLexicalRecordContext();
-    auto parent_name =
-        static_cast<const clang::RecordDecl *>(record.getParent())
-            ->getQualifiedNameAsString();
+    auto parent_name = static_cast<const clang::RecordDecl *>(parent)
+                           ->getQualifiedNameAsString();
 
     auto namespace_declaration = common::get_enclosing_namespace(parent);
     if (namespace_declaration.has_value()) {
@@ -889,8 +1006,8 @@ void translation_unit_visitor::process_function_parameter(
                 (relationship_type != relationship_t::kNone)) {
                 relationship r{relationship_t::kDependency, type_element_id};
 
-                LOG_DBG(
-                    "Adding function parameter relationship from {} to {}: {}",
+                LOG_DBG("Adding function parameter relationship from {} to "
+                        "{}: {}",
                     c.full_name(), clanguml::common::model::to_string(r.type()),
                     r.label());
 
@@ -898,8 +1015,9 @@ void translation_unit_visitor::process_function_parameter(
             }
         }
 
-        // Also consider the container itself if it is a template instantiation
-        // it's arguments could count as reference to relevant types
+        // Also consider the container itself if it is a template
+        // instantiation it's arguments could count as reference to relevant
+        // types
         auto underlying_type = p.getType();
         if (underlying_type->isReferenceType())
             underlying_type = underlying_type.getNonReferenceType();
@@ -1103,9 +1221,9 @@ void translation_unit_visitor::process_template_specialization_argument(
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
 
-            // clang does not provide declared template parameter/argument names
-            // in template specializations - so we have to extract them from
-            // raw source code...
+            // clang does not provide declared template parameter/argument
+            // names in template specializations - so we have to extract
+            // them from raw source code...
             if (type_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
                     cls->getSourceRange(), source_manager_);
@@ -1948,8 +2066,20 @@ void translation_unit_visitor::process_field(
     if (!field.skip_relationship()) {
         // Find relationship for the type if the type has not been added
         // as aggregation
-        if (!template_instantiation_added_as_aggregation)
-            find_relationships(field_type, relationships, relationship_hint);
+        if (!template_instantiation_added_as_aggregation) {
+            if (field_type->getAsCXXRecordDecl() &&
+                field_type->getAsCXXRecordDecl()->getNameAsString().empty()) {
+                // Relationships to fields whose type is an anonymous nested
+                // struct have to be handled separately here
+                anonymous_struct_relationships_[field_type->getAsCXXRecordDecl()
+                                                    ->getID()] =
+                    std::make_tuple(
+                        field.name(), relationship_hint, field.access());
+            }
+            else
+                find_relationships(
+                    field_type, relationships, relationship_hint);
+        }
 
         add_relationships(c, field, relationships);
     }
@@ -1997,11 +2127,13 @@ bool translation_unit_visitor::simplify_system_template(
 void translation_unit_visitor::set_ast_local_id(
     int64_t local_id, common::model::diagram_element::id_t global_id)
 {
+    LOG_DBG("== Setting local element mapping {} --> {}", local_id, global_id);
+
     local_ast_id_map_[local_id] = global_id;
 }
 
 std::optional<common::model::diagram_element::id_t>
-translation_unit_visitor::get_ast_local_id(int64_t local_id)
+translation_unit_visitor::get_ast_local_id(int64_t local_id) const
 {
     if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
         return {};

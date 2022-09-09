@@ -14,7 +14,8 @@ public:
     public:
         enum class Lights { Green, Yellow, Red };
 
-        class AAA { };
+        class AAA {
+        };
     };
 
     void foo2() const { }
@@ -25,7 +26,8 @@ public:
     T t;
 
     class AA {
-        class AAA { };
+        class AAA {
+        };
 
         enum class CCC { CCC_1, CCC_2 };
     };

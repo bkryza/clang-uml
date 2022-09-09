@@ -154,9 +154,6 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     if (util::contains(base_name, "::"))
         throw std::runtime_error("Name cannot contain namespace: " + base_name);
 
-    if (util::contains(base_name, "<"))
-        throw std::runtime_error("Name cannot contain <: " + base_name);
-
     if (util::contains(base_name, "*"))
         throw std::runtime_error("Name cannot contain *: " + base_name);
 
