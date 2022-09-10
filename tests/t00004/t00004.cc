@@ -35,5 +35,15 @@ public:
     enum class CC { CC_1, CC_2 };
 };
 
+namespace detail {
+class D {
+public:
+    enum class AA { AA_1, AA_2, AA_3 };
+
+    class DD {
+    };
+};
+}
+
 }
 }

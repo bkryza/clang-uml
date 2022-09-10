@@ -70,7 +70,7 @@ public:
 
     std::string full_name(bool relative = true) const override;
 
-    std::string full_name_no_ns() const;
+    std::string full_name_no_ns() const override;
 
     bool is_abstract() const;
 

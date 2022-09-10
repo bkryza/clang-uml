@@ -176,7 +176,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         assert(parent_class);
 
         e.set_namespace(ns);
-        e.set_name(parent_class.value().full_name(true) + "##" +
+        e.set_name(parent_class.value().full_name_no_ns() + "##" +
             enm->getNameAsString());
         e.set_id(common::to_id(e.full_name(false)));
         e.add_relationship({relationship_t::kContainment, *id_opt});
@@ -462,19 +462,19 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
                 const auto &[label, hint, access] =
                     anonymous_struct_relationships_[cls->getID()];
 
-                c.set_name(parent_class.value().full_name(true) + "##" +
+                c.set_name(parent_class.value().full_name_no_ns() + "##" +
                     fmt::format("({})", label));
 
                 parent_class.value().add_relationship(
                     {hint, common::to_id(c.full_name(false)), access, label});
             }
             else
-                c.set_name(parent_class.value().full_name(true) + "##" +
+                c.set_name(parent_class.value().full_name_no_ns() + "##" +
                     fmt::format(
                         "(anonymous_{})", std::to_string(cls->getID())));
         }
         else {
-            c.set_name(parent_class.value().full_name(true) + "##" +
+            c.set_name(parent_class.value().full_name_no_ns() + "##" +
                 cls->getNameAsString());
         }
 

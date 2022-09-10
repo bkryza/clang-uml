@@ -58,6 +58,10 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::CC")));
     REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::CCC")));
 
+    REQUIRE_THAT(puml, IsClass(_A("detail::D")));
+    REQUIRE_THAT(puml, IsClass(_A("detail::D::DD")));
+    REQUIRE_THAT(puml, IsEnum(_A("detail::D::AA")));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }
