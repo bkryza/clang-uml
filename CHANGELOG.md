@@ -1,6 +1,6 @@
 # CHANGELOG
 
-###
+### 0.2.1
   * Fixed handling of classes nested in templates and anonymous nested structs
   * Fixed handling of configurable type aliases
 
