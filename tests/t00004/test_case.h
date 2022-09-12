@@ -58,6 +58,11 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::CC")));
     REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::CCC")));
 
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::B<V>")));
+    REQUIRE_THAT(puml, IsAggregation(_A("C<T>"), _A("C<T>::B<int>"), "+b_int"));
+    REQUIRE_THAT(puml, !IsInnerClass(_A("C<T>"), _A("C<T>::B")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("C<T>::B<V>"), _A("C<T>::B<int>")));
+
     REQUIRE_THAT(puml, IsClass(_A("detail::D")));
     REQUIRE_THAT(puml, IsClass(_A("detail::D::DD")));
     REQUIRE_THAT(puml, IsEnum(_A("detail::D::AA")));

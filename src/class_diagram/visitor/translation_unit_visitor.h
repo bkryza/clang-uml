@@ -215,6 +215,8 @@ private:
 
     void add_incomplete_forward_declarations();
 
+    void resolve_local_to_global_ids();
+
     bool simplify_system_template(
         model::template_parameter &ct, const std::string &full_name);
 

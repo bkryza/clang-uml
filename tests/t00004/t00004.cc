@@ -32,6 +32,12 @@ public:
         enum class CCC { CCC_1, CCC_2 };
     };
 
+    template <typename V> class B {
+        V b;
+    };
+
+    B<int> b_int;
+
     enum class CC { CC_1, CC_2 };
 };
 

@@ -161,12 +161,14 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt) {
-            local_id = static_cast<const clang::RecordDecl *>(parent)
-                           ->getDescribedTemplate()
-                           ->getID();
             if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate())
+                    ->getDescribedTemplate()) {
+                local_id = static_cast<const clang::RecordDecl *>(parent)
+                               ->getDescribedTemplate()
+                               ->getID();
+
                 id_opt = get_ast_local_id(local_id);
+            }
         }
 
         assert(id_opt);
@@ -358,13 +360,24 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager_));
 
-    if (!cls->getParent()->isRecord())
-        // Templated records are handled by VisitClassTemplateDecl()
-        // unless they are nested in template classes
-        if (cls->isTemplated() || cls->isTemplateDecl() ||
-            (clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(
-                 cls) != nullptr))
+    LOG_DBG(
+        "== getQualifiedNameAsString() = {}", cls->getQualifiedNameAsString());
+    LOG_DBG("== getID() = {}", cls->getID());
+    LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
+    LOG_DBG("== isTemplated() = {}", cls->isTemplated());
+    LOG_DBG("== getParent()->isRecord()() = {}", cls->getParent()->isRecord());
+    if (cls->getParent()->isRecord()) {
+        LOG_DBG("== getParent()->getQualifiedNameAsString() = {}",
+            clang::dyn_cast<clang::RecordDecl>(cls->getParent())
+                ->getQualifiedNameAsString());
+    }
+
+    if (cls->isTemplated() && cls->getDescribedTemplate()) {
+        // If the described templated of this class is already in the model
+        // skip it:
+        if (get_ast_local_id(cls->getDescribedTemplate()->getID()))
             return true;
+    }
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -1331,7 +1344,8 @@ void translation_unit_visitor::process_template_specialization_argument(
         }
     }
     else {
-        LOG_ERROR("Unsupported template argument kind {}", arg.getKind());
+        LOG_ERROR("Unsupported template argument kind {} [{}]", arg.getKind(),
+            cls->getLocation().printToString(source_manager_));
     }
 }
 
@@ -1462,8 +1476,8 @@ std::unique_ptr<class_> translation_unit_visitor::
             {relationship_t::kInstantiation, templated_decl_local_id});
     }
     else if (diagram().should_include(qualified_name)) {
-        LOG_DBG("Skipping instantiation relationship from {}",
-            template_instantiation_ptr->full_name(false));
+        LOG_DBG("Skipping instantiation relationship from {} to {}",
+            template_instantiation_ptr->full_name(false), templated_decl_id);
     }
 
     return template_instantiation_ptr;
@@ -1502,15 +1516,28 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         template_type.desugar(),
         template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
 
-    const auto *template_decl{
-        template_type.getTemplateName().getAsTemplateDecl()};
+    auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
 
     auto qualified_name = template_decl->getQualifiedNameAsString();
 
-    namespace_ ns{qualified_name};
-    ns.pop_back();
-    template_instantiation.set_name(template_decl->getNameAsString());
-    template_instantiation.set_namespace(ns);
+    auto *class_template_decl{
+        clang::dyn_cast<clang::ClassTemplateDecl>(template_decl)};
+
+    if (parent.has_value() && class_template_decl &&
+        class_template_decl->getTemplatedDecl() &&
+        class_template_decl->getTemplatedDecl()->getParent() &&
+        class_template_decl->getTemplatedDecl()->getParent()->isRecord()) {
+
+        template_instantiation.set_name(parent.value()->full_name_no_ns() +
+            "##" + template_decl->getNameAsString());
+        template_instantiation.set_namespace(parent.value()->get_namespace());
+    }
+    else {
+        namespace_ ns{qualified_name};
+        ns.pop_back();
+        template_instantiation.set_name(template_decl->getNameAsString());
+        template_instantiation.set_namespace(ns);
+    }
 
     // TODO: Refactor handling of base parameters to a separate method
 
@@ -1618,9 +1645,13 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         template_instantiation.add_relationship(
             {relationship_t::kInstantiation, templated_decl_local_id});
     }
-    else if (diagram().should_include(qualified_name)) {
-        LOG_DBG("Skipping instantiation relationship from {}",
-            template_instantiation_ptr->full_name(false));
+    else {
+        LOG_DBG("== Cannot determine global id for specialization template {} "
+                "- delaying until the translation unit is complete ",
+            templated_decl_id);
+
+        template_instantiation.add_relationship(
+            {relationship_t::kInstantiation, templated_decl_id});
     }
 
     template_instantiation.set_id(
@@ -1994,10 +2025,6 @@ void translation_unit_visitor::process_field(
     // Process the type which is template instantiation of some sort
     if (template_field_type != nullptr &&
         !field_type_is_template_template_parameter) {
-        const auto template_field_decl_name =
-            template_field_type->getTemplateName()
-                .getAsTemplateDecl()
-                ->getQualifiedNameAsString();
 
         // Build the template instantiation for the field type
         auto template_specialization_ptr = build_template_instantiation(
@@ -2107,9 +2134,29 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
     forward_declarations_.clear();
 }
 
+void translation_unit_visitor::resolve_local_to_global_ids()
+{
+    // TODO: Refactor to a map with relationships attached to references
+    //       to elements
+    for (auto &cls : diagram().classes()) {
+        for (auto &rel : cls.get().relationships()) {
+            if (rel.type() == relationship_t::kInstantiation) {
+                const auto maybe_local_id = rel.destination();
+                if (get_ast_local_id(maybe_local_id)) {
+                    LOG_DBG("= Resolved instantiation destination from local "
+                            "id {} to global id {}",
+                        maybe_local_id, *get_ast_local_id(maybe_local_id));
+                    rel.set_destination(*get_ast_local_id(maybe_local_id));
+                }
+            }
+        }
+    }
+}
+
 void translation_unit_visitor::finalize()
 {
     add_incomplete_forward_declarations();
+    resolve_local_to_global_ids();
 }
 
 bool translation_unit_visitor::simplify_system_template(
