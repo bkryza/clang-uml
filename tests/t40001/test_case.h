@@ -41,7 +41,7 @@ TEST_CASE("t40001", "[test-case][package]")
     REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
 
     REQUIRE_THAT(puml, IsFile("string"));
-    REQUIRE_THAT(puml, IsFile("clang/Lex/Lexer.h"));
+    REQUIRE_THAT(puml, IsFile("yaml-cpp/yaml.h"));
 
     REQUIRE_THAT(puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
     REQUIRE_THAT(puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
