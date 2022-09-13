@@ -53,15 +53,15 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo2")));
 
     REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::AA")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::AAA")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::CC")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>::AA"), _A("C<T>::AA::CCC")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::AA")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C::AA"), _A("C::AA::AAA")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::CC")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C::AA"), _A("C::AA::CCC")));
 
-    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C<T>::B<V>")));
-    REQUIRE_THAT(puml, IsAggregation(_A("C<T>"), _A("C<T>::B<int>"), "+b_int"));
-    REQUIRE_THAT(puml, !IsInnerClass(_A("C<T>"), _A("C<T>::B")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("C<T>::B<V>"), _A("C<T>::B<int>")));
+    REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::B<V>")));
+    REQUIRE_THAT(puml, IsAggregation(_A("C<T>"), _A("C::B<int>"), "+b_int"));
+    REQUIRE_THAT(puml, !IsInnerClass(_A("C<T>"), _A("C::B")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("C::B<V>"), _A("C::B<int>")));
 
     REQUIRE_THAT(puml, IsClass(_A("detail::D")));
     REQUIRE_THAT(puml, IsClass(_A("detail::D::DD")));

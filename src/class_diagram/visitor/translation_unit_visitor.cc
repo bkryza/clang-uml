@@ -178,8 +178,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         assert(parent_class);
 
         e.set_namespace(ns);
-        e.set_name(parent_class.value().full_name_no_ns() + "##" +
-            enm->getNameAsString());
+        e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
         e.set_id(common::to_id(e.full_name(false)));
         e.add_relationship({relationship_t::kContainment, *id_opt});
         e.nested(true);
@@ -251,9 +250,10 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
                     .value()});
 
     if (diagram_.should_include(template_specialization)) {
-        LOG_DBG("Adding class template specialization {} with id {}",
-            template_specialization.full_name(false),
-            template_specialization.id());
+        const auto name = template_specialization.full_name(false);
+        const auto id = template_specialization.id();
+
+        LOG_DBG("Adding class template specialization {} with id {}", name, id);
 
         diagram_.add_class(std::move(template_specialization_ptr));
     }
@@ -289,9 +289,10 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         return true;
 
     if (diagram_.should_include(*template_specialization_ptr)) {
-        LOG_DBG("Adding class {} with id {}",
-            template_specialization_ptr->full_name(),
-            template_specialization_ptr->id());
+        const auto name = template_specialization_ptr->full_name();
+        const auto id = template_specialization_ptr->id();
+
+        LOG_DBG("Adding class {} with id {}", name, id);
 
         diagram_.add_class(std::move(template_specialization_ptr));
     }
@@ -339,7 +340,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     }
 
     if (diagram_.should_include(*c_ptr)) {
-        LOG_DBG("Adding class template {} with id {}", c_ptr->full_name(), id);
+        const auto name = c_ptr->full_name();
+        LOG_DBG("Adding class template {} with id {}", name, id);
 
         diagram_.add_class(std::move(c_ptr));
     }
@@ -475,20 +477,20 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
                 const auto &[label, hint, access] =
                     anonymous_struct_relationships_[cls->getID()];
 
-                c.set_name(parent_class.value().full_name_no_ns() + "##" +
+                c.set_name(parent_class.value().name() + "##" +
                     fmt::format("({})", label));
 
                 parent_class.value().add_relationship(
                     {hint, common::to_id(c.full_name(false)), access, label});
             }
             else
-                c.set_name(parent_class.value().full_name_no_ns() + "##" +
+                c.set_name(parent_class.value().name() + "##" +
                     fmt::format(
                         "(anonymous_{})", std::to_string(cls->getID())));
         }
         else {
-            c.set_name(parent_class.value().full_name_no_ns() + "##" +
-                cls->getNameAsString());
+            c.set_name(
+                parent_class.value().name() + "##" + cls->getNameAsString());
         }
 
         c.set_id(common::to_id(c.full_name(false)));
@@ -1518,22 +1520,34 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
 
-    auto qualified_name = template_decl->getQualifiedNameAsString();
+    auto template_decl_qualified_name =
+        template_decl->getQualifiedNameAsString();
 
     auto *class_template_decl{
         clang::dyn_cast<clang::ClassTemplateDecl>(template_decl)};
 
-    if (parent.has_value() && class_template_decl &&
-        class_template_decl->getTemplatedDecl() &&
+    if (class_template_decl && class_template_decl->getTemplatedDecl() &&
         class_template_decl->getTemplatedDecl()->getParent() &&
         class_template_decl->getTemplatedDecl()->getParent()->isRecord()) {
 
-        template_instantiation.set_name(parent.value()->full_name_no_ns() +
-            "##" + template_decl->getNameAsString());
-        template_instantiation.set_namespace(parent.value()->get_namespace());
+        namespace_ ns{
+            common::get_tag_namespace(*class_template_decl->getTemplatedDecl()
+                                           ->getParent()
+                                           ->getOuterLexicalRecordContext())};
+
+        std::string ns_str = ns.to_string();
+        std::string name = template_decl->getQualifiedNameAsString();
+        if (!ns_str.empty()) {
+            name = name.substr(ns_str.size() + 2);
+        }
+
+        util::replace_all(name, "::", "##");
+        template_instantiation.set_name(name);
+
+        template_instantiation.set_namespace(ns);
     }
     else {
-        namespace_ ns{qualified_name};
+        namespace_ ns{template_decl_qualified_name};
         ns.pop_back();
         template_instantiation.set_name(template_decl->getNameAsString());
         template_instantiation.set_namespace(ns);

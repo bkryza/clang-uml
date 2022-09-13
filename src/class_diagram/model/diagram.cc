@@ -164,19 +164,26 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     auto &cc = *c;
     auto id = cc.id();
 
-    if (!has_class(cc)) {
-        if (add_element(ns, std::move(c)))
-            classes_.push_back(std::ref(cc));
+    try {
+        if (!has_class(cc)) {
+            if (add_element(ns, std::move(c)))
+                classes_.push_back(std::ref(cc));
 
-        const auto &el = get_element<class_>(name_and_ns).value();
+            const auto &el = get_element<class_>(name_and_ns).value();
 
-        if ((el.name() != name) || !(el.get_relative_namespace() == ns))
-            throw std::runtime_error(
-                "Invalid element stored in the diagram tree");
+            if ((el.name() != name) || !(el.get_relative_namespace() == ns))
+                throw std::runtime_error(
+                    "Invalid element stored in the diagram tree");
 
-        LOG_DBG("Added class {} ({} - [{}])", base_name, full_name, id);
+            LOG_DBG("Added class {} ({} - [{}])", base_name, full_name, id);
 
-        return true;
+            return true;
+        }
+    }
+    catch (const std::runtime_error &e) {
+        LOG_WARN("Cannot add template specialization {} with id {} due to: {}",
+            name, id, e.what());
+        return false;
     }
 
     LOG_DBG(
