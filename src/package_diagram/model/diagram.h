@@ -59,6 +59,8 @@ public:
     std::string to_alias(
         const clanguml::common::model::diagram_element::id_t) const;
 
+    inja::json context() const override;
+
 private:
     common::reference_vector<clanguml::common::model::package> packages_;
 };

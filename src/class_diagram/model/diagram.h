@@ -87,6 +87,8 @@ public:
     bool has_element(
         const clanguml::common::model::diagram_element::id_t id) const override;
 
+    inja::json context() const override;
+
 private:
     common::reference_vector<class_> classes_;
 

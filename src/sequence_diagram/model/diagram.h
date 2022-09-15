@@ -45,6 +45,8 @@ public:
 
     std::string to_alias(const std::string &full_name) const;
 
+    inja::json context() const override;
+
     bool started{false};
 
     std::map<int64_t, activity> sequences;

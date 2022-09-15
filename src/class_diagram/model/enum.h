@@ -34,6 +34,8 @@ public:
     enum_ &operator=(const enum_ &) = delete;
     enum_ &operator=(enum_ &&) = delete;
 
+    std::string type_name() const override { return "enum"; }
+
     // TODO: Do we need this?
     friend bool operator==(const enum_ &l, const enum_ &r);
 

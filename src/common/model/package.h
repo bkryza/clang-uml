@@ -42,6 +42,8 @@ public:
     package &operator=(const package &) = delete;
     package &operator=(package &&) = delete;
 
+    std::string type_name() const override { return "package"; }
+
     std::string full_name(bool relative) const override;
 
     bool is_deprecated() const;

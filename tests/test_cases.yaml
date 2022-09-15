@@ -144,6 +144,9 @@ test_cases:
     - name: t00049
       title: Test case configurable type aliases
       description:
+    - name: t00050
+      title: Test case for generating notes from comments using jinja templates
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

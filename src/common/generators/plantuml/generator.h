@@ -69,6 +69,8 @@ public:
     template <typename E>
     void generate_link(std::ostream &ostr, const E &e) const;
 
+    void update_context() const;
+
 protected:
     const inja::json &context() const;
 
@@ -85,7 +87,7 @@ protected:
     ConfigType &m_config;
     DiagramType &m_model;
     mutable std::set<std::string> m_generated_aliases;
-    inja::json m_context;
+    mutable inja::json m_context;
     mutable inja::Environment m_env;
 };
 
@@ -372,9 +374,11 @@ template <typename C, typename D> void generator<C, D>::init_context()
         m_context["git"]["commit"] = m_config.git().commit;
         m_context["git"]["toplevel"] = m_config.git().toplevel;
     }
+}
 
-    m_context["diagram"]["name"] = m_config.name;
-    m_context["diagram"]["type"] = to_string(m_config.type());
+template <typename C, typename D> void generator<C, D>::update_context() const
+{
+    m_context["diagram"] = m_model.context();
 }
 
 template <typename C, typename D> void generator<C, D>::init_env()

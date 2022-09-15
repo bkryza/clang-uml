@@ -48,6 +48,8 @@ public:
 
     std::string name() const { return name_; }
 
+    virtual std::string type_name() const { return "__undefined__"; };
+
     virtual std::string full_name(bool /*relative*/) const { return name(); }
 
     std::vector<relationship> &relationships();

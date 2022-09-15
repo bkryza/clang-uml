@@ -242,16 +242,17 @@ using namespace clanguml::test::matchers;
 #include "t00047/test_case.h"
 #include "t00048/test_case.h"
 #include "t00049/test_case.h"
+#include "t00050/test_case.h"
 
-////
-//// Sequence diagram tests
-////
+///
+/// Sequence diagram tests
+///
 #include "t20001/test_case.h"
 #include "t20002/test_case.h"
 
-////
-//// Package diagram tests
-////
+///
+/// Package diagram tests
+///
 #include "t30001/test_case.h"
 #include "t30002/test_case.h"
 #include "t30003/test_case.h"
@@ -261,21 +262,21 @@ using namespace clanguml::test::matchers;
 #include "t30007/test_case.h"
 #include "t30008/test_case.h"
 
-////
-//// Include diagram tests
-////
+///
+/// Include diagram tests
+///
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
 
-////
-//// Other tests (e.g. configuration file)
-////
+///
+/// Other tests (e.g. configuration file)
+///
 #include "t90000/test_case.h"
 
-//
-// Main test function
-//
+///
+/// Main test function
+///
 int main(int argc, char *argv[])
 {
     Catch::Session session;

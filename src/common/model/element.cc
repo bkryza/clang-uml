@@ -40,6 +40,7 @@ inja::json element::context() const
 {
     inja::json ctx;
     ctx["name"] = name();
+    ctx["type"] = type_name();
     ctx["alias"] = alias();
     ctx["full_name"] = full_name(false);
     ctx["namespace"] = get_namespace().to_string();

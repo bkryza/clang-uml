@@ -74,6 +74,8 @@ public:
     virtual bool should_include(
         const namespace_ &ns, const std::string &name) const;
 
+    virtual inja::json context() const = 0;
+
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;

@@ -59,6 +59,8 @@ public:
 
     const common::reference_vector<common::model::source_file> &files() const;
 
+    inja::json context() const override;
+
 private:
     common::reference_vector<common::model::source_file> files_;
 };

@@ -42,6 +42,8 @@ public:
     class_ &operator=(const class_ &) = delete;
     class_ &operator=(class_ &&) = delete;
 
+    std::string type_name() const override { return "class"; }
+
     bool is_struct() const;
     void is_struct(bool is_struct);
 
