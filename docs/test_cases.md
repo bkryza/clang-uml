@@ -48,6 +48,7 @@
  * [t00047](./test_cases/t00047.md) - Test case for recursive variadic template
  * [t00048](./test_cases/t00048.md) - Test case for unique entity id with multiple translation units
  * [t00049](./test_cases/t00049.md) - Test case configurable type aliases
+ * [t00050](./test_cases/t00050.md) - Test case for generating notes from comments using jinja templates
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
