@@ -135,7 +135,8 @@ diagram::files() const
     return files_;
 }
 
-inja::json diagram::context() const {
+inja::json diagram::context() const
+{
     inja::json ctx;
     ctx["name"] = name();
     ctx["type"] = "include";
@@ -143,7 +144,7 @@ inja::json diagram::context() const {
     inja::json::array_t elements{};
 
     // Add files and directories
-    for(const auto &f : files()) {
+    for (const auto &f : files()) {
         elements.emplace_back(f.get().context());
     }
 

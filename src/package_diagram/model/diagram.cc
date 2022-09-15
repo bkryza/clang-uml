@@ -95,14 +95,15 @@ std::string diagram::to_alias(
     return {};
 }
 
-inja::json diagram::context() const {
+inja::json diagram::context() const
+{
     inja::json ctx;
     ctx["name"] = name();
     ctx["type"] = "package";
 
     inja::json::array_t elements{};
 
-    for(const auto &p : packages()) {
+    for (const auto &p : packages()) {
         elements.emplace_back(p.get().context());
     }
 

@@ -45,7 +45,8 @@ std::string diagram::to_alias(const std::string &full_name) const
     return full_name;
 }
 
-inja::json diagram::context() const {
+inja::json diagram::context() const
+{
     inja::json ctx;
     ctx["name"] = name();
     ctx["type"] = "sequence";

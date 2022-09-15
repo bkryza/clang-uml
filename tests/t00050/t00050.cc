@@ -1,12 +1,14 @@
 namespace clanguml {
 
 /// Vivamus integer non suscipit taciti mus
-class A { };
+class A {
+};
 
 namespace t00050 {
 
 /// Lorem ipsum dolor sit
-class A { };
+class A {
+};
 
 /**
  * Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis
@@ -15,7 +17,8 @@ class A { };
  * integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora
  * tellus ligula porttitor metus.
  */
-class B { };
+class B {
+};
 
 /// Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis
 /// vehicula class ultricies mollis dictumst, aenean non a in donec nulla.
@@ -42,7 +45,8 @@ class B { };
 /// imperdiet praesent magnis ridiculus congue gravida curabitur dictum
 /// sagittis, enim et magna sit inceptos sodales parturient pharetra mollis,
 /// aenean vel nostra tellus commodo pretium sapien sociosqu.
-class C { };
+class C {
+};
 
 /// Mollis pretium lorem primis
 namespace utils {
@@ -52,14 +56,16 @@ namespace utils {
 /// Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,
 /// integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora
 /// tellus ligula porttitor metus.
-class D { };
+class D {
+};
 
 }
 
 /// Mollis pretium lorem primis
 enum class E { E1, E2, E3 };
 
-class NoComment {};
+class NoComment {
+};
 
 }
 }

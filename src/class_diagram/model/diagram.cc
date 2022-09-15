@@ -271,7 +271,8 @@ std::string diagram::to_alias(
     throw error::uml_alias_missing(fmt::format("Missing alias for {}", id));
 }
 
-inja::json diagram::context() const {
+inja::json diagram::context() const
+{
     inja::json ctx;
     ctx["name"] = name();
     ctx["type"] = "class";
@@ -279,12 +280,12 @@ inja::json diagram::context() const {
     inja::json::array_t elements{};
 
     // Add classes
-    for(const auto &c : classes()) {
+    for (const auto &c : classes()) {
         elements.emplace_back(c.get().context());
     }
 
     // Add enums
-    for(const auto &e : enums()) {
+    for (const auto &e : enums()) {
         elements.emplace_back(e.get().context());
     }
 
