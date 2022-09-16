@@ -13,8 +13,13 @@ diagrams:
       after:
         - >
            note left of {{ alias("A") }}
-              {{ comment("A") }}
+              {{ comment("clanguml::t00050::A") }}
            end note
+
+        - >
+          note right of {{ element("clanguml::t00050::A").alias }}
+             {{ element("A").comment }}
+          end note
 
         - >
           {% for element in diagram.elements %}

@@ -386,22 +386,28 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //
     // Add basic string functions to inja environment
     //
+
+    // Check if string is empty
     m_env.add_callback("empty", 1, [](inja::Arguments &args) {
         return args.at(0)->get<std::string>().empty();
     });
 
+    // Remove spaces from the left of a string
     m_env.add_callback("ltrim", 1, [](inja::Arguments &args) {
         return util::ltrim(args.at(0)->get<std::string>());
     });
 
+    // Remove trailing spaces from a string
     m_env.add_callback("rtrim", 1, [](inja::Arguments &args) {
         return util::rtrim(args.at(0)->get<std::string>());
     });
 
+    // Remove spaces before and after a string
     m_env.add_callback("trim", 1, [](inja::Arguments &args) {
         return util::trim(args.at(0)->get<std::string>());
     });
 
+    // Make a string shorted with a limit to
     m_env.add_callback("abbrv", 2, [](inja::Arguments &args) {
         return util::abbreviate(
             args.at(0)->get<std::string>(), args.at(1)->get<unsigned>());
@@ -422,28 +428,38 @@ template <typename C, typename D> void generator<C, D>::init_env()
     // Add PlantUML specific functions
     //
 
+    // Return the entire element JSON context based on element name
+    // e.g.:
+    //   {{ element("clanguml::t00050::A").comment }}
+    //
+    m_env.add_callback("element", 1, [this](inja::Arguments &args) {
+        auto element_opt = m_model.get_with_namespace(
+            args[0]->get<std::string>(), m_config.using_namespace());
+
+        return element_opt.value().context();
+    });
+
     // Convert C++ entity to PlantUML alias, e.g.
-    //   "note left of {{ alias("ClassA") }}: This is a note"
-    // is equivalent to the old syntax:
-    //   "note left of @A(ClassA): This is a note"
+    //   "note left of {{ alias("A") }}: This is a note"
+    // Shortcut to:
+    //   {{ element("A").alias }}
+    //
     m_env.add_callback("alias", 1, [this](inja::Arguments &args) {
-        auto alias_match =
-            m_config.using_namespace() | args[0]->get<std::string>();
-        auto element_opt = m_model.get(alias_match.to_string());
+        auto element_opt = m_model.get_with_namespace(
+            args[0]->get<std::string>(), m_config.using_namespace());
 
         return element_opt.value().alias();
     });
 
+    // Get elements' comment:
+    //   "note left of {{ alias("A") }}: {{ comment("A") }}"
+    // Shortcut to:
+    //   {{ element("A").comment }}
+    //
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
         std::string res{};
-        auto full_name = args[0]->get<std::string>();
-        auto element = m_model.get(full_name);
-
-        if (!element.has_value()) {
-            // Try with current using namespace prepended
-            element = m_model.get(fmt::format(
-                "{}::{}", m_config.using_namespace().to_string(), full_name));
-        }
+        auto element = m_model.get_with_namespace(
+            args[0]->get<std::string>(), m_config.using_namespace());
 
         if (element.has_value()) {
             auto comment = element.value().comment();

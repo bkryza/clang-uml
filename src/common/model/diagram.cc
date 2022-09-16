@@ -31,6 +31,21 @@ diagram::diagram(diagram &&) = default;
 
 diagram &diagram::operator=(diagram &&) = default;
 
+common::optional_ref<clanguml::common::model::diagram_element>
+diagram::get_with_namespace(const std::string &name, const namespace_ &ns) const
+{
+    auto element_opt = get(name);
+
+    if (!element_opt) {
+        // If no element matches, try to prepend the 'using_namespace'
+        // value to the element and search again
+        auto fully_qualified_name = ns | name;
+        element_opt = get(fully_qualified_name.to_string());
+    }
+
+    return element_opt;
+}
+
 std::string diagram::name() const { return name_; }
 
 void diagram::set_name(const std::string &name) { name_ = name; }

@@ -43,6 +43,7 @@ TEST_CASE("t00050", "[test-case][class]")
 
     REQUIRE_THAT(puml, HasNote(_A("A"), "left"));
     REQUIRE_THAT(puml, HasNote(_A("A"), "top"));
+    REQUIRE_THAT(puml, HasNote(_A("A"), "right"));
     REQUIRE_THAT(puml, HasNote(_A("B"), "top"));
     REQUIRE_THAT(puml, HasNote(_A("C"), "top"));
     REQUIRE_THAT(puml, HasNote(_A("utils::D"), "top"));

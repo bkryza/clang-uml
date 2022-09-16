@@ -50,8 +50,15 @@ The following, are the `clang-uml` additional template functions:
 * `split(string)` - splits a string and returns a list of strings
 * `replace(string, regex, replacement)` - returns a string with replace matches to regex with replacement string
 * `abbrv(string, length)` - returns a string truncated to length including trailing ellipsis
+* `element(string)` - returns the entire JSON context a given diagram element, including the following properties:
+  * `name` - name of the element 
+  * `type` - type of diagram element (e.g. `class`, `enum`, `package`)
+  * `namespace` - fully qualified element namespace
+  * `full_name` - fully qualified element name
+  * `comment` [optional] - elements comment, if any
+  * `alias` - internal diagram element alias (e.g. PlantUML alias)
 * `alias(string)` - returns a PlantUML alias of an C++ entity represented by string name
-
+* `comment(string)` - returns a comment of an C++ entity represented by string name
 
 ## Example complete config
 
