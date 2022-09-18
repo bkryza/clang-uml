@@ -11,15 +11,23 @@ class A {
 };
 
 /**
+ * \brief Lorem ipsum
+ *
  * Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis
  * vehicula class ultricies mollis dictumst, aenean non a in donec nulla.
  * Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,
  * integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora
  * tellus ligula porttitor metus.
+ *
+ * \todo 1. Write meaningful comment
+ * \todo 2. Write tests
+ * \todo 3. Implement
  */
 class B {
 };
 
+/// \brief Long comment example
+///
 /// Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis
 /// vehicula class ultricies mollis dictumst, aenean non a in donec nulla.
 /// Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,
@@ -56,6 +64,8 @@ namespace utils {
 /// Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,
 /// integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora
 /// tellus ligula porttitor metus.
+///
+/// \todo Implement...
 class D {
 };
 
@@ -63,6 +73,20 @@ class D {
 
 /// Mollis pretium lorem primis
 enum class E { E1, E2, E3 };
+
+/// \brief Simple array wrapper.
+///
+/// This class is just for testing tparam parsing, it serves no other
+/// purpose.
+///
+/// \tparam T Type of array elements.
+/// \tparam V Type of regular element.
+/// \tparam N Size of T array.
+///
+template <typename T, typename V, int N> class F {
+    T t[N];
+    V v;
+};
 
 class NoComment {
 };

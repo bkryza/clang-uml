@@ -7,6 +7,7 @@ diagrams:
     glob:
       - src/**/*.cc
       - src/**/*.h
+    comment_parser: clang
     using_namespace: clanguml
     generate_method_arguments: full
     generate_packages: true

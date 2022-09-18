@@ -37,6 +37,8 @@ namespace config {
 
 enum class method_arguments { full, abbreviated, none };
 
+enum class comment_parser_t { plain, clang };
+
 struct plantuml {
     std::vector<std::string> before;
     std::vector<std::string> after;
@@ -138,6 +140,8 @@ struct inheritable_diagram_options {
     option<bool> generate_system_headers{"generate_system_headers", false};
     option<relationship_hints_t> relationship_hints{"relationship_hints"};
     option<type_aliases_t> type_aliases{"type_aliases"};
+    option<comment_parser_t> comment_parser{
+        "comment_parser", comment_parser_t::plain};
 
     void inherit(const inheritable_diagram_options &parent);
 

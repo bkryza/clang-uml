@@ -44,6 +44,9 @@ TEST_CASE("Test config simple", "[unit-test]")
         "element.source.file }}#L{{ element.source.line }}");
     CHECK(diagram.generate_links().tooltip == "{{ element.comment }}");
 
+    CHECK(
+        diagram.comment_parser() == clanguml::config::comment_parser_t::clang);
+
     CHECK(contains(diagram.include().access, access_t::kPublic));
     CHECK(contains(diagram.include().access, access_t::kProtected));
     CHECK(contains(diagram.include().access, access_t::kPrivate));

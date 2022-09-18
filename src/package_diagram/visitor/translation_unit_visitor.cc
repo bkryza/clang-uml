@@ -39,7 +39,7 @@ using clanguml::package_diagram::model::diagram;
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::package_diagram::model::diagram &diagram,
     const clanguml::config::package_diagram &config)
-    : source_manager_{sm}
+    : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
 {
@@ -107,7 +107,7 @@ bool translation_unit_visitor::VisitFunctionDecl(
     assert(function_declaration != nullptr);
 
     // Skip system headers
-    if (source_manager_.isInSystemHeader(
+    if (source_manager().isInSystemHeader(
             function_declaration->getSourceRange().getBegin()))
         return true;
 
@@ -130,7 +130,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     assert(cls != nullptr);
 
     // Skip system headers
-    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
     // Templated records are handled by VisitClassTemplateDecl()

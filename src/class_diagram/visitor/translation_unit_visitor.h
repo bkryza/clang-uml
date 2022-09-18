@@ -20,6 +20,7 @@
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
+#include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
@@ -38,7 +39,8 @@ using found_relationships_t =
         common::model::relationship_t>>;
 
 class translation_unit_visitor
-    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
+    : public clang::RecursiveASTVisitor<translation_unit_visitor>,
+      public common::visitor::translation_unit_visitor {
 public:
     explicit translation_unit_visitor(clang::SourceManager &sm,
         clanguml::class_diagram::model::diagram &diagram,
@@ -130,9 +132,6 @@ private:
         const found_relationships_t &relationships,
         bool break_on_first_aggregation = false);
 
-    void set_source_location(const clang::Decl &decl,
-        clanguml::common::model::source_location &element);
-
     std::unique_ptr<clanguml::class_diagram::model::class_>
     build_template_instantiation(
         const clang::TemplateSpecializationType &template_type,
@@ -199,20 +198,6 @@ private:
         const clanguml::class_diagram::model::template_parameter &ct,
         found_relationships_t &relationships);
 
-    template <typename ClangDecl>
-    void process_comment(
-        const ClangDecl &decl, clanguml::common::model::decorated_element &e)
-    {
-        const auto *comment =
-            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
-
-        if (comment != nullptr) {
-            e.set_comment(comment->getFormattedText(
-                source_manager_, decl.getASTContext().getDiagnostics()));
-            e.add_decorators(decorators::parse(e.comment().value()));
-        }
-    }
-
     void add_incomplete_forward_declarations();
 
     void resolve_local_to_global_ids();
@@ -228,8 +213,6 @@ private:
     /// Retrieve the global clang-uml entity id based on the clang local id
     std::optional<common::model::diagram_element::id_t> get_ast_local_id(
         int64_t local_id) const;
-
-    clang::SourceManager &source_manager_;
 
     // Reference to the output diagram model
     clanguml::class_diagram::model::diagram &diagram_;

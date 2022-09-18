@@ -66,7 +66,7 @@ access_t access_specifier_to_access_t(clang::AccessSpecifier access_specifier)
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::class_diagram::model::diagram &diagram,
     const clanguml::config::class_diagram &config)
-    : source_manager_{sm}
+    : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
 {
@@ -81,7 +81,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     LOG_DBG("= Visiting namespace declaration {} at {}",
         ns->getQualifiedNameAsString(),
-        ns->getLocation().printToString(source_manager_));
+        ns->getLocation().printToString(source_manager()));
 
     auto package_path = namespace_{common::get_qualified_name(*ns)};
     auto package_parent = package_path;
@@ -138,7 +138,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     LOG_DBG("= Visiting enum declaration {} at {}",
         enm->getQualifiedNameAsString(),
-        enm->getLocation().printToString(source_manager_));
+        enm->getLocation().printToString(source_manager()));
 
     auto e_ptr = std::make_unique<enum_>(config_.using_namespace());
     auto &e = *e_ptr;
@@ -217,7 +217,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl *cls)
 {
-    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
@@ -225,7 +225,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
     LOG_DBG("= Visiting template specialization declaration {} at {}",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager_));
+        cls->getLocation().printToString(source_manager()));
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass())
@@ -264,7 +264,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     clang::TypeAliasTemplateDecl *cls)
 {
-    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
@@ -272,7 +272,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
     LOG_DBG("= Visiting template type alias declaration {} at {}",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager_));
+        cls->getLocation().printToString(source_manager()));
 
     auto *template_type_specialization_ptr =
         cls->getTemplatedDecl()
@@ -303,7 +303,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 bool translation_unit_visitor::VisitClassTemplateDecl(
     clang::ClassTemplateDecl *cls)
 {
-    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
@@ -311,7 +311,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     LOG_DBG("= Visiting class template declaration {} at {}",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager_));
+        cls->getLocation().printToString(source_manager()));
 
     auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
 
@@ -352,7 +352,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 {
     // Skip system headers
-    if (source_manager_.isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
@@ -360,7 +360,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     LOG_DBG("= Visiting class declaration {} at {}",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager_));
+        cls->getLocation().printToString(source_manager()));
 
     LOG_DBG(
         "== getQualifiedNameAsString() = {}", cls->getQualifiedNameAsString());
@@ -1004,7 +1004,7 @@ void translation_unit_visitor::process_function_parameter(
         const auto *default_arg = p.getDefaultArg();
         if (default_arg != nullptr) {
             auto default_arg_str = common::get_source_text(
-                default_arg->getSourceRange(), source_manager_);
+                default_arg->getSourceRange(), source_manager());
             parameter.set_default_value(default_arg_str);
         }
     }
@@ -1241,7 +1241,7 @@ void translation_unit_visitor::process_template_specialization_argument(
             // them from raw source code...
             if (type_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
-                    cls->getSourceRange(), source_manager_);
+                    cls->getSourceRange(), source_manager());
 
                 declaration_text = declaration_text.substr(
                     declaration_text.find(cls->getNameAsString()) +
@@ -1282,7 +1282,7 @@ void translation_unit_visitor::process_template_specialization_argument(
             }
             else if (type_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
-                    cls->getSourceRange(), source_manager_);
+                    cls->getSourceRange(), source_manager());
 
                 declaration_text = declaration_text.substr(
                     declaration_text.find(cls->getNameAsString()) +
@@ -1327,14 +1327,14 @@ void translation_unit_visitor::process_template_specialization_argument(
         template_parameter argument;
         argument.is_template_parameter(false);
         argument.set_type(common::get_source_text(
-            arg.getAsExpr()->getSourceRange(), source_manager_));
+            arg.getAsExpr()->getSourceRange(), source_manager()));
         template_instantiation.add_template(std::move(argument));
     }
     else if (argument_kind == clang::TemplateArgument::TemplateExpansion) {
         template_parameter argument;
         argument.is_template_parameter(true);
 
-        cls->getLocation().dump(source_manager_);
+        cls->getLocation().dump(source_manager());
     }
     else if (argument_kind == clang::TemplateArgument::Pack) {
         // This will only work for now if pack is at the end
@@ -1347,7 +1347,7 @@ void translation_unit_visitor::process_template_specialization_argument(
     }
     else {
         LOG_ERROR("Unsupported template argument kind {} [{}]", arg.getKind(),
-            cls->getLocation().printToString(source_manager_));
+            cls->getLocation().printToString(source_manager()));
     }
 }
 
@@ -1888,7 +1888,7 @@ void translation_unit_visitor::
 
     argument.is_template_parameter(false);
     argument.set_type(common::get_source_text(
-        arg.getAsExpr()->getSourceRange(), source_manager_));
+        arg.getAsExpr()->getSourceRange(), source_manager()));
 }
 
 void translation_unit_visitor::
@@ -2126,16 +2126,6 @@ void translation_unit_visitor::process_field(
     }
 
     c.add_member(std::move(field));
-}
-
-void translation_unit_visitor::set_source_location(
-    const clang::Decl &decl, clanguml::common::model::source_location &element)
-{
-    if (decl.getLocation().isValid()) {
-        element.set_file(source_manager_.getFilename(decl.getLocation()).str());
-        element.set_line(
-            source_manager_.getSpellingLineNumber(decl.getLocation()));
-    }
 }
 
 void translation_unit_visitor::add_incomplete_forward_declarations()

@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "package_diagram/model/diagram.h"
 
@@ -37,7 +38,8 @@ using found_relationships_t =
         common::model::relationship_t>>;
 
 class translation_unit_visitor
-    : public clang::RecursiveASTVisitor<translation_unit_visitor> {
+    : public clang::RecursiveASTVisitor<translation_unit_visitor>,
+      public common::visitor::translation_unit_visitor {
 public:
     translation_unit_visitor(clang::SourceManager &sm,
         clanguml::package_diagram::model::diagram &diagram,
@@ -87,33 +89,6 @@ private:
 
     void add_relationships(
         clang::DeclContext *cls, found_relationships_t &relationships);
-
-    template <typename ClangDecl>
-    void process_comment(
-        const ClangDecl &decl, clanguml::common::model::decorated_element &e)
-    {
-        const auto *comment =
-            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
-
-        if (comment != nullptr) {
-            e.set_comment(comment->getFormattedText(
-                source_manager_, decl.getASTContext().getDiagnostics()));
-            e.add_decorators(decorators::parse(e.comment().value()));
-        }
-    }
-
-    void set_source_location(const clang::Decl &decl,
-        clanguml::common::model::source_location &element)
-    {
-        if (decl.getLocation().isValid()) {
-            element.set_file(
-                source_manager_.getFilename(decl.getLocation()).str());
-            element.set_line(
-                source_manager_.getSpellingLineNumber(decl.getLocation()));
-        }
-    }
-
-    clang::SourceManager &source_manager_;
 
     // Reference to the output diagram model
     clanguml::package_diagram::model::diagram &diagram_;

@@ -5,6 +5,7 @@ diagrams:
     type: class
     glob:
       - ../../tests/t00050/t00050.cc
+    comment_parser: clang
     include:
       namespaces:
         - clanguml::t00050
@@ -12,32 +13,49 @@ diagrams:
     plantuml:
       after:
         - >
-           note left of {{ alias("A") }}
-              {{ comment("clanguml::t00050::A") }}
+           note left of {{ alias("A") }}          
+              {{ comment("clanguml::t00050::A").formatted }}          
            end note
-
         - >
           note right of {{ element("clanguml::t00050::A").alias }}
-             {{ element("A").comment }}
+             {% set e=element("clanguml::t00050::A") %} {{ e.comment.formatted }}          
+          end note
+        - >
+          note left of {{ alias("C") }} #AABBCC                 
+             {{ trim(comment("clanguml::t00050::C").text) }}          
           end note
 
         - >
-          {% for element in diagram.elements %}
-          {% if element.type == "class" and existsIn(element, "comment")  %}
-          
-          note top of {{ element.alias }}
-             {{ element.comment }}
+          {# Render brief comments and todos, if any were written for an element #}
+          {% for e in diagram.elements %}
+          {% if existsIn(e, "comment") and existsIn(e.comment, "brief") %}
+  
+          note top of {{ e.alias }} {% if e.type == "class" %} #22AA22 {% else %} #2222AA {% endif %}
+             {% set c=e.comment %} {{ c.brief.0 }}
           end note
           
           {% endif %}
-          {% endfor %}
-        - >
-          {% for element in diagram.elements %}
-          {% if element.type == "enum" and existsIn(element, "comment") %}
-          
-          note bottom of {{ element.alias }}
-             {{ element.comment }}
+          {% if existsIn(e, "comment") and existsIn(e.comment, "todo") %}
+          {% set c=e.comment %} 
+          {% for t in c.todo %}
+          note top of {{ e.alias }} #882222           
+             **TODO**
+             {{ t }}
           end note
           
+          {% endfor %}
+
+          {% endif %}
+          {# Render template paramete if any #}
+          {% if existsIn(e, "comment") and existsIn(e.comment, "tparam") %}
+          {% set c=e.comment %} 
+
+          note top of {{ e.alias }} #AAAAFF           
+             **Template parameters**
+             {% for tp in c.tparam %}
+             //{{ tp.name }}// {{ trim(tp.description) }}        
+             {% endfor %}
+          end note
+
           {% endif %}
           {% endfor %}

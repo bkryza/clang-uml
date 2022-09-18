@@ -100,6 +100,7 @@ void inheritable_diagram_options::inherit(
     git.override(parent.git);
     base_directory.override(parent.base_directory);
     relative_to.override(parent.relative_to);
+    comment_parser.override(parent.comment_parser);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
@@ -281,6 +282,21 @@ void get_option<method_arguments>(
         else
             throw std::runtime_error(
                 "Invalid generate_method_arguments value: " + val);
+    }
+}
+
+template <>
+void get_option<clanguml::config::comment_parser_t>(const Node &node,
+    clanguml::config::option<clanguml::config::comment_parser_t> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "plain")
+            option.set(clanguml::config::comment_parser_t::plain);
+        else if (val == "clang")
+            option.set(clanguml::config::comment_parser_t::clang);
+        else
+            throw std::runtime_error("Invalid comment_parser value: " + val);
     }
 }
 
@@ -532,6 +548,8 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.puml);
     get_option(node, rhs.git);
     get_option(node, rhs.generate_links);
+    get_option(node, rhs.type_aliases);
+    get_option(node, rhs.comment_parser);
 
     return true;
 }
@@ -552,6 +570,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
+        //        get_option(node, rhs.comment_parser);
 
         rhs.initialize_relationship_hints();
         rhs.initialize_type_aliases();

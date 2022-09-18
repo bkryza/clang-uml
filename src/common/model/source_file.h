@@ -45,7 +45,6 @@ using filesystem_path = common::model::path<fs_path_sep>;
 class source_file
     : public common::model::diagram_element,
       public common::model::stylable_element,
-      public source_location,
       public common::model::nested_trait<common::model::source_file,
           filesystem_path> {
 public:

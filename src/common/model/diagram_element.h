@@ -19,6 +19,7 @@
 
 #include "decorated_element.h"
 #include "relationship.h"
+#include "source_location.h"
 #include "util/util.h"
 
 #include <inja/inja.hpp>
@@ -30,7 +31,7 @@
 
 namespace clanguml::common::model {
 
-class diagram_element : public decorated_element {
+class diagram_element : public decorated_element, public source_location {
 public:
     using id_t = int64_t;
 

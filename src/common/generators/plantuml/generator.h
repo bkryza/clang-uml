@@ -133,10 +133,7 @@ inja::json generator<C, D>::element_context(const E &e) const
     }
 
     if (e.comment().has_value()) {
-        std::string c = e.comment().value();
-        if (!c.empty()) {
-            ctx["element"]["comment"] = util::trim(c);
-        }
+        ctx["element"]["comment"] = e.comment().value();
     }
 
     return ctx;
@@ -186,27 +183,35 @@ void generator<C, D>::generate_plantuml_directives(
     using common::model::namespace_;
 
     for (const auto &d : directives) {
-        // Render the directive with template engine first
-        std::string directive{env().render(std::string_view{d}, context())};
+        try {
+            // Render the directive with template engine first
+            std::string directive{env().render(std::string_view{d}, context())};
 
-        // Now search for alias @A() directives in the text
-        std::tuple<std::string, size_t, size_t> alias_match;
-        while (util::find_element_alias(directive, alias_match)) {
-            const auto full_name =
-                m_config.using_namespace() | std::get<0>(alias_match);
-            auto element_opt = m_model.get(full_name.to_string());
+            // Now search for alias @A() directives in the text
+            // (this is deprecated)
+            std::tuple<std::string, size_t, size_t> alias_match;
+            while (util::find_element_alias(directive, alias_match)) {
+                const auto full_name =
+                    m_config.using_namespace() | std::get<0>(alias_match);
+                auto element_opt = m_model.get(full_name.to_string());
 
-            if (element_opt)
-                directive.replace(std::get<1>(alias_match),
-                    std::get<2>(alias_match), element_opt.value().alias());
-            else {
-                LOG_ERROR("Cannot find clang-uml alias for element {}",
-                    full_name.to_string());
-                directive.replace(std::get<1>(alias_match),
-                    std::get<2>(alias_match), "UNKNOWN_ALIAS");
+                if (element_opt)
+                    directive.replace(std::get<1>(alias_match),
+                        std::get<2>(alias_match), element_opt.value().alias());
+                else {
+                    LOG_ERROR("Cannot find clang-uml alias for element {}",
+                        full_name.to_string());
+                    directive.replace(std::get<1>(alias_match),
+                        std::get<2>(alias_match), "UNKNOWN_ALIAS");
+                }
             }
+
+            ostr << directive << '\n';
         }
-        ostr << directive << '\n';
+        catch (const inja::json::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                d, e.what());
+        }
     }
 }
 
@@ -433,10 +438,14 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //   {{ element("clanguml::t00050::A").comment }}
     //
     m_env.add_callback("element", 1, [this](inja::Arguments &args) {
+        inja::json res{};
         auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
-        return element_opt.value().context();
+        if (element_opt.has_value())
+            res = element_opt.value().context();
+
+        return res;
     });
 
     // Convert C++ entity to PlantUML alias, e.g.
@@ -457,15 +466,17 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //   {{ element("A").comment }}
     //
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
-        std::string res{};
+        inja::json res{};
         auto element = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
         if (element.has_value()) {
             auto comment = element.value().comment();
 
-            if (comment.has_value())
+            if (comment.has_value()) {
+                assert(comment.value().is_object());
                 res = comment.value();
+            }
         }
 
         return res;
