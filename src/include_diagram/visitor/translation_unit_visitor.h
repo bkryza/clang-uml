@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "common/model/package.h"
+#include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "include_diagram/model/diagram.h"
 
@@ -39,7 +40,8 @@ class translation_unit_visitor
 public:
     // This is an internal class for convenience to be able to access the
     // include_visitor type from translation_unit_visitor type
-    class include_visitor : public clang::PPCallbacks {
+    class include_visitor : public clang::PPCallbacks,
+                            public common::visitor::translation_unit_visitor {
     public:
         include_visitor(clang::SourceManager &sm,
             clanguml::include_diagram::model::diagram &diagram,
@@ -74,8 +76,6 @@ public:
         }
 
     private:
-        clang::SourceManager &source_manager_;
-
         // Reference to the output diagram model
         clanguml::include_diagram::model::diagram &diagram_;
 

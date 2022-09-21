@@ -15,3 +15,6 @@ diagrams:
         - clanguml::t00041::RR
       subclasses:
         - clanguml::t00041::ns1::N
+    exclude:
+      namespaces:
+        - clanguml::t00041::detail

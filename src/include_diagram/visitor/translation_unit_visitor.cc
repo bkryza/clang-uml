@@ -37,7 +37,7 @@ translation_unit_visitor::include_visitor::include_visitor(
     clang::SourceManager &sm,
     clanguml::include_diagram::model::diagram &diagram,
     const clanguml::config::include_diagram &config)
-    : source_manager_{sm}
+    : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
 {
@@ -55,7 +55,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     using common::model::source_file_t;
 
     auto current_file =
-        std::filesystem::path{source_manager_.getFilename(hash_loc).str()};
+        std::filesystem::path{source_manager().getFilename(hash_loc).str()};
     current_file = std::filesystem::absolute(current_file);
     current_file = current_file.lexically_normal();
 

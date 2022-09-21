@@ -24,9 +24,15 @@ struct E {
 struct F {
 };
 
+namespace detail {
+struct G {
+};
+} // namespace detail
+
 struct RR : public R {
     E *e;
     F *f;
+    detail::G *g;
 };
 
 struct RRR : public RR {

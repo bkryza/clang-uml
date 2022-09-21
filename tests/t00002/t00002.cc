@@ -3,7 +3,7 @@
 namespace clanguml {
 namespace t00002 {
 
-/// This is class A
+/// \brief This is class A
 class A {
 public:
     /// Abstract foo_a
@@ -12,7 +12,7 @@ public:
     virtual void foo_c() = 0;
 };
 
-/// This is class B
+/// \brief This is class B
 class B : public A {
 public:
     virtual void foo_a() override { }

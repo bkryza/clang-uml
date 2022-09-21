@@ -32,7 +32,7 @@
 
 namespace clanguml::common::model {
 
-class element : public diagram_element, public source_location {
+class element : public diagram_element {
 public:
     element(const namespace_ &using_namespace);
 

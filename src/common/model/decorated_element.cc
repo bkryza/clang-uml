@@ -88,10 +88,7 @@ void decorated_element::append(const decorated_element &de)
     }
 }
 
-std::optional<std::string> decorated_element::comment() const
-{
-    return comment_;
-}
+std::optional<comment_t> decorated_element::comment() const { return comment_; }
 
-void decorated_element::set_comment(const std::string &c) { comment_ = c; }
+void decorated_element::set_comment(const comment_t &c) { comment_ = c; }
 }

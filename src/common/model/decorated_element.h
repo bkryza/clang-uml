@@ -20,13 +20,19 @@
 #include "enums.h"
 
 #include "decorators/decorators.h"
+#include "inja/inja.hpp"
 
+#include <any>
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <variant>
 #include <vector>
 
 namespace clanguml::common::model {
+
+using comment_t = inja::json;
 
 class decorated_element {
 public:
@@ -46,13 +52,13 @@ public:
 
     void append(const decorated_element &de);
 
-    std::optional<std::string> comment() const;
+    std::optional<comment_t> comment() const;
 
-    void set_comment(const std::string &c);
+    void set_comment(const comment_t &c);
 
 private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;
-    std::optional<std::string> comment_;
+    std::optional<comment_t> comment_;
 };
 
 }

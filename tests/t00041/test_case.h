@@ -47,6 +47,7 @@ TEST_CASE("t00041", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("R")));
     REQUIRE_THAT(puml, IsClass(_A("RR")));
     REQUIRE_THAT(puml, IsClass(_A("RRR")));
+    REQUIRE_THAT(puml, !IsClass(_A("detail::G")));
 
     REQUIRE_THAT(puml, IsBaseClass(_A("R"), _A("RR")));
     REQUIRE_THAT(puml, IsBaseClass(_A("RR"), _A("RRR")));
