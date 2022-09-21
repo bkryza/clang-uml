@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="515px" preserveAspectRatio="none" style="width:2183px;height:515px;" version="1.1" viewBox="0 0 2183 515" width="2183px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="599px" preserveAspectRatio="none" style="width:2232px;height:599px;" version="1.1" viewBox="0 0 2232 599" width="2232px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1rxmi0fcn81io" width="300%" x="-1" y="-1">
+    <filter height="300%" id="foat64puak4sk" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,108 +9,160 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L10" target="_top" title="Lorem ipsum dolor sit" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L10" xlink:show="new" xlink:title="Lorem ipsum dolor sit" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="48" id="C_0001885563213397742674" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="201" y="456"/>
-      <ellipse cx="216" cy="472" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M218.9688,477.6406 Q218.3906,477.9375 217.75,478.0781 Q217.1094,478.2344 216.4063,478.2344 Q213.9063,478.2344 212.5781,476.5938 Q211.2656,474.9375 211.2656,471.8125 Q211.2656,468.6875 212.5781,467.0313 Q213.9063,465.375 216.4063,465.375 Q217.1094,465.375 217.75,465.5313 Q218.4063,465.6875 218.9688,465.9844 L218.9688,468.7031 Q218.3438,468.125 217.75,467.8594 Q217.1563,467.5781 216.5313,467.5781 Q215.1875,467.5781 214.5,468.6563 Q213.8125,469.7188 213.8125,471.8125 Q213.8125,473.9063 214.5,474.9844 Q215.1875,476.0469 216.5313,476.0469 Q217.1563,476.0469 217.75,475.7813 Q218.3438,475.5 218.9688,474.9219 L218.9688,477.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="230" y="476.1543">A</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="202" x2="240" y1="488" y2="488"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="202" x2="240" y1="496" y2="496"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L10" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L10" xlink:show="new" xlink:title="A" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="48" id="C_0001885563213397742674" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="241" y="49.5"/>
+      <ellipse cx="256" cy="65.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M258.9688,71.1406 Q258.3906,71.4375 257.75,71.5781 Q257.1094,71.7344 256.4063,71.7344 Q253.9063,71.7344 252.5781,70.0938 Q251.2656,68.4375 251.2656,65.3125 Q251.2656,62.1875 252.5781,60.5313 Q253.9063,58.875 256.4063,58.875 Q257.1094,58.875 257.75,59.0313 Q258.4063,59.1875 258.9688,59.4844 L258.9688,62.2031 Q258.3438,61.625 257.75,61.3594 Q257.1563,61.0781 256.5313,61.0781 Q255.1875,61.0781 254.5,62.1563 Q253.8125,63.2188 253.8125,65.3125 Q253.8125,67.4063 254.5,68.4844 Q255.1875,69.5469 256.5313,69.5469 Q257.1563,69.5469 257.75,69.2813 Q258.3438,69 258.9688,68.4219 L258.9688,71.1406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="270" y="69.6543">A</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="242" x2="280" y1="81.5" y2="81.5"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="242" x2="280" y1="89.5" y2="89.5"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L20" target="_top" title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis  vehicula class ultricies mollis dictumst, aenean non a in donec nulla.  Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,  integer placerat et turpis mi ..." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L20" xlink:show="new" xlink:title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis  vehicula class ultricies mollis dictumst, aenean non a in donec nulla.  Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,  integer placerat et turpis mi ..." xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="48" id="C_0000500262098409836244" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="569" y="456"/>
-      <ellipse cx="584" cy="472" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M586.9688,477.6406 Q586.3906,477.9375 585.75,478.0781 Q585.1094,478.2344 584.4063,478.2344 Q581.9063,478.2344 580.5781,476.5938 Q579.2656,474.9375 579.2656,471.8125 Q579.2656,468.6875 580.5781,467.0313 Q581.9063,465.375 584.4063,465.375 Q585.1094,465.375 585.75,465.5313 Q586.4063,465.6875 586.9688,465.9844 L586.9688,468.7031 Q586.3438,468.125 585.75,467.8594 Q585.1563,467.5781 584.5313,467.5781 Q583.1875,467.5781 582.5,468.6563 Q581.8125,469.7188 581.8125,471.8125 Q581.8125,473.9063 582.5,474.9844 Q583.1875,476.0469 584.5313,476.0469 Q585.1563,476.0469 585.75,475.7813 Q586.3438,475.5 586.9688,474.9219 L586.9688,477.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="598" y="476.1543">B</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="570" x2="608" y1="488" y2="488"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="570" x2="608" y1="496" y2="496"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L26" target="_top" title="Lorem ipsum" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L26" xlink:show="new" xlink:title="Lorem ipsum" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="48" id="C_0000500262098409836244" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="1089" y="369"/>
+      <ellipse cx="1104" cy="385" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M1106.9688,390.6406 Q1106.3906,390.9375 1105.75,391.0781 Q1105.1094,391.2344 1104.4063,391.2344 Q1101.9063,391.2344 1100.5781,389.5938 Q1099.2656,387.9375 1099.2656,384.8125 Q1099.2656,381.6875 1100.5781,380.0313 Q1101.9063,378.375 1104.4063,378.375 Q1105.1094,378.375 1105.75,378.5313 Q1106.4063,378.6875 1106.9688,378.9844 L1106.9688,381.7031 Q1106.3438,381.125 1105.75,380.8594 Q1105.1563,380.5781 1104.5313,380.5781 Q1103.1875,380.5781 1102.5,381.6563 Q1101.8125,382.7188 1101.8125,384.8125 Q1101.8125,386.9063 1102.5,387.9844 Q1103.1875,389.0469 1104.5313,389.0469 Q1105.1563,389.0469 1105.75,388.7813 Q1106.3438,388.5 1106.9688,387.9219 L1106.9688,390.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="1118" y="389.1543">B</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1090" x2="1128" y1="401" y2="401"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1090" x2="1128" y1="409" y2="409"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L48" target="_top" title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis vehicula class ultricies mollis dictumst, aenean non a in donec nulla. Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam, integer placerat et turpis mi ero..." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L48" xlink:show="new" xlink:title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis vehicula class ultricies mollis dictumst, aenean non a in donec nulla. Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam, integer placerat et turpis mi ero..." xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="48" id="C_0001663081653671078922" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="1119" y="456"/>
-      <ellipse cx="1134" cy="472" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M1136.9688,477.6406 Q1136.3906,477.9375 1135.75,478.0781 Q1135.1094,478.2344 1134.4063,478.2344 Q1131.9063,478.2344 1130.5781,476.5938 Q1129.2656,474.9375 1129.2656,471.8125 Q1129.2656,468.6875 1130.5781,467.0313 Q1131.9063,465.375 1134.4063,465.375 Q1135.1094,465.375 1135.75,465.5313 Q1136.4063,465.6875 1136.9688,465.9844 L1136.9688,468.7031 Q1136.3438,468.125 1135.75,467.8594 Q1135.1563,467.5781 1134.5313,467.5781 Q1133.1875,467.5781 1132.5,468.6563 Q1131.8125,469.7188 1131.8125,471.8125 Q1131.8125,473.9063 1132.5,474.9844 Q1133.1875,476.0469 1134.5313,476.0469 Q1135.1563,476.0469 1135.75,475.7813 Q1136.3438,475.5 1136.9688,474.9219 L1136.9688,477.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="1148" y="476.1543">C</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1120" x2="1158" y1="488" y2="488"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1120" x2="1158" y1="496" y2="496"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L56" target="_top" title="Long comment example" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L56" xlink:show="new" xlink:title="Long comment example" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="48" id="C_0001663081653671078922" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="620" y="369"/>
+      <ellipse cx="635" cy="385" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M637.9688,390.6406 Q637.3906,390.9375 636.75,391.0781 Q636.1094,391.2344 635.4063,391.2344 Q632.9063,391.2344 631.5781,389.5938 Q630.2656,387.9375 630.2656,384.8125 Q630.2656,381.6875 631.5781,380.0313 Q632.9063,378.375 635.4063,378.375 Q636.1094,378.375 636.75,378.5313 Q637.4063,378.6875 637.9688,378.9844 L637.9688,381.7031 Q637.3438,381.125 636.75,380.8594 Q636.1563,380.5781 635.5313,380.5781 Q634.1875,380.5781 633.5,381.6563 Q632.8125,382.7188 632.8125,384.8125 Q632.8125,386.9063 633.5,387.9844 Q634.1875,389.0469 635.5313,389.0469 Q636.1563,389.0469 636.75,388.7813 Q637.3438,388.5 637.9688,387.9219 L637.9688,390.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="649" y="389.1543">C</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="621" x2="659" y1="401" y2="401"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="621" x2="659" y1="409" y2="409"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L59" target="_top" title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis vehicula class ultricies mollis dictumst, aenean non a in donec nulla. Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam, integer placerat et turpis mi ero..." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L59" xlink:show="new" xlink:title="Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis vehicula class ultricies mollis dictumst, aenean non a in donec nulla. Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam, integer placerat et turpis mi ero..." xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="48" id="C_0001492514566602019299" style="stroke: #A80036; stroke-width: 1.5;" width="75" x="1657.5" y="456"/>
-      <ellipse cx="1672.5" cy="472" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M1675.4688,477.6406 Q1674.8906,477.9375 1674.25,478.0781 Q1673.6094,478.2344 1672.9063,478.2344 Q1670.4063,478.2344 1669.0781,476.5938 Q1667.7656,474.9375 1667.7656,471.8125 Q1667.7656,468.6875 1669.0781,467.0313 Q1670.4063,465.375 1672.9063,465.375 Q1673.6094,465.375 1674.25,465.5313 Q1674.9063,465.6875 1675.4688,465.9844 L1675.4688,468.7031 Q1674.8438,468.125 1674.25,467.8594 Q1673.6563,467.5781 1673.0313,467.5781 Q1671.6875,467.5781 1671,468.6563 Q1670.3125,469.7188 1670.3125,471.8125 Q1670.3125,473.9063 1671,474.9844 Q1671.6875,476.0469 1673.0313,476.0469 Q1673.6563,476.0469 1674.25,475.7813 Q1674.8438,475.5 1675.4688,474.9219 L1675.4688,477.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="43" x="1686.5" y="476.1543">utils::D</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1658.5" x2="1731.5" y1="488" y2="488"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1658.5" x2="1731.5" y1="496" y2="496"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L69" target="_top" title="D" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L69" xlink:show="new" xlink:title="D" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="48" id="C_0001492514566602019299" style="stroke: #A80036; stroke-width: 1.5;" width="75" x="1458.5" y="369"/>
+      <ellipse cx="1473.5" cy="385" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M1476.4688,390.6406 Q1475.8906,390.9375 1475.25,391.0781 Q1474.6094,391.2344 1473.9063,391.2344 Q1471.4063,391.2344 1470.0781,389.5938 Q1468.7656,387.9375 1468.7656,384.8125 Q1468.7656,381.6875 1470.0781,380.0313 Q1471.4063,378.375 1473.9063,378.375 Q1474.6094,378.375 1475.25,378.5313 Q1475.9063,378.6875 1476.4688,378.9844 L1476.4688,381.7031 Q1475.8438,381.125 1475.25,380.8594 Q1474.6563,380.5781 1474.0313,380.5781 Q1472.6875,380.5781 1472,381.6563 Q1471.3125,382.7188 1471.3125,384.8125 Q1471.3125,386.9063 1472,387.9844 Q1472.6875,389.0469 1474.0313,389.0469 Q1474.6563,389.0469 1475.25,388.7813 Q1475.8438,388.5 1476.4688,387.9219 L1476.4688,390.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="43" x="1487.5" y="389.1543">utils::D</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1459.5" x2="1532.5" y1="401" y2="401"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1459.5" x2="1532.5" y1="409" y2="409"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L65" target="_top" title="Mollis pretium lorem primis" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L65" xlink:show="new" xlink:title="Mollis pretium lorem primis" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="86.4141" id="C_0002027344031570117998" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="1989" y="159"/>
-      <ellipse cx="2004" cy="175" fill="#EB937F" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M2008.1094,181 L2000.3906,181 L2000.3906,168.6094 L2008.1094,168.6094 L2008.1094,170.7656 L2002.8438,170.7656 L2002.8438,173.4375 L2007.6094,173.4375 L2007.6094,175.5938 L2002.8438,175.5938 L2002.8438,178.8438 L2008.1094,178.8438 L2008.1094,181 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="2018" y="179.1543">E</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1990" x2="2028" y1="191" y2="191"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1995" y="205.2104">E1</text>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1995" y="218.0151">E2</text>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1995" y="230.8198">E3</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1990" x2="2028" y1="237.4141" y2="237.4141"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L75" target="_top" title="E" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L75" xlink:show="new" xlink:title="E" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="86.4141" id="C_0002027344031570117998" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="1584" y="30.5"/>
+      <ellipse cx="1599" cy="46.5" fill="#EB937F" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M1603.1094,52.5 L1595.3906,52.5 L1595.3906,40.1094 L1603.1094,40.1094 L1603.1094,42.2656 L1597.8438,42.2656 L1597.8438,44.9375 L1602.6094,44.9375 L1602.6094,47.0938 L1597.8438,47.0938 L1597.8438,50.3438 L1603.1094,50.3438 L1603.1094,52.5 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="1613" y="50.6543">E</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1585" x2="1623" y1="62.5" y2="62.5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1590" y="76.7104">E1</text>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1590" y="89.5151">E2</text>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="14" x="1590" y="102.3198">E3</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1585" x2="1623" y1="108.9141" y2="108.9141"/>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L67" target="_top" title="NoComment" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/3bbaf91511f5d6ae38648439f25f5f2732373b67/tests/t00050/t00050.cc#L67" xlink:show="new" xlink:title="NoComment" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1rxmi0fcn81io)" height="48" id="C_0001832693799357996932" style="stroke: #A80036; stroke-width: 1.5;" width="108" x="2064" y="178"/>
-      <ellipse cx="2079" cy="194" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M2081.9688,199.6406 Q2081.3906,199.9375 2080.75,200.0781 Q2080.1094,200.2344 2079.4063,200.2344 Q2076.9063,200.2344 2075.5781,198.5938 Q2074.2656,196.9375 2074.2656,193.8125 Q2074.2656,190.6875 2075.5781,189.0313 Q2076.9063,187.375 2079.4063,187.375 Q2080.1094,187.375 2080.75,187.5313 Q2081.4063,187.6875 2081.9688,187.9844 L2081.9688,190.7031 Q2081.3438,190.125 2080.75,189.8594 Q2080.1563,189.5781 2079.5313,189.5781 Q2078.1875,189.5781 2077.5,190.6563 Q2076.8125,191.7188 2076.8125,193.8125 Q2076.8125,195.9063 2077.5,196.9844 Q2078.1875,198.0469 2079.5313,198.0469 Q2080.1563,198.0469 2080.75,197.7813 Q2081.3438,197.5 2081.9688,196.9219 L2081.9688,199.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="2093" y="198.1543">NoComment</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="2065" x2="2171" y1="210" y2="210"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="2065" x2="2171" y1="218" y2="218"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L86" target="_top" title="Simple array wrapper." xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L86" xlink:show="new" xlink:title="Simple array wrapper." xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="73.6094" id="C_0000793698410848959592" style="stroke: #A80036; stroke-width: 1.5;" width="95" x="1805.5" y="356"/>
+      <ellipse cx="1820.5" cy="372" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M1823.4688,377.6406 Q1822.8906,377.9375 1822.25,378.0781 Q1821.6094,378.2344 1820.9063,378.2344 Q1818.4063,378.2344 1817.0781,376.5938 Q1815.7656,374.9375 1815.7656,371.8125 Q1815.7656,368.6875 1817.0781,367.0313 Q1818.4063,365.375 1820.9063,365.375 Q1821.6094,365.375 1822.25,365.5313 Q1822.9063,365.6875 1823.4688,365.9844 L1823.4688,368.7031 Q1822.8438,368.125 1822.25,367.8594 Q1821.6563,367.5781 1821.0313,367.5781 Q1819.6875,367.5781 1819,368.6563 Q1818.3125,369.7188 1818.3125,371.8125 Q1818.3125,373.9063 1819,374.9844 Q1819.6875,376.0469 1821.0313,376.0469 Q1821.6563,376.0469 1822.25,375.7813 Q1822.8438,375.5 1823.4688,374.9219 L1823.4688,377.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="7" x="1834.5" y="376.1543">F</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="54" x="1849.5" y="353"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="52" x="1850.5" y="365.1387">T,V,int N</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="1806.5" x2="1899.5" y1="388" y2="388"/>
     </a>
-    <path d="M6,467.5 L6,492.6328 A0,0 0 0 0 6,492.6328 L166,492.6328 A0,0 0 0 0 166,492.6328 L166,485.5 L200.86,480 L166,477.5 L166,477.5 L156,467.5 L6,467.5 A0,0 0 0 0 6,467.5 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M156,467.5 L156,477.5 L166,477.5 L156,467.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="139" x="12" y="484.5669">Lorem ipsum dolor sit</text>
-    <path d="M141,189.5 L141,214.6328 A0,0 0 0 0 141,214.6328 L217,214.6328 L221,455.85 L225,214.6328 L301,214.6328 A0,0 0 0 0 301,214.6328 L301,199.5 L291,189.5 L141,189.5 A0,0 0 0 0 141,189.5 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M291,189.5 L291,199.5 L301,199.5 L291,189.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="139" x="147" y="206.5669">Lorem ipsum dolor sit</text>
-    <path d="M336.5,144 L336.5,259.9297 A0,0 0 0 0 336.5,259.9297 L585,259.9297 L589,455.85 L593,259.9297 L841.5,259.9297 A0,0 0 0 0 841.5,259.9297 L841.5,154 L831.5,144 L336.5,144 A0,0 0 0 0 336.5,144 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M831.5,144 L831.5,154 L841.5,154 L831.5,144 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="350.5" y="161.0669"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="484" x="342.5" y="176.1997">Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="434" x="342.5" y="191.3325">vehicula class ultricies mollis dictumst, aenean non a in donec nulla.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="470" x="342.5" y="206.4653">Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="444" x="342.5" y="221.5981">integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="176" x="342.5" y="236.731">tellus ligula porttitor metus.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="346.5" y="251.8638"/>
-    <path d="M876.5,8 L876.5,396.3203 A0,0 0 0 0 876.5,396.3203 L1135,396.3203 L1139,455.68 L1143,396.3203 L1401.5,396.3203 A0,0 0 0 0 1401.5,396.3203 L1401.5,18 L1391.5,8 L876.5,8 A0,0 0 0 0 876.5,8 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M1391.5,8 L1391.5,18 L1401.5,18 L1391.5,8 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="484" x="894.5" y="25.0669">Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="434" x="882.5" y="40.1997">vehicula class ultricies mollis dictumst, aenean non a in donec nulla.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="470" x="882.5" y="55.3325">Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="444" x="882.5" y="70.4653">integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="176" x="882.5" y="85.5981">tellus ligula porttitor metus.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="886.5" y="100.731"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="476" x="882.5" y="115.8638">Vivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="472" x="882.5" y="130.9966">euismod libero facilisi aptent elementum felis blandit cursus gravida sociis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="473" x="882.5" y="146.1294">erat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="433" x="882.5" y="161.2622">ad. Massa curae fringilla porttitor quam sollicitudin iaculis aptent leo</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="462" x="882.5" y="176.395">ligula euismod dictumst, orci penatibus mauris eros etiam praesent erat</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="468" x="882.5" y="191.5278">volutpat posuere hac. Metus fringilla nec ullamcorper odio aliquam lacinia</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="433" x="882.5" y="206.6606">conubia mauris tempor, etiam ultricies proin quisque lectus sociis id</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="415" x="882.5" y="221.7935">tristique, integer phasellus taciti pretium adipiscing tortor sagittis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="37" x="882.5" y="236.9263">ligula.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="886.5" y="252.0591"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="419" x="882.5" y="267.1919">Mollis pretium lorem primis senectus habitasse lectus scelerisque</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="421" x="882.5" y="282.3247">donec, ultricies tortor suspendisse adipiscing fusce morbi volutpat</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="496" x="882.5" y="297.4575">pellentesque, consectetur mi risus molestie curae malesuada cum. Dignissim</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="498" x="882.5" y="312.5903">lacus convallis massa mauris enim ad mattis magnis senectus montes, mollis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="504" x="882.5" y="327.7231">taciti phasellus accumsan bibendum semper blandit suspendisse faucibus nibh</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="493" x="882.5" y="342.856">est, metus lobortis morbi cras magna vivamus per risus fermentum. Dapibus</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="440" x="882.5" y="357.9888">imperdiet praesent magnis ridiculus congue gravida curabitur dictum</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="453" x="882.5" y="373.1216">sagittis, enim et magna sit inceptos sodales parturient pharetra mollis,</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="386" x="882.5" y="388.2544">aenean vel nostra tellus commodo pretium sapien sociosqu.</text>
-    <path d="M1436.5,159 L1436.5,244.6641 A0,0 0 0 0 1436.5,244.6641 L1691,244.6641 L1695,455.89 L1699,244.6641 L1953.5,244.6641 A0,0 0 0 0 1953.5,244.6641 L1953.5,169 L1943.5,159 L1436.5,159 A0,0 0 0 0 1436.5,159 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M1943.5,159 L1943.5,169 L1953.5,169 L1943.5,159 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="484" x="1454.5" y="176.0669">Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="434" x="1442.5" y="191.1997">vehicula class ultricies mollis dictumst, aenean non a in donec nulla.</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="470" x="1442.5" y="206.3325">Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="444" x="1442.5" y="221.4653">integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="176" x="1442.5" y="236.5981">tellus ligula porttitor metus.</text>
-    <path d="M1912,467.5 L1912,492.6328 A0,0 0 0 0 1912,492.6328 L2106,492.6328 A0,0 0 0 0 2106,492.6328 L2106,477.5 L2096,467.5 L2013,467.5 L2009,245.22 L2005,467.5 L1912,467.5 A0,0 0 0 0 1912,467.5 " fill="#FBFB77" filter="url(#f1rxmi0fcn81io)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M2096,467.5 L2096,477.5 L2106,477.5 L2096,467.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="173" x="1918" y="484.5669">Mollis pretium lorem primis</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L87" target="_top" title="t" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L87" xlink:show="new" xlink:title="t" xlink:type="simple">
+      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="1811.5" y="394"/>
+      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="1813.5" y="396"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L87" target="_top" title="t" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L87" xlink:show="new" xlink:title="t" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="39" x="1825.5" y="402.2104">t : T[N]</text>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L88" target="_top" title="v" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L88" xlink:show="new" xlink:title="v" xlink:type="simple">
+      <rect fill="#FEFECE" height="10" style="stroke: none; stroke-width: 1.0;" width="20" x="1811.5" y="406.8047"/>
+      <rect fill="none" height="6" style="stroke: #C82930; stroke-width: 1.0;" width="6" x="1813.5" y="408.8047"/>
+    </a>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L88" target="_top" title="v" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L88" xlink:show="new" xlink:title="v" xlink:type="simple">
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="25" x="1825.5" y="415.0151">v : V</text>
+    </a>
+    <line style="stroke: #A80036; stroke-width: 1.5;" x1="1806.5" x2="1899.5" y1="421.6094" y2="421.6094"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L91" target="_top" title="NoComment" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/4449782fb59aea504224fb8dc113f653a2827053/tests/t00050/t00050.cc#L91" xlink:show="new" xlink:title="NoComment" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#foat64puak4sk)" height="48" id="C_0001832693799357996932" style="stroke: #A80036; stroke-width: 1.5;" width="108" x="2113" y="49.5"/>
+      <ellipse cx="2128" cy="65.5" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M2130.9688,71.1406 Q2130.3906,71.4375 2129.75,71.5781 Q2129.1094,71.7344 2128.4063,71.7344 Q2125.9063,71.7344 2124.5781,70.0938 Q2123.2656,68.4375 2123.2656,65.3125 Q2123.2656,62.1875 2124.5781,60.5313 Q2125.9063,58.875 2128.4063,58.875 Q2129.1094,58.875 2129.75,59.0313 Q2130.4063,59.1875 2130.9688,59.4844 L2130.9688,62.2031 Q2130.3438,61.625 2129.75,61.3594 Q2129.1563,61.0781 2128.5313,61.0781 Q2127.1875,61.0781 2126.5,62.1563 Q2125.8125,63.2188 2125.8125,65.3125 Q2125.8125,67.4063 2126.5,68.4844 Q2127.1875,69.5469 2128.5313,69.5469 Q2129.1563,69.5469 2129.75,69.2813 Q2130.3438,69 2130.9688,68.4219 L2130.9688,71.1406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="76" x="2142" y="69.6543">NoComment</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="2114" x2="2220" y1="81.5" y2="81.5"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="2114" x2="2220" y1="89.5" y2="89.5"/>
+    </a>
+    <path d="M6,61 L6,86.1328 A0,0 0 0 0 6,86.1328 L206,86.1328 A0,0 0 0 0 206,86.1328 L206,79 L240.88,73.5 L206,71 L206,71 L196,61 L6,61 A0,0 0 0 0 6,61 " fill="#FBFB77" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M196,61 L196,71 L206,71 L196,61 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="139" x="12" y="78.0669">Lorem ipsum dolor sit</text>
+    <path d="M316,61 L316,69.5 L281.28,73.5 L316,77.5 L316,86.1328 A0,0 0 0 0 316,86.1328 L516,86.1328 A0,0 0 0 0 516,86.1328 L516,71 L506,61 L316,61 A0,0 0 0 0 316,61 " fill="#FBFB77" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M506,61 L506,71 L516,71 L506,61 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="139" x="322" y="78.0669">Lorem ipsum dolor sit</text>
+    <path d="M59.5,199 L59.5,587.3203 A0,0 0 0 0 59.5,587.3203 L584.5,587.3203 A0,0 0 0 0 584.5,587.3203 L584.5,397 L619.7,393 L584.5,389 L584.5,209 L574.5,199 L59.5,199 A0,0 0 0 0 59.5,199 " fill="#AABBCC" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M574.5,199 L574.5,209 L584.5,209 L574.5,199 " fill="#AABBCC" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="484" x="73.5" y="216.0669">Lorem ipsum dolor sit amet consectetur adipiscing elit, urna consequat felis</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="434" x="65.5" y="231.1997">vehicula class ultricies mollis dictumst, aenean non a in donec nulla.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="470" x="65.5" y="246.3325">Phasellus ante pellentesque erat cum risus consequat imperdiet aliquam,</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="444" x="65.5" y="261.4653">integer placerat et turpis mi eros nec lobortis taciti, vehicula nisl litora</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="176" x="65.5" y="276.5981">tellus ligula porttitor metus.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="69.5" y="291.731"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="476" x="65.5" y="306.8638">Vivamus integer non suscipit taciti mus etiam at primis tempor sagittis sit,</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="472" x="65.5" y="321.9966">euismod libero facilisi aptent elementum felis blandit cursus gravida sociis</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="473" x="65.5" y="337.1294">erat ante, eleifend lectus nullam dapibus netus feugiat curae curabitur est</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="433" x="65.5" y="352.2622">ad. Massa curae fringilla porttitor quam sollicitudin iaculis aptent leo</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="462" x="65.5" y="367.395">ligula euismod dictumst, orci penatibus mauris eros etiam praesent erat</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="468" x="65.5" y="382.5278">volutpat posuere hac. Metus fringilla nec ullamcorper odio aliquam lacinia</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="433" x="65.5" y="397.6606">conubia mauris tempor, etiam ultricies proin quisque lectus sociis id</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="415" x="65.5" y="412.7935">tristique, integer phasellus taciti pretium adipiscing tortor sagittis</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="37" x="65.5" y="427.9263">ligula.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="69.5" y="443.0591"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="419" x="65.5" y="458.1919">Mollis pretium lorem primis senectus habitasse lectus scelerisque</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="421" x="65.5" y="473.3247">donec, ultricies tortor suspendisse adipiscing fusce morbi volutpat</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="496" x="65.5" y="488.4575">pellentesque, consectetur mi risus molestie curae malesuada cum. Dignissim</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="498" x="65.5" y="503.5903">lacus convallis massa mauris enim ad mattis magnis senectus montes, mollis</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="504" x="65.5" y="518.7231">taciti phasellus accumsan bibendum semper blandit suspendisse faucibus nibh</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="493" x="65.5" y="533.856">est, metus lobortis morbi cras magna vivamus per risus fermentum. Dapibus</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="440" x="65.5" y="548.9888">imperdiet praesent magnis ridiculus congue gravida curabitur dictum</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="453" x="65.5" y="564.1216">sagittis, enim et magna sit inceptos sodales parturient pharetra mollis,</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="386" x="65.5" y="579.2544">aenean vel nostra tellus commodo pretium sapien sociosqu.</text>
+    <path d="M763.5,53.5 L763.5,93.7656 A0,0 0 0 0 763.5,93.7656 L829.89,93.7656 L1088.67,369.97 L837.89,93.7656 L868.5,93.7656 A0,0 0 0 0 868.5,93.7656 L868.5,63.5 L858.5,53.5 L763.5,53.5 A0,0 0 0 0 763.5,53.5 " fill="#22AA22" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M858.5,53.5 L858.5,63.5 L868.5,63.5 L858.5,53.5 " fill="#22AA22" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="84" x="769.5" y="70.5669">Lorem ipsum</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="773.5" y="85.6997"/>
+    <path d="M904,38 L904,108.5313 A0,0 0 0 0 904,108.5313 L1017.67,108.5313 L1101.78,368.62 L1025.67,108.5313 L1118,108.5313 A0,0 0 0 0 1118,108.5313 L1118,48 L1108,38 L904,38 A0,0 0 0 0 904,38 " fill="#882222" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M1108,38 L1108,48 L1118,48 L1108,38 " fill="#882222" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="41" x="910" y="55.0669">TODO</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="189" x="914" y="70.1997">1. Write meaningful comment</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="914" y="85.3325"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="914" y="100.4653"/>
+    <path d="M1153.5,38 L1153.5,108.5313 A0,0 0 0 0 1153.5,108.5313 L1193.22,108.5313 L1116.29,368.62 L1201.22,108.5313 L1262.5,108.5313 A0,0 0 0 0 1262.5,108.5313 L1262.5,48 L1252.5,38 L1153.5,38 A0,0 0 0 0 1153.5,38 " fill="#882222" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M1252.5,38 L1252.5,48 L1262.5,48 L1252.5,38 " fill="#882222" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="41" x="1159.5" y="55.0669">TODO</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="84" x="1163.5" y="70.1997">2. Write tests</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1163.5" y="85.3325"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1163.5" y="100.4653"/>
+    <path d="M1298,46 L1298,101.3984 A0,0 0 0 0 1298,101.3984 L1328.62,101.3984 L1126.82,368.81 L1336.62,101.3984 L1408,101.3984 A0,0 0 0 0 1408,101.3984 L1408,56 L1398,46 L1298,46 A0,0 0 0 0 1298,46 " fill="#882222" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M1398,46 L1398,56 L1408,56 L1398,46 " fill="#882222" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="41" x="1304" y="63.0669">TODO</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="85" x="1308" y="78.1997">3. Implement</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1308" y="93.3325"/>
+    <path d="M551.5,53.5 L551.5,93.7656 A0,0 0 0 0 551.5,93.7656 L636,93.7656 L640,368.67 L644,93.7656 L728.5,93.7656 A0,0 0 0 0 728.5,93.7656 L728.5,63.5 L718.5,53.5 L551.5,53.5 A0,0 0 0 0 551.5,53.5 " fill="#22AA22" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M718.5,53.5 L718.5,63.5 L728.5,63.5 L718.5,53.5 " fill="#22AA22" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="156" x="557.5" y="70.5669">Long comment example</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="561.5" y="85.6997"/>
+    <path d="M1443,46 L1443,101.3984 A0,0 0 0 0 1443,101.3984 L1492,101.3984 L1496,368.81 L1500,101.3984 L1549,101.3984 A0,0 0 0 0 1549,101.3984 L1549,56 L1539,46 L1443,46 A0,0 0 0 0 1443,46 " fill="#882222" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M1539,46 L1539,56 L1549,56 L1539,46 " fill="#882222" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="41" x="1449" y="63.0669">TODO</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="81" x="1453" y="78.1997">Implement...</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1453" y="93.3325"/>
+    <path d="M1659.5,53.5 L1659.5,93.7656 A0,0 0 0 0 1659.5,93.7656 L1742.9,93.7656 L1840.15,355.9 L1750.9,93.7656 L1820.5,93.7656 A0,0 0 0 0 1820.5,93.7656 L1820.5,63.5 L1810.5,53.5 L1659.5,53.5 A0,0 0 0 0 1659.5,53.5 " fill="#22AA22" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M1810.5,53.5 L1810.5,63.5 L1820.5,63.5 L1810.5,53.5 " fill="#22AA22" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="140" x="1665.5" y="70.5669">Simple array wrapper.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1669.5" y="85.6997"/>
+    <path d="M1856,8 L1856,139.0625 A0,0 0 0 0 1856,139.0625 L1939.79,139.0625 L1866.06,355.63 L1947.79,139.0625 L2078,139.0625 A0,0 0 0 0 2078,139.0625 L2078,18 L2068,8 L1856,8 A0,0 0 0 0 1856,8 " fill="#AAAAFF" filter="url(#foat64puak4sk)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M2068,8 L2068,18 L2078,18 L2068,8 " fill="#AAAAFF" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="160" x="1862" y="25.0669">Template parameters</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1866" y="40.1997"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="8" x="1862" y="55.3325">T</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="151" x="1874" y="55.3325">Type of array elements.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1866" y="70.4653"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="9" x="1862" y="85.5981">V</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="156" x="1875" y="85.5981">Type of regular element.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1866" y="100.731"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="10" x="1862" y="115.8638">N</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="95" x="1876" y="115.8638">Size of T array.</text>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="0" x="1866" y="130.9966"/>
   </g>
 </svg>
