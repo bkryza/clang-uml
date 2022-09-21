@@ -173,11 +173,23 @@ tvl::value_t namespace_filter::match(
     const diagram & /*d*/, const element &e) const
 {
     if (dynamic_cast<const package *>(&e) != nullptr) {
-        return tvl::any_of(
-            namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
-                return (e.get_namespace() | e.name()).starts_with(nsit) ||
-                    nsit.starts_with(e.get_namespace() | e.name()) ||
+        return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+            [&e, is_inclusive = is_inclusive()](const auto &nsit) {
+                auto element_full_name_starts_with_namespace =
+                    (e.get_namespace() | e.name()).starts_with(nsit);
+                auto element_full_name_equals_pattern =
                     (e.get_namespace() | e.name()) == nsit;
+                auto namespace_starts_with_element_qualified_name =
+                    nsit.starts_with(e.get_namespace());
+
+                auto result = element_full_name_starts_with_namespace |
+                    element_full_name_equals_pattern;
+
+                if (is_inclusive)
+                    result =
+                        result | namespace_starts_with_element_qualified_name;
+
+                return result;
             });
     }
     else {

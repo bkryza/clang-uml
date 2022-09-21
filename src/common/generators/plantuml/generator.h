@@ -208,6 +208,9 @@ void generator<C, D>::generate_plantuml_directives(
 
             ostr << directive << '\n';
         }
+        catch (const inja::json::parse_error &e) {
+            LOG_ERROR("Failed to parse Jinja template: {}", d);
+        }
         catch (const inja::json::exception &e) {
             LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
                 d, e.what());
@@ -236,20 +239,42 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
     if (e.file().empty())
         return;
 
-    if (!m_config.generate_links().link.empty()) {
-        ostr << " [[";
-        ostr << env().render(std::string_view{m_config.generate_links().link},
-            element_context(e));
+    ostr << " [[";
+    try {
+        if (!m_config.generate_links().link.empty()) {
+
+            ostr << env().render(
+                std::string_view{m_config.generate_links().link},
+                element_context(e));
+        }
+    }
+    catch (const inja::json::parse_error &e) {
+        LOG_ERROR("Failed to parse Jinja template: {}",
+            m_config.generate_links().link);
+    }
+    catch (const inja::json::exception &e) {
+        LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+            m_config.generate_links().link, e.what());
     }
 
-    if (!m_config.generate_links().tooltip.empty()) {
-        ostr << "{";
-        ostr << env().render(
-            std::string_view{m_config.generate_links().tooltip},
-            element_context(e));
-        ostr << "}";
+    ostr << "{";
+    try {
+        if (!m_config.generate_links().tooltip.empty()) {
+            ostr << env().render(
+                std::string_view{m_config.generate_links().tooltip},
+                element_context(e));
+        }
+    }
+    catch (const inja::json::parse_error &e) {
+        LOG_ERROR("Failed to parse Jinja template: {}",
+            m_config.generate_links().link);
+    }
+    catch (const inja::json::exception &e) {
+        LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+            m_config.generate_links().link, e.what());
     }
 
+    ostr << "}";
     ostr << "]]";
 }
 

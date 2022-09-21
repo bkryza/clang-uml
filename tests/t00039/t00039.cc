@@ -42,6 +42,11 @@ struct AAAA : public virtual AAA {
 };
 } // namespace ns2
 
+namespace detail {
+struct AA : public A {
+};
+} // namespace detail
+
 namespace ns3 {
 template <typename T> struct F {
     T *t;
