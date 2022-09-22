@@ -49,6 +49,9 @@ TEST_CASE("t00050", "[test-case][class]")
     REQUIRE_THAT(puml, !HasNote(_A("E"), "bottom"));
     REQUIRE_THAT(puml, !HasNote(_A("NoComment"), "top"));
     REQUIRE_THAT(puml, HasNote(_A("F<T,V,int N>"), "top"));
+    REQUIRE_THAT(puml, HasNote(_A("G"), "top"));
+    REQUIRE_THAT(puml, HasNote(_A("G"), "bottom"));
+    REQUIRE_THAT(puml, HasNote(_A("G"), "right"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

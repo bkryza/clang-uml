@@ -121,6 +121,27 @@ generate notes in the PlantUML diagram from code comments (see also test case [t
           {% endif %}
           {% endfor %}
 ```
+Currently there are 2 available comment parsers:
+* `plain` - default
+* `clang`
+They can be selected using `comment_parser` config option.
+
+#### `plain` comment parser
+This parser provides only 2 options to the Jinja context:
+* `comment.raw` - raw comment text, including comment markers such as `///` or `/**`
+* `comment.formatted` - formatted entire comment
+
+#### `clang` comment parser
+This parser uses Clang comment parsing API to extract commands from the command:
+* `comment.raw` - raw comment text, including comment markers such as `///` or `/**`
+* `comment.formatted` - formatted entire comment
+* `comment.<command>.<N>` - where command is the command used in the command e.g. `brief`, `todo`, etc. 
+   and `N` is the index of the command in the array (each comment can have multiple instances of the 
+   same command such as `\todo`)
+* `comment.text` - entire text of the comment that is not attached to any command
+* `comment.paragraph.<N>` - array of plain text paragraphs, for instance if you don't use `\brief`
+  commands but often provide brief description as first sentence of the comment separated with a new line
+  from the rest of the comment
 
 ## Example complete config
 

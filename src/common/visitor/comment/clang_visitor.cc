@@ -69,6 +69,11 @@ void clang_visitor::visit(
 
             cmt["text"] =
                 cmt["text"].get<std::string>() + "\n" + paragraph_text;
+
+            if (!cmt.contains("paragraph"))
+                cmt["paragraph"] = inja::json::array();
+
+            cmt["paragraph"].push_back(paragraph_text);
         }
         else if (block_kind == Comment::TextCommentKind) {
             // TODO

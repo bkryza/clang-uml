@@ -69,7 +69,7 @@ namespace utils {
 class D {
 };
 
-}
+} // namespace utils
 
 /// Mollis pretium lorem primis
 enum class E { E1, E2, E3 };
@@ -86,6 +86,14 @@ enum class E { E1, E2, E3 };
 template <typename T, typename V, int N> class F {
     T t[N];
     V v;
+};
+
+/// This is a short description of class G.
+///
+/// This is an intermediate description of class G.
+///
+/// This is a long description of class G.
+class G {
 };
 
 class NoComment {

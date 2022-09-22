@@ -24,7 +24,19 @@ diagrams:
           note left of {{ alias("C") }} #AABBCC                 
              {{ trim(comment("clanguml::t00050::C").text) }}          
           end note
+        - >
+          {% set cmt=comment("clanguml::t00050::G").paragraph %}
+          note top of {{ alias("G") }}
+             {{ trim(cmt.0) }}
+          end note
 
+          note right of {{ alias("G") }}
+             {{ trim(cmt.1) }}
+          end note
+
+          note bottom of {{ alias("G") }}
+             {{ trim(cmt.2) }}
+          end note
         - >
           {# Render brief comments and todos, if any were written for an element #}
           {% for e in diagram.elements %}
