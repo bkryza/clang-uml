@@ -47,8 +47,10 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     }
 
     auto message = m.message;
-    if (!message.empty())
+    if (!message.empty()) {
+        message = m_config.using_namespace().relative(message);
         message += "()";
+    }
 
     ostr << '"' << from << "\" "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
@@ -103,7 +105,8 @@ void generator::generate(std::ostream &ostr) const
         if (sf.location_type == source_location::location_t::function) {
             std::int64_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
-                if (v.from == sf.location) {
+                std::string vfrom = v.from;
+                if (vfrom == sf.location) {
                     start_from = k;
                     break;
                 }

@@ -63,7 +63,6 @@ private:
     clang::CXXMethodDecl *current_method_decl_;
     clang::FunctionDecl *current_function_decl_;
     clang::FunctionTemplateDecl *current_function_template_decl_;
-
 };
 
 }
