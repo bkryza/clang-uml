@@ -20,6 +20,7 @@
 #include "activity.h"
 #include "common/model/diagram.h"
 #include "common/types.h"
+#include "participant.h"
 
 #include <map>
 #include <string>
@@ -47,9 +48,41 @@ public:
 
     inja::json context() const override;
 
+    void print() const;
+
     bool started{false};
 
-    std::map<int64_t, activity> sequences;
+    template <typename T>
+    common::optional_ref<T> get_participant(
+        common::model::diagram_element::id_t id)
+    {
+        if (participants.find(id) == participants.end()) {
+            return {};
+        }
+
+        return common::optional_ref<T>(
+            static_cast<T *>(participants.at(id).get()));
+    }
+
+    void add_participant(std::unique_ptr<participant> p)
+    {
+        LOG_DBG("Adding {} participant: {}, {} [{}]", p->type_name(),
+            p->full_name(false), p->id(),
+            p->type_name() == "method"
+                ? dynamic_cast<method *>(p.get())->method_name()
+                : "");
+
+        const auto pid = p->id();
+
+        if (participants.find(pid) == participants.end()) {
+            participants.emplace(pid, std::move(p));
+        }
+    }
+
+    std::map<common::model::diagram_element::id_t, activity> sequences;
+
+    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
+        participants;
 };
 
 }

@@ -36,6 +36,10 @@ public:
     {
     }
 
+    optional_ref(T *value) { value_ = value; }
+
+    optional_ref(const T *value) { value_ = value; }
+
     optional_ref(T &value) { value_ = &value; }
 
     optional_ref(const T &value) { value_ = &value; }

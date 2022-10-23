@@ -38,15 +38,15 @@ generator::generator(
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto from = m_config.using_namespace().relative(m.from);
-    const auto to = m_config.using_namespace().relative(m.to);
+    const auto from = m_config.using_namespace().relative(m.from_name);
+    const auto to = m_config.using_namespace().relative(m.to_name);
 
     if (from.empty() || to.empty()) {
         LOG_DBG("Skipping empty call from '{}' to '{}'", from, to);
         return;
     }
 
-    auto message = m.message;
+    auto message = m.message_name;
     if (!message.empty()) {
         message = m_config.using_namespace().relative(message);
         message += "()";
@@ -57,7 +57,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
          << to << "\" : " << message << std::endl;
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
-        m.from_usr, to, m.to_usr);
+        m.from_name, to, m.to_name);
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
@@ -65,8 +65,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
     if ((m.from != m.to) && (m.return_type != "void")) {
-        const auto from = m_config.using_namespace().relative(m.from);
-        const auto to = m_config.using_namespace().relative(m.to);
+        const auto from = m_config.using_namespace().relative(m.from_name);
+        const auto to = m_config.using_namespace().relative(m.to_name);
 
         ostr << '"' << to << "\" "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
@@ -77,17 +77,25 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 void generator::generate_activity(const activity &a, std::ostream &ostr) const
 {
     for (const auto &m : a.messages) {
-        const auto to = m_config.using_namespace().relative(m.to);
+        const auto to = m_config.using_namespace().relative(m.to_name);
 
         if (to.empty())
             continue;
 
+        LOG_DBG("Generating message {} --> {}",
+            m.from_name, m.to_name);
         generate_call(m, ostr);
 
         ostr << "activate " << '"' << to << '"' << std::endl;
 
-        if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())
-            generate_activity(m_model.sequences[m.to_usr], ostr);
+        if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
+            LOG_DBG("Creating activity {} --> {} - missing sequence {}",
+                m.from_name, m.to_name, m.to);
+            generate_activity(m_model.sequences[m.to], ostr);
+        }
+        else
+            LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
+                m.from_name, m.to_name, m.to);
 
         generate_return(m, ostr);
 
@@ -97,6 +105,8 @@ void generator::generate_activity(const activity &a, std::ostream &ostr) const
 
 void generator::generate(std::ostream &ostr) const
 {
+    m_model.print();
+
     ostr << "@startuml" << std::endl;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
@@ -107,6 +117,7 @@ void generator::generate(std::ostream &ostr) const
             for (const auto &[k, v] : m_model.sequences) {
                 std::string vfrom = v.from;
                 if (vfrom == sf.location) {
+                    LOG_DBG("Found sequence diagram start point: {}", k);
                     start_from = k;
                     break;
                 }

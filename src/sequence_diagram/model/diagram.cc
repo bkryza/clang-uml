@@ -58,6 +58,20 @@ inja::json diagram::context() const
     return ctx;
 }
 
+void diagram::print() const
+{
+    for (const auto &[from_id, act] : sequences) {
+        LOG_DBG("Sequence id={}:", from_id);
+        LOG_DBG("   Activity id={}, from={}:", act.usr, act.from);
+        for (const auto &message : act.messages) {
+            LOG_DBG(
+                "       Message from={}, from_id={}, to={}, to_id={}, name={}",
+                message.from_name, message.from, message.to_name, message.to,
+                message.message_name);
+        }
+    }
+}
+
 }
 
 namespace clanguml::common::model {
