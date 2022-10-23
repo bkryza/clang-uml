@@ -128,4 +128,11 @@ method::method(const common::model::namespace_ &using_namespace)
     : participant{using_namespace}
 {
 }
+
+std::string method::alias() const
+{
+    assert(class_id_ >= 0);
+
+    return fmt::format("C_{:022}", class_id_);
+}
 }

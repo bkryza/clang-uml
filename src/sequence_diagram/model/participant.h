@@ -157,11 +157,11 @@ struct method : public participant {
 
     std::string type_name() const override { return "method"; }
 
-    const std::string method_name() const {
-        return method_name_;
-    }
+    const std::string method_name() const { return method_name_; }
 
-    void set_method_name(const std::string& name) { method_name_ = name; }
+    std::string alias() const override;
+
+    void set_method_name(const std::string &name) { method_name_ = name; }
 
     void set_class_id(diagram_element::id_t id) { class_id_ = id; }
 

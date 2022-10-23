@@ -79,10 +79,17 @@ public:
         }
     }
 
+    void add_active_participant(common::model::diagram_element::id_t id)
+    {
+        active_participants_.emplace(id);
+    }
+
     std::map<common::model::diagram_element::id_t, activity> sequences;
 
     std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
         participants;
+
+    std::set<common::model::diagram_element::id_t> active_participants_;
 };
 
 }

@@ -52,6 +52,8 @@ public:
     void generate_return(const clanguml::sequence_diagram::model::message &m,
         std::ostream &ostr) const;
 
+    void generate_participants(std::ostream &ostr) const;
+
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
         std::ostream &ostr) const;
 

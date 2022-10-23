@@ -339,6 +339,10 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         m.message_name = method_decl->getNameAsString();
         m.return_type = method_call_expr->getCallReturnType(current_ast_context)
                             .getAsString();
+
+        if (get_ast_local_id(callee_decl->getID()))
+            diagram().add_active_participant(
+                get_ast_local_id(callee_decl->getID()).value());
     }
     else if (const auto *function_call_expr =
                  clang::dyn_cast_or_null<clang::CallExpr>(expr);
@@ -400,13 +404,16 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         return true;
     }
 
-    if(m.from > 0 && m.to > 0) {
+    if (m.from > 0 && m.to > 0) {
         if (diagram().sequences.find(m.from) == diagram().sequences.end()) {
             activity a;
             a.usr = m.from;
             a.from = m.from_name;
             diagram().sequences.insert({m.from, std::move(a)});
         }
+
+        diagram().add_active_participant(m.from);
+        diagram().add_active_participant(m.to);
 
         LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name,
             m.from_name, m.from, m.to_name, m.to);
