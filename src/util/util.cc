@@ -201,7 +201,6 @@ std::string abbreviate(const std::string &s, const unsigned int max_length)
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result)
 {
-
     std::regex alias_regex("(@A\\([^\\).]+\\))");
 
     auto alias_it =

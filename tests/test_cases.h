@@ -123,17 +123,8 @@ ContainsMatcher HasCall(std::string const &from, std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, from, message),
+        CasedString(fmt::format("{} -> {} : {}()", from, from, message),
             caseSensitivity));
-}
-
-ContainsMatcher HasFunctionCall(std::string const &from,
-    std::string const &message,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(CasedString(
-        fmt::format("\"{}()\" -> \"{}()\" : {}()", from, message, message),
-        caseSensitivity));
 }
 
 ContainsMatcher HasCall(std::string const &from, std::string const &to,
@@ -141,7 +132,7 @@ ContainsMatcher HasCall(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
+        CasedString(fmt::format("{} -> {} : {}()", from, to, message),
             caseSensitivity));
 }
 
@@ -150,10 +141,10 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return HasCallWithResultMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
+        CasedString(fmt::format("{} -> {} : {}()", from, to, message),
             caseSensitivity),
         CasedString(
-            fmt::format("\"{}\" --> \"{}\"", to, from), caseSensitivity));
+            fmt::format("{} --> {}", to, from), caseSensitivity));
 }
 
 struct AliasMatcher {
@@ -162,11 +153,14 @@ struct AliasMatcher {
     {
     }
 
-    std::string operator()(const std::string &name)
+    std::string operator()(std::string name)
     {
         std::vector<std::regex> patterns;
 
         const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "\\(");
+        util::replace_all(name, ")", "\\)");
 
         patterns.push_back(
             std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
@@ -182,6 +176,8 @@ struct AliasMatcher {
             std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
             std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 

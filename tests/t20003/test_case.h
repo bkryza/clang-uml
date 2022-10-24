@@ -29,13 +29,14 @@ TEST_CASE("t20003", "[test-case][sequence]")
     REQUIRE(model->name() == "t20003_sequence");
 
     auto puml = generate_sequence_puml(diagram, *model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, HasFunctionCall("m1<T>", "m2<T>"));
-    REQUIRE_THAT(puml, HasFunctionCall("m2<T>", "m3<T>"));
-    REQUIRE_THAT(puml, HasFunctionCall("m3<T>", "m4<T>"));
+    REQUIRE_THAT(puml, HasCall(_A("m1<T>()"), _A("m2<T>()")));
+    REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()")));
+    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
