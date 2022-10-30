@@ -26,6 +26,24 @@
 
 namespace clanguml::sequence_diagram::model {
 
+struct template_trait {
+    std::ostringstream &render_template_params(std::ostringstream &ostr,
+        const common::model::namespace_ &using_namespace, bool relative) const;
+
+    void set_base_template(const std::string &full_name);
+
+    std::string base_template() const;
+
+    void add_template(class_diagram::model::template_parameter tmplt);
+
+    const std::vector<class_diagram::model::template_parameter> &
+    templates() const;
+
+private:
+    std::vector<class_diagram::model::template_parameter> templates_;
+    std::string base_template_full_name_;
+};
+
 struct participant : public common::model::element,
                      public common::model::stylable_element {
     enum class stereotype_t {
@@ -50,30 +68,8 @@ struct participant : public common::model::element,
 
     stereotype_t stereotype_{stereotype_t::participant};
 };
-//
-// struct template_trait {
-//    void set_base_template(const std::string &full_name)
-//    {
-//        base_template_full_name_ = full_name;
-//    }
-//    std::string base_template() const { return base_template_full_name_; }
-//
-//    void add_template(class_diagram::model::template_parameter tmplt)
-//    {
-//        templates_.push_back(std::move(tmplt));
-//    }
-//
-//    const std::vector<class_diagram::model::template_parameter> &
-//    templates() const
-//    {
-//        return templates_;
-//    }
-//
-//    std::vector<class_diagram::model::template_parameter> templates_;
-//    std::string base_template_full_name_;
-//};
 
-struct class_ : public participant {
+struct class_ : public participant, public template_trait {
 public:
     class_(const common::model::namespace_ &using_namespace);
 
@@ -93,14 +89,6 @@ public:
     bool is_template_instantiation() const;
     void is_template_instantiation(bool is_template_instantiation);
 
-    void add_template(class_diagram::model::template_parameter tmplt);
-
-    const std::vector<class_diagram::model::template_parameter> &
-    templates() const;
-
-    void set_base_template(const std::string &full_name);
-    std::string base_template() const;
-
     friend bool operator==(const class_ &l, const class_ &r);
 
     std::string full_name(bool relative = true) const override;
@@ -113,19 +101,12 @@ public:
 
     void is_alias(bool alias) { is_alias_ = alias; }
 
-    int calculate_template_specialization_match(
-        const class_ &other, const std::string &full_name) const;
-
 private:
-    std::ostringstream &render_template_params(
-        std::ostringstream &ostr, bool relative) const;
-
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
     bool is_alias_{false};
-    std::vector<class_diagram::model::template_parameter> templates_;
-    std::string base_template_full_name_;
+
     std::map<std::string, clanguml::class_diagram::model::type_alias>
         type_aliases_;
 
@@ -172,6 +153,19 @@ private:
     std::string method_name_;
 };
 
-struct function_template : public participant { };
+struct function_template : public participant, public template_trait {
+    function_template(const common::model::namespace_ &using_namespace);
+
+    function_template(const function_template &) = delete;
+    function_template(function_template &&) noexcept = delete;
+    function_template &operator=(const function_template &) = delete;
+    function_template &operator=(function_template &&) = delete;
+
+    std::string type_name() const override { return "function_template"; }
+
+    std::string full_name(bool relative = true) const override;
+
+    std::string full_name_no_ns() const override;
+};
 
 }

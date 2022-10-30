@@ -19,6 +19,50 @@
 #include "participant.h"
 
 namespace clanguml::sequence_diagram::model {
+
+std::ostringstream &template_trait::render_template_params(
+    std::ostringstream &ostr, const common::model::namespace_ &using_namespace,
+    bool relative) const
+{
+    using clanguml::common::model::namespace_;
+
+    if (!templates_.empty()) {
+        std::vector<std::string> tnames;
+        std::vector<std::string> tnames_simplified;
+
+        std::transform(templates_.cbegin(), templates_.cend(),
+            std::back_inserter(tnames),
+            [ns = using_namespace, relative](
+                const auto &tmplt) { return tmplt.to_string(ns, relative); });
+
+        ostr << fmt::format("<{}>", fmt::join(tnames, ","));
+    }
+
+    return ostr;
+}
+
+void template_trait::set_base_template(const std::string &full_name)
+{
+    base_template_full_name_ = full_name;
+}
+
+std::string template_trait::base_template() const
+{
+    return base_template_full_name_;
+}
+
+void template_trait::add_template(
+    class_diagram::model::template_parameter tmplt)
+{
+    templates_.push_back(std::move(tmplt));
+}
+
+const std::vector<class_diagram::model::template_parameter> &
+template_trait::templates() const
+{
+    return templates_;
+}
+
 class_::class_(const common::model::namespace_ &using_namespace)
     : participant{using_namespace}
 {
@@ -42,17 +86,6 @@ void class_::is_template_instantiation(bool is_template_instantiation)
     is_template_instantiation_ = is_template_instantiation;
 }
 
-void class_::add_template(class_diagram::model::template_parameter tmplt)
-{
-    templates_.emplace_back(std::move(tmplt));
-}
-
-const std::vector<class_diagram::model::template_parameter> &
-class_::templates() const
-{
-    return templates_;
-}
-
 std::string class_::full_name_no_ns() const
 {
     using namespace clanguml::util;
@@ -61,7 +94,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr, false);
+    render_template_params(ostr, using_namespace(), false);
 
     return ostr.str();
 }
@@ -74,7 +107,7 @@ std::string class_::full_name(bool relative) const
     std::ostringstream ostr;
 
     ostr << name_and_ns();
-    render_template_params(ostr, relative);
+    render_template_params(ostr, using_namespace(), relative);
 
     std::string res;
 
@@ -87,26 +120,6 @@ std::string class_::full_name(bool relative) const
         return "<<anonymous>>";
 
     return res;
-}
-
-std::ostringstream &class_::render_template_params(
-    std::ostringstream &ostr, bool relative) const
-{
-    using clanguml::common::model::namespace_;
-
-    if (!templates_.empty()) {
-        std::vector<std::string> tnames;
-        std::vector<std::string> tnames_simplified;
-
-        std::transform(templates_.cbegin(), templates_.cend(),
-            std::back_inserter(tnames),
-            [ns = using_namespace(), relative](
-                const auto &tmplt) { return tmplt.to_string(ns, relative); });
-
-        ostr << fmt::format("<{}>", fmt::join(tnames, ","));
-    }
-
-    return ostr;
 }
 
 function::function(const common::model::namespace_ &using_namespace)
@@ -135,4 +148,51 @@ std::string method::alias() const
 
     return fmt::format("C_{:022}", class_id_);
 }
+
+function_template::function_template(
+    const common::model::namespace_ &using_namespace)
+    : participant{using_namespace}
+{
+}
+
+std::string function_template::full_name(bool relative) const
+{
+    using namespace clanguml::util;
+    using clanguml::common::model::namespace_;
+
+    std::ostringstream ostr;
+
+    ostr << name_and_ns();
+    render_template_params(ostr, using_namespace(), relative);
+
+    ostr << "()";
+
+    std::string res;
+
+    if (relative)
+        res = using_namespace().relative(ostr.str());
+    else
+        res = ostr.str();
+
+    if (res.empty())
+        return "<<anonymous>>";
+
+    return res;
+}
+
+std::string function_template::full_name_no_ns() const
+{
+    using namespace clanguml::util;
+
+    std::ostringstream ostr;
+
+    ostr << name();
+
+    render_template_params(ostr, using_namespace(), false);
+
+    ostr << "()";
+
+    return ostr.str();
+}
+
 }

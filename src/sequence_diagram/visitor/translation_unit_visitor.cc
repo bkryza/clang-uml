@@ -243,6 +243,13 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
     LOG_DBG("Visiting function declaration {}", function_name);
 
+    if (f->isTemplated() && f->getDescribedTemplate()) {
+        // If the described templated of this function is already in the model
+        // skip it:
+        if (get_ast_local_id(f->getDescribedTemplate()->getID()))
+            return true;
+    }
+
     auto f_ptr = std::make_unique<sequence_diagram::model::function>(
         config().using_namespace());
 
@@ -272,9 +279,28 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     if (!diagram().should_include(function_name))
         return true;
 
-    LOG_DBG("Visiting function template declaration {}", function_name);
+    LOG_DBG("Visiting function template declaration {} at {}", function_name,
+        function_template->getLocation().printToString(source_manager()));
+
+    auto f_ptr = std::make_unique<sequence_diagram::model::function_template>(
+        config().using_namespace());
+
+    common::model::namespace_ ns{function_name};
+    f_ptr->set_name(ns.name());
+    ns.pop_back();
+    f_ptr->set_namespace(ns);
+
+    process_template_parameters(*function_template, *f_ptr);
+
+    f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
 
     call_expression_context_.update(function_template);
+    call_expression_context_.set_caller_id(f_ptr->id());
+
+    set_ast_local_id(function_template->getID(), f_ptr->id());
+
+    // TODO: Handle overloaded functions with different arguments
+    diagram().add_participant(std::move(f_ptr));
 
     return true;
 }
@@ -305,7 +331,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     m.from_name = diagram().participants.at(m.from)->full_name(false);
 
     const auto &current_ast_context =
-        call_expression_context_.get_ast_context();
+        *call_expression_context_.get_ast_context();
 
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
@@ -372,8 +398,17 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                                 clang::FunctionTemplateDecl>(decl);
 
                             m.to_name = to_string(ftd);
-                            m.message_name = to_string(ftd);
                             m.to = get_ast_local_id(ftd->getID()).value();
+                            auto message_name =
+                                diagram()
+                                    .get_participant<model::function_template>(
+                                        m.to)
+                                    .value()
+                                    .full_name(false)
+                                    .substr();
+                            m.message_name =
+                                message_name.substr(0, message_name.size() - 2);
+
                             break;
                         }
                     }
@@ -392,7 +427,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             if (!callee_function)
                 return true;
 
-            m.to_name = callee_function->getQualifiedNameAsString() + "()";
+            m.to_name = callee_function->getQualifiedNameAsString();
             m.message_name = callee_function->getNameAsString();
             m.to = get_ast_local_id(callee_function->getID()).value();
         }
@@ -523,8 +558,8 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
 }
 
 bool translation_unit_visitor::process_template_parameters(
-    const clang::ClassTemplateDecl &template_declaration,
-    sequence_diagram::model::class_ &c)
+    const clang::TemplateDecl &template_declaration,
+    sequence_diagram::model::template_trait &c)
 {
     using class_diagram::model::template_parameter;
 

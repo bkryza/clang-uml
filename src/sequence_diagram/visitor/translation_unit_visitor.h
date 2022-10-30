@@ -61,10 +61,15 @@ struct call_expression_context {
         current_class_template_decl_ = clst;
     }
 
-    auto &get_ast_context()
+    clang::ASTContext *get_ast_context()
     {
-        return current_class_decl_ ? current_class_decl_->getASTContext()
-                                   : current_function_decl_->getASTContext();
+        if(current_class_decl_)
+            return &current_class_decl_->getASTContext();
+
+        if(current_function_template_decl_)
+            return &current_function_template_decl_->getASTContext();
+
+        return &current_function_decl_->getASTContext();
     }
 
     void update(clang::CXXMethodDecl *method) { current_method_decl_ = method; }
@@ -241,8 +246,8 @@ private:
     create_class_declaration(clang::CXXRecordDecl *cls);
 
     bool process_template_parameters(
-        const clang::ClassTemplateDecl &template_declaration,
-        sequence_diagram::model::class_ &c);
+        const clang::TemplateDecl &template_declaration,
+        sequence_diagram::model::template_trait &c);
 
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
