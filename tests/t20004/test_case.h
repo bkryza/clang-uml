@@ -32,14 +32,10 @@ TEST_CASE("t20004", "[test-case][sequence]")
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>()")));
-    REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()")));
-    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()")));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<T>()"), "m1<int>"));
+    REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()"), "m3<T>"));
+    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()"), "m42<T>"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-
-    // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("A"), "log_result"));
-    // REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

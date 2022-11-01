@@ -63,10 +63,10 @@ struct call_expression_context {
 
     clang::ASTContext *get_ast_context()
     {
-        if(current_class_decl_)
+        if (current_class_decl_)
             return &current_class_decl_->getASTContext();
 
-        if(current_function_template_decl_)
+        if (current_function_template_decl_)
             return &current_function_template_decl_->getASTContext();
 
         return &current_function_decl_->getASTContext();
@@ -185,12 +185,10 @@ struct call_expression_context {
     //            return "";
     //    }
 
-    std::int64_t caller_id() const
-    {
-        return current_caller_id_;
-    }
+    std::int64_t caller_id() const { return current_caller_id_; }
 
-    void set_caller_id(std::int64_t id) {
+    void set_caller_id(std::int64_t id)
+    {
         LOG_DBG("Setting current caller id to {}", id);
         current_caller_id_ = id;
     }
@@ -248,6 +246,47 @@ private:
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
         sequence_diagram::model::template_trait &c);
+
+    std::unique_ptr<model::function_template>
+    build_function_template_instantiation(const clang::FunctionDecl &pDecl);
+
+    void build_template_instantiation_process_template_arguments(
+        std::optional<model::template_trait *> &parent,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        const clang::ArrayRef<clang::TemplateArgument> &template_args,
+        model::template_trait &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl);
+
+    void build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_expression_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_tag_argument(
+        model::template_trait &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const;
+
+    void build_template_instantiation_process_type_argument(
+        std::optional<model::template_trait *> &parent,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::template_trait &template_instantiation,
+        class_diagram::model::template_parameter &argument);
+
+    bool simplify_system_template(class_diagram::model::template_parameter &ct,
+        const std::string &full_name);
 
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;

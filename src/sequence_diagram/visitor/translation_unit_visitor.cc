@@ -140,9 +140,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
             class_model.id());
     }
 
-    //    call_expression_context_.current_class_decl_ = cls;
-    //    call_expression_context_.current_class_ = process_class(cls);
-
     return true;
 }
 
@@ -166,7 +163,6 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
-
     process_template_parameters(*cls, *c_ptr);
 
     const auto cls_full_name = c_ptr->full_name(false);
@@ -389,7 +385,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                         function_call_expr->getCallee());
 
                 if (unresolved_expr) {
-                    unresolved_expr->dump();
                     for (const auto *decl : unresolved_expr->decls()) {
                         if (clang::dyn_cast_or_null<
                                 clang::FunctionTemplateDecl>(decl)) {
@@ -427,9 +422,49 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             if (!callee_function)
                 return true;
 
+            bool is_implicit = false;
+            if (!get_ast_local_id(callee_function->getID()).has_value()) {
+                // This is implicit function template
+                // specialization/instantiation We have to build it
+                std::unique_ptr<model::function_template> f_ptr =
+                    build_function_template_instantiation(*callee_function);
+
+                f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+                set_ast_local_id(callee_function->getID(), f_ptr->id());
+                diagram().add_participant(std::move(f_ptr));
+
+                // This is not optimal way to check whether the callee declaration
+                // is implicit or explicit (we don't want implicit declarations
+                // as separate participants), but is there a better way?
+                is_implicit = true;
+            }
+
+            if (is_implicit)
+                LOG_DBG("Processing implicit template specialization {}",
+                    diagram()
+                        .get_participant<model::function_template>(
+                            get_ast_local_id(callee_function->getID()).value())
+                        .value()
+                        .full_name(false));
+
             m.to_name = callee_function->getQualifiedNameAsString();
-            m.message_name = callee_function->getNameAsString();
-            m.to = get_ast_local_id(callee_function->getID()).value();
+            if (is_implicit) {
+                // If this is an implicit template specialization/instantiation
+                m.to = get_ast_local_id(
+                    callee_function->getPrimaryTemplate()->getID())
+                           .value();
+            }
+            else
+                m.to = get_ast_local_id(callee_function->getID()).value();
+
+            auto message_name =
+                diagram()
+                    .get_participant<model::function_template>(
+                        get_ast_local_id(callee_function->getID()).value())
+                    .value()
+                    .full_name(false)
+                    .substr();
+            m.message_name = message_name.substr(0, message_name.size() - 2);
         }
         m.return_type =
             function_call_expr->getCallReturnType(current_ast_context)
@@ -635,4 +670,232 @@ translation_unit_visitor::get_ast_local_id(int64_t local_id) const
 
     return local_ast_id_map_.at(local_id);
 }
+
+std::unique_ptr<model::function_template>
+translation_unit_visitor::build_function_template_instantiation(
+    const clang::FunctionDecl &decl)
+{
+    //
+    // Here we'll hold the template base params to replace with the
+    // instantiated values
+    //
+    std::deque<std::tuple</*parameter name*/ std::string, /* position */ int,
+        /*is variadic */ bool>>
+        template_base_params{};
+
+    auto template_instantiation_ptr =
+        std::make_unique<model::function_template>(config_.using_namespace());
+    auto &template_instantiation = *template_instantiation_ptr;
+
+    //
+    // Set function template instantiation name
+    //
+    auto template_decl_qualified_name = decl.getQualifiedNameAsString();
+    common::model::namespace_ ns{template_decl_qualified_name};
+    ns.pop_back();
+    template_instantiation.set_name(decl.getNameAsString());
+    template_instantiation.set_namespace(ns);
+
+    //
+    // Instantiate the template arguments
+    //
+    std::optional<model::template_trait *> parent;
+    build_template_instantiation_process_template_arguments(parent,
+        template_base_params, decl.getTemplateSpecializationArgs()->asArray(),
+        template_instantiation, "", decl.getPrimaryTemplate());
+
+    return template_instantiation_ptr;
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_template_arguments(
+        std::optional<model::template_trait *> &parent,
+        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        const clang::ArrayRef<clang::TemplateArgument> &template_args,
+        model::template_trait &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl)
+{
+    auto arg_index = 0U;
+    for (const auto &arg : template_args) {
+        const auto argument_kind = arg.getKind();
+        class_diagram::model::template_parameter argument;
+        if (argument_kind == clang::TemplateArgument::Template) {
+            build_template_instantiation_process_template_argument(
+                arg, argument);
+        }
+        else if (argument_kind == clang::TemplateArgument::Type) {
+            build_template_instantiation_process_type_argument(parent,
+                full_template_specialization_name, template_decl, arg,
+                template_instantiation, argument);
+        }
+        else if (argument_kind == clang::TemplateArgument::Integral) {
+            build_template_instantiation_process_integral_argument(
+                arg, argument);
+        }
+        else if (argument_kind == clang::TemplateArgument::Expression) {
+            build_template_instantiation_process_expression_argument(
+                arg, argument);
+        }
+        else {
+            LOG_ERROR("Unsupported argument type {}", arg.getKind());
+        }
+
+        simplify_system_template(
+            argument, argument.to_string(config().using_namespace(), false));
+
+        template_instantiation.add_template(std::move(argument));
+
+        arg_index++;
+    }
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const
+{
+    argument.is_template_parameter(true);
+    auto arg_name =
+        arg.getAsTemplate().getAsTemplateDecl()->getQualifiedNameAsString();
+    argument.set_type(arg_name);
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const
+{
+    assert(arg.getKind() == clang::TemplateArgument::Integral);
+
+    argument.is_template_parameter(false);
+    argument.set_type(std::to_string(arg.getAsIntegral().getExtValue()));
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_expression_argument(
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const
+{
+    assert(arg.getKind() == clang::TemplateArgument::Expression);
+
+    argument.is_template_parameter(false);
+    argument.set_type(common::get_source_text(
+        arg.getAsExpr()->getSourceRange(), source_manager()));
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_tag_argument(
+        model::template_trait &template_instantiation,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        class_diagram::model::template_parameter &argument) const
+{
+    assert(arg.getKind() == clang::TemplateArgument::Type);
+
+    argument.is_template_parameter(false);
+
+    argument.set_name(
+        common::to_string(arg.getAsType(), template_decl->getASTContext()));
+}
+
+void translation_unit_visitor::
+    build_template_instantiation_process_type_argument(
+        std::optional<model::template_trait *> &parent,
+        const std::string &full_template_specialization_name,
+        const clang::TemplateDecl *template_decl,
+        const clang::TemplateArgument &arg,
+        model::template_trait &template_instantiation,
+        class_diagram::model::template_parameter &argument)
+{
+    assert(arg.getKind() == clang::TemplateArgument::Type);
+
+    argument.is_template_parameter(false);
+
+    // If this is a nested template type - add nested templates as
+    // template arguments
+    if (arg.getAsType()->getAs<clang::FunctionType>()) {
+
+        for (const auto &param_type :
+            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types()) {
+
+            if (!param_type->getAs<clang::RecordType>())
+                continue;
+
+            //            auto classTemplateSpecialization =
+            //                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+            //                    param_type->getAsRecordDecl());
+
+            //            if (classTemplateSpecialization) {
+            //                // Read arg info as needed.
+            //                auto nested_template_instantiation =
+            //                    build_template_instantiation_from_class_template_specialization(
+            //                        *classTemplateSpecialization,
+            //                        *param_type->getAs<clang::RecordType>(),
+            //                        diagram().should_include(
+            //                            full_template_specialization_name)
+            //                            ?
+            //                            std::make_optional(&template_instantiation)
+            //                            : parent);
+            //            }
+        }
+    }
+    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+        const auto *nested_template_type =
+            arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+
+        const auto nested_template_name =
+            nested_template_type->getTemplateName()
+                .getAsTemplateDecl()
+                ->getQualifiedNameAsString();
+
+        auto [tinst_ns, tinst_name] = cx::util::split_ns(nested_template_name);
+
+        argument.set_name(nested_template_name);
+
+        //        auto nested_template_instantiation =
+        //        build_template_instantiation(
+        //            *arg.getAsType()->getAs<clang::TemplateSpecializationType>(),
+        //            diagram().should_include(full_template_specialization_name)
+        //                ? std::make_optional(&template_instantiation)
+        //                : parent);
+        //
+        //        argument.set_id(nested_template_instantiation->id());
+        //
+        //        for (const auto &t :
+        //        nested_template_instantiation->templates())
+        //            argument.add_template_param(t);
+
+        // Check if this template should be simplified (e.g. system
+        // template aliases such as 'std:basic_string<char>' should
+        // be simply 'std::string')
+        simplify_system_template(
+            argument, argument.to_string(config().using_namespace(), false));
+    }
+    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+        argument.is_template_parameter(true);
+        argument.set_name(
+            common::to_string(arg.getAsType(), template_decl->getASTContext()));
+    }
+    else {
+        // This is just a regular record type
+        build_template_instantiation_process_tag_argument(
+            template_instantiation, full_template_specialization_name,
+            template_decl, arg, argument);
+    }
+}
+
+bool translation_unit_visitor::simplify_system_template(
+    class_diagram::model::template_parameter &ct, const std::string &full_name)
+{
+    if (config().type_aliases().count(full_name) > 0) {
+        ct.set_name(config().type_aliases().at(full_name));
+        ct.clear_params();
+        return true;
+    }
+    else
+        return false;
+}
+
 }
