@@ -34,7 +34,7 @@ TEST_CASE("t20004", "[test-case][sequence]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<T>()"), "m1<int>"));
     REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()"), "m3<T>"));
-    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()"), "m42<T>"));
+    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()"), "m4<T>"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     save_puml(
