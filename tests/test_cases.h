@@ -122,18 +122,16 @@ struct HasCallWithResultMatcher : ContainsMatcher {
 ContainsMatcher HasCall(std::string const &from, std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("{} -> {} : {}()", from, from, message),
-            caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("{} -> {} : {}()", from, from, message), caseSensitivity));
 }
 
 ContainsMatcher HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("{} -> {} : {}()", from, to, message),
-            caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("{} -> {} : {}()", from, to, message), caseSensitivity));
 }
 
 auto HasCallWithResponse(std::string const &from, std::string const &to,
@@ -141,10 +139,9 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return HasCallWithResultMatcher(
-        CasedString(fmt::format("{} -> {} : {}()", from, to, message),
-            caseSensitivity),
         CasedString(
-            fmt::format("{} --> {}", to, from), caseSensitivity));
+            fmt::format("{} -> {} : {}()", from, to, message), caseSensitivity),
+        CasedString(fmt::format("{} --> {}", to, from), caseSensitivity));
 }
 
 struct AliasMatcher {

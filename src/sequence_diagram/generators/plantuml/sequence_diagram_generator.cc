@@ -113,7 +113,7 @@ void generator::generate_participants(std::ostream &ostr) const
         ostr << "participant \""
              << m_config.using_namespace().relative(
                     participant.full_name(false))
-             << "\" as " << participant.alias()<< '\n';
+             << "\" as " << participant.alias() << '\n';
     }
 }
 

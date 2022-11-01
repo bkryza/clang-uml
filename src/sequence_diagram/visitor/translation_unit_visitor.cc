@@ -433,9 +433,10 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 set_ast_local_id(callee_function->getID(), f_ptr->id());
                 diagram().add_participant(std::move(f_ptr));
 
-                // This is not optimal way to check whether the callee declaration
-                // is implicit or explicit (we don't want implicit declarations
-                // as separate participants), but is there a better way?
+                // This is not optimal way to check whether the callee
+                // declaration is implicit or explicit (we don't want implicit
+                // declarations as separate participants), but is there a better
+                // way?
                 is_implicit = true;
             }
 

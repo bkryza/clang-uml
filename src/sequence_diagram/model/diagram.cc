@@ -29,10 +29,10 @@ common::model::diagram_t diagram::type() const
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
-    const std::string & full_name) const
+    const std::string &full_name) const
 {
-    for(const auto& [id, participant] : participants) {
-        if(participant->full_name(false) == full_name)
+    for (const auto &[id, participant] : participants) {
+        if (participant->full_name(false) == full_name)
             return {*participant};
     }
 
@@ -42,7 +42,7 @@ common::optional_ref<common::model::diagram_element> diagram::get(
 common::optional_ref<common::model::diagram_element> diagram::get(
     const common::model::diagram_element::id_t id) const
 {
-    if(participants.find(id) != participants.end())
+    if (participants.find(id) != participants.end())
         return {*participants.at(id)};
 
     return {};
