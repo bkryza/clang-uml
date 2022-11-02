@@ -46,6 +46,9 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         return;
     }
 
+    generate_participant(ostr, m.from);
+    generate_participant(ostr, m.to);
+
     auto message = m.message_name;
     if (!message.empty()) {
         message = m_config.using_namespace().relative(message);
@@ -101,20 +104,55 @@ void generator::generate_activity(const activity &a, std::ostream &ostr) const
     }
 }
 
-void generator::generate_participants(std::ostream &ostr) const
+void generator::generate_participant(std::ostream &ostr, common::id_t id) const
 {
     for (const auto participant_id : m_model.active_participants_) {
+        if (participant_id != id)
+            continue;
+
+        if (is_participant_generated(participant_id))
+            return;
+
         const auto &participant =
             m_model.get_participant<model::participant>(participant_id).value();
 
-        if (participant.type_name() == "method")
-            continue;
+        if (participant.type_name() == "method") {
+            const auto &class_id =
+                m_model.get_participant<model::method>(participant_id)
+                    .value()
+                    .class_id();
 
-        ostr << "participant \""
-             << m_config.using_namespace().relative(
-                    participant.full_name(false))
-             << "\" as " << participant.alias() << '\n';
+            if (is_participant_generated(class_id))
+                return;
+
+            const auto &class_participant =
+                m_model.get_participant<model::participant>(class_id).value();
+
+            ostr << "participant \""
+                 << m_config.using_namespace().relative(
+                        class_participant.full_name(false))
+                 << "\" as " << class_participant.alias() << '\n';
+
+            generated_participants_.emplace(class_id);
+        }
+        else {
+            ostr << "participant \""
+                 << m_config.using_namespace().relative(
+                        participant.full_name(false))
+                 << "\" as " << participant.alias() << '\n';
+
+            generated_participants_.emplace(participant_id);
+        }
+
+        return;
     }
+}
+
+bool generator::is_participant_generated(common::id_t id) const
+{
+    return std::find(generated_participants_.begin(),
+               generated_participants_.end(),
+               id) != generated_participants_.end();
 }
 
 void generator::generate(std::ostream &ostr) const
@@ -124,8 +162,6 @@ void generator::generate(std::ostream &ostr) const
     ostr << "@startuml" << std::endl;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
-
-    generate_participants(ostr);
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {

@@ -52,12 +52,17 @@ public:
     void generate_return(const clanguml::sequence_diagram::model::message &m,
         std::ostream &ostr) const;
 
-    void generate_participants(std::ostream &ostr) const;
+    void generate_participant(std::ostream &ostr, common::id_t id) const;
 
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
         std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const;
+
+private:
+    bool is_participant_generated(common::id_t id) const;
+
+    mutable std::set<common::id_t> generated_participants_;
 };
 
 }
