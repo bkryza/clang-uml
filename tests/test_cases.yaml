@@ -154,6 +154,12 @@ test_cases:
     - name: t20002
       title: Free function sequence diagram test case
       description:
+    - name: t20003
+      title: Function template sequence diagram test case
+      description:
+    - name: t20004
+      title: Function template instantiation sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
