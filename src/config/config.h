@@ -156,6 +156,8 @@ struct diagram : public inheritable_diagram_options {
     std::vector<std::string> get_translation_units(
         const std::filesystem::path &root_directory) const;
 
+    void initialize_type_aliases();
+
     std::string name;
 };
 
@@ -174,8 +176,6 @@ struct class_diagram : public diagram {
     option<layout_hints> layout{"layout"};
 
     void initialize_relationship_hints();
-
-    void initialize_type_aliases();
 };
 
 struct sequence_diagram : public diagram {

@@ -237,32 +237,51 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
     if (!diagram().should_include(function_name))
         return true;
 
-    LOG_DBG("Visiting function declaration {}", function_name);
+    LOG_DBG("Visiting function declaration {} at {}", function_name,
+        f->getLocation().printToString(source_manager()));
 
-    if (f->isTemplated() && f->getDescribedTemplate()) {
-        // If the described templated of this function is already in the model
-        // skip it:
-        if (get_ast_local_id(f->getDescribedTemplate()->getID()))
-            return true;
+    if (f->isTemplated()) {
+        if (f->getDescribedTemplate()) {
+            // If the described templated of this function is already in the
+            // model skip it:
+            if (get_ast_local_id(f->getDescribedTemplate()->getID()))
+                return true;
+        }
     }
 
-    auto f_ptr = std::make_unique<sequence_diagram::model::function>(
-        config().using_namespace());
+    if (f->isFunctionTemplateSpecialization()) {
+        auto f_ptr = build_function_template_instantiation(*f);
 
-    common::model::namespace_ ns{function_name};
-    f_ptr->set_name(ns.name());
-    ns.pop_back();
-    f_ptr->set_namespace(ns);
-    f_ptr->set_id(common::to_id(function_name));
+        f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
 
-    call_expression_context_.update(f);
+        call_expression_context_.update(f);
 
-    call_expression_context_.set_caller_id(f_ptr->id());
+        call_expression_context_.set_caller_id(f_ptr->id());
 
-    set_ast_local_id(f->getID(), f_ptr->id());
+        set_ast_local_id(f->getID(), f_ptr->id());
 
-    // TODO: Handle overloaded functions with different arguments
-    diagram().add_participant(std::move(f_ptr));
+        // TODO: Handle overloaded functions with different arguments
+        diagram().add_participant(std::move(f_ptr));
+    }
+    else {
+        auto f_ptr = std::make_unique<sequence_diagram::model::function>(
+            config().using_namespace());
+
+        common::model::namespace_ ns{function_name};
+        f_ptr->set_name(ns.name());
+        ns.pop_back();
+        f_ptr->set_namespace(ns);
+        f_ptr->set_id(common::to_id(function_name));
+
+        call_expression_context_.update(f);
+
+        call_expression_context_.set_caller_id(f_ptr->id());
+
+        set_ast_local_id(f->getID(), f_ptr->id());
+
+        // TODO: Handle overloaded functions with different arguments
+        diagram().add_participant(std::move(f_ptr));
+    }
 
     return true;
 }
@@ -423,34 +442,42 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 return true;
 
             bool is_implicit = false;
-            if (!get_ast_local_id(callee_function->getID()).has_value()) {
-                // This is implicit function template
-                // specialization/instantiation We have to build it
-                std::unique_ptr<model::function_template> f_ptr =
-                    build_function_template_instantiation(*callee_function);
+            auto callee_name =
+                callee_function->getQualifiedNameAsString() + "()";
+
+            std::unique_ptr<model::function_template> f_ptr;
+
+            //
+            // The target template function is implicit if it's
+            // specialization/instantiation was not explicitly defined
+            // (i.e. it was not added to the diagram by visitor methods)
+            //
+            is_implicit =
+                !get_ast_local_id(callee_function->getID()).has_value();
+
+            //
+            // If the callee is a specialization of a function template,
+            // build it's instantiation model to get the id
+            //
+            if (callee_function->getTemplateSpecializationArgs() &&
+                callee_function->getTemplateSpecializationArgs()->size() > 0) {
+                f_ptr = build_function_template_instantiation(*callee_function);
+
+                callee_name = f_ptr->full_name(false);
 
                 f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
                 set_ast_local_id(callee_function->getID(), f_ptr->id());
-                diagram().add_participant(std::move(f_ptr));
-
-                // This is not optimal way to check whether the callee
-                // declaration is implicit or explicit (we don't want implicit
-                // declarations as separate participants), but is there a better
-                // way?
-                is_implicit = true;
             }
 
             if (is_implicit)
                 LOG_DBG("Processing implicit template specialization {}",
-                    diagram()
-                        .get_participant<model::function_template>(
-                            get_ast_local_id(callee_function->getID()).value())
-                        .value()
-                        .full_name(false));
+                    f_ptr->full_name(false));
 
             m.to_name = callee_function->getQualifiedNameAsString();
             if (is_implicit) {
                 // If this is an implicit template specialization/instantiation
+                // for now we just redirect the call to it's primary template
+                // (TODO: this is not correct in a general case)
                 m.to = get_ast_local_id(
                     callee_function->getPrimaryTemplate()->getID())
                            .value();
@@ -458,14 +485,11 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             else
                 m.to = get_ast_local_id(callee_function->getID()).value();
 
-            auto message_name =
-                diagram()
-                    .get_participant<model::function_template>(
-                        get_ast_local_id(callee_function->getID()).value())
-                    .value()
-                    .full_name(false)
-                    .substr();
+            auto message_name = callee_name;
             m.message_name = message_name.substr(0, message_name.size() - 2);
+
+            if (f_ptr)
+                diagram().add_participant(std::move(f_ptr));
         }
 
         const auto &return_type =
@@ -908,5 +932,4 @@ bool translation_unit_visitor::simplify_system_template(
     else
         return false;
 }
-
 }

@@ -131,6 +131,38 @@ std::vector<std::string> diagram::get_translation_units(
     return translation_units;
 }
 
+void diagram::initialize_type_aliases()
+{
+    if (!type_aliases().count("std::basic_string<char>")) {
+        type_aliases().insert({"std::basic_string<char>", "std::string"});
+    }
+    if (!type_aliases().count("std::basic_string<char,std::char_traits<"
+                              "char>,std::allocator<char>>")) {
+        type_aliases().insert({"std::basic_string<char,std::char_traits<"
+                               "char>,std::allocator<char>>",
+            "std::string"});
+    }
+    if (!type_aliases().count("std::basic_string<wchar_t>")) {
+        type_aliases().insert({"std::basic_string<wchar_t>", "std::wstring"});
+    }
+    if (!type_aliases().count("std::basic_string<char16_t>")) {
+        type_aliases().insert(
+            {"std::basic_string<char16_t>", "std::u16string"});
+    }
+    if (!type_aliases().count("std::basic_string<char32_t>")) {
+        type_aliases().insert(
+            {"std::basic_string<char32_t>", "std::u32string"});
+    }
+    if (!type_aliases().count("std::integral_constant<bool,true>")) {
+        type_aliases().insert(
+            {"std::integral_constant<bool,true>", "std::true_type"});
+    }
+    if (!type_aliases().count("std::integral_constant<bool,false>")) {
+        type_aliases().insert(
+            {"std::integral_constant<bool,false>", "std::false_type"});
+    }
+}
+
 common::model::diagram_t class_diagram::type() const
 {
     return common::model::diagram_t::kClass;
@@ -176,38 +208,6 @@ void class_diagram::initialize_relationship_hints()
         relationship_hint_t hint{relationship_t::kNone};
         hint.argument_hints.insert({1, relationship_t::kAggregation});
         relationship_hints().insert({"std::tuple", std::move(hint)});
-    }
-}
-
-void class_diagram::initialize_type_aliases()
-{
-    if (!type_aliases().count("std::basic_string<char>")) {
-        type_aliases().insert({"std::basic_string<char>", "std::string"});
-    }
-    if (!type_aliases().count("std::basic_string<char,std::char_traits<"
-                              "char>,std::allocator<char>>")) {
-        type_aliases().insert({"std::basic_string<char,std::char_traits<"
-                               "char>,std::allocator<char>>",
-            "std::string"});
-    }
-    if (!type_aliases().count("std::basic_string<wchar_t>")) {
-        type_aliases().insert({"std::basic_string<wchar_t>", "std::wstring"});
-    }
-    if (!type_aliases().count("std::basic_string<char16_t>")) {
-        type_aliases().insert(
-            {"std::basic_string<char16_t>", "std::u16string"});
-    }
-    if (!type_aliases().count("std::basic_string<char32_t>")) {
-        type_aliases().insert(
-            {"std::basic_string<char32_t>", "std::u32string"});
-    }
-    if (!type_aliases().count("std::integral_constant<bool,true>")) {
-        type_aliases().insert(
-            {"std::integral_constant<bool,true>", "std::true_type"});
-    }
-    if (!type_aliases().count("std::integral_constant<bool,false>")) {
-        type_aliases().insert(
-            {"std::integral_constant<bool,false>", "std::false_type"});
     }
 }
 
@@ -589,6 +589,8 @@ template <> struct convert<sequence_diagram> {
             return false;
 
         get_option(node, rhs.start_from);
+
+        rhs.initialize_type_aliases();
 
         return true;
     }
