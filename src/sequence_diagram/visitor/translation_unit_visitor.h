@@ -32,6 +32,7 @@ std::string to_string(const clang::FunctionTemplateDecl *decl);
 struct call_expression_context {
     call_expression_context()
         : current_class_decl_{nullptr}
+        , current_class_template_decl_{nullptr}
         , current_method_decl_{nullptr}
         , current_function_decl_{nullptr}
         , current_function_template_decl_{nullptr}
@@ -40,29 +41,40 @@ struct call_expression_context {
 
     void reset()
     {
+        current_caller_id_ = 0;
         current_class_decl_ = nullptr;
+        current_class_template_decl_ = nullptr;
         current_method_decl_ = nullptr;
         current_function_decl_ = nullptr;
         current_function_template_decl_ = nullptr;
     }
 
+    void dump()
+    {
+        LOG_DBG("current_caller_id_ = {}", current_caller_id_);
+        LOG_DBG("current_class_decl_ = {}", (void *)current_class_decl_);
+        LOG_DBG("current_class_template_decl_ = {}",
+            (void *)current_class_template_decl_);
+        LOG_DBG("current_method_decl_ = {}", (void *)current_method_decl_);
+        LOG_DBG("current_function_decl_ = {}", (void *)current_function_decl_);
+        LOG_DBG("current_function_template_decl_ = {}",
+            (void *)current_function_template_decl_);
+    }
+
     bool valid() const
     {
         return (current_class_decl_ != nullptr) ||
+            (current_class_template_decl_ != nullptr) ||
             (current_method_decl_ != nullptr) ||
             (current_function_decl_ != nullptr) ||
             (current_function_template_decl_ != nullptr);
     }
 
-    void update(clang::CXXRecordDecl *cls) { current_class_decl_ = cls; }
-
-    void update(clang::ClassTemplateDecl *clst)
-    {
-        current_class_template_decl_ = clst;
-    }
-
     clang::ASTContext *get_ast_context()
     {
+        if (current_class_template_decl_)
+            return &current_class_template_decl_->getASTContext();
+
         if (current_class_decl_)
             return &current_class_decl_->getASTContext();
 
@@ -70,6 +82,13 @@ struct call_expression_context {
             return &current_function_template_decl_->getASTContext();
 
         return &current_function_decl_->getASTContext();
+    }
+
+    void update(clang::CXXRecordDecl *cls) { current_class_decl_ = cls; }
+
+    void update(clang::ClassTemplateDecl *clst)
+    {
+        current_class_template_decl_ = clst;
     }
 
     void update(clang::CXXMethodDecl *method) { current_method_decl_ = method; }
@@ -117,73 +136,6 @@ struct call_expression_context {
         return current_function_decl_ != nullptr &&
             current_function_template_decl_ != nullptr;
     }
-
-    //    std::string caller_name() const
-    //    {
-    //        if (in_class_method())
-    //            return current_class_decl_->getQualifiedNameAsString();
-    //        else if (in_function_template()) {
-    //            return to_string(current_function_template_decl_);
-    //        }
-    //        else if (in_function()) {
-    //            const auto function_name =
-    //                current_function_decl_->getQualifiedNameAsString();
-    //            LOG_DBG("Processing function {}", function_name);
-    //            // Handle call expression within free function
-    //            if
-    //            (current_function_decl_->isFunctionTemplateSpecialization()) {
-    //                /*
-    //                    /// This template specialization was formed from a
-    //                   template-id but
-    //                    /// has not yet been declared, defined, or
-    //                    instantiated. TSK_Undeclared = 0,
-    //                    /// This template specialization was implicitly
-    //                    instantiated
-    //                   from a
-    //                    /// template. (C++ [temp.inst]).
-    //                    TSK_ImplicitInstantiation,
-    //                    /// This template specialization was declared or
-    //                    defined by
-    //                   an
-    //                    /// explicit specialization (C++ [temp.expl.spec]) or
-    //                   partial
-    //                    /// specialization (C++ [temp.class.spec]).
-    //                    TSK_ExplicitSpecialization,
-    //                    /// This template specialization was instantiated from
-    //                    a
-    //                   template
-    //                    /// due to an explicit instantiation declaration
-    //                    request
-    //                    /// (C++11 [temp.explicit]).
-    //                    TSK_ExplicitInstantiationDeclaration,
-    //                    /// This template specialization was instantiated from
-    //                    a
-    //                   template
-    //                    /// due to an explicit instantiation definition
-    //                    request
-    //                    /// (C++ [temp.explicit]).
-    //                    TSK_ExplicitInstantiationDefinition
-    //                 */
-    //                [[maybe_unused]] const auto specialization_kind =
-    //                    current_function_decl_->getTemplateSpecializationKind();
-    //                [[maybe_unused]] const auto *primary_template =
-    //                    current_function_decl_->getPrimaryTemplate();
-    //
-    //                for (const auto &arg :
-    //                    current_function_decl_->getTemplateSpecializationArgs()
-    //                        ->asArray()) {
-    //                    LOG_DBG("TEMPLATE SPECIALIZATION ARG:");
-    //                    arg.dump();
-    //                }
-    //
-    //                LOG_DBG("--------------");
-    //            }
-    //
-    //            return function_name + "()";
-    //        }
-    //        else
-    //            return "";
-    //    }
 
     std::int64_t caller_id() const { return current_caller_id_; }
 

@@ -66,16 +66,16 @@ public:
 
     void add_participant(std::unique_ptr<participant> p)
     {
-        LOG_DBG("Adding {} participant: {}, {} [{}]", p->type_name(),
-            p->full_name(false), p->id(),
-            p->type_name() == "method"
-                ? dynamic_cast<method *>(p.get())->method_name()
-                : "");
+        const auto participant_id = p->id();
 
-        const auto pid = p->id();
+        if (participants.find(participant_id) == participants.end()) {
+            LOG_DBG("Adding '{}' participant: {}, {} [{}]", p->type_name(),
+                p->full_name(false), p->id(),
+                p->type_name() == "method"
+                    ? dynamic_cast<method *>(p.get())->method_name()
+                    : "");
 
-        if (participants.find(pid) == participants.end()) {
-            participants.emplace(pid, std::move(p));
+            participants.emplace(participant_id, std::move(p));
         }
     }
 

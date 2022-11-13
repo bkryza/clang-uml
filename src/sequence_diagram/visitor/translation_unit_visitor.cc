@@ -78,8 +78,6 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    call_expression_context_.reset();
-
     if (!diagram().should_include(cls->getQualifiedNameAsString())) {
         return true;
     }
@@ -101,6 +99,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     if (!c_ptr)
         return true;
+
+    call_expression_context_.reset();
 
     const auto cls_id = c_ptr->id();
 
@@ -152,9 +152,9 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("= Visiting class template declaration {} at {}",
+    LOG_DBG("= Visiting class template declaration {} at {} [{}]",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()));
+        cls->getLocation().printToString(source_manager()), (void *)cls);
 
     auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
 
@@ -181,8 +181,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     }
 
     if (diagram_.should_include(*c_ptr)) {
-        const auto name = c_ptr->full_name();
-        LOG_DBG("Adding class template {} with id {}", name, id);
+        LOG_DBG("Adding class template {} with id {}", cls_full_name, id);
 
         call_expression_context_.set_caller_id(id);
         call_expression_context_.update(cls);
@@ -195,7 +194,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
 bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 {
-    if (call_expression_context_.current_class_decl_ == nullptr ||
+    if (call_expression_context_.current_class_decl_ == nullptr &&
         call_expression_context_.current_class_template_decl_ == nullptr)
         return true;
 
@@ -210,11 +209,22 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     m_ptr->set_name(ns.name());
     ns.pop_back();
     m_ptr->set_namespace(ns);
-    m_ptr->set_id(common::to_id(m->getQualifiedNameAsString()));
 
-    m_ptr->set_class_id(
-        get_ast_local_id(call_expression_context_.current_class_decl_->getID())
-            .value());
+    if (call_expression_context_.current_class_decl_)
+        m_ptr->set_class_id(get_ast_local_id(
+            call_expression_context_.current_class_decl_->getID())
+                                .value());
+    else
+        m_ptr->set_class_id(get_ast_local_id(
+            call_expression_context_.current_class_template_decl_->getID())
+                                .value());
+
+    m_ptr->set_name(
+        diagram().participants.at(m_ptr->class_id())->full_name_no_ns() +
+        "::" + m->getNameAsString());
+
+    m_ptr->set_id(
+        common::to_id(m_ptr->full_name(false) + "::" + m->getNameAsString()));
 
     call_expression_context_.update(m);
 
@@ -327,6 +337,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
+    //    expr->dump();
+
     // Skip casts, moves and such
     if (expr->isCallToStdMove())
         return true;
@@ -337,16 +349,20 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
         return true;
 
+    call_expression_context_.dump();
+
     if (!call_expression_context_.valid())
         return true;
 
     message m;
     m.type = message_t::kCall;
     m.from = call_expression_context_.caller_id();
-    m.from_name = diagram().participants.at(m.from)->full_name(false);
 
     const auto &current_ast_context =
         *call_expression_context_.get_ast_context();
+
+    LOG_DBG("Visiting call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
 
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
@@ -354,7 +370,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         // TODO: Handle C++ operator calls
     }
     //
-    // class method
+    // Call to a class method
     //
     else if (const auto *method_call_expr =
                  clang::dyn_cast_or_null<clang::CXXMemberCallExpr>(expr);
@@ -376,7 +392,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         //       encountered by the visitor - for now it's not a problem
         //       as overloaded methods are not supported
         m.to = common::to_id(method_decl->getQualifiedNameAsString());
-        m.to_name = callee_decl->getQualifiedNameAsString();
         m.message_name = method_decl->getNameAsString();
         m.return_type = method_call_expr->getCallReturnType(current_ast_context)
                             .getAsString();
@@ -385,6 +400,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             diagram().add_active_participant(
                 get_ast_local_id(callee_decl->getID()).value());
     }
+    //
+    // Call to a function
+    //
     else if (const auto *function_call_expr =
                  clang::dyn_cast_or_null<clang::CallExpr>(expr);
              function_call_expr != nullptr) {
@@ -396,8 +414,49 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
 
         if (!callee_decl) {
-            if (clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
+            //
+            // Call to a method of a class template
+            //
+            if (clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
                     function_call_expr->getCallee())) {
+                auto *dependent_member_callee =
+                    clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
+                        function_call_expr->getCallee());
+
+                if (!dependent_member_callee->getBaseType().isNull()) {
+                    const auto *primary_template =
+                        dependent_member_callee->getBaseType()
+                            ->getAs<clang::TemplateSpecializationType>()
+                            ->getTemplateName()
+                            .getAsTemplateDecl();
+
+                    auto callee_method_full_name =
+                        diagram()
+                            .participants
+                            .at(get_ast_local_id(primary_template->getID())
+                                    .value())
+                            ->full_name(false) +
+                        "::" +
+                        dependent_member_callee->getMember().getAsString();
+
+                    auto callee_id = common::to_id(callee_method_full_name);
+                    m.to = callee_id;
+
+                    m.message_name =
+                        dependent_member_callee->getMember().getAsString();
+                    m.return_type = "";
+
+                    if (get_ast_local_id(primary_template->getID()))
+                        diagram().add_active_participant(
+                            get_ast_local_id(primary_template->getID())
+                                .value());
+                }
+            }
+            //
+            // Call to a template function
+            //
+            else if (clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
+                         function_call_expr->getCallee())) {
                 // This is probably a template
                 auto *unresolved_expr =
                     clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
@@ -411,7 +470,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                             auto *ftd = clang::dyn_cast_or_null<
                                 clang::FunctionTemplateDecl>(decl);
 
-                            m.to_name = to_string(ftd);
+                            //                            m.to_name =
+                            //                            to_string(ftd);
                             m.to = get_ast_local_id(ftd->getID()).value();
                             auto message_name =
                                 diagram()
@@ -430,11 +490,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             }
         }
         else {
-            if (!callee_decl)
-                return true;
-
             if (callee_decl->isTemplateDecl())
-                LOG_DBG("Call to template function!!!!");
+                LOG_DBG("Call to template function");
 
             const auto *callee_function = callee_decl->getAsFunction();
 
@@ -473,7 +530,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 LOG_DBG("Processing implicit template specialization {}",
                     f_ptr->full_name(false));
 
-            m.to_name = callee_function->getQualifiedNameAsString();
+            //            m.to_name =
+            //            callee_function->getQualifiedNameAsString();
             if (is_implicit) {
                 // If this is an implicit template specialization/instantiation
                 // for now we just redirect the call to it's primary template
@@ -512,8 +570,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (m.from > 0 && m.to > 0) {
         if (diagram().sequences.find(m.from) == diagram().sequences.end()) {
             activity a;
-            a.usr = m.from;
-            a.from = m.from_name;
+            //            a.usr = m.from;
+            a.from = m.from;
             diagram().sequences.insert({m.from, std::move(a)});
         }
 
@@ -521,7 +579,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         diagram().add_active_participant(m.to);
 
         LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name,
-            m.from_name, m.from, m.to_name, m.to);
+            m.from, m.from, m.to, m.to);
 
         diagram().sequences[m.from].messages.emplace_back(std::move(m));
 

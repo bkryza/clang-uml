@@ -18,6 +18,7 @@
 #pragma once
 
 #include "message.h"
+#include "participant.h"
 
 #include <string>
 #include <vector>
@@ -25,8 +26,10 @@
 namespace clanguml::sequence_diagram::model {
 
 struct activity {
-    std::uint_least64_t usr;
-    std::string from;
+//    std::uint_least64_t from_id;
+//    std::string from_name;
+//    std::string from_method_name;
+    common::model::diagram_element::id_t from;
     std::vector<message> messages;
 };
 

@@ -66,6 +66,12 @@ struct participant : public common::model::element,
 
     std::string type_name() const override { return "participant"; }
 
+    virtual std::string to_string() const
+    {
+        return fmt::format("Participant '{}': id={} name={}", type_name(), id(),
+            full_name(false));
+    }
+
     stereotype_t stereotype_{stereotype_t::participant};
 };
 
@@ -147,6 +153,12 @@ struct method : public participant {
     void set_class_id(diagram_element::id_t id) { class_id_ = id; }
 
     diagram_element::id_t class_id() const { return class_id_; }
+
+    std::string to_string() const override
+    {
+        return fmt::format("Participant '{}': id={}, name={}, class_id={}",
+            type_name(), id(), full_name(false), class_id());
+    }
 
 private:
     diagram_element::id_t class_id_;

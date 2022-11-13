@@ -73,13 +73,25 @@ inja::json diagram::context() const
 
 void diagram::print() const
 {
+    LOG_DBG(" --- Participants ---");
+    for (const auto &[id, participant] : participants) {
+        LOG_DBG("{} - {}", id, participant->to_string());
+    }
+
+    LOG_DBG(" --- Activities ---");
     for (const auto &[from_id, act] : sequences) {
         LOG_DBG("Sequence id={}:", from_id);
-        LOG_DBG("   Activity id={}, from={}:", act.usr, act.from);
+        const auto &from_activity = *(participants.at(from_id));
+        LOG_DBG("   Activity id={}, from={}:", act.from,
+            from_activity.full_name(false));
         for (const auto &message : act.messages) {
-            LOG_DBG(
-                "       Message from={}, from_id={}, to={}, to_id={}, name={}",
-                message.from_name, message.from, message.to_name, message.to,
+            const auto &from_participant = *participants.at(message.from);
+            const auto &to_participant = *participants.at(message.to);
+
+            LOG_DBG("       Message from={}, from_id={}, "
+                    "to={}, to_id={}, name={}",
+                from_participant.full_name(false), from_participant.id(),
+                to_participant.full_name(false), to_participant.id(),
                 message.message_name);
         }
     }
