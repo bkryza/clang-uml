@@ -28,10 +28,7 @@ namespace clanguml::sequence_diagram::model {
 struct message {
     message()
         : from{}
-//        , from_method_name{}
-//        , from_name{}
         , to{}
-//        , to_name{}
         , message_name{}
         , return_type{}
         , line{}
@@ -41,19 +38,6 @@ struct message {
     common::model::message_t type;
     common::model::diagram_element::id_t from;
     common::model::diagram_element::id_t to;
-//
-//    /// Source participant id
-//    std::uint_least64_t from;
-//    std::string from_method_name;
-//
-//    std::string from_name;
-//    //    std::uint_least64_t from_usr{};
-//
-//    /// Target participant id
-//    std::uint_least64_t to;
-//    std::string to_name;
-//
-//    //    std::int64_t to_usr{};
 
     std::string message_name;
 

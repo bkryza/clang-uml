@@ -90,13 +90,13 @@ void generator::generate_activity(const activity &a, std::ostream &ostr) const
         ostr << "activate " << to.value().alias() << std::endl;
 
         if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
-            LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                m.from, m.to, m.to);
+            LOG_DBG("Creating activity {} --> {} - missing sequence {}", m.from,
+                m.to, m.to);
             generate_activity(m_model.sequences[m.to], ostr);
         }
         else
-            LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
-                m.from, m.to, m.to);
+            LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from,
+                m.to, m.to);
 
         generate_return(m, ostr);
 
@@ -159,8 +159,6 @@ void generator::generate(std::ostream &ostr) const
 {
     m_model.print();
 
-
-
     ostr << "@startuml" << std::endl;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
@@ -169,7 +167,7 @@ void generator::generate(std::ostream &ostr) const
         if (sf.location_type == source_location::location_t::function) {
             std::int64_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
-                const auto& caller = *m_model.participants.at(v.from);
+                const auto &caller = *m_model.participants.at(v.from);
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {
                     LOG_DBG("Found sequence diagram start point: {}", k);

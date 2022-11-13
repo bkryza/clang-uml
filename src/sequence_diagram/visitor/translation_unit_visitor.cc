@@ -223,8 +223,13 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
         diagram().participants.at(m_ptr->class_id())->full_name_no_ns() +
         "::" + m->getNameAsString());
 
-    m_ptr->set_id(
-        common::to_id(m_ptr->full_name(false) + "::" + m->getNameAsString()));
+    m_ptr->set_id(common::to_id(
+        diagram().participants.at(m_ptr->class_id())->full_name(false) +
+        "::" + m->getNameAsString()));
+
+    LOG_DBG("Set id {} for method name {}", m_ptr->id(),
+        diagram().participants.at(m_ptr->class_id())->full_name(false) +
+            "::" + m->getNameAsString());
 
     call_expression_context_.update(m);
 
@@ -395,6 +400,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         m.message_name = method_decl->getNameAsString();
         m.return_type = method_call_expr->getCallReturnType(current_ast_context)
                             .getAsString();
+
+        LOG_DBG("Set callee method id {} for method name {}", m.to,
+            method_decl->getQualifiedNameAsString());
 
         if (get_ast_local_id(callee_decl->getID()))
             diagram().add_active_participant(
