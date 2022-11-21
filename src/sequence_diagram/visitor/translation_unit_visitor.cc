@@ -192,6 +192,60 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     return true;
 }
 
+bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
+    clang::ClassTemplateSpecializationDecl *cls)
+{
+    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
+        return true;
+
+    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+        return true;
+
+    if(cls->isImplicit())
+        LOG_DBG("!!!!!!!!!!!!!!!!!!!!!");
+
+    LOG_DBG("= Visiting template specialization declaration {} at {}",
+        cls->getQualifiedNameAsString(),
+        cls->getLocation().printToString(source_manager()));
+
+    // TODO: Add support for classes defined in function/method bodies
+    if (cls->isLocalClass())
+        return true;
+
+    auto template_specialization_ptr = process_template_specialization(cls);
+
+    if (!template_specialization_ptr)
+        return true;
+
+    const auto cls_full_name = template_specialization_ptr->full_name(false);
+    const auto id = common::to_id(cls_full_name);
+
+    template_specialization_ptr->set_id(id);
+
+    set_ast_local_id(cls->getID(), id);
+
+    if (!cls->isCompleteDefinition()) {
+        forward_declarations_.emplace(
+            id, std::move(template_specialization_ptr));
+        return true;
+    }
+    else {
+        forward_declarations_.erase(id);
+    }
+
+    if (diagram_.should_include(*template_specialization_ptr)) {
+        LOG_DBG("Adding class template specialization {} with id {}",
+            cls_full_name, id);
+
+        call_expression_context_.set_caller_id(id);
+        call_expression_context_.update(cls);
+
+        diagram_.add_participant(std::move(template_specialization_ptr));
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 {
     if (call_expression_context_.current_class_decl_ == nullptr &&
@@ -385,18 +439,45 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         const auto *method_decl = method_call_expr->getMethodDecl();
         std::string method_name = method_decl->getQualifiedNameAsString();
 
-        const auto *callee_decl =
-            method_decl ? method_decl->getParent() : nullptr;
+        auto *callee_decl = method_decl ? method_decl->getParent() : nullptr;
 
         if (!(callee_decl &&
                 diagram().should_include(
                     callee_decl->getQualifiedNameAsString())))
             return true;
 
-        // TODO: The method can be called before it's declaration has been
-        //       encountered by the visitor - for now it's not a problem
-        //       as overloaded methods are not supported
-        m.to = common::to_id(method_decl->getQualifiedNameAsString());
+        const auto *callee_template_specialization =
+            clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                callee_decl);
+
+        if (callee_template_specialization) {
+            LOG_DBG("Callee is a template specialization declaration {}",
+                callee_template_specialization->getQualifiedNameAsString());
+
+            if (!get_ast_local_id(callee_template_specialization->getID())) {
+                callee_template_specialization->dump();
+
+
+                call_expression_context context_backup = call_expression_context_;
+
+                // Since this visitor will overwrite the call_expression_context_
+                // we need to back it up and restore it later
+                VisitClassTemplateSpecializationDecl(
+                    const_cast<clang::ClassTemplateSpecializationDecl *>(
+                        callee_template_specialization));
+
+                call_expression_context_ = context_backup;
+            }
+
+            m.to = get_ast_local_id(callee_template_specialization->getID())
+                       .value();
+        }
+        else {
+            // TODO: The method can be called before it's declaration has been
+            //       encountered by the visitor - for now it's not a problem
+            //       as overloaded methods are not supported
+            m.to = common::to_id(method_decl->getQualifiedNameAsString());
+        }
         m.message_name = method_decl->getNameAsString();
         m.return_type = method_call_expr->getCallReturnType(current_ast_context)
                             .getAsString();
@@ -800,7 +881,7 @@ translation_unit_visitor::build_function_template_instantiation(
     //
     // Instantiate the template arguments
     //
-    std::optional<model::template_trait *> parent;
+    model::template_trait *parent{nullptr};
     build_template_instantiation_process_template_arguments(parent,
         template_base_params, decl.getTemplateSpecializationArgs()->asArray(),
         template_instantiation, "", decl.getPrimaryTemplate());
@@ -810,7 +891,7 @@ translation_unit_visitor::build_function_template_instantiation(
 
 void translation_unit_visitor::
     build_template_instantiation_process_template_arguments(
-        std::optional<model::template_trait *> &parent,
+        model::template_trait *parent,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::template_trait &template_instantiation,
@@ -903,7 +984,7 @@ void translation_unit_visitor::
 
 void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
-        std::optional<model::template_trait *> &parent,
+        model::template_trait *parent,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
@@ -984,6 +1065,400 @@ void translation_unit_visitor::
         build_template_instantiation_process_tag_argument(
             template_instantiation, full_template_specialization_name,
             template_decl, arg, argument);
+    }
+}
+
+std::unique_ptr<model::class_>
+translation_unit_visitor::process_template_specialization(
+    clang::ClassTemplateSpecializationDecl *cls)
+{
+    auto c_ptr{std::make_unique<model::class_>(config_.using_namespace())};
+    auto &template_instantiation = *c_ptr;
+
+    // TODO: refactor to method get_qualified_name()
+    auto qualified_name = cls->getQualifiedNameAsString();
+    util::replace_all(qualified_name, "(anonymous namespace)", "");
+    util::replace_all(qualified_name, "::::", "::");
+
+    common::model::namespace_ ns{qualified_name};
+    ns.pop_back();
+    template_instantiation.set_name(cls->getNameAsString());
+    template_instantiation.set_namespace(ns);
+
+    template_instantiation.is_struct(cls->isStruct());
+
+    process_comment(*cls, template_instantiation);
+    set_source_location(*cls, template_instantiation);
+
+    if (template_instantiation.skip())
+        return {};
+
+    const auto template_args_count = cls->getTemplateArgs().size();
+    for (auto arg_it = 0U; arg_it < template_args_count; arg_it++) {
+        const auto arg = cls->getTemplateArgs().get(arg_it);
+        process_template_specialization_argument(
+            cls, template_instantiation, arg, arg_it);
+    }
+
+    template_instantiation.set_id(
+        common::to_id(template_instantiation.full_name(false)));
+
+    set_ast_local_id(cls->getID(), template_instantiation.id());
+
+    return c_ptr;
+}
+
+void translation_unit_visitor::process_template_specialization_argument(
+    const clang::ClassTemplateSpecializationDecl *cls,
+    model::class_ &template_instantiation, const clang::TemplateArgument &arg,
+    size_t argument_index, bool in_parameter_pack)
+{
+    const auto argument_kind = arg.getKind();
+
+    if (argument_kind == clang::TemplateArgument::Type) {
+        class_diagram::model::template_parameter argument;
+        argument.is_template_parameter(false);
+
+        // If this is a nested template type - add nested templates as
+        // template arguments
+        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+            const auto *nested_template_type =
+                arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+
+            const auto nested_template_name =
+                nested_template_type->getTemplateName()
+                    .getAsTemplateDecl()
+                    ->getQualifiedNameAsString();
+
+            argument.set_name(nested_template_name);
+
+            auto nested_template_instantiation = build_template_instantiation(
+                *arg.getAsType()->getAs<clang::TemplateSpecializationType>(),
+                &template_instantiation);
+
+            argument.set_id(nested_template_instantiation->id());
+
+            for (const auto &t : nested_template_instantiation->templates())
+                argument.add_template_param(t);
+
+            // Check if this template should be simplified (e.g. system
+            // template aliases such as 'std:basic_string<char>' should be
+            // simply 'std::string')
+            simplify_system_template(argument,
+                argument.to_string(config().using_namespace(), false));
+        }
+        else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+            auto type_name =
+                common::to_string(arg.getAsType(), cls->getASTContext());
+
+            // clang does not provide declared template parameter/argument
+            // names in template specializations - so we have to extract
+            // them from raw source code...
+            if (type_name.find("type-parameter-") == 0) {
+                auto declaration_text = common::get_source_text_raw(
+                    cls->getSourceRange(), source_manager());
+
+                declaration_text = declaration_text.substr(
+                    declaration_text.find(cls->getNameAsString()) +
+                    cls->getNameAsString().size() + 1);
+
+                auto template_params =
+                    cx::util::parse_unexposed_template_params(
+                        declaration_text, [](const auto &t) { return t; });
+
+                if (template_params.size() > argument_index)
+                    type_name = template_params[argument_index].to_string(
+                        config().using_namespace(), false);
+                else {
+                    LOG_DBG("Failed to find type specialization for argument "
+                            "{} at index {} in declaration \n===\n{}\n===\n",
+                        type_name, argument_index, declaration_text);
+                }
+            }
+
+            argument.set_name(type_name);
+        }
+        else {
+            auto type_name =
+                common::to_string(arg.getAsType(), cls->getASTContext());
+            if (type_name.find('<') != std::string::npos) {
+                // Sometimes template instantiation is reported as
+                // RecordType in the AST and getAs to
+                // TemplateSpecializationType returns null pointer so we
+                // have to at least make sure it's properly formatted
+                // (e.g. std:integral_constant, or any template
+                // specialization which contains it - see t00038)
+                process_unexposed_template_specialization_parameters(
+                    type_name.substr(type_name.find('<') + 1,
+                        type_name.size() - (type_name.find('<') + 2)),
+                    argument, template_instantiation);
+
+                argument.set_name(type_name.substr(0, type_name.find('<')));
+            }
+            else if (type_name.find("type-parameter-") == 0) {
+                auto declaration_text = common::get_source_text_raw(
+                    cls->getSourceRange(), source_manager());
+
+                declaration_text = declaration_text.substr(
+                    declaration_text.find(cls->getNameAsString()) +
+                    cls->getNameAsString().size() + 1);
+
+                auto template_params =
+                    cx::util::parse_unexposed_template_params(
+                        declaration_text, [](const auto &t) { return t; });
+
+                if (template_params.size() > argument_index)
+                    type_name = template_params[argument_index].to_string(
+                        config().using_namespace(), false);
+                else {
+                    LOG_DBG("Failed to find type specialization for argument "
+                            "{} at index {} in declaration \n===\n{}\n===\n",
+                        type_name, argument_index, declaration_text);
+                }
+
+                // Otherwise just set the name for the template argument to
+                // whatever clang says
+                argument.set_name(type_name);
+            }
+            else
+                argument.set_name(type_name);
+        }
+
+        LOG_DBG("Adding template instantiation argument {}",
+            argument.to_string(config().using_namespace(), false));
+
+        simplify_system_template(
+            argument, argument.to_string(config().using_namespace(), false));
+
+        template_instantiation.add_template(std::move(argument));
+    }
+    else if (argument_kind == clang::TemplateArgument::Integral) {
+        class_diagram::model::template_parameter argument;
+        argument.is_template_parameter(false);
+        argument.set_type(std::to_string(arg.getAsIntegral().getExtValue()));
+        template_instantiation.add_template(std::move(argument));
+    }
+    else if (argument_kind == clang::TemplateArgument::Expression) {
+        class_diagram::model::template_parameter argument;
+        argument.is_template_parameter(false);
+        argument.set_type(common::get_source_text(
+            arg.getAsExpr()->getSourceRange(), source_manager()));
+        template_instantiation.add_template(std::move(argument));
+    }
+    else if (argument_kind == clang::TemplateArgument::TemplateExpansion) {
+        class_diagram::model::template_parameter argument;
+        argument.is_template_parameter(true);
+
+        cls->getLocation().dump(source_manager());
+    }
+    else if (argument_kind == clang::TemplateArgument::Pack) {
+        // This will only work for now if pack is at the end
+        size_t argument_pack_index{argument_index};
+        for (const auto &template_argument : arg.getPackAsArray()) {
+            process_template_specialization_argument(cls,
+                template_instantiation, template_argument,
+                argument_pack_index++, true);
+        }
+    }
+    else {
+        LOG_ERROR("Unsupported template argument kind {} [{}]", arg.getKind(),
+            cls->getLocation().printToString(source_manager()));
+    }
+}
+
+std::unique_ptr<model::class_>
+translation_unit_visitor::build_template_instantiation(
+    const clang::TemplateSpecializationType &template_type_decl,
+    model::class_ *parent)
+{
+    // TODO: Make sure we only build instantiation once
+
+    //
+    // Here we'll hold the template base params to replace with the
+    // instantiated values
+    //
+    std::deque<std::tuple</*parameter name*/ std::string, /* position */ int,
+        /*is variadic */ bool>>
+        template_base_params{};
+
+    auto *template_type_ptr = &template_type_decl;
+    if (template_type_decl.isTypeAlias() &&
+        template_type_decl.getAliasedType()
+            ->getAs<clang::TemplateSpecializationType>())
+        template_type_ptr = template_type_decl.getAliasedType()
+                                ->getAs<clang::TemplateSpecializationType>();
+
+    auto &template_type = *template_type_ptr;
+
+    //
+    // Create class_ instance to hold the template instantiation
+    //
+    auto template_instantiation_ptr =
+        std::make_unique<model::class_>(config_.using_namespace());
+    auto &template_instantiation = *template_instantiation_ptr;
+    std::string full_template_specialization_name = common::to_string(
+        template_type.desugar(),
+        template_type.getTemplateName().getAsTemplateDecl()->getASTContext());
+
+    auto *template_decl{template_type.getTemplateName().getAsTemplateDecl()};
+
+    auto template_decl_qualified_name =
+        template_decl->getQualifiedNameAsString();
+
+    auto *class_template_decl{
+        clang::dyn_cast<clang::ClassTemplateDecl>(template_decl)};
+
+    if (class_template_decl && class_template_decl->getTemplatedDecl() &&
+        class_template_decl->getTemplatedDecl()->getParent() &&
+        class_template_decl->getTemplatedDecl()->getParent()->isRecord()) {
+
+        common::model::namespace_ ns{
+            common::get_tag_namespace(*class_template_decl->getTemplatedDecl()
+                                           ->getParent()
+                                           ->getOuterLexicalRecordContext())};
+
+        std::string ns_str = ns.to_string();
+        std::string name = template_decl->getQualifiedNameAsString();
+        if (!ns_str.empty()) {
+            name = name.substr(ns_str.size() + 2);
+        }
+
+        util::replace_all(name, "::", "##");
+        template_instantiation.set_name(name);
+
+        template_instantiation.set_namespace(ns);
+    }
+    else {
+        common::model::namespace_ ns{template_decl_qualified_name};
+        ns.pop_back();
+        template_instantiation.set_name(template_decl->getNameAsString());
+        template_instantiation.set_namespace(ns);
+    }
+
+    // TODO: Refactor handling of base parameters to a separate method
+
+    // We need this to match any possible base classes coming from template
+    // arguments
+    std::vector<
+        std::pair</* parameter name */ std::string, /* is variadic */ bool>>
+        template_parameter_names{};
+
+    for (const auto *parameter : *template_decl->getTemplateParameters()) {
+        if (parameter->isTemplateParameter() &&
+            (parameter->isTemplateParameterPack() ||
+                parameter->isParameterPack())) {
+            template_parameter_names.emplace_back(
+                parameter->getNameAsString(), true);
+        }
+        else
+            template_parameter_names.emplace_back(
+                parameter->getNameAsString(), false);
+    }
+
+    // Check if the primary template has any base classes
+    int base_index = 0;
+
+    const auto *templated_class_decl =
+        clang::dyn_cast_or_null<clang::CXXRecordDecl>(
+            template_decl->getTemplatedDecl());
+
+    if (templated_class_decl && templated_class_decl->hasDefinition())
+        for (const auto &base : templated_class_decl->bases()) {
+            const auto base_class_name = common::to_string(
+                base.getType(), templated_class_decl->getASTContext(), false);
+
+            LOG_DBG("Found template instantiation base: {}, {}",
+                base_class_name, base_index);
+
+            // Check if any of the primary template arguments has a
+            // parameter equal to this type
+            auto it = std::find_if(template_parameter_names.begin(),
+                template_parameter_names.end(),
+                [&base_class_name](
+                    const auto &p) { return p.first == base_class_name; });
+
+            if (it != template_parameter_names.end()) {
+                const auto &parameter_name = it->first;
+                const bool is_variadic = it->second;
+                // Found base class which is a template parameter
+                LOG_DBG("Found base class which is a template parameter "
+                        "{}, {}, {}",
+                    parameter_name, is_variadic,
+                    std::distance(template_parameter_names.begin(), it));
+
+                template_base_params.emplace_back(parameter_name,
+                    std::distance(template_parameter_names.begin(), it),
+                    is_variadic);
+            }
+            else {
+                // This is a regular base class - it is handled by
+                // process_template
+            }
+            base_index++;
+        }
+
+    build_template_instantiation_process_template_arguments(parent,
+        template_base_params, template_type.template_arguments(),
+        template_instantiation, full_template_specialization_name,
+        template_decl);
+
+    // First try to find the best match for this template in partially
+    // specialized templates
+    std::string destination{};
+    std::string best_match_full_name{};
+    auto full_template_name = template_instantiation.full_name(false);
+    int best_match{};
+    common::model::diagram_element::id_t best_match_id{0};
+
+    for (const auto &[id, c] : diagram().participants) {
+        const auto *participant_as_class =
+            dynamic_cast<model::class_ *>(c.get());
+        if ((participant_as_class != nullptr) &&
+            (*participant_as_class == template_instantiation))
+            continue;
+
+        auto c_full_name = participant_as_class->full_name(false);
+        auto match =
+            participant_as_class->calculate_template_specialization_match(
+                template_instantiation, template_instantiation.name_and_ns());
+
+        if (match > best_match) {
+            best_match = match;
+            best_match_full_name = c_full_name;
+            best_match_id = participant_as_class->id();
+        }
+    }
+
+    auto templated_decl_id =
+        template_type.getTemplateName().getAsTemplateDecl()->getID();
+    //    auto templated_decl_local_id =
+    //        get_ast_local_id(templated_decl_id).value_or(0);
+
+    if (best_match_id > 0) {
+        destination = best_match_full_name;
+    }
+    else {
+        LOG_DBG("== Cannot determine global id for specialization template {} "
+                "- delaying until the translation unit is complete ",
+            templated_decl_id);
+    }
+
+    template_instantiation.set_id(
+        common::to_id(template_instantiation_ptr->full_name(false)));
+
+    return template_instantiation_ptr;
+}
+
+void translation_unit_visitor::
+    process_unexposed_template_specialization_parameters(
+        const std::string &type_name,
+        class_diagram::model::template_parameter &tp, model::class_ &c) const
+{
+    auto template_params = cx::util::parse_unexposed_template_params(
+        type_name, [](const std::string &t) { return t; });
+
+    for (auto &param : template_params) {
+        tp.add_template_param(param);
     }
 }
 

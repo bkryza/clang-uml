@@ -39,6 +39,9 @@ struct template_trait {
     const std::vector<class_diagram::model::template_parameter> &
     templates() const;
 
+    int calculate_template_specialization_match(
+        const template_trait &other, const std::string &full_name) const;
+
 private:
     std::vector<class_diagram::model::template_parameter> templates_;
     std::string base_template_full_name_;

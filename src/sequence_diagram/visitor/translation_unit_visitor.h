@@ -169,7 +169,10 @@ public:
 
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
 
-    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
+    virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
+
+    virtual bool VisitClassTemplateSpecializationDecl(
+        clang::ClassTemplateSpecializationDecl *cls);
 
     virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
 
@@ -203,7 +206,7 @@ private:
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
 
     void build_template_instantiation_process_template_arguments(
-        std::optional<model::template_trait *> &parent,
+        model::template_trait *parent,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::template_trait &template_instantiation,
@@ -230,12 +233,29 @@ private:
         class_diagram::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_type_argument(
-        std::optional<model::template_trait *> &parent,
+        model::template_trait *parent,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         model::template_trait &template_instantiation,
         class_diagram::model::template_parameter &argument);
+
+    std::unique_ptr<model::class_> process_template_specialization(
+        clang::ClassTemplateSpecializationDecl *cls);
+
+    void process_template_specialization_argument(
+        const clang::ClassTemplateSpecializationDecl *cls,
+        model::class_ &template_instantiation,
+        const clang::TemplateArgument &arg, size_t argument_index,
+        bool in_parameter_pack = false);
+
+    void process_unexposed_template_specialization_parameters(
+        const std::string &type_name,
+        class_diagram::model::template_parameter &tp, model::class_ &c) const;
+
+    std::unique_ptr<model::class_> build_template_instantiation(
+        const clang::TemplateSpecializationType &template_type_decl,
+        model::class_ *parent);
 
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
         const std::string &full_name);

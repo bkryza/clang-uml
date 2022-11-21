@@ -64,7 +64,9 @@ int tmain()
     A a;
     B b(a);
 
-    return b.wrap_add3(1, 2, 3);
+    auto tmp = a.add(1, 2);
+
+    return b.wrap_add3(tmp, 2, 3);
 }
 }
 }
