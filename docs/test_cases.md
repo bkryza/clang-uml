@@ -54,6 +54,8 @@
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
  * [t20003](./test_cases/t20003.md) - Function template sequence diagram test case
  * [t20004](./test_cases/t20004.md) - Function template instantiation sequence diagram test case
+ * [t20005](./test_cases/t20005.md) - Class template basic sequence diagram
+ * [t20006](./test_cases/t20006.md) - Class template specialization basic sequence diagram
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
