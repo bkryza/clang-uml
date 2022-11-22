@@ -68,12 +68,12 @@ int template_trait::calculate_template_specialization_match(
 {
     int res{};
 
-//    std::string left = name_and_ns();
-//    // TODO: handle variadic templates
-//    if ((name_and_ns() != full_name) ||
-//        (templates().size() != other.templates().size())) {
-//        return res;
-//    }
+    //    std::string left = name_and_ns();
+    //    // TODO: handle variadic templates
+    //    if ((name_and_ns() != full_name) ||
+    //        (templates().size() != other.templates().size())) {
+    //        return res;
+    //    }
 
     // Iterate over all template arguments
     for (auto i = 0U; i < other.templates().size(); i++) {
@@ -155,7 +155,6 @@ std::string class_::full_name(bool relative) const
 }
 
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
-
 
 function::function(const common::model::namespace_ &using_namespace)
     : participant{using_namespace}

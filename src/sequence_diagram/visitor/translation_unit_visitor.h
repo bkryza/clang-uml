@@ -33,9 +33,11 @@ struct call_expression_context {
     call_expression_context()
         : current_class_decl_{nullptr}
         , current_class_template_decl_{nullptr}
+        , current_class_template_specialization_decl_{nullptr}
         , current_method_decl_{nullptr}
         , current_function_decl_{nullptr}
         , current_function_template_decl_{nullptr}
+        , current_caller_id_{0}
     {
     }
 
@@ -44,6 +46,7 @@ struct call_expression_context {
         current_caller_id_ = 0;
         current_class_decl_ = nullptr;
         current_class_template_decl_ = nullptr;
+        current_class_template_specialization_decl_ = nullptr;
         current_method_decl_ = nullptr;
         current_function_decl_ = nullptr;
         current_function_template_decl_ = nullptr;
@@ -55,6 +58,8 @@ struct call_expression_context {
         LOG_DBG("current_class_decl_ = {}", (void *)current_class_decl_);
         LOG_DBG("current_class_template_decl_ = {}",
             (void *)current_class_template_decl_);
+        LOG_DBG("current_class_template_specialization_decl_ = {}",
+            (void *)current_class_template_specialization_decl_);
         LOG_DBG("current_method_decl_ = {}", (void *)current_method_decl_);
         LOG_DBG("current_function_decl_ = {}", (void *)current_function_decl_);
         LOG_DBG("current_function_template_decl_ = {}",
@@ -65,6 +70,7 @@ struct call_expression_context {
     {
         return (current_class_decl_ != nullptr) ||
             (current_class_template_decl_ != nullptr) ||
+            (current_class_template_specialization_decl_ != nullptr) ||
             (current_method_decl_ != nullptr) ||
             (current_function_decl_ != nullptr) ||
             (current_function_template_decl_ != nullptr);
@@ -72,6 +78,10 @@ struct call_expression_context {
 
     clang::ASTContext *get_ast_context()
     {
+        if (current_class_template_specialization_decl_)
+            return &current_class_template_specialization_decl_
+                        ->getASTContext();
+
         if (current_class_template_decl_)
             return &current_class_template_decl_->getASTContext();
 
@@ -85,6 +95,11 @@ struct call_expression_context {
     }
 
     void update(clang::CXXRecordDecl *cls) { current_class_decl_ = cls; }
+
+    void update(clang::ClassTemplateSpecializationDecl *clst)
+    {
+        current_class_template_specialization_decl_ = clst;
+    }
 
     void update(clang::ClassTemplateDecl *clst)
     {
@@ -147,6 +162,8 @@ struct call_expression_context {
 
     clang::CXXRecordDecl *current_class_decl_;
     clang::ClassTemplateDecl *current_class_template_decl_;
+    clang::ClassTemplateSpecializationDecl
+        *current_class_template_specialization_decl_;
     clang::CXXMethodDecl *current_method_decl_;
     clang::FunctionDecl *current_function_decl_;
     clang::FunctionTemplateDecl *current_function_template_decl_;

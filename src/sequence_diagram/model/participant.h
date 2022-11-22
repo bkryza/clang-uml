@@ -42,9 +42,14 @@ struct template_trait {
     int calculate_template_specialization_match(
         const template_trait &other, const std::string &full_name) const;
 
+    bool is_implicit() const { return is_implicit_; }
+
+    void set_implicit(bool implicit) { is_implicit_ = implicit; }
+
 private:
     std::vector<class_diagram::model::template_parameter> templates_;
     std::string base_template_full_name_;
+    bool is_implicit_{false};
 };
 
 struct participant : public common::model::element,
@@ -155,6 +160,18 @@ struct method : public participant {
 
     void set_class_id(diagram_element::id_t id) { class_id_ = id; }
 
+    void set_class_full_name(const std::string &name)
+    {
+        class_full_name_ = name;
+    }
+
+    const auto &class_full_name() const { return class_full_name_; }
+
+    std::string full_name(bool /*relative*/) const override
+    {
+        return class_full_name() + "::" + method_name();
+    }
+
     diagram_element::id_t class_id() const { return class_id_; }
 
     std::string to_string() const override
@@ -166,6 +183,7 @@ struct method : public participant {
 private:
     diagram_element::id_t class_id_;
     std::string method_name_;
+    std::string class_full_name_;
 };
 
 struct function_template : public participant, public template_trait {

@@ -35,12 +35,12 @@ TEST_CASE("t20006", "[test-case][sequence]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a"));
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<T>"), "B<int>::b"));
+    REQUIRE_THAT(puml, HasCall(_A("B<T>"), _A("A<T>"), "a_int"));
 
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<std::string>"), "b"));
-    REQUIRE_THAT(
-        puml, !HasCall(_A("B<std::string>"), _A("A<std::string>"), "a"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("B<std::string>"), _A("A<T>"), "A<std::string>::a_string"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
