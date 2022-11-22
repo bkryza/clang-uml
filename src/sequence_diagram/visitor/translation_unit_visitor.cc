@@ -706,18 +706,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 diagram().add_participant(std::move(f_ptr));
         }
 
-        const auto &return_type =
-            function_call_expr->getCallReturnType(current_ast_context);
-
         //
-        // Without this if, this crashes test case t20003 on LLVM <= 12
+        // This crashes on LLVM <= 12, for now just return empty type
         //
-        if (!clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
-                function_call_expr->getCallee())) {
-            m.return_type = return_type.getAsString();
-        }
-        else
-            m.return_type = "";
+        // const auto &return_type =
+        //    function_call_expr->getCallReturnType(current_ast_context);
+        // m.return_type = return_type.getAsString();
+        m.return_type = "";
     }
     else {
         return true;
