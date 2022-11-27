@@ -56,6 +56,8 @@
  * [t20004](./test_cases/t20004.md) - Function template instantiation sequence diagram test case
  * [t20005](./test_cases/t20005.md) - Class template basic sequence diagram
  * [t20006](./test_cases/t20006.md) - Class template specialization basic sequence diagram
+ * [t20007](./test_cases/t20007.md) - Class template variadic argument list sequence diagram
+ * [t20008](./test_cases/t20008.md) - Constexpr if sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
