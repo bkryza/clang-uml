@@ -176,7 +176,7 @@ public:
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
-    bool shouldVisitTemplateInstantiations() { return true; }
+    bool shouldVisitTemplateInstantiations();
 
     virtual bool VisitCallExpr(clang::CallExpr *expr);
 
@@ -198,15 +198,17 @@ public:
 
     const clanguml::config::sequence_diagram &config() const;
 
+    call_expression_context &context();
+
     void finalize() { }
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id
-    void set_ast_local_id(
+    void set_unique_id(
         int64_t local_id, common::model::diagram_element::id_t global_id);
 
     /// Retrieve the global clang-uml entity id based on the clang local id
-    std::optional<common::model::diagram_element::id_t> get_ast_local_id(
+    std::optional<common::model::diagram_element::id_t> get_unique_id(
         int64_t local_id) const;
 
 private:
