@@ -641,45 +641,18 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             if (!callee_function)
                 return true;
 
-            bool is_implicit = false;
             auto callee_name =
                 callee_function->getQualifiedNameAsString() + "()";
 
             std::unique_ptr<model::function_template> f_ptr;
 
-            //
-            // The target template function is implicit if it's
-            // specialization/instantiation was not explicitly defined
-            // (i.e. it was not added to the diagram by visitor methods)
-            //
-            is_implicit =
-                !get_ast_local_id(callee_function->getID()).has_value();
-
-            //
-            // If the callee is a specialization of a function template,
-            // build it's instantiation model to get the id
-            //
-            if (callee_function->getTemplateSpecializationArgs() &&
-                callee_function->getTemplateSpecializationArgs()->size() > 0) {
-                f_ptr = build_function_template_instantiation(*callee_function);
-
-                f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
-                set_ast_local_id(callee_function->getID(), f_ptr->id());
+            if(!get_ast_local_id(callee_function->getID()).has_value()) {
+                // This is hopefully not an interesting call...
+                return true;
             }
-
-            if (is_implicit) {
-                LOG_DBG("Processing implicit template specialization {}",
-                    f_ptr->full_name(false));
-
-                // If this is an implicit template specialization/instantiation
-                // for now we just redirect the call to it's primary template
-                // (TODO: this is not correct in a general case)
-                m.to = get_ast_local_id(
-                    callee_function->getPrimaryTemplate()->getID())
-                           .value();
-            }
-            else
+            else {
                 m.to = get_ast_local_id(callee_function->getID()).value();
+            }
 
             auto message_name = callee_name;
             m.message_name = message_name.substr(0, message_name.size() - 2);

@@ -166,6 +166,9 @@ test_cases:
     - name: t20006
       title: Class template specialization basic sequence diagram
       description:
+    - name: t20007
+      title: Class template variadic argument list sequence diagram
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
