@@ -32,27 +32,24 @@ TEST_CASE("t20004", "[test-case][sequence]")
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>()"), "m1<float>"));
-    REQUIRE_THAT(puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2<T>"));
-    REQUIRE_THAT(
-        puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2<float>"));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>()"), "m1"));
+    REQUIRE_THAT(puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2"));
+    REQUIRE_THAT(puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("main()"), _A("m1<unsigned long>()"), "m1<unsigned long>"));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<unsigned long>()"), "m1"));
     REQUIRE_THAT(puml,
         HasCall(_A("m1<unsigned long>()"), _A("m4<unsigned long>()"),
-            "m4<unsigned long>"));
+            "m4"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("main()"), _A("m1<std::string>()"), "m1<std::string>"));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<std::string>()"), "m1"));
     REQUIRE_THAT(puml,
         HasCall(_A("m1<std::string>()"), _A("m2<std::string>()"),
-            "m2<std::string>"));
+            "m2"));
 
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<T>()"), "m1<int>"));
-    REQUIRE_THAT(puml, HasCall(_A("m1<T>()"), _A("m2<T>()"), "m2<T>"));
-    REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()"), "m3<T>"));
-    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()"), "m4<T>"));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>()"), "m1"));
+    REQUIRE_THAT(puml, HasCall(_A("m1<int>()"), _A("m2<int>()"), "m2"));
+    REQUIRE_THAT(puml, HasCall(_A("m2<int>()"), _A("m3<int>()"), "m3"));
+    REQUIRE_THAT(puml, HasCall(_A("m3<int>()"), _A("m4<int>()"), "m4"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     save_puml(

@@ -201,7 +201,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("= Visiting template specialization declaration {} at {}",
+    LOG_DBG("##### Visiting template specialization declaration {} at {}",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager()));
 
@@ -251,6 +251,10 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
             nullptr)
         return true;
 
+    LOG_DBG("= Processing method {} in class {} [{}]",
+        m->getQualifiedNameAsString(),
+        m->getParent()->getQualifiedNameAsString(), (void *)m->getParent());
+
     call_expression_context_.update(m);
 
     auto m_ptr = std::make_unique<sequence_diagram::model::method>(
@@ -262,45 +266,24 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     ns.pop_back();
     m_ptr->set_name(ns.name());
     ns.pop_back();
-    // m_ptr->set_namespace(ns);
 
-    if (call_expression_context_.current_class_decl_) {
-        const auto &current_class =
-            diagram()
-                .get_participant<model::class_>(get_ast_local_id(
-                    call_expression_context_.current_class_decl_->getID())
-                                                    .value())
-                .value();
+    clang::Decl *parent_decl = m->getParent();
 
-        m_ptr->set_class_id(current_class.id());
-        m_ptr->set_class_full_name(current_class.full_name(false));
-    }
-    else if (call_expression_context_.current_class_template_decl_) {
-        const auto &current_template_class =
-            diagram()
-                .get_participant<model::class_>(
-                    get_ast_local_id(call_expression_context_
-                                         .current_class_template_decl_->getID())
-                        .value())
-                .value();
+    if (call_expression_context_.current_class_template_decl_)
+        parent_decl = call_expression_context_.current_class_template_decl_;
 
-        m_ptr->set_class_id(current_template_class.id());
-        m_ptr->set_class_full_name(current_template_class.full_name(false));
-    }
-    else {
-        const auto &current_template_specialization_class =
-            diagram()
-                .get_participant<model::class_>(get_ast_local_id(
-                    call_expression_context_
-                        .current_class_template_specialization_decl_->getID())
-                                                    .value())
-                .value();
+    call_expression_context_.dump();
 
-        m_ptr->set_class_id(current_template_specialization_class.id());
-        m_ptr->set_class_full_name(
-            current_template_specialization_class.full_name(false));
-    }
+    LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
 
+    const auto &method_class =
+        diagram()
+            .get_participant<model::class_>(
+                get_ast_local_id(parent_decl->getID()).value())
+            .value();
+
+    m_ptr->set_class_id(method_class.id());
+    m_ptr->set_class_full_name(method_class.full_name(false));
     m_ptr->set_name(
         diagram().participants.at(m_ptr->class_id())->full_name_no_ns() +
         "::" + m->getNameAsString());
@@ -434,8 +417,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
         return true;
 
-    call_expression_context_.dump();
-
     if (!call_expression_context_.valid())
         return true;
 
@@ -480,27 +461,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             LOG_DBG("Callee is a template specialization declaration {}",
                 callee_template_specialization->getQualifiedNameAsString());
 
-            if (!get_ast_local_id(callee_template_specialization->getID())) {
-                call_expression_context context_backup =
-                    call_expression_context_;
-
-                // Since this visitor will overwrite the
-                // call_expression_context_ we need to back it up and restore it
-                // later
-                VisitClassTemplateSpecializationDecl(
-                    const_cast<clang::ClassTemplateSpecializationDecl *>(
-                        callee_template_specialization));
-
-                call_expression_context_ = context_backup;
-
-                diagram()
-                    .get_participant<model::class_>(get_ast_local_id(
-                        callee_template_specialization->getID())
-                                                        .value())
-                    .value()
-                    .set_implicit(true);
-            }
-
             const auto &participant =
                 diagram()
                     .get_participant<model::class_>(get_ast_local_id(
@@ -509,6 +469,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                     .value();
 
             if (participant.is_implicit()) {
+                /*
                 const auto *parent_template =
                     callee_template_specialization->getSpecializedTemplate();
 
@@ -525,6 +486,32 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 m.to = common::to_id(parent_method_name);
                 m.message_name = participant.full_name_no_ns() +
                     "::" + method_decl->getNameAsString();
+                */
+                const auto specialization_method_name =
+                    participant.full_name(false) +
+                    "::" + method_decl->getNameAsString();
+
+                m.to = common::to_id(method_name);
+                m.message_name = method_decl->getNameAsString();
+
+                // Since this is an implicit instantiation it might not exist
+                // so we have to create this participant here and it to the
+                // diagram
+                if (!diagram()
+                         .get_participant<model::class_>(m.to)
+                         .has_value()) {
+                    auto m_ptr =
+                        std::make_unique<sequence_diagram::model::method>(
+                            config().using_namespace());
+                    m_ptr->set_id(m.to);
+                    m_ptr->set_method_name(method_decl->getNameAsString());
+                    m_ptr->set_name(method_decl->getNameAsString());
+                    m_ptr->set_class_id(participant.id());
+                    m_ptr->set_class_full_name(participant.full_name(false));
+                    set_ast_local_id(method_decl->getID(), m_ptr->id());
+                    diagram().add_active_participant(m_ptr->id());
+                    diagram().add_participant(std::move(m_ptr));
+                }
             }
             else {
                 const auto &specialization_participant =
@@ -676,19 +663,14 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 callee_function->getTemplateSpecializationArgs()->size() > 0) {
                 f_ptr = build_function_template_instantiation(*callee_function);
 
-                callee_name = f_ptr->full_name(false);
-
                 f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
                 set_ast_local_id(callee_function->getID(), f_ptr->id());
             }
 
-            if (is_implicit)
+            if (is_implicit) {
                 LOG_DBG("Processing implicit template specialization {}",
                     f_ptr->full_name(false));
 
-            //            m.to_name =
-            //            callee_function->getQualifiedNameAsString();
-            if (is_implicit) {
                 // If this is an implicit template specialization/instantiation
                 // for now we just redirect the call to it's primary template
                 // (TODO: this is not correct in a general case)
@@ -1061,29 +1043,28 @@ void translation_unit_visitor::
     // template arguments
     if (arg.getAsType()->getAs<clang::FunctionType>()) {
 
-        for (const auto &param_type :
-            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types()) {
-
-            if (!param_type->getAs<clang::RecordType>())
-                continue;
-
-            //            auto classTemplateSpecialization =
-            //                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
-            //                    param_type->getAsRecordDecl());
-
-            //            if (classTemplateSpecialization) {
-            //                // Read arg info as needed.
-            //                auto nested_template_instantiation =
-            //                    build_template_instantiation_from_class_template_specialization(
-            //                        *classTemplateSpecialization,
-            //                        *param_type->getAs<clang::RecordType>(),
-            //                        diagram().should_include(
-            //                            full_template_specialization_name)
-            //                            ?
-            //                            std::make_optional(&template_instantiation)
-            //                            : parent);
-            //            }
-        }
+//        for (const auto &param_type :
+//            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types()) {
+//
+//            if (!param_type->getAs<clang::RecordType>())
+//                continue;
+//
+//            auto classTemplateSpecialization =
+//                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+//                    param_type->getAsRecordDecl());
+//
+//            if (classTemplateSpecialization) {
+//                // Read arg info as needed.
+//                auto nested_template_instantiation =
+//                    build_template_instantiation_from_class_template_specialization(
+//                        *classTemplateSpecialization,
+//                        *param_type->getAs<clang::RecordType>(),
+//                        diagram().should_include(
+//                            full_template_specialization_name)
+//                            ? std::make_optional(&template_instantiation)
+//                            : parent);
+//            }
+//        }
     }
     else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
         const auto *nested_template_type =

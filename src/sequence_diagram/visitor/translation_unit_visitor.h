@@ -122,10 +122,6 @@ struct call_expression_context {
                 function->getQualifiedNameAsString()) {
             current_function_template_decl_ = nullptr;
         }
-        //        else {
-        //            call_expression_context_.current_class_method_ =
-        //                process_class_method(method);
-        //        }
     }
 
     void update(clang::FunctionTemplateDecl *function_template)
@@ -179,6 +175,10 @@ public:
     translation_unit_visitor(clang::SourceManager &sm,
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
+
+    bool shouldVisitTemplateInstantiations() {
+        return true;
+    }
 
     virtual bool VisitCallExpr(clang::CallExpr *expr);
 
