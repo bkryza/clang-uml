@@ -79,26 +79,19 @@ template <typename T, typename... Ts> constexpr bool has_type() noexcept
     return (std::is_same_v<T, Ts> || ... || false);
 }
 
-struct Public {
-};
+struct Public { };
 
-struct Protected {
-};
+struct Protected { };
 
-struct Private {
-};
+struct Private { };
 
-struct Abstract {
-};
+struct Abstract { };
 
-struct Static {
-};
+struct Static { };
 
-struct Const {
-};
+struct Const { };
 
-struct Default {
-};
+struct Default { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(
@@ -158,6 +151,8 @@ struct AliasMatcher {
 
         util::replace_all(name, "(", "\\(");
         util::replace_all(name, ")", "\\)");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
 
         patterns.push_back(
             std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
@@ -180,12 +175,11 @@ struct AliasMatcher {
 
         for (const auto &line : puml) {
             for (const auto &pattern : patterns) {
-                if (std::regex_search(line, base_match, pattern)) {
-                    if (base_match.size() == 2) {
-                        std::ssub_match base_sub_match = base_match[1];
-                        std::string alias = base_sub_match.str();
-                        return trim(alias);
-                    }
+                if (std::regex_search(line, base_match, pattern) &&
+                    base_match.size() == 2) {
+                    std::ssub_match base_sub_match = base_match[1];
+                    std::string alias = base_sub_match.str();
+                    return trim(alias);
                 }
             }
         }
