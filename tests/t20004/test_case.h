@@ -38,13 +38,11 @@ TEST_CASE("t20004", "[test-case][sequence]")
 
     REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<unsigned long>()"), "m1"));
     REQUIRE_THAT(puml,
-        HasCall(_A("m1<unsigned long>()"), _A("m4<unsigned long>()"),
-            "m4"));
+        HasCall(_A("m1<unsigned long>()"), _A("m4<unsigned long>()"), "m4"));
 
     REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<std::string>()"), "m1"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("m1<std::string>()"), _A("m2<std::string>()"),
-            "m2"));
+    REQUIRE_THAT(
+        puml, HasCall(_A("m1<std::string>()"), _A("m2<std::string>()"), "m2"));
 
     REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>()"), "m1"));
     REQUIRE_THAT(puml, HasCall(_A("m1<int>()"), _A("m2<int>()"), "m2"));

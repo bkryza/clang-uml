@@ -176,9 +176,7 @@ public:
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
-    bool shouldVisitTemplateInstantiations() {
-        return true;
-    }
+    bool shouldVisitTemplateInstantiations() { return true; }
 
     virtual bool VisitCallExpr(clang::CallExpr *expr);
 

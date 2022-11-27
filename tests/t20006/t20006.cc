@@ -19,10 +19,9 @@ template <> struct B<std::string> {
 };
 
 template <typename T> struct AA {
-    void aa1(T t) {  }
-    void aa2(T t) {  }
+    void aa1(T t) { }
+    void aa2(T t) { }
 };
-
 
 template <typename T, typename F> struct BB {
     void bb1(T t, F f) { aa_.aa1(t); }
@@ -37,7 +36,6 @@ template <typename T> struct BB<T, std::string> {
 
     AA<T> aa_;
 };
-
 
 void tmain()
 {

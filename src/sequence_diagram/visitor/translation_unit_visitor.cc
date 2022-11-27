@@ -646,7 +646,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
             std::unique_ptr<model::function_template> f_ptr;
 
-            if(!get_ast_local_id(callee_function->getID()).has_value()) {
+            if (!get_ast_local_id(callee_function->getID()).has_value()) {
                 // This is hopefully not an interesting call...
                 return true;
             }
@@ -1016,28 +1016,30 @@ void translation_unit_visitor::
     // template arguments
     if (arg.getAsType()->getAs<clang::FunctionType>()) {
 
-//        for (const auto &param_type :
-//            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types()) {
-//
-//            if (!param_type->getAs<clang::RecordType>())
-//                continue;
-//
-//            auto classTemplateSpecialization =
-//                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
-//                    param_type->getAsRecordDecl());
-//
-//            if (classTemplateSpecialization) {
-//                // Read arg info as needed.
-//                auto nested_template_instantiation =
-//                    build_template_instantiation_from_class_template_specialization(
-//                        *classTemplateSpecialization,
-//                        *param_type->getAs<clang::RecordType>(),
-//                        diagram().should_include(
-//                            full_template_specialization_name)
-//                            ? std::make_optional(&template_instantiation)
-//                            : parent);
-//            }
-//        }
+        //        for (const auto &param_type :
+        //            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types())
+        //            {
+        //
+        //            if (!param_type->getAs<clang::RecordType>())
+        //                continue;
+        //
+        //            auto classTemplateSpecialization =
+        //                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+        //                    param_type->getAsRecordDecl());
+        //
+        //            if (classTemplateSpecialization) {
+        //                // Read arg info as needed.
+        //                auto nested_template_instantiation =
+        //                    build_template_instantiation_from_class_template_specialization(
+        //                        *classTemplateSpecialization,
+        //                        *param_type->getAs<clang::RecordType>(),
+        //                        diagram().should_include(
+        //                            full_template_specialization_name)
+        //                            ?
+        //                            std::make_optional(&template_instantiation)
+        //                            : parent);
+        //            }
+        //        }
     }
     else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
         const auto *nested_template_type =
