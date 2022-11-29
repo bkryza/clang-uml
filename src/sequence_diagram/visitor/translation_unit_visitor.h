@@ -202,6 +202,29 @@ public:
 
     void finalize() { }
 
+    template <typename T = model::participant>
+    common::optional_ref<T> get_participant(const clang::Decl *decl)
+    {
+        assert(decl != nullptr);
+
+        auto unique_participant_id = get_unique_id(decl->getID());
+        if (!unique_participant_id.has_value())
+            return {};
+
+        return get_participant<T>(unique_participant_id.value());
+    }
+
+    template <typename T = model::participant>
+    common::optional_ref<T> get_participant(
+        const common::model::diagram_element::id_t id)
+    {
+        if (diagram().participants.find(id) == diagram().participants.end())
+            return {};
+
+        return common::optional_ref<T>(
+            *(static_cast<T *>(diagram().participants.at(id).get())));
+    }
+
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id
     void set_unique_id(
@@ -277,6 +300,8 @@ private:
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
         const std::string &full_name);
 
+    bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;
+
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
 
@@ -296,5 +321,4 @@ private:
             common::model::access_t>>
         anonymous_struct_relationships_;
 };
-
 }

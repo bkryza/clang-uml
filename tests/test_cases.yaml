@@ -172,6 +172,9 @@ test_cases:
     - name: t20008
       title: Constexpr if sequence diagram test case
       description:
+    - name: t20009
+      title: Smart pointer dereference call expression test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

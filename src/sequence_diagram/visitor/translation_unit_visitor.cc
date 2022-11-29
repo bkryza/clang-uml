@@ -279,31 +279,28 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
 
+    set_unique_id(m->getID(), m_ptr->id());
+
     const auto &method_class =
-        diagram()
-            .get_participant<model::class_>(
-                get_unique_id(parent_decl->getID()).value())
-            .value();
+        get_participant<model::class_>(parent_decl).value();
 
     m_ptr->set_class_id(method_class.id());
     m_ptr->set_class_full_name(method_class.full_name(false));
     m_ptr->set_name(
-        diagram().participants.at(m_ptr->class_id())->full_name_no_ns() +
+        get_participant(m_ptr->class_id()).value().full_name_no_ns() +
         "::" + m->getNameAsString());
 
     m_ptr->set_id(common::to_id(
-        diagram().participants.at(m_ptr->class_id())->full_name(false) +
+        get_participant(m_ptr->class_id()).value().full_name(false) +
         "::" + m->getNameAsString()));
 
     LOG_DBG("Set id {} for method name {}", m_ptr->id(),
-        diagram().participants.at(m_ptr->class_id())->full_name(false) +
+        get_participant(m_ptr->class_id()).value().full_name(false) +
             "::" + m->getNameAsString());
 
     context().update(m);
 
     context().set_caller_id(m_ptr->id());
-
-    set_unique_id(m->getID(), m_ptr->id());
 
     diagram().add_participant(std::move(m_ptr));
 
@@ -577,14 +574,36 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                             ->getTemplateName()
                             .getAsTemplateDecl();
 
-                    auto callee_method_full_name =
-                        diagram()
-                            .participants
-                            .at(get_unique_id(primary_template->getID())
-                                    .value())
-                            ->full_name(false) +
-                        "::" +
-                        dependent_member_callee->getMember().getAsString();
+                    std::string callee_method_full_name;
+
+                    // First check if the primary template is already in the
+                    // participants map
+                    if (get_participant(primary_template).has_value()) {
+                        callee_method_full_name =
+                            get_participant(primary_template)
+                                .value()
+                                .full_name(false) +
+                            "::" +
+                            dependent_member_callee->getMember().getAsString();
+                    }
+                    else if (is_smart_pointer(primary_template)) {
+                        // Otherwise check if it a smart pointer
+                        primary_template->getTemplateParameters()
+                            ->asArray()
+                            .front();
+
+                        if (get_participant(primary_template).has_value()) {
+                            callee_method_full_name =
+                                get_participant(primary_template)
+                                    .value()
+                                    .full_name(false) +
+                                "::" +
+                                dependent_member_callee->getMember()
+                                    .getAsString();
+                        }
+                        else
+                            return true;
+                    }
 
                     auto callee_id = common::to_id(callee_method_full_name);
                     m.to = callee_id;
@@ -694,6 +713,16 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     return true;
+}
+
+bool translation_unit_visitor::is_smart_pointer(
+    const clang::TemplateDecl *primary_template) const
+{
+    return primary_template->getQualifiedNameAsString().find(
+               "std::unique_ptr") == 0 ||
+        primary_template->getQualifiedNameAsString().find("std::shared_ptr") ==
+        0 ||
+        primary_template->getQualifiedNameAsString().find("std::weak_ptr") == 0;
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::class_>
