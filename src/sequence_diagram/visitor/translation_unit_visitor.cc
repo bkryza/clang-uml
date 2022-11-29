@@ -567,7 +567,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                     clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
                         function_call_expr->getCallee());
 
-                if (!dependent_member_callee->getBaseType().isNull()) {
+                if (is_callee_valid_template_specialization(
+                        dependent_member_callee)) {
+
                     const auto *primary_template =
                         dependent_member_callee->getBaseType()
                             ->getAs<clang::TemplateSpecializationType>()
@@ -713,6 +715,17 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     return true;
+}
+
+bool translation_unit_visitor::is_callee_valid_template_specialization(
+    const clang::CXXDependentScopeMemberExpr *dependent_member_callee) const
+{
+    return !dependent_member_callee->getBaseType().isNull() &&
+        dependent_member_callee->getBaseType()
+            ->getAs<clang::TemplateSpecializationType>() &&
+        !dependent_member_callee->getBaseType()
+             ->getAs<clang::TemplateSpecializationType>()
+             ->isPointerType();
 }
 
 bool translation_unit_visitor::is_smart_pointer(

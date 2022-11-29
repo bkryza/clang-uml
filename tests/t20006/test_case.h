@@ -58,6 +58,11 @@ TEST_CASE("t20006", "[test-case][sequence]")
     REQUIRE_THAT(
         puml, HasCall(_A("BB<int,std::string>"), _A("AA<int>"), "aa1"));
 
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("BB<int,float>"), "bb1"));
+    REQUIRE_THAT(
+        puml, HasCall(_A("BB<int,float>"), _A("BB<int,float>"), "bb2"));
+    REQUIRE_THAT(puml, HasCall(_A("BB<int,float>"), _A("AA<int>"), "aa2"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

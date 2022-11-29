@@ -31,10 +31,27 @@ template <typename T, typename F> struct BB {
 };
 
 template <typename T> struct BB<T, std::string> {
-    void bb1(T t, std::string f) { aa_.aa2(t); }
-    void bb2(T t, std::string f) { aa_.aa1(t); }
+    void bb1(T t, std::string f) { aa_->aa2(t); }
+    void bb2(T t, std::string f) { aa_->aa1(t); }
 
-    AA<T> aa_;
+    BB<T, std::string>(AA<T> *aa)
+        : aa_{aa}
+    {
+    }
+
+    AA<T> *aa_;
+};
+
+template <typename T> struct BB<T, float> {
+    void bb1(T t, float f) { bb2(t, f); }
+    void bb2(T t, float f) { aa_.aa2(t); }
+
+    BB<T, float>(AA<T> &aa)
+        : aa_{aa}
+    {
+    }
+
+    AA<T> &aa_;
 };
 
 void tmain()
@@ -46,13 +63,17 @@ void tmain()
     bstring.b("bstring");
 
     BB<int, int> bbint;
-    BB<int, std::string> bbstring;
+    AA<int> aaint;
+    BB<int, std::string> bbstring{&aaint};
+    BB<int, float> bbfloat{aaint};
 
     bbint.bb1(1, 1);
     bbint.bb2(2, 2);
 
     bbstring.bb1(1, "calling aa2");
     bbstring.bb2(1, "calling aa1");
+
+    bbfloat.bb1(1, 1.0f);
 }
 }
 }

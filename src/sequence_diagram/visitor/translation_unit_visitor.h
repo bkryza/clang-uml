@@ -302,6 +302,10 @@ private:
 
     bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;
 
+    bool is_callee_valid_template_specialization(
+        const clang::CXXDependentScopeMemberExpr *dependent_member_callee)
+        const;
+
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
 
