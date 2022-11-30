@@ -55,7 +55,8 @@ public:
     void generate_participant(std::ostream &ostr, common::id_t id) const;
 
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
-        std::ostream &ostr) const;
+        std::ostream &ostr,
+        std::set<common::model::diagram_element::id_t> &visited) const;
 
     void generate(std::ostream &ostr) const;
 

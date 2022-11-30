@@ -77,22 +77,29 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     }
 }
 
-void generator::generate_activity(const activity &a, std::ostream &ostr) const
+void generator::generate_activity(const activity &a, std::ostream &ostr,
+    std::set<common::model::diagram_element::id_t> &visited) const
 {
     for (const auto &m : a.messages) {
+        visited.emplace(m.from);
+
         const auto &to = m_model.get_participant<model::participant>(m.to);
         if (!to)
             continue;
 
         LOG_DBG("Generating message {} --> {}", m.from, m.to);
+
         generate_call(m, ostr);
 
         ostr << "activate " << to.value().alias() << std::endl;
 
         if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
-            LOG_DBG("Creating activity {} --> {} - missing sequence {}", m.from,
-                m.to, m.to);
-            generate_activity(m_model.sequences[m.to], ostr);
+            if (visited.find(m.to) ==
+                visited.end()) { // break infinite recursion on recursive calls
+                LOG_DBG("Creating activity {} --> {} - missing sequence {}",
+                    m.from, m.to, m.to);
+                generate_activity(m_model.sequences[m.to], ostr, visited);
+            }
         }
         else
             LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from,
@@ -165,7 +172,7 @@ void generator::generate(std::ostream &ostr) const
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            std::int64_t start_from;
+            common::model::diagram_element::id_t start_from;
             for (const auto &[k, v] : m_model.sequences) {
                 const auto &caller = *m_model.participants.at(v.from);
                 std::string vfrom = caller.full_name(false);
@@ -175,7 +182,9 @@ void generator::generate(std::ostream &ostr) const
                     break;
                 }
             }
-            generate_activity(m_model.sequences[start_from], ostr);
+            std::set<common::model::diagram_element::id_t> visited_participants;
+            generate_activity(
+                m_model.sequences[start_from], ostr, visited_participants);
         }
         else {
             // TODO: Add support for other sequence start location types
