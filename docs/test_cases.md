@@ -58,6 +58,9 @@
  * [t20006](./test_cases/t20006.md) - Class template specialization basic sequence diagram
  * [t20007](./test_cases/t20007.md) - Class template variadic argument list sequence diagram
  * [t20008](./test_cases/t20008.md) - Constexpr if sequence diagram test case
+ * [t20009](./test_cases/t20009.md) - Smart pointer dereference call expression test case
+ * [t20010](./test_cases/t20010.md) - Container sequence diagram test case
+ * [t20011](./test_cases/t20011.md) - Recursive calls sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
