@@ -85,6 +85,11 @@ void diagram::print() const
         LOG_DBG("   Activity id={}, from={}:", act.from,
             from_activity.full_name(false));
         for (const auto &message : act.messages) {
+            if (participants.find(message.from) == participants.end())
+                continue;
+            if (participants.find(message.to) == participants.end())
+                continue;
+
             const auto &from_participant = *participants.at(message.from);
             const auto &to_participant = *participants.at(message.to);
 
