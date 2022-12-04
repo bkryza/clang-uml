@@ -35,17 +35,17 @@ TEST_CASE("t20010", "[test-case][sequence]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b1"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a1"));
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b1()"));
+    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a1()"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b2"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a2"));
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b2()"));
+    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a2()"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b3"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a3"));
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b3()"));
+    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a3()"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b4"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a4"));
+    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b4()"));
+    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A"), "a4()"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

@@ -38,30 +38,36 @@ TEST_CASE("t20006", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
     REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a1(int)"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
     REQUIRE_THAT(
-        puml, HasCall(_A("B<std::string>"), _A("A<std::string>"), "a2"));
-
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("BB<int,int>"), "bb1"));
-    REQUIRE_THAT(puml, HasCall(_A("BB<int,int>"), _A("AA<int>"), "aa1"));
-
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("BB<int,int>"), "bb2"));
-    REQUIRE_THAT(puml, HasCall(_A("BB<int,int>"), _A("AA<int>"), "aa2"));
+        puml, HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("B<std::string>"), _A("A<std::string>"), "a2(std::string)"));
 
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()"), _A("BB<int,std::string>"), "bb1"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("BB<int,std::string>"), _A("AA<int>"), "aa2"));
+        puml, HasCall(_A("tmain()"), _A("BB<int,int>"), "bb1(int,int)"));
+    REQUIRE_THAT(puml, HasCall(_A("BB<int,int>"), _A("AA<int>"), "aa1(int)"));
 
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()"), _A("BB<int,std::string>"), "bb2"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("BB<int,std::string>"), _A("AA<int>"), "aa1"));
+        puml, HasCall(_A("tmain()"), _A("BB<int,int>"), "bb2(int,int)"));
+    REQUIRE_THAT(puml, HasCall(_A("BB<int,int>"), _A("AA<int>"), "aa2(int)"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("BB<int,float>"), "bb1"));
+    REQUIRE_THAT(puml,
+        HasCall(
+            _A("tmain()"), _A("BB<int,std::string>"), "bb1(int,std::string)"));
     REQUIRE_THAT(
-        puml, HasCall(_A("BB<int,float>"), _A("BB<int,float>"), "bb2"));
-    REQUIRE_THAT(puml, HasCall(_A("BB<int,float>"), _A("AA<int>"), "aa2"));
+        puml, HasCall(_A("BB<int,std::string>"), _A("AA<int>"), "aa2(int)"));
+
+    REQUIRE_THAT(puml,
+        HasCall(
+            _A("tmain()"), _A("BB<int,std::string>"), "bb2(int,std::string)"));
+    REQUIRE_THAT(
+        puml, HasCall(_A("BB<int,std::string>"), _A("AA<int>"), "aa1(int)"));
+
+    REQUIRE_THAT(
+        puml, HasCall(_A("tmain()"), _A("BB<int,float>"), "bb1(int,float)"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("BB<int,float>"), _A("BB<int,float>"), "bb2(int,float)"));
+    REQUIRE_THAT(puml, HasCall(_A("BB<int,float>"), _A("AA<int>"), "aa2(int)"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

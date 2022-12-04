@@ -131,7 +131,7 @@ ContainsMatcher HasCall(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString(
-        fmt::format("{} -> {} : {}", from, to, message), caseSensitivity));
+        fmt::format("{} -> {} : {}\n", from, to, message), caseSensitivity));
 }
 
 auto HasCallWithResponse(std::string const &from, std::string const &to,

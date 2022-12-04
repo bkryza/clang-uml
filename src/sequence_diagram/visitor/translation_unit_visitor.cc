@@ -304,7 +304,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     for (const auto *param : m->parameters()) {
         m_ptr->add_parameter(simplify_system_template(
-            common::to_string(param->getType(), m->getASTContext())));
+            common::to_string(param->getType(), m->getASTContext(), false)));
     }
 
     set_source_location(*m, *m_ptr);
@@ -372,8 +372,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         f_ptr->set_namespace(ns);
 
         for (const auto *param : f->parameters()) {
-            f_ptr->add_parameter(simplify_system_template(
-                common::to_string(param->getType(), f->getASTContext())));
+            f_ptr->add_parameter(simplify_system_template(common::to_string(
+                param->getType(), f->getASTContext(), false)));
         }
 
         f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
@@ -415,7 +415,7 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     for (const auto *param :
         function_template->getTemplatedDecl()->parameters()) {
         f_ptr->add_parameter(simplify_system_template(common::to_string(
-            param->getType(), function_template->getASTContext())));
+            param->getType(), function_template->getASTContext(), false)));
     }
 
     f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
@@ -426,7 +426,6 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
 
     set_unique_id(function_template->getID(), f_ptr->id());
 
-    // TODO: Handle overloaded functions with different arguments
     diagram().add_participant(std::move(f_ptr));
 
     return true;
@@ -1657,11 +1656,12 @@ bool translation_unit_visitor::simplify_system_template(
 std::string translation_unit_visitor::simplify_system_template(
     const std::string &full_name) const
 {
-    if (config().type_aliases().count(full_name) > 0) {
-        return config().type_aliases().at(full_name);
+    std::string result{full_name};
+    for(const auto& [k, v] : config().type_aliases()) {
+        util::replace_all(result, k, v);
     }
 
-    return full_name;
+    return result;
 }
 
 std::string translation_unit_visitor::make_lambda_name(
