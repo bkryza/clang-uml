@@ -63,6 +63,8 @@ public:
 private:
     bool is_participant_generated(common::id_t id) const;
 
+    std::string render_name(std::string name) const;
+
     mutable std::set<common::id_t> generated_participants_;
 };
 

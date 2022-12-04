@@ -36,6 +36,13 @@ generator::generator(
 {
 }
 
+std::string generator::render_name(std::string name) const
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
     const auto &from = m_model.get_participant<model::participant>(m.from);
@@ -142,8 +149,8 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
                 m_model.get_participant<model::participant>(class_id).value();
 
             ostr << "participant \""
-                 << m_config.using_namespace().relative(
-                        class_participant.full_name(false))
+                 << render_name(m_config.using_namespace().relative(
+                        class_participant.full_name(false)))
                  << "\" as " << class_participant.alias() << '\n';
 
             generated_participants_.emplace(class_id);

@@ -68,7 +68,18 @@ call_expression_context &translation_unit_visitor::context()
     return call_expression_context_;
 }
 
+const call_expression_context &translation_unit_visitor::context() const
+{
+    return call_expression_context_;
+}
+
 clanguml::sequence_diagram::model::diagram &translation_unit_visitor::diagram()
+{
+    return diagram_;
+}
+
+const clanguml::sequence_diagram::model::diagram &
+translation_unit_visitor::diagram() const
 {
     return diagram_;
 }
@@ -920,15 +931,8 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
     else if (cls->isLambda()) {
         c.is_lambda(true);
         if (cls->getParent()) {
-            auto parent_full_name = get_participant(context().caller_id())
-                                        .value()
-                                        .full_name_no_ns();
+            const auto type_name = make_lambda_name(cls);
 
-            const auto location = cls->getLocation();
-            const auto type_name =
-                fmt::format("{}##(lambda {}:{})", parent_full_name,
-                    source_manager().getSpellingLineNumber(location),
-                    source_manager().getSpellingColumnNumber(location));
             c.set_name(type_name);
             c.set_namespace(ns);
             c.set_id(common::to_id(c.full_name(false)));
@@ -1370,17 +1374,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                                       .full_name(false));
             }
             else {
-                auto parent_full_name = get_participant(context().caller_id())
-                                            .value()
-                                            .full_name_no_ns();
-
-                const auto location =
-                    arg.getAsType()->getAsCXXRecordDecl()->getLocation();
                 const auto type_name =
-                    fmt::format("{}##(lambda {}:{})", parent_full_name,
-                        source_manager().getSpellingLineNumber(location),
-                        source_manager().getSpellingColumnNumber(location));
-
+                    make_lambda_name(arg.getAsType()->getAsCXXRecordDecl());
                 argument.set_name(type_name);
             }
         }
@@ -1678,6 +1673,32 @@ bool translation_unit_visitor::simplify_system_template(
     }
     else
         return false;
+}
+
+std::string translation_unit_visitor::make_lambda_name(
+    const clang::CXXRecordDecl *cls) const
+{
+    std::string result;
+    const auto location = cls->getLocation();
+    const auto file_line = source_manager().getSpellingLineNumber(location);
+    const auto file_column = source_manager().getSpellingColumnNumber(location);
+    const std::string file_name =
+        util::split(source_manager().getFilename(location).str(), "/").back();
+
+    if (context().caller_id() != 0 &&
+        get_participant(context().caller_id()).has_value()) {
+        auto parent_full_name =
+            get_participant(context().caller_id()).value().full_name_no_ns();
+
+        result = fmt::format("{}##(lambda {}:{}:{})", parent_full_name,
+            file_name, file_line, file_column);
+    }
+    else {
+        result =
+            fmt::format("(lambda {}:{}:{})", file_name, file_line, file_column);
+    }
+
+    return result;
 }
 
 void translation_unit_visitor::finalize()

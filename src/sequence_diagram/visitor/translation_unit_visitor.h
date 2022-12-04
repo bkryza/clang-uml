@@ -17,10 +17,10 @@
  */
 #pragma once
 
+#include "call_expression_context.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "sequence_diagram/model/diagram.h"
-#include "call_expression_context.h"
 
 #include <clang/AST/Expr.h>
 #include <clang/AST/RecursiveASTVisitor.h>
@@ -64,9 +64,13 @@ public:
 
     clanguml::sequence_diagram::model::diagram &diagram();
 
+    const clanguml::sequence_diagram::model::diagram &diagram() const;
+
     const clanguml::config::sequence_diagram &config() const;
 
     call_expression_context &context();
+
+    const call_expression_context &context() const;
 
     void finalize();
 
@@ -83,8 +87,31 @@ public:
     }
 
     template <typename T = model::participant>
+    const common::optional_ref<T> get_participant(const clang::Decl *decl) const
+    {
+        assert(decl != nullptr);
+
+        auto unique_participant_id = get_unique_id(decl->getID());
+        if (!unique_participant_id.has_value())
+            return {};
+
+        return get_participant<T>(unique_participant_id.value());
+    }
+
+    template <typename T = model::participant>
     common::optional_ref<T> get_participant(
         const common::model::diagram_element::id_t id)
+    {
+        if (diagram().participants.find(id) == diagram().participants.end())
+            return {};
+
+        return common::optional_ref<T>(
+            *(static_cast<T *>(diagram().participants.at(id).get())));
+    }
+
+    template <typename T = model::participant>
+    const common::optional_ref<T> get_participant(
+        const common::model::diagram_element::id_t id) const
     {
         if (diagram().participants.find(id) == diagram().participants.end())
             return {};
@@ -167,6 +194,8 @@ private:
 
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
         const std::string &full_name);
+
+    std::string make_lambda_name(const clang::CXXRecordDecl *cls) const;
 
     bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;
 
