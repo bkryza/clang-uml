@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="227px" preserveAspectRatio="none" style="width:721px;height:227px;" version="1.1" viewBox="0 0 721 227" width="721px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f19uymv2k5kccm" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f1qymw9r37i9vh" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,45 +9,47 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="139.5" y="69.4297"/>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="302.5" y="112.5625"/>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="557" y="155.6953"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="121.3984" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="48.2969"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="139.5" y="69.4297"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="302.5" y="112.5625"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="557" y="155.6953"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="41" x2="41" y1="38.2969" y2="187.6953"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="144" x2="144" y1="38.2969" y2="187.6953"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="307" x2="307" y1="38.2969" y2="187.6953"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="562" x2="562" y1="38.2969" y2="187.6953"/>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="3"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="3"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="22.9951">tmain()</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="186.6953"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="186.6953"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="206.6904">tmain()</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="117" x="84" y="3"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="117" x="84" y="3"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="103" x="91" y="22.9951">Adder&lt;int,int&gt;</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="117" x="84" y="186.6953"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="117" x="84" y="186.6953"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="103" x="91" y="206.6904">Adder&lt;int,int&gt;</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="181" x="215" y="3"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="181" x="215" y="3"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="167" x="222" y="22.9951">Adder&lt;int,float,double&gt;</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="181" x="215" y="186.6953"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="181" x="215" y="186.6953"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="167" x="222" y="206.6904">Adder&lt;int,float,double&gt;</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="300" x="410" y="3"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="300" x="410" y="3"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="286" x="417" y="22.9951">Adder&lt;std::string,std::string,std::string&gt;</text>
-    <rect fill="#FEFECE" filter="url(#f19uymv2k5kccm)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="300" x="410" y="186.6953"/>
+    <rect fill="#FEFECE" filter="url(#f1qymw9r37i9vh)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="300" x="410" y="186.6953"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="286" x="417" y="206.6904">Adder&lt;std::string,std::string,std::string&gt;</text>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="139.5" y="69.4297"/>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="302.5" y="112.5625"/>
-    <rect fill="#FFFFFF" filter="url(#f19uymv2k5kccm)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="557" y="155.6953"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="121.3984" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="48.2969"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="139.5" y="69.4297"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="302.5" y="112.5625"/>
+    <rect fill="#FFFFFF" filter="url(#f1qymw9r37i9vh)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="557" y="155.6953"/>
     <polygon fill="#A80036" points="127.5,65.4297,137.5,69.4297,127.5,73.4297,131.5,69.4297" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <line style="stroke: #A80036; stroke-width: 1.0;" x1="41" x2="133.5" y1="69.4297" y2="69.4297"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="48" y="64.3638">add()</text>
-    <polygon fill="#A80036" points="52,79.4297,42,83.4297,52,87.4297,48,83.4297" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="46" x2="143.5" y1="83.4297" y2="83.4297"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="133.5" y1="69.4297" y2="69.4297"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="53" y="64.3638">add()</text>
+    <polygon fill="#A80036" points="57,79.4297,47,83.4297,57,87.4297,53,83.4297" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="51" x2="143.5" y1="83.4297" y2="83.4297"/>
     <polygon fill="#A80036" points="290.5,108.5625,300.5,112.5625,290.5,116.5625,294.5,112.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <line style="stroke: #A80036; stroke-width: 1.0;" x1="41" x2="296.5" y1="112.5625" y2="112.5625"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="48" y="107.4966">add()</text>
-    <polygon fill="#A80036" points="52,122.5625,42,126.5625,52,130.5625,48,126.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="46" x2="306.5" y1="126.5625" y2="126.5625"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="296.5" y1="112.5625" y2="112.5625"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="53" y="107.4966">add()</text>
+    <polygon fill="#A80036" points="57,122.5625,47,126.5625,57,130.5625,53,126.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="51" x2="306.5" y1="126.5625" y2="126.5625"/>
     <polygon fill="#A80036" points="545,151.6953,555,155.6953,545,159.6953,549,155.6953" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <line style="stroke: #A80036; stroke-width: 1.0;" x1="41" x2="551" y1="155.6953" y2="155.6953"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="48" y="150.6294">add()</text>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="551" y1="155.6953" y2="155.6953"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="34" x="53" y="150.6294">add()</text>
     <polygon fill="#A80036" points="52,165.6953,42,169.6953,52,173.6953,48,169.6953" style="stroke: #A80036; stroke-width: 1.0;"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="46" x2="561" y1="169.6953" y2="169.6953"/>
   </g>
