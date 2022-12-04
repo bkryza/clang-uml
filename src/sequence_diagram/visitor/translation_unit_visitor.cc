@@ -1327,35 +1327,6 @@ void translation_unit_visitor::process_template_specialization_argument(
             simplify_system_template(argument,
                 argument.to_string(config().using_namespace(), false));
         }
-        else if (arg.getAsType()->getAsCXXRecordDecl()) {
-            if (arg.getAsType()->getAsCXXRecordDecl()->isLambda()) {
-                if (get_unique_id(
-                        arg.getAsType()->getAsCXXRecordDecl()->getID())
-                        .has_value()) {
-                    argument.set_name(get_participant(
-                        get_unique_id(
-                            arg.getAsType()->getAsCXXRecordDecl()->getID())
-                            .value())
-                                          .value()
-                                          .full_name(false));
-                }
-                else {
-                    auto parent_full_name =
-                        get_participant(context().caller_id())
-                            .value()
-                            .full_name_no_ns();
-
-                    const auto location =
-                        arg.getAsType()->getAsCXXRecordDecl()->getLocation();
-                    const auto type_name =
-                        fmt::format("{}##(lambda {}:{})", parent_full_name,
-                            source_manager().getSpellingLineNumber(location),
-                            source_manager().getSpellingColumnNumber(location));
-
-                    argument.set_name(type_name);
-                }
-            }
-        }
         else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
@@ -1386,6 +1357,32 @@ void translation_unit_visitor::process_template_specialization_argument(
             }
 
             argument.set_name(type_name);
+        }
+        else if (arg.getAsType()->getAsCXXRecordDecl() &&
+            arg.getAsType()->getAsCXXRecordDecl()->isLambda()) {
+            if (get_unique_id(arg.getAsType()->getAsCXXRecordDecl()->getID())
+                    .has_value()) {
+                argument.set_name(get_participant(
+                    get_unique_id(
+                        arg.getAsType()->getAsCXXRecordDecl()->getID())
+                        .value())
+                                      .value()
+                                      .full_name(false));
+            }
+            else {
+                auto parent_full_name = get_participant(context().caller_id())
+                                            .value()
+                                            .full_name_no_ns();
+
+                const auto location =
+                    arg.getAsType()->getAsCXXRecordDecl()->getLocation();
+                const auto type_name =
+                    fmt::format("{}##(lambda {}:{})", parent_full_name,
+                        source_manager().getSpellingLineNumber(location),
+                        source_manager().getSpellingColumnNumber(location));
+
+                argument.set_name(type_name);
+            }
         }
         else {
             auto type_name =
