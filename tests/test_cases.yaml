@@ -181,6 +181,9 @@ test_cases:
     - name: t20011
       title: Recursive calls sequence diagram test case
       description:
+    - name: t20012
+      title: Lambda expression call sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
