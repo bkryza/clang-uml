@@ -107,10 +107,6 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
                     m.from, m.to, m.to);
                 generate_activity(m_model.sequences[m.to], ostr, visited);
             }
-//            else {
-//                // clear the visited list after breaking the loop
-//                visited.clear();
-//            }
         }
         else
             LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from,
@@ -195,9 +191,11 @@ void generator::generate(std::ostream &ostr) const
                     break;
                 }
             }
-            std::vector<common::model::diagram_element::id_t> visited_participants;
+            std::vector<common::model::diagram_element::id_t>
+                visited_participants;
 
-            const auto& from = m_model.get_participant<model::participant>(start_from);
+            const auto &from =
+                m_model.get_participant<model::participant>(start_from);
 
             generate_participant(ostr, start_from);
 

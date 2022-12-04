@@ -76,7 +76,6 @@ public:
             static_cast<T *>(participants.at(id).get()));
     }
 
-
     void add_participant(std::unique_ptr<participant> p)
     {
         const auto participant_id = p->id();

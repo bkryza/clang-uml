@@ -164,8 +164,6 @@ std::string get_source_text(
     return get_source_text_raw(printable_range, sm);
 }
 
-
-
 template <> id_t to_id(const std::string &full_name)
 {
     return std::hash<std::string>{}(full_name) >> 3;
