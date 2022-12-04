@@ -11,4 +11,4 @@ diagrams:
     using_namespace:
       - clanguml::t20003
     start_from:
-      - function: "clanguml::t20003::m1<T>()"
+      - function: "clanguml::t20003::m1<T>(T)"

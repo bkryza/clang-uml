@@ -34,9 +34,9 @@ TEST_CASE("t20003", "[test-case][sequence]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, HasCall(_A("m1<T>()"), _A("m2<T>()"), "m2<T>"));
-    REQUIRE_THAT(puml, HasCall(_A("m2<T>()"), _A("m3<T>()"), "m3<T>"));
-    REQUIRE_THAT(puml, HasCall(_A("m3<T>()"), _A("m4<T>()"), "m4<T>"));
+    REQUIRE_THAT(puml, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
+    REQUIRE_THAT(puml, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
+    REQUIRE_THAT(puml, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

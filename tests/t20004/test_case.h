@@ -32,22 +32,28 @@ TEST_CASE("t20004", "[test-case][sequence]")
     AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>()"), "m1"));
-    REQUIRE_THAT(puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2"));
-    REQUIRE_THAT(puml, !HasCall(_A("m1<float>()"), _A("m1<float>()"), "m2"));
-
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<unsigned long>()"), "m1"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("m1<unsigned long>()"), _A("m4<unsigned long>()"), "m4"));
-
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<std::string>()"), "m1"));
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>(float)"), ""));
     REQUIRE_THAT(
-        puml, HasCall(_A("m1<std::string>()"), _A("m2<std::string>()"), "m2"));
+        puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
+    REQUIRE_THAT(
+        puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
 
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>()"), "m1"));
-    REQUIRE_THAT(puml, HasCall(_A("m1<int>()"), _A("m2<int>()"), "m2"));
-    REQUIRE_THAT(puml, HasCall(_A("m2<int>()"), _A("m3<int>()"), "m3"));
-    REQUIRE_THAT(puml, HasCall(_A("m3<int>()"), _A("m4<int>()"), "m4"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"), ""));
+    REQUIRE_THAT(puml,
+        HasCall(_A("m1<unsigned long>(unsigned long)"),
+            _A("m4<unsigned long>(unsigned long)"), ""));
+
+    REQUIRE_THAT(
+        puml, HasCall(_A("main()"), _A("m1<std::string>(std::string)"), ""));
+    REQUIRE_THAT(puml,
+        HasCall(_A("m1<std::string>(std::string)"),
+            _A("m2<std::string>(std::string)"), ""));
+
+    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
+    REQUIRE_THAT(puml, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"), ""));
+    REQUIRE_THAT(puml, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"), ""));
+    REQUIRE_THAT(puml, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     save_puml(

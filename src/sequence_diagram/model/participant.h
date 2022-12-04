@@ -139,6 +139,8 @@ struct lambda : public class_ {
 };
 
 struct function : public participant {
+    enum class message_render_mode { full, no_arguments };
+
     function(const common::model::namespace_ &using_namespace);
 
     function(const function &) = delete;
@@ -151,9 +153,31 @@ struct function : public participant {
     std::string full_name(bool relative = true) const override;
 
     std::string full_name_no_ns() const override;
+
+    virtual std::string message_name(message_render_mode mode) const
+    {
+        if (mode == message_render_mode::no_arguments) {
+            return fmt::format("{}(){}", name(), is_const() ? " const" : "");
+        }
+
+        return fmt::format("{}({}){}", name(), fmt::join(parameters_, ","),
+            is_const() ? " const" : "");
+    }
+
+    bool is_const() const { return is_const_; }
+
+    void is_const(bool c) { is_const_ = c; }
+
+    void add_parameter(const std::string &a) { parameters_.push_back(a); }
+
+    const std::vector<std::string> &parameters() const { return parameters_; }
+
+private:
+    bool is_const_{false};
+    std::vector<std::string> parameters_;
 };
 
-struct method : public participant {
+struct method : public function {
     method(const common::model::namespace_ &using_namespace);
 
     method(const function &) = delete;
@@ -180,7 +204,19 @@ struct method : public participant {
 
     std::string full_name(bool /*relative*/) const override
     {
-        return class_full_name() + "::" + method_name();
+        return fmt::format("{}::{}({}){}", class_full_name(), method_name(),
+            fmt::join(parameters(), ","), is_const() ? " const" : "");
+    }
+
+    std::string message_name(message_render_mode mode) const override
+    {
+        if (mode == message_render_mode::no_arguments) {
+            return fmt::format(
+                "{}(){}", method_name(), is_const() ? " const" : "");
+        }
+
+        return fmt::format("{}({}){}", method_name(),
+            fmt::join(parameters(), ","), is_const() ? " const" : "");
     }
 
     diagram_element::id_t class_id() const { return class_id_; }
@@ -197,7 +233,7 @@ private:
     std::string class_full_name_;
 };
 
-struct function_template : public participant, public template_trait {
+struct function_template : public function, public template_trait {
     function_template(const common::model::namespace_ &using_namespace);
 
     function_template(const function_template &) = delete;

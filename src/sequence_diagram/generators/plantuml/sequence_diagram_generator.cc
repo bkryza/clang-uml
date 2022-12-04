@@ -56,10 +56,11 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     generate_participant(ostr, m.from);
     generate_participant(ostr, m.to);
 
-    auto message = m.message_name;
-    if (!message.empty()) {
-        message = m_config.using_namespace().relative(message);
-        message += "()";
+    std::string message;
+
+    if (to.value().type_name() == "method") {
+        message = dynamic_cast<const model::function &>(to.value())
+                      .message_name(model::function::message_render_mode::full);
     }
 
     ostr << from.value().alias() << " "
@@ -133,7 +134,7 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
             m_model.get_participant<model::participant>(participant_id).value();
 
         if (participant.type_name() == "method") {
-            const auto &class_id =
+            const auto class_id =
                 m_model.get_participant<model::method>(participant_id)
                     .value()
                     .class_id();
@@ -196,6 +197,13 @@ void generator::generate(std::ostream &ostr) const
 
             const auto &from =
                 m_model.get_participant<model::participant>(start_from);
+
+            if (!from.has_value()) {
+                LOG_WARN(
+                    "Failed to find participant {} for start_from condition",
+                    sf.location);
+                continue;
+            }
 
             generate_participant(ostr, start_from);
 

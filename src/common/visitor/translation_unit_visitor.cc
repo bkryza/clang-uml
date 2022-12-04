@@ -70,6 +70,7 @@ void translation_unit_visitor::set_source_location(
         element.set_file(source_manager_.getFilename(decl.getLocation()).str());
         element.set_line(
             source_manager_.getSpellingLineNumber(decl.getLocation()));
+        element.set_location_id(decl.getLocation().getHashValue());
     }
 }
 

@@ -163,16 +163,18 @@ function::function(const common::model::namespace_ &using_namespace)
 
 std::string function::full_name(bool relative) const
 {
-    return element::full_name(relative) + "()";
+    return fmt::format("{}({}){}", element::full_name(relative),
+        fmt::join(parameters_, ","), is_const() ? " const" : "");
 }
 
 std::string function::full_name_no_ns() const
 {
-    return element::full_name_no_ns() + "()";
+    return fmt::format("{}({}){}", element::full_name_no_ns(),
+        fmt::join(parameters_, ","), is_const() ? " const" : "");
 }
 
 method::method(const common::model::namespace_ &using_namespace)
-    : participant{using_namespace}
+    : function{using_namespace}
 {
 }
 
@@ -185,7 +187,7 @@ std::string method::alias() const
 
 function_template::function_template(
     const common::model::namespace_ &using_namespace)
-    : participant{using_namespace}
+    : function{using_namespace}
 {
 }
 
@@ -199,7 +201,8 @@ std::string function_template::full_name(bool relative) const
     ostr << name_and_ns();
     render_template_params(ostr, using_namespace(), relative);
 
-    ostr << "()";
+    ostr << fmt::format(
+        "({}){}", fmt::join(parameters(), ","), is_const() ? " const" : "");
 
     std::string res;
 
@@ -224,7 +227,8 @@ std::string function_template::full_name_no_ns() const
 
     render_template_params(ostr, using_namespace(), false);
 
-    ostr << "()";
+    ostr << fmt::format(
+        "({}){}", fmt::join(parameters(), ","), is_const() ? " const" : "");
 
     return ostr.str();
 }

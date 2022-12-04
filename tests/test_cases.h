@@ -123,7 +123,7 @@ ContainsMatcher HasCall(std::string const &from, std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString(
-        fmt::format("{} -> {} : {}()", from, from, message), caseSensitivity));
+        fmt::format("{} -> {} : {}", from, from, message), caseSensitivity));
 }
 
 ContainsMatcher HasCall(std::string const &from, std::string const &to,
@@ -131,7 +131,7 @@ ContainsMatcher HasCall(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString(
-        fmt::format("{} -> {} : {}()", from, to, message), caseSensitivity));
+        fmt::format("{} -> {} : {}", from, to, message), caseSensitivity));
 }
 
 auto HasCallWithResponse(std::string const &from, std::string const &to,
@@ -140,7 +140,7 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
 {
     return HasCallWithResultMatcher(
         CasedString(
-            fmt::format("{} -> {} : {}()", from, to, message), caseSensitivity),
+            fmt::format("{} -> {} : {}", from, to, message), caseSensitivity),
         CasedString(fmt::format("{} --> {}", to, from), caseSensitivity));
 }
 

@@ -195,6 +195,8 @@ private:
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
         const std::string &full_name);
 
+    std::string simplify_system_template(const std::string &full_name) const;
+
     std::string make_lambda_name(const clang::CXXRecordDecl *cls) const;
 
     bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;

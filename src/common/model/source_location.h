@@ -39,8 +39,13 @@ public:
 
     void set_line(const unsigned line) { line_ = line; }
 
+    unsigned int location_id() const { return hash_; }
+
+    void set_location_id(unsigned int h) { hash_ = h; }
+
 private:
     std::string file_;
     unsigned int line_{0};
+    unsigned int hash_;
 };
 }
