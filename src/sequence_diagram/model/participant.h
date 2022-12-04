@@ -115,16 +115,27 @@ public:
 
     void is_alias(bool alias) { is_alias_ = alias; }
 
+    bool is_lambda() const { return is_lambda_; }
+
+    void is_lambda(bool is_lambda) { is_lambda_ = is_lambda; }
+
 private:
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
     bool is_alias_{false};
+    bool is_lambda_{false};
 
     std::map<std::string, clanguml::class_diagram::model::type_alias>
         type_aliases_;
 
     std::string full_name_;
+};
+
+struct lambda : public class_ {
+    using class_::class_;
+
+    std::string type_name() const override { return "lambda"; }
 };
 
 struct function : public participant {

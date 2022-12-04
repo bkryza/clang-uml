@@ -78,10 +78,10 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 }
 
 void generator::generate_activity(const activity &a, std::ostream &ostr,
-    std::set<common::model::diagram_element::id_t> &visited) const
+    std::vector<common::model::diagram_element::id_t> &visited) const
 {
     for (const auto &m : a.messages) {
-        visited.emplace(m.from);
+        visited.push_back(m.from);
 
         const auto &to = m_model.get_participant<model::participant>(m.to);
         if (!to)
@@ -94,18 +94,24 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         ostr << "activate " << to.value().alias() << std::endl;
 
         if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
-            if (visited.find(m.to) ==
+            if (std::find(visited.begin(), visited.end(), m.to) ==
                 visited.end()) { // break infinite recursion on recursive calls
                 LOG_DBG("Creating activity {} --> {} - missing sequence {}",
                     m.from, m.to, m.to);
                 generate_activity(m_model.sequences[m.to], ostr, visited);
             }
+//            else {
+//                // clear the visited list after breaking the loop
+//                visited.clear();
+//            }
         }
         else
             LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from,
                 m.to, m.to);
 
         generate_return(m, ostr);
+
+        visited.pop_back();
 
         ostr << "deactivate " << to.value().alias() << std::endl;
     }
@@ -182,9 +188,18 @@ void generator::generate(std::ostream &ostr) const
                     break;
                 }
             }
-            std::set<common::model::diagram_element::id_t> visited_participants;
+            std::vector<common::model::diagram_element::id_t> visited_participants;
+
+            const auto& from = m_model.get_participant<model::participant>(start_from);
+
+            generate_participant(ostr, start_from);
+
+            ostr << "activate " << from.value().alias() << std::endl;
+
             generate_activity(
                 m_model.sequences[start_from], ostr, visited_participants);
+
+            ostr << "deactivate " << from.value().alias() << std::endl;
         }
         else {
             // TODO: Add support for other sequence start location types

@@ -25,6 +25,8 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
 
+#include <stack>
+
 namespace clanguml::sequence_diagram::visitor {
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);
@@ -150,10 +152,37 @@ struct call_expression_context {
 
     std::int64_t caller_id() const { return current_caller_id_; }
 
+    std::int64_t lambda_caller_id() const
+    {
+        if(current_lambda_caller_id_.empty())
+            return 0;
+
+        return current_lambda_caller_id_.top();
+    }
+
     void set_caller_id(std::int64_t id)
     {
         LOG_DBG("Setting current caller id to {}", id);
         current_caller_id_ = id;
+    }
+
+    void enter_lambda_expression(std::int64_t id)
+    {
+        LOG_DBG("Setting current lambda caller id to {}", id);
+
+        assert(id != 0);
+
+        current_lambda_caller_id_.push(id);
+    }
+
+    void leave_lambda_expression()
+    {
+        assert(!current_lambda_caller_id_.empty());
+
+        LOG_DBG("Leaving current lambda expression id to {}",
+            current_lambda_caller_id_.top());
+
+        current_lambda_caller_id_.pop();
     }
 
     clang::CXXRecordDecl *current_class_decl_;
@@ -166,6 +195,7 @@ struct call_expression_context {
 
 private:
     std::int64_t current_caller_id_;
+    std::stack<std::int64_t> current_lambda_caller_id_;
 };
 
 class translation_unit_visitor
@@ -179,6 +209,10 @@ public:
     bool shouldVisitTemplateInstantiations();
 
     virtual bool VisitCallExpr(clang::CallExpr *expr);
+
+    virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
+
+    virtual bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
     virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
 
@@ -200,7 +234,7 @@ public:
 
     call_expression_context &context();
 
-    void finalize() { }
+    void finalize();
 
     template <typename T = model::participant>
     common::optional_ref<T> get_participant(const clang::Decl *decl)
