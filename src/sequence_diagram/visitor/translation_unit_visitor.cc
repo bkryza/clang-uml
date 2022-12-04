@@ -505,11 +505,11 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     m.type = message_t::kCall;
     m.from = context().caller_id();
 
+    // If we're currently inside a lambda expression, set it's id as
+    // message source rather then enclosing context
     if (context().lambda_caller_id() != 0) {
         m.from = context().lambda_caller_id();
     }
-
-    const auto &current_ast_context = *context().get_ast_context();
 
     LOG_DBG("Visiting call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
@@ -517,27 +517,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
         operator_call_expr != nullptr) {
-        // TODO: Handle C++ operator calls
 
-        LOG_DBG("Operator call expression to {} at {}",
-            expr->getCalleeDecl()->getID(),
-            expr->getBeginLoc().printToString(source_manager()));
-
-        auto maybe_id = get_unique_id(expr->getCalleeDecl()->getID());
-        if (maybe_id.has_value()) {
-            // Found operator() call to a participant
-            // auto maybe_participant = get_participant(maybe_id.value());
-            // if (maybe_participant.has_value()) {
-            m.to = maybe_id.value();
-            m.message_name = "operator()";
-            //}
-        }
-        else {
-            m.to = expr->getCalleeDecl()->getID();
-            m.message_name = "operator()";
-        }
-
-        if (clang::dyn_cast<clang::ImplicitCastExpr>(expr)) { }
+        if (!process_operator_call_expression(m, operator_call_expr))
+            return true;
     }
     //
     // Call to a class method
@@ -546,120 +528,18 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                  clang::dyn_cast_or_null<clang::CXXMemberCallExpr>(expr);
              method_call_expr != nullptr) {
 
-        // Get callee declaration as methods parent
-        const auto *method_decl = method_call_expr->getMethodDecl();
-        std::string method_name = method_decl->getQualifiedNameAsString();
-
-        auto *callee_decl = method_decl ? method_decl->getParent() : nullptr;
-
-        if (!(callee_decl &&
-                diagram().should_include(
-                    callee_decl->getQualifiedNameAsString())))
+        if (!process_class_method_call_expression(m, method_call_expr))
             return true;
-
-        const auto *callee_template_specialization =
-            clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
-                callee_decl);
-
-        if (callee_template_specialization) {
-            LOG_DBG("Callee is a template specialization declaration {}",
-                callee_template_specialization->getQualifiedNameAsString());
-
-            const auto &participant =
-                diagram()
-                    .get_participant<model::class_>(
-                        get_unique_id(callee_template_specialization->getID())
-                            .value())
-                    .value();
-
-            if (participant.is_implicit()) {
-                /*
-                const auto *parent_template =
-                    callee_template_specialization->getSpecializedTemplate();
-
-                const auto &parent_template_participant =
-                    diagram()
-                        .get_participant<model::class_>(
-                            get_unique_id(parent_template->getID()).value())
-                        .value();
-
-                const auto parent_method_name =
-                    parent_template_participant.full_name(false) +
-                    "::" + method_decl->getNameAsString();
-
-                m.to = common::to_id(parent_method_name);
-                m.message_name = participant.full_name_no_ns() +
-                    "::" + method_decl->getNameAsString();
-                */
-                const auto specialization_method_name =
-                    participant.full_name(false) +
-                    "::" + method_decl->getNameAsString();
-
-                m.to = common::to_id(method_name);
-                m.message_name = method_decl->getNameAsString();
-
-                // Since this is an implicit instantiation it might not exist
-                // so we have to create this participant here and it to the
-                // diagram
-                if (!diagram()
-                         .get_participant<model::class_>(m.to)
-                         .has_value()) {
-                    auto m_ptr =
-                        std::make_unique<sequence_diagram::model::method>(
-                            config().using_namespace());
-                    m_ptr->set_id(m.to);
-                    m_ptr->set_method_name(method_decl->getNameAsString());
-                    m_ptr->set_name(method_decl->getNameAsString());
-                    m_ptr->set_class_id(participant.id());
-                    m_ptr->set_class_full_name(participant.full_name(false));
-                    set_unique_id(method_decl->getID(), m_ptr->id());
-                    diagram().add_active_participant(m_ptr->id());
-                    diagram().add_participant(std::move(m_ptr));
-                }
-            }
-            else {
-                const auto &specialization_participant =
-                    diagram()
-                        .get_participant<model::class_>(get_unique_id(
-                            callee_template_specialization->getID())
-                                                            .value())
-                        .value();
-                const auto specialization_method_name =
-                    specialization_participant.full_name(false) +
-                    "::" + method_decl->getNameAsString();
-
-                m.to = common::to_id(specialization_method_name);
-                m.message_name = method_decl->getNameAsString();
-            }
-        }
-        else {
-            // TODO: The method can be called before it's declaration has been
-            //       encountered by the visitor - for now it's not a problem
-            //       as overloaded methods are not supported
-            m.to = common::to_id(method_decl->getQualifiedNameAsString());
-            m.message_name = method_decl->getNameAsString();
-        }
-        m.return_type = method_call_expr->getCallReturnType(current_ast_context)
-                            .getAsString();
-
-        LOG_DBG("Set callee method id {} for method name {}", m.to,
-            method_decl->getQualifiedNameAsString());
-
-        if (get_unique_id(callee_decl->getID()))
-            diagram().add_active_participant(
-                get_unique_id(callee_decl->getID()).value());
     }
     //
-    // Call to a function
+    // Call to function or template
     //
-    else if (const auto *function_call_expr =
-                 clang::dyn_cast_or_null<clang::CallExpr>(expr);
-             function_call_expr != nullptr) {
-        auto *callee_decl = function_call_expr->getCalleeDecl();
+    else {
+        auto *callee_decl = expr->getCalleeDecl();
 
         if (callee_decl == nullptr) {
             LOG_DBG("Cannot get callee declaration - trying direct callee...");
-            callee_decl = function_call_expr->getDirectCallee();
+            callee_decl = expr->getDirectCallee();
         }
 
         if (!callee_decl) {
@@ -667,128 +547,24 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             // Call to a method of a class template
             //
             if (clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
-                    function_call_expr->getCallee())) {
-                auto *dependent_member_callee =
-                    clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
-                        function_call_expr->getCallee());
-
-                if (is_callee_valid_template_specialization(
-                        dependent_member_callee)) {
-
-                    const auto *primary_template =
-                        dependent_member_callee->getBaseType()
-                            ->getAs<clang::TemplateSpecializationType>()
-                            ->getTemplateName()
-                            .getAsTemplateDecl();
-
-                    std::string callee_method_full_name;
-
-                    // First check if the primary template is already in the
-                    // participants map
-                    if (get_participant(primary_template).has_value()) {
-                        callee_method_full_name =
-                            get_participant(primary_template)
-                                .value()
-                                .full_name(false) +
-                            "::" +
-                            dependent_member_callee->getMember().getAsString();
-                    }
-                    else if (is_smart_pointer(primary_template)) {
-                        // Otherwise check if it a smart pointer
-                        primary_template->getTemplateParameters()
-                            ->asArray()
-                            .front();
-
-                        if (get_participant(primary_template).has_value()) {
-                            callee_method_full_name =
-                                get_participant(primary_template)
-                                    .value()
-                                    .full_name(false) +
-                                "::" +
-                                dependent_member_callee->getMember()
-                                    .getAsString();
-                        }
-                        else
-                            return true;
-                    }
-
-                    auto callee_id = common::to_id(callee_method_full_name);
-                    m.to = callee_id;
-
-                    m.message_name =
-                        dependent_member_callee->getMember().getAsString();
-                    m.return_type = "";
-
-                    if (get_unique_id(primary_template->getID()))
-                        diagram().add_active_participant(
-                            get_unique_id(primary_template->getID()).value());
+                    expr->getCallee())) {
+                if (!process_class_template_method_call_expression(m, expr)) {
+                    return true;
                 }
             }
             //
-            // Call to a template function
+            // Unresolved lookup expression are sometimes calls to template
+            // functions
             //
             else if (clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
-                         function_call_expr->getCallee())) {
-                // This is probably a template
-                auto *unresolved_expr =
-                    clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
-                        function_call_expr->getCallee());
-
-                if (unresolved_expr) {
-                    for (const auto *decl : unresolved_expr->decls()) {
-                        if (clang::dyn_cast_or_null<
-                                clang::FunctionTemplateDecl>(decl)) {
-                            // Yes, it's a template
-                            auto *ftd = clang::dyn_cast_or_null<
-                                clang::FunctionTemplateDecl>(decl);
-
-                            if (!get_unique_id(ftd->getID()).has_value())
-                                continue;
-
-                            m.to = get_unique_id(ftd->getID()).value();
-                            auto message_name =
-                                diagram()
-                                    .get_participant<model::function_template>(
-                                        m.to)
-                                    .value()
-                                    .full_name(false)
-                                    .substr();
-                            m.message_name =
-                                message_name.substr(0, message_name.size() - 2);
-
-                            break;
-                        }
-                    }
-                }
+                         expr->getCallee())) {
+                if (!process_unresolved_lookup_call_expression(m, expr))
+                    return true;
             }
         }
         else {
-            if (callee_decl->isTemplateDecl())
-                LOG_DBG("Call to template function");
-
-            const auto *callee_function = callee_decl->getAsFunction();
-
-            if (!callee_function)
+            if (!process_function_call_expression(m, expr))
                 return true;
-
-            auto callee_name =
-                callee_function->getQualifiedNameAsString() + "()";
-
-            std::unique_ptr<model::function_template> f_ptr;
-
-            if (!get_unique_id(callee_function->getID()).has_value()) {
-                // This is hopefully not an interesting call...
-                return true;
-            }
-            else {
-                m.to = get_unique_id(callee_function->getID()).value();
-            }
-
-            auto message_name = callee_name;
-            m.message_name = message_name.substr(0, message_name.size() - 2);
-
-            if (f_ptr)
-                diagram().add_participant(std::move(f_ptr));
         }
 
         //
@@ -798,9 +574,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         //    function_call_expr->getCallReturnType(current_ast_context);
         // m.return_type = return_type.getAsString();
         m.return_type = "";
-    }
-    else {
-        return true;
     }
 
     if (m.from > 0 && m.to > 0) {
@@ -820,6 +593,202 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         diagram().sequences[m.from].messages.emplace_back(std::move(m));
 
         assert(!diagram().sequences.empty());
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::process_operator_call_expression(
+    model::message &m, const clang::CXXOperatorCallExpr *operator_call_expr)
+{
+    LOG_DBG("Operator '{}' call expression to {} at {}",
+        getOperatorSpelling(operator_call_expr->getOperator()),
+        operator_call_expr->getCalleeDecl()->getID(),
+        operator_call_expr->getBeginLoc().printToString(source_manager()));
+
+    auto maybe_id = get_unique_id(operator_call_expr->getCalleeDecl()->getID());
+    if (maybe_id.has_value()) {
+        m.to = maybe_id.value();
+    }
+    else {
+        m.to = operator_call_expr->getCalleeDecl()->getID();
+    }
+
+    m.message_name = fmt::format(
+        "operator{}", getOperatorSpelling(operator_call_expr->getOperator()));
+
+    return true;
+}
+
+bool translation_unit_visitor::process_class_method_call_expression(
+    model::message &m, const clang::CXXMemberCallExpr *method_call_expr)
+{
+    // Get callee declaration as methods parent
+    const auto *method_decl = method_call_expr->getMethodDecl();
+    std::string method_name = method_decl->getQualifiedNameAsString();
+
+    auto *callee_decl = method_decl ? method_decl->getParent() : nullptr;
+
+    if (!(callee_decl &&
+            diagram().should_include(callee_decl->getQualifiedNameAsString())))
+        return false;
+
+    const auto *callee_template_specialization =
+        clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(callee_decl);
+
+    if (callee_template_specialization) {
+        LOG_DBG("Callee is a template specialization declaration {}",
+            callee_template_specialization->getQualifiedNameAsString());
+
+        const auto &specialization_participant =
+            diagram()
+                .get_participant<model::class_>(
+                    get_unique_id(callee_template_specialization->getID())
+                        .value())
+                .value();
+        const auto specialization_method_name =
+            specialization_participant.full_name(false) +
+            "::" + method_decl->getNameAsString();
+
+        m.to = common::to_id(specialization_method_name);
+        m.message_name = method_decl->getNameAsString();
+    }
+    else {
+        // TODO: The method can be called before it's declaration has been
+        //       encountered by the visitor - for now it's not a problem
+        //       as overloaded methods are not supported
+        m.to = common::to_id(method_decl->getQualifiedNameAsString());
+        m.message_name = method_decl->getNameAsString();
+    }
+    m.return_type =
+        method_call_expr->getCallReturnType(*context().get_ast_context())
+            .getAsString();
+
+    LOG_DBG("Set callee method id {} for method name {}", m.to,
+        method_decl->getQualifiedNameAsString());
+
+    if (get_unique_id(callee_decl->getID()))
+        diagram().add_active_participant(
+            get_unique_id(callee_decl->getID()).value());
+
+    return true;
+}
+
+bool translation_unit_visitor::process_class_template_method_call_expression(
+    model::message &m, const clang::CallExpr *expr)
+{
+    auto *dependent_member_callee =
+        clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
+            expr->getCallee());
+
+    if (is_callee_valid_template_specialization(dependent_member_callee)) {
+
+        const auto *primary_template =
+            dependent_member_callee->getBaseType()
+                ->getAs<clang::TemplateSpecializationType>()
+                ->getTemplateName()
+                .getAsTemplateDecl();
+
+        std::string callee_method_full_name;
+
+        // First check if the primary template is already in the
+        // participants map
+        if (get_participant(primary_template).has_value()) {
+            callee_method_full_name =
+                get_participant(primary_template).value().full_name(false) +
+                "::" + dependent_member_callee->getMember().getAsString();
+        }
+        else if (is_smart_pointer(primary_template)) {
+            // Otherwise check if it a smart pointer
+            primary_template->getTemplateParameters()->asArray().front();
+
+            if (get_participant(primary_template).has_value()) {
+                callee_method_full_name =
+                    get_participant(primary_template).value().full_name(false) +
+                    "::" + dependent_member_callee->getMember().getAsString();
+            }
+            else
+                return false;
+        }
+
+        auto callee_id = common::to_id(callee_method_full_name);
+        m.to = callee_id;
+
+        m.message_name = dependent_member_callee->getMember().getAsString();
+        m.return_type = "";
+
+        if (get_unique_id(primary_template->getID()))
+            diagram().add_active_participant(
+                get_unique_id(primary_template->getID()).value());
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::process_function_call_expression(
+    model::message &m, const clang::CallExpr *expr)
+{
+    const auto *callee_decl = expr->getCalleeDecl();
+
+    if (callee_decl == nullptr)
+        return false;
+
+    const auto *callee_function = callee_decl->getAsFunction();
+
+    if (!callee_function)
+        return false;
+
+    auto callee_name = callee_function->getQualifiedNameAsString() + "()";
+
+    std::unique_ptr<model::function_template> f_ptr;
+
+    if (!get_unique_id(callee_function->getID()).has_value()) {
+        // This is hopefully not an interesting call...
+        return false;
+    }
+    else {
+        m.to = get_unique_id(callee_function->getID()).value();
+    }
+
+    auto message_name = callee_name;
+    m.message_name = message_name.substr(0, message_name.size() - 2);
+
+    if (f_ptr)
+        diagram().add_participant(std::move(f_ptr));
+
+    return true;
+}
+
+bool translation_unit_visitor::process_unresolved_lookup_call_expression(
+    model::message &m, const clang::CallExpr *expr)
+{
+    // This is probably a template
+    auto *unresolved_expr =
+        clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(expr->getCallee());
+
+    if (unresolved_expr) {
+        for (const auto *decl : unresolved_expr->decls()) {
+            if (clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl)) {
+                // Yes, it's a template
+                auto *ftd =
+                    clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
+
+                if (!get_unique_id(ftd->getID()).has_value())
+                    continue;
+
+                m.to = get_unique_id(ftd->getID()).value();
+                auto message_name =
+                    diagram()
+                        .get_participant<model::function_template>(m.to)
+                        .value()
+                        .full_name(false)
+                        .substr();
+                m.message_name =
+                    message_name.substr(0, message_name.size() - 2);
+
+                break;
+            }
+        }
     }
 
     return true;

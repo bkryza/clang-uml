@@ -42,22 +42,22 @@ public:
 
     bool shouldVisitTemplateInstantiations();
 
-    virtual bool VisitCallExpr(clang::CallExpr *expr);
+    bool VisitCallExpr(clang::CallExpr *expr);
 
-    virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
+    bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
-    virtual bool TraverseLambdaExpr(clang::LambdaExpr *expr);
+    bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
-    virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
+    bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
 
-    virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+    bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
 
-    virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
+    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
 
-    virtual bool VisitClassTemplateSpecializationDecl(
+    bool VisitClassTemplateSpecializationDecl(
         clang::ClassTemplateSpecializationDecl *cls);
 
-    virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+    bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
@@ -202,6 +202,21 @@ private:
     bool is_callee_valid_template_specialization(
         const clang::CXXDependentScopeMemberExpr *dependent_member_callee)
         const;
+
+    bool process_operator_call_expression(model::message &m,
+        const clang::CXXOperatorCallExpr *operator_call_expr);
+
+    bool process_class_method_call_expression(
+        model::message &m, const clang::CXXMemberCallExpr *operator_call_expr);
+
+    bool process_class_template_method_call_expression(
+        model::message &m, const clang::CallExpr *expr);
+
+    bool process_function_call_expression(
+        model::message &m, const clang::CallExpr *expr);
+
+    bool process_unresolved_lookup_call_expression(
+        model::message &m, const clang::CallExpr *expr);
 
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;

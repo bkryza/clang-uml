@@ -64,6 +64,19 @@ public:
             static_cast<T *>(participants.at(id).get()));
     }
 
+    template <typename T>
+    const common::optional_ref<T> get_participant(
+        common::model::diagram_element::id_t id) const
+    {
+        if (participants.find(id) == participants.end()) {
+            return {};
+        }
+
+        return common::optional_ref<T>(
+            static_cast<T *>(participants.at(id).get()));
+    }
+
+
     void add_participant(std::unique_ptr<participant> p)
     {
         const auto participant_id = p->id();
