@@ -1457,41 +1457,6 @@ void translation_unit_visitor::process_template_specialization_argument(
 
         cls->getLocation().dump(source_manager());
     }
-    //    else if (arg.getKind() == clang::TemplateArgument::Expression) {
-    //        if (clang::dyn_cast<clang::LambdaExpr>(arg.getAsExpr()) !=
-    //        nullptr) {
-    //            class_diagram::model::template_parameter argument;
-    ////            const auto location =
-    ////                arg.getAsType()->getAsCXXRecordDecl()->getLocation();
-    ////
-    ////            auto type_name = fmt::format("(lambda {}:{}:{})",
-    ////                source_manager().getFilename(location).str(),
-    ////                source_manager().getSpellingLineNumber(location),
-    ////                source_manager().getSpellingColumnNumber(location));
-    ////
-    ////            argument.set_name(type_name);
-    //
-    //            if (get_unique_id(
-    //                    arg.getAsType()->getAsCXXRecordDecl()->getID())
-    //                    .has_value()) {
-    //                argument.set_name(get_participant(
-    //                    get_unique_id(
-    //                        arg.getAsType()->getAsCXXRecordDecl()->getID())
-    //                        .value())
-    //                                      .value()
-    //                                      .full_name(false));
-    //            }
-    //            else {
-    //                const auto location =
-    //                    arg.getAsType()->getAsCXXRecordDecl()->getLocation();
-    //                auto type_name = fmt::format("(lambda {}:{}:{})",
-    //                    source_manager().getFilename(location).str(),
-    //                    source_manager().getSpellingLineNumber(location),
-    //                    source_manager().getSpellingColumnNumber(location));
-    //                argument.set_name(type_name);
-    //            }
-    //        }
-    //    }
     else if (argument_kind == clang::TemplateArgument::Pack) {
         // This will only work for now if pack is at the end
         size_t argument_pack_index{argument_index};
