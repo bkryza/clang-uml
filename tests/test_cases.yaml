@@ -184,6 +184,12 @@ test_cases:
     - name: t20012
       title: Lambda expression call sequence diagram test case
       description:
+    - name: t20013
+      title: Function and method arguments in sequence diagrams test case
+      description:
+    - name: t20014
+      title: Multiple translation units sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

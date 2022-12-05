@@ -514,21 +514,25 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
     return true;
 }
-//
-// bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt
-// *stmt) {
-//    const auto lambda_full_name =
-//        stmt->
-//
-//    RecursiveASTVisitor<translation_unit_visitor>::TraverseCompoundStmt(stmt);
-//
-//    LOG_DBG("Leaving lambda expression {} at {}", lambda_full_name,
-//        expr->getBeginLoc().printToString(source_manager()));
-//
-//    context().leave_lambda_expression();
-//
-//    return true;
-//}
+
+bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
+{
+    LOG_DBG("Entering call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    if (expr->getCalleeDecl() &&
+        expr->getCalleeDecl()->isFunctionOrFunctionTemplate())
+        context().current_function_call_expr_ = expr;
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_DBG("Leaving call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().current_function_call_expr_ = nullptr;
+
+    return true;
+}
 
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
@@ -543,11 +547,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     LOG_DBG("Visiting call expression at {} [caller_id = {}]",
         expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
-
-    if (context().caller_id() == 2166770483948966160) {
-        LOG_WARN(">>>>>>> VISITING CALL EXPRESSION IN METHOD "
-                 "one::s3::S3Server::listBuckets()");
-    }
 
     // Skip casts, moves and such
     if (expr->isCallToStdMove())
@@ -568,7 +567,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     // If we're currently inside a lambda expression, set it's id as
     // message source rather then enclosing context
-    if (context().lambda_caller_id() != 0) {
+    // Unless the lambda is declared in a function or method call
+    if (context().lambda_caller_id() != 0 &&
+        context().current_function_call_expr_ == nullptr) {
         m.from = context().lambda_caller_id();
     }
 
@@ -960,6 +961,14 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
             c.set_name(type_name);
             c.set_namespace(ns);
             c.set_id(common::to_id(c.full_name(false)));
+
+            // Check if lambda is declared as an argument passed to a
+            // function/method call
+        }
+        else {
+            LOG_WARN("Cannot find parent declaration for lambda {}",
+                cls->getQualifiedNameAsString());
+            return {};
         }
     }
     else {

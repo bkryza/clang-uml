@@ -62,6 +62,8 @@
  * [t20010](./test_cases/t20010.md) - Container sequence diagram test case
  * [t20011](./test_cases/t20011.md) - Recursive calls sequence diagram test case
  * [t20012](./test_cases/t20012.md) - Lambda expression call sequence diagram test case
+ * [t20013](./test_cases/t20013.md) - Function and method arguments in sequence diagrams test case
+ * [t20013](./test_cases/t20013.md) - Multiple translation units sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

@@ -78,6 +78,8 @@ struct call_expression_context {
     clang::FunctionDecl *current_function_decl_;
     clang::FunctionTemplateDecl *current_function_template_decl_;
 
+    clang::CallExpr *current_function_call_expr_{nullptr};
+
 private:
     std::int64_t current_caller_id_;
     std::stack<std::int64_t> current_lambda_caller_id_;

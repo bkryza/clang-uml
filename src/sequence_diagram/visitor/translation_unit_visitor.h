@@ -44,13 +44,13 @@ public:
 
     bool VisitCallExpr(clang::CallExpr *expr);
 
+    bool TraverseCallExpr(clang::CallExpr *expr);
+
     bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
-
-//    bool TraverseCompoundStmt(clang::CompoundStmt *stmt);
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
 
