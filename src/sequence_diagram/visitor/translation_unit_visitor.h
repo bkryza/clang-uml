@@ -50,6 +50,8 @@ public:
 
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
 
+//    bool TraverseCompoundStmt(clang::CompoundStmt *stmt);
+
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
 
     bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
@@ -61,6 +63,8 @@ public:
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
+
+
 
     clanguml::sequence_diagram::model::diagram &diagram();
 

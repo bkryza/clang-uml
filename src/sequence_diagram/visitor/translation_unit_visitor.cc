@@ -265,12 +265,16 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
 bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 {
-    if (context().current_class_decl_ == nullptr &&
-        context().current_class_template_decl_ == nullptr &&
-        context().current_class_template_specialization_decl_ == nullptr)
+    if (!diagram().should_include(m->getParent()->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("= Processing method {} in class {} [{}]",
+    if (!m->isThisDeclarationADefinition()) {
+        if (m->getDefinition())
+            return VisitCXXMethodDecl(
+                static_cast<clang::CXXMethodDecl *>(m->getDefinition()));
+    }
+
+    LOG_DBG("Visiting method {} in class {} [{}]",
         m->getQualifiedNameAsString(),
         m->getParent()->getQualifiedNameAsString(), (void *)m->getParent());
 
@@ -292,6 +296,13 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
         parent_decl = context().current_class_template_decl_;
 
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
+
+    if (!get_participant<model::class_>(parent_decl)) {
+        LOG_WARN("Cannot find parent class_ for method {} in class {}",
+            m->getQualifiedNameAsString(),
+            m->getParent()->getQualifiedNameAsString());
+        return true;
+    }
 
     const auto &method_class =
         get_participant<model::class_>(parent_decl).value();
@@ -335,6 +346,12 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
     if (!diagram().should_include(function_name))
         return true;
+
+    if (!f->isThisDeclarationADefinition()) {
+        if (f->getDefinition())
+            return VisitFunctionDecl(
+                static_cast<clang::FunctionDecl *>(f->getDefinition()));
+    }
 
     LOG_DBG("Visiting function declaration {} at {}", function_name,
         f->getLocation().printToString(source_manager()));
@@ -497,6 +514,21 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
     return true;
 }
+//
+// bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt
+// *stmt) {
+//    const auto lambda_full_name =
+//        stmt->
+//
+//    RecursiveASTVisitor<translation_unit_visitor>::TraverseCompoundStmt(stmt);
+//
+//    LOG_DBG("Leaving lambda expression {} at {}", lambda_full_name,
+//        expr->getBeginLoc().printToString(source_manager()));
+//
+//    context().leave_lambda_expression();
+//
+//    return true;
+//}
 
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
@@ -504,6 +536,18 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     using clanguml::common::model::namespace_;
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
+
+    if (context().caller_id() == 0)
+        return true;
+
+    LOG_DBG("Visiting call expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    if (context().caller_id() == 2166770483948966160) {
+        LOG_WARN(">>>>>>> VISITING CALL EXPRESSION IN METHOD "
+                 "one::s3::S3Server::listBuckets()");
+    }
 
     // Skip casts, moves and such
     if (expr->isCallToStdMove())
@@ -527,9 +571,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (context().lambda_caller_id() != 0) {
         m.from = context().lambda_caller_id();
     }
-
-    LOG_DBG("Visiting call expression at {}",
-        expr->getBeginLoc().printToString(source_manager()));
 
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
@@ -618,6 +659,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 bool translation_unit_visitor::process_operator_call_expression(
     model::message &m, const clang::CXXOperatorCallExpr *operator_call_expr)
 {
+    if (operator_call_expr->getCalleeDecl() == nullptr)
+        return false;
+
     LOG_DBG("Operator '{}' call expression to {} at {}",
         getOperatorSpelling(operator_call_expr->getOperator()),
         operator_call_expr->getCalleeDecl()->getID(),
@@ -642,6 +686,10 @@ bool translation_unit_visitor::process_class_method_call_expression(
 {
     // Get callee declaration as methods parent
     const auto *method_decl = method_call_expr->getMethodDecl();
+
+    if (method_decl == nullptr)
+        return false;
+
     std::string method_name = method_decl->getQualifiedNameAsString();
 
     auto *callee_decl = method_decl ? method_decl->getParent() : nullptr;
@@ -701,12 +749,15 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                 }
             }
         }
+        // Otherwise check if it is a smart pointer
         else if (is_smart_pointer(template_declaration)) {
-            // Otherwise check if it is a smart pointer
-            template_declaration->getTemplateParameters()->asArray().front();
+            const auto *argument_template =
+                template_declaration->getTemplateParameters()
+                    ->asArray()
+                    .front();
 
-            if (get_participant(template_declaration).has_value()) {
-                callee_method_full_name = get_participant(template_declaration)
+            if (get_participant(argument_template).has_value()) {
+                callee_method_full_name = get_participant(argument_template)
                                               .value()
                                               .full_name(false) +
                     "::" + dependent_member_callee->getMember().getAsString();
@@ -1657,7 +1708,7 @@ std::string translation_unit_visitor::simplify_system_template(
     const std::string &full_name) const
 {
     std::string result{full_name};
-    for(const auto& [k, v] : config().type_aliases()) {
+    for (const auto &[k, v] : config().type_aliases()) {
         util::replace_all(result, k, v);
     }
 
