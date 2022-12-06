@@ -507,9 +507,6 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseLambdaExpr(expr);
 
-    LOG_DBG("Leaving lambda expression {} at {}", lambda_full_name,
-        expr->getBeginLoc().printToString(source_manager()));
-
     context().leave_lambda_expression();
 
     return true;
@@ -517,17 +514,9 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
-    LOG_DBG("Entering call expression at {}",
-        expr->getBeginLoc().printToString(source_manager()));
-
-    if (expr->getCalleeDecl() &&
-        expr->getCalleeDecl()->isFunctionOrFunctionTemplate())
-        context().current_function_call_expr_ = expr;
+    context().current_function_call_expr_ = expr;
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
-
-    LOG_DBG("Leaving call expression at {}",
-        expr->getBeginLoc().printToString(source_manager()));
 
     context().current_function_call_expr_ = nullptr;
 
@@ -544,10 +533,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (context().caller_id() == 0)
         return true;
 
-    LOG_DBG("Visiting call expression at {} [caller_id = {}]",
-        expr->getBeginLoc().printToString(source_manager()),
-        context().caller_id());
-
     // Skip casts, moves and such
     if (expr->isCallToStdMove())
         return true;
@@ -561,6 +546,10 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (!context().valid())
         return true;
 
+    LOG_DBG("Visiting call expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
     message m;
     m.type = message_t::kCall;
     m.from = context().caller_id();
@@ -568,9 +557,14 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // If we're currently inside a lambda expression, set it's id as
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
-    if (context().lambda_caller_id() != 0 &&
-        context().current_function_call_expr_ == nullptr) {
-        m.from = context().lambda_caller_id();
+    if (context().lambda_caller_id() != 0) {
+        if (context().current_function_call_expr_ == nullptr) {
+            m.from = context().lambda_caller_id();
+        }
+        else {
+            LOG_DBG("Current lambda declaration is passed to a method or "
+                    "function - keep the original caller id");
+        }
     }
 
     if (const auto *operator_call_expr =

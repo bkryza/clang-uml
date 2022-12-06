@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <functional>
 #include <utility>
 
@@ -25,6 +26,10 @@ struct C {
     void cc() { ccc(); }
 
     void ccc() { }
+};
+
+struct D {
+    int add5(int arg) const { return arg + 5; }
 };
 
 template <typename F> struct R {
@@ -68,6 +73,12 @@ void tmain()
     R r{[&c]() { c.c(); }};
 
     r.r();
+
+    D d;
+
+    std::vector<int> ints{0, 1, 2, 3, 4};
+    std::transform(ints.begin(), ints.end(), ints.begin(),
+        [&d](auto i) { return d.add5(i); });
 }
 }
 }
