@@ -616,23 +616,28 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             }
         }
         else {
-            if (!process_function_call_expression(m, expr))
-                return true;
-        }
+            if (!process_function_call_expression(m, expr)) {
+                //        expr->dump();
+                LOG_DBG("Skipping call to unsupported type of call expression "
+                        "at: {}",
+                    expr->getBeginLoc().printToString(source_manager()));
 
-        //
-        // This crashes on LLVM <= 12, for now just return empty type
-        //
-        // const auto &return_type =
-        //    function_call_expr->getCallReturnType(current_ast_context);
-        // m.return_type = return_type.getAsString();
-        m.return_type = "";
+                return true;
+            }
+        }
     }
+
+    //
+    // This crashes on LLVM <= 12, for now just return empty type
+    //
+    // const auto &return_type =
+    //    function_call_expr->getCallReturnType(current_ast_context);
+    // m.return_type = return_type.getAsString();
+    m.return_type = "";
 
     if (m.from > 0 && m.to > 0) {
         if (diagram().sequences.find(m.from) == diagram().sequences.end()) {
             activity a;
-            //            a.usr = m.from;
             a.from = m.from;
             diagram().sequences.insert({m.from, std::move(a)});
         }
@@ -778,6 +783,10 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
             diagram().add_active_participant(
                 get_unique_id(template_declaration->getID()).value());
     }
+    else {
+        LOG_WARN("Cannot generate call due to unresolvable "
+                 "CXXDependentScopeMemberExpr");
+    }
 
     return true;
 }
@@ -845,14 +854,23 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 }
 
 bool translation_unit_visitor::is_callee_valid_template_specialization(
-    const clang::CXXDependentScopeMemberExpr *dependent_member_callee) const
+    const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const
 {
-    return !dependent_member_callee->getBaseType().isNull() &&
-        dependent_member_callee->getBaseType()
-            ->getAs<clang::TemplateSpecializationType>() &&
-        !dependent_member_callee->getBaseType()
+    const bool base_type_is_not_null =
+        !dependent_member_expr->getBaseType().isNull();
+
+    const bool base_type_is_specialization_type =
+        dependent_member_expr->getBaseType()
+            ->getAs<clang::TemplateSpecializationType>() != nullptr;
+
+    const bool base_type_is_not_pointer_type =
+        base_type_is_specialization_type &&
+        !dependent_member_expr->getBaseType()
              ->getAs<clang::TemplateSpecializationType>()
              ->isPointerType();
+
+    return (base_type_is_not_null && base_type_is_specialization_type &&
+        base_type_is_not_pointer_type);
 }
 
 bool translation_unit_visitor::is_smart_pointer(
@@ -898,8 +916,8 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
         int64_t local_id =
             static_cast<const clang::RecordDecl *>(parent)->getID();
 
-        // First check if the parent has been added to the diagram as regular
-        // class
+        // First check if the parent has been added to the diagram as
+        // regular class
         id_opt = get_unique_id(local_id);
 
         // If not, check if the parent template declaration is in the model

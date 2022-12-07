@@ -193,6 +193,9 @@ test_cases:
     - name: t20015
       title: Class exclusion by namespace in sequence diagram test case
       description:
+    - name: t20016
+      title: Template method specialization sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

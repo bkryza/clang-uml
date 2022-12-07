@@ -1,5 +1,7 @@
 #include <algorithm>
 #include <functional>
+#include <memory>
+#include <optional>
 #include <utility>
 
 namespace clanguml {
@@ -18,6 +20,8 @@ struct B {
     void bb() { bbb(); }
 
     void bbb() { }
+
+    void eb() { }
 };
 
 struct C {
@@ -30,6 +34,14 @@ struct C {
 
 struct D {
     int add5(int arg) const { return arg + 5; }
+};
+
+class E {
+    std::optional<std::shared_ptr<B>> maybe_b;
+    std::shared_ptr<A> a;
+
+public:
+    template <typename F> void setup(F &&f) { f(maybe_b); }
 };
 
 template <typename F> struct R {
@@ -79,6 +91,14 @@ void tmain()
     std::vector<int> ints{0, 1, 2, 3, 4};
     std::transform(ints.begin(), ints.end(), ints.begin(),
         [&d](auto i) { return d.add5(i); });
+
+    // TODO: Fix naming function call arguments which are lambdas
+    //    E e;
+    //
+    //    e.setup([](auto &&arg) mutable {
+    //        // We cannot know here what 'arg' might be
+    //        arg.value()->eb();
+    //    });
 }
 }
 }

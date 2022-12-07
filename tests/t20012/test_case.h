@@ -36,37 +36,38 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
     // Check if all calls exist
     REQUIRE_THAT(puml,
-        HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:54:20)"),
+        HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:66:20)"),
             "operator()()"));
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()::(lambda t20012.cc:54:20)"), _A("A"), "a()"));
+        puml, HasCall(_A("tmain()::(lambda t20012.cc:66:20)"), _A("A"), "a()"));
     REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aa()"));
     REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aaa()"));
 
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()::(lambda t20012.cc:54:20)"), _A("B"), "b()"));
+        puml, HasCall(_A("tmain()::(lambda t20012.cc:66:20)"), _A("B"), "b()"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bb()"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bbb()"));
 
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("C"), "c()"));
+        puml, HasCall(_A("tmain()::(lambda t20012.cc:79:20)"), _A("C"), "c()"));
     REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "cc()"));
     REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
     REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda t20012.cc:67:20)"),
-            _A("tmain()::(lambda t20012.cc:54:20)"), "operator()()"));
+        HasCall(_A("tmain()::(lambda t20012.cc:79:20)"),
+            _A("tmain()::(lambda t20012.cc:66:20)"), "operator()()"));
 
     REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
 
     REQUIRE_THAT(puml,
-        HasCall(_A("tmain()"), _A("R<R::(lambda t20012.cc:73:9)>"), "r()"));
+        HasCall(_A("tmain()"), _A("R<R::(lambda t20012.cc:85:9)>"), "r()"));
     REQUIRE_THAT(puml,
-        HasCall(_A("R<R::(lambda t20012.cc:73:9)>"),
-            _A("tmain()::(lambda t20012.cc:73:9)"), "operator()()"));
+        HasCall(_A("R<R::(lambda t20012.cc:85:9)>"),
+            _A("tmain()::(lambda t20012.cc:85:9)"), "operator()()"));
     REQUIRE_THAT(
-        puml, HasCall(_A("tmain()::(lambda t20012.cc:73:9)"), _A("C"), "c()"));
+        puml, HasCall(_A("tmain()::(lambda t20012.cc:85:9)"), _A("C"), "c()"));
 
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
+
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

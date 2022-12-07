@@ -1,4 +1,5 @@
 #include <memory>
+#include <optional>
 
 namespace clanguml {
 namespace t20015 {
