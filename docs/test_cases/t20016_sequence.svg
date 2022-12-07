@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="271px" preserveAspectRatio="none" style="width:281px;height:271px;" version="1.1" viewBox="0 0 281 271" width="281px" zoomAndPan="magnify">
+  <defs>
+    <filter height="300%" id="f14eo1hlx95v7p" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="164.5313" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="48.2969"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="57.1328" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="120" y="69.4297"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="57.1328" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="120" y="155.6953"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="256" y="98.5625"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="256" y="184.8281"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="41" x2="41" y1="38.2969" y2="230.8281"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="125" x2="125" y1="38.2969" y2="230.8281"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="260.5" x2="260.5" y1="38.2969" y2="230.8281"/>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="3"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="22.9951">tmain()</text>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="229.8281"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="249.8232">tmain()</text>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="78" x="84" y="3"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="64" x="91" y="22.9951">B&lt;long&gt;</text>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="78" x="84" y="229.8281"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="64" x="91" y="249.8232">B&lt;long&gt;</text>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="23" x="247.5" y="3"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="9" x="254.5" y="22.9951">A</text>
+    <rect fill="#FEFECE" filter="url(#f14eo1hlx95v7p)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="23" x="247.5" y="229.8281"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="9" x="254.5" y="249.8232">A</text>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="164.5313" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="48.2969"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="57.1328" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="120" y="69.4297"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="57.1328" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="120" y="155.6953"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="256" y="98.5625"/>
+    <rect fill="#FFFFFF" filter="url(#f14eo1hlx95v7p)" height="14" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="256" y="184.8281"/>
+    <polygon fill="#A80036" points="108,65.4297,118,69.4297,108,73.4297,112,69.4297" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="114" y1="69.4297" y2="69.4297"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="53" x="53" y="64.3638">b1(long)</text>
+    <polygon fill="#A80036" points="244,94.5625,254,98.5625,244,102.5625,248,98.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="130" x2="250" y1="98.5625" y2="98.5625"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="42" x="137" y="93.4966">a1(int)</text>
+    <polygon fill="#A80036" points="141,108.5625,131,112.5625,141,116.5625,137,112.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="135" x2="260" y1="112.5625" y2="112.5625"/>
+    <polygon fill="#A80036" points="57,122.5625,47,126.5625,57,130.5625,53,126.5625" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="51" x2="124" y1="126.5625" y2="126.5625"/>
+    <polygon fill="#A80036" points="108,151.6953,118,155.6953,108,159.6953,112,155.6953" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="114" y1="155.6953" y2="155.6953"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="53" x="53" y="150.6294">b2(long)</text>
+    <polygon fill="#A80036" points="244,180.8281,254,184.8281,244,188.8281,248,184.8281" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0;" x1="130" x2="250" y1="184.8281" y2="184.8281"/>
+    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="107" x="137" y="179.7622">a2(const long &amp;)</text>
+    <polygon fill="#A80036" points="141,194.8281,131,198.8281,141,202.8281,137,198.8281" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="135" x2="260" y1="198.8281" y2="198.8281"/>
+    <polygon fill="#A80036" points="52,208.8281,42,212.8281,52,216.8281,48,212.8281" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" x1="46" x2="124" y1="212.8281" y2="212.8281"/>
+  </g>
+</svg>
