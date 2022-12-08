@@ -142,6 +142,8 @@ struct inheritable_diagram_options {
     option<type_aliases_t> type_aliases{"type_aliases"};
     option<comment_parser_t> comment_parser{
         "comment_parser", comment_parser_t::plain};
+    option<bool> combine_free_functions_into_file_participants{
+        "combine_free_functions_into_file_participants", false};
 
     void inherit(const inheritable_diagram_options &parent);
 

@@ -376,6 +376,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
         set_unique_id(f->getID(), f_ptr->id());
 
+        set_source_location(*f, *f_ptr);
+
         // TODO: Handle overloaded functions with different arguments
         diagram().add_participant(std::move(f_ptr));
     }
@@ -400,6 +402,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         context().set_caller_id(f_ptr->id());
 
         set_unique_id(f->getID(), f_ptr->id());
+
+        set_source_location(*f, *f_ptr);
 
         // TODO: Handle overloaded functions with different arguments
         diagram().add_participant(std::move(f_ptr));
@@ -436,6 +440,8 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     }
 
     f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+
+    set_source_location(*function_template, *f_ptr);
 
     context().update(function_template);
 
@@ -784,8 +790,9 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                 get_unique_id(template_declaration->getID()).value());
     }
     else {
-        LOG_WARN("Cannot generate call due to unresolvable "
-                 "CXXDependentScopeMemberExpr");
+        LOG_DBG("Skipping call due to unresolvable "
+                "CXXDependentScopeMemberExpr at {}",
+            expr->getBeginLoc().printToString(source_manager()));
     }
 
     return true;

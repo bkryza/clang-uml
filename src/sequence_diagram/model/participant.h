@@ -246,6 +246,21 @@ struct function_template : public function, public template_trait {
     std::string full_name(bool relative = true) const override;
 
     std::string full_name_no_ns() const override;
+
+    std::string message_name(message_render_mode mode) const override
+    {
+        std::ostringstream s;
+        render_template_params(s, using_namespace(), true);
+        std::string template_params = s.str();
+
+        if (mode == message_render_mode::no_arguments) {
+            return fmt::format("{}{}(){}", name(), template_params,
+                is_const() ? " const" : "");
+        }
+
+        return fmt::format("{}{}({}){}", name(), template_params,
+            fmt::join(parameters(), ","), is_const() ? " const" : "");
+    }
 };
 
 }

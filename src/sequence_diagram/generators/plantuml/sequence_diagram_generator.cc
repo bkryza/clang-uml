@@ -62,10 +62,25 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         message = dynamic_cast<const model::function &>(to.value())
                       .message_name(model::function::message_render_mode::full);
     }
+    else if (m_config.combine_free_functions_into_file_participants()) {
+        if (to.value().type_name() == "function") {
+            message =
+                dynamic_cast<const model::function &>(to.value())
+                    .message_name(model::function::message_render_mode::full);
+        }
+        else if (to.value().type_name() == "function_template") {
+            message =
+                dynamic_cast<const model::function_template &>(to.value())
+                    .message_name(model::function::message_render_mode::full);
+        }
+    }
 
-    ostr << from.value().alias() << " "
+    const std::string from_alias = generate_alias(from.value());
+    const std::string to_alias = generate_alias(to.value());
+
+    ostr << from_alias << " "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " "
-         << to.value().alias() << " : " << message << std::endl;
+         << to_alias << " : " << message << std::endl;
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
         m.from, to, m.to);
@@ -79,9 +94,13 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
         const auto &from = m_model.get_participant<model::participant>(m.from);
         const auto &to = m_model.get_participant<model::participant>(m.to);
 
-        ostr << to.value().alias() << " "
+        const std::string from_alias = generate_alias(from.value());
+
+        const std::string to_alias = generate_alias(to.value());
+
+        ostr << to_alias << " "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
-             << " " << from.value().alias() << '\n';
+             << " " << from_alias << '\n';
     }
 }
 
@@ -99,7 +118,9 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
         generate_call(m, ostr);
 
-        ostr << "activate " << to.value().alias() << std::endl;
+        std::string to_alias = generate_alias(to.value());
+
+        ostr << "activate " << to_alias << std::endl;
 
         if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
             if (std::find(visited.begin(), visited.end(), m.to) ==
@@ -117,7 +138,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
         visited.pop_back();
 
-        ostr << "deactivate " << to.value().alias() << std::endl;
+        ostr << "deactivate " << to_alias << std::endl;
     }
 }
 
@@ -151,6 +172,35 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
                  << "\" as " << class_participant.alias() << '\n';
 
             generated_participants_.emplace(class_id);
+        }
+        else if ((participant.type_name() == "function" ||
+                     participant.type_name() == "function_template") &&
+            m_config.combine_free_functions_into_file_participants()) {
+            // Create a single participant for all functions declared in a
+            // single file
+            const auto &file_path =
+                m_model.get_participant<model::function>(participant_id)
+                    .value()
+                    .file();
+
+            assert(!file_path.empty());
+
+            const auto file_id = common::to_id(file_path);
+
+            if (is_participant_generated(file_id))
+                return;
+
+            [[maybe_unused]] const auto &relative_to =
+                std::filesystem::canonical(m_config.relative_to());
+
+            auto participant_name = std::filesystem::relative(
+                std::filesystem::path{file_path}, relative_to)
+                                        .string();
+
+            ostr << "participant \"" << render_name(participant_name)
+                 << "\" as " << fmt::format("C_{:022}", file_id) << '\n';
+
+            generated_participants_.emplace(file_id);
         }
         else {
             ostr << "participant \""
@@ -192,6 +242,8 @@ void generator::generate(std::ostream &ostr) const
                     break;
                 }
             }
+
+            // Use this to break out of recurrent loops
             std::vector<common::model::diagram_element::id_t>
                 visited_participants;
 
@@ -199,20 +251,22 @@ void generator::generate(std::ostream &ostr) const
                 m_model.get_participant<model::participant>(start_from);
 
             if (!from.has_value()) {
-                LOG_WARN(
-                    "Failed to find participant {} for start_from condition",
+                LOG_WARN("Failed to find participant {} for start_from "
+                         "condition",
                     sf.location);
                 continue;
             }
 
             generate_participant(ostr, start_from);
 
-            ostr << "activate " << from.value().alias() << std::endl;
+            std::string from_alias = generate_alias(from.value());
+
+            ostr << "activate " << from_alias << std::endl;
 
             generate_activity(
                 m_model.sequences[start_from], ostr, visited_participants);
 
-            ostr << "deactivate " << from.value().alias() << std::endl;
+            ostr << "deactivate " << from_alias << std::endl;
         }
         else {
             // TODO: Add support for other sequence start location types
@@ -225,4 +279,17 @@ void generator::generate(std::ostream &ostr) const
     ostr << "@enduml" << std::endl;
 }
 
+std::string generator::generate_alias(
+    const model::participant &participant) const
+{
+    if ((participant.type_name() == "function" ||
+            participant.type_name() == "function_template") &&
+        m_config.combine_free_functions_into_file_participants()) {
+        const auto file_id = common::to_id(participant.file());
+
+        return fmt::format("C_{:022}", file_id);
+    }
+
+    return participant.alias();
+}
 }

@@ -101,6 +101,8 @@ void inheritable_diagram_options::inherit(
     base_directory.override(parent.base_directory);
     relative_to.override(parent.relative_to);
     comment_parser.override(parent.comment_parser);
+    combine_free_functions_into_file_participants.override(
+        combine_free_functions_into_file_participants);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
@@ -589,6 +591,8 @@ template <> struct convert<sequence_diagram> {
             return false;
 
         get_option(node, rhs.start_from);
+        get_option(node, rhs.combine_free_functions_into_file_participants);
+        get_option(node, rhs.relative_to);
 
         rhs.initialize_type_aliases();
 

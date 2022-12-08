@@ -196,6 +196,9 @@ test_cases:
     - name: t20016
       title: Template method specialization sequence diagram test case
       description:
+    - name: t20017
+      title: Test case for combine_free_functions_into_file_participants option
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

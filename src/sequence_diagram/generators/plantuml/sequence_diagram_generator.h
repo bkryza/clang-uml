@@ -66,6 +66,7 @@ private:
     std::string render_name(std::string name) const;
 
     mutable std::set<common::id_t> generated_participants_;
+    std::string generate_alias(const model::participant &participant) const;
 };
 
 }
