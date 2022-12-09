@@ -314,6 +314,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     m_ptr->set_name(
         get_participant(m_ptr->class_id()).value().full_name_no_ns() +
         "::" + m->getNameAsString());
+    m_ptr->is_static(m->isStatic());
 
     for (const auto *param : m->parameters()) {
         m_ptr->add_parameter(simplify_system_template(

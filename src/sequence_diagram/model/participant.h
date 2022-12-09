@@ -200,10 +200,15 @@ struct method : public function {
 
     std::string to_string() const override;
 
+    bool is_static() const;
+
+    void is_static(bool s);
+
 private:
     diagram_element::id_t class_id_;
     std::string method_name_;
     std::string class_full_name_;
+    bool is_static_{false};
 };
 
 struct function_template : public function, public template_trait {

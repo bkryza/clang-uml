@@ -249,12 +249,15 @@ std::string method::full_name(bool /*relative*/) const
 
 std::string method::message_name(message_render_mode mode) const
 {
+    const std::string style = is_static() ? "__" : "";
+
     if (mode == message_render_mode::no_arguments) {
-        return fmt::format("{}(){}", method_name(), is_const() ? " const" : "");
+        return fmt::format("{}{}(){}{}", style, method_name(),
+            is_const() ? " const" : "", style);
     }
 
-    return fmt::format("{}({}){}", method_name(), fmt::join(parameters(), ","),
-        is_const() ? " const" : "");
+    return fmt::format("{}{}({}){}{}", style, method_name(),
+        fmt::join(parameters(), ","), is_const() ? " const" : "", style);
 }
 
 class_::diagram_element::id_t method::class_id() const { return class_id_; }
@@ -264,6 +267,10 @@ std::string method::to_string() const
     return fmt::format("Participant '{}': id={}, name={}, class_id={}",
         type_name(), id(), full_name(false), class_id());
 }
+
+bool method::is_static() const { return is_static_; }
+
+void method::is_static(bool s) { is_static_ = s; }
 
 function_template::function_template(
     const common::model::namespace_ &using_namespace)

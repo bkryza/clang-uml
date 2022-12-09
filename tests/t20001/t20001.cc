@@ -28,7 +28,7 @@ public:
         return res;
     }
 
-    void log_result(int r) { }
+    static void log_result(int r) { }
 
 private:
     detail::C m_c{};

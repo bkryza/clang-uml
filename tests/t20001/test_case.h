@@ -38,8 +38,8 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, HasCall(_A("A"), "log_result(int)"));
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "log_result(int)"));
+    REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
+    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
     REQUIRE_THAT(
         puml, HasCallWithResponse(_A("B"), _A("A"), "add3(int,int,int)"));
     REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
