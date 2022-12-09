@@ -160,6 +160,10 @@ struct function : public participant {
 
     void is_void(bool v);
 
+    bool is_static() const;
+
+    void is_static(bool s);
+
     void add_parameter(const std::string &a);
 
     const std::vector<std::string> &parameters() const;
@@ -167,6 +171,7 @@ struct function : public participant {
 private:
     bool is_const_{false};
     bool is_void_{false};
+    bool is_static_{false};
     std::vector<std::string> parameters_;
 };
 
@@ -200,15 +205,10 @@ struct method : public function {
 
     std::string to_string() const override;
 
-    bool is_static() const;
-
-    void is_static(bool s);
-
 private:
     diagram_element::id_t class_id_;
     std::string method_name_;
     std::string class_full_name_;
-    bool is_static_{false};
 };
 
 struct function_template : public function, public template_trait {

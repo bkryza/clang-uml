@@ -209,6 +209,10 @@ bool function::is_void() const { return is_void_; }
 
 void function::is_void(bool v) { is_void_ = v; }
 
+bool function::is_static() const { return is_static_; }
+
+void function::is_static(bool s) { is_static_ = s; }
+
 void function::add_parameter(const std::string &a) { parameters_.push_back(a); }
 
 const std::vector<std::string> &function::parameters() const
@@ -267,10 +271,6 @@ std::string method::to_string() const
     return fmt::format("Participant '{}': id={}, name={}, class_id={}",
         type_name(), id(), full_name(false), class_id());
 }
-
-bool method::is_static() const { return is_static_; }
-
-void method::is_static(bool s) { is_static_ = s; }
 
 function_template::function_template(
     const common::model::namespace_ &using_namespace)
