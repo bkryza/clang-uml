@@ -45,8 +45,7 @@ TEST_CASE("t20017", "[test-case][sequence]")
     REQUIRE_THAT(puml,
         HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
     REQUIRE_THAT(puml,
-        HasCall(
-            _A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
+        HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
     REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
 
     save_puml(

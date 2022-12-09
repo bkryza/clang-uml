@@ -33,7 +33,7 @@ TEST_CASE("t20014", "[test-case][sequence]")
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    
+
     // Check if all calls exist
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "b1(int,int)"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "a1(int,int)"));

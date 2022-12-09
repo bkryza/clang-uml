@@ -2,7 +2,7 @@ namespace clanguml {
 namespace t20016 {
 struct A {
     void a1(int a) { }
-    template <typename T> T a2(const T &a) { return a;}
+    template <typename T> T a2(const T &a) { return a; }
 };
 
 template <typename T> struct B {
@@ -13,7 +13,8 @@ template <typename T> struct B {
     A a_;
 };
 
-void tmain() {
+void tmain()
+{
     B<long> b;
 
     b.b1(1);

@@ -40,7 +40,8 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
     REQUIRE_THAT(puml, HasCall(_A("A"), "log_result(int)"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "log_result(int)"));
-    REQUIRE_THAT(puml, HasCallWithResponse(_A("B"), _A("A"), "add3(int,int,int)"));
+    REQUIRE_THAT(
+        puml, HasCallWithResponse(_A("B"), _A("A"), "add3(int,int,int)"));
     REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
     REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
 

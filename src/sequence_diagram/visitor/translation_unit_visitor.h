@@ -64,8 +64,6 @@ public:
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
 
-
-
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;
@@ -206,8 +204,7 @@ private:
     bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;
 
     bool is_callee_valid_template_specialization(
-        const clang::CXXDependentScopeMemberExpr *dependent_member_expr)
-        const;
+        const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const;
 
     bool process_operator_call_expression(model::message &m,
         const clang::CXXOperatorCallExpr *operator_call_expr);

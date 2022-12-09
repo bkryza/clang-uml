@@ -177,7 +177,7 @@ void call_expression_context::enter_lambda_expression(std::int64_t id)
 
 void call_expression_context::leave_lambda_expression()
 {
-    if(current_lambda_caller_id_.empty())
+    if (current_lambda_caller_id_.empty())
         return;
 
     LOG_DBG("Leaving current lambda expression id to {}",
