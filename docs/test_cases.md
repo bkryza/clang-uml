@@ -66,6 +66,8 @@
  * [t20014](./test_cases/t20014.md) - Multiple translation units sequence diagram test case
  * [t20015](./test_cases/t20015.md) - Class exclusion by namespace in sequence diagram test case
  * [t20016](./test_cases/t20016.md) - Template method specialization sequence diagram test case
+ * [t20017](./test_cases/t20017.md) - Test case for combine_free_functions_into_file_participants option
+ * [t20018](./test_cases/t20018.md) - Recursive template sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
