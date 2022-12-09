@@ -35,16 +35,19 @@ TEST_CASE("t20017", "[test-case][sequence]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     // Check if all calls exist
+    REQUIRE_THAT(puml, HasEntrypoint(_A("t20017.cc"), "tmain()"));
     REQUIRE_THAT(puml,
         HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a1(int,int)"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
     REQUIRE_THAT(puml,
         HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a3(int,int)"));
     REQUIRE_THAT(puml,
         HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
     REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
+        HasCall(
+            _A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
+    REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

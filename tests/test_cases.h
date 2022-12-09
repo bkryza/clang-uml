@@ -79,26 +79,19 @@ template <typename T, typename... Ts> constexpr bool has_type() noexcept
     return (std::is_same_v<T, Ts> || ... || false);
 }
 
-struct Public {
-};
+struct Public { };
 
-struct Protected {
-};
+struct Protected { };
 
-struct Private {
-};
+struct Private { };
 
-struct Abstract {
-};
+struct Abstract { };
 
-struct Static {
-};
+struct Static { };
 
-struct Const {
-};
+struct Const { };
 
-struct Default {
-};
+struct Default { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(
@@ -142,6 +135,20 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
         CasedString(
             fmt::format("{} -> {} : {}", from, to, message), caseSensitivity),
         CasedString(fmt::format("{} --> {}", to, from), caseSensitivity));
+}
+
+ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("[-> {} : {}", to, message), caseSensitivity));
+}
+
+ContainsMatcher HasExitpoint(std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("[<-- {}", to), caseSensitivity));
 }
 
 struct AliasMatcher {

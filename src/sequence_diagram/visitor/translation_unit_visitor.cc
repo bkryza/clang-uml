@@ -307,6 +307,8 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     const auto &method_class =
         get_participant<model::class_>(parent_decl).value();
 
+    m_ptr->is_void(m->getReturnType()->isVoidType());
+
     m_ptr->set_class_id(method_class.id());
     m_ptr->set_class_full_name(method_class.full_name(false));
     m_ptr->set_name(
@@ -370,6 +372,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
         f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
 
+        f_ptr->is_void(f->getReturnType()->isVoidType());
+
         context().update(f);
 
         context().set_caller_id(f_ptr->id());
@@ -396,6 +400,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         }
 
         f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+
+        f_ptr->is_void(f->getReturnType()->isVoidType());
 
         context().update(f);
 
@@ -440,6 +446,9 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     }
 
     f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+
+    f_ptr->is_void(
+        function_template->getAsFunction()->getReturnType()->isVoidType());
 
     set_source_location(*function_template, *f_ptr);
 

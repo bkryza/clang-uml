@@ -248,7 +248,7 @@ void generator::generate(std::ostream &ostr) const
                 visited_participants;
 
             const auto &from =
-                m_model.get_participant<model::participant>(start_from);
+                m_model.get_participant<model::function>(start_from);
 
             if (!from.has_value()) {
                 LOG_WARN("Failed to find participant {} for start_from "
@@ -261,10 +261,28 @@ void generator::generate(std::ostream &ostr) const
 
             std::string from_alias = generate_alias(from.value());
 
+            if (from.value().type_name() == "method" ||
+                m_config.combine_free_functions_into_file_participants()) {
+                ostr << "[->"
+                     << " " << from_alias << " : "
+                     << from.value().message_name(
+                            model::function::message_render_mode::full)
+                     << std::endl;
+            }
+
             ostr << "activate " << from_alias << std::endl;
 
             generate_activity(
                 m_model.sequences[start_from], ostr, visited_participants);
+
+            if (from.value().type_name() == "method" ||
+                m_config.combine_free_functions_into_file_participants()) {
+
+                if (!from.value().is_void()) {
+                    ostr << "[<--"
+                         << " " << from_alias << std::endl;
+                }
+            }
 
             ostr << "deactivate " << from_alias << std::endl;
         }

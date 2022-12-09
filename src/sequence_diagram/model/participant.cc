@@ -57,6 +57,10 @@ void template_trait::add_template(
     templates_.push_back(std::move(tmplt));
 }
 
+bool template_trait::is_implicit() const { return is_implicit_; }
+
+void template_trait::set_implicit(bool implicit) { is_implicit_ = implicit; }
+
 const std::vector<class_diagram::model::template_parameter> &
 template_trait::templates() const
 {
@@ -93,6 +97,12 @@ int template_trait::calculate_template_specialization_match(
     }
 
     return res;
+}
+
+std::string participant::to_string() const
+{
+    return fmt::format(
+        "Participant '{}': id={} name={}", type_name(), id(), full_name(false));
 }
 
 class_::class_(const common::model::namespace_ &using_namespace)
@@ -154,6 +164,14 @@ std::string class_::full_name(bool relative) const
     return res;
 }
 
+bool class_::is_alias() const { return is_alias_; }
+
+void class_::is_alias(bool alias) { is_alias_ = alias; }
+
+bool class_::is_lambda() const { return is_lambda_; }
+
+void class_::is_lambda(bool is_lambda) { is_lambda_ = is_lambda; }
+
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
 function::function(const common::model::namespace_ &using_namespace)
@@ -173,16 +191,78 @@ std::string function::full_name_no_ns() const
         fmt::join(parameters_, ","), is_const() ? " const" : "");
 }
 
+std::string function::message_name(message_render_mode mode) const
+{
+    if (mode == message_render_mode::no_arguments) {
+        return fmt::format("{}(){}", name(), is_const() ? " const" : "");
+    }
+
+    return fmt::format("{}({}){}", name(), fmt::join(parameters_, ","),
+        is_const() ? " const" : "");
+}
+
+bool function::is_const() const { return is_const_; }
+
+void function::is_const(bool c) { is_const_ = c; }
+
+bool function::is_void() const { return is_void_; }
+
+void function::is_void(bool v) { is_void_ = v; }
+
+void function::add_parameter(const std::string &a) { parameters_.push_back(a); }
+
+const std::vector<std::string> &function::parameters() const
+{
+    return parameters_;
+}
+
 method::method(const common::model::namespace_ &using_namespace)
     : function{using_namespace}
 {
 }
+
+const std::string method::method_name() const { return method_name_; }
 
 std::string method::alias() const
 {
     assert(class_id_ >= 0);
 
     return fmt::format("C_{:022}", class_id_);
+}
+
+void method::set_method_name(const std::string &name) { method_name_ = name; }
+
+void method::set_class_id(diagram_element::id_t id) { class_id_ = id; }
+
+void method::set_class_full_name(const std::string &name)
+{
+    class_full_name_ = name;
+}
+
+const auto &method::class_full_name() const { return class_full_name_; }
+
+std::string method::full_name(bool /*relative*/) const
+{
+    return fmt::format("{}::{}({}){}", class_full_name(), method_name(),
+        fmt::join(parameters(), ","), is_const() ? " const" : "");
+}
+
+std::string method::message_name(message_render_mode mode) const
+{
+    if (mode == message_render_mode::no_arguments) {
+        return fmt::format("{}(){}", method_name(), is_const() ? " const" : "");
+    }
+
+    return fmt::format("{}({}){}", method_name(), fmt::join(parameters(), ","),
+        is_const() ? " const" : "");
+}
+
+class_::diagram_element::id_t method::class_id() const { return class_id_; }
+
+std::string method::to_string() const
+{
+    return fmt::format("Participant '{}': id={}, name={}, class_id={}",
+        type_name(), id(), full_name(false), class_id());
 }
 
 function_template::function_template(
@@ -231,6 +311,21 @@ std::string function_template::full_name_no_ns() const
         "({}){}", fmt::join(parameters(), ","), is_const() ? " const" : "");
 
     return ostr.str();
+}
+
+std::string function_template::message_name(message_render_mode mode) const
+{
+    std::ostringstream s;
+    render_template_params(s, using_namespace(), true);
+    std::string template_params = s.str();
+
+    if (mode == message_render_mode::no_arguments) {
+        return fmt::format(
+            "{}{}(){}", name(), template_params, is_const() ? " const" : "");
+    }
+
+    return fmt::format("{}{}({}){}", name(), template_params,
+        fmt::join(parameters(), ","), is_const() ? " const" : "");
 }
 
 }

@@ -42,9 +42,9 @@ struct template_trait {
     int calculate_template_specialization_match(
         const template_trait &other, const std::string &full_name) const;
 
-    bool is_implicit() const { return is_implicit_; }
+    bool is_implicit() const;
 
-    void set_implicit(bool implicit) { is_implicit_ = implicit; }
+    void set_implicit(bool implicit);
 
 private:
     std::vector<class_diagram::model::template_parameter> templates_;
@@ -74,11 +74,7 @@ struct participant : public common::model::element,
 
     std::string type_name() const override { return "participant"; }
 
-    virtual std::string to_string() const
-    {
-        return fmt::format("Participant '{}': id={} name={}", type_name(), id(),
-            full_name(false));
-    }
+    virtual std::string to_string() const;
 
     stereotype_t stereotype_{stereotype_t::participant};
 };
@@ -111,13 +107,13 @@ public:
 
     bool is_abstract() const;
 
-    bool is_alias() const { return is_alias_; }
+    bool is_alias() const;
 
-    void is_alias(bool alias) { is_alias_ = alias; }
+    void is_alias(bool alias);
 
-    bool is_lambda() const { return is_lambda_; }
+    bool is_lambda() const;
 
-    void is_lambda(bool is_lambda) { is_lambda_ = is_lambda; }
+    void is_lambda(bool is_lambda);
 
 private:
     bool is_struct_{false};
@@ -154,26 +150,23 @@ struct function : public participant {
 
     std::string full_name_no_ns() const override;
 
-    virtual std::string message_name(message_render_mode mode) const
-    {
-        if (mode == message_render_mode::no_arguments) {
-            return fmt::format("{}(){}", name(), is_const() ? " const" : "");
-        }
+    virtual std::string message_name(message_render_mode mode) const;
 
-        return fmt::format("{}({}){}", name(), fmt::join(parameters_, ","),
-            is_const() ? " const" : "");
-    }
+    bool is_const() const;
 
-    bool is_const() const { return is_const_; }
+    void is_const(bool c);
 
-    void is_const(bool c) { is_const_ = c; }
+    bool is_void() const;
 
-    void add_parameter(const std::string &a) { parameters_.push_back(a); }
+    void is_void(bool v);
 
-    const std::vector<std::string> &parameters() const { return parameters_; }
+    void add_parameter(const std::string &a);
+
+    const std::vector<std::string> &parameters() const;
 
 private:
     bool is_const_{false};
+    bool is_void_{false};
     std::vector<std::string> parameters_;
 };
 
@@ -187,45 +180,25 @@ struct method : public function {
 
     std::string type_name() const override { return "method"; }
 
-    const std::string method_name() const { return method_name_; }
+    const std::string method_name() const;
 
     std::string alias() const override;
 
-    void set_method_name(const std::string &name) { method_name_ = name; }
+    void set_method_name(const std::string &name);
 
-    void set_class_id(diagram_element::id_t id) { class_id_ = id; }
+    void set_class_id(diagram_element::id_t id);
 
-    void set_class_full_name(const std::string &name)
-    {
-        class_full_name_ = name;
-    }
+    void set_class_full_name(const std::string &name);
 
-    const auto &class_full_name() const { return class_full_name_; }
+    const auto &class_full_name() const;
 
-    std::string full_name(bool /*relative*/) const override
-    {
-        return fmt::format("{}::{}({}){}", class_full_name(), method_name(),
-            fmt::join(parameters(), ","), is_const() ? " const" : "");
-    }
+    std::string full_name(bool /*relative*/) const override;
 
-    std::string message_name(message_render_mode mode) const override
-    {
-        if (mode == message_render_mode::no_arguments) {
-            return fmt::format(
-                "{}(){}", method_name(), is_const() ? " const" : "");
-        }
+    std::string message_name(message_render_mode mode) const override;
 
-        return fmt::format("{}({}){}", method_name(),
-            fmt::join(parameters(), ","), is_const() ? " const" : "");
-    }
+    diagram_element::id_t class_id() const;
 
-    diagram_element::id_t class_id() const { return class_id_; }
-
-    std::string to_string() const override
-    {
-        return fmt::format("Participant '{}': id={}, name={}, class_id={}",
-            type_name(), id(), full_name(false), class_id());
-    }
+    std::string to_string() const override;
 
 private:
     diagram_element::id_t class_id_;
@@ -247,20 +220,6 @@ struct function_template : public function, public template_trait {
 
     std::string full_name_no_ns() const override;
 
-    std::string message_name(message_render_mode mode) const override
-    {
-        std::ostringstream s;
-        render_template_params(s, using_namespace(), true);
-        std::string template_params = s.str();
-
-        if (mode == message_render_mode::no_arguments) {
-            return fmt::format("{}{}(){}", name(), template_params,
-                is_const() ? " const" : "");
-        }
-
-        return fmt::format("{}{}({}){}", name(), template_params,
-            fmt::join(parameters(), ","), is_const() ? " const" : "");
-    }
+    std::string message_name(message_render_mode mode) const override;
 };
-
 }
