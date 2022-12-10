@@ -64,6 +64,10 @@ public:
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
 
+    bool TraverseCompoundStmt(clang::CompoundStmt *stmt);
+
+    bool TraverseIfStmt(clang::IfStmt *stmt);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;

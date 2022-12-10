@@ -39,7 +39,7 @@ enum class relationship_t {
     kDependency
 };
 
-enum class message_t { kCall, kReturn };
+enum class message_t { kCall, kReturn, kIf, kElse, kElseIf, kIfEnd };
 
 std::string to_string(relationship_t r);
 

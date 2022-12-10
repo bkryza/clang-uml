@@ -539,6 +539,138 @@ bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
     return true;
 }
 
+bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto *current_ifstmt = context().current_ifstmt();
+    const auto *current_elseifstmt = context().current_elseifstmt();
+
+    //
+    // Add final else block (not else if)
+    //
+    if (current_elseifstmt != nullptr) {
+        if (current_elseifstmt->getElse() == stmt) {
+            const auto current_caller_id = context().caller_id();
+
+            if (current_caller_id) {
+                message m;
+                m.from = current_caller_id;
+                m.type = message_t::kElse;
+
+                diagram().sequences[current_caller_id].messages.emplace_back(
+                    std::move(m));
+            }
+        }
+    }
+    else if(current_ifstmt != nullptr) {
+        if (current_ifstmt->getElse() == stmt) {
+            const auto current_caller_id = context().caller_id();
+
+            if (current_caller_id) {
+                message m;
+                m.from = current_caller_id;
+                m.type = message_t::kElse;
+
+                diagram().sequences[current_caller_id].messages.emplace_back(
+                    std::move(m));
+            }
+        }
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCompoundStmt(stmt);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto *current_ifstmt = context().current_ifstmt();
+
+    context().enter_ifstmt(stmt);
+
+    const auto current_caller_id = context().caller_id();
+
+    bool elseif_block{false};
+
+    if (current_caller_id) {
+        if (diagram().sequences.find(current_caller_id) ==
+            diagram().sequences.end()) {
+            activity a;
+            a.from = current_caller_id;
+            diagram().sequences.insert({current_caller_id, std::move(a)});
+        }
+        message m;
+        m.from = current_caller_id;
+
+        // Check if this is a beginning of a new if statement, or an
+        // else if condition of the current if statement
+        if (current_ifstmt != nullptr) {
+            for (const auto *child_stmt : current_ifstmt->children()) {
+                if (child_stmt == stmt) {
+                    elseif_block = true;
+                    break;
+                }
+            }
+        }
+
+        if (elseif_block) {
+            m.type = message_t::kElseIf;
+            context().enter_elseifstmt(stmt);
+        }
+        else {
+            m.type = message_t::kIf;
+        }
+
+        diagram().sequences[current_caller_id].messages.emplace_back(
+            std::move(m));
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
+
+    context().leave_ifstmt();
+
+    if (current_caller_id && !elseif_block) {
+        message m;
+        m.from = current_caller_id;
+        m.type = message_t::kIfEnd;
+
+        if (diagram().sequences.find(current_caller_id) !=
+            diagram().sequences.end()) {
+
+            auto &current_messages =
+                diagram().sequences[current_caller_id].messages;
+            // Remove the if/else messages if there were no calls
+            // added to the diagram between them
+            auto last_if_it =
+                std::find_if(current_messages.rbegin(), current_messages.rend(),
+                    [](const message &m) { return m.type == message_t::kIf; });
+
+            bool last_if_block_is_empty = std::none_of(
+                current_messages.rbegin(), last_if_it,
+                [](const message &m) { return m.type == message_t::kCall; });
+
+            if (!last_if_block_is_empty) {
+                current_messages.emplace_back(std::move(m));
+            }
+            else {
+                current_messages.erase(
+                    (last_if_it + 1).base(), current_messages.end());
+            }
+        }
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_t;
@@ -635,7 +767,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
         else {
             if (!process_function_call_expression(m, expr)) {
-                //        expr->dump();
                 LOG_DBG("Skipping call to unsupported type of call expression "
                         "at: {}",
                     expr->getBeginLoc().printToString(source_manager()));
@@ -824,6 +955,9 @@ bool translation_unit_visitor::process_function_call_expression(
         return false;
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
+
+    if (!diagram().should_include(callee_name))
+        return false;
 
     std::unique_ptr<model::function_template> f_ptr;
 

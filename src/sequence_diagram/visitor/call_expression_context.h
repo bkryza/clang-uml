@@ -70,6 +70,43 @@ struct call_expression_context {
 
     void leave_lambda_expression();
 
+    clang::IfStmt *current_ifstmt() const
+    {
+        if (if_stmt_stack_.empty())
+            return nullptr;
+
+        return if_stmt_stack_.top();
+    }
+
+    void enter_ifstmt(clang::IfStmt *stmt) { return if_stmt_stack_.push(stmt); }
+
+    void leave_ifstmt()
+    {
+        if (!if_stmt_stack_.empty()) {
+            if_stmt_stack_.pop();
+            std::stack<clang::IfStmt *>{}.swap(elseif_stmt_stack_);
+        }
+    }
+
+    void enter_elseifstmt(clang::IfStmt *stmt)
+    {
+        return elseif_stmt_stack_.push(stmt);
+    }
+
+    void leave_elseifstmt()
+    {
+        if (elseif_stmt_stack_.empty())
+            return elseif_stmt_stack_.pop();
+    }
+
+    clang::IfStmt *current_elseifstmt() const
+    {
+        if (elseif_stmt_stack_.empty())
+            return nullptr;
+
+        return elseif_stmt_stack_.top();
+    }
+
     clang::CXXRecordDecl *current_class_decl_;
     clang::ClassTemplateDecl *current_class_template_decl_;
     clang::ClassTemplateSpecializationDecl
@@ -83,6 +120,8 @@ struct call_expression_context {
 private:
     std::int64_t current_caller_id_;
     std::stack<std::int64_t> current_lambda_caller_id_;
+    std::stack<clang::IfStmt *> if_stmt_stack_;
+    std::stack<clang::IfStmt *> elseif_stmt_stack_;
 };
 
 }

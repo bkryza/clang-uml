@@ -113,37 +113,52 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
     std::vector<common::model::diagram_element::id_t> &visited) const
 {
     for (const auto &m : a.messages) {
-        visited.push_back(m.from);
+        if (m.type == message_t::kCall) {
+            const auto &to = m_model.get_participant<model::participant>(m.to);
+            if (!to)
+                continue;
 
-        const auto &to = m_model.get_participant<model::participant>(m.to);
-        if (!to)
-            continue;
+            visited.push_back(m.from);
 
-        LOG_DBG("Generating message {} --> {}", m.from, m.to);
+            LOG_DBG("Generating message {} --> {}", m.from, m.to);
 
-        generate_call(m, ostr);
+            generate_call(m, ostr);
 
-        std::string to_alias = generate_alias(to.value());
+            std::string to_alias = generate_alias(to.value());
 
-        ostr << "activate " << to_alias << std::endl;
+            ostr << "activate " << to_alias << std::endl;
 
-        if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
-            if (std::find(visited.begin(), visited.end(), m.to) ==
-                visited.end()) { // break infinite recursion on recursive calls
-                LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                    m.from, m.to, m.to);
-                generate_activity(m_model.sequences[m.to], ostr, visited);
+            if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
+                if (std::find(visited.begin(), visited.end(), m.to) ==
+                    visited
+                        .end()) { // break infinite recursion on recursive calls
+                    LOG_DBG("Creating activity {} --> {} - missing sequence {}",
+                        m.from, m.to, m.to);
+                    generate_activity(m_model.sequences[m.to], ostr, visited);
+                }
             }
+            else
+                LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
+                    m.from, m.to, m.to);
+
+            generate_return(m, ostr);
+
+            ostr << "deactivate " << to_alias << std::endl;
+
+            visited.pop_back();
         }
-        else
-            LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from,
-                m.to, m.to);
-
-        generate_return(m, ostr);
-
-        visited.pop_back();
-
-        ostr << "deactivate " << to_alias << std::endl;
+        else if (m.type == message_t::kIf) {
+            ostr << "alt\n";
+        }
+        else if (m.type == message_t::kElseIf) {
+            ostr << "else\n";
+        }
+        else if (m.type == message_t::kElse) {
+            ostr << "else\n";
+        }
+        else if (m.type == message_t::kIfEnd) {
+            ostr << "end\n";
+        }
     }
 }
 
