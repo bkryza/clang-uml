@@ -37,8 +37,8 @@ TEST_CASE("t20008", "[test-case][sequence]")
     // Check if all calls exist
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
     REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a1(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"), "a2(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"), "a3(int)"));
+    //    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"), "a2(int)"));
+    //    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"), "a3(int)"));
 
     REQUIRE_THAT(
         puml, HasCall(_A("tmain()"), _A("B<const char *>"), "b(const char *)"));

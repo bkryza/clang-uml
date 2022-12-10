@@ -25,13 +25,12 @@
 
 namespace clanguml::sequence_diagram::model {
 
-struct message {
+struct message : public common::model::diagram_element {
     message()
         : from{}
         , to{}
         , message_name{}
         , return_type{}
-        , line{}
     {
     }
 
@@ -42,8 +41,6 @@ struct message {
     std::string message_name;
 
     std::string return_type;
-
-    unsigned int line;
 };
 
 }

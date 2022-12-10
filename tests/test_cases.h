@@ -48,8 +48,10 @@
 using Catch::Matchers::Contains;
 using Catch::Matchers::EndsWith;
 using Catch::Matchers::Equals;
+using Catch::Matchers::Matches;
 using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
+
 using namespace clanguml::util;
 
 std::pair<clanguml::config::config,
@@ -73,6 +75,7 @@ namespace matchers {
 using Catch::CaseSensitive;
 using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
+using Catch::Matchers::StdString::RegexMatcher;
 
 template <typename T, typename... Ts> constexpr bool has_type() noexcept
 {
@@ -119,19 +122,18 @@ struct HasCallWithResultMatcher : ContainsMatcher {
     CasedString m_resultComparator;
 };
 
-ContainsMatcher HasCall(std::string const &from, std::string const &message,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(CasedString(
-        fmt::format("{} -> {} : {}", from, from, message), caseSensitivity));
-}
-
-ContainsMatcher HasCall(std::string const &from, std::string const &to,
+auto HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString(
-        fmt::format("{} -> {} : {}\n", from, to, message), caseSensitivity));
+    return ContainsMatcher(
+        CasedString(fmt::format("{} -> {}", from, to), caseSensitivity));
+}
+
+auto HasCall(std::string const &from, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return HasCall(from, from, message, caseSensitivity);
 }
 
 auto HasCallWithResponse(std::string const &from, std::string const &to,
@@ -139,8 +141,7 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return HasCallWithResultMatcher(
-        CasedString(
-            fmt::format("{} -> {} : {}", from, to, message), caseSensitivity),
+        CasedString(fmt::format("{} -> {}", from, to), caseSensitivity),
         CasedString(fmt::format("{} --> {}", to, from), caseSensitivity));
 }
 

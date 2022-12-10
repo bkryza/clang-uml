@@ -570,6 +570,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     m.type = message_t::kCall;
     m.from = context().caller_id();
 
+    set_source_location(*expr, m);
+
     // If we're currently inside a lambda expression, set it's id as
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call

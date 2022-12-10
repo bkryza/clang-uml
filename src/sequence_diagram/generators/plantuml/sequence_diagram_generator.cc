@@ -80,7 +80,13 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     ostr << from_alias << " "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " "
-         << to_alias << " : " << message << std::endl;
+         << to_alias;
+
+    if (m_config.generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, m);
+    }
+
+    ostr << " : " << message << std::endl;
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
         m.from, to, m.to);
@@ -168,7 +174,14 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
             ostr << "participant \""
                  << render_name(m_config.using_namespace().relative(
                         class_participant.full_name(false)))
-                 << "\" as " << class_participant.alias() << '\n';
+                 << "\" as " << class_participant.alias();
+
+            if (m_config.generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    ostr, class_participant);
+            }
+
+            ostr << '\n';
 
             generated_participants_.emplace(class_id);
         }
@@ -197,7 +210,9 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
                                         .string();
 
             ostr << "participant \"" << render_name(participant_name)
-                 << "\" as " << fmt::format("C_{:022}", file_id) << '\n';
+                 << "\" as " << fmt::format("C_{:022}", file_id);
+
+            ostr << '\n';
 
             generated_participants_.emplace(file_id);
         }
@@ -205,7 +220,14 @@ void generator::generate_participant(std::ostream &ostr, common::id_t id) const
             ostr << "participant \""
                  << m_config.using_namespace().relative(
                         participant.full_name(false))
-                 << "\" as " << participant.alias() << '\n';
+                 << "\" as " << participant.alias();
+
+            if (m_config.generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    ostr, participant);
+            }
+
+            ostr << '\n';
 
             generated_participants_.emplace(participant_id);
         }
@@ -309,4 +331,5 @@ std::string generator::generate_alias(
 
     return participant.alias();
 }
+
 }
