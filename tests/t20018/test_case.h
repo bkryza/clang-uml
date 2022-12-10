@@ -35,22 +35,24 @@ TEST_CASE("t20018", "[test-case][sequence]")
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
     // Check if all calls exist
-    REQUIRE_THAT(
-        puml, HasCall(_A("Factorial<5>"), _A("Factorial<4>"), "__print()__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("tmain()"), _A("Answer<Factorial<5>,120>"), "__print()__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Answer<Factorial<5>,120>"), _A("Factorial<5>"),
+            "__print(int)__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Factorial<5>"), _A("Factorial<4>"), "__print(int)__"));
     REQUIRE_THAT(puml,
         !HasCallWithResponse(
-            _A("Factorial<5>"), _A("Factorial<4>"), "__print()__"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("Factorial<4>"), _A("Factorial<3>"), "__print()__"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("Factorial<3>"), _A("Factorial<2>"), "__print()__"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("Factorial<2>"), _A("Factorial<1>"), "__print()__"));
-    REQUIRE_THAT(
-        puml, HasCall(_A("Factorial<1>"), _A("Factorial<0>"), "__print()__"));
-
-    // REQUIRE_THAT(puml, HasCall("A", "log_result"));
-    // REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
+            _A("Factorial<5>"), _A("Factorial<4>"), "__print(int)__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Factorial<4>"), _A("Factorial<3>"), "__print(int)__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Factorial<3>"), _A("Factorial<2>"), "__print(int)__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Factorial<2>"), _A("Factorial<1>"), "__print(int)__"));
+    REQUIRE_THAT(puml,
+        HasCall(_A("Factorial<1>"), _A("Factorial<0>"), "__print(int)__"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
