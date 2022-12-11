@@ -39,7 +39,7 @@ TEST_CASE("t20021", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a2()"));
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a3()"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "b1()"));
+    REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "b1()"));
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "b2()"));
 
     save_puml(

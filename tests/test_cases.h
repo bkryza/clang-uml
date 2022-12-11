@@ -82,26 +82,19 @@ template <typename T, typename... Ts> constexpr bool has_type() noexcept
     return (std::is_same_v<T, Ts> || ... || false);
 }
 
-struct Public {
-};
+struct Public { };
 
-struct Protected {
-};
+struct Protected { };
 
-struct Private {
-};
+struct Private { };
 
-struct Abstract {
-};
+struct Abstract { };
 
-struct Static {
-};
+struct Static { };
 
-struct Const {
-};
+struct Const { };
 
-struct Default {
-};
+struct Default { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(
@@ -122,12 +115,51 @@ struct HasCallWithResultMatcher : ContainsMatcher {
     CasedString m_resultComparator;
 };
 
+template <typename T> class HasCallMatcher : public Catch::MatcherBase<T> {
+    T m_from, m_to, m_message;
+
+public:
+    HasCallMatcher(T from, T to, T message)
+        : m_from(from)
+        , m_to{to}
+        , m_message{message}
+    {
+        util::replace_all(m_message, "(", "\\(");
+        util::replace_all(m_message, "*", "\\*");
+        util::replace_all(m_message, ")", "\\)");
+    }
+
+    bool match(T const &in) const override
+    {
+        std::istringstream fin(in);
+        std::string line;
+        std::regex r{fmt::format("{} -> {} "
+                                 "(\\[\\[.*\\]\\] )?: {}",
+            m_from, m_to, m_message)};
+        while (std::getline(fin, line)) {
+            std::smatch base_match;
+            std::regex_search(in, base_match, r);
+            if (base_match.size() > 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream ss;
+        ss << "has call "
+           << fmt::format("{} -> {} : {}", m_from, m_to, m_message);
+        return ss.str();
+    }
+};
+
 auto HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("{} -> {}", from, to), caseSensitivity));
+    return HasCallMatcher(from, to, message);
 }
 
 auto HasCall(std::string const &from, std::string const &message,
@@ -140,9 +172,9 @@ auto HasCallWithResponse(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return HasCallWithResultMatcher(
-        CasedString(fmt::format("{} -> {}", from, to), caseSensitivity),
-        CasedString(fmt::format("{} --> {}", to, from), caseSensitivity));
+    return ContainsMatcher(CasedString(
+               fmt::format("{} --> {}", to, from), caseSensitivity)) &&
+        HasCallMatcher(from, to, message);
 }
 
 ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,

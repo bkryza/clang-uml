@@ -43,9 +43,6 @@ TEST_CASE("t20018", "[test-case][sequence]")
     REQUIRE_THAT(puml,
         HasCall(_A("Factorial<5>"), _A("Factorial<4>"), "__print(int)__"));
     REQUIRE_THAT(puml,
-        !HasCallWithResponse(
-            _A("Factorial<5>"), _A("Factorial<4>"), "__print(int)__"));
-    REQUIRE_THAT(puml,
         HasCall(_A("Factorial<4>"), _A("Factorial<3>"), "__print(int)__"));
     REQUIRE_THAT(puml,
         HasCall(_A("Factorial<3>"), _A("Factorial<2>"), "__print(int)__"));
