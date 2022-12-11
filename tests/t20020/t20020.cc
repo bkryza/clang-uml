@@ -43,7 +43,7 @@ int tmain()
     if (result != 2) {
         result = std::exp(result);
     }
-    else if(result == 3) {
+    else if (result == 3) {
         result = 4;
     }
     else {

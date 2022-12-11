@@ -548,7 +548,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
 
     const auto *current_ifstmt = context().current_ifstmt();
     const auto *current_elseifstmt = context().current_elseifstmt();
-    
+
     //
     // Add final else block (not else if)
     //
