@@ -211,6 +211,9 @@ test_cases:
     - name: t20021
       title: Loop statements sequence diagram test case
       description:
+    - name: t20022
+      title: Forward class declaration sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
