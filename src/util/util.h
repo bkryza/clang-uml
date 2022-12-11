@@ -62,7 +62,7 @@ std::string trim(const std::string &s);
  *
  * @param verbose Whether the logging should be verbose or not.
  */
-void setup_logging(bool verbose);
+void setup_logging(int verbose);
 
 std::string get_process_output(const std::string &command);
 

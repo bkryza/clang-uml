@@ -173,7 +173,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("= Visiting class template declaration {} at {} [{}]",
+    LOG_TRACE("Visiting class template declaration {} at {} [{}]",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager()), (void *)cls);
 
@@ -222,7 +222,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("Visiting template specialization declaration {} at {}",
+    LOG_TRACE("Visiting template specialization declaration {} at {}",
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager()));
 
@@ -275,7 +275,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
                 static_cast<clang::CXXMethodDecl *>(m->getDefinition()));
     }
 
-    LOG_DBG("Visiting method {} in class {} [{}]",
+    LOG_TRACE("Visiting method {} in class {} [{}]",
         m->getQualifiedNameAsString(),
         m->getParent()->getQualifiedNameAsString(), (void *)m->getParent());
 
@@ -299,7 +299,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
 
     if (!get_participant<model::class_>(parent_decl)) {
-        LOG_WARN("Cannot find parent class_ for method {} in class {}",
+        LOG_INFO("Cannot find parent class_ for method {} in class {}",
             m->getQualifiedNameAsString(),
             m->getParent()->getQualifiedNameAsString());
         return true;
@@ -336,7 +336,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     set_unique_id(m->getID(), m_ptr->id()); // This is probably not necessary?
 
-    LOG_DBG("Set id {} --> {} for method name {} [{}]", m->getID(), m_ptr->id(),
+    LOG_TRACE("Set id {} --> {} for method name {} [{}]", m->getID(), m_ptr->id(),
         method_full_name, m->isThisDeclarationADefinition());
 
     context().update(m);
@@ -364,7 +364,7 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
                 static_cast<clang::FunctionDecl *>(f->getDefinition()));
     }
 
-    LOG_DBG("Visiting function declaration {} at {}", function_name,
+    LOG_TRACE("Visiting function declaration {} at {}", function_name,
         f->getLocation().printToString(source_manager()));
 
     if (f->isTemplated()) {
@@ -441,7 +441,7 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     if (!diagram().should_include(function_name))
         return true;
 
-    LOG_DBG("Visiting function template declaration {} at {}", function_name,
+    LOG_TRACE("Visiting function template declaration {} at {}", function_name,
         function_template->getLocation().printToString(source_manager()));
 
     auto f_ptr = std::make_unique<sequence_diagram::model::function_template>(
@@ -753,7 +753,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (!context().valid())
         return true;
 
-    LOG_DBG("Visiting call expression at {} [caller_id = {}]",
+    LOG_TRACE("Visiting call expression at {} [caller_id = {}]",
         expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
 
@@ -912,7 +912,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
         method_call_expr->getCallReturnType(*context().get_ast_context())
             .getAsString());
 
-    LOG_DBG("Set callee method id {} for method name {}", m.to(),
+    LOG_TRACE("Set callee method id {} for method name {}", m.to(),
         method_decl->getQualifiedNameAsString());
 
     diagram().add_active_participant(method_decl->getID());
@@ -1216,7 +1216,7 @@ bool translation_unit_visitor::process_template_parameters(
 {
     using class_diagram::model::template_parameter;
 
-    LOG_DBG("Processing class {} template parameters...",
+    LOG_TRACE("Processing class {} template parameters...",
         common::get_qualified_name(template_declaration));
 
     if (template_declaration.getTemplateParameters() == nullptr)
@@ -1275,7 +1275,7 @@ bool translation_unit_visitor::process_template_parameters(
 void translation_unit_visitor::set_unique_id(
     int64_t local_id, common::model::diagram_element::id_t global_id)
 {
-    LOG_DBG("== Setting local element mapping {} --> {}", local_id, global_id);
+    LOG_TRACE("Setting local element mapping {} --> {}", local_id, global_id);
 
     local_ast_id_map_[local_id] = global_id;
 }
@@ -1361,7 +1361,7 @@ void translation_unit_visitor::
                 arg, argument);
         }
         else {
-            LOG_ERROR("Unsupported argument type {}", arg.getKind());
+            LOG_INFO("Unsupported argument type {}", arg.getKind());
         }
 
         simplify_system_template(
@@ -1683,7 +1683,7 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.set_name(type_name);
         }
 
-        LOG_DBG("Adding template instantiation argument {}",
+        LOG_TRACE("Adding template instantiation argument {}",
             argument.to_string(config().using_namespace(), false));
 
         simplify_system_template(
@@ -1720,7 +1720,7 @@ void translation_unit_visitor::process_template_specialization_argument(
         }
     }
     else {
-        LOG_ERROR("Unsupported template argument kind {} [{}]", arg.getKind(),
+        LOG_INFO("Unsupported template argument kind {} [{}]", arg.getKind(),
             cls->getLocation().printToString(source_manager()));
     }
 }
@@ -1897,7 +1897,7 @@ translation_unit_visitor::build_template_instantiation(
         destination = best_match_full_name;
     }
     else {
-        LOG_DBG("== Cannot determine global id for specialization template {} "
+        LOG_DBG("Cannot determine global id for specialization template {} "
                 "- delaying until the translation unit is complete ",
             templated_decl_id);
     }

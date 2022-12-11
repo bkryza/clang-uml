@@ -265,19 +265,19 @@ diagram::active_participants() const
 
 void diagram::print() const
 {
-    LOG_DBG(" --- Participants ---");
+    LOG_TRACE(" --- Participants ---");
     for (const auto &[id, participant] : participants_) {
         LOG_DBG("{} - {}", id, participant->to_string());
     }
 
-    LOG_DBG(" --- Activities ---");
+    LOG_TRACE(" --- Activities ---");
     for (const auto &[from_id, act] : sequences_) {
 
-        LOG_DBG("Sequence id={}:", from_id);
+        LOG_TRACE("Sequence id={}:", from_id);
 
         const auto &from_activity = *(participants_.at(from_id));
 
-        LOG_DBG("   Activity id={}, from={}:", act.from(),
+        LOG_TRACE("   Activity id={}, from={}:", act.from(),
             from_activity.full_name(false));
 
         for (const auto &message : act.messages()) {
@@ -287,7 +287,7 @@ void diagram::print() const
             const auto &from_participant = *participants_.at(message.from());
 
             if (participants_.find(message.to()) == participants_.end()) {
-                LOG_DBG("       Message from={}, from_id={}, "
+                LOG_TRACE("       Message from={}, from_id={}, "
                         "to={}, to_id={}, name={}, type={}",
                     from_participant.full_name(false), from_participant.id(),
                     "__UNRESOLVABLE_ID__", message.to(), message.message_name(),
@@ -296,7 +296,7 @@ void diagram::print() const
             else {
                 const auto &to_participant = *participants_.at(message.to());
 
-                LOG_DBG("       Message from={}, from_id={}, "
+                LOG_TRACE("       Message from={}, from_id={}, "
                         "to={}, to_id={}, name={}, type={}",
                     from_participant.full_name(false), from_participant.id(),
                     to_participant.full_name(false), to_participant.id(),
