@@ -107,6 +107,25 @@ struct call_expression_context {
         return elseif_stmt_stack_.top();
     }
 
+    clang::Stmt *current_loopstmt() const
+    {
+        if (loop_stmt_stack_.empty())
+            return nullptr;
+
+        return loop_stmt_stack_.top();
+    }
+
+    void enter_loopstmt(clang::Stmt *stmt)
+    {
+        return loop_stmt_stack_.push(stmt);
+    }
+
+    void leave_loopstmt()
+    {
+        if (loop_stmt_stack_.empty())
+            return loop_stmt_stack_.pop();
+    }
+
     clang::CXXRecordDecl *current_class_decl_;
     clang::ClassTemplateDecl *current_class_template_decl_;
     clang::ClassTemplateSpecializationDecl
@@ -122,6 +141,8 @@ private:
     std::stack<std::int64_t> current_lambda_caller_id_;
     std::stack<clang::IfStmt *> if_stmt_stack_;
     std::stack<clang::IfStmt *> elseif_stmt_stack_;
+
+    std::stack<clang::Stmt *> loop_stmt_stack_;
 };
 
 }

@@ -102,6 +102,96 @@ void diagram::print() const
     }
 }
 
+void diagram::add_for_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    add_loop_stmt(current_caller_id, common::model::message_t::kFor);
+}
+
+void diagram::end_for_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    end_loop_stmt(current_caller_id, common::model::message_t::kForEnd);
+}
+
+void diagram::add_while_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    add_loop_stmt(current_caller_id, common::model::message_t::kWhile);
+}
+
+void diagram::end_while_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    end_loop_stmt(current_caller_id, common::model::message_t::kWhileEnd);
+}
+
+void diagram::add_do_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    add_loop_stmt(current_caller_id, common::model::message_t::kDo);
+}
+
+void diagram::end_do_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    end_loop_stmt(current_caller_id, common::model::message_t::kDoEnd);
+}
+
+void diagram::add_loop_stmt(
+    const common::model::diagram_element::id_t current_caller_id,
+    common::model::message_t type)
+{
+    using clanguml::common::model::message_t;
+
+    if (current_caller_id == 0)
+        return;
+
+    if (sequences.find(current_caller_id) == sequences.end()) {
+        activity a;
+        a.from = current_caller_id;
+        sequences.insert({current_caller_id, std::move(a)});
+    }
+
+    message m;
+    m.from = current_caller_id;
+    m.type = type;
+
+    sequences[current_caller_id].messages.emplace_back(std::move(m));
+}
+
+void diagram::end_loop_stmt(
+    const common::model::diagram_element::id_t current_caller_id,
+    common::model::message_t type)
+{
+    using clanguml::common::model::message_t;
+
+    if (current_caller_id == 0)
+        return;
+
+    message m;
+    m.from = current_caller_id;
+    m.type = type;
+
+    message_t loop_type = message_t::kWhile;
+
+    if (type == message_t::kForEnd)
+        loop_type = message_t::kFor;
+    else if (type == message_t::kDoEnd)
+        loop_type = message_t::kDo;
+
+    if (sequences.find(current_caller_id) != sequences.end()) {
+        auto &current_messages = sequences[current_caller_id].messages;
+
+        if (current_messages.back().type == loop_type) {
+            current_messages.pop_back();
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
 }
 
 namespace clanguml::common::model {

@@ -159,6 +159,24 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type == message_t::kIfEnd) {
             ostr << "end\n";
         }
+        else if (m.type == message_t::kWhile) {
+            ostr << "loop\n";
+        }
+        else if (m.type == message_t::kWhileEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type == message_t::kFor) {
+            ostr << "loop\n";
+        }
+        else if (m.type == message_t::kForEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type == message_t::kDo) {
+            ostr << "loop\n";
+        }
+        else if (m.type == message_t::kDoEnd) {
+            ostr << "end\n";
+        }
     }
 }
 

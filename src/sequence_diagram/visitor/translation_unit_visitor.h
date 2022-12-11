@@ -68,6 +68,14 @@ public:
 
     bool TraverseIfStmt(clang::IfStmt *stmt);
 
+    bool TraverseWhileStmt(clang::WhileStmt *stmt);
+
+    bool TraverseDoStmt(clang::DoStmt *stmt);
+
+    bool TraverseForStmt(clang::ForStmt *stmt);
+
+    bool TraverseCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;

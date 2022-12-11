@@ -566,7 +566,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
             }
         }
     }
-    else if(current_ifstmt != nullptr) {
+    else if (current_ifstmt != nullptr) {
         if (current_ifstmt->getElse() == stmt) {
             const auto current_caller_id = context().caller_id();
 
@@ -667,6 +667,92 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
             }
         }
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    context().enter_loopstmt(stmt);
+
+    const auto current_caller_id = context().caller_id();
+
+    diagram().add_while_stmt(current_caller_id);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
+
+    diagram().end_while_stmt(current_caller_id);
+
+    context().leave_loopstmt();
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    context().enter_loopstmt(stmt);
+
+    const auto current_caller_id = context().caller_id();
+
+    diagram().add_do_stmt(current_caller_id);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
+
+    context().leave_loopstmt();
+
+    diagram().end_do_stmt(current_caller_id);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    context().enter_loopstmt(stmt);
+
+    const auto current_caller_id = context().caller_id();
+
+    diagram().add_for_stmt(current_caller_id);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
+
+    context().leave_loopstmt();
+
+    diagram().end_for_stmt(current_caller_id);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXForRangeStmt(
+    clang::CXXForRangeStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    context().enter_loopstmt(stmt);
+
+    const auto current_caller_id = context().caller_id();
+
+    diagram().add_for_stmt(current_caller_id);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
+        stmt);
+
+    context().leave_loopstmt();
+
+    diagram().end_for_stmt(current_caller_id);
 
     return true;
 }

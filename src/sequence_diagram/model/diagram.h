@@ -102,6 +102,19 @@ public:
         participants;
 
     std::set<common::model::diagram_element::id_t> active_participants_;
+
+    void add_loop_stmt(
+        const common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void end_loop_stmt(
+        const common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void add_while_stmt(const common::model::diagram_element::id_t i);
+    void end_while_stmt(const common::model::diagram_element::id_t i);
+    void add_do_stmt(const common::model::diagram_element::id_t i);
+    void end_do_stmt(const common::model::diagram_element::id_t i);
+    void add_for_stmt(const common::model::diagram_element::id_t i);
+    void end_for_stmt(const common::model::diagram_element::id_t i);
 };
 
 }
