@@ -571,12 +571,9 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
             const auto current_caller_id = context().caller_id();
 
             if (current_caller_id) {
-                message m;
-                m.from = current_caller_id;
-                m.type = message_t::kElse;
-
-                diagram().sequences[current_caller_id].messages.emplace_back(
-                    std::move(m));
+                diagram()
+                    .get_activity(current_caller_id)
+                    .add_message({message_t::kElse, current_caller_id});
             }
         }
     }
@@ -585,12 +582,9 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
             const auto current_caller_id = context().caller_id();
 
             if (current_caller_id) {
-                message m;
-                m.from = current_caller_id;
-                m.type = message_t::kElse;
-
-                diagram().sequences[current_caller_id].messages.emplace_back(
-                    std::move(m));
+                diagram()
+                    .get_activity(current_caller_id)
+                    .add_message({message_t::kElse, current_caller_id});
             }
         }
     }
@@ -763,9 +757,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
 
-    message m;
-    m.type = message_t::kCall;
-    m.from = context().caller_id();
+    message m{message_t::kCall, context().caller_id()};
 
     set_source_location(*expr, m);
 
@@ -774,7 +766,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // Unless the lambda is declared in a function or method call
     if (context().lambda_caller_id() != 0) {
         if (context().current_function_call_expr_ == nullptr) {
-            m.from = context().lambda_caller_id();
+            m.set_from(context().lambda_caller_id());
         }
         else {
             LOG_DBG("Current lambda declaration is passed to a method or "
@@ -847,24 +839,21 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // const auto &return_type =
     //    function_call_expr->getCallReturnType(current_ast_context);
     // m.return_type = return_type.getAsString();
-    m.return_type = "";
 
-    if (m.from > 0 && m.to > 0) {
-        if (diagram().sequences.find(m.from) == diagram().sequences.end()) {
-            activity a;
-            a.from = m.from;
-            diagram().sequences.insert({m.from, std::move(a)});
+    if (m.from() > 0 && m.to() > 0) {
+        if (diagram().sequences().find(m.from()) ==
+            diagram().sequences().end()) {
+            activity a{m.from()};
+            diagram().sequences().insert({m.from(), std::move(a)});
         }
 
-        diagram().add_active_participant(m.from);
-        diagram().add_active_participant(m.to);
+        diagram().add_active_participant(m.from());
+        diagram().add_active_participant(m.to());
 
-        LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name,
-            m.from, m.from, m.to, m.to);
+        LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name(),
+            m.from(), m.from(), m.to(), m.to());
 
-        diagram().sequences[m.from].messages.emplace_back(std::move(m));
-
-        assert(!diagram().sequences.empty());
+        diagram().get_activity(m.from()).add_message(std::move(m));
     }
 
     return true;
@@ -876,6 +865,11 @@ bool translation_unit_visitor::process_operator_call_expression(
     if (operator_call_expr->getCalleeDecl() == nullptr)
         return false;
 
+    // For now we only handle call overloaded operators
+    if (operator_call_expr->getOperator() !=
+        clang::OverloadedOperatorKind::OO_Call)
+        return false;
+
     LOG_DBG("Operator '{}' call expression to {} at {}",
         getOperatorSpelling(operator_call_expr->getOperator()),
         operator_call_expr->getCalleeDecl()->getID(),
@@ -883,14 +877,14 @@ bool translation_unit_visitor::process_operator_call_expression(
 
     auto maybe_id = get_unique_id(operator_call_expr->getCalleeDecl()->getID());
     if (maybe_id.has_value()) {
-        m.to = maybe_id.value();
+        m.set_to(maybe_id.value());
     }
     else {
-        m.to = operator_call_expr->getCalleeDecl()->getID();
+        m.set_to(operator_call_expr->getCalleeDecl()->getID());
     }
 
-    m.message_name = fmt::format(
-        "operator{}", getOperatorSpelling(operator_call_expr->getOperator()));
+    m.set_message_name(fmt::format(
+        "operator{}", getOperatorSpelling(operator_call_expr->getOperator())));
 
     return true;
 }
@@ -912,15 +906,13 @@ bool translation_unit_visitor::process_class_method_call_expression(
             diagram().should_include(callee_decl->getQualifiedNameAsString())))
         return false;
 
-    m.to = method_decl->getID();
-
-    m.message_name = method_decl->getNameAsString();
-
-    m.return_type =
+    m.set_to(method_decl->getID());
+    m.set_message_name(method_decl->getNameAsString());
+    m.set_return_type(
         method_call_expr->getCallReturnType(*context().get_ast_context())
-            .getAsString();
+            .getAsString());
 
-    LOG_DBG("Set callee method id {} for method name {}", m.to,
+    LOG_DBG("Set callee method id {} for method name {}", m.to(),
         method_decl->getQualifiedNameAsString());
 
     diagram().add_active_participant(method_decl->getID());
@@ -951,13 +943,13 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                 get_participant(template_declaration).value().full_name(false) +
                 "::" + dependent_member_callee->getMember().getAsString();
 
-            for (const auto &[id, p] : diagram().participants) {
+            for (const auto &[id, p] : diagram().participants()) {
                 const auto p_full_name = p->full_name(false);
 
                 if (p_full_name.find(callee_method_full_name + "(") == 0) {
                     // TODO: This selects the first matching template method
                     //       without considering arguments!!!
-                    m.to = id;
+                    m.set_to(id);
                     break;
                 }
             }
@@ -975,12 +967,12 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                                               .full_name(false) +
                     "::" + dependent_member_callee->getMember().getAsString();
 
-                for (const auto &[id, p] : diagram().participants) {
+                for (const auto &[id, p] : diagram().participants()) {
                     const auto p_full_name = p->full_name(false);
                     if (p_full_name.find(callee_method_full_name + "(") == 0) {
                         // TODO: This selects the first matching template method
                         //       without considering arguments!!!
-                        m.to = id;
+                        m.set_to(id);
                         break;
                     }
                 }
@@ -989,8 +981,7 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                 return false;
         }
 
-        m.message_name = dependent_member_callee->getMember().getAsString();
-        m.return_type = "";
+        m.set_message_name(dependent_member_callee->getMember().getAsString());
 
         if (get_unique_id(template_declaration->getID()))
             diagram().add_active_participant(
@@ -1027,14 +1018,14 @@ bool translation_unit_visitor::process_function_call_expression(
 
     if (!get_unique_id(callee_function->getID()).has_value()) {
         // This is hopefully not an interesting call...
-        m.to = callee_function->getID();
+        m.set_to(callee_function->getID());
     }
     else {
-        m.to = get_unique_id(callee_function->getID()).value();
+        m.set_to(get_unique_id(callee_function->getID()).value());
     }
 
     auto message_name = callee_name;
-    m.message_name = message_name.substr(0, message_name.size() - 2);
+    m.set_message_name(message_name.substr(0, message_name.size() - 2));
 
     if (f_ptr)
         diagram().add_participant(std::move(f_ptr));
@@ -1057,9 +1048,9 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
 
                 if (!get_unique_id(ftd->getID()).has_value())
-                    m.to = ftd->getID();
+                    m.set_to(ftd->getID());
                 else {
-                    m.to = get_unique_id(ftd->getID()).value();
+                    m.set_to(get_unique_id(ftd->getID()).value());
                 }
 
                 break;
@@ -1878,7 +1869,7 @@ translation_unit_visitor::build_template_instantiation(
     int best_match{};
     common::model::diagram_element::id_t best_match_id{0};
 
-    for (const auto &[id, c] : diagram().participants) {
+    for (const auto &[id, c] : diagram().participants()) {
         const auto *participant_as_class =
             dynamic_cast<model::class_ *>(c.get());
         if ((participant_as_class != nullptr) &&
@@ -1981,9 +1972,9 @@ std::string translation_unit_visitor::make_lambda_name(
 
 void translation_unit_visitor::finalize()
 {
-    decltype(diagram().active_participants_) active_participants_unique;
+    std::set<common::model::diagram_element::id_t> active_participants_unique;
 
-    for (auto id : diagram().active_participants_) {
+    for (auto id : diagram().active_participants()) {
         if (local_ast_id_map_.find(id) != local_ast_id_map_.end()) {
             active_participants_unique.emplace(local_ast_id_map_.at(id));
         }
@@ -1992,12 +1983,12 @@ void translation_unit_visitor::finalize()
         }
     }
 
-    diagram().active_participants_ = std::move(active_participants_unique);
+    diagram().active_participants() = std::move(active_participants_unique);
 
-    for (auto &[id, activity] : diagram().sequences) {
-        for (auto &m : activity.messages) {
-            if (local_ast_id_map_.find(m.to) != local_ast_id_map_.end()) {
-                m.to = local_ast_id_map_.at(m.to);
+    for (auto &[id, activity] : diagram().sequences()) {
+        for (auto &m : activity.messages()) {
+            if (local_ast_id_map_.find(m.to()) != local_ast_id_map_.end()) {
+                m.set_to(local_ast_id_map_.at(m.to()));
             }
         }
     }

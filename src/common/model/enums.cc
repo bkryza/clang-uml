@@ -74,6 +74,26 @@ std::string to_string(message_t r)
         return "call";
     case message_t::kReturn:
         return "return";
+    case message_t::kIf:
+        return "if";
+    case message_t::kElse:
+        return "else";
+    case message_t::kElseIf:
+        return "else if";
+    case message_t::kIfEnd:
+        return "end if";
+    case message_t::kWhile:
+        return "while";
+    case message_t::kWhileEnd:
+        return "end while";
+    case message_t::kDo:
+        return "do";
+    case message_t::kDoEnd:
+        return "end do";
+    case message_t::kFor:
+        return "for";
+    case message_t::kForEnd:
+        return "end for";
     default:
         assert(false);
         return "";

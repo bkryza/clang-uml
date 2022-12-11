@@ -45,16 +45,16 @@ std::string generator::render_name(std::string name) const
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto &from = m_model.get_participant<model::participant>(m.from);
-    const auto &to = m_model.get_participant<model::participant>(m.to);
+    const auto &from = m_model.get_participant<model::participant>(m.from());
+    const auto &to = m_model.get_participant<model::participant>(m.to());
 
     if (!from || !to) {
-        LOG_DBG("Skipping empty call from '{}' to '{}'", m.from, m.to);
+        LOG_DBG("Skipping empty call from '{}' to '{}'", m.from(), m.to());
         return;
     }
 
-    generate_participant(ostr, m.from);
-    generate_participant(ostr, m.to);
+    generate_participant(ostr, m.from());
+    generate_participant(ostr, m.to());
 
     std::string message;
 
@@ -89,16 +89,16 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     ostr << " : " << message << std::endl;
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
-        m.from, to, m.to);
+        m.from(), to, m.to());
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
-    const auto &from = m_model.get_participant<model::participant>(m.from);
-    const auto &to = m_model.get_participant<model::function>(m.to);
-    if ((m.from != m.to) && !to.value().is_void()) {
+    const auto &from = m_model.get_participant<model::participant>(m.from());
+    const auto &to = m_model.get_participant<model::function>(m.to());
+    if ((m.from() != m.to()) && !to.value().is_void()) {
         const std::string from_alias = generate_alias(from.value());
 
         const std::string to_alias = generate_alias(to.value());
@@ -112,15 +112,16 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 void generator::generate_activity(const activity &a, std::ostream &ostr,
     std::vector<common::model::diagram_element::id_t> &visited) const
 {
-    for (const auto &m : a.messages) {
-        if (m.type == message_t::kCall) {
-            const auto &to = m_model.get_participant<model::participant>(m.to);
+    for (const auto &m : a.messages()) {
+        if (m.type() == message_t::kCall) {
+            const auto &to =
+                m_model.get_participant<model::participant>(m.to());
             if (!to)
                 continue;
 
-            visited.push_back(m.from);
+            visited.push_back(m.from());
 
-            LOG_DBG("Generating message {} --> {}", m.from, m.to);
+            LOG_DBG("Generating message {} --> {}", m.from(), m.to());
 
             generate_call(m, ostr);
 
@@ -128,18 +129,19 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
             ostr << "activate " << to_alias << std::endl;
 
-            if (m_model.sequences.find(m.to) != m_model.sequences.end()) {
-                if (std::find(visited.begin(), visited.end(), m.to) ==
+            if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
+                if (std::find(visited.begin(), visited.end(), m.to()) ==
                     visited
                         .end()) { // break infinite recursion on recursive calls
                     LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                        m.from, m.to, m.to);
-                    generate_activity(m_model.sequences[m.to], ostr, visited);
+                        m.from(), m.to(), m.to());
+                    generate_activity(
+                        m_model.get_activity(m.to()), ostr, visited);
                 }
             }
             else
                 LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
-                    m.from, m.to, m.to);
+                    m.from(), m.to(), m.to());
 
             generate_return(m, ostr);
 
@@ -147,34 +149,34 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
             visited.pop_back();
         }
-        else if (m.type == message_t::kIf) {
+        else if (m.type() == message_t::kIf) {
             ostr << "alt\n";
         }
-        else if (m.type == message_t::kElseIf) {
+        else if (m.type() == message_t::kElseIf) {
             ostr << "else\n";
         }
-        else if (m.type == message_t::kElse) {
+        else if (m.type() == message_t::kElse) {
             ostr << "else\n";
         }
-        else if (m.type == message_t::kIfEnd) {
+        else if (m.type() == message_t::kIfEnd) {
             ostr << "end\n";
         }
-        else if (m.type == message_t::kWhile) {
+        else if (m.type() == message_t::kWhile) {
             ostr << "loop\n";
         }
-        else if (m.type == message_t::kWhileEnd) {
+        else if (m.type() == message_t::kWhileEnd) {
             ostr << "end\n";
         }
-        else if (m.type == message_t::kFor) {
+        else if (m.type() == message_t::kFor) {
             ostr << "loop\n";
         }
-        else if (m.type == message_t::kForEnd) {
+        else if (m.type() == message_t::kForEnd) {
             ostr << "end\n";
         }
-        else if (m.type == message_t::kDo) {
+        else if (m.type() == message_t::kDo) {
             ostr << "loop\n";
         }
-        else if (m.type == message_t::kDoEnd) {
+        else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
         }
     }
@@ -182,7 +184,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
 void generator::generate_participant(std::ostream &ostr, common::id_t id) const
 {
-    for (const auto participant_id : m_model.active_participants_) {
+    for (const auto participant_id : m_model.active_participants()) {
         if (participant_id != id)
             continue;
 
@@ -287,8 +289,8 @@ void generator::generate(std::ostream &ostr) const
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
             common::model::diagram_element::id_t start_from;
-            for (const auto &[k, v] : m_model.sequences) {
-                const auto &caller = *m_model.participants.at(v.from);
+            for (const auto &[k, v] : m_model.sequences()) {
+                const auto &caller = *m_model.participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {
                     LOG_DBG("Found sequence diagram start point: {}", k);
@@ -327,7 +329,7 @@ void generator::generate(std::ostream &ostr) const
             ostr << "activate " << from_alias << std::endl;
 
             generate_activity(
-                m_model.sequences[start_from], ostr, visited_participants);
+                m_model.get_activity(start_from), ostr, visited_participants);
 
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {

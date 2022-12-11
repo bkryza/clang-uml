@@ -116,22 +116,22 @@ public:
     common::optional_ref<T> get_participant(
         const common::model::diagram_element::id_t id)
     {
-        if (diagram().participants.find(id) == diagram().participants.end())
+        if (diagram().participants().find(id) == diagram().participants().end())
             return {};
 
         return common::optional_ref<T>(
-            *(static_cast<T *>(diagram().participants.at(id).get())));
+            *(static_cast<T *>(diagram().participants().at(id).get())));
     }
 
     template <typename T = model::participant>
     const common::optional_ref<T> get_participant(
         const common::model::diagram_element::id_t id) const
     {
-        if (diagram().participants.find(id) == diagram().participants.end())
+        if (diagram().participants().find(id) == diagram().participants().end())
             return {};
 
         return common::optional_ref<T>(
-            *(static_cast<T *>(diagram().participants.at(id).get())));
+            *(static_cast<T *>(diagram().participants().at(id).get())));
     }
 
     /// Store the mapping from local clang entity id (obtained using

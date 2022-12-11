@@ -25,22 +25,40 @@
 
 namespace clanguml::sequence_diagram::model {
 
-struct message : public common::model::diagram_element {
-    message()
-        : from{}
-        , to{}
-        , message_name{}
-        , return_type{}
-    {
-    }
+class message : public common::model::diagram_element {
+public:
+    message() = default;
 
-    common::model::message_t type;
-    common::model::diagram_element::id_t from;
-    common::model::diagram_element::id_t to;
+    message(common::model::message_t type,
+        common::model::diagram_element::id_t from);
 
-    std::string message_name;
+    void set_type(common::model::message_t t);
+    common::model::message_t type() const;
 
-    std::string return_type;
+    void set_from(common::model::diagram_element::id_t f);
+    common::model::diagram_element::id_t from() const;
+
+    void set_to(common::model::diagram_element::id_t t);
+    common::model::diagram_element::id_t to() const;
+
+    void set_message_name(std::string name);
+    const std::string &message_name() const;
+
+    void set_return_type(std::string t);
+    const std::string &return_type() const;
+
+private:
+    common::model::message_t type_{common::model::message_t::kNone};
+
+    common::model::diagram_element::id_t from_{};
+
+    common::model::diagram_element::id_t to_{};
+
+    // This is only for better verbose messages, we cannot rely on this
+    // always
+    std::string message_name_{};
+
+    std::string return_type_{};
 };
 
 }

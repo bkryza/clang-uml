@@ -42,8 +42,6 @@ public:
 
     clang::SourceManager &source_manager() const;
 
-    void finalize();
-
 protected:
     void set_source_location(const clang::Decl &decl,
         clanguml::common::model::source_location &element);

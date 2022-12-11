@@ -50,81 +50,84 @@ public:
 
     void print() const;
 
-    bool started{false};
-
     template <typename T>
     common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id)
     {
-        if (participants.find(id) == participants.end()) {
+        if (participants_.find(id) == participants_.end()) {
             return {};
         }
 
         return common::optional_ref<T>(
-            static_cast<T *>(participants.at(id).get()));
+            static_cast<T *>(participants_.at(id).get()));
     }
 
     template <typename T>
     const common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id) const
     {
-        if (participants.find(id) == participants.end()) {
+        if (participants_.find(id) == participants_.end()) {
             return {};
         }
 
         return common::optional_ref<T>(
-            static_cast<T *>(participants.at(id).get()));
+            static_cast<T *>(participants_.at(id).get()));
     }
 
-    void add_participant(std::unique_ptr<participant> p)
-    {
-        const auto participant_id = p->id();
+    void add_participant(std::unique_ptr<participant> p);
 
-        if (participants.find(participant_id) == participants.end()) {
-            LOG_DBG("Adding '{}' participant: {}, {} [{}]", p->type_name(),
-                p->full_name(false), p->id(),
-                p->type_name() == "method"
-                    ? dynamic_cast<method *>(p.get())->method_name()
-                    : "");
+    void add_active_participant(common::model::diagram_element::id_t id);
 
-            participants.emplace(participant_id, std::move(p));
-        }
-    }
+    activity& get_activity(common::model::diagram_element::id_t id);
 
-    void add_active_participant(common::model::diagram_element::id_t id)
-    {
-        active_participants_.emplace(id);
-    }
+    void add_if_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void end_if_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
 
-    std::map<common::model::diagram_element::id_t, activity> sequences;
+    void add_loop_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void end_loop_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+
+    void add_while_stmt(common::model::diagram_element::id_t i);
+    void end_while_stmt(common::model::diagram_element::id_t i);
+
+    void add_do_stmt(common::model::diagram_element::id_t i);
+    void end_do_stmt(common::model::diagram_element::id_t i);
+
+    void add_for_stmt(common::model::diagram_element::id_t i);
+    void end_for_stmt(common::model::diagram_element::id_t i);
+
+    bool started() const;
+    void started(bool s);
+
+    std::map<common::model::diagram_element::id_t, activity> &sequences();
+
+    const std::map<common::model::diagram_element::id_t, activity> &
+    sequences() const;
 
     std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
-        participants;
+        &participants();
+
+    const std::map<common::model::diagram_element::id_t,
+        std::unique_ptr<participant>> &
+    participants() const;
+
+    std::set<common::model::diagram_element::id_t> &active_participants();
+
+    const std::set<common::model::diagram_element::id_t> &
+    active_participants() const;
+
+private:
+    bool started_{false};
+
+    std::map<common::model::diagram_element::id_t, activity> sequences_;
+
+    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
+        participants_;
 
     std::set<common::model::diagram_element::id_t> active_participants_;
-
-    void add_if_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-    void end_if_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-
-    void add_loop_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-    void end_loop_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-
-    void add_while_stmt(const common::model::diagram_element::id_t i);
-    void end_while_stmt(const common::model::diagram_element::id_t i);
-
-    void add_do_stmt(const common::model::diagram_element::id_t i);
-    void end_do_stmt(const common::model::diagram_element::id_t i);
-
-    void add_for_stmt(const common::model::diagram_element::id_t i);
-    void end_for_stmt(const common::model::diagram_element::id_t i);
 };
 
 }
