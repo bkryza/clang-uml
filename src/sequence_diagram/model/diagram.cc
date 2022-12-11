@@ -80,24 +80,35 @@ void diagram::print() const
 
     LOG_DBG(" --- Activities ---");
     for (const auto &[from_id, act] : sequences) {
+
         LOG_DBG("Sequence id={}:", from_id);
+
         const auto &from_activity = *(participants.at(from_id));
+
         LOG_DBG("   Activity id={}, from={}:", act.from,
             from_activity.full_name(false));
+
         for (const auto &message : act.messages) {
             if (participants.find(message.from) == participants.end())
                 continue;
-            if (participants.find(message.to) == participants.end())
-                continue;
 
             const auto &from_participant = *participants.at(message.from);
-            const auto &to_participant = *participants.at(message.to);
 
-            LOG_DBG("       Message from={}, from_id={}, "
-                    "to={}, to_id={}, name={}",
-                from_participant.full_name(false), from_participant.id(),
-                to_participant.full_name(false), to_participant.id(),
-                message.message_name);
+            if (participants.find(message.to) == participants.end()) {
+                LOG_DBG("       Message from={}, from_id={}, "
+                        "to={}, to_id={}, name={}",
+                    from_participant.full_name(false), from_participant.id(),
+                    "__UNRESOLVABLE_ID__", message.to, message.message_name);
+            }
+            else {
+                const auto &to_participant = *participants.at(message.to);
+
+                LOG_DBG("       Message from={}, from_id={}, "
+                        "to={}, to_id={}, name={}",
+                    from_participant.full_name(false), from_participant.id(),
+                    to_participant.full_name(false), to_participant.id(),
+                    message.message_name);
+            }
         }
     }
 }
@@ -188,6 +199,57 @@ void diagram::end_loop_stmt(
         }
         else {
             current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
+void diagram::add_if_stmt(
+    const common::model::diagram_element::id_t current_caller_id,
+    common::model::message_t type)
+{
+    using clanguml::common::model::message_t;
+
+    if (sequences.find(current_caller_id) == sequences.end()) {
+        activity a;
+        a.from = current_caller_id;
+        sequences.insert({current_caller_id, std::move(a)});
+    }
+    message m;
+    m.from = current_caller_id;
+    m.type = type;
+
+    sequences[current_caller_id].messages.emplace_back(std::move(m));
+}
+
+void diagram::end_if_stmt(
+    const common::model::diagram_element::id_t current_caller_id,
+    common::model::message_t type)
+{
+    using clanguml::common::model::message_t;
+
+    message m;
+    m.from = current_caller_id;
+    m.type = message_t::kIfEnd;
+
+    if (sequences.find(current_caller_id) != sequences.end()) {
+
+        auto &current_messages = sequences[current_caller_id].messages;
+        // Remove the if/else messages if there were no calls
+        // added to the diagram between them
+        auto last_if_it =
+            std::find_if(current_messages.rbegin(), current_messages.rend(),
+                [](const message &m) { return m.type == message_t::kIf; });
+
+        bool last_if_block_is_empty =
+            std::none_of(current_messages.rbegin(), last_if_it,
+                [](const message &m) { return m.type == message_t::kCall; });
+
+        if (!last_if_block_is_empty) {
+            current_messages.emplace_back(std::move(m));
+        }
+        else {
+            current_messages.erase(
+                (last_if_it + 1).base(), current_messages.end());
         }
     }
 }

@@ -53,6 +53,10 @@ std::string trim(const std::string &s);
     spdlog::get("console")->debug(std::string("[{}:{}] ") + fmt__,             \
         __FILENAME__, __LINE__, ##__VA_ARGS__)
 
+#define LOG_TRACE(fmt__, ...)                                                  \
+    spdlog::get("console")->trace(std::string("[{}:{}] ") + fmt__,             \
+        __FILENAME__, __LINE__, ##__VA_ARGS__)
+
 /**
  * @brief Setup spdlog logger.
  *

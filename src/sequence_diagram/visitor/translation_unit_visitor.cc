@@ -102,7 +102,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isTemplated() && cls->getDescribedTemplate()) {
         // If the described templated of this class is already in the model
         // skip it:
-        if (get_unique_id(cls->getDescribedTemplate()->getID()))
+        auto local_id = cls->getDescribedTemplate()->getID();
+        if (get_unique_id(local_id))
             return true;
     }
 
@@ -110,12 +111,12 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isLocalClass())
         return true;
 
-    LOG_DBG("Visiting class declaration at {}",
+    LOG_TRACE("Visiting class declaration at {}",
         cls->getBeginLoc().printToString(source_manager()));
 
     // Build the class declaration and store it in the diagram, even
     // if we don't need it for any of the participants of this diagram
-    auto c_ptr = create_class_declaration(cls);
+    auto c_ptr = this->create_class_declaration(cls);
 
     if (!c_ptr)
         return true;
@@ -327,9 +328,16 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     m_ptr->set_id(common::to_id(method_full_name));
 
-    set_unique_id(m->getID(), m_ptr->id());
+    // Callee methods in call expressions are referred to by first declaration
+    // id
+    if (m->isThisDeclarationADefinition()) {
+        set_unique_id(m->getFirstDecl()->getID(), m_ptr->id());
+    }
 
-    LOG_DBG("Set id {} for method name {}", m_ptr->id(), method_full_name);
+    set_unique_id(m->getID(), m_ptr->id()); // This is probably not necessary?
+
+    LOG_DBG("Set id {} --> {} for method name {} [{}]", m->getID(), m_ptr->id(),
+        method_full_name, m->isThisDeclarationADefinition());
 
     context().update(m);
 
@@ -379,6 +387,9 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
         context().set_caller_id(f_ptr->id());
 
+        if (f->isThisDeclarationADefinition()) {
+            set_unique_id(f->getFirstDecl()->getID(), f_ptr->id());
+        }
         set_unique_id(f->getID(), f_ptr->id());
 
         set_source_location(*f, *f_ptr);
@@ -408,6 +419,9 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
 
         context().set_caller_id(f_ptr->id());
 
+        if (f->isThisDeclarationADefinition()) {
+            set_unique_id(f->getFirstDecl()->getID(), f_ptr->id());
+        }
         set_unique_id(f->getID(), f_ptr->id());
 
         set_source_location(*f, *f_ptr);
@@ -469,11 +483,11 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     const auto lambda_full_name =
         expr->getLambdaClass()->getCanonicalDecl()->getNameAsString();
 
-    LOG_DBG("Visiting lambda expression {} at {}", lambda_full_name,
+    LOG_TRACE("Visiting lambda expression {} at {}", lambda_full_name,
         expr->getBeginLoc().printToString(source_manager()));
 
-    LOG_DBG("Lambda call operator ID {} - lambda class ID {}, class call "
-            "operator ID {}",
+    LOG_TRACE("Lambda call operator ID {} - lambda class ID {}, class call "
+              "operator ID {}",
         expr->getCallOperator()->getID(), expr->getLambdaClass()->getID(),
         expr->getLambdaClass()->getLambdaCallOperator()->getID());
 
@@ -593,75 +607,37 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    const auto current_caller_id = context().caller_id();
     bool elseif_block{false};
 
-    if (current_caller_id && !stmt->isConstexpr()) {
-        const auto *current_ifstmt = context().current_ifstmt();
-        context().enter_ifstmt(stmt);
+    const auto current_caller_id = context().caller_id();
+    const auto *current_ifstmt = context().current_ifstmt();
 
-        if (diagram().sequences.find(current_caller_id) ==
-            diagram().sequences.end()) {
-            activity a;
-            a.from = current_caller_id;
-            diagram().sequences.insert({current_caller_id, std::move(a)});
-        }
-        message m;
-        m.from = current_caller_id;
-
-        // Check if this is a beginning of a new if statement, or an
-        // else if condition of the current if statement
-        if (current_ifstmt != nullptr) {
-            for (const auto *child_stmt : current_ifstmt->children()) {
-                if (child_stmt == stmt) {
-                    elseif_block = true;
-                    break;
-                }
+    // Check if this is a beginning of a new if statement, or an
+    // else if condition of the current if statement
+    if (current_ifstmt != nullptr) {
+        for (const auto *child_stmt : current_ifstmt->children()) {
+            if (child_stmt == stmt) {
+                elseif_block = true;
+                break;
             }
         }
+    }
 
+    if (current_caller_id && !stmt->isConstexpr()) {
+        context().enter_ifstmt(stmt);
         if (elseif_block) {
-            m.type = message_t::kElseIf;
             context().enter_elseifstmt(stmt);
+            diagram().add_if_stmt(current_caller_id, message_t::kElseIf);
         }
         else {
-            m.type = message_t::kIf;
+            diagram().add_if_stmt(current_caller_id, message_t::kIf);
         }
-
-        diagram().sequences[current_caller_id].messages.emplace_back(
-            std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
     if (current_caller_id && !stmt->isConstexpr() && !elseif_block) {
-        message m;
-        m.from = current_caller_id;
-        m.type = message_t::kIfEnd;
-
-        if (diagram().sequences.find(current_caller_id) !=
-            diagram().sequences.end()) {
-
-            auto &current_messages =
-                diagram().sequences[current_caller_id].messages;
-            // Remove the if/else messages if there were no calls
-            // added to the diagram between them
-            auto last_if_it =
-                std::find_if(current_messages.rbegin(), current_messages.rend(),
-                    [](const message &m) { return m.type == message_t::kIf; });
-
-            bool last_if_block_is_empty = std::none_of(
-                current_messages.rbegin(), last_if_it,
-                [](const message &m) { return m.type == message_t::kCall; });
-
-            if (!last_if_block_is_empty) {
-                current_messages.emplace_back(std::move(m));
-            }
-            else {
-                current_messages.erase(
-                    (last_if_it + 1).base(), current_messages.end());
-            }
-        }
+        diagram().end_if_stmt(current_caller_id, message_t::kIfEnd);
     }
 
     return true;
@@ -673,17 +649,18 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    context().enter_loopstmt(stmt);
-
     const auto current_caller_id = context().caller_id();
 
-    diagram().add_while_stmt(current_caller_id);
-
+    if (current_caller_id) {
+        context().enter_loopstmt(stmt);
+        diagram().add_while_stmt(current_caller_id);
+    }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
-    diagram().end_while_stmt(current_caller_id);
-
-    context().leave_loopstmt();
+    if (current_caller_id) {
+        diagram().end_while_stmt(current_caller_id);
+        context().leave_loopstmt();
+    }
 
     return true;
 }
@@ -694,17 +671,19 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    context().enter_loopstmt(stmt);
-
     const auto current_caller_id = context().caller_id();
 
-    diagram().add_do_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().enter_loopstmt(stmt);
+        diagram().add_do_stmt(current_caller_id);
+    }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
 
-    context().leave_loopstmt();
-
-    diagram().end_do_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().leave_loopstmt();
+        diagram().end_do_stmt(current_caller_id);
+    }
 
     return true;
 }
@@ -715,17 +694,19 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    context().enter_loopstmt(stmt);
-
     const auto current_caller_id = context().caller_id();
 
-    diagram().add_for_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().enter_loopstmt(stmt);
+        diagram().add_for_stmt(current_caller_id);
+    }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
 
-    context().leave_loopstmt();
-
-    diagram().end_for_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().leave_loopstmt();
+        diagram().end_for_stmt(current_caller_id);
+    }
 
     return true;
 }
@@ -737,18 +718,20 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    context().enter_loopstmt(stmt);
-
     const auto current_caller_id = context().caller_id();
 
-    diagram().add_for_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().enter_loopstmt(stmt);
+        diagram().add_for_stmt(current_caller_id);
+    }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
         stmt);
 
-    context().leave_loopstmt();
-
-    diagram().end_for_stmt(current_caller_id);
+    if (current_caller_id) {
+        context().leave_loopstmt();
+        diagram().end_for_stmt(current_caller_id);
+    }
 
     return true;
 }
@@ -930,6 +913,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
         return false;
 
     m.to = method_decl->getID();
+
     m.message_name = method_decl->getNameAsString();
 
     m.return_type =
@@ -939,9 +923,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
     LOG_DBG("Set callee method id {} for method name {}", m.to,
         method_decl->getQualifiedNameAsString());
 
-    if (get_unique_id(callee_decl->getID()))
-        diagram().add_active_participant(
-            get_unique_id(callee_decl->getID()).value());
+    diagram().add_active_participant(method_decl->getID());
 
     return true;
 }

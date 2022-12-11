@@ -16,10 +16,29 @@ struct B {
     int b2() { return 4; }
 };
 
+struct C {
+    void log() const { }
+
+    void c1() const
+    {
+        if (c2())
+            log();
+    }
+
+    bool c2() const { return true; }
+};
+
+template <typename T> struct D {
+
+    T d1(T x, T y) { return x + y; }
+};
+
 int tmain()
 {
     A a;
     B b;
+    C c;
+    D<int> d;
 
     int result{0};
 
@@ -37,6 +56,12 @@ int tmain()
     }
 
     b.log();
+
+    if (true)
+        c.c1();
+
+    if (true)
+        d.d1(1, 1);
 
     // This if/else should not be included in the diagram at all
     // as the calls to std will be excluded by the diagram filters
