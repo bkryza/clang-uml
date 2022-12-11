@@ -33,15 +33,16 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE(!model->should_include("std::vector"));
 
     auto puml = generate_sequence_puml(diagram, *model);
+    AliasMatcher _A(puml);
 
     REQUIRE_THAT(puml, StartsWith("@startuml"));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, HasCall("A", "log_result"));
-    REQUIRE_THAT(puml, HasCall("B", "A", "log_result"));
-    REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
-    REQUIRE_THAT(puml, HasCall("A", "add"));
-    REQUIRE_THAT(puml, !HasCall("A", "detail::C", "add"));
+    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
+    REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
+    REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
+    REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
+    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

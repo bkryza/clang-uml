@@ -56,8 +56,8 @@ CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
 
 SEQUENCE_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if all calls exist
-    //REQUIRE_THAT(puml, HasCall("A", "log_result"));
-    //REQUIRE_THAT(puml, HasCallWithResponse("B", "A", "add3"));
+    //REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
+    //REQUIRE_THAT(puml, HasCall(_A("A"), "a()"));
 """
 
 PACKAGE_DIAGRAM_TEST_CASE_EXAMPLES = """

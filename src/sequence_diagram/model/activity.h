@@ -18,16 +18,30 @@
 #pragma once
 
 #include "message.h"
+#include "participant.h"
 
 #include <string>
 #include <vector>
 
 namespace clanguml::sequence_diagram::model {
 
-struct activity {
-    std::uint_least64_t usr;
-    std::string from;
-    std::vector<message> messages;
+class activity {
+public:
+    activity(common::model::diagram_element::id_t id);
+
+    void add_message(message m);
+
+    std::vector<message> &messages();
+
+    const std::vector<message> &messages() const;
+
+    void set_from(common::model::diagram_element::id_t f);
+
+    common::model::diagram_element::id_t from() const;
+
+private:
+    common::model::diagram_element::id_t from_;
+    std::vector<message> messages_;
 };
 
 }

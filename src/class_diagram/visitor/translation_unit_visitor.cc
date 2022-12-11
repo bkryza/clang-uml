@@ -171,7 +171,10 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
             }
         }
 
-        assert(id_opt);
+        if (!id_opt) {
+            LOG_WARN("Unknown parent for enum {}", qualified_name);
+            return true;
+        }
 
         auto parent_class = diagram_.get_class(*id_opt);
 

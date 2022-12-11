@@ -48,8 +48,10 @@
 using Catch::Matchers::Contains;
 using Catch::Matchers::EndsWith;
 using Catch::Matchers::Equals;
+using Catch::Matchers::Matches;
 using Catch::Matchers::StartsWith;
 using Catch::Matchers::VectorContains;
+
 using namespace clanguml::util;
 
 std::pair<clanguml::config::config,
@@ -73,6 +75,7 @@ namespace matchers {
 using Catch::CaseSensitive;
 using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
+using Catch::Matchers::StdString::RegexMatcher;
 
 template <typename T, typename... Ts> constexpr bool has_type() noexcept
 {
@@ -119,41 +122,80 @@ struct HasCallWithResultMatcher : ContainsMatcher {
     CasedString m_resultComparator;
 };
 
-ContainsMatcher HasCall(std::string const &from, std::string const &message,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, from, message),
-            caseSensitivity));
-}
+template <typename T> class HasCallMatcher : public Catch::MatcherBase<T> {
+    T m_from, m_to, m_message;
 
-ContainsMatcher HasFunctionCall(std::string const &from,
+public:
+    HasCallMatcher(T from, T to, T message)
+        : m_from(from)
+        , m_to{to}
+        , m_message{message}
+    {
+        util::replace_all(m_message, "(", "\\(");
+        util::replace_all(m_message, "*", "\\*");
+        util::replace_all(m_message, ")", "\\)");
+    }
+
+    bool match(T const &in) const override
+    {
+        std::istringstream fin(in);
+        std::string line;
+        std::regex r{fmt::format("{} -> {} "
+                                 "(\\[\\[.*\\]\\] )?: {}",
+            m_from, m_to, m_message)};
+        while (std::getline(fin, line)) {
+            std::smatch base_match;
+            std::regex_search(in, base_match, r);
+            if (base_match.size() > 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream ss;
+        ss << "has call "
+           << fmt::format("{} -> {} : {}", m_from, m_to, m_message);
+        return ss.str();
+    }
+};
+
+auto HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString(
-        fmt::format("\"{}()\" -> \"{}()\" : {}()", from, message, message),
-        caseSensitivity));
+    return HasCallMatcher(from, to, message);
 }
 
-ContainsMatcher HasCall(std::string const &from, std::string const &to,
-    std::string const &message,
+auto HasCall(std::string const &from, std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
-            caseSensitivity));
+    return HasCall(from, from, message, caseSensitivity);
 }
 
 auto HasCallWithResponse(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return HasCallWithResultMatcher(
-        CasedString(fmt::format("\"{}\" -> \"{}\" : {}()", from, to, message),
-            caseSensitivity),
-        CasedString(
-            fmt::format("\"{}\" --> \"{}\"", to, from), caseSensitivity));
+    return ContainsMatcher(CasedString(
+               fmt::format("{} --> {}", to, from), caseSensitivity)) &&
+        HasCallMatcher(from, to, message);
+}
+
+ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("[-> {} : {}", to, message), caseSensitivity));
+}
+
+ContainsMatcher HasExitpoint(std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("[<-- {}", to), caseSensitivity));
 }
 
 struct AliasMatcher {
@@ -162,11 +204,16 @@ struct AliasMatcher {
     {
     }
 
-    std::string operator()(const std::string &name)
+    std::string operator()(std::string name)
     {
         std::vector<std::regex> patterns;
 
         const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "\\(");
+        util::replace_all(name, ")", "\\)");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
 
         patterns.push_back(
             std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
@@ -182,17 +229,18 @@ struct AliasMatcher {
             std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
             std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 
         for (const auto &line : puml) {
             for (const auto &pattern : patterns) {
-                if (std::regex_search(line, base_match, pattern)) {
-                    if (base_match.size() == 2) {
-                        std::ssub_match base_sub_match = base_match[1];
-                        std::string alias = base_sub_match.str();
-                        return trim(alias);
-                    }
+                if (std::regex_search(line, base_match, pattern) &&
+                    base_match.size() == 2) {
+                    std::ssub_match base_sub_match = base_match[1];
+                    std::string alias = base_sub_match.str();
+                    return trim(alias);
                 }
             }
         }

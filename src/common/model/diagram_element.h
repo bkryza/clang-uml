@@ -43,7 +43,7 @@ public:
 
     void set_id(id_t id);
 
-    std::string alias() const;
+    virtual std::string alias() const;
 
     void set_name(const std::string &name) { name_ = name; }
 

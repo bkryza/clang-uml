@@ -60,7 +60,7 @@ int main(int argc, const char *argv[])
     std::optional<std::string> output_directory;
     unsigned int thread_count{0};
     bool show_version{false};
-    bool verbose{false};
+    int verbose{0};
     bool list_diagrams{false};
 
     app.add_option(

@@ -20,6 +20,7 @@
 #include "activity.h"
 #include "common/model/diagram.h"
 #include "common/types.h"
+#include "participant.h"
 
 #include <map>
 #include <string>
@@ -47,9 +48,86 @@ public:
 
     inja::json context() const override;
 
-    bool started{false};
+    void print() const;
 
-    std::map<int64_t, activity> sequences;
+    template <typename T>
+    common::optional_ref<T> get_participant(
+        common::model::diagram_element::id_t id)
+    {
+        if (participants_.find(id) == participants_.end()) {
+            return {};
+        }
+
+        return common::optional_ref<T>(
+            static_cast<T *>(participants_.at(id).get()));
+    }
+
+    template <typename T>
+    const common::optional_ref<T> get_participant(
+        common::model::diagram_element::id_t id) const
+    {
+        if (participants_.find(id) == participants_.end()) {
+            return {};
+        }
+
+        return common::optional_ref<T>(
+            static_cast<T *>(participants_.at(id).get()));
+    }
+
+    void add_participant(std::unique_ptr<participant> p);
+
+    void add_active_participant(common::model::diagram_element::id_t id);
+
+    activity &get_activity(common::model::diagram_element::id_t id);
+
+    void add_if_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void end_if_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+
+    void add_loop_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+    void end_loop_stmt(common::model::diagram_element::id_t current_caller_id,
+        common::model::message_t type);
+
+    void add_while_stmt(common::model::diagram_element::id_t i);
+    void end_while_stmt(common::model::diagram_element::id_t i);
+
+    void add_do_stmt(common::model::diagram_element::id_t i);
+    void end_do_stmt(common::model::diagram_element::id_t i);
+
+    void add_for_stmt(common::model::diagram_element::id_t i);
+    void end_for_stmt(common::model::diagram_element::id_t i);
+
+    bool started() const;
+    void started(bool s);
+
+    std::map<common::model::diagram_element::id_t, activity> &sequences();
+
+    const std::map<common::model::diagram_element::id_t, activity> &
+    sequences() const;
+
+    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
+        &participants();
+
+    const std::map<common::model::diagram_element::id_t,
+        std::unique_ptr<participant>> &
+    participants() const;
+
+    std::set<common::model::diagram_element::id_t> &active_participants();
+
+    const std::set<common::model::diagram_element::id_t> &
+    active_participants() const;
+
+private:
+    bool started_{false};
+
+    std::map<common::model::diagram_element::id_t, activity> sequences_;
+
+    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
+        participants_;
+
+    std::set<common::model::diagram_element::id_t> active_participants_;
 };
 
 }

@@ -52,6 +52,26 @@
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
+ * [t20003](./test_cases/t20003.md) - Function template sequence diagram test case
+ * [t20004](./test_cases/t20004.md) - Function template instantiation sequence diagram test case
+ * [t20005](./test_cases/t20005.md) - Class template basic sequence diagram
+ * [t20006](./test_cases/t20006.md) - Class template specialization basic sequence diagram
+ * [t20007](./test_cases/t20007.md) - Class template variadic argument list sequence diagram
+ * [t20008](./test_cases/t20008.md) - Constexpr if sequence diagram test case
+ * [t20009](./test_cases/t20009.md) - Smart pointer dereference call expression test case
+ * [t20010](./test_cases/t20010.md) - Container sequence diagram test case
+ * [t20011](./test_cases/t20011.md) - Recursive calls sequence diagram test case
+ * [t20012](./test_cases/t20012.md) - Lambda expression call sequence diagram test case
+ * [t20013](./test_cases/t20013.md) - Function and method arguments in sequence diagrams test case
+ * [t20014](./test_cases/t20014.md) - Multiple translation units sequence diagram test case
+ * [t20015](./test_cases/t20015.md) - Class exclusion by namespace in sequence diagram test case
+ * [t20016](./test_cases/t20016.md) - Template method specialization sequence diagram test case
+ * [t20017](./test_cases/t20017.md) - Test case for combine_free_functions_into_file_participants option
+ * [t20018](./test_cases/t20018.md) - Recursive template sequence diagram test case
+ * [t20019](./test_cases/t20019.md) - Curiously Recurring Template Pattern sequence diagram test case
+ * [t20020](./test_cases/t20020.md) - If statement sequence diagram test case
+ * [t20021](./test_cases/t20021.md) - Loop statements sequence diagram test case
+ * [t20022](./test_cases/t20022.md) - Forward class declaration sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

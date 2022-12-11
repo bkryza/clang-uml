@@ -154,6 +154,66 @@ test_cases:
     - name: t20002
       title: Free function sequence diagram test case
       description:
+    - name: t20003
+      title: Function template sequence diagram test case
+      description:
+    - name: t20004
+      title: Function template instantiation sequence diagram test case
+      description:
+    - name: t20005
+      title: Class template basic sequence diagram
+      description:
+    - name: t20006
+      title: Class template specialization basic sequence diagram
+      description:
+    - name: t20007
+      title: Class template variadic argument list sequence diagram
+      description:
+    - name: t20008
+      title: Constexpr if sequence diagram test case
+      description:
+    - name: t20009
+      title: Smart pointer dereference call expression test case
+      description:
+    - name: t20010
+      title: Container sequence diagram test case
+      description:
+    - name: t20011
+      title: Recursive calls sequence diagram test case
+      description:
+    - name: t20012
+      title: Lambda expression call sequence diagram test case
+      description:
+    - name: t20013
+      title: Function and method arguments in sequence diagrams test case
+      description:
+    - name: t20014
+      title: Multiple translation units sequence diagram test case
+      description:
+    - name: t20015
+      title: Class exclusion by namespace in sequence diagram test case
+      description:
+    - name: t20016
+      title: Template method specialization sequence diagram test case
+      description:
+    - name: t20017
+      title: Test case for combine_free_functions_into_file_participants option
+      description:
+    - name: t20018
+      title: Recursive template sequence diagram test case
+      description:
+    - name: t20019
+      title: Curiously Recurring Template Pattern sequence diagram test case
+      description:
+    - name: t20020
+      title: If statement sequence diagram test case
+      description:
+    - name: t20021
+      title: Loop statements sequence diagram test case
+      description:
+    - name: t20022
+      title: Forward class declaration sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

@@ -66,10 +66,23 @@ void translation_unit_visitor::process_comment(
 void translation_unit_visitor::set_source_location(
     const clang::Decl &decl, clanguml::common::model::source_location &element)
 {
-    if (decl.getLocation().isValid()) {
-        element.set_file(source_manager_.getFilename(decl.getLocation()).str());
-        element.set_line(
-            source_manager_.getSpellingLineNumber(decl.getLocation()));
+    set_source_location(decl.getLocation(), element);
+}
+
+void translation_unit_visitor::set_source_location(
+    const clang::Expr &expr, clanguml::common::model::source_location &element)
+{
+    set_source_location(expr.getBeginLoc(), element);
+}
+
+void translation_unit_visitor::set_source_location(
+    const clang::SourceLocation &location,
+    clanguml::common::model::source_location &element)
+{
+    if (location.isValid()) {
+        element.set_file(source_manager_.getFilename(location).str());
+        element.set_line(source_manager_.getSpellingLineNumber(location));
+        element.set_location_id(location.getHashValue());
     }
 }
 

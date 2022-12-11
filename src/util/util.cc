@@ -26,15 +26,24 @@ namespace util {
 
 const std::string WHITESPACE = " \n\r\t\f\v";
 
-void setup_logging(bool verbose)
+void setup_logging(int verbose)
 {
     auto console =
         spdlog::stdout_color_mt("console", spdlog::color_mode::automatic);
 
     console->set_pattern("[%^%l%^] [tid %t] %v");
 
-    if (verbose) {
+    if (verbose == 0) {
+        console->set_level(spdlog::level::err);
+    }
+    else if (verbose == 1) {
+        console->set_level(spdlog::level::info);
+    }
+    else if (verbose == 2) {
         console->set_level(spdlog::level::debug);
+    }
+    else {
+        console->set_level(spdlog::level::trace);
     }
 }
 
@@ -201,7 +210,6 @@ std::string abbreviate(const std::string &s, const unsigned int max_length)
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result)
 {
-
     std::regex alias_regex("(@A\\([^\\).]+\\))");
 
     auto alias_it =

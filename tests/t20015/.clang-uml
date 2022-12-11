@@ -1,0 +1,17 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t20015_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t20015/t20015.cc
+    include:
+      namespaces:
+        - clanguml::t20015
+    exclude:
+      namespaces:
+        - clanguml::t20015::detail
+    using_namespace:
+      - clanguml::t20015
+    start_from:
+      - function: "clanguml::t20015::tmain()"

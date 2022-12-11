@@ -36,79 +36,311 @@ generator::generator(
 {
 }
 
+std::string generator::render_name(std::string name) const
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto from = m_config.using_namespace().relative(m.from);
-    const auto to = m_config.using_namespace().relative(m.to);
+    const auto &from = m_model.get_participant<model::participant>(m.from());
+    const auto &to = m_model.get_participant<model::participant>(m.to());
 
-    if (from.empty() || to.empty()) {
-        LOG_DBG("Skipping empty call from '{}' to '{}'", from, to);
+    if (!from || !to) {
+        LOG_DBG("Skipping empty call from '{}' to '{}'", m.from(), m.to());
         return;
     }
 
-    auto message = m.message;
-    if (!message.empty())
-        message += "()";
+    generate_participant(ostr, m.from());
+    generate_participant(ostr, m.to());
 
-    ostr << '"' << from << "\" "
-         << common::generators::plantuml::to_plantuml(message_t::kCall) << " \""
-         << to << "\" : " << message << std::endl;
+    std::string message;
+
+    if (to.value().type_name() == "method") {
+        message = dynamic_cast<const model::function &>(to.value())
+                      .message_name(model::function::message_render_mode::full);
+    }
+    else if (m_config.combine_free_functions_into_file_participants()) {
+        if (to.value().type_name() == "function") {
+            message =
+                dynamic_cast<const model::function &>(to.value())
+                    .message_name(model::function::message_render_mode::full);
+        }
+        else if (to.value().type_name() == "function_template") {
+            message =
+                dynamic_cast<const model::function_template &>(to.value())
+                    .message_name(model::function::message_render_mode::full);
+        }
+    }
+
+    const std::string from_alias = generate_alias(from.value());
+    const std::string to_alias = generate_alias(to.value());
+
+    ostr << from_alias << " "
+         << common::generators::plantuml::to_plantuml(message_t::kCall) << " "
+         << to_alias;
+
+    if (m_config.generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, m);
+    }
+
+    ostr << " : " << message << std::endl;
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
-        m.from_usr, to, m.to_usr);
+        m.from(), to, m.to());
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
-    if ((m.from != m.to) && (m.return_type != "void")) {
-        const auto from = m_config.using_namespace().relative(m.from);
-        const auto to = m_config.using_namespace().relative(m.to);
+    const auto &from = m_model.get_participant<model::participant>(m.from());
+    const auto &to = m_model.get_participant<model::function>(m.to());
+    if ((m.from() != m.to()) && !to.value().is_void()) {
+        const std::string from_alias = generate_alias(from.value());
 
-        ostr << '"' << to << "\" "
+        const std::string to_alias = generate_alias(to.value());
+
+        ostr << to_alias << " "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
-             << " \"" << from << "\"" << std::endl;
+             << " " << from_alias << '\n';
     }
 }
 
-void generator::generate_activity(const activity &a, std::ostream &ostr) const
+void generator::generate_activity(const activity &a, std::ostream &ostr,
+    std::vector<common::model::diagram_element::id_t> &visited) const
 {
-    for (const auto &m : a.messages) {
-        const auto to = m_config.using_namespace().relative(m.to);
+    for (const auto &m : a.messages()) {
+        if (m.type() == message_t::kCall) {
+            const auto &to =
+                m_model.get_participant<model::participant>(m.to());
+            if (!to)
+                continue;
 
-        if (to.empty())
+            visited.push_back(m.from());
+
+            LOG_DBG("Generating message {} --> {}", m.from(), m.to());
+
+            generate_call(m, ostr);
+
+            std::string to_alias = generate_alias(to.value());
+
+            ostr << "activate " << to_alias << std::endl;
+
+            if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
+                if (std::find(visited.begin(), visited.end(), m.to()) ==
+                    visited
+                        .end()) { // break infinite recursion on recursive calls
+                    LOG_DBG("Creating activity {} --> {} - missing sequence {}",
+                        m.from(), m.to(), m.to());
+                    generate_activity(
+                        m_model.get_activity(m.to()), ostr, visited);
+                }
+            }
+            else
+                LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
+                    m.from(), m.to(), m.to());
+
+            generate_return(m, ostr);
+
+            ostr << "deactivate " << to_alias << std::endl;
+
+            visited.pop_back();
+        }
+        else if (m.type() == message_t::kIf) {
+            ostr << "alt\n";
+        }
+        else if (m.type() == message_t::kElseIf) {
+            ostr << "else\n";
+        }
+        else if (m.type() == message_t::kElse) {
+            ostr << "else\n";
+        }
+        else if (m.type() == message_t::kIfEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type() == message_t::kWhile) {
+            ostr << "loop\n";
+        }
+        else if (m.type() == message_t::kWhileEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type() == message_t::kFor) {
+            ostr << "loop\n";
+        }
+        else if (m.type() == message_t::kForEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type() == message_t::kDo) {
+            ostr << "loop\n";
+        }
+        else if (m.type() == message_t::kDoEnd) {
+            ostr << "end\n";
+        }
+    }
+}
+
+void generator::generate_participant(std::ostream &ostr, common::id_t id) const
+{
+    for (const auto participant_id : m_model.active_participants()) {
+        if (participant_id != id)
             continue;
 
-        generate_call(m, ostr);
+        if (is_participant_generated(participant_id))
+            return;
 
-        ostr << "activate " << '"' << to << '"' << std::endl;
+        const auto &participant =
+            m_model.get_participant<model::participant>(participant_id).value();
 
-        if (m_model.sequences.find(m.to_usr) != m_model.sequences.end())
-            generate_activity(m_model.sequences[m.to_usr], ostr);
+        if (participant.type_name() == "method") {
+            const auto class_id =
+                m_model.get_participant<model::method>(participant_id)
+                    .value()
+                    .class_id();
 
-        generate_return(m, ostr);
+            if (is_participant_generated(class_id))
+                return;
 
-        ostr << "deactivate " << '"' << to << '"' << std::endl;
+            const auto &class_participant =
+                m_model.get_participant<model::participant>(class_id).value();
+
+            ostr << "participant \""
+                 << render_name(m_config.using_namespace().relative(
+                        class_participant.full_name(false)))
+                 << "\" as " << class_participant.alias();
+
+            if (m_config.generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    ostr, class_participant);
+            }
+
+            ostr << '\n';
+
+            generated_participants_.emplace(class_id);
+        }
+        else if ((participant.type_name() == "function" ||
+                     participant.type_name() == "function_template") &&
+            m_config.combine_free_functions_into_file_participants()) {
+            // Create a single participant for all functions declared in a
+            // single file
+            const auto &file_path =
+                m_model.get_participant<model::function>(participant_id)
+                    .value()
+                    .file();
+
+            assert(!file_path.empty());
+
+            const auto file_id = common::to_id(file_path);
+
+            if (is_participant_generated(file_id))
+                return;
+
+            [[maybe_unused]] const auto &relative_to =
+                std::filesystem::canonical(m_config.relative_to());
+
+            auto participant_name = std::filesystem::relative(
+                std::filesystem::path{file_path}, relative_to)
+                                        .string();
+
+            ostr << "participant \"" << render_name(participant_name)
+                 << "\" as " << fmt::format("C_{:022}", file_id);
+
+            ostr << '\n';
+
+            generated_participants_.emplace(file_id);
+        }
+        else {
+            ostr << "participant \""
+                 << m_config.using_namespace().relative(
+                        participant.full_name(false))
+                 << "\" as " << participant.alias();
+
+            if (m_config.generate_links) {
+                common_generator<diagram_config, diagram_model>::generate_link(
+                    ostr, participant);
+            }
+
+            ostr << '\n';
+
+            generated_participants_.emplace(participant_id);
+        }
+
+        return;
     }
+}
+
+bool generator::is_participant_generated(common::id_t id) const
+{
+    return std::find(generated_participants_.begin(),
+               generated_participants_.end(),
+               id) != generated_participants_.end();
 }
 
 void generator::generate(std::ostream &ostr) const
 {
+    m_model.print();
+
     ostr << "@startuml" << std::endl;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            std::int64_t start_from;
-            for (const auto &[k, v] : m_model.sequences) {
-                if (v.from == sf.location) {
+            common::model::diagram_element::id_t start_from;
+            for (const auto &[k, v] : m_model.sequences()) {
+                const auto &caller = *m_model.participants().at(v.from());
+                std::string vfrom = caller.full_name(false);
+                if (vfrom == sf.location) {
+                    LOG_DBG("Found sequence diagram start point: {}", k);
                     start_from = k;
                     break;
                 }
             }
-            generate_activity(m_model.sequences[start_from], ostr);
+
+            // Use this to break out of recurrent loops
+            std::vector<common::model::diagram_element::id_t>
+                visited_participants;
+
+            const auto &from =
+                m_model.get_participant<model::function>(start_from);
+
+            if (!from.has_value()) {
+                LOG_WARN("Failed to find participant {} for start_from "
+                         "condition",
+                    sf.location);
+                continue;
+            }
+
+            generate_participant(ostr, start_from);
+
+            std::string from_alias = generate_alias(from.value());
+
+            if (from.value().type_name() == "method" ||
+                m_config.combine_free_functions_into_file_participants()) {
+                ostr << "[->"
+                     << " " << from_alias << " : "
+                     << from.value().message_name(
+                            model::function::message_render_mode::full)
+                     << std::endl;
+            }
+
+            ostr << "activate " << from_alias << std::endl;
+
+            generate_activity(
+                m_model.get_activity(start_from), ostr, visited_participants);
+
+            if (from.value().type_name() == "method" ||
+                m_config.combine_free_functions_into_file_participants()) {
+
+                if (!from.value().is_void()) {
+                    ostr << "[<--"
+                         << " " << from_alias << std::endl;
+                }
+            }
+
+            ostr << "deactivate " << from_alias << std::endl;
         }
         else {
             // TODO: Add support for other sequence start location types
@@ -119,6 +351,20 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().after);
 
     ostr << "@enduml" << std::endl;
+}
+
+std::string generator::generate_alias(
+    const model::participant &participant) const
+{
+    if ((participant.type_name() == "function" ||
+            participant.type_name() == "function_template") &&
+        m_config.combine_free_functions_into_file_participants()) {
+        const auto file_id = common::to_id(participant.file());
+
+        return fmt::format("C_{:022}", file_id);
+    }
+
+    return participant.alias();
 }
 
 }

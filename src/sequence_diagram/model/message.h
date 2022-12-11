@@ -18,21 +18,47 @@
 #pragma once
 
 #include "common/model/enums.h"
+#include "participant.h"
 
 #include <string>
 #include <vector>
 
 namespace clanguml::sequence_diagram::model {
 
-struct message {
-    common::model::message_t type;
-    std::string from;
-    std::uint_least64_t from_usr;
-    std::string to;
-    std::int64_t to_usr;
-    std::string message;
-    std::string return_type;
-    unsigned int line;
+class message : public common::model::diagram_element {
+public:
+    message() = default;
+
+    message(common::model::message_t type,
+        common::model::diagram_element::id_t from);
+
+    void set_type(common::model::message_t t);
+    common::model::message_t type() const;
+
+    void set_from(common::model::diagram_element::id_t f);
+    common::model::diagram_element::id_t from() const;
+
+    void set_to(common::model::diagram_element::id_t t);
+    common::model::diagram_element::id_t to() const;
+
+    void set_message_name(std::string name);
+    const std::string &message_name() const;
+
+    void set_return_type(std::string t);
+    const std::string &return_type() const;
+
+private:
+    common::model::message_t type_{common::model::message_t::kNone};
+
+    common::model::diagram_element::id_t from_{};
+
+    common::model::diagram_element::id_t to_{};
+
+    // This is only for better verbose messages, we cannot rely on this
+    // always
+    std::string message_name_{};
+
+    std::string return_type_{};
 };
 
 }

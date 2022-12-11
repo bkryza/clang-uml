@@ -8,3 +8,5 @@ diagrams:
     include:
       namespaces:
         - clanguml::{{ name }}
+    using_namespace:
+      - clanguml::{{ name }}

@@ -249,6 +249,26 @@ using namespace clanguml::test::matchers;
 ///
 #include "t20001/test_case.h"
 #include "t20002/test_case.h"
+#include "t20003/test_case.h"
+#include "t20004/test_case.h"
+#include "t20005/test_case.h"
+#include "t20006/test_case.h"
+#include "t20007/test_case.h"
+#include "t20008/test_case.h"
+#include "t20009/test_case.h"
+#include "t20010/test_case.h"
+#include "t20011/test_case.h"
+#include "t20012/test_case.h"
+#include "t20013/test_case.h"
+#include "t20014/test_case.h"
+#include "t20015/test_case.h"
+#include "t20016/test_case.h"
+#include "t20017/test_case.h"
+#include "t20018/test_case.h"
+#include "t20019/test_case.h"
+#include "t20020/test_case.h"
+#include "t20021/test_case.h"
+#include "t20022/test_case.h"
 
 ///
 /// Package diagram tests
