@@ -548,7 +548,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
 
     const auto *current_ifstmt = context().current_ifstmt();
     const auto *current_elseifstmt = context().current_elseifstmt();
-
+    
     //
     // Add final else block (not else if)
     //
@@ -593,15 +593,13 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    const auto *current_ifstmt = context().current_ifstmt();
-
-    context().enter_ifstmt(stmt);
-
     const auto current_caller_id = context().caller_id();
-
     bool elseif_block{false};
 
-    if (current_caller_id) {
+    if (current_caller_id && !stmt->isConstexpr()) {
+        const auto *current_ifstmt = context().current_ifstmt();
+        context().enter_ifstmt(stmt);
+
         if (diagram().sequences.find(current_caller_id) ==
             diagram().sequences.end()) {
             activity a;
@@ -636,9 +634,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
-    context().leave_ifstmt();
-
-    if (current_caller_id && !elseif_block) {
+    if (current_caller_id && !stmt->isConstexpr() && !elseif_block) {
         message m;
         m.from = current_caller_id;
         m.type = message_t::kIfEnd;
