@@ -288,7 +288,7 @@ void diagram::print() const
 
             if (participants_.find(message.to()) == participants_.end()) {
                 LOG_TRACE("       Message from={}, from_id={}, "
-                        "to={}, to_id={}, name={}, type={}",
+                          "to={}, to_id={}, name={}, type={}",
                     from_participant.full_name(false), from_participant.id(),
                     "__UNRESOLVABLE_ID__", message.to(), message.message_name(),
                     to_string(message.type()));
@@ -297,7 +297,7 @@ void diagram::print() const
                 const auto &to_participant = *participants_.at(message.to());
 
                 LOG_TRACE("       Message from={}, from_id={}, "
-                        "to={}, to_id={}, name={}, type={}",
+                          "to={}, to_id={}, name={}, type={}",
                     from_participant.full_name(false), from_participant.id(),
                     to_participant.full_name(false), to_participant.id(),
                     message.message_name(), to_string(message.type()));

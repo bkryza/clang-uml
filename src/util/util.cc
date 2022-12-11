@@ -36,10 +36,10 @@ void setup_logging(int verbose)
     if (verbose == 0) {
         console->set_level(spdlog::level::err);
     }
-    else if(verbose == 1) {
+    else if (verbose == 1) {
         console->set_level(spdlog::level::info);
     }
-    else if(verbose == 2) {
+    else if (verbose == 2) {
         console->set_level(spdlog::level::debug);
     }
     else {

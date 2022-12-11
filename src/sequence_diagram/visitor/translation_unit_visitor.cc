@@ -336,8 +336,8 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     set_unique_id(m->getID(), m_ptr->id()); // This is probably not necessary?
 
-    LOG_TRACE("Set id {} --> {} for method name {} [{}]", m->getID(), m_ptr->id(),
-        method_full_name, m->isThisDeclarationADefinition());
+    LOG_TRACE("Set id {} --> {} for method name {} [{}]", m->getID(),
+        m_ptr->id(), method_full_name, m->isThisDeclarationADefinition());
 
     context().update(m);
 

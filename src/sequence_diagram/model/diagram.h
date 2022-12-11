@@ -78,7 +78,7 @@ public:
 
     void add_active_participant(common::model::diagram_element::id_t id);
 
-    activity& get_activity(common::model::diagram_element::id_t id);
+    activity &get_activity(common::model::diagram_element::id_t id);
 
     void add_if_stmt(common::model::diagram_element::id_t current_caller_id,
         common::model::message_t type);
