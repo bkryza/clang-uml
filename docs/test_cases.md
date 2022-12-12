@@ -72,6 +72,7 @@
  * [t20020](./test_cases/t20020.md) - If statement sequence diagram test case
  * [t20021](./test_cases/t20021.md) - Loop statements sequence diagram test case
  * [t20022](./test_cases/t20022.md) - Forward class declaration sequence diagram test case
+ * [t20023](./test_cases/t20023.md) - Try/catch statement sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
