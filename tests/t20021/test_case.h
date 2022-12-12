@@ -36,11 +36,26 @@ TEST_CASE("t20021", "[test-case][sequence]")
 
     // Check if all calls exist
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a1()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a2()"));
+    REQUIRE_THAT(
+        puml, HasCallInControlCondition(_A("tmain()"), _A("A"), "a2()"));
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a3()"));
 
     REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "b1()"));
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "b2()"));
+
+    REQUIRE_THAT(
+        puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c1()"));
+    REQUIRE_THAT(
+        puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c2()"));
+
+    // TODO: Why is this not working?
+    //    REQUIRE_THAT(
+    //        puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c3()"));
+    REQUIRE_THAT(
+        puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c4()"));
+    REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "c5()"));
+    REQUIRE_THAT(
+        puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "contents()"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

@@ -775,20 +775,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
     }
 
-    if (context().current_ifstmt()) {
-        if (common::is_subexpr_of(
-                context().current_ifstmt()->getCond(), expr)) {
-            m.set_message_scope(common::model::message_scope_t::kCondition);
-        }
+    if (context().is_expr_in_current_control_statement_condition(expr)) {
+        m.set_message_scope(common::model::message_scope_t::kCondition);
     }
 
-    if (context().current_elseifstmt()) {
-        if (common::is_subexpr_of(
-                context().current_elseifstmt()->getCond(), expr)) {
-            m.set_message_scope(common::model::message_scope_t::kCondition);
-        }
-    }
-
+    //
+    // Call to an overloaded operator
+    //
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
         operator_call_expr != nullptr) {

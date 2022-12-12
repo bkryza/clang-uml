@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 #pragma once
-//
-//#include "common/visitor/translation_unit_visitor.h"
-//#include "config/config.h"
-//#include "sequence_diagram/model/diagram.h"
 
+#include "common/clang_utils.h"
 #include "util/util.h"
 
 #include <clang/AST/Expr.h>
@@ -70,61 +67,22 @@ struct call_expression_context {
 
     void leave_lambda_expression();
 
-    clang::IfStmt *current_ifstmt() const
-    {
-        if (if_stmt_stack_.empty())
-            return nullptr;
+    clang::IfStmt *current_ifstmt() const;
 
-        return if_stmt_stack_.top();
-    }
+    void enter_ifstmt(clang::IfStmt *stmt);
+    void leave_ifstmt();
 
-    void enter_ifstmt(clang::IfStmt *stmt) { return if_stmt_stack_.push(stmt); }
+    void enter_elseifstmt(clang::IfStmt *stmt);
+    void leave_elseifstmt();
 
-    void leave_ifstmt()
-    {
-        if (!if_stmt_stack_.empty()) {
-            if_stmt_stack_.pop();
-            std::stack<clang::IfStmt *>{}.swap(elseif_stmt_stack_);
-        }
-    }
+    clang::IfStmt *current_elseifstmt() const;
+    clang::Stmt *current_loopstmt() const;
 
-    void enter_elseifstmt(clang::IfStmt *stmt)
-    {
-        return elseif_stmt_stack_.push(stmt);
-    }
+    void enter_loopstmt(clang::Stmt *stmt);
+    void leave_loopstmt();
 
-    void leave_elseifstmt()
-    {
-        if (elseif_stmt_stack_.empty())
-            return elseif_stmt_stack_.pop();
-    }
-
-    clang::IfStmt *current_elseifstmt() const
-    {
-        if (elseif_stmt_stack_.empty())
-            return nullptr;
-
-        return elseif_stmt_stack_.top();
-    }
-
-    clang::Stmt *current_loopstmt() const
-    {
-        if (loop_stmt_stack_.empty())
-            return nullptr;
-
-        return loop_stmt_stack_.top();
-    }
-
-    void enter_loopstmt(clang::Stmt *stmt)
-    {
-        return loop_stmt_stack_.push(stmt);
-    }
-
-    void leave_loopstmt()
-    {
-        if (loop_stmt_stack_.empty())
-            return loop_stmt_stack_.pop();
-    }
+    bool is_expr_in_current_control_statement_condition(
+        const clang::Stmt *stmt) const;
 
     clang::CXXRecordDecl *current_class_decl_;
     clang::ClassTemplateDecl *current_class_template_decl_;
