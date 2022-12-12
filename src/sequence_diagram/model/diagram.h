@@ -85,6 +85,9 @@ public:
     void end_if_stmt(common::model::diagram_element::id_t current_caller_id,
         common::model::message_t type);
 
+    void add_try_stmt(common::model::diagram_element::id_t current_caller_id);
+    void end_try_stmt(common::model::diagram_element::id_t current_caller_id);
+
     void add_loop_stmt(common::model::diagram_element::id_t current_caller_id,
         common::model::message_t type);
     void end_loop_stmt(common::model::diagram_element::id_t current_caller_id,
@@ -118,6 +121,10 @@ public:
 
     const std::set<common::model::diagram_element::id_t> &
     active_participants() const;
+
+    void add_catch_stmt(
+        const common::model::diagram_element::id_t current_caller_id,
+        std::string caught_type);
 
 private:
     bool started_{false};

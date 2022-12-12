@@ -94,6 +94,12 @@ std::string to_string(message_t r)
         return "for";
     case message_t::kForEnd:
         return "end for";
+    case message_t::kTry:
+        return "try";
+    case message_t::kCatch:
+        return "catch";
+    case message_t::kTryEnd:
+        return "end try";
     default:
         assert(false);
         return "";

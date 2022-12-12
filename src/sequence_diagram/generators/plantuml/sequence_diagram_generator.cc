@@ -190,6 +190,15 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
         }
+        else if (m.type() == message_t::kTry) {
+            ostr << "group try\n";
+        }
+        else if (m.type() == message_t::kCatch) {
+            ostr << "else " << m.message_name() << '\n';
+        }
+        else if (m.type() == message_t::kTryEnd) {
+            ostr << "end\n";
+        }
     }
 }
 

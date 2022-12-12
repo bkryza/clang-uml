@@ -224,6 +224,55 @@ void diagram::end_if_stmt(
     }
 }
 
+void diagram::add_try_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    if (sequences_.find(current_caller_id) == sequences_.end()) {
+        activity a{current_caller_id};
+        sequences_.insert({current_caller_id, std::move(a)});
+    }
+
+    get_activity(current_caller_id)
+        .add_message({message_t::kTry, current_caller_id});
+}
+
+void diagram::end_try_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    message m{message_t::kTryEnd, current_caller_id};
+
+    if (sequences_.find(current_caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(current_caller_id).messages();
+
+        if (current_messages.back().type() == message_t::kTry) {
+            current_messages.pop_back();
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
+void diagram::add_catch_stmt(
+    const int64_t current_caller_id, std::string caught_type)
+{
+    using clanguml::common::model::message_t;
+
+    if (sequences_.find(current_caller_id) == sequences_.end()) {
+        activity a{current_caller_id};
+        sequences_.insert({current_caller_id, std::move(a)});
+    }
+
+    message m{message_t::kCatch, current_caller_id};
+    m.set_message_name(std::move(caught_type));
+
+    get_activity(current_caller_id).add_message(std::move(m));
+}
+
 bool diagram::started() const { return started_; }
 
 void diagram::started(bool s) { started_ = s; }
@@ -255,13 +304,13 @@ diagram::participants() const
 std::set<common::model::diagram_element::id_t> &diagram::active_participants()
 {
     return active_participants_;
-};
+}
 
 const std::set<common::model::diagram_element::id_t> &
 diagram::active_participants() const
 {
     return active_participants_;
-};
+}
 
 void diagram::print() const
 {
@@ -305,7 +354,6 @@ void diagram::print() const
         }
     }
 }
-
 }
 
 namespace clanguml::common::model {

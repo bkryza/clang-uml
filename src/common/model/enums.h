@@ -53,6 +53,9 @@ enum class message_t {
     kDoEnd,
     kFor,
     kForEnd,
+    kTry,
+    kCatch,
+    kTryEnd,
     kNone
 };
 

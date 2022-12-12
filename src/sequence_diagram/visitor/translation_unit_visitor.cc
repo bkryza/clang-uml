@@ -705,6 +705,53 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
     return true;
 }
 
+bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_trystmt(stmt);
+        diagram().add_try_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
+
+    if (current_caller_id) {
+        context().leave_trystmt();
+        diagram().end_try_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id && context().current_trystmt()) {
+        std::string caught_type;
+        if (stmt->getCaughtType().isNull())
+            caught_type = "...";
+        else
+            caught_type = common::to_string(
+                stmt->getCaughtType(), *context().get_ast_context());
+
+        diagram().add_catch_stmt(current_caller_id, std::move(caught_type));
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXCatchStmt(stmt);
+
+    return true;
+}
+
 bool translation_unit_visitor::TraverseCXXForRangeStmt(
     clang::CXXForRangeStmt *stmt)
 {

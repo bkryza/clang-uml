@@ -76,6 +76,10 @@ public:
 
     bool TraverseCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
 
+    bool TraverseCXXTryStmt(clang::CXXTryStmt *stmt);
+
+    bool TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;

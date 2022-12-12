@@ -196,7 +196,7 @@ clang::IfStmt *call_expression_context::current_ifstmt() const
 
 void call_expression_context::enter_ifstmt(clang::IfStmt *stmt)
 {
-    return if_stmt_stack_.push(stmt);
+    if_stmt_stack_.push(stmt);
 }
 
 void call_expression_context::leave_ifstmt()
@@ -209,13 +209,13 @@ void call_expression_context::leave_ifstmt()
 
 void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 {
-    return elseif_stmt_stack_.push(stmt);
+    elseif_stmt_stack_.push(stmt);
 }
 
 void call_expression_context::leave_elseifstmt()
 {
     if (elseif_stmt_stack_.empty())
-        return elseif_stmt_stack_.pop();
+        elseif_stmt_stack_.pop();
 }
 
 clang::IfStmt *call_expression_context::current_elseifstmt() const
@@ -236,13 +236,32 @@ clang::Stmt *call_expression_context::current_loopstmt() const
 
 void call_expression_context::enter_loopstmt(clang::Stmt *stmt)
 {
-    return loop_stmt_stack_.push(stmt);
+    loop_stmt_stack_.push(stmt);
 }
 
 void call_expression_context::leave_loopstmt()
 {
     if (loop_stmt_stack_.empty())
         return loop_stmt_stack_.pop();
+}
+
+clang::Stmt *call_expression_context::current_trystmt() const
+{
+    if (try_stmt_stack_.empty())
+        return nullptr;
+
+    return try_stmt_stack_.top();
+}
+
+void call_expression_context::enter_trystmt(clang::Stmt *stmt)
+{
+    try_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_trystmt()
+{
+    if (try_stmt_stack_.empty())
+        try_stmt_stack_.pop();
 }
 
 bool call_expression_context::is_expr_in_current_control_statement_condition(

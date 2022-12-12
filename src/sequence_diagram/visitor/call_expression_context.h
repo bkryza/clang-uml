@@ -74,12 +74,15 @@ struct call_expression_context {
 
     void enter_elseifstmt(clang::IfStmt *stmt);
     void leave_elseifstmt();
-
     clang::IfStmt *current_elseifstmt() const;
-    clang::Stmt *current_loopstmt() const;
 
+    clang::Stmt *current_loopstmt() const;
     void enter_loopstmt(clang::Stmt *stmt);
     void leave_loopstmt();
+
+    clang::Stmt *current_trystmt() const;
+    void enter_trystmt(clang::Stmt *stmt);
+    void leave_trystmt();
 
     bool is_expr_in_current_control_statement_condition(
         const clang::Stmt *stmt) const;
@@ -101,6 +104,7 @@ private:
     std::stack<clang::IfStmt *> elseif_stmt_stack_;
 
     std::stack<clang::Stmt *> loop_stmt_stack_;
+    std::stack<clang::Stmt *> try_stmt_stack_;
 };
 
 }
