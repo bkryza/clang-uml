@@ -68,6 +68,8 @@ std::string get_source_text_raw(
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm);
 
+bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
+
 template <typename T> id_t to_id(const T &declaration);
 
 template <> id_t to_id(const std::string &full_name);

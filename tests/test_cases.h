@@ -132,8 +132,10 @@ public:
         , m_message{message}
     {
         util::replace_all(m_message, "(", "\\(");
-        util::replace_all(m_message, "*", "\\*");
         util::replace_all(m_message, ")", "\\)");
+        util::replace_all(m_message, "*", "\\*");
+        util::replace_all(m_message, "[", "\\[");
+        util::replace_all(m_message, "]", "\\]");
     }
 
     bool match(T const &in) const override
@@ -167,6 +169,13 @@ auto HasCall(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return HasCallMatcher(from, to, message);
+}
+
+auto HasCallInControlCondition(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return HasCallMatcher(from, to, fmt::format("**[**{}**]**", message));
 }
 
 auto HasCall(std::string const &from, std::string const &message,

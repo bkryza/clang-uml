@@ -79,14 +79,25 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const std::string to_alias = generate_alias(to.value());
 
     ostr << from_alias << " "
-         << common::generators::plantuml::to_plantuml(message_t::kCall) << " "
-         << to_alias;
+         << common::generators::plantuml::to_plantuml(message_t::kCall) << " ";
+
+    ostr << to_alias;
 
     if (m_config.generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, m);
     }
 
-    ostr << " : " << message << std::endl;
+    ostr << " : ";
+
+    if (m.message_scope() == common::model::message_scope_t::kCondition)
+        ostr << "**[**";
+
+    ostr << message;
+
+    if (m.message_scope() == common::model::message_scope_t::kCondition)
+        ostr << "**]**";
+
+    ostr << '\n';
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
         m.from(), to, m.to());

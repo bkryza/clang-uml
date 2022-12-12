@@ -47,12 +47,18 @@ public:
     void set_return_type(std::string t);
     const std::string &return_type() const;
 
+    void set_message_scope(common::model::message_scope_t scope);
+    common::model::message_scope_t message_scope() const;
+
 private:
     common::model::message_t type_{common::model::message_t::kNone};
 
     common::model::diagram_element::id_t from_{};
 
     common::model::diagram_element::id_t to_{};
+
+    common::model::message_scope_t scope_{
+        common::model::message_scope_t::kNormal};
 
     // This is only for better verbose messages, we cannot rely on this
     // always

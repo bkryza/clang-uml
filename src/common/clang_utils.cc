@@ -164,6 +164,22 @@ std::string get_source_text(
     return get_source_text_raw(printable_range, sm);
 }
 
+bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
+{
+    if (parent_stmt == nullptr || sub_stmt == nullptr)
+        return false;
+
+    if (parent_stmt == sub_stmt)
+        return true;
+
+    for (const auto *e : parent_stmt->children()) {
+        if (is_subexpr_of(e, sub_stmt))
+            return true;
+    }
+
+    return false;
+}
+
 template <> id_t to_id(const std::string &full_name)
 {
     return std::hash<std::string>{}(full_name) >> 3;

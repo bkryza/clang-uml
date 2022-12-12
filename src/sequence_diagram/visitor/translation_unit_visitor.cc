@@ -732,6 +732,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
 
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
+    using clanguml::common::model::message_scope_t;
     using clanguml::common::model::message_t;
     using clanguml::common::model::namespace_;
     using clanguml::sequence_diagram::model::activity;
@@ -771,6 +772,20 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         else {
             LOG_DBG("Current lambda declaration is passed to a method or "
                     "function - keep the original caller id");
+        }
+    }
+
+    if (context().current_ifstmt()) {
+        if (common::is_subexpr_of(
+                context().current_ifstmt()->getCond(), expr)) {
+            m.set_message_scope(common::model::message_scope_t::kCondition);
+        }
+    }
+
+    if (context().current_elseifstmt()) {
+        if (common::is_subexpr_of(
+                context().current_elseifstmt()->getCond(), expr)) {
+            m.set_message_scope(common::model::message_scope_t::kCondition);
         }
     }
 
