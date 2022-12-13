@@ -28,7 +28,12 @@ Main features supported so far include:
     * Optional package generation from namespaces
     * Interactive links to online code to classes, methods and class fields in SVG diagrams
 * **Sequence diagram generation**
-    * Generation of sequence diagram from one code location to another (currently only for non-template code)
+    * Generation of sequence diagram from specific method or function
+    * Generation of loop and conditional statements
+    * Generation of switch statements
+    * Generation of try/catch blocks
+    * Handling of template code including constexpr conditionals
+    * Handling of lambda expressions
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces
     * Interactive links to online code to packages

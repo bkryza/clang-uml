@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Added support for sequence diagrams with template code
+
 ### 0.2.2
   * Added structured comment parsing (#32)
   * Fixed namespace exclusive filtering
