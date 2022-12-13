@@ -100,6 +100,12 @@ std::string to_string(message_t r)
         return "catch";
     case message_t::kTryEnd:
         return "end try";
+    case message_t::kSwitch:
+        return "switch";
+    case message_t::kCase:
+        return "case";
+    case message_t::kSwitchEnd:
+        return "end switch";
     default:
         assert(false);
         return "";

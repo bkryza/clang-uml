@@ -144,6 +144,51 @@ std::string to_string(const clang::RecordType &type,
     return to_string(type.desugar(), ctx, try_canonical);
 }
 
+std::string to_string(const clang::Expr *expr)
+{
+    clang::LangOptions lang_options;
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    expr->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+
+    return result;
+}
+
+std::string to_string(const clang::Stmt *stmt)
+{
+    clang::LangOptions lang_options;
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    stmt->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+
+    return result;
+}
+
+std::string to_string(const clang::FunctionTemplateDecl *decl)
+{
+    std::vector<std::string> template_parameters;
+    // Handle template function
+    for (const auto *parameter : *decl->getTemplateParameters()) {
+        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
+            const auto *template_type_parameter =
+                clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
+
+            std::string template_parameter{
+                template_type_parameter->getNameAsString()};
+
+            if (template_type_parameter->isParameterPack())
+                template_parameter += "...";
+
+            template_parameters.emplace_back(std::move(template_parameter));
+        }
+        else {
+            // TODO
+        }
+    }
+    return fmt::format("{}<{}>({})", decl->getQualifiedNameAsString(),
+        fmt::join(template_parameters, ","), "");
+}
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm)
 {

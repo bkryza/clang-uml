@@ -93,14 +93,24 @@ public:
     void end_loop_stmt(common::model::diagram_element::id_t current_caller_id,
         common::model::message_t type);
 
-    void add_while_stmt(common::model::diagram_element::id_t i);
-    void end_while_stmt(common::model::diagram_element::id_t i);
+    void add_while_stmt(common::model::diagram_element::id_t current_caller_id);
+    void end_while_stmt(common::model::diagram_element::id_t current_caller_id);
 
-    void add_do_stmt(common::model::diagram_element::id_t i);
-    void end_do_stmt(common::model::diagram_element::id_t i);
+    void add_do_stmt(common::model::diagram_element::id_t current_caller_id);
+    void end_do_stmt(common::model::diagram_element::id_t current_caller_id);
 
-    void add_for_stmt(common::model::diagram_element::id_t i);
-    void end_for_stmt(common::model::diagram_element::id_t i);
+    void add_for_stmt(common::model::diagram_element::id_t current_caller_id);
+    void end_for_stmt(common::model::diagram_element::id_t current_caller_id);
+
+    void add_switch_stmt(
+        common::model::diagram_element::id_t current_caller_id);
+    void end_switch_stmt(
+        common::model::diagram_element::id_t current_caller_id);
+    void add_case_stmt(common::model::diagram_element::id_t current_caller_id);
+    void add_case_stmt(common::model::diagram_element::id_t current_caller_id,
+        const std::string &case_label);
+    void add_default_stmt(
+        common::model::diagram_element::id_t current_caller_id);
 
     bool started() const;
     void started(bool s);

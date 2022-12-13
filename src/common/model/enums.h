@@ -56,6 +56,9 @@ enum class message_t {
     kTry,
     kCatch,
     kTryEnd,
+    kSwitch,
+    kCase,
+    kSwitchEnd,
     kNone
 };
 

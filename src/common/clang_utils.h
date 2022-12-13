@@ -62,6 +62,12 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 std::string to_string(const clang::RecordType &type,
     const clang::ASTContext &ctx, bool try_canonical = true);
 
+std::string to_string(const clang::Expr *expr);
+
+std::string to_string(const clang::Stmt *stmt);
+
+std::string to_string(const clang::FunctionTemplateDecl *decl);
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm);
 

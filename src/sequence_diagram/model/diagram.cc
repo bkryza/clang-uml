@@ -273,6 +273,81 @@ void diagram::add_catch_stmt(
     get_activity(current_caller_id).add_message(std::move(m));
 }
 
+void diagram::add_switch_stmt(
+    common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    if (sequences_.find(current_caller_id) == sequences_.end()) {
+        activity a{current_caller_id};
+        sequences_.insert({current_caller_id, std::move(a)});
+    }
+
+    message m{message_t::kSwitch, current_caller_id};
+
+    get_activity(current_caller_id).add_message(std::move(m));
+}
+
+void diagram::end_switch_stmt(
+    common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    message m{message_t::kTryEnd, current_caller_id};
+
+    if (sequences_.find(current_caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(current_caller_id).messages();
+
+        if (current_messages.back().type() == message_t::kSwitch) {
+            current_messages.pop_back();
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
+void diagram::add_case_stmt(
+    common::model::diagram_element::id_t current_caller_id,
+    const std::string &case_label)
+{
+    using clanguml::common::model::message_t;
+
+    message m{message_t::kCase, current_caller_id};
+    m.set_message_name(case_label);
+
+    if (sequences_.find(current_caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(current_caller_id).messages();
+
+        if (current_messages.back().type() == message_t::kCase) {
+            // Do nothing - fallthroughs not supported yet...
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
+void diagram::add_default_stmt(
+    common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    message m{message_t::kCase, current_caller_id};
+    m.set_message_name("default");
+
+    if (sequences_.find(current_caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(current_caller_id).messages();
+
+        if (current_messages.back().type() == message_t::kCase) {
+            current_messages.pop_back();
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
 bool diagram::started() const { return started_; }
 
 void diagram::started(bool s) { started_ = s; }

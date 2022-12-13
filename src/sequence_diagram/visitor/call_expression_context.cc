@@ -264,6 +264,25 @@ void call_expression_context::leave_trystmt()
         try_stmt_stack_.pop();
 }
 
+clang::SwitchStmt *call_expression_context::current_switchstmt() const
+{
+    if (switch_stmt_stack_.empty())
+        return nullptr;
+
+    return switch_stmt_stack_.top();
+}
+
+void call_expression_context::enter_switchstmt(clang::SwitchStmt *stmt)
+{
+    switch_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_switchstmt()
+{
+    if (switch_stmt_stack_.empty())
+        switch_stmt_stack_.pop();
+}
+
 bool call_expression_context::is_expr_in_current_control_statement_condition(
     const clang::Stmt *stmt) const
 {

@@ -23,31 +23,6 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
-std::string to_string(const clang::FunctionTemplateDecl *decl)
-{
-    std::vector<std::string> template_parameters;
-    // Handle template function
-    for (const auto *parameter : *decl->getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
-            const auto *template_type_parameter =
-                clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
-
-            std::string template_parameter{
-                template_type_parameter->getNameAsString()};
-
-            if (template_type_parameter->isParameterPack())
-                template_parameter += "...";
-
-            template_parameters.emplace_back(std::move(template_parameter));
-        }
-        else {
-            // TODO
-        }
-    }
-    return fmt::format("{}<{}>({})", decl->getQualifiedNameAsString(),
-        fmt::join(template_parameters, ","), "");
-}
-
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::sequence_diagram::model::diagram &diagram,
     const clanguml::config::sequence_diagram &config)
@@ -318,8 +293,9 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     m_ptr->is_static(m->isStatic());
 
     for (const auto *param : m->parameters()) {
-        m_ptr->add_parameter(simplify_system_template(
-            common::to_string(param->getType(), m->getASTContext(), false)));
+        m_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(common::to_string(
+                param->getType(), m->getASTContext(), false))));
     }
 
     set_source_location(*m, *m_ptr);
@@ -773,6 +749,52 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
         context().leave_loopstmt();
         diagram().end_for_stmt(current_caller_id);
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_switchstmt(stmt);
+        diagram().add_switch_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
+
+    if (current_caller_id) {
+        context().leave_switchstmt();
+        diagram().end_switch_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        diagram().add_case_stmt(
+            current_caller_id, common::to_string(stmt->getLHS()));
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCaseStmt(stmt);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        diagram().add_default_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseDefaultStmt(stmt);
 
     return true;
 }

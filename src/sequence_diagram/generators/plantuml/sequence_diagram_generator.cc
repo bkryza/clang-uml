@@ -199,6 +199,15 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kTryEnd) {
             ostr << "end\n";
         }
+        else if (m.type() == message_t::kSwitch) {
+            ostr << "group switch\n";
+        }
+        else if (m.type() == message_t::kCase) {
+            ostr << "else " << m.message_name() << '\n';
+        }
+        else if (m.type() == message_t::kSwitchEnd) {
+            ostr << "end\n";
+        }
     }
 }
 

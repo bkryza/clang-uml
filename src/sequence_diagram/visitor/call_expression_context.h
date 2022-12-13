@@ -84,6 +84,10 @@ struct call_expression_context {
     void enter_trystmt(clang::Stmt *stmt);
     void leave_trystmt();
 
+    clang::SwitchStmt *current_switchstmt() const;
+    void enter_switchstmt(clang::SwitchStmt *stmt);
+    void leave_switchstmt();
+
     bool is_expr_in_current_control_statement_condition(
         const clang::Stmt *stmt) const;
 
@@ -105,6 +109,7 @@ private:
 
     std::stack<clang::Stmt *> loop_stmt_stack_;
     std::stack<clang::Stmt *> try_stmt_stack_;
+    std::stack<clang::SwitchStmt *> switch_stmt_stack_;
 };
 
 }

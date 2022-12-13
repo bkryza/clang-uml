@@ -80,6 +80,12 @@ public:
 
     bool TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt);
 
+    bool TraverseSwitchStmt(clang::SwitchStmt *stmt);
+
+    bool TraverseCaseStmt(clang::CaseStmt *stmt);
+
+    bool TraverseDefaultStmt(clang::DefaultStmt *stmt);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;
