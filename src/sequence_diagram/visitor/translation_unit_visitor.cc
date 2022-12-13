@@ -298,6 +298,8 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
                 param->getType(), m->getASTContext(), false))));
     }
 
+    process_comment(*m, *m_ptr);
+
     set_source_location(*m, *m_ptr);
 
     const auto method_full_name = m_ptr->full_name(false);
@@ -368,6 +370,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         }
         set_unique_id(f->getID(), f_ptr->id());
 
+        process_comment(*f, *f_ptr);
+
         set_source_location(*f, *f_ptr);
 
         // TODO: Handle overloaded functions with different arguments
@@ -399,6 +403,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
             set_unique_id(f->getFirstDecl()->getID(), f_ptr->id());
         }
         set_unique_id(f->getID(), f_ptr->id());
+
+        process_comment(*f, *f_ptr);
 
         set_source_location(*f, *f_ptr);
 
@@ -440,6 +446,8 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
 
     f_ptr->is_void(
         function_template->getAsFunction()->getReturnType()->isVoidType());
+
+    process_comment(*function_template, *f_ptr);
 
     set_source_location(*function_template, *f_ptr);
 
@@ -811,8 +819,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         return true;
 
     // Skip casts, moves and such
-    if (expr->isCallToStdMove())
-        return true;
+    if (expr->isCallToStdMove())        return true;
 
     if (expr->isImplicitCXXThis())
         return true;

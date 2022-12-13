@@ -220,6 +220,9 @@ test_cases:
     - name: t20024
       title: Switch statement sequence diagram test case
       description:
+    - name: t20025
+      title: Skip decorator sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

@@ -127,7 +127,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         if (m.type() == message_t::kCall) {
             const auto &to =
                 m_model.get_participant<model::participant>(m.to());
-            if (!to)
+            if (!to || to.value().skip())
                 continue;
 
             visited.push_back(m.from());
