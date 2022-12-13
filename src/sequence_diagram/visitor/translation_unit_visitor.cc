@@ -819,7 +819,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         return true;
 
     // Skip casts, moves and such
-    if (expr->isCallToStdMove())        return true;
+    if (expr->isCallToStdMove())
+        return true;
 
     if (expr->isImplicitCXXThis())
         return true;

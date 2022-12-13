@@ -36,7 +36,7 @@ int tmain()
     result = a.a();
 
     result += add(1, 2);
-    
+
     result += add2(2, 4);
 
     return result;
