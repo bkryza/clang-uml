@@ -73,6 +73,9 @@
  * [t20021](./test_cases/t20021.md) - Loop statements sequence diagram test case
  * [t20022](./test_cases/t20022.md) - Forward class declaration sequence diagram test case
  * [t20023](./test_cases/t20023.md) - Try/catch statement sequence diagram test case
+ * [t20024](./test_cases/t20024.md) - Switch statement sequence diagram test case
+ * [t20025](./test_cases/t20025.md) - Skip decorator sequence diagram test case
+ * [t20026](./test_cases/t20026.md) - Virtual method call sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
