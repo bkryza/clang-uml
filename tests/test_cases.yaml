@@ -232,6 +232,9 @@ test_cases:
     - name: t20028
       title: Conditional (ternary) '?:' operator test case
       description:
+    - name: t20029
+      title: Combined feature sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
