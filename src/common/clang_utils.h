@@ -31,6 +31,9 @@ class NamespaceDecl;
 }
 
 namespace clanguml::common {
+model::access_t access_specifier_to_access_t(
+    clang::AccessSpecifier access_specifier);
+
 std::string get_tag_name(const clang::TagDecl &declaration);
 
 template <typename T> std::string get_qualified_name(const T &declaration)

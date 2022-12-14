@@ -991,6 +991,10 @@ bool translation_unit_visitor::process_class_method_call_expression(
             diagram().should_include(callee_decl->getQualifiedNameAsString())))
         return false;
 
+    if (!diagram().should_include(
+            common::access_specifier_to_access_t(method_decl->getAccess())))
+        return false;
+
     m.set_to(method_decl->getID());
     m.set_message_name(method_decl->getNameAsString());
     m.set_return_type(

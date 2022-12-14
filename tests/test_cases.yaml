@@ -226,6 +226,9 @@ test_cases:
     - name: t20026
       title: Virtual method call sequence diagram test case
       description:
+    - name: t20027
+      title: Filter call expressions based on access test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

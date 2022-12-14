@@ -22,6 +22,27 @@
 
 namespace clanguml::common {
 
+model::access_t access_specifier_to_access_t(
+    clang::AccessSpecifier access_specifier)
+{
+    auto access = model::access_t::kPublic;
+    switch (access_specifier) {
+    case clang::AccessSpecifier::AS_public:
+        access = model::access_t::kPublic;
+        break;
+    case clang::AccessSpecifier::AS_private:
+        access = model::access_t::kPrivate;
+        break;
+    case clang::AccessSpecifier::AS_protected:
+        access = model::access_t::kProtected;
+        break;
+    default:
+        break;
+    }
+
+    return access;
+}
+
 std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
     const clang::DeclContext *decl)
 {
