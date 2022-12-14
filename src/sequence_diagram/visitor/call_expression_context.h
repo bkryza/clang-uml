@@ -88,6 +88,10 @@ struct call_expression_context {
     void enter_switchstmt(clang::SwitchStmt *stmt);
     void leave_switchstmt();
 
+    clang::ConditionalOperator *current_conditionaloperator() const;
+    void enter_conditionaloperator(clang::ConditionalOperator *stmt);
+    void leave_conditionaloperator();
+
     bool is_expr_in_current_control_statement_condition(
         const clang::Stmt *stmt) const;
 
@@ -110,6 +114,7 @@ private:
     std::stack<clang::Stmt *> loop_stmt_stack_;
     std::stack<clang::Stmt *> try_stmt_stack_;
     std::stack<clang::SwitchStmt *> switch_stmt_stack_;
+    std::stack<clang::ConditionalOperator *> conditional_operator_stack_;
 };
 
 }

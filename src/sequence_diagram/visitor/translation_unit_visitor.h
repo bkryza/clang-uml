@@ -86,6 +86,8 @@ public:
 
     bool TraverseDefaultStmt(clang::DefaultStmt *stmt);
 
+    bool TraverseConditionalOperator(clang::ConditionalOperator *stmt);
+
     clanguml::sequence_diagram::model::diagram &diagram();
 
     const clanguml::sequence_diagram::model::diagram &diagram() const;

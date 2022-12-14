@@ -106,6 +106,10 @@ std::string to_string(message_t r)
         return "case";
     case message_t::kSwitchEnd:
         return "end switch";
+    case message_t::kConditional:
+        return "conditional";
+    case message_t::kConditionalEnd:
+        return "end conditional";
     default:
         assert(false);
         return "";

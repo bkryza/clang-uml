@@ -348,6 +348,52 @@ void diagram::add_default_stmt(
     }
 }
 
+void diagram::add_conditional_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    if (sequences_.find(current_caller_id) == sequences_.end()) {
+        activity a{current_caller_id};
+        sequences_.insert({current_caller_id, std::move(a)});
+    }
+
+    get_activity(current_caller_id)
+        .add_message({message_t::kConditional, current_caller_id});
+}
+
+void diagram::add_conditional_elsestmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    get_activity(current_caller_id)
+        .add_message({message_t::kElse, current_caller_id});
+}
+
+void diagram::end_conditional_stmt(
+    const common::model::diagram_element::id_t current_caller_id)
+{
+    using clanguml::common::model::message_t;
+
+    message m{message_t::kConditionalEnd, current_caller_id};
+
+    if (sequences_.find(current_caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(current_caller_id).messages();
+
+        if (current_messages.at(current_messages.size() - 1).type() ==
+                message_t::kElse &&
+            current_messages.at(current_messages.size() - 2).type() ==
+                message_t::kConditional) {
+            current_messages.pop_back();
+            current_messages.pop_back();
+        }
+        else {
+            current_messages.emplace_back(std::move(m));
+        }
+    }
+}
+
 bool diagram::started() const { return started_; }
 
 void diagram::started(bool s) { started_ = s; }

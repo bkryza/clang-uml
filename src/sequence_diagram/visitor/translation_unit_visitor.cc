@@ -807,6 +807,37 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
     return true;
 }
 
+bool translation_unit_visitor::TraverseConditionalOperator(
+    clang::ConditionalOperator *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_conditionaloperator(stmt);
+        diagram().add_conditional_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getCond());
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getTrueExpr());
+
+    if (current_caller_id) {
+        diagram().add_conditional_elsestmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getFalseExpr());
+
+    if (current_caller_id) {
+        context().leave_conditionaloperator();
+        diagram().end_conditional_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_scope_t;

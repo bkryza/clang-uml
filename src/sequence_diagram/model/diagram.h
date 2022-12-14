@@ -112,6 +112,13 @@ public:
     void add_default_stmt(
         common::model::diagram_element::id_t current_caller_id);
 
+    void add_conditional_stmt(
+        common::model::diagram_element::id_t current_caller_id);
+    void add_conditional_elsestmt(
+        common::model::diagram_element::id_t current_caller_id);
+    void end_conditional_stmt(
+        common::model::diagram_element::id_t current_caller_id);
+
     bool started() const;
     void started(bool s);
 

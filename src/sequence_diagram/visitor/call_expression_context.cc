@@ -283,6 +283,27 @@ void call_expression_context::leave_switchstmt()
         switch_stmt_stack_.pop();
 }
 
+clang::ConditionalOperator *
+call_expression_context::current_conditionaloperator() const
+{
+    if (conditional_operator_stack_.empty())
+        return nullptr;
+
+    return conditional_operator_stack_.top();
+}
+
+void call_expression_context::enter_conditionaloperator(
+    clang::ConditionalOperator *stmt)
+{
+    conditional_operator_stack_.push(stmt);
+}
+
+void call_expression_context::leave_conditionaloperator()
+{
+    if (conditional_operator_stack_.empty())
+        conditional_operator_stack_.pop();
+}
+
 bool call_expression_context::is_expr_in_current_control_statement_condition(
     const clang::Stmt *stmt) const
 {
@@ -331,6 +352,13 @@ bool call_expression_context::is_expr_in_current_control_statement_condition(
         if (const auto *do_stmt = clang::dyn_cast<clang::DoStmt>(loop_stmt);
             do_stmt != nullptr) {
             if (common::is_subexpr_of(do_stmt->getCond(), stmt)) {
+                return true;
+            }
+        }
+
+        if (current_conditionaloperator()) {
+            if (common::is_subexpr_of(
+                    current_conditionaloperator()->getCond(), stmt)) {
                 return true;
             }
         }

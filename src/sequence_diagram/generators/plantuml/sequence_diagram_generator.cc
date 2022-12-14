@@ -208,6 +208,15 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kSwitchEnd) {
             ostr << "end\n";
         }
+        else if (m.type() == message_t::kConditional) {
+            ostr << "alt\n";
+        }
+        else if (m.type() == message_t::kElse) {
+            ostr << "else\n";
+        }
+        else if (m.type() == message_t::kConditionalEnd) {
+            ostr << "end\n";
+        }
     }
 }
 
