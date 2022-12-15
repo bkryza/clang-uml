@@ -244,73 +244,78 @@ generates the following diagram (via PlantUML):
 The following C++ code:
 
 ```cpp
-#include <algorithm>
-#include <numeric>
-#include <vector>
+#include <atomic>
+#include <functional>
+#include <iostream>
+#include <memory>
+#include <string>
 
 namespace clanguml {
-namespace t20001 {
+namespace t20029 {
+using encoder_function_t = std::function<std::string(std::string &&)>;
 
-namespace detail {
-struct C {
-    auto add(int x, int y) { return x + y; }
-};
-}
+std::string encode_b64(std::string &&content) { return std::move(content); }
 
-class A {
+template <typename T> class Encoder : public T {
 public:
-    A() {}
-
-    int add(int x, int y) { return m_c.add(x, y); }
-
-    int add3(int x, int y, int z)
+    bool send(std::string &&msg)
     {
-        std::vector<int> v;
-        v.push_back(x);
-        v.push_back(y);
-        v.push_back(z);
-        auto res = add(v[0], v[1]) + v[2];
-        log_result(res);
-        return res;
+        auto encoded = encode(std::move(msg));
+        return T::send(std::move(encoded));
     }
 
-    void log_result(int r) {}
+protected:
+    std::string encode(std::string &&msg) { return encode_b64(std::move(msg)); }
 
 private:
-    detail::C m_c{};
+    encoder_function_t f_;
 };
 
-class B {
+template <typename T> class Retrier : public T {
 public:
-    B(A &a)
-        : m_a{a}
+    bool send(std::string &&msg)
     {
+        std::string buffer{std::move(msg)};
+
+        int retryCount = 5;
+
+        while (retryCount--) {
+            if (T::send(buffer))
+                return true;
+        }
+
+        return false;
+    }
+};
+
+class ConnectionPool {
+public:
+    void connect()
+    {
+        if (!is_connected_.load())
+            connect_impl();
     }
 
-    int wrap_add(int x, int y)
-    {
-        auto res = m_a.add(x, y);
-        m_a.log_result(res);
-        return res;
-    }
-
-    int wrap_add3(int x, int y, int z)
-    {
-        auto res = m_a.add3(x, y, z);
-        m_a.log_result(res);
-        return res;
-    }
+    bool send(const std::string &msg) { return true; }
 
 private:
-    A &m_a;
+    void connect_impl() { is_connected_ = true; }
+
+    std::atomic<bool> is_connected_;
 };
 
 int tmain()
 {
-    A a;
-    B b(a);
+    auto pool = std::make_shared<Encoder<Retrier<ConnectionPool>>>();
 
-    return b.wrap_add3(1, 2, 3);
+    pool->connect();
+
+    for (std::string line; std::getline(std::cin, line);) {
+        if (!pool->send(std::move(line)))
+            break;
+    }
+
+    return 0;
 }
 }
 }
@@ -318,7 +323,7 @@ int tmain()
 
 generates the following diagram (via PlantUML):
 
-![sequence_diagram_example](docs/test_cases/t20001_sequence.svg)
+![sequence_diagram_example](docs/test_cases/t20029_sequence.svg)
 
 ### Package diagrams
 
