@@ -125,7 +125,8 @@ std::vector<std::string> diagram::get_translation_units(
     for (const auto &g : glob()) {
         const auto matches = glob::glob(g, root_directory);
         for (const auto &match : matches) {
-            const auto path = root_directory / match;
+            const auto path =
+                std::filesystem::canonical(root_directory / match);
             translation_units.emplace_back(path.string());
         }
     }
