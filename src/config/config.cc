@@ -594,6 +594,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.start_from);
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.relative_to);
+        get_option(node, rhs.participants_order);
 
         rhs.initialize_type_aliases();
 

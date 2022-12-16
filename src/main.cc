@@ -79,7 +79,7 @@ void generate_diagram(const std::string &od, const std::string &name,
 /// Find translation units for diagrams.
 ///
 /// For each diagram to be generated, this function selects translation units
-/// to be used for this diagram. The diagrams are selected as an intersection
+/// to be used for this diagram. The files are selected as an intersection
 /// between all translation units found in the compilation database and the
 /// `glob` patterns specified for each diagram in the configuration file.
 ///
