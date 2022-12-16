@@ -528,11 +528,35 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
-    context().current_function_call_expr_ = expr;
+    context().enter_callexpr(expr);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
 
-    context().current_function_call_expr_ = nullptr;
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXMemberCallExpr(
+    clang::CXXMemberCallExpr *expr)
+{
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXMemberCallExpr(
+        expr);
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXOperatorCallExpr(
+    clang::CXXOperatorCallExpr *expr)
+{
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXOperatorCallExpr(
+        expr);
+
+    pop_message_to_diagram(expr);
 
     return true;
 }
@@ -874,7 +898,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
     if (context().lambda_caller_id() != 0) {
-        if (context().current_function_call_expr_ == nullptr) {
+        if (context().current_callexpr() == nullptr) {
             m.set_from(context().lambda_caller_id());
         }
         else {
@@ -969,7 +993,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name(),
             m.from(), m.from(), m.to(), m.to());
 
-        diagram().get_activity(m.from()).add_message(std::move(m));
+        push_message(expr, std::move(m));
     }
 
     return true;
@@ -2088,6 +2112,29 @@ std::string translation_unit_visitor::make_lambda_name(
     }
 
     return result;
+}
+
+void translation_unit_visitor::push_message(
+    clang::CallExpr *expr, model::message &&m)
+{
+    call_expr_message_map_.emplace(expr, std::move(m));
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (call_expr_message_map_.find(expr) == call_expr_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(call_expr_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    call_expr_message_map_.erase(expr);
 }
 
 void translation_unit_visitor::finalize()

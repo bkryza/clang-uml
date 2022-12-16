@@ -92,6 +92,10 @@ struct call_expression_context {
     void enter_conditionaloperator(clang::ConditionalOperator *stmt);
     void leave_conditionaloperator();
 
+    clang::CallExpr *current_callexpr() const;
+    void enter_callexpr(clang::CallExpr *expr);
+    void leave_callexpr();
+
     bool is_expr_in_current_control_statement_condition(
         const clang::Stmt *stmt) const;
 
@@ -103,11 +107,12 @@ struct call_expression_context {
     clang::FunctionDecl *current_function_decl_;
     clang::FunctionTemplateDecl *current_function_template_decl_;
 
-    clang::CallExpr *current_function_call_expr_{nullptr};
-
 private:
     std::int64_t current_caller_id_;
     std::stack<std::int64_t> current_lambda_caller_id_;
+
+    std::stack<clang::CallExpr *> call_expr_stack_;
+
     std::stack<clang::IfStmt *> if_stmt_stack_;
     std::stack<clang::IfStmt *> elseif_stmt_stack_;
 

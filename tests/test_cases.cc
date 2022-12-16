@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
     if (returnCode != 0)
         return returnCode;
 
-    clanguml::util::setup_logging(debug_log);
+    clanguml::util::setup_logging(debug_log ? 3 : 1);
 
     return session.run();
 }

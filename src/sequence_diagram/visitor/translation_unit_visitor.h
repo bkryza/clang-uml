@@ -46,6 +46,13 @@ public:
 
     bool TraverseCallExpr(clang::CallExpr *expr);
 
+    bool TraverseCXXMemberCallExpr(clang::CXXMemberCallExpr *expr);
+
+    bool TraverseCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr);
+
+    // TODO
+    // bool TraverseCXXConstructExpr(clang::CXXConstructExpr *expr);
+
     bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
@@ -245,6 +252,10 @@ private:
     bool process_unresolved_lookup_call_expression(
         model::message &m, const clang::CallExpr *expr);
 
+    void push_message(clang::CallExpr *expr, model::message &&m);
+
+    void pop_message_to_diagram(clang::CallExpr *expr);
+
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
 
@@ -252,6 +263,12 @@ private:
     const clanguml::config::sequence_diagram &config_;
 
     call_expression_context call_expression_context_;
+
+    /// This is used to generate messages in proper order in case of
+    /// nested call expressions (e.g. a(b(c(), d())), as they need to
+    /// be added to the diagram sequence after the visitor leaves the
+    /// call expression AST node
+    std::map<clang::CallExpr *, model::message> call_expr_message_map_;
 
     std::map<common::model::diagram_element::id_t,
         std::unique_ptr<clanguml::sequence_diagram::model::class_>>

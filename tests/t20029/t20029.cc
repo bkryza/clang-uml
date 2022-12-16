@@ -6,23 +6,17 @@
 
 namespace clanguml {
 namespace t20029 {
-using encoder_function_t = std::function<std::string(std::string &&)>;
-
 std::string encode_b64(std::string &&content) { return std::move(content); }
 
 template <typename T> class Encoder : public T {
 public:
     bool send(std::string &&msg)
     {
-        auto encoded = encode(std::move(msg));
-        return T::send(std::move(encoded));
+        return T::send(std::move(encode(std::move(msg))));
     }
 
 protected:
     std::string encode(std::string &&msg) { return encode_b64(std::move(msg)); }
-
-private:
-    encoder_function_t f_;
 };
 
 template <typename T> class Retrier : public T {

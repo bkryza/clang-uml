@@ -214,7 +214,7 @@ void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 
 void call_expression_context::leave_elseifstmt()
 {
-    if (elseif_stmt_stack_.empty())
+    if (!elseif_stmt_stack_.empty())
         elseif_stmt_stack_.pop();
 }
 
@@ -241,8 +241,28 @@ void call_expression_context::enter_loopstmt(clang::Stmt *stmt)
 
 void call_expression_context::leave_loopstmt()
 {
-    if (loop_stmt_stack_.empty())
+    if (!loop_stmt_stack_.empty())
         return loop_stmt_stack_.pop();
+}
+
+clang::CallExpr *call_expression_context::current_callexpr() const
+{
+    if (call_expr_stack_.empty())
+        return nullptr;
+
+    return call_expr_stack_.top();
+}
+
+void call_expression_context::enter_callexpr(clang::CallExpr *expr)
+{
+    call_expr_stack_.push(expr);
+}
+
+void call_expression_context::leave_callexpr()
+{
+    if (!call_expr_stack_.empty()) {
+        return call_expr_stack_.pop();
+    }
 }
 
 clang::Stmt *call_expression_context::current_trystmt() const
@@ -300,7 +320,7 @@ void call_expression_context::enter_conditionaloperator(
 
 void call_expression_context::leave_conditionaloperator()
 {
-    if (conditional_operator_stack_.empty())
+    if (!conditional_operator_stack_.empty())
         conditional_operator_stack_.pop();
 }
 
