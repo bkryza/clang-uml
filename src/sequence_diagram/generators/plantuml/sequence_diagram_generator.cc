@@ -79,14 +79,25 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const std::string to_alias = generate_alias(to.value());
 
     ostr << from_alias << " "
-         << common::generators::plantuml::to_plantuml(message_t::kCall) << " "
-         << to_alias;
+         << common::generators::plantuml::to_plantuml(message_t::kCall) << " ";
+
+    ostr << to_alias;
 
     if (m_config.generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, m);
     }
 
-    ostr << " : " << message << std::endl;
+    ostr << " : ";
+
+    if (m.message_scope() == common::model::message_scope_t::kCondition)
+        ostr << "**[**";
+
+    ostr << message;
+
+    if (m.message_scope() == common::model::message_scope_t::kCondition)
+        ostr << "**]**";
+
+    ostr << '\n';
 
     LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
         m.from(), to, m.to());
@@ -116,7 +127,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         if (m.type() == message_t::kCall) {
             const auto &to =
                 m_model.get_participant<model::participant>(m.to());
-            if (!to)
+            if (!to || to.value().skip())
                 continue;
 
             visited.push_back(m.from());
@@ -179,96 +190,149 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
         }
+        else if (m.type() == message_t::kTry) {
+            ostr << "group try\n";
+        }
+        else if (m.type() == message_t::kCatch) {
+            ostr << "else " << m.message_name() << '\n';
+        }
+        else if (m.type() == message_t::kTryEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type() == message_t::kSwitch) {
+            ostr << "group switch\n";
+        }
+        else if (m.type() == message_t::kCase) {
+            ostr << "else " << m.message_name() << '\n';
+        }
+        else if (m.type() == message_t::kSwitchEnd) {
+            ostr << "end\n";
+        }
+        else if (m.type() == message_t::kConditional) {
+            ostr << "alt\n";
+        }
+        else if (m.type() == message_t::kElse) {
+            ostr << "else\n";
+        }
+        else if (m.type() == message_t::kConditionalEnd) {
+            ostr << "end\n";
+        }
     }
 }
 
-void generator::generate_participant(std::ostream &ostr, common::id_t id) const
+void generator::generate_participant(
+    std::ostream &ostr, const std::string &name) const
 {
-    for (const auto participant_id : m_model.active_participants()) {
-        if (participant_id != id)
-            continue;
+    auto p = m_model.get(name);
 
-        if (is_participant_generated(participant_id))
-            return;
-
-        const auto &participant =
-            m_model.get_participant<model::participant>(participant_id).value();
-
-        if (participant.type_name() == "method") {
-            const auto class_id =
-                m_model.get_participant<model::method>(participant_id)
-                    .value()
-                    .class_id();
-
-            if (is_participant_generated(class_id))
-                return;
-
-            const auto &class_participant =
-                m_model.get_participant<model::participant>(class_id).value();
-
-            ostr << "participant \""
-                 << render_name(m_config.using_namespace().relative(
-                        class_participant.full_name(false)))
-                 << "\" as " << class_participant.alias();
-
-            if (m_config.generate_links) {
-                common_generator<diagram_config, diagram_model>::generate_link(
-                    ostr, class_participant);
-            }
-
-            ostr << '\n';
-
-            generated_participants_.emplace(class_id);
-        }
-        else if ((participant.type_name() == "function" ||
-                     participant.type_name() == "function_template") &&
-            m_config.combine_free_functions_into_file_participants()) {
-            // Create a single participant for all functions declared in a
-            // single file
-            const auto &file_path =
-                m_model.get_participant<model::function>(participant_id)
-                    .value()
-                    .file();
-
-            assert(!file_path.empty());
-
-            const auto file_id = common::to_id(file_path);
-
-            if (is_participant_generated(file_id))
-                return;
-
-            [[maybe_unused]] const auto &relative_to =
-                std::filesystem::canonical(m_config.relative_to());
-
-            auto participant_name = std::filesystem::relative(
-                std::filesystem::path{file_path}, relative_to)
-                                        .string();
-
-            ostr << "participant \"" << render_name(participant_name)
-                 << "\" as " << fmt::format("C_{:022}", file_id);
-
-            ostr << '\n';
-
-            generated_participants_.emplace(file_id);
-        }
-        else {
-            ostr << "participant \""
-                 << m_config.using_namespace().relative(
-                        participant.full_name(false))
-                 << "\" as " << participant.alias();
-
-            if (m_config.generate_links) {
-                common_generator<diagram_config, diagram_model>::generate_link(
-                    ostr, participant);
-            }
-
-            ostr << '\n';
-
-            generated_participants_.emplace(participant_id);
-        }
-
+    if (!p.has_value()) {
+        LOG_WARN("Cannot find participant {} from `participants_order` option",
+            name);
         return;
     }
+
+    generate_participant(ostr, p.value().id(), true);
+}
+
+void generator::generate_participant(
+    std::ostream &ostr, common::id_t id, bool force) const
+{
+    common::id_t participant_id{0};
+
+    if (!force) {
+        for (const auto pid : m_model.active_participants()) {
+            if (pid == id) {
+                participant_id = pid;
+                break;
+            }
+        }
+    }
+    else
+        participant_id = id;
+
+    if (participant_id == 0)
+        return;
+
+    if (is_participant_generated(participant_id))
+        return;
+
+    const auto &participant =
+        m_model.get_participant<model::participant>(participant_id).value();
+
+    if (participant.type_name() == "method") {
+        const auto class_id =
+            m_model.get_participant<model::method>(participant_id)
+                .value()
+                .class_id();
+
+        if (is_participant_generated(class_id))
+            return;
+
+        const auto &class_participant =
+            m_model.get_participant<model::participant>(class_id).value();
+
+        ostr << "participant \""
+             << render_name(m_config.using_namespace().relative(
+                    class_participant.full_name(false)))
+             << "\" as " << class_participant.alias();
+
+        if (m_config.generate_links) {
+            common_generator<diagram_config, diagram_model>::generate_link(
+                ostr, class_participant);
+        }
+
+        ostr << '\n';
+
+        generated_participants_.emplace(class_id);
+    }
+    else if ((participant.type_name() == "function" ||
+                 participant.type_name() == "function_template") &&
+        m_config.combine_free_functions_into_file_participants()) {
+        // Create a single participant for all functions declared in a
+        // single file
+        const auto &file_path =
+            m_model.get_participant<model::function>(participant_id)
+                .value()
+                .file();
+
+        assert(!file_path.empty());
+
+        const auto file_id = common::to_id(file_path);
+
+        if (is_participant_generated(file_id))
+            return;
+
+        [[maybe_unused]] const auto &relative_to =
+            std::filesystem::canonical(m_config.relative_to());
+
+        auto participant_name = std::filesystem::relative(
+            std::filesystem::path{file_path}, relative_to)
+                                    .string();
+
+        ostr << "participant \"" << render_name(participant_name) << "\" as "
+             << fmt::format("C_{:022}", file_id);
+
+        ostr << '\n';
+
+        generated_participants_.emplace(file_id);
+    }
+    else {
+        ostr << "participant \""
+             << m_config.using_namespace().relative(
+                    participant.full_name(false))
+             << "\" as " << participant.alias();
+
+        if (m_config.generate_links) {
+            common_generator<diagram_config, diagram_model>::generate_link(
+                ostr, participant);
+        }
+
+        ostr << '\n';
+
+        generated_participants_.emplace(participant_id);
+    }
+
+    return;
 }
 
 bool generator::is_participant_generated(common::id_t id) const
@@ -285,6 +349,13 @@ void generator::generate(std::ostream &ostr) const
     ostr << "@startuml" << std::endl;
 
     generate_plantuml_directives(ostr, m_config.puml().before);
+
+    if (m_config.participants_order.has_value) {
+        for (const auto &p : m_config.participants_order()) {
+            LOG_DBG("Pregenerating participant {}", p);
+            generate_participant(ostr, p);
+        }
+    }
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
@@ -366,5 +437,4 @@ std::string generator::generate_alias(
 
     return participant.alias();
 }
-
 }

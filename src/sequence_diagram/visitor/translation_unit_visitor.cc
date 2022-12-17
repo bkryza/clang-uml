@@ -23,31 +23,6 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
-std::string to_string(const clang::FunctionTemplateDecl *decl)
-{
-    std::vector<std::string> template_parameters;
-    // Handle template function
-    for (const auto *parameter : *decl->getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
-            const auto *template_type_parameter =
-                clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
-
-            std::string template_parameter{
-                template_type_parameter->getNameAsString()};
-
-            if (template_type_parameter->isParameterPack())
-                template_parameter += "...";
-
-            template_parameters.emplace_back(std::move(template_parameter));
-        }
-        else {
-            // TODO
-        }
-    }
-    return fmt::format("{}<{}>({})", decl->getQualifiedNameAsString(),
-        fmt::join(template_parameters, ","), "");
-}
-
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::sequence_diagram::model::diagram &diagram,
     const clanguml::config::sequence_diagram &config)
@@ -318,9 +293,12 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     m_ptr->is_static(m->isStatic());
 
     for (const auto *param : m->parameters()) {
-        m_ptr->add_parameter(simplify_system_template(
-            common::to_string(param->getType(), m->getASTContext(), false)));
+        m_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(common::to_string(
+                param->getType(), m->getASTContext(), false))));
     }
+
+    process_comment(*m, *m_ptr);
 
     set_source_location(*m, *m_ptr);
 
@@ -392,6 +370,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         }
         set_unique_id(f->getID(), f_ptr->id());
 
+        process_comment(*f, *f_ptr);
+
         set_source_location(*f, *f_ptr);
 
         // TODO: Handle overloaded functions with different arguments
@@ -423,6 +403,8 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
             set_unique_id(f->getFirstDecl()->getID(), f_ptr->id());
         }
         set_unique_id(f->getID(), f_ptr->id());
+
+        process_comment(*f, *f_ptr);
 
         set_source_location(*f, *f_ptr);
 
@@ -464,6 +446,8 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
 
     f_ptr->is_void(
         function_template->getAsFunction()->getReturnType()->isVoidType());
+
+    process_comment(*function_template, *f_ptr);
 
     set_source_location(*function_template, *f_ptr);
 
@@ -544,11 +528,35 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
-    context().current_function_call_expr_ = expr;
+    context().enter_callexpr(expr);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
 
-    context().current_function_call_expr_ = nullptr;
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXMemberCallExpr(
+    clang::CXXMemberCallExpr *expr)
+{
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXMemberCallExpr(
+        expr);
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXOperatorCallExpr(
+    clang::CXXOperatorCallExpr *expr)
+{
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXOperatorCallExpr(
+        expr);
+
+    pop_message_to_diagram(expr);
 
     return true;
 }
@@ -705,6 +713,53 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
     return true;
 }
 
+bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_trystmt(stmt);
+        diagram().add_try_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
+
+    if (current_caller_id) {
+        context().leave_trystmt();
+        diagram().end_try_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
+{
+    using clanguml::common::model::message_t;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id && context().current_trystmt()) {
+        std::string caught_type;
+        if (stmt->getCaughtType().isNull())
+            caught_type = "...";
+        else
+            caught_type = common::to_string(
+                stmt->getCaughtType(), *context().get_ast_context());
+
+        diagram().add_catch_stmt(current_caller_id, std::move(caught_type));
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXCatchStmt(stmt);
+
+    return true;
+}
+
 bool translation_unit_visitor::TraverseCXXForRangeStmt(
     clang::CXXForRangeStmt *stmt)
 {
@@ -730,8 +785,86 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     return true;
 }
 
+bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_switchstmt(stmt);
+        diagram().add_switch_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
+
+    if (current_caller_id) {
+        context().leave_switchstmt();
+        diagram().end_switch_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        diagram().add_case_stmt(
+            current_caller_id, common::to_string(stmt->getLHS()));
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCaseStmt(stmt);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        diagram().add_default_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseDefaultStmt(stmt);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseConditionalOperator(
+    clang::ConditionalOperator *stmt)
+{
+    const auto current_caller_id = context().caller_id();
+
+    if (current_caller_id) {
+        context().enter_conditionaloperator(stmt);
+        diagram().add_conditional_stmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getCond());
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getTrueExpr());
+
+    if (current_caller_id) {
+        diagram().add_conditional_elsestmt(current_caller_id);
+    }
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
+        stmt->getFalseExpr());
+
+    if (current_caller_id) {
+        context().leave_conditionaloperator();
+        diagram().end_conditional_stmt(current_caller_id);
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
+    using clanguml::common::model::message_scope_t;
     using clanguml::common::model::message_t;
     using clanguml::common::model::namespace_;
     using clanguml::sequence_diagram::model::activity;
@@ -765,7 +898,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
     if (context().lambda_caller_id() != 0) {
-        if (context().current_function_call_expr_ == nullptr) {
+        if (context().current_callexpr() == nullptr) {
             m.set_from(context().lambda_caller_id());
         }
         else {
@@ -774,6 +907,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
     }
 
+    if (context().is_expr_in_current_control_statement_condition(expr)) {
+        m.set_message_scope(common::model::message_scope_t::kCondition);
+    }
+
+    //
+    // Call to an overloaded operator
+    //
     if (const auto *operator_call_expr =
             clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
         operator_call_expr != nullptr) {
@@ -853,7 +993,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         LOG_DBG("Found call {} from {} [{}] to {} [{}] ", m.message_name(),
             m.from(), m.from(), m.to(), m.to());
 
-        diagram().get_activity(m.from()).add_message(std::move(m));
+        push_message(expr, std::move(m));
     }
 
     return true;
@@ -904,6 +1044,10 @@ bool translation_unit_visitor::process_class_method_call_expression(
 
     if (!(callee_decl &&
             diagram().should_include(callee_decl->getQualifiedNameAsString())))
+        return false;
+
+    if (!diagram().should_include(
+            common::access_specifier_to_access_t(method_decl->getAccess())))
         return false;
 
     m.set_to(method_decl->getID());
@@ -1968,6 +2112,29 @@ std::string translation_unit_visitor::make_lambda_name(
     }
 
     return result;
+}
+
+void translation_unit_visitor::push_message(
+    clang::CallExpr *expr, model::message &&m)
+{
+    call_expr_message_map_.emplace(expr, std::move(m));
+}
+
+void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (call_expr_message_map_.find(expr) == call_expr_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(call_expr_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    call_expr_message_map_.erase(expr);
 }
 
 void translation_unit_visitor::finalize()

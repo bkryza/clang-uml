@@ -186,4 +186,205 @@ void call_expression_context::leave_lambda_expression()
     current_lambda_caller_id_.pop();
 }
 
+clang::IfStmt *call_expression_context::current_ifstmt() const
+{
+    if (if_stmt_stack_.empty())
+        return nullptr;
+
+    return if_stmt_stack_.top();
+}
+
+void call_expression_context::enter_ifstmt(clang::IfStmt *stmt)
+{
+    if_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_ifstmt()
+{
+    if (!if_stmt_stack_.empty()) {
+        if_stmt_stack_.pop();
+        std::stack<clang::IfStmt *>{}.swap(elseif_stmt_stack_);
+    }
+}
+
+void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
+{
+    elseif_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_elseifstmt()
+{
+    if (!elseif_stmt_stack_.empty())
+        elseif_stmt_stack_.pop();
+}
+
+clang::IfStmt *call_expression_context::current_elseifstmt() const
+{
+    if (elseif_stmt_stack_.empty())
+        return nullptr;
+
+    return elseif_stmt_stack_.top();
+}
+
+clang::Stmt *call_expression_context::current_loopstmt() const
+{
+    if (loop_stmt_stack_.empty())
+        return nullptr;
+
+    return loop_stmt_stack_.top();
+}
+
+void call_expression_context::enter_loopstmt(clang::Stmt *stmt)
+{
+    loop_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_loopstmt()
+{
+    if (!loop_stmt_stack_.empty())
+        return loop_stmt_stack_.pop();
+}
+
+clang::CallExpr *call_expression_context::current_callexpr() const
+{
+    if (call_expr_stack_.empty())
+        return nullptr;
+
+    return call_expr_stack_.top();
+}
+
+void call_expression_context::enter_callexpr(clang::CallExpr *expr)
+{
+    call_expr_stack_.push(expr);
+}
+
+void call_expression_context::leave_callexpr()
+{
+    if (!call_expr_stack_.empty()) {
+        return call_expr_stack_.pop();
+    }
+}
+
+clang::Stmt *call_expression_context::current_trystmt() const
+{
+    if (try_stmt_stack_.empty())
+        return nullptr;
+
+    return try_stmt_stack_.top();
+}
+
+void call_expression_context::enter_trystmt(clang::Stmt *stmt)
+{
+    try_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_trystmt()
+{
+    if (try_stmt_stack_.empty())
+        try_stmt_stack_.pop();
+}
+
+clang::SwitchStmt *call_expression_context::current_switchstmt() const
+{
+    if (switch_stmt_stack_.empty())
+        return nullptr;
+
+    return switch_stmt_stack_.top();
+}
+
+void call_expression_context::enter_switchstmt(clang::SwitchStmt *stmt)
+{
+    switch_stmt_stack_.push(stmt);
+}
+
+void call_expression_context::leave_switchstmt()
+{
+    if (switch_stmt_stack_.empty())
+        switch_stmt_stack_.pop();
+}
+
+clang::ConditionalOperator *
+call_expression_context::current_conditionaloperator() const
+{
+    if (conditional_operator_stack_.empty())
+        return nullptr;
+
+    return conditional_operator_stack_.top();
+}
+
+void call_expression_context::enter_conditionaloperator(
+    clang::ConditionalOperator *stmt)
+{
+    conditional_operator_stack_.push(stmt);
+}
+
+void call_expression_context::leave_conditionaloperator()
+{
+    if (!conditional_operator_stack_.empty())
+        conditional_operator_stack_.pop();
+}
+
+bool call_expression_context::is_expr_in_current_control_statement_condition(
+    const clang::Stmt *stmt) const
+{
+    if (current_ifstmt()) {
+        if (common::is_subexpr_of(current_ifstmt()->getCond(), stmt)) {
+            return true;
+        }
+    }
+
+    if (current_elseifstmt()) {
+        if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt)) {
+            return true;
+        }
+    }
+
+    if (const auto *loop_stmt = current_loopstmt(); loop_stmt != nullptr) {
+        if (const auto *for_stmt = clang::dyn_cast<clang::ForStmt>(loop_stmt);
+            for_stmt != nullptr) {
+            if (common::is_subexpr_of(for_stmt->getCond(), stmt)) {
+                return true;
+            }
+            if (common::is_subexpr_of(for_stmt->getInit(), stmt)) {
+                return true;
+            }
+            if (common::is_subexpr_of(for_stmt->getInc(), stmt)) {
+                return true;
+            }
+        }
+
+        if (const auto *range_for_stmt =
+                clang::dyn_cast<clang::CXXForRangeStmt>(loop_stmt);
+            range_for_stmt != nullptr) {
+            if (common::is_subexpr_of(range_for_stmt->getRangeInit(), stmt)) {
+                return true;
+            }
+        }
+
+        if (const auto *while_stmt =
+                clang::dyn_cast<clang::WhileStmt>(loop_stmt);
+            while_stmt != nullptr) {
+            if (common::is_subexpr_of(while_stmt->getCond(), stmt)) {
+                return true;
+            }
+        }
+
+        if (const auto *do_stmt = clang::dyn_cast<clang::DoStmt>(loop_stmt);
+            do_stmt != nullptr) {
+            if (common::is_subexpr_of(do_stmt->getCond(), stmt)) {
+                return true;
+            }
+        }
+
+        if (current_conditionaloperator()) {
+            if (common::is_subexpr_of(
+                    current_conditionaloperator()->getCond(), stmt)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 }

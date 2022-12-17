@@ -31,6 +31,9 @@ class NamespaceDecl;
 }
 
 namespace clanguml::common {
+model::access_t access_specifier_to_access_t(
+    clang::AccessSpecifier access_specifier);
+
 std::string get_tag_name(const clang::TagDecl &declaration);
 
 template <typename T> std::string get_qualified_name(const T &declaration)
@@ -62,11 +65,19 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 std::string to_string(const clang::RecordType &type,
     const clang::ASTContext &ctx, bool try_canonical = true);
 
+std::string to_string(const clang::Expr *expr);
+
+std::string to_string(const clang::Stmt *stmt);
+
+std::string to_string(const clang::FunctionTemplateDecl *decl);
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm);
 
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm);
+
+bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
 
 template <typename T> id_t to_id(const T &declaration);
 

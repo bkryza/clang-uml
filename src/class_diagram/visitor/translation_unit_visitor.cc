@@ -41,28 +41,6 @@ using clanguml::common::model::namespace_;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 
-namespace detail {
-access_t access_specifier_to_access_t(clang::AccessSpecifier access_specifier)
-{
-    auto access = access_t::kPublic;
-    switch (access_specifier) {
-    case clang::AccessSpecifier::AS_public:
-        access = access_t::kPublic;
-        break;
-    case clang::AccessSpecifier::AS_private:
-        access = access_t::kPrivate;
-        break;
-    case clang::AccessSpecifier::AS_protected:
-        access = access_t::kProtected;
-        break;
-    default:
-        break;
-    }
-
-    return access;
-}
-}
-
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::class_diagram::model::diagram &diagram,
     const clanguml::config::class_diagram &config)
@@ -668,7 +646,7 @@ void translation_unit_visitor::process_class_bases(
         cp.is_virtual(base.isVirtual());
 
         cp.set_access(
-            detail::access_specifier_to_access_t(base.getAccessSpecifier()));
+            common::access_specifier_to_access_t(base.getAccessSpecifier()));
 
         LOG_DBG("Found base class {} [{}] for class {}", cp.name(), cp.id(),
             c.name());
@@ -725,7 +703,7 @@ void translation_unit_visitor::process_template_specialization_children(
 
             if (enum_decl->getNameAsString().empty()) {
                 for (const auto *enum_const : enum_decl->enumerators()) {
-                    class_member m{detail::access_specifier_to_access_t(
+                    class_member m{common::access_specifier_to_access_t(
                                        enum_decl->getAccess()),
                         enum_const->getNameAsString(), "enum"};
                     c.add_member(std::move(m));
@@ -787,7 +765,7 @@ void translation_unit_visitor::process_class_children(
 
             if (enum_decl->getNameAsString().empty()) {
                 for (const auto *enum_const : enum_decl->enumerators()) {
-                    class_member m{detail::access_specifier_to_access_t(
+                    class_member m{common::access_specifier_to_access_t(
                                        enum_decl->getAccess()),
                         enum_const->getNameAsString(), "enum"};
                     c.add_member(std::move(m));
@@ -818,7 +796,7 @@ void translation_unit_visitor::process_friend(
             if (diagram().should_include(friend_type_name)) {
                 relationship r{relationship_t::kFriendship,
                     common::to_id(*friend_type->getAsRecordDecl()),
-                    detail::access_specifier_to_access_t(f.getAccess()),
+                    common::access_specifier_to_access_t(f.getAccess()),
                     "<<friend>>"};
 
                 c.add_relationship(std::move(r));
@@ -835,7 +813,7 @@ void translation_unit_visitor::process_method(
     if (mf.isDefaulted() && !mf.isExplicitlyDefaulted())
         return;
 
-    class_method method{detail::access_specifier_to_access_t(mf.getAccess()),
+    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(mf.getNameAsString()),
         common::to_string(mf.getReturnType(), mf.getASTContext())};
 
@@ -869,7 +847,7 @@ void translation_unit_visitor::process_template_method(
         !mf.getTemplatedDecl()->isExplicitlyDefaulted())
         return;
 
-    class_method method{detail::access_specifier_to_access_t(mf.getAccess()),
+    class_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(mf.getNameAsString()),
         mf.getTemplatedDecl()->getReturnType().getAsString()};
 
@@ -1133,7 +1111,7 @@ void translation_unit_visitor::process_static_field(
         type_name = "<<anonymous>>";
 
     class_member field{
-        detail::access_specifier_to_access_t(field_declaration.getAccess()),
+        common::access_specifier_to_access_t(field_declaration.getAccess()),
         field_declaration.getNameAsString(), type_name};
     field.is_static(true);
 
@@ -1981,7 +1959,7 @@ void translation_unit_visitor::process_field(
     const auto field_name = field_declaration.getNameAsString();
 
     class_member field{
-        detail::access_specifier_to_access_t(field_declaration.getAccess()),
+        common::access_specifier_to_access_t(field_declaration.getAccess()),
         field_name,
         common::to_string(
             field_type, field_declaration.getASTContext(), false)};

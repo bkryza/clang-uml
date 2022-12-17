@@ -50,4 +50,11 @@ void message::set_return_type(std::string t) { return_type_ = std::move(t); }
 
 const std::string &message::return_type() const { return return_type_; }
 
+void message::set_message_scope(common::model::message_scope_t scope)
+{
+    scope_ = scope;
+}
+
+common::model::message_scope_t message::message_scope() const { return scope_; }
+
 }

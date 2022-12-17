@@ -39,6 +39,7 @@ enum class relationship_t {
     kDependency
 };
 
+/// Types of sequence diagram activity elements
 enum class message_t {
     kCall,
     kReturn,
@@ -52,7 +53,22 @@ enum class message_t {
     kDoEnd,
     kFor,
     kForEnd,
+    kTry,
+    kCatch,
+    kTryEnd,
+    kSwitch,
+    kCase,
+    kSwitchEnd,
+    kConditional,
+    kConditionalEnd,
     kNone
+};
+
+/// The scope of the call expression represented in the sequence diagram
+enum class message_scope_t {
+    kNormal,   // This is a regular call expression
+    kCondition // This is a call expression from within a control condition
+               // e.g if(a->is_valid()) { ... }
 };
 
 std::string to_string(relationship_t r);

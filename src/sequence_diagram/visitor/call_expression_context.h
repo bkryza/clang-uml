@@ -16,11 +16,8 @@
  * limitations under the License.
  */
 #pragma once
-//
-//#include "common/visitor/translation_unit_visitor.h"
-//#include "config/config.h"
-//#include "sequence_diagram/model/diagram.h"
 
+#include "common/clang_utils.h"
 #include "util/util.h"
 
 #include <clang/AST/Expr.h>
@@ -70,61 +67,37 @@ struct call_expression_context {
 
     void leave_lambda_expression();
 
-    clang::IfStmt *current_ifstmt() const
-    {
-        if (if_stmt_stack_.empty())
-            return nullptr;
+    clang::IfStmt *current_ifstmt() const;
 
-        return if_stmt_stack_.top();
-    }
+    void enter_ifstmt(clang::IfStmt *stmt);
+    void leave_ifstmt();
 
-    void enter_ifstmt(clang::IfStmt *stmt) { return if_stmt_stack_.push(stmt); }
+    void enter_elseifstmt(clang::IfStmt *stmt);
+    void leave_elseifstmt();
+    clang::IfStmt *current_elseifstmt() const;
 
-    void leave_ifstmt()
-    {
-        if (!if_stmt_stack_.empty()) {
-            if_stmt_stack_.pop();
-            std::stack<clang::IfStmt *>{}.swap(elseif_stmt_stack_);
-        }
-    }
+    clang::Stmt *current_loopstmt() const;
+    void enter_loopstmt(clang::Stmt *stmt);
+    void leave_loopstmt();
 
-    void enter_elseifstmt(clang::IfStmt *stmt)
-    {
-        return elseif_stmt_stack_.push(stmt);
-    }
+    clang::Stmt *current_trystmt() const;
+    void enter_trystmt(clang::Stmt *stmt);
+    void leave_trystmt();
 
-    void leave_elseifstmt()
-    {
-        if (elseif_stmt_stack_.empty())
-            return elseif_stmt_stack_.pop();
-    }
+    clang::SwitchStmt *current_switchstmt() const;
+    void enter_switchstmt(clang::SwitchStmt *stmt);
+    void leave_switchstmt();
 
-    clang::IfStmt *current_elseifstmt() const
-    {
-        if (elseif_stmt_stack_.empty())
-            return nullptr;
+    clang::ConditionalOperator *current_conditionaloperator() const;
+    void enter_conditionaloperator(clang::ConditionalOperator *stmt);
+    void leave_conditionaloperator();
 
-        return elseif_stmt_stack_.top();
-    }
+    clang::CallExpr *current_callexpr() const;
+    void enter_callexpr(clang::CallExpr *expr);
+    void leave_callexpr();
 
-    clang::Stmt *current_loopstmt() const
-    {
-        if (loop_stmt_stack_.empty())
-            return nullptr;
-
-        return loop_stmt_stack_.top();
-    }
-
-    void enter_loopstmt(clang::Stmt *stmt)
-    {
-        return loop_stmt_stack_.push(stmt);
-    }
-
-    void leave_loopstmt()
-    {
-        if (loop_stmt_stack_.empty())
-            return loop_stmt_stack_.pop();
-    }
+    bool is_expr_in_current_control_statement_condition(
+        const clang::Stmt *stmt) const;
 
     clang::CXXRecordDecl *current_class_decl_;
     clang::ClassTemplateDecl *current_class_template_decl_;
@@ -134,15 +107,19 @@ struct call_expression_context {
     clang::FunctionDecl *current_function_decl_;
     clang::FunctionTemplateDecl *current_function_template_decl_;
 
-    clang::CallExpr *current_function_call_expr_{nullptr};
-
 private:
     std::int64_t current_caller_id_;
     std::stack<std::int64_t> current_lambda_caller_id_;
+
+    std::stack<clang::CallExpr *> call_expr_stack_;
+
     std::stack<clang::IfStmt *> if_stmt_stack_;
     std::stack<clang::IfStmt *> elseif_stmt_stack_;
 
     std::stack<clang::Stmt *> loop_stmt_stack_;
+    std::stack<clang::Stmt *> try_stmt_stack_;
+    std::stack<clang::SwitchStmt *> switch_stmt_stack_;
+    std::stack<clang::ConditionalOperator *> conditional_operator_stack_;
 };
 
 }

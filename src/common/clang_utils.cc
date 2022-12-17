@@ -22,6 +22,27 @@
 
 namespace clanguml::common {
 
+model::access_t access_specifier_to_access_t(
+    clang::AccessSpecifier access_specifier)
+{
+    auto access = model::access_t::kPublic;
+    switch (access_specifier) {
+    case clang::AccessSpecifier::AS_public:
+        access = model::access_t::kPublic;
+        break;
+    case clang::AccessSpecifier::AS_private:
+        access = model::access_t::kPrivate;
+        break;
+    case clang::AccessSpecifier::AS_protected:
+        access = model::access_t::kProtected;
+        break;
+    default:
+        break;
+    }
+
+    return access;
+}
+
 std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
     const clang::DeclContext *decl)
 {
@@ -144,6 +165,51 @@ std::string to_string(const clang::RecordType &type,
     return to_string(type.desugar(), ctx, try_canonical);
 }
 
+std::string to_string(const clang::Expr *expr)
+{
+    clang::LangOptions lang_options;
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    expr->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+
+    return result;
+}
+
+std::string to_string(const clang::Stmt *stmt)
+{
+    clang::LangOptions lang_options;
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    stmt->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+
+    return result;
+}
+
+std::string to_string(const clang::FunctionTemplateDecl *decl)
+{
+    std::vector<std::string> template_parameters;
+    // Handle template function
+    for (const auto *parameter : *decl->getTemplateParameters()) {
+        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
+            const auto *template_type_parameter =
+                clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
+
+            std::string template_parameter{
+                template_type_parameter->getNameAsString()};
+
+            if (template_type_parameter->isParameterPack())
+                template_parameter += "...";
+
+            template_parameters.emplace_back(std::move(template_parameter));
+        }
+        else {
+            // TODO
+        }
+    }
+    return fmt::format("{}<{}>({})", decl->getQualifiedNameAsString(),
+        fmt::join(template_parameters, ","), "");
+}
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm)
 {
@@ -162,6 +228,22 @@ std::string get_source_text(
     auto end_loc = clang::Lexer::getLocForEndOfToken(last_token_loc, 0, sm, lo);
     auto printable_range = clang::SourceRange{start_loc, end_loc};
     return get_source_text_raw(printable_range, sm);
+}
+
+bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
+{
+    if (parent_stmt == nullptr || sub_stmt == nullptr)
+        return false;
+
+    if (parent_stmt == sub_stmt)
+        return true;
+
+    for (const auto *e : parent_stmt->children()) {
+        if (is_subexpr_of(e, sub_stmt))
+            return true;
+    }
+
+    return false;
 }
 
 template <> id_t to_id(const std::string &full_name)

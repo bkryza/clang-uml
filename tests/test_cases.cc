@@ -269,6 +269,13 @@ using namespace clanguml::test::matchers;
 #include "t20020/test_case.h"
 #include "t20021/test_case.h"
 #include "t20022/test_case.h"
+#include "t20023/test_case.h"
+#include "t20024/test_case.h"
+#include "t20025/test_case.h"
+#include "t20026/test_case.h"
+#include "t20027/test_case.h"
+#include "t20028/test_case.h"
+#include "t20029/test_case.h"
 
 ///
 /// Package diagram tests
@@ -312,7 +319,7 @@ int main(int argc, char *argv[])
     if (returnCode != 0)
         return returnCode;
 
-    clanguml::util::setup_logging(debug_log);
+    clanguml::util::setup_logging(debug_log ? 3 : 1);
 
     return session.run();
 }

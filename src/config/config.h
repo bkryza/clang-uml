@@ -144,6 +144,7 @@ struct inheritable_diagram_options {
         "comment_parser", comment_parser_t::plain};
     option<bool> combine_free_functions_into_file_participants{
         "combine_free_functions_into_file_participants", false};
+    option<std::vector<std::string>> participants_order{"participants_order"};
 
     void inherit(const inheritable_diagram_options &parent);
 

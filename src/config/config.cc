@@ -125,7 +125,8 @@ std::vector<std::string> diagram::get_translation_units(
     for (const auto &g : glob()) {
         const auto matches = glob::glob(g, root_directory);
         for (const auto &match : matches) {
-            const auto path = root_directory / match;
+            const auto path =
+                std::filesystem::canonical(root_directory / match);
             translation_units.emplace_back(path.string());
         }
     }
@@ -593,6 +594,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.start_from);
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.relative_to);
+        get_option(node, rhs.participants_order);
 
         rhs.initialize_type_aliases();
 

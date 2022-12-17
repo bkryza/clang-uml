@@ -7,6 +7,7 @@ struct A {
     int a1() { return 0; }
     int a2() { return 1; }
     int a3() { return 2; }
+    int a4() { return 3; }
 };
 
 struct B {
@@ -26,6 +27,8 @@ struct C {
     }
 
     bool c2() const { return true; }
+
+    int c3(int x) { return x * 2; }
 };
 
 template <typename T> struct D {
@@ -46,13 +49,15 @@ int tmain()
         result = a.a1();
     }
     else if (reinterpret_cast<uint64_t>(&a) % 64 == 0ULL) {
-        if (a.a2() > 2)
+        if (c.c3(a.a2()) > 2)
             result = b.b1();
-        else
+        else if (a.a3() % 2)
             result = b.b2();
+        else
+            result = 0;
     }
     else {
-        result = a.a3();
+        result = a.a4();
     }
 
     b.log();
