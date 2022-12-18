@@ -32,11 +32,6 @@ TEST_CASE("Test diagram paths filter", "[unit-test]")
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::source_file;
 
-    auto make_path = [](std::string_view p) {
-        return source_file{
-            std::filesystem::current_path() / "test_config_data" / p};
-    };
-
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     CHECK(cfg.diagrams.size() == 1);
@@ -45,10 +40,15 @@ TEST_CASE("Test diagram paths filter", "[unit-test]")
 
     diagram_filter filter(diagram, config);
 
-    CHECK(filter.should_include(make_path("dir1/file1.h")));
-    CHECK(filter.should_include(make_path("dir1/dir2/file1.h")));
-    CHECK(filter.should_include(make_path("dir1/dir2/dir3/dir4/file1.h")));
-    CHECK_FALSE(filter.should_include(make_path("dir1/file9.h")));
-    CHECK_FALSE(filter.should_include(make_path("dir1/dir3/file1.h")));
-    CHECK_FALSE(filter.should_include(make_path("dir2/dir1/file9.h")));
+    auto make_path = [&](std::string_view p) {
+        return source_file{config.relative_to() / p};
+    };
+
+    CHECK(filter.should_include(
+        make_path("class_diagram/visitor/translation_unit_visitor.h")));
+    CHECK(filter.should_include(make_path("main.cc")));
+    CHECK(filter.should_include(make_path("util/util.cc")));
+    CHECK_FALSE(filter.should_include(make_path("util/error.h")));
+    CHECK_FALSE(filter.should_include(
+        make_path("sequence_diagram/visitor/translation_unit_visitor.h")));
 }

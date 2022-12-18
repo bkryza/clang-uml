@@ -1,0 +1,30 @@
+type: sequence
+combine_free_functions_into_file_participants: true
+generate_method_arguments: none
+glob:
+  - src/main.cc
+include:
+  paths:
+    - src
+exclude:
+  namespaces:
+    - std
+    - fmt
+    - spdlog
+    - clang
+    - llvm
+    - nlohmann
+    - CLI
+    - __gnu_cxx
+    - inja
+  elements:
+    - clanguml::config::option<std::string>
+  paths:
+    - src/util/util.h
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clang-uml main function sequence diagram'
+start_from:
+  - function: main(int,const char **)

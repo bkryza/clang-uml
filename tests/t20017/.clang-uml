@@ -10,6 +10,9 @@ diagrams:
     include:
       namespaces:
         - clanguml::t20017
+      # This only affects free function participants
+      paths:
+        - t20017.cc
     using_namespace:
       - clanguml::t20017
     start_from:

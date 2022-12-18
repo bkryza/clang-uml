@@ -135,7 +135,7 @@ struct lambda : public class_ {
 };
 
 struct function : public participant {
-    enum class message_render_mode { full, no_arguments };
+    enum class message_render_mode { full, abbreviated, no_arguments };
 
     function(const common::model::namespace_ &using_namespace);
 

@@ -196,6 +196,12 @@ std::string function::message_name(message_render_mode mode) const
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}(){}", name(), is_const() ? " const" : "");
     }
+    else if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters_, ",")), 15),
+            is_const() ? " const" : "");
+    }
 
     return fmt::format("{}({}){}", name(), fmt::join(parameters_, ","),
         is_const() ? " const" : "");
@@ -258,6 +264,12 @@ std::string method::message_name(message_render_mode mode) const
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}{}(){}{}", style, method_name(),
             is_const() ? " const" : "", style);
+    }
+    else if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters(), ",")), 15),
+            is_const() ? " const" : "");
     }
 
     return fmt::format("{}{}({}){}{}", style, method_name(),
@@ -329,6 +341,12 @@ std::string function_template::message_name(message_render_mode mode) const
     if (mode == message_render_mode::no_arguments) {
         return fmt::format(
             "{}{}(){}", name(), template_params, is_const() ? " const" : "");
+    }
+    else if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters(), ",")), 15),
+            is_const() ? " const" : "");
     }
 
     return fmt::format("{}{}({}){}", name(), template_params,

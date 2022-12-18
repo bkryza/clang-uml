@@ -353,13 +353,25 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
     : filter_visitor{type}
     , root_{root}
 {
-    for (auto &&path : p) {
+    for (const auto &path : p) {
         std::filesystem::path absolute_path;
 
-        if (path.is_relative())
+        if (path.string().empty() || path.string() == ".")
+            absolute_path = root;
+        else if (path.is_relative())
             absolute_path = root / path;
+        else
+            absolute_path = path;
 
-        absolute_path = absolute_path.lexically_normal();
+        try {
+            absolute_path =
+                std::filesystem::canonical(absolute_path.lexically_normal());
+        }
+        catch (std::filesystem::filesystem_error &e) {
+            LOG_WARN("Cannot add non-existent path {} to paths filter",
+                path.string());
+            continue;
+        }
 
         paths_.emplace_back(std::move(absolute_path));
     }
@@ -430,7 +442,7 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().access));
 
         add_inclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kInclusive, c.base_directory(), c.include().paths));
+            filter_t::kInclusive, c.relative_to(), c.include().paths));
 
         // Include any of these matches even if one them does not match
         std::vector<std::unique_ptr<filter_visitor>> element_filters;
@@ -474,21 +486,11 @@ void diagram_filter::init_filters(const config::diagram &c)
 
             for (auto &&path : c.include().dependants) {
                 std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
-
                 dependants.emplace_back(dep_path.lexically_normal().string());
             }
 
             for (auto &&path : c.include().dependencies) {
                 std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
-
                 dependencies.emplace_back(dep_path.lexically_normal().string());
             }
 
@@ -518,7 +520,7 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, c.exclude().namespaces));
 
         add_exclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kExclusive, c.base_directory(), c.exclude().paths));
+            filter_t::kExclusive, c.relative_to(), c.exclude().paths));
 
         add_exclusive_filter(std::make_unique<element_filter>(
             filter_t::kExclusive, c.exclude().elements));

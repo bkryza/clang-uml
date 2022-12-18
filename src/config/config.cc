@@ -595,6 +595,11 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.participants_order);
+        get_option(node, rhs.generate_method_arguments);
+
+        // Ensure relative_to has a value
+        if (!rhs.relative_to.has_value)
+            rhs.relative_to.set(std::filesystem::current_path());
 
         rhs.initialize_type_aliases();
 
@@ -629,6 +634,9 @@ template <> struct convert<include_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.generate_system_headers);
+
+        if (!rhs.relative_to)
+            rhs.relative_to.set(std::filesystem::current_path());
 
         // Convert the path in relative_to to an absolute path, with respect
         // to the directory where the `.clang-uml` configuration file is located

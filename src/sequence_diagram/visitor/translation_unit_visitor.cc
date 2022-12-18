@@ -274,7 +274,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
 
     if (!get_participant<model::class_>(parent_decl)) {
-        LOG_INFO("Cannot find parent class_ for method {} in class {}",
+        LOG_DBG("Cannot find parent class_ for method {} in class {}",
             m->getQualifiedNameAsString(),
             m->getParent()->getQualifiedNameAsString());
         return true;
@@ -490,10 +490,8 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     auto m_ptr = std::make_unique<sequence_diagram::model::method>(
         config().using_namespace());
 
-    common::model::namespace_ ns{c_ptr->get_namespace()};
     auto method_name = "operator()";
     m_ptr->set_method_name(method_name);
-    ns.pop_back();
 
     m_ptr->set_class_id(cls_id);
     m_ptr->set_class_full_name(c_ptr->full_name(false));
@@ -1156,6 +1154,11 @@ bool translation_unit_visitor::process_function_call_expression(
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
     if (!diagram().should_include(callee_name))
+        return false;
+
+    // Skip free functions declared in files outside of included paths
+    if (config().combine_free_functions_into_file_participants() &&
+        !diagram().should_include(common::model::source_file{m.file()}))
         return false;
 
     std::unique_ptr<model::function_template> f_ptr;

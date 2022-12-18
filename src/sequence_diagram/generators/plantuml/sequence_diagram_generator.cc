@@ -58,20 +58,28 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     std::string message;
 
+    model::function::message_render_mode render_mode =
+        model::function::message_render_mode::full;
+
+    if (m_config.generate_method_arguments() ==
+        config::method_arguments::abbreviated)
+        render_mode = model::function::message_render_mode::abbreviated;
+    else if (m_config.generate_method_arguments() ==
+        config::method_arguments::none)
+        render_mode = model::function::message_render_mode::no_arguments;
+
     if (to.value().type_name() == "method") {
         message = dynamic_cast<const model::function &>(to.value())
-                      .message_name(model::function::message_render_mode::full);
+                      .message_name(render_mode);
     }
     else if (m_config.combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
-            message =
-                dynamic_cast<const model::function &>(to.value())
-                    .message_name(model::function::message_render_mode::full);
+            message = dynamic_cast<const model::function &>(to.value())
+                          .message_name(render_mode);
         }
         else if (to.value().type_name() == "function_template") {
-            message =
-                dynamic_cast<const model::function_template &>(to.value())
-                    .message_name(model::function::message_render_mode::full);
+            message = dynamic_cast<const model::function_template &>(to.value())
+                          .message_name(render_mode);
         }
     }
 
@@ -302,7 +310,7 @@ void generator::generate_participant(
         if (is_participant_generated(file_id))
             return;
 
-        [[maybe_unused]] const auto &relative_to =
+        const auto &relative_to =
             std::filesystem::canonical(m_config.relative_to());
 
         auto participant_name = std::filesystem::relative(
@@ -388,13 +396,22 @@ void generator::generate(std::ostream &ostr) const
 
             std::string from_alias = generate_alias(from.value());
 
+            model::function::message_render_mode render_mode =
+                model::function::message_render_mode::full;
+
+            if (m_config.generate_method_arguments() ==
+                config::method_arguments::abbreviated)
+                render_mode = model::function::message_render_mode::abbreviated;
+            else if (m_config.generate_method_arguments() ==
+                config::method_arguments::none)
+                render_mode =
+                    model::function::message_render_mode::no_arguments;
+
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {
                 ostr << "[->"
                      << " " << from_alias << " : "
-                     << from.value().message_name(
-                            model::function::message_render_mode::full)
-                     << std::endl;
+                     << from.value().message_name(render_mode) << std::endl;
             }
 
             ostr << "activate " << from_alias << std::endl;
