@@ -95,6 +95,10 @@ clang-format:
 format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
 
+.PHONY: check-formatting
+check-formatting:
+	./util/check_formatting.sh
+
 .PHONY: iwyu_fixes
 iwyu_fixes: debug
 	python3 $(shell which iwyu_tool.py) -p debug > debug/iwyu.out
