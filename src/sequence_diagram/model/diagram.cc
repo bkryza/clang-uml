@@ -170,12 +170,7 @@ void diagram::end_loop_stmt(
     if (sequences_.find(current_caller_id) != sequences_.end()) {
         auto &current_messages = get_activity(current_caller_id).messages();
 
-        if (current_messages.back().type() == loop_type) {
-            current_messages.pop_back();
-        }
-        else {
-            current_messages.emplace_back(std::move(m));
-        }
+        fold_or_end_block_statement(std::move(m), loop_type, current_messages);
     }
 }
 
@@ -202,25 +197,10 @@ void diagram::end_if_stmt(
     message m{message_t::kIfEnd, current_caller_id};
 
     if (sequences_.find(current_caller_id) != sequences_.end()) {
-
         auto &current_messages = get_activity(current_caller_id).messages();
-        // Remove the if/else messages if there were no calls
-        // added to the diagram between them
-        auto last_if_it =
-            std::find_if(current_messages.rbegin(), current_messages.rend(),
-                [](const message &m) { return m.type() == message_t::kIf; });
 
-        bool last_if_block_is_empty =
-            std::none_of(current_messages.rbegin(), last_if_it,
-                [](const message &m) { return m.type() == message_t::kCall; });
-
-        if (!last_if_block_is_empty) {
-            current_messages.emplace_back(std::move(m));
-        }
-        else {
-            current_messages.erase(
-                (last_if_it + 1).base(), current_messages.end());
-        }
+        fold_or_end_block_statement(
+            std::move(m), message_t::kIf, current_messages);
     }
 }
 
@@ -248,12 +228,8 @@ void diagram::end_try_stmt(
     if (sequences_.find(current_caller_id) != sequences_.end()) {
         auto &current_messages = get_activity(current_caller_id).messages();
 
-        if (current_messages.back().type() == message_t::kTry) {
-            current_messages.pop_back();
-        }
-        else {
-            current_messages.emplace_back(std::move(m));
-        }
+        fold_or_end_block_statement(
+            std::move(m), message_t::kTry, current_messages);
     }
 }
 
@@ -293,17 +269,13 @@ void diagram::end_switch_stmt(
 {
     using clanguml::common::model::message_t;
 
-    message m{message_t::kTryEnd, current_caller_id};
+    message m{message_t::kSwitchEnd, current_caller_id};
 
     if (sequences_.find(current_caller_id) != sequences_.end()) {
         auto &current_messages = get_activity(current_caller_id).messages();
 
-        if (current_messages.back().type() == message_t::kSwitch) {
-            current_messages.pop_back();
-        }
-        else {
-            current_messages.emplace_back(std::move(m));
-        }
+        fold_or_end_block_statement(
+            std::move(m), message_t::kSwitch, current_messages);
     }
 }
 
@@ -374,23 +346,17 @@ void diagram::add_conditional_elsestmt(
 void diagram::end_conditional_stmt(
     const common::model::diagram_element::id_t current_caller_id)
 {
-    using clanguml::common::model::message_t;
+    using common::model::message_t;
 
     message m{message_t::kConditionalEnd, current_caller_id};
 
     if (sequences_.find(current_caller_id) != sequences_.end()) {
         auto &current_messages = get_activity(current_caller_id).messages();
 
-        if (current_messages.at(current_messages.size() - 1).type() ==
-                message_t::kElse &&
-            current_messages.at(current_messages.size() - 2).type() ==
-                message_t::kConditional) {
-            current_messages.pop_back();
-            current_messages.pop_back();
-        }
-        else {
-            current_messages.emplace_back(std::move(m));
-        }
+        const message_t begin_stmt_message_type{message_t::kConditional};
+
+        fold_or_end_block_statement(
+            std::move(m), begin_stmt_message_type, current_messages);
     }
 }
 
@@ -473,6 +439,31 @@ void diagram::print() const
                     message.message_name(), to_string(message.type()));
             }
         }
+    }
+}
+
+void diagram::fold_or_end_block_statement(message &&m,
+    const common::model::message_t statement_begin,
+    std::vector<message> &current_messages) const
+{
+    bool is_empty_statement{true};
+
+    auto rit = current_messages.rbegin();
+    for (; rit != current_messages.rend(); rit++) {
+        if (rit->type() == statement_begin) {
+            break;
+        }
+        if (rit->type() == common::model::message_t::kCall) {
+            is_empty_statement = false;
+            break;
+        }
+    }
+
+    if (is_empty_statement) {
+        current_messages.erase((rit + 1).base(), current_messages.end());
+    }
+    else {
+        current_messages.emplace_back(std::move(m));
     }
 }
 }

@@ -2142,7 +2142,6 @@ bool translation_unit_visitor::should_include(
     const clang::LambdaExpr *expr) const
 {
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
-
     return diagram().should_include(common::model::source_file{expr_file});
 }
 

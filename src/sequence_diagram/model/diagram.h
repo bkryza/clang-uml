@@ -144,6 +144,10 @@ public:
         std::string caught_type);
 
 private:
+    void fold_or_end_block_statement(message &&m,
+        common::model::message_t statement_begin,
+        std::vector<message> &current_messages) const;
+
     bool started_{false};
 
     std::map<common::model::diagram_element::id_t, activity> sequences_;
