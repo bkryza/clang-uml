@@ -209,8 +209,11 @@ element_filter::element_filter(filter_t type, std::vector<std::string> elements)
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const element &e) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
-        [&e](const auto &el) { return e.full_name(false) == el; });
+    return tvl::any_of(
+        elements_.begin(), elements_.end(), [&e](const auto &el) {
+            return (e.full_name(false) == el) ||
+                (fmt::format("::{}", e.full_name(false)) == el);
+        });
 }
 
 subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)

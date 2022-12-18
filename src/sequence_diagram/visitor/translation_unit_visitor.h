@@ -163,6 +163,14 @@ public:
         int64_t local_id) const;
 
 private:
+    bool should_include(const clang::TagDecl *decl) const;
+    bool should_include(const clang::LambdaExpr *expr) const;
+    bool should_include(const clang::CallExpr *expr) const;
+    bool should_include(const clang::CXXMethodDecl *decl) const;
+    bool should_include(const clang::FunctionDecl *decl) const;
+    bool should_include(const clang::FunctionTemplateDecl *decl) const;
+    bool should_include(const clang::ClassTemplateDecl *decl) const;
+
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
     create_class_declaration(clang::CXXRecordDecl *cls);
 

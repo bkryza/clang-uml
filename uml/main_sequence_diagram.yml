@@ -1,30 +1,28 @@
 type: sequence
+# Group free functions into one participant per file
 combine_free_functions_into_file_participants: true
+# Do not generate method or function arguments
 generate_method_arguments: none
+# Parse only 1 translation unit for this diagram
 glob:
   - src/main.cc
 include:
+  # Only include entities and call expressions from the project directory
   paths:
     - src
 exclude:
-  namespaces:
-    - std
-    - fmt
-    - spdlog
-    - clang
-    - llvm
-    - nlohmann
-    - CLI
-    - __gnu_cxx
-    - inja
+  # Exclude calls to config options
   elements:
     - clanguml::config::option<std::string>
+  # Exclude entities and call expressions from irrelevant files
   paths:
     - src/util/util.h
+    - src/common/model/enums.h
 using_namespace:
   - clanguml
 plantuml:
   before:
     - 'title clang-uml main function sequence diagram'
+# Use clang-uml main function as entry point for this diagram
 start_from:
   - function: main(int,const char **)

@@ -209,87 +209,6 @@ int main(int argc, const char *argv[])
     return 0;
 }
 
-void generate_diagrams(const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
-    const int verbose, const unsigned int thread_count,
-    const std::map<std::string, std::vector<std::string>>
-        &translation_units_map)
-{
-    util::thread_pool_executor generator_executor{thread_count};
-    std::vector<std::future<void>> futs;
-
-    for (const auto &[name, diagram] : config.diagrams) {
-        // If there are any specific diagram names provided on the command line,
-        // and this diagram is not in that list - skip it
-        if (!diagram_names.empty() && !util::contains(diagram_names, name))
-            continue;
-
-        const auto &valid_translation_units = translation_units_map.at(name);
-
-        if (valid_translation_units.empty()) {
-            LOG_ERROR(
-                "Diagram {} generation failed: no translation units found",
-                name);
-            continue;
-        }
-
-        futs.emplace_back(generator_executor.add(
-            [&od, &name = name, &diagram = diagram, db = std::ref(*db),
-                translation_units = valid_translation_units, verbose]() {
-                try {
-                    generate_diagram(
-                        od, name, diagram, db, translation_units, verbose);
-                }
-                catch (std::runtime_error &e) {
-                    LOG_ERROR(e.what());
-                }
-            }));
-    }
-
-    for (auto &fut : futs) {
-        fut.get();
-    }
-}
-
-void find_translation_units_for_diagrams(
-    const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config,
-    const std::vector<std::string> &compilation_database_files,
-    std::map<std::string, std::vector<std::string>> &translation_units_map)
-{
-    const auto current_directory = std::filesystem::current_path();
-
-    for (const auto &[name, diagram] : config.diagrams) {
-        // If there are any specific diagram names provided on the command line,
-        // and this diagram is not in that list - skip it
-        if (!diagram_names.empty() && !util::contains(diagram_names, name))
-            continue;
-
-        // If glob is not defined use all translation units from the
-        // compilation database
-        if (!diagram->glob.has_value) {
-            translation_units_map[name] = compilation_database_files;
-        }
-        // Otherwise, get all translation units matching the glob from diagram
-        // configuration
-        else {
-            const std::vector<std::string> translation_units =
-                diagram->get_translation_units(current_directory);
-
-            std::vector<std::string> valid_translation_units{};
-            std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(),
-                std::back_inserter(valid_translation_units),
-                [&translation_units](const auto &tu) {
-                    return util::contains(translation_units, tu);
-                });
-
-            translation_units_map[name] = std::move(valid_translation_units);
-        }
-    }
-}
-
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const clang::tooling::CompilationDatabase &db,
@@ -370,6 +289,87 @@ void generate_diagram(const std::string &od, const std::string &name,
     LOG_INFO("Written {} diagram to {}", name, path.string());
 
     ofs.close();
+}
+
+void generate_diagrams(const std::vector<std::string> &diagram_names,
+    clanguml::config::config &config, const std::string &od,
+    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
+    const int verbose, const unsigned int thread_count,
+    const std::map<std::string, std::vector<std::string>>
+        &translation_units_map)
+{
+    util::thread_pool_executor generator_executor{thread_count};
+    std::vector<std::future<void>> futs;
+
+    for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
+            continue;
+
+        const auto &valid_translation_units = translation_units_map.at(name);
+
+        if (valid_translation_units.empty()) {
+            LOG_ERROR(
+                "Diagram {} generation failed: no translation units found",
+                name);
+            continue;
+        }
+
+        futs.emplace_back(generator_executor.add(
+            [&od, &name = name, &diagram = diagram, db = std::ref(*db),
+                translation_units = valid_translation_units, verbose]() {
+                try {
+                    generate_diagram(
+                        od, name, diagram, db, translation_units, verbose);
+                }
+                catch (std::runtime_error &e) {
+                    LOG_ERROR(e.what());
+                }
+            }));
+    }
+
+    for (auto &fut : futs) {
+        fut.get();
+    }
+}
+
+void find_translation_units_for_diagrams(
+    const std::vector<std::string> &diagram_names,
+    clanguml::config::config &config,
+    const std::vector<std::string> &compilation_database_files,
+    std::map<std::string, std::vector<std::string>> &translation_units_map)
+{
+    const auto current_directory = std::filesystem::current_path();
+
+    for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
+            continue;
+
+        // If glob is not defined use all translation units from the
+        // compilation database
+        if (!diagram->glob.has_value) {
+            translation_units_map[name] = compilation_database_files;
+        }
+        // Otherwise, get all translation units matching the glob from diagram
+        // configuration
+        else {
+            const std::vector<std::string> translation_units =
+                diagram->get_translation_units(current_directory);
+
+            std::vector<std::string> valid_translation_units{};
+            std::copy_if(compilation_database_files.begin(),
+                compilation_database_files.end(),
+                std::back_inserter(valid_translation_units),
+                [&translation_units](const auto &tu) {
+                    return util::contains(translation_units, tu);
+                });
+
+            translation_units_map[name] = std::move(valid_translation_units);
+        }
+    }
 }
 
 bool ensure_output_directory_exists(const std::string &dir)
