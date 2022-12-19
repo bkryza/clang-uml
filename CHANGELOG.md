@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.0
   * Added support for sequence diagrams with template code
 
 ### 0.2.2
