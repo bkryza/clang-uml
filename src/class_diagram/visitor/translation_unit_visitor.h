@@ -38,6 +38,12 @@ using found_relationships_t =
     std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
         common::model::relationship_t>>;
 
+/**
+ * @brief Class diagram translation unit visitor
+ *
+ * This class implements the @link clang::RecursiveASTVisitor interface
+ * for selected visitors relevant to generating class diagrams.
+ */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
       public common::visitor::translation_unit_visitor {
@@ -60,10 +66,28 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
+    /**
+     * @brief Get diagram model reference
+     *
+     * @return Reference to diagram model created by the visitor
+     */
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
+    /**
+     * @brief Get diagram config instance
+     *
+     * @return Reference to config instance
+     */
     const clanguml::config::class_diagram &config() const { return config_; }
 
+    /**
+     * @brief Finalize diagram model
+     *
+     * This method is called after the entire AST has been visited by this
+     * visitor. It is used to perform necessary post processing on the diagram
+     * (e.g. resolve translation unit local element ID's into global ID's based
+     * on elements full names).
+     */
     void finalize();
 
 private:

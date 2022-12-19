@@ -17,7 +17,6 @@ exclude:
   # Exclude entities and call expressions from irrelevant files
   paths:
     - src/util/util.h
-#    - src/common/model/enums.h
 using_namespace:
   - clanguml
 plantuml:

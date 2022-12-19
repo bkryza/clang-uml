@@ -39,78 +39,78 @@
 using namespace clanguml;
 using config::config;
 
-///
-/// Print the program version and basic information
-///
+/**
+ * Print the program version and basic information
+ */
 void print_version();
 
-////
-/// Print list of diagrams available in the configuration file
-///
-/// \param cfg Configuration instance loaded from configuration file
-///
+/**
+ * Print list of diagrams available in the configuration file
+ *
+ *  @param cfg Configuration instance loaded from configuration file
+ */
 void print_diagrams_list(const clanguml::config::config &cfg);
 
-///
-/// Check if diagram output directory exists, if not create it
-///
-/// \param dir Path to the output directory
-/// \return True if directory exists or has been created
-///
+/**
+ * Check if diagram output directory exists, if not create it
+ *
+ * @param dir Path to the output directory
+ * @return True if directory exists or has been created
+ */
 bool ensure_output_directory_exists(const std::string &dir);
 
-///
-/// Generate specific diagram identified by name
-///
-/// \param od Diagram output directory
-/// \param name Name of the diagram as specified in the config file
-/// \param diagram Diagram model instance
-/// \param db Compilation database
-/// \param translation_units List of translation units to be used for this
-///        diagram
-/// \param verbose Logging level
-///
+/**
+ * Generate specific diagram identified by name
+ *
+ * @param od Diagram output directory
+ * @param name Name of the diagram as specified in the config file
+ * @param diagram Diagram model instance
+ * @param db Compilation database
+ * @param translation_units List of translation units to be used for this
+ *        diagram
+ * @param verbose Logging level
+ */
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const clang::tooling::CompilationDatabase &db,
     const std::vector<std::string> &translation_units, bool verbose);
 
-///
-/// Find translation units for diagrams.
-///
-/// For each diagram to be generated, this function selects translation units
-/// to be used for this diagram. The files are selected as an intersection
-/// between all translation units found in the compilation database and the
-/// `glob` patterns specified for each diagram in the configuration file.
-///
-/// \param diagram_names List of diagram names to be generated
-/// \param config Configuration instance
-/// \param compilation_database_files All translation units in compilation
-/// database
-/// \param translation_units_map The output map containing translation
-///                 units for each diagram by name
-///
+/**
+ * Find translation units for diagrams.
+ *
+ *  For each diagram to be generated, this function selects translation units
+ *  to be used for this diagram. The files are selected as an intersection
+ *  between all translation units found in the compilation database and the
+ *  `glob` patterns specified for each diagram in the configuration file.
+ *
+ *  @param diagram_names List of diagram names to be generated
+ *  @param config Configuration instance
+ *  @param compilation_database_files All translation units in compilation
+ *  database
+ *  @param translation_units_map The output map containing translation
+ *                  units for each diagram by name
+ */
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
-///
-/// Generate diagrams.
-///
-/// This function generates all diagrams specified in the configuration file
-/// and in the command line.
-///
-/// \param diagram_names List of diagram names to be generated
-/// \param config Configuration instance
-/// \param od Output directory where diagrams should be written
-/// \param db Compilation database instance
-/// \param verbose Verbosity level
-/// \param thread_count Number of diagrams to be generated in parallel
-/// \param translation_units_map List of translation units to be used for each
-///        diagram
-///
+/**
+ *  Generate diagrams.
+ *
+ *  This function generates all diagrams specified in the configuration file
+ *  and in the command line.
+ *
+ *  @param diagram_names List of diagram names to be generated
+ *  @param config Configuration instance
+ *  @param od Output directory where diagrams should be written
+ *  @param db Compilation database instance
+ *  @param verbose Verbosity level
+ *  @param thread_count Number of diagrams to be generated in parallel
+ *  @param translation_units_map List of translation units to be used for each
+ *         diagram
+ */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
     const std::unique_ptr<clang::tooling::CompilationDatabase> &db,

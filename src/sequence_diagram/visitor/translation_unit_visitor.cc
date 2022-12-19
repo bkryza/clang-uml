@@ -1549,31 +1549,7 @@ void translation_unit_visitor::
     // If this is a nested template type - add nested templates as
     // template arguments
     if (arg.getAsType()->getAs<clang::FunctionType>()) {
-
-        //        for (const auto &param_type :
-        //            arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types())
-        //            {
-        //
-        //            if (!param_type->getAs<clang::RecordType>())
-        //                continue;
-        //
-        //            auto classTemplateSpecialization =
-        //                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
-        //                    param_type->getAsRecordDecl());
-        //
-        //            if (classTemplateSpecialization) {
-        //                // Read arg info as needed.
-        //                auto nested_template_instantiation =
-        //                    build_template_instantiation_from_class_template_specialization(
-        //                        *classTemplateSpecialization,
-        //                        *param_type->getAs<clang::RecordType>(),
-        //                        diagram().should_include(
-        //                            full_template_specialization_name)
-        //                            ?
-        //                            std::make_optional(&template_instantiation)
-        //                            : parent);
-        //            }
-        //        }
+        // TODO
     }
     else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
         const auto *nested_template_type =
@@ -1587,19 +1563,6 @@ void translation_unit_visitor::
         auto [tinst_ns, tinst_name] = cx::util::split_ns(nested_template_name);
 
         argument.set_name(nested_template_name);
-
-        //        auto nested_template_instantiation =
-        //        build_template_instantiation(
-        //            *arg.getAsType()->getAs<clang::TemplateSpecializationType>(),
-        //            diagram().should_include(full_template_specialization_name)
-        //                ? std::make_optional(&template_instantiation)
-        //                : parent);
-        //
-        //        argument.set_id(nested_template_instantiation->id());
-        //
-        //        for (const auto &t :
-        //        nested_template_instantiation->templates())
-        //            argument.add_template_param(t);
 
         // Check if this template should be simplified (e.g. system
         // template aliases such as 'std:basic_string<char>' should

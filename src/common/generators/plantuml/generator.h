@@ -41,8 +41,20 @@ std::string to_plantuml(relationship_t r, std::string style);
 std::string to_plantuml(access_t scope);
 std::string to_plantuml(message_t r);
 
+/**
+ * @brief Base class for diagram generators
+ *
+ * @tparam ConfigType Configuration type
+ * @tparam DiagramType Diagram model type
+ */
 template <typename ConfigType, typename DiagramType> class generator {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param config Reference to instance of @link clanguml::config::diagram
+     * @param model Reference to instance of @link clanguml::model::diagram
+     */
     generator(ConfigType &config, DiagramType &model)
         : m_config{config}
         , m_model{model}
@@ -53,22 +65,75 @@ public:
 
     virtual ~generator() = default;
 
+    /**
+     * @brief Generate diagram
+     *
+     * This method must be implemented in subclasses for specific diagram
+     * types. It is responsible for calling other methods in appropriate
+     * order to generate the diagram into the output stream.
+     *
+     * @param ostr Output stream
+     */
     virtual void generate(std::ostream &ostr) const = 0;
 
     template <typename C, typename D>
     friend std::ostream &operator<<(std::ostream &os, const generator<C, D> &g);
 
+    /**
+     * @brief Generate diagram layout hints
+     *
+     * This method adds to the diagram any layout hints that were provided
+     * in the configuration file.
+     *
+     * @param ostr Output stream
+     */
     void generate_config_layout_hints(std::ostream &ostr) const;
 
+    /**
+     * @brief Generate PlantUML directives from config file.
+     *
+     * This method renders the PlantUML directives provided in the configuration
+     * file, including resolving any element aliases and Jinja templates.
+     *
+     * @param ostr Output stream
+     * @param directives List of directives from the configuration file
+     */
     void generate_plantuml_directives(
         std::ostream &ostr, const std::vector<std::string> &directives) const;
 
+    /**
+     * @brief Generate diagram notes
+     *
+     * This method adds any notes in the diagram, which were declared in the
+     * code using inline directives
+     *
+     * @param ostr Output stream
+     * @param element Element to which the note should be attached
+     */
     void generate_notes(
         std::ostream &ostr, const model::element &element) const;
 
+    /**
+     * @brief Generate hyper link to element
+     *
+     * This method renders links to URL's based on templates provided
+     * in the configuration file (e.g. Git browser with specific line and
+     * column offset)
+     *
+     * @param ostr Output stream
+     * @param e Reference to diagram element
+     * @tparam E Diagram element type
+     */
     template <typename E>
     void generate_link(std::ostream &ostr, const E &e) const;
 
+    /**
+     * @brief Update diagram Jinja context
+     *
+     * This method updates the diagram context with models properties
+     * which can be used to render Jinja templates in the diagram (e.g.
+     * in notes or links)
+     */
     void update_context() const;
 
 protected:

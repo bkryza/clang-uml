@@ -31,9 +31,22 @@ class NamespaceDecl;
 }
 
 namespace clanguml::common {
+/**
+ * @brief Convert @link clang::AccessSpecifier to @link model::access_t
+ *
+ * @param access_specifier Clang member access specifier
+ * @return Enum value of @link model::access_t
+ */
 model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
 
+/**
+ * @brief Generate full qualified name for @link clang::TagDecl instance
+ *
+ * @param declaration Input declaration
+ * @return String representation including any templates, parameters and
+ * attribtues
+ */
 std::string get_tag_name(const clang::TagDecl &declaration);
 
 template <typename T> std::string get_qualified_name(const T &declaration)
@@ -77,8 +90,30 @@ std::string get_source_text_raw(
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm);
 
+/**
+ * @brief Check if an expression is contained in another expression
+ *
+ * This method returns true if `sub_stmt` is equal to or is contained in the
+ * AST subtree of `parent_stmt`
+ *
+ * @param parent_stmt Parent statement
+ * @param sub_stmt Sub statement
+ * @return
+ */
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
 
+/**
+ * @brief Forward template for convertions to ID from various entities
+ *
+ * These methods provide the main mechanism for generating globally unique
+ * identifiers for all elements in the diagrams. The identifiers must be unique
+ * between different translation units in order for element relationships to
+ * be properly rendered in diagrams.
+ *
+ * @tparam T Type of entity for which ID should be computed
+ * @param declaration Element (e.g. declaration) for which the ID is needed
+ * @return Unique ID
+ */
 template <typename T> id_t to_id(const T &declaration);
 
 template <> id_t to_id(const std::string &full_name);
