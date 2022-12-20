@@ -18,17 +18,18 @@
 
 #include "relationship.h"
 
+#include <utility>
+
 namespace clanguml::common::model {
 
 relationship::relationship(relationship_t type, int64_t destination,
-    access_t access, const std::string &label,
-    const std::string &multiplicity_source,
-    const std::string &multiplicity_destination)
+    access_t access, std::string label, std::string multiplicity_source,
+    std::string multiplicity_destination)
     : type_{type}
     , destination_{destination}
-    , multiplicity_source_{multiplicity_source}
-    , multiplicity_destination_{multiplicity_destination}
-    , label_{label}
+    , multiplicity_source_{std::move(multiplicity_source)}
+    , multiplicity_destination_{std::move(multiplicity_destination)}
+    , label_{std::move(label)}
     , access_{access}
 {
 }

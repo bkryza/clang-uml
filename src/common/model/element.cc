@@ -21,11 +21,12 @@
 #include "util/util.h"
 
 #include <ostream>
+#include <utility>
 
 namespace clanguml::common::model {
 
-element::element(const namespace_ &using_namespace)
-    : using_namespace_{using_namespace}
+element::element(namespace_ using_namespace)
+    : using_namespace_{std::move(using_namespace)}
 {
 }
 

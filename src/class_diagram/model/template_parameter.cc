@@ -20,11 +20,13 @@
 #include "common/model/enums.h"
 #include <common/model/namespace.h>
 
+#include <utility>
+
 namespace clanguml::class_diagram::model {
 
 template_parameter::template_parameter(const std::string &type,
-    const std::string &name, const std::string &default_value, bool is_variadic)
-    : default_value_{default_value}
+    const std::string &name, std::string default_value, bool is_variadic)
+    : default_value_{std::move(default_value)}
     , is_variadic_{is_variadic}
 {
     set_name(name);

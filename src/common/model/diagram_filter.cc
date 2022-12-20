@@ -18,6 +18,8 @@
 
 #include "diagram_filter.h"
 
+#include <utility>
+
 #include "class_diagram/model/class.h"
 #include "common/model/package.h"
 #include "include_diagram/model/diagram.h"
@@ -155,7 +157,7 @@ tvl::value_t anyof_filter::match(
 namespace_filter::namespace_filter(
     filter_t type, std::vector<namespace_> namespaces)
     : filter_visitor{type}
-    , namespaces_{namespaces}
+    , namespaces_{std::move(namespaces)}
 {
 }
 
@@ -202,7 +204,7 @@ tvl::value_t namespace_filter::match(
 
 element_filter::element_filter(filter_t type, std::vector<std::string> elements)
     : filter_visitor{type}
-    , elements_{elements}
+    , elements_{std::move(elements)}
 {
 }
 
@@ -218,7 +220,7 @@ tvl::value_t element_filter::match(
 
 subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
     : filter_visitor{type}
-    , roots_{roots}
+    , roots_{std::move(roots)}
 {
 }
 
@@ -268,7 +270,7 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
 relationship_filter::relationship_filter(
     filter_t type, std::vector<relationship_t> relationships)
     : filter_visitor{type}
-    , relationships_{relationships}
+    , relationships_{std::move(relationships)}
 {
 }
 
@@ -281,7 +283,7 @@ tvl::value_t relationship_filter::match(
 
 access_filter::access_filter(filter_t type, std::vector<access_t> access)
     : filter_visitor{type}
-    , access_{access}
+    , access_{std::move(access)}
 {
 }
 
@@ -294,7 +296,7 @@ tvl::value_t access_filter::match(
 
 context_filter::context_filter(filter_t type, std::vector<std::string> context)
     : filter_visitor{type}
-    , context_{context}
+    , context_{std::move(context)}
 {
 }
 

@@ -29,8 +29,8 @@ namespace clanguml::class_diagram::model {
 class class_element : public common::model::decorated_element,
                       public common::model::source_location {
 public:
-    class_element(common::model::access_t scope, const std::string &name,
-        const std::string &type);
+    class_element(
+        common::model::access_t scope, std::string name, std::string type);
 
     common::model::access_t access() const;
     std::string name() const;

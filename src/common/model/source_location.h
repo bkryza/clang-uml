@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 namespace clanguml::common::model {
 
@@ -25,8 +26,8 @@ class source_location {
 public:
     source_location() = default;
 
-    source_location(const std::string &f, unsigned int l)
-        : file_{f}
+    source_location(std::string f, unsigned int l)
+        : file_{std::move(f)}
         , line_{l}
     {
     }

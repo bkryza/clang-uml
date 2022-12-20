@@ -34,7 +34,7 @@ namespace clanguml::common::model {
 
 class element : public diagram_element {
 public:
-    element(const namespace_ &using_namespace);
+    element(namespace_ using_namespace);
 
     virtual ~element() = default;
 

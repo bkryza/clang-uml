@@ -29,9 +29,9 @@ class relationship : public common::model::decorated_element,
                      public common::model::stylable_element {
 public:
     relationship(relationship_t type, int64_t destination,
-        access_t access = access_t::kPublic, const std::string &label = "",
-        const std::string &multiplicity_source = "",
-        const std::string &multiplicity_destination = "");
+        access_t access = access_t::kPublic, std::string label = "",
+        std::string multiplicity_source = "",
+        std::string multiplicity_destination = "");
 
     virtual ~relationship() = default;
 

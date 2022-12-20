@@ -18,13 +18,15 @@
 
 #include "class_element.h"
 
+#include <utility>
+
 namespace clanguml::class_diagram::model {
 
-class_element::class_element(common::model::access_t access,
-    const std::string &name, const std::string &type)
+class_element::class_element(
+    common::model::access_t access, std::string name, std::string type)
     : access_{access}
-    , name_{name}
-    , type_{type}
+    , name_{std::move(name)}
+    , type_{std::move(type)}
 {
 }
 

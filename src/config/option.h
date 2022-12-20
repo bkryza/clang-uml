@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 namespace clanguml {
 namespace config {
@@ -27,17 +28,17 @@ template <typename T> void append_value(T &l, const T &r) { l = r; }
 enum class option_inherit_mode { kOverride, kAppend };
 
 template <typename T> struct option {
-    option(const std::string &name_,
+    option(std::string name_,
         option_inherit_mode im = option_inherit_mode::kOverride)
-        : name{name_}
+        : name{std::move(name_)}
         , value{}
         , inheritance_mode{im}
     {
     }
-    option(const std::string &name_, const T &initial_value,
+    option(std::string name_, T initial_value,
         option_inherit_mode im = option_inherit_mode::kOverride)
-        : name{name_}
-        , value{initial_value}
+        : name{std::move(name_)}
+        , value{std::move(initial_value)}
         , has_value{true}
         , inheritance_mode{im}
     {

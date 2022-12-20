@@ -34,7 +34,7 @@ namespace clanguml::class_diagram::model {
 class template_parameter {
 public:
     template_parameter(const std::string &type = "",
-        const std::string &name = "", const std::string &default_value = "",
+        const std::string &name = "", std::string default_value = "",
         bool is_variadic = false);
 
     template_parameter(const template_parameter &right) = default;

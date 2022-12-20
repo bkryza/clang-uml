@@ -30,6 +30,7 @@
 #include "tvl.h"
 
 #include <filesystem>
+#include <utility>
 
 namespace clanguml::common::model {
 
@@ -140,7 +141,7 @@ struct edge_traversal_filter : public filter_visitor {
     edge_traversal_filter(filter_t type, relationship_t relationship,
         std::vector<std::string> roots, bool forward = false)
         : filter_visitor{type}
-        , roots_{roots}
+        , roots_{std::move(roots)}
         , relationship_{relationship}
         , forward_{forward}
     {
