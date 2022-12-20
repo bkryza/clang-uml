@@ -18,5 +18,5 @@ widget::widget(widget &&) = default;
 widget::~widget() = default;
 
 widget &widget::operator=(widget &&) = default;
-}
-}
+} // namespace t00018
+} // namespace clanguml

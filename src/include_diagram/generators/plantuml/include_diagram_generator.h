@@ -60,7 +60,7 @@ public:
     void generate(std::ostream &ostr) const;
 };
 
-}
-}
-}
-}
+} // namespace plantuml
+} // namespace generators
+} // namespace include_diagram
+} // namespace clanguml

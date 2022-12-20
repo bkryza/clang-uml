@@ -105,7 +105,7 @@ private:
     std::string full_name_;
 };
 
-}
+} // namespace clanguml::class_diagram::model
 
 namespace std {
 template <>
@@ -119,4 +119,4 @@ struct hash<std::reference_wrapper<clanguml::class_diagram::model::class_>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

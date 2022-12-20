@@ -88,4 +88,4 @@ private:
 };
 
 template <typename DiagramT> bool check_diagram_type(diagram_t t);
-}
+} // namespace clanguml::common::model

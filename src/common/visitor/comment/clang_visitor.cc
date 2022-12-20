@@ -223,4 +223,4 @@ void clang_visitor::visit_paragraph(
     }
 }
 
-}
+} // namespace clanguml::common::visitor::comment

@@ -30,4 +30,4 @@ private:
     std::string style_;
 };
 
-}
+} // namespace clanguml::common::model

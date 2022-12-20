@@ -86,4 +86,4 @@ void translation_unit_visitor::set_source_location(
     }
 }
 
-}
+} // namespace clanguml::common::visitor

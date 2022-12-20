@@ -44,4 +44,4 @@ private:
     std::vector<message> messages_;
 };
 
-}
+} // namespace clanguml::sequence_diagram::model

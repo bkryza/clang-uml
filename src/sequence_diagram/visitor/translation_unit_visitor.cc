@@ -1239,8 +1239,9 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
         id_opt = get_unique_id(local_id);
 
         // If not, check if the parent template declaration is in the model
-        if (!id_opt && static_cast<const clang::RecordDecl *>(parent)
-                           ->getDescribedTemplate()) {
+        if (!id_opt &&
+            static_cast<const clang::RecordDecl *>(parent)
+                ->getDescribedTemplate()) {
             local_id = static_cast<const clang::RecordDecl *>(parent)
                            ->getDescribedTemplate()
                            ->getID();
@@ -1249,7 +1250,7 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
                 id_opt = get_unique_id(local_id);
         }
 
-        if(!id_opt)
+        if (!id_opt)
             return {};
 
         auto parent_class =
@@ -2176,4 +2177,4 @@ bool translation_unit_visitor::should_include(
     return diagram().should_include(decl->getQualifiedNameAsString()) &&
         diagram().should_include(common::model::source_file{decl_file});
 }
-}
+} // namespace clanguml::sequence_diagram::visitor

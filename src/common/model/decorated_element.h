@@ -61,4 +61,4 @@ private:
     std::optional<comment_t> comment_;
 };
 
-}
+} // namespace clanguml::common::model

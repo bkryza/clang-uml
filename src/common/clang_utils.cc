@@ -298,4 +298,4 @@ template <> id_t to_id(const clang::TemplateArgument &template_argument)
 
     throw std::runtime_error("Cannot generate id for template argument");
 }
-}
+} // namespace clanguml::common

@@ -215,4 +215,4 @@ bool template_parameter::find_nested_relationships(
     return added_aggregation_relationship;
 }
 
-}
+} // namespace clanguml::class_diagram::model

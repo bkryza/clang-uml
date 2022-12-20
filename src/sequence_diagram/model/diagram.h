@@ -158,7 +158,7 @@ private:
     std::set<common::model::diagram_element::id_t> active_participants_;
 };
 
-}
+} // namespace clanguml::sequence_diagram::model
 
 namespace clanguml::common::model {
 template <>

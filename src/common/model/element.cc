@@ -64,4 +64,4 @@ std::ostream &operator<<(std::ostream &out, const element &rhs)
     return out;
 }
 
-}
+} // namespace clanguml::common::model

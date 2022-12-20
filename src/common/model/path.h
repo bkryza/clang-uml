@@ -216,4 +216,4 @@ private:
     container_type path_;
 };
 
-}
+} // namespace clanguml::common::model

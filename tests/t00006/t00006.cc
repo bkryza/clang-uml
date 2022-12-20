@@ -80,5 +80,5 @@ public:
 
     std::tuple<N, NN, NNN> ns;
 };
-}
-}
+} // namespace t00006
+} // namespace clanguml

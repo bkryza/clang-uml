@@ -104,4 +104,4 @@ private:
 
     std::unique_ptr<comment::comment_visitor> comment_visitor_;
 };
-}
+} // namespace clanguml::common::visitor

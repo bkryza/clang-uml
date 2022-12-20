@@ -54,4 +54,4 @@ std::vector<std::string> &enum_::constants() { return constants_; }
 
 const std::vector<std::string> &enum_::constants() const { return constants_; }
 
-}
+} // namespace clanguml::class_diagram::model

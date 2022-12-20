@@ -412,4 +412,4 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     return result;
 }
 
-}
+} // namespace clanguml::package_diagram::visitor

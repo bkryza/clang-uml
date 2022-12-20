@@ -1,0 +1,47 @@
+Checks: >-
+  *,
+  -altera*,
+  -*braces-around-statements,
+  -*osx*,
+  -abseil*,
+  -android*,
+  -clang-analyzer-alpha.*,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cert-env33-c,
+  -cert-err58-cpp,
+  -fuchsia*,
+  -hicpp-no-array-decay,
+  -google-readability-todo,
+  -google-default-arguments,
+  -hicpp-signed-bitwise,
+  -llvmlibc-*,
+  -llvm-header-guard,
+  -llvm-namespace-comment,
+  -misc-no-recursion,
+  -modernize-use-trailing-return-type,
+  -mpi*,
+  -objc*,
+  -openmp*,
+  -readability-inconsistent-declaration-parameter-name,
+  -readability-identifier-naming,
+  -darwin*,
+  -zircon*
+WarningsAsErrors: '*'
+HeaderFilterRegex: 'src'
+CheckOptions:
+  - key:             readability-identifier-naming.ClassMemberSuffix
+    value:           '_'
+  - key:             readability-identifier-naming.PublicMemberSuffix
+    value:           ''
+  - key:             performance-unnecessary-value-param.AllowedTypes
+    value:           shared_ptr;weak_ptr
+  - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           1
+  - key:             hicpp-special-member-functions.AllowSoleDefaultDtor
+    value:           1
+  - key:             cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value:           1

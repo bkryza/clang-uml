@@ -466,7 +466,7 @@ void diagram::fold_or_end_block_statement(message &&m,
         current_messages.emplace_back(std::move(m));
     }
 }
-}
+} // namespace clanguml::sequence_diagram::model
 
 namespace clanguml::common::model {
 template <>

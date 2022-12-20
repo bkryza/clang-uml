@@ -363,4 +363,4 @@ private:
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const;
-}
+} // namespace clanguml::common::model

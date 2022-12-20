@@ -30,4 +30,4 @@ clang::SourceManager &comment_visitor::source_manager()
     return source_manager_;
 }
 
-}
+} // namespace clanguml::common::visitor::comment

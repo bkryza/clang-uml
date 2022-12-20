@@ -133,4 +133,4 @@ std::string to_string(const diagram_t t)
     }
 }
 
-}
+} // namespace clanguml::common::model

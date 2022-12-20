@@ -62,5 +62,5 @@ private:
     volatile J *j;
     mutable K *k;
 };
-}
-}
+} // namespace t00017
+} // namespace clanguml

@@ -57,4 +57,4 @@ void message::set_message_scope(common::model::message_scope_t scope)
 
 common::model::message_scope_t message::message_scope() const { return scope_; }
 
-}
+} // namespace clanguml::sequence_diagram::model

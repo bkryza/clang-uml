@@ -35,4 +35,4 @@ void class_parent::set_access(common::model::access_t access)
 
 common::model::access_t class_parent::access() const { return access_; }
 
-}
+} // namespace clanguml::class_diagram::model

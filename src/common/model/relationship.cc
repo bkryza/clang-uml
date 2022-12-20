@@ -82,4 +82,4 @@ bool operator==(const relationship &l, const relationship &r)
     return l.type() == r.type() && l.destination() == r.destination() &&
         l.label() == r.label();
 }
-}
+} // namespace clanguml::common::model

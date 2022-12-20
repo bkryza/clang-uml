@@ -49,4 +49,4 @@ std::string method_parameter::to_string(
     return fmt::format("{} {} = {}", type_ns, name(), default_value());
 }
 
-}
+} // namespace clanguml::class_diagram::model

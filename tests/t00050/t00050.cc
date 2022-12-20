@@ -99,5 +99,5 @@ class G {
 class NoComment {
 };
 
-}
-}
+} // namespace t00050
+} // namespace clanguml

@@ -131,4 +131,4 @@ template <> id_t to_id(const clang::EnumType &type);
 template <> id_t to_id(const clang::TemplateSpecializationType &type);
 
 template <> id_t to_id(const std::filesystem::path &type);
-}
+} // namespace clanguml::common

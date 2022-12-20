@@ -572,4 +572,4 @@ template <typename C, typename D> void generator<C, D>::init_env()
         return res;
     });
 }
-}
+} // namespace clanguml::common::generators::plantuml

@@ -96,7 +96,7 @@ private:
 
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
-}
+} // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {
 template <>

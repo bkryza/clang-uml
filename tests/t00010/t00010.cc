@@ -19,5 +19,5 @@ class C {
 public:
     B<int> aintstring;
 };
-}
-}
+} // namespace t00010
+} // namespace clanguml

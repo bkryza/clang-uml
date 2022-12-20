@@ -216,5 +216,5 @@ struct config : public inheritable_diagram_options {
 };
 
 config load(const std::string &config_file);
-}
-}
+} // namespace config
+} // namespace clanguml

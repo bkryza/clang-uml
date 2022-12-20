@@ -21,6 +21,6 @@ void widget::draw(const clanguml::t00018::widget &w)
     if (w.shown())
         std::cout << "drawing a non-const widget " << n << '\n';
 }
-}
-}
-}
+} // namespace impl
+} // namespace t00018
+} // namespace clanguml

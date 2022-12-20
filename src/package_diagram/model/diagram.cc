@@ -111,7 +111,7 @@ inja::json diagram::context() const
 
     return ctx;
 }
-}
+} // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {
 template <>

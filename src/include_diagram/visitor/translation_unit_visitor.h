@@ -102,4 +102,4 @@ private:
     // Reference to class diagram config
     const clanguml::config::include_diagram &config_;
 };
-}
+} // namespace clanguml::include_diagram::visitor

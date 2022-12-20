@@ -454,4 +454,4 @@ std::string generator::generate_alias(
 
     return participant.alias();
 }
-}
+} // namespace clanguml::sequence_diagram::generators::plantuml

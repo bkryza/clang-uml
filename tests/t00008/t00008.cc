@@ -32,5 +32,5 @@ struct D {
 
     void add(int i) { ints.template_template.values.push_back(i); }
 };
-}
-}
+} // namespace t00008
+} // namespace clanguml

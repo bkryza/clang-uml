@@ -194,4 +194,4 @@ int class_::calculate_template_specialization_match(
 
     return res;
 }
-}
+} // namespace clanguml::class_diagram::model

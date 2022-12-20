@@ -81,7 +81,7 @@ private:
     std::string render_name(std::string name) const;
 };
 
-}
-}
-}
-}
+} // namespace plantuml
+} // namespace generators
+} // namespace class_diagram
+} // namespace clanguml

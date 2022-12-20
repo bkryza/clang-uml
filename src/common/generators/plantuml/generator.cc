@@ -70,4 +70,4 @@ std::string to_plantuml(message_t r)
     }
 }
 
-}
+} // namespace clanguml::common::generators::plantuml

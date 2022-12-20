@@ -76,4 +76,4 @@ private:
     namespace_ ns_;
     namespace_ using_namespace_;
 };
-}
+} // namespace clanguml::common::model

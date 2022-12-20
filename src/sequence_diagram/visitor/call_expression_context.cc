@@ -387,4 +387,4 @@ bool call_expression_context::is_expr_in_current_control_statement_condition(
     return false;
 }
 
-}
+} // namespace clanguml::sequence_diagram::visitor

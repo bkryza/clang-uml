@@ -353,4 +353,4 @@ std::string function_template::message_name(message_render_mode mode) const
         fmt::join(parameters(), ","), is_const() ? " const" : "");
 }
 
-}
+} // namespace clanguml::sequence_diagram::model

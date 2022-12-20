@@ -71,4 +71,4 @@ inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
 
     return res;
 }
-};
+} // namespace clanguml::common::model::tvl;

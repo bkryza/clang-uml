@@ -58,4 +58,4 @@ private:
     bool is_defaulted_{false};
     bool is_static_{false};
 };
-}
+} // namespace clanguml::class_diagram::model

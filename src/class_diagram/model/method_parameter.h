@@ -45,4 +45,4 @@ private:
     std::string default_value_;
 };
 
-}
+} // namespace clanguml::class_diagram::model

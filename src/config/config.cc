@@ -218,8 +218,8 @@ template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
 }
-}
-}
+} // namespace config
+} // namespace clanguml
 
 namespace YAML {
 using clanguml::common::model::access_t;
@@ -775,4 +775,4 @@ template <> struct convert<config> {
         return true;
     }
 };
-}
+} // namespace YAML

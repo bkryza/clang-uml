@@ -91,4 +91,4 @@ void decorated_element::append(const decorated_element &de)
 std::optional<comment_t> decorated_element::comment() const { return comment_; }
 
 void decorated_element::set_comment(const comment_t &c) { comment_ = c; }
-}
+} // namespace clanguml::common::model

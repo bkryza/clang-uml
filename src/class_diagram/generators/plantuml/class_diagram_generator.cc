@@ -537,4 +537,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-}
+} // namespace clanguml::class_diagram::generators::plantuml

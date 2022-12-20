@@ -255,4 +255,4 @@ private:
             common::model::access_t>>
         anonymous_struct_relationships_;
 };
-}
+} // namespace clanguml::class_diagram::visitor

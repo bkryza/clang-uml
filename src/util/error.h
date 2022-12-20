@@ -34,4 +34,4 @@ struct substring_delimiter_not_found : public virtual std::runtime_error {
     {
     }
 };
-}
+} // namespace clanguml::error

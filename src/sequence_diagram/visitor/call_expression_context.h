@@ -122,4 +122,4 @@ private:
     std::stack<clang::ConditionalOperator *> conditional_operator_stack_;
 };
 
-}
+} // namespace clanguml::sequence_diagram::visitor

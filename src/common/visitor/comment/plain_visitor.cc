@@ -47,4 +47,4 @@ void plain_visitor::visit(
     e.set_comment(cmt);
 }
 
-}
+} // namespace clanguml::common::visitor::comment

@@ -64,4 +64,4 @@ private:
     std::string label_;
     access_t access_;
 };
-}
+} // namespace clanguml::common::model

@@ -78,5 +78,5 @@ template <typename T> struct option {
     bool has_value{false};
     option_inherit_mode inheritance_mode;
 };
-}
-}
+} // namespace config
+} // namespace clanguml

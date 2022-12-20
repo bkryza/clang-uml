@@ -96,4 +96,4 @@ private:
     // Reference to class diagram config
     const clanguml::config::package_diagram &config_;
 };
-}
+} // namespace clanguml::package_diagram::visitor

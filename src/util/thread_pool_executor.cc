@@ -90,4 +90,4 @@ std::packaged_task<void()> thread_pool_executor::get()
     return res;
 }
 
-}  // namespace clanguml::util
+} // namespace clanguml::util

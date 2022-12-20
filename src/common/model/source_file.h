@@ -119,7 +119,7 @@ private:
     source_file_t type_{source_file_t::kDirectory};
     bool is_absolute_{false};
 };
-}
+} // namespace clanguml::common::model
 
 namespace std {
 
@@ -139,7 +139,7 @@ template <> struct hash<clanguml::common::model::filesystem_path> {
     }
 };
 
-}
+} // namespace std
 
 namespace std {
 template <>
@@ -153,4 +153,4 @@ struct hash<std::reference_wrapper<clanguml::common::model::source_file>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

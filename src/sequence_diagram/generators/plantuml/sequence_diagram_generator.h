@@ -73,7 +73,7 @@ private:
     std::string generate_alias(const model::participant &participant) const;
 };
 
-}
-}
-}
-}
+} // namespace plantuml
+} // namespace generators
+} // namespace sequence_diagram
+} // namespace clanguml

@@ -49,4 +49,4 @@ private:
     std::vector<std::string> constants_;
 };
 
-}
+} // namespace clanguml::class_diagram::model

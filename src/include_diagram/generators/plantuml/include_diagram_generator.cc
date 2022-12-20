@@ -120,4 +120,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-}
+} // namespace clanguml::include_diagram::generators::plantuml

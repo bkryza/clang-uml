@@ -64,7 +64,7 @@ public:
 private:
     common::reference_vector<common::model::source_file> files_;
 };
-}
+} // namespace clanguml::include_diagram::model
 
 namespace clanguml::common::model {
 template <>

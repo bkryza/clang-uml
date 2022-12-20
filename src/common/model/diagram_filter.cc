@@ -612,4 +612,4 @@ bool diagram_filter::should_include<std::string>(const std::string &name) const
 
     return should_include(ns, n);
 }
-}
+} // namespace clanguml::common::model

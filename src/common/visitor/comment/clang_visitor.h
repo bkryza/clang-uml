@@ -51,4 +51,4 @@ private:
     void visit_paragraph(const clang::comments::ParagraphComment *paragraph,
         const clang::comments::CommandTraits &traits, std::string &text);
 };
-}
+} // namespace clanguml::common::visitor::comment

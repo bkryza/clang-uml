@@ -38,4 +38,4 @@ public:
 private:
     clang::SourceManager &source_manager_;
 };
-}
+} // namespace clanguml::common::visitor::comment

@@ -227,4 +227,4 @@ struct function_template : public function, public template_trait {
 
     std::string message_name(message_render_mode mode) const override;
 };
-}
+} // namespace clanguml::sequence_diagram::model

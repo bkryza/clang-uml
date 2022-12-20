@@ -50,4 +50,4 @@ template <> struct hash<clanguml::common::model::namespace_> {
     }
 };
 
-}
+} // namespace std

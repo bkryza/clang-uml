@@ -34,4 +34,4 @@ private:
     std::string underlying_type_;
 };
 
-}
+} // namespace clanguml::class_diagram::model

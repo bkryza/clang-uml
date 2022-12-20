@@ -55,7 +55,7 @@ public:
 private:
     bool is_deprecated_{false};
 };
-}
+} // namespace clanguml::common::model
 
 namespace std {
 template <>
@@ -69,4 +69,4 @@ struct hash<std::reference_wrapper<clanguml::common::model::package>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

@@ -105,4 +105,4 @@ std::ostream &operator<<(std::ostream &out, const diagram_element &rhs)
     return out;
 }
 
-}
+} // namespace clanguml::common::model

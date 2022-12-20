@@ -44,4 +44,4 @@ private:
     std::string type_;
 };
 
-}
+} // namespace clanguml::class_diagram::model

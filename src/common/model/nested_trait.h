@@ -171,4 +171,4 @@ private:
     std::vector<std::unique_ptr<T>> elements_;
 };
 
-}
+} // namespace clanguml::common::model

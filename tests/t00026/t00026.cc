@@ -54,5 +54,5 @@ struct StringMemento {
     Caretaker<std::string> caretaker;
     Originator<std::string> originator;
 };
-}
-}
+} // namespace t00026
+} // namespace clanguml

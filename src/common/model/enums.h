@@ -79,4 +79,4 @@ std::string to_string(message_t m);
 
 std::string to_string(diagram_t r);
 
-}
+} // namespace clanguml::common::model

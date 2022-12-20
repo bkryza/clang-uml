@@ -27,5 +27,5 @@ protected:
     void method1() override { }
     void method2() override { }
 };
-}
-}
+} // namespace t00022
+} // namespace clanguml

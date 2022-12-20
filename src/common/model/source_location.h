@@ -48,4 +48,4 @@ private:
     unsigned int line_{0};
     unsigned int hash_;
 };
-}
+} // namespace clanguml::common::model

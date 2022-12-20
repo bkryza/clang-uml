@@ -42,4 +42,4 @@ inja::json class_element::context() const
     ctx["access"] = to_string(access());
     return ctx;
 }
-}
+} // namespace clanguml::class_diagram::model

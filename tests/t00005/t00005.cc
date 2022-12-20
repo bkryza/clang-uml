@@ -51,5 +51,5 @@ public:
     volatile J *j;
     mutable K *k;
 };
-}
-}
+} // namespace t00005
+} // namespace clanguml

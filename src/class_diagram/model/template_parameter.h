@@ -129,4 +129,4 @@ private:
 
     std::optional<int64_t> id_;
 };
-}
+} // namespace clanguml::class_diagram::model

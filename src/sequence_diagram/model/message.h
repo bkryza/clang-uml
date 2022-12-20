@@ -67,4 +67,4 @@ private:
     std::string return_type_{};
 };
 
-}
+} // namespace clanguml::sequence_diagram::model

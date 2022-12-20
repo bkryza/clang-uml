@@ -85,4 +85,4 @@ private:
 
     static std::atomic_uint64_t m_nextId;
 };
-}
+} // namespace clanguml::common::model

@@ -229,4 +229,4 @@ translation_unit_visitor::include_visitor::process_source_file(
     return {};
 }
 
-}
+} // namespace clanguml::include_diagram::visitor

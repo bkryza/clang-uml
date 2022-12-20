@@ -108,4 +108,4 @@ bool diagram::should_include(const common::model::source_file &f) const
     return filter_->should_include(f);
 }
 
-}
+} // namespace clanguml::common::model

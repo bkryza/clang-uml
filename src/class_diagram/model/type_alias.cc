@@ -31,4 +31,4 @@ void type_alias::set_underlying_type(const std::string &type)
 
 std::string type_alias::underlying_type() const { return underlying_type_; }
 
-}
+} // namespace clanguml::class_diagram::model

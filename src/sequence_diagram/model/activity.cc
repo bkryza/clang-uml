@@ -35,4 +35,4 @@ void activity::set_from(common::model::diagram_element::id_t f) { from_ = f; }
 
 common::model::diagram_element::id_t activity::from() const { return from_; }
 
-}
+} // namespace clanguml::sequence_diagram::model

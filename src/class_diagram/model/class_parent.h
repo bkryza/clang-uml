@@ -46,4 +46,4 @@ private:
     bool is_virtual_{false};
     common::model::access_t access_;
 };
-}
+} // namespace clanguml::class_diagram::model
