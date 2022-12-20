@@ -31,7 +31,7 @@ template <typename T> class optional_ref {
 public:
     using optional_type = T;
 
-    optional_ref() { }
+    optional_ref() = default;
 
     optional_ref(T *value) { value_ = value; }
 

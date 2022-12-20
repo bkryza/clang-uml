@@ -20,7 +20,7 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
-call_expression_context::call_expression_context() { }
+call_expression_context::call_expression_context() = default;
 
 void call_expression_context::reset()
 {
