@@ -77,11 +77,11 @@ public:
     void complete(bool completed);
 
 private:
-    id_t id_;
+    id_t id_{0};
     std::string name_;
     std::vector<relationship> relationships_;
-    bool nested_;
-    bool complete_;
+    bool nested_{false};
+    bool complete_{false};
 
     static std::atomic_uint64_t m_nextId;
 };

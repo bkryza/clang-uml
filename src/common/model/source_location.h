@@ -47,6 +47,6 @@ public:
 private:
     std::string file_;
     unsigned int line_{0};
-    unsigned int hash_;
+    unsigned int hash_{0};
 };
 } // namespace clanguml::common::model

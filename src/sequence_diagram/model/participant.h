@@ -206,7 +206,7 @@ struct method : public function {
     std::string to_string() const override;
 
 private:
-    diagram_element::id_t class_id_;
+    diagram_element::id_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
 };

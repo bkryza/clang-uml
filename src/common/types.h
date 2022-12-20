@@ -31,10 +31,7 @@ template <typename T> class optional_ref {
 public:
     using optional_type = T;
 
-    optional_ref()
-        : value_{nullptr}
-    {
-    }
+    optional_ref() { }
 
     optional_ref(T *value) { value_ = value; }
 
@@ -112,7 +109,7 @@ public:
     T *get() const { return value_; }
 
 private:
-    T *value_;
+    T *value_{nullptr};
 };
 
 template <typename T>

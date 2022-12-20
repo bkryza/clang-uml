@@ -79,7 +79,7 @@ struct filter {
 enum class hint_t { up, down, left, right };
 
 struct layout_hint {
-    hint_t hint;
+    hint_t hint{hint_t::up};
     std::string entity;
 };
 
@@ -166,7 +166,7 @@ struct diagram : public inheritable_diagram_options {
 
 struct source_location {
     enum class location_t { usr, marker, fileline, function };
-    location_t location_type;
+    location_t location_type{location_t::function};
     std::string location;
 };
 

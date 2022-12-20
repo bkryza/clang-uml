@@ -20,16 +20,7 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
-call_expression_context::call_expression_context()
-    : current_class_decl_{nullptr}
-    , current_class_template_decl_{nullptr}
-    , current_class_template_specialization_decl_{nullptr}
-    , current_method_decl_{nullptr}
-    , current_function_decl_{nullptr}
-    , current_function_template_decl_{nullptr}
-    , current_caller_id_{0}
-{
-}
+call_expression_context::call_expression_context() { }
 
 void call_expression_context::reset()
 {

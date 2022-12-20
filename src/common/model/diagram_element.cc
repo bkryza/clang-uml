@@ -26,12 +26,7 @@ namespace clanguml::common::model {
 
 std::atomic_uint64_t diagram_element::m_nextId = 1;
 
-diagram_element::diagram_element()
-    : id_{0}
-    , nested_{false}
-    , complete_{false}
-{
-}
+diagram_element::diagram_element() { }
 
 diagram_element::id_t diagram_element::id() const { return id_; }
 

@@ -41,9 +41,9 @@ public:
     common::model::access_t access() const;
 
 private:
-    clanguml::common::id_t id_;
+    clanguml::common::id_t id_{};
     std::string name_;
     bool is_virtual_{false};
-    common::model::access_t access_;
+    common::model::access_t access_{common::model::access_t::kPublic};
 };
 } // namespace clanguml::class_diagram::model
