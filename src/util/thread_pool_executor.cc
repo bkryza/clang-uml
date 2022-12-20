@@ -31,7 +31,7 @@ thread_pool_executor::thread_pool_executor(unsigned int pool_size)
         pool_size = std::thread::hardware_concurrency();
 
     for (auto i = 0U; i < pool_size; i++) {
-        threads_.push_back(std::thread{&thread_pool_executor::worker, this});
+        threads_.emplace_back(&thread_pool_executor::worker, this);
     }
 }
 
@@ -90,4 +90,4 @@ std::packaged_task<void()> thread_pool_executor::get()
     return res;
 }
 
-}
+}  // namespace clanguml::util
