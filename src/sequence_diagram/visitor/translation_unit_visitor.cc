@@ -116,9 +116,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
-    else {
-        forward_declarations_.erase(id);
-    }
+    forward_declarations_.erase(id);
 
     if (diagram().should_include(class_model)) {
         LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
@@ -169,9 +167,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
-    else {
-        forward_declarations_.erase(id);
-    }
+    forward_declarations_.erase(id);
 
     if (diagram().should_include(*c_ptr)) {
         LOG_DBG("Adding class template {} with id {}", cls_full_name, id);
@@ -216,9 +212,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
             id, std::move(template_specialization_ptr));
         return true;
     }
-    else {
-        forward_declarations_.erase(id);
-    }
+    forward_declarations_.erase(id);
 
     if (diagram().should_include(*template_specialization_ptr)) {
         LOG_DBG("Adding class template specialization {} with id {}",
@@ -2005,8 +1999,7 @@ bool translation_unit_visitor::simplify_system_template(
         ct.clear_params();
         return true;
     }
-    else
-        return false;
+    return false;
 }
 
 std::string translation_unit_visitor::simplify_system_template(

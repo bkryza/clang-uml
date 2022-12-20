@@ -63,9 +63,7 @@ inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
                 res = true;
                 break;
             }
-            else {
-                res = false;
-            }
+            res = false;
         }
     }
 

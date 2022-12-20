@@ -286,7 +286,7 @@ template <> id_t to_id(const clang::TemplateArgument &template_argument)
             return to_id(*template_argument.getAsType()
                               ->getAs<clang::EnumType>()
                               ->getAsTagDecl());
-        else if (template_argument.getAsType()->getAs<clang::RecordType>())
+        if (template_argument.getAsType()->getAs<clang::RecordType>())
             return to_id(*template_argument.getAsType()
                               ->getAs<clang::RecordType>()
                               ->getAsRecordDecl());

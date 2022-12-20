@@ -70,11 +70,9 @@ public:
         if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
             return dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
-        else {
-            spdlog::info("No parent element found at: {}", path.to_string());
-            throw std::runtime_error(
-                "No parent element found for " + path.to_string());
-        }
+        spdlog::info("No parent element found at: {}", path.to_string());
+        throw std::runtime_error(
+            "No parent element found for " + path.to_string());
     }
 
     template <typename V = T> auto get_element(const Path &path) const

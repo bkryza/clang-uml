@@ -315,10 +315,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
-    else {
-        process_class_declaration(*cls->getTemplatedDecl(), *c_ptr);
-        forward_declarations_.erase(id);
-    }
+    process_class_declaration(*cls->getTemplatedDecl(), *c_ptr);
+    forward_declarations_.erase(id);
 
     if (diagram_.should_include(*c_ptr)) {
         const auto name = c_ptr->full_name();
@@ -387,8 +385,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
         forward_declarations_.emplace(id, std::move(c_ptr));
         return true;
     }
-    else
-        forward_declarations_.erase(id);
+    forward_declarations_.erase(id);
 
     if (diagram_.should_include(class_model)) {
         LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
@@ -2152,8 +2149,7 @@ bool translation_unit_visitor::simplify_system_template(
         ct.clear_params();
         return true;
     }
-    else
-        return false;
+    return false;
 }
 
 void translation_unit_visitor::set_ast_local_id(

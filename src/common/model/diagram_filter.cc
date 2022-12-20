@@ -194,12 +194,8 @@ tvl::value_t namespace_filter::match(
                 return result;
             });
     }
-    else {
-        return tvl::any_of(
-            namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
-                return e.get_namespace().starts_with(nsit);
-            });
-    }
+    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+        [&e](const auto &nsit) { return e.get_namespace().starts_with(nsit); });
 }
 
 element_filter::element_filter(filter_t type, std::vector<std::string> elements)

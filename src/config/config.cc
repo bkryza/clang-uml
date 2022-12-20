@@ -308,7 +308,7 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
     if (diagram_type == "class") {
         return std::make_shared<class_diagram>(d.as<class_diagram>());
     }
-    else if (diagram_type == "sequence") {
+    if (diagram_type == "sequence") {
         return std::make_shared<sequence_diagram>(d.as<sequence_diagram>());
     }
     else if (diagram_type == "package") {
