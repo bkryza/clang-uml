@@ -71,7 +71,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
         pos = std::distance(c.begin(), it);
         // If the diagram list is provided after ':', [] is mandatory
         // even if empty
-        auto d = c.substr(pos, c.find("[", pos) - pos);
+        auto d = c.substr(pos, c.find('[', pos) - pos);
         if (!d.empty()) {
             std::string d_str{d};
             d_str.erase(std::remove_if(d_str.begin(), d_str.end(),
@@ -87,7 +87,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
         std::advance(it, 1);
 
         pos = std::distance(c.begin(), it);
-        res.param = c.substr(pos, c.find("]", pos) - pos);
+        res.param = c.substr(pos, c.find(']', pos) - pos);
 
         std::advance(it, res.param.size() + 1);
     }
@@ -96,7 +96,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
     }
 
     pos = std::distance(c.begin(), it);
-    res.text = c.substr(pos, c.find("}", pos) - pos);
+    res.text = c.substr(pos, c.find('}', pos) - pos);
     res.text = util::trim(res.text);
     res.param = util::trim(res.param);
 
@@ -190,7 +190,7 @@ std::vector<std::shared_ptr<decorator>> parse(
     auto pos = block_view.find("@" + clanguml_tag + "{");
     while (pos < documentation_block.size()) {
         auto c_begin = pos + begin_tag_size;
-        auto c_end = documentation_block.find("}", c_begin);
+        auto c_end = documentation_block.find('}', c_begin);
 
         if (c_end == std::string::npos)
             return res;
