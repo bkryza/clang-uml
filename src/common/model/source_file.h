@@ -92,7 +92,8 @@ public:
     {
         LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
 
-        add_element(f->path(), std::move(f));
+        const auto path = f->path();
+        add_element(path, std::move(f));
     }
 
     std::filesystem::path fs_path(const std::filesystem::path &base = {}) const
