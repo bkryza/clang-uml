@@ -75,7 +75,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
         if (!d.empty()) {
             std::string d_str{d};
             d_str.erase(std::remove_if(d_str.begin(), d_str.end(),
-                            (int (*)(int))std::isspace),
+                            static_cast<int (*)(int)>(std::isspace)),
                 d_str.end());
             res.diagrams = util::split(d_str, ",");
         }
