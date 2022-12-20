@@ -24,6 +24,10 @@
 #include "util/util.h"
 #include "version.h"
 
+#ifndef NDEBUG
+#include <backward-cpp/backward.hpp>
+#endif
+
 #include <clang/Basic/Version.h>
 #include <clang/Config/config.h>
 #include <cli11/CLI11.hpp>
@@ -35,6 +39,12 @@
 #include <iostream>
 #include <string.h>
 #include <util/thread_pool_executor.h>
+
+#ifndef NDEBUG
+namespace backward {
+backward::SignalHandling sh;
+} // namespace backward
+#endif
 
 using namespace clanguml;
 using config::config;

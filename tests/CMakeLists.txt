@@ -4,7 +4,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(TEST_DISABLE_WARNINGS "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes")
+set(TEST_DISABLE_WARNINGS "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull -Wno-aggressive-loop-optimizations")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS}")
 if(APPLE)

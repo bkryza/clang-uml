@@ -25,7 +25,7 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 #
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries or statically" ON)
 set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
-set(GIT_VERSION "0.1.0" CACHE STRING "clang-uml version")
+set(GIT_VERSION "0.3.0" CACHE STRING "clang-uml version")
 
 #
 # Setup LLVM
