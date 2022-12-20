@@ -22,20 +22,19 @@ namespace clanguml::common::model {
 
 bool decorated_element::skip() const
 {
-    for (auto d : decorators_)
-        if (std::dynamic_pointer_cast<decorators::skip>(d))
-            return true;
-
-    return false;
+    return std::any_of(
+        decorators_.begin(), decorators_.end(), [](const auto &d) {
+            return std::dynamic_pointer_cast<decorators::skip>(d) != nullptr;
+        });
 }
 
 bool decorated_element::skip_relationship() const
 {
-    for (auto d : decorators_)
-        if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
-            return true;
-
-    return false;
+    return std::any_of(
+        decorators_.begin(), decorators_.end(), [](const auto &d) {
+            return std::dynamic_pointer_cast<decorators::skip_relationship>(
+                       d) != nullptr;
+        });
 }
 
 std::pair<relationship_t, std::string>

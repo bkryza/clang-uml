@@ -239,17 +239,14 @@ void diagram::get_parents(
 bool diagram::has_element(
     clanguml::common::model::diagram_element::id_t id) const
 {
-    for (const auto &c : classes_) {
-        if (c.get().id() == id)
-            return true;
-    }
+    const auto has_class = std::any_of(classes_.begin(), classes_.end(),
+        [id](const auto &c) { return c.get().id() == id; });
 
-    for (const auto &c : enums_) {
-        if (c.get().id() == id)
-            return true;
-    }
+    if (has_class)
+        return true;
 
-    return false;
+    return std::any_of(enums_.begin(), enums_.end(),
+        [id](const auto &c) { return c.get().id() == id; });
 }
 
 std::string diagram::to_alias(

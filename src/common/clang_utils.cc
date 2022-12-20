@@ -238,12 +238,8 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
     if (parent_stmt == sub_stmt)
         return true;
 
-    for (const auto *e : parent_stmt->children()) {
-        if (is_subexpr_of(e, sub_stmt))
-            return true;
-    }
-
-    return false;
+    return std::any_of(parent_stmt->child_begin(), parent_stmt->child_end(),
+        [sub_stmt](const auto *e) { return is_subexpr_of(e, sub_stmt); });
 }
 
 template <> id_t to_id(const std::string &full_name)
