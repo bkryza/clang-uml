@@ -4,12 +4,18 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(TEST_DISABLE_WARNINGS "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull -Wno-aggressive-loop-optimizations")
+set(TEST_DISABLE_WARNINGS_DEBUG "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull")
+set(TEST_DISABLE_WARNINGS_RELEASE "${TEST_DISABLE_WARNINGS} -Wno-aggressive-loop-optimizations")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS}")
+
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS_DEBUG}")
+
 if(APPLE)
     # Without this, clang-uml test cases fail with error saying that clang cannot find stdarg.h
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
+    set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}  -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
 endif(APPLE)
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc)

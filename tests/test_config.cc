@@ -154,7 +154,7 @@ TEST_CASE("Test config layout", "[unit-test]")
 
     CHECK(cfg.diagrams.size() == 2);
 
-    auto &def = static_cast<clanguml::config::class_diagram &>(
+    [[maybe_unused]] auto &def = static_cast<clanguml::config::class_diagram &>(
         *cfg.diagrams["class_main"]);
 
     auto check_layout = [](const auto &diagram,
