@@ -281,4 +281,13 @@ template <> bool ends_with(const std::string &value, const std::string &suffix)
     return std::equal(suffix.rbegin(), suffix.rend(), value.rbegin());
 }
 
+std::size_t hash_seed(std::size_t seed)
+{
+    constexpr auto kSeedStart{0x6a3712b5};
+    constexpr auto kSeedShiftFirst{6};
+    constexpr auto kSeedShiftSecond{2};
+
+    return kSeedStart + (seed << kSeedShiftFirst) + (seed >> kSeedShiftSecond);
+}
+
 } // namespace clanguml::util

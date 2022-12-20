@@ -27,8 +27,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace clanguml {
-namespace util {
+namespace clanguml::util {
 
 std::string ltrim(const std::string &s);
 std::string rtrim(const std::string &s);
@@ -247,5 +246,6 @@ void for_each_if(const T &collection, C &&cond, F &&func)
         });
 }
 
-} // namespace util
-} // namespace clanguml
+std::size_t hash_seed(std::size_t seed);
+
+} // namespace clanguml::util

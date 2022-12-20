@@ -101,6 +101,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     const auto &uns = m_config.using_namespace();
 
     std::string class_type{"class"};
@@ -148,7 +150,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             auto args_string = fmt::format("{}", fmt::join(params, ", "));
             if (m_config.generate_method_arguments() ==
                 config::method_arguments::abbreviated) {
-                args_string = clanguml::util::abbreviate(args_string, 10);
+                args_string = clanguml::util::abbreviate(
+                    args_string, kAbbreviatedMethodArgumentsLength);
             }
             ostr << args_string;
         }

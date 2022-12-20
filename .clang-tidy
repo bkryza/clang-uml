@@ -18,6 +18,7 @@ Checks: >-
   -google-readability-todo,
   -google-default-arguments,
   -google-explicit-constructor,
+  -google-build-using-namespace,
   -hicpp-signed-bitwise,
   -hicpp-explicit-conversions,
   -llvmlibc-*,

@@ -403,11 +403,14 @@ bool ensure_output_directory_exists(const std::string &dir)
 
 void print_version()
 {
+    constexpr auto kLLVMBackendPackageStringLength{5};
     std::cout << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
     std::cout << "Copyright (C) 2021-2022 Bartek Kryza <bkryza@gmail.com>"
               << '\n';
     std::cout << "Built with LLVM version: "
-              << std::string{BACKEND_PACKAGE_STRING}.substr(5) << std::endl;
+              << std::string{BACKEND_PACKAGE_STRING}.substr(
+                     kLLVMBackendPackageStringLength)
+              << std::endl;
     std::cout << "Using LLVM version: " << clang::getClangFullVersion()
               << std::endl;
 }

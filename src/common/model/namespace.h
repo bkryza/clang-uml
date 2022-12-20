@@ -42,8 +42,8 @@ template <> struct hash<clanguml::common::model::namespace_> {
 
         std::size_t seed = key.size();
         for (const auto &ns : key) {
-            seed ^= std::hash<std::string>{}(ns) + 0x6a3712b5 + (seed << 6) +
-                (seed >> 2);
+            seed ^=
+                std::hash<std::string>{}(ns) + clanguml::util::hash_seed(seed);
         }
 
         return seed;

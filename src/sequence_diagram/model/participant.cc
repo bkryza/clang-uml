@@ -193,13 +193,16 @@ std::string function::full_name_no_ns() const
 
 std::string function::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}(){}", name(), is_const() ? " const" : "");
     }
     else if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
-                fmt::format("{}", fmt::join(parameters_, ",")), 15),
+                fmt::format("{}", fmt::join(parameters_, ",")),
+                kAbbreviatedMethodArgumentsLength),
             is_const() ? " const" : "");
     }
 
@@ -259,6 +262,8 @@ std::string method::full_name(bool /*relative*/) const
 
 std::string method::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     const std::string style = is_static() ? "__" : "";
 
     if (mode == message_render_mode::no_arguments) {
@@ -268,7 +273,8 @@ std::string method::message_name(message_render_mode mode) const
     else if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
-                fmt::format("{}", fmt::join(parameters(), ",")), 15),
+                fmt::format("{}", fmt::join(parameters(), ",")),
+                kAbbreviatedMethodArgumentsLength),
             is_const() ? " const" : "");
     }
 
@@ -334,6 +340,8 @@ std::string function_template::full_name_no_ns() const
 
 std::string function_template::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     std::ostringstream s;
     render_template_params(s, using_namespace(), true);
     std::string template_params = s.str();
@@ -345,7 +353,8 @@ std::string function_template::message_name(message_render_mode mode) const
     else if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
-                fmt::format("{}", fmt::join(parameters(), ",")), 15),
+                fmt::format("{}", fmt::join(parameters(), ",")),
+                kAbbreviatedMethodArgumentsLength),
             is_const() ? " const" : "");
     }
 
