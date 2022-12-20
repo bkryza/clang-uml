@@ -42,7 +42,7 @@
 
 #ifndef NDEBUG
 namespace backward {
-backward::SignalHandling sh;
+backward::SignalHandling sh; // NOLINT
 } // namespace backward
 #endif
 

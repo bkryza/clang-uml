@@ -82,7 +82,5 @@ private:
     std::vector<relationship> relationships_;
     bool nested_{false};
     bool complete_{false};
-
-    static std::atomic_uint64_t m_nextId;
 };
 } // namespace clanguml::common::model
