@@ -56,7 +56,7 @@ public:
     void add_member(class_member &&member);
     void add_method(class_method &&method);
     void add_parent(class_parent &&parent);
-    void add_template(template_parameter tmplt);
+    void add_template(template_parameter &&tmplt);
 
     const std::vector<class_member> &members() const;
     const std::vector<class_method> &methods() const;

@@ -354,7 +354,7 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    std::vector<std::filesystem::path> p)
+    const std::vector<std::filesystem::path> &p)
     : filter_visitor{type}
     , root_{root}
 {
@@ -420,7 +420,7 @@ void diagram_filter::add_exclusive_filter(std::unique_ptr<filter_visitor> fv)
 }
 
 bool diagram_filter::should_include(
-    namespace_ ns, const std::string &name) const
+    const namespace_ &ns, const std::string &name) const
 {
     if (should_include(ns)) {
         element e{namespace_{}};

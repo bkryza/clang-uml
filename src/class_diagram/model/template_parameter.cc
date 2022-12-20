@@ -180,7 +180,8 @@ bool template_parameter::find_nested_relationships(
     std::vector<std::pair<int64_t, common::model::relationship_t>>
         &nested_relationships,
     common::model::relationship_t hint,
-    std::function<bool(const std::string &full_name)> should_include) const
+    const std::function<bool(const std::string &full_name)> &should_include)
+    const
 {
     bool added_aggregation_relationship{false};
 

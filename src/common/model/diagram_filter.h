@@ -314,7 +314,7 @@ private:
 
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
-        std::vector<std::filesystem::path> p);
+        const std::vector<std::filesystem::path> &p);
 
     virtual ~paths_filter() = default;
 
@@ -334,7 +334,7 @@ public:
 
     void add_exclusive_filter(std::unique_ptr<filter_visitor> fv);
 
-    bool should_include(namespace_ ns, const std::string &name) const;
+    bool should_include(const namespace_ &ns, const std::string &name) const;
 
     template <typename T> bool should_include(const T &e) const
     {

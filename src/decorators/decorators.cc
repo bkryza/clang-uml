@@ -51,7 +51,7 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     return {};
 }
 
-bool decorator::applies_to_diagram(std::string name)
+bool decorator::applies_to_diagram(const std::string &name)
 {
     return diagrams.empty() ||
         (std::find(diagrams.begin(), diagrams.end(), name) != diagrams.end());
@@ -174,7 +174,7 @@ std::shared_ptr<decorator> association::from_string(std::string_view c)
 }
 
 std::vector<std::shared_ptr<decorator>> parse(
-    std::string documentation_block, std::string clanguml_tag)
+    std::string documentation_block, const std::string &clanguml_tag)
 {
     std::vector<std::shared_ptr<decorator>> res;
     const std::string begin_tag{"@" + clanguml_tag};

@@ -40,7 +40,7 @@ struct decorator {
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 
-    bool applies_to_diagram(std::string name);
+    bool applies_to_diagram(const std::string &name);
 
 protected:
     decorator_toks tokenize(const std::string &label, std::string_view c);
@@ -97,7 +97,7 @@ struct association : public relationship {
 };
 
 std::vector<std::shared_ptr<decorator>> parse(
-    std::string documentation_block, std::string clanguml_tag = "uml");
+    std::string documentation_block, const std::string &clanguml_tag = "uml");
 
 } // namespace decorators
 } // namespace clanguml

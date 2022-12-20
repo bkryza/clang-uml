@@ -19,7 +19,7 @@
 
 namespace clanguml::common::generators::plantuml {
 
-std::string to_plantuml(relationship_t r, std::string style)
+std::string to_plantuml(relationship_t r, const std::string &style)
 {
     switch (r) {
     case relationship_t::kOwnership:

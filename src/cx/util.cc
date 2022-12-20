@@ -41,7 +41,8 @@ std::pair<common::model::namespace_, std::string> split_ns(
 
 std::vector<class_diagram::model::template_parameter>
 parse_unexposed_template_params(const std::string &params,
-    std::function<std::string(const std::string &)> ns_resolve, int depth)
+    const std::function<std::string(const std::string &)> &ns_resolve,
+    int depth)
 {
     using class_diagram::model::template_parameter;
 

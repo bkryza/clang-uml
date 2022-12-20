@@ -68,7 +68,7 @@ void class_::add_parent(class_parent &&parent)
     bases_.emplace_back(std::move(parent));
 }
 
-void class_::add_template(template_parameter tmplt)
+void class_::add_template(template_parameter &&tmplt)
 {
     templates_.emplace_back(std::move(tmplt));
 }
