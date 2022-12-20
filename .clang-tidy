@@ -25,6 +25,7 @@ Checks: >-
   -llvm-header-guard,
   -llvm-namespace-comment,
   -misc-no-recursion,
+  -hicpp-special-member-functions,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
   -mpi*,
@@ -32,6 +33,7 @@ Checks: >-
   -openmp*,
   -readability-inconsistent-declaration-parameter-name,
   -readability-identifier-naming,
+  -readability-redundant-smartptr-get,
   -darwin*,
   -zircon*
 WarningsAsErrors: '*'
