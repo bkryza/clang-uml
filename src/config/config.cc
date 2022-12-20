@@ -21,8 +21,7 @@
 
 #include <filesystem>
 
-namespace clanguml {
-namespace config {
+namespace clanguml::config {
 
 config load(const std::string &config_file)
 {
@@ -218,8 +217,7 @@ template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
 }
-} // namespace config
-} // namespace clanguml
+} // namespace clanguml::config
 
 namespace YAML {
 using clanguml::common::model::access_t;

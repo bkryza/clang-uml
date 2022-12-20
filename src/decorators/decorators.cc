@@ -22,8 +22,7 @@
 #include <string>
 #include <string_view>
 
-namespace clanguml {
-namespace decorators {
+namespace clanguml::decorators {
 
 std::shared_ptr<decorator> decorator::from_string(std::string_view c)
 {
@@ -208,5 +207,4 @@ std::vector<std::shared_ptr<decorator>> parse(
     return res;
 };
 
-} // namespace decorators
-} // namespace clanguml
+} // namespace clanguml::decorators
