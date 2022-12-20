@@ -355,7 +355,7 @@ public:
     {
     }
 
-    virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
+    void HandleTranslationUnit(clang::ASTContext &ast_context) override
     {
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();

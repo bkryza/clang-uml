@@ -62,7 +62,7 @@ public:
         std::ostream &ostr,
         std::vector<common::model::diagram_element::id_t> &visited) const;
 
-    void generate(std::ostream &ostr) const;
+    void generate(std::ostream &ostr) const override;
 
 private:
     bool is_participant_generated(common::id_t id) const;

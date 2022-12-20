@@ -57,7 +57,7 @@ public:
 
     void generate(const source_file &e, std::ostream &ostr) const;
 
-    void generate(std::ostream &ostr) const;
+    void generate(std::ostream &ostr) const override;
 };
 
 } // namespace plantuml

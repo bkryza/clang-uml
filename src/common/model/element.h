@@ -36,7 +36,7 @@ class element : public diagram_element {
 public:
     element(namespace_ using_namespace);
 
-    virtual ~element() = default;
+    ~element() override = default;
 
     std::string name_and_ns() const
     {

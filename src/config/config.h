@@ -171,7 +171,7 @@ struct source_location {
 };
 
 struct class_diagram : public diagram {
-    virtual ~class_diagram() = default;
+    ~class_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -182,7 +182,7 @@ struct class_diagram : public diagram {
 };
 
 struct sequence_diagram : public diagram {
-    virtual ~sequence_diagram() = default;
+    ~sequence_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -190,7 +190,7 @@ struct sequence_diagram : public diagram {
 };
 
 struct package_diagram : public diagram {
-    virtual ~package_diagram() = default;
+    ~package_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -198,7 +198,7 @@ struct package_diagram : public diagram {
 };
 
 struct include_diagram : public diagram {
-    virtual ~include_diagram() = default;
+    ~include_diagram() override = default;
 
     common::model::diagram_t type() const override;
 

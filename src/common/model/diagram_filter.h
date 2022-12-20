@@ -88,7 +88,7 @@ struct anyof_filter : public filter_visitor {
     anyof_filter(
         filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
 
-    virtual ~anyof_filter() = default;
+    ~anyof_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
@@ -103,7 +103,7 @@ private:
 struct namespace_filter : public filter_visitor {
     namespace_filter(filter_t type, std::vector<namespace_> namespaces);
 
-    virtual ~namespace_filter() = default;
+    ~namespace_filter() override = default;
 
     tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
@@ -116,7 +116,7 @@ private:
 struct element_filter : public filter_visitor {
     element_filter(filter_t type, std::vector<std::string> elements);
 
-    virtual ~element_filter() = default;
+    ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -127,7 +127,7 @@ private:
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<std::string> roots);
 
-    virtual ~subclass_filter() = default;
+    ~subclass_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -147,7 +147,7 @@ struct edge_traversal_filter : public filter_visitor {
     {
     }
 
-    virtual ~edge_traversal_filter() = default;
+    ~edge_traversal_filter() override = default;
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
@@ -281,7 +281,7 @@ struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);
 
-    virtual ~relationship_filter() = default;
+    ~relationship_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const relationship_t &r) const override;
@@ -293,7 +293,7 @@ private:
 struct access_filter : public filter_visitor {
     access_filter(filter_t type, std::vector<access_t> access);
 
-    virtual ~access_filter() = default;
+    ~access_filter() override = default;
 
     tvl::value_t match(const diagram &d, const access_t &a) const override;
 
@@ -304,7 +304,7 @@ private:
 struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<std::string> context);
 
-    virtual ~context_filter() = default;
+    ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
@@ -316,7 +316,7 @@ struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
         const std::vector<std::filesystem::path> &p);
 
-    virtual ~paths_filter() = default;
+    ~paths_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const common::model::source_file &r) const override;
