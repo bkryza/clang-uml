@@ -64,7 +64,7 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
 {
     model::namespace_ ns;
 
-    auto *parent{declaration.getParent()};
+    const auto *parent{declaration.getParent()};
 
     // First walk up to the nearest namespace, e.g. from nested class or enum
     while (parent && !parent->isNamespace()) {
@@ -103,7 +103,7 @@ std::string get_tag_name(const clang::TagDecl &declaration)
         std::deque<std::string> record_parent_names;
         record_parent_names.push_front(base_name);
 
-        auto *cls_parent{declaration.getParent()};
+        const auto *cls_parent{declaration.getParent()};
         while (cls_parent->isRecord()) {
             auto parent_name =
                 static_cast<const clang::RecordDecl *>(cls_parent)

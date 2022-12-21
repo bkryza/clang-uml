@@ -238,7 +238,7 @@ void translation_unit_visitor::process_class_children(
 void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
 {
-    for (auto &base : cls.bases()) {
+    for (const auto &base : cls.bases()) {
         find_relationships(base.getType(), relationships);
     }
 }
@@ -336,7 +336,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         relationships.emplace_back(
             common::to_id(*type->getAs<clang::EnumType>()), relationship_hint);
     }
-    else if (auto *template_specialization_type =
+    else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>()) {
         if (template_specialization_type != nullptr) {
             if (template_specialization_type->isTypeAlias())

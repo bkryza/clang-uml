@@ -40,7 +40,7 @@ bool decorated_element::skip_relationship() const
 std::pair<relationship_t, std::string>
 decorated_element::get_relationship() const
 {
-    for (auto &d : decorators_)
+    for (const auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::association>(d))
             return {relationship_t::kAssociation,
                 std::dynamic_pointer_cast<decorators::relationship>(d)

@@ -87,8 +87,9 @@ void clang_visitor::visit(
                 clang::dyn_cast<TParamCommandComment>(block), traits, cmt);
         }
         else if (block_kind == Comment::BlockCommandCommentKind) {
-            auto *command = clang::dyn_cast<BlockCommandComment>(block);
-            auto command_info = traits.getCommandInfo(command->getCommandID());
+            const auto *command = clang::dyn_cast<BlockCommandComment>(block);
+            const auto *command_info =
+                traits.getCommandInfo(command->getCommandID());
 
             if (command_info->IsBlockCommand && command_info->NumArgs == 0) {
                 // Visit block command with a single text argument, e.g.:
@@ -125,7 +126,7 @@ void clang_visitor::visit_block_command(
 
     std::string command_text;
 
-    for (auto paragraph_it = command->child_begin();
+    for (const auto *paragraph_it = command->child_begin();
          paragraph_it != command->child_end(); ++paragraph_it) {
 
         if ((*paragraph_it)->getCommentKind() ==
@@ -156,7 +157,8 @@ void clang_visitor::visit_param_command(
 
     const auto name = command->getParamNameAsWritten().str();
 
-    for (auto it = command->child_begin(); it != command->child_end(); ++it) {
+    for (const auto *it = command->child_begin(); it != command->child_end();
+         ++it) {
 
         if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
             visit_paragraph(
@@ -187,7 +189,8 @@ void clang_visitor::visit_tparam_command(
 
     const auto name = command->getParamNameAsWritten().str();
 
-    for (auto it = command->child_begin(); it != command->child_end(); ++it) {
+    for (const auto *it = command->child_begin(); it != command->child_end();
+         ++it) {
         if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
             visit_paragraph(
                 clang::dyn_cast<ParagraphComment>(*it), traits, description);
@@ -212,7 +215,7 @@ void clang_visitor::visit_paragraph(
     using clang::comments::Comment;
     using clang::comments::TextComment;
 
-    for (auto text_it = paragraph->child_begin();
+    for (const auto *text_it = paragraph->child_begin();
          text_it != paragraph->child_end(); ++text_it) {
 
         if ((*text_it)->getCommentKind() == Comment::TextCommentKind) {
