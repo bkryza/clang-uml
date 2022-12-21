@@ -367,7 +367,7 @@ void generator::generate(std::ostream &ostr) const
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            common::model::diagram_element::id_t start_from;
+            common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : m_model.sequences()) {
                 const auto &caller = *m_model.participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
@@ -376,6 +376,13 @@ void generator::generate(std::ostream &ostr) const
                     start_from = k;
                     break;
                 }
+            }
+
+            if (start_from == 0) {
+                LOG_WARN("Failed to find participant with {} for start_from "
+                         "condition",
+                    sf.location);
+                continue;
             }
 
             // Use this to break out of recurrent loops

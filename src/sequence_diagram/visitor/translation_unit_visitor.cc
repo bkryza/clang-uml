@@ -538,6 +538,9 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
+    if (stmt == nullptr)
+        return true;
+
     const auto *current_ifstmt = context().current_ifstmt();
     const auto *current_elseifstmt = context().current_elseifstmt();
 
@@ -1943,6 +1946,9 @@ translation_unit_visitor::build_template_instantiation(
     for (const auto &[id, c] : diagram().participants()) {
         const auto *participant_as_class =
             dynamic_cast<model::class_ *>(c.get());
+        if (participant_as_class == nullptr)
+            continue;
+
         if ((participant_as_class != nullptr) &&
             (*participant_as_class == template_instantiation))
             continue;
