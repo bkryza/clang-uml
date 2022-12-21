@@ -187,7 +187,7 @@ bool template_parameter::find_nested_relationships(
     // just add it and skip recursion (e.g. this is a user defined type)
     if (should_include(name())) {
         if (id()) {
-            nested_relationships.push_back({id().value(), hint});
+            nested_relationships.emplace_back(id().value(), hint);
             added_aggregation_relationship =
                 (hint == common::model::relationship_t::kAggregation);
         }
@@ -199,8 +199,8 @@ bool template_parameter::find_nested_relationships(
             if (should_include(template_argument.name()) &&
                 template_argument.id()) {
 
-                nested_relationships.push_back(
-                    {template_argument.id().value(), hint});
+                nested_relationships.emplace_back(
+                    template_argument.id().value(), hint);
 
                 added_aggregation_relationship =
                     (hint == common::model::relationship_t::kAggregation);

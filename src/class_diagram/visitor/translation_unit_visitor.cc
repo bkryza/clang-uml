@@ -1745,7 +1745,7 @@ void translation_unit_visitor::
             if (!param_type->getAs<clang::RecordType>())
                 continue;
 
-            auto classTemplateSpecialization =
+            auto *classTemplateSpecialization =
                 llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
                     param_type->getAsRecordDecl());
 

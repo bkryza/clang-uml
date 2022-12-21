@@ -462,7 +462,7 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     auto m_ptr = std::make_unique<sequence_diagram::model::method>(
         config().using_namespace());
 
-    auto method_name = "operator()";
+    const auto *method_name = "operator()";
     m_ptr->set_method_name(method_name);
 
     m_ptr->set_class_id(cls_id);
