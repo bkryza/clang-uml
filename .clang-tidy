@@ -11,6 +11,7 @@ Checks: >-
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-special-member-functions,
   -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
   -cert-env33-c,
   -cert-err58-cpp,
   -fuchsia*,
