@@ -438,19 +438,19 @@ void generator::generate(const package &p, std::ostream &ostr) const
     }
 
     for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get())) {
+        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty())
                 generate(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(subpackage.get())) {
+        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
                 generate(dynamic_cast<class_ &>(*subpackage), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(subpackage.get())) {
+        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
                 generate(dynamic_cast<enum_ &>(*subpackage), ostr);
@@ -473,19 +473,19 @@ void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
     for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get())) {
+        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty())
                 generate_relationships(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(subpackage.get())) {
+        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<class_ &>(*subpackage), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(subpackage.get())) {
+        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<enum_ &>(*subpackage), ostr);
@@ -503,18 +503,18 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get())) {
+        if (dynamic_cast<package *>(p.get()) != nullptr) {
             const auto &sp = dynamic_cast<package &>(*p);
             if (!sp.is_empty())
                 generate(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(p.get())) {
+        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_alias(dynamic_cast<class_ &>(*p), ostr);
                 generate(dynamic_cast<class_ &>(*p), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get())) {
+        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_alias(dynamic_cast<enum_ &>(*p), ostr);
                 generate(dynamic_cast<enum_ &>(*p), ostr);
@@ -523,15 +523,15 @@ void generator::generate(std::ostream &ostr) const
     }
 
     for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get())) {
+        if (dynamic_cast<package *>(p.get()) != nullptr) {
             generate_relationships(dynamic_cast<package &>(*p), ostr);
         }
-        else if (dynamic_cast<class_ *>(p.get())) {
+        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_relationships(dynamic_cast<class_ &>(*p), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get())) {
+        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_relationships(dynamic_cast<enum_ &>(*p), ostr);
             }

@@ -59,16 +59,16 @@ bool call_expression_context::valid() const
 
 clang::ASTContext *call_expression_context::get_ast_context()
 {
-    if (current_class_template_specialization_decl_)
+    if (current_class_template_specialization_decl_ != nullptr)
         return &current_class_template_specialization_decl_->getASTContext();
 
-    if (current_class_template_decl_)
+    if (current_class_template_decl_ != nullptr)
         return &current_class_template_decl_->getASTContext();
 
-    if (current_class_decl_)
+    if (current_class_decl_ != nullptr)
         return &current_class_decl_->getASTContext();
 
-    if (current_function_template_decl_)
+    if (current_function_template_decl_ != nullptr)
         return &current_function_template_decl_->getASTContext();
 
     return &current_function_decl_->getASTContext();
@@ -104,7 +104,7 @@ void call_expression_context::update(clang::FunctionDecl *function)
 
     // Check if this function is a part of template function declaration,
     // If no - reset the current_function_template_decl_
-    if (current_function_template_decl_ &&
+    if ((current_function_template_decl_ != nullptr) &&
         current_function_template_decl_->getQualifiedNameAsString() !=
             function->getQualifiedNameAsString()) {
         current_function_template_decl_ = nullptr;
@@ -318,13 +318,13 @@ void call_expression_context::leave_conditionaloperator()
 bool call_expression_context::is_expr_in_current_control_statement_condition(
     const clang::Stmt *stmt) const
 {
-    if (current_ifstmt()) {
+    if (current_ifstmt() != nullptr) {
         if (common::is_subexpr_of(current_ifstmt()->getCond(), stmt)) {
             return true;
         }
     }
 
-    if (current_elseifstmt()) {
+    if (current_elseifstmt() != nullptr) {
         if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt)) {
             return true;
         }
@@ -367,7 +367,7 @@ bool call_expression_context::is_expr_in_current_control_statement_condition(
             }
         }
 
-        if (current_conditionaloperator()) {
+        if (current_conditionaloperator() != nullptr) {
             if (common::is_subexpr_of(
                     current_conditionaloperator()->getCond(), stmt)) {
                 return true;

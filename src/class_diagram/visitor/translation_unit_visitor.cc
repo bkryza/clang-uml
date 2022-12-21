@@ -127,7 +127,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     const auto *parent = enm->getParent();
 
-    if (parent && parent->isRecord()) {
+    if ((parent != nullptr) && parent->isRecord()) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
@@ -140,7 +140,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         // If not, check if the parent template declaration is in the model
         if (!id_opt) {
             if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate()) {
+                    ->getDescribedTemplate() != nullptr) {
                 local_id = static_cast<const clang::RecordDecl *>(parent)
                                ->getDescribedTemplate()
                                ->getID();
@@ -209,7 +209,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         cls->getLocation().printToString(source_manager()));
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass())
+    if (cls->isLocalClass() != nullptr)
         return true;
 
     auto template_specialization_ptr = process_template_specialization(cls);
@@ -353,7 +353,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
                 ->getQualifiedNameAsString());
     }
 
-    if (cls->isTemplated() && cls->getDescribedTemplate()) {
+    if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
         // skip it:
         if (get_ast_local_id(cls->getDescribedTemplate()->getID()))
@@ -361,7 +361,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     }
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass())
+    if (cls->isLocalClass() != nullptr)
         return true;
 
     auto c_ptr = create_class_declaration(cls);
@@ -420,7 +420,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
     const auto *parent = cls->getParent();
 
-    if (parent && parent->isRecord()) {
+    if ((parent != nullptr) && parent->isRecord()) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
@@ -438,7 +438,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
                            ->getDescribedTemplate()
                            ->getID();
             if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate())
+                    ->getDescribedTemplate() != nullptr)
                 id_opt = get_ast_local_id(local_id);
         }
 
@@ -523,7 +523,8 @@ bool translation_unit_visitor::process_template_parameters(
 
     for (const auto *parameter :
         *template_declaration.getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
+        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter) !=
+            nullptr) {
             const auto *template_type_parameter =
                 clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
             template_parameter ct;
@@ -536,7 +537,7 @@ bool translation_unit_visitor::process_template_parameters(
             c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
-                     parameter)) {
+                     parameter) != nullptr) {
             const auto *template_nontype_parameter =
                 clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                     parameter);
@@ -550,7 +551,7 @@ bool translation_unit_visitor::process_template_parameters(
             c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
-                     parameter)) {
+                     parameter) != nullptr) {
             const auto *template_template_parameter =
                 clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
                     parameter);
@@ -579,9 +580,9 @@ void translation_unit_visitor::process_template_record_containment(
 
     const auto *parent = record.getParent(); //->getOuterLexicalRecordContext();
 
-    if (parent &&
-        static_cast<const clang::RecordDecl *>(parent)
-            ->getDescribedTemplate()) {
+    if ((parent != nullptr) &&
+        (static_cast<const clang::RecordDecl *>(parent)
+                ->getDescribedTemplate() != nullptr)) {
         auto id_opt =
             get_ast_local_id(static_cast<const clang::RecordDecl *>(parent)
                                  ->getDescribedTemplate()
@@ -687,7 +688,7 @@ void translation_unit_visitor::process_template_specialization_children(
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
                 dynamic_cast<const clang::VarDecl *>(decl)};
-            if (variable_declaration &&
+            if ((variable_declaration != nullptr) &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, c);
             }
@@ -749,7 +750,7 @@ void translation_unit_visitor::process_class_children(
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
                 dynamic_cast<const clang::VarDecl *>(decl)};
-            if (variable_declaration &&
+            if ((variable_declaration != nullptr) &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, c);
             }
@@ -787,7 +788,7 @@ void translation_unit_visitor::process_friend(
             nullptr) {
             // TODO: handle template friend
         }
-        else if (friend_type->getAs<clang::RecordType>()) {
+        else if (friend_type->getAs<clang::RecordType>() != nullptr) {
             const auto friend_type_name =
                 friend_type->getAsRecordDecl()->getQualifiedNameAsString();
             if (diagram().should_include(friend_type_name)) {
@@ -938,7 +939,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                     // pass
                 }
                 else if (template_argument.getAsType()
-                             ->getAs<clang::FunctionProtoType>()) {
+                             ->getAs<clang::FunctionProtoType>() != nullptr) {
                     for (const auto &param_type :
                         template_argument.getAsType()
                             ->getAs<clang::FunctionProtoType>()
@@ -1184,7 +1185,8 @@ void translation_unit_visitor::process_template_specialization_argument(
 
         // If this is a nested template type - add nested templates as
         // template arguments
-        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
+            nullptr) {
             const auto *nested_template_type =
                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -1210,7 +1212,8 @@ void translation_unit_visitor::process_template_specialization_argument(
             simplify_system_template(argument,
                 argument.to_string(config().using_namespace(), false));
         }
-        else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+        else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() !=
+            nullptr) {
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
 
@@ -1480,8 +1483,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
 
     auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias() &&
-        template_type_decl.getAliasedType()
-            ->getAs<clang::TemplateSpecializationType>())
+        (template_type_decl.getAliasedType()
+                ->getAs<clang::TemplateSpecializationType>() != nullptr))
         template_type_ptr = template_type_decl.getAliasedType()
                                 ->getAs<clang::TemplateSpecializationType>();
 
@@ -1505,8 +1508,9 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     auto *class_template_decl{
         clang::dyn_cast<clang::ClassTemplateDecl>(template_decl)};
 
-    if (class_template_decl && class_template_decl->getTemplatedDecl() &&
-        class_template_decl->getTemplatedDecl()->getParent() &&
+    if ((class_template_decl != nullptr) &&
+        (class_template_decl->getTemplatedDecl() != nullptr) &&
+        (class_template_decl->getTemplatedDecl()->getParent() != nullptr) &&
         class_template_decl->getTemplatedDecl()->getParent()->isRecord()) {
 
         namespace_ ns{
@@ -1559,7 +1563,8 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         clang::dyn_cast_or_null<clang::CXXRecordDecl>(
             template_decl->getTemplatedDecl());
 
-    if (templated_class_decl && templated_class_decl->hasDefinition())
+    if ((templated_class_decl != nullptr) &&
+        templated_class_decl->hasDefinition())
         for (const auto &base : templated_class_decl->bases()) {
             const auto base_class_name = common::to_string(
                 base.getType(), templated_class_decl->getASTContext(), false);
@@ -1738,19 +1743,19 @@ void translation_unit_visitor::
 
     // If this is a nested template type - add nested templates as
     // template arguments
-    if (arg.getAsType()->getAs<clang::FunctionType>()) {
+    if (arg.getAsType()->getAs<clang::FunctionType>() != nullptr) {
 
         for (const auto &param_type :
             arg.getAsType()->getAs<clang::FunctionProtoType>()->param_types()) {
 
-            if (!param_type->getAs<clang::RecordType>())
+            if (param_type->getAs<clang::RecordType>() == nullptr)
                 continue;
 
             auto *classTemplateSpecialization =
                 llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
                     param_type->getAsRecordDecl());
 
-            if (classTemplateSpecialization) {
+            if (classTemplateSpecialization != nullptr) {
                 // Read arg info as needed.
                 auto nested_template_instantiation =
                     build_template_instantiation_from_class_template_specialization(
@@ -1784,7 +1789,8 @@ void translation_unit_visitor::
             }
         }
     }
-    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
+        nullptr) {
         const auto *nested_template_type =
             arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -1836,7 +1842,7 @@ void translation_unit_visitor::
             diagram().add_class(std::move(nested_template_instantiation));
         }
     }
-    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() != nullptr) {
         argument.is_template_parameter(true);
         argument.set_name(
             common::to_string(arg.getAsType(), template_decl->getASTContext()));
@@ -1884,8 +1890,9 @@ void translation_unit_visitor::
     argument.set_name(
         common::to_string(arg.getAsType(), template_decl->getASTContext()));
 
-    if (arg.getAsType()->getAs<clang::RecordType>() &&
-        arg.getAsType()->getAs<clang::RecordType>()->getAsRecordDecl()) {
+    if ((arg.getAsType()->getAs<clang::RecordType>() != nullptr) &&
+        (arg.getAsType()->getAs<clang::RecordType>()->getAsRecordDecl() !=
+            nullptr)) {
         argument.set_id(common::to_id(arg));
 
         if (diagram().should_include(full_template_specialization_name)) {
@@ -1895,8 +1902,9 @@ void translation_unit_visitor::
                 {relationship_t::kDependency, common::to_id(arg)});
         }
     }
-    else if (arg.getAsType()->getAs<clang::EnumType>()) {
-        if (arg.getAsType()->getAs<clang::EnumType>()->getAsTagDecl()) {
+    else if (arg.getAsType()->getAs<clang::EnumType>() != nullptr) {
+        if (arg.getAsType()->getAs<clang::EnumType>()->getAsTagDecl() !=
+            nullptr) {
             template_instantiation.add_relationship(
                 {relationship_t::kDependency, common::to_id(arg)});
         }
@@ -2087,7 +2095,7 @@ void translation_unit_visitor::process_field(
         // Find relationship for the type if the type has not been added
         // as aggregation
         if (!template_instantiation_added_as_aggregation) {
-            if (field_type->getAsCXXRecordDecl() &&
+            if ((field_type->getAsCXXRecordDecl() != nullptr) &&
                 field_type->getAsCXXRecordDecl()->getNameAsString().empty()) {
                 // Relationships to fields whose type is an anonymous nested
                 // struct have to be handled separately here

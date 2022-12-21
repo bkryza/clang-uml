@@ -49,7 +49,7 @@ parse_unexposed_template_params(const std::string &params,
     std::vector<template_parameter> res;
 
     auto it = params.begin();
-    while (std::isspace(*it))
+    while (std::isspace(*it) != 0)
         ++it;
 
     std::string type{};

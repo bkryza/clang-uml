@@ -74,7 +74,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (!should_include(cls))
         return true;
 
-    if (cls->isTemplated() && cls->getDescribedTemplate()) {
+    if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
         // skip it:
         auto local_id = cls->getDescribedTemplate()->getID();
@@ -83,7 +83,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     }
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass())
+    if (cls->isLocalClass() != nullptr)
         return true;
 
     LOG_TRACE("Visiting class declaration at {}",
@@ -192,7 +192,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         cls->getLocation().printToString(source_manager()));
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass())
+    if (cls->isLocalClass() != nullptr)
         return true;
 
     auto template_specialization_ptr = process_template_specialization(cls);
@@ -233,7 +233,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
         return true;
 
     if (!m->isThisDeclarationADefinition()) {
-        if (m->getDefinition())
+        if (m->getDefinition() != nullptr)
             return VisitCXXMethodDecl(
                 static_cast<clang::CXXMethodDecl *>(m->getDefinition()));
     }
@@ -256,7 +256,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
 
     clang::Decl *parent_decl = m->getParent();
 
-    if (context().current_class_template_decl_)
+    if (context().current_class_template_decl_ != nullptr)
         parent_decl = context().current_class_template_decl_;
 
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
@@ -325,7 +325,7 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
     const auto function_name = f->getQualifiedNameAsString();
 
     if (!f->isThisDeclarationADefinition()) {
-        if (f->getDefinition())
+        if (f->getDefinition() != nullptr)
             return VisitFunctionDecl(
                 static_cast<clang::FunctionDecl *>(f->getDefinition()));
     }
@@ -334,7 +334,7 @@ bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
         f->getLocation().printToString(source_manager()));
 
     if (f->isTemplated()) {
-        if (f->getDescribedTemplate()) {
+        if (f->getDescribedTemplate() != nullptr) {
             // If the described templated of this function is already in the
             // model skip it:
             if (get_unique_id(f->getDescribedTemplate()->getID()))
@@ -551,7 +551,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
         if (current_elseifstmt->getElse() == stmt) {
             const auto current_caller_id = context().caller_id();
 
-            if (current_caller_id) {
+            if (current_caller_id != 0) {
                 diagram()
                     .get_activity(current_caller_id)
                     .add_message({message_t::kElse, current_caller_id});
@@ -562,7 +562,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
         if (current_ifstmt->getElse() == stmt) {
             const auto current_caller_id = context().caller_id();
 
-            if (current_caller_id) {
+            if (current_caller_id != 0) {
                 diagram()
                     .get_activity(current_caller_id)
                     .add_message({message_t::kElse, current_caller_id});
@@ -598,7 +598,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
         }
     }
 
-    if (current_caller_id && !stmt->isConstexpr()) {
+    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
         context().enter_ifstmt(stmt);
         if (elseif_block) {
             context().enter_elseifstmt(stmt);
@@ -611,7 +611,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
-    if (current_caller_id && !stmt->isConstexpr() && !elseif_block) {
+    if ((current_caller_id != 0) && !stmt->isConstexpr() && !elseif_block) {
         diagram().end_if_stmt(current_caller_id, message_t::kIfEnd);
     }
 
@@ -626,13 +626,13 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         diagram().add_while_stmt(current_caller_id);
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         diagram().end_while_stmt(current_caller_id);
         context().leave_loopstmt();
     }
@@ -648,14 +648,14 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         diagram().add_do_stmt(current_caller_id);
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_loopstmt();
         diagram().end_do_stmt(current_caller_id);
     }
@@ -671,14 +671,14 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         diagram().add_for_stmt(current_caller_id);
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_loopstmt();
         diagram().end_for_stmt(current_caller_id);
     }
@@ -694,14 +694,14 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_trystmt(stmt);
         diagram().add_try_stmt(current_caller_id);
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_trystmt();
         diagram().end_try_stmt(current_caller_id);
     }
@@ -717,7 +717,7 @@ bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id && context().current_trystmt()) {
+    if ((current_caller_id != 0) && (context().current_trystmt() != nullptr)) {
         std::string caught_type;
         if (stmt->getCaughtType().isNull())
             caught_type = "...";
@@ -742,7 +742,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         diagram().add_for_stmt(current_caller_id);
     }
@@ -750,7 +750,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
         stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_loopstmt();
         diagram().end_for_stmt(current_caller_id);
     }
@@ -762,14 +762,14 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 {
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_switchstmt(stmt);
         diagram().add_switch_stmt(current_caller_id);
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_switchstmt();
         diagram().end_switch_stmt(current_caller_id);
     }
@@ -781,7 +781,7 @@ bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 {
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         diagram().add_case_stmt(
             current_caller_id, common::to_string(stmt->getLHS()));
     }
@@ -795,7 +795,7 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 {
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         diagram().add_default_stmt(current_caller_id);
     }
 
@@ -809,7 +809,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
 {
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().enter_conditionaloperator(stmt);
         diagram().add_conditional_stmt(current_caller_id);
     }
@@ -820,14 +820,14 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getTrueExpr());
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         diagram().add_conditional_elsestmt(current_caller_id);
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getFalseExpr());
 
-    if (current_caller_id) {
+    if (current_caller_id != 0) {
         context().leave_conditionaloperator();
         diagram().end_conditional_stmt(current_caller_id);
     }
@@ -902,12 +902,12 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             callee_decl = expr->getDirectCallee();
         }
 
-        if (!callee_decl) {
+        if (callee_decl == nullptr) {
             //
             // Call to a method of a class template
             //
             if (clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
-                    expr->getCallee())) {
+                    expr->getCallee()) != nullptr) {
                 if (!process_class_template_method_call_expression(m, expr)) {
                     return true;
                 }
@@ -917,7 +917,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             // functions
             //
             else if (clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(
-                         expr->getCallee())) {
+                         expr->getCallee()) != nullptr) {
                 if (!process_unresolved_lookup_call_expression(m, expr))
                     return true;
             }
@@ -1000,9 +1000,10 @@ bool translation_unit_visitor::process_class_method_call_expression(
 
     std::string method_name = method_decl->getQualifiedNameAsString();
 
-    auto *callee_decl = method_decl ? method_decl->getParent() : nullptr;
+    auto *callee_decl =
+        method_decl != nullptr ? method_decl->getParent() : nullptr;
 
-    if (!callee_decl)
+    if (callee_decl == nullptr)
         return false;
 
     if (!should_include(callee_decl) || !should_include(method_decl))
@@ -1108,7 +1109,7 @@ bool translation_unit_visitor::process_function_call_expression(
 
     const auto *callee_function = callee_decl->getAsFunction();
 
-    if (!callee_function)
+    if (callee_function == nullptr)
         return false;
 
     if (!should_include(callee_function))
@@ -1147,9 +1148,10 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
     auto *unresolved_expr =
         clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(expr->getCallee());
 
-    if (unresolved_expr) {
+    if (unresolved_expr != nullptr) {
         for (const auto *decl : unresolved_expr->decls()) {
-            if (clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl)) {
+            if (clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl) !=
+                nullptr) {
                 // Yes, it's a template
                 auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
@@ -1223,7 +1225,7 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
 
     const auto *parent = cls->getParent();
 
-    if (parent && parent->isRecord()) {
+    if ((parent != nullptr) && parent->isRecord()) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
@@ -1237,13 +1239,13 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt &&
-            static_cast<const clang::RecordDecl *>(parent)
-                ->getDescribedTemplate()) {
+            (static_cast<const clang::RecordDecl *>(parent)
+                    ->getDescribedTemplate() != nullptr)) {
             local_id = static_cast<const clang::RecordDecl *>(parent)
                            ->getDescribedTemplate()
                            ->getID();
             if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate())
+                    ->getDescribedTemplate() != nullptr)
                 id_opt = get_unique_id(local_id);
         }
 
@@ -1285,7 +1287,7 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
     }
     else if (cls->isLambda()) {
         c.is_lambda(true);
-        if (cls->getParent()) {
+        if (cls->getParent() != nullptr) {
             const auto type_name = make_lambda_name(cls);
 
             c.set_name(type_name);
@@ -1334,7 +1336,8 @@ bool translation_unit_visitor::process_template_parameters(
 
     for (const auto *parameter :
         *template_declaration.getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
+        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter) !=
+            nullptr) {
             const auto *template_type_parameter =
                 clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
             template_parameter ct;
@@ -1347,7 +1350,7 @@ bool translation_unit_visitor::process_template_parameters(
             c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
-                     parameter)) {
+                     parameter) != nullptr) {
             const auto *template_nontype_parameter =
                 clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                     parameter);
@@ -1361,7 +1364,7 @@ bool translation_unit_visitor::process_template_parameters(
             c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
-                     parameter)) {
+                     parameter) != nullptr) {
             const auto *template_template_parameter =
                 clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
                     parameter);
@@ -1549,10 +1552,11 @@ void translation_unit_visitor::
 
     // If this is a nested template type - add nested templates as
     // template arguments
-    if (arg.getAsType()->getAs<clang::FunctionType>()) {
+    if (arg.getAsType()->getAs<clang::FunctionType>() != nullptr) {
         // TODO
     }
-    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
+        nullptr) {
         const auto *nested_template_type =
             arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -1571,7 +1575,7 @@ void translation_unit_visitor::
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
     }
-    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() != nullptr) {
         argument.is_template_parameter(true);
         argument.set_name(
             common::to_string(arg.getAsType(), template_decl->getASTContext()));
@@ -1637,7 +1641,8 @@ void translation_unit_visitor::process_template_specialization_argument(
 
         // If this is a nested template type - add nested templates as
         // template arguments
-        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>()) {
+        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
+            nullptr) {
             const auto *nested_template_type =
                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
 
@@ -1663,7 +1668,8 @@ void translation_unit_visitor::process_template_specialization_argument(
             simplify_system_template(argument,
                 argument.to_string(config().using_namespace(), false));
         }
-        else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>()) {
+        else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() !=
+            nullptr) {
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
 
@@ -1694,7 +1700,7 @@ void translation_unit_visitor::process_template_specialization_argument(
 
             argument.set_name(type_name);
         }
-        else if (arg.getAsType()->getAsCXXRecordDecl() &&
+        else if ((arg.getAsType()->getAsCXXRecordDecl() != nullptr) &&
             arg.getAsType()->getAsCXXRecordDecl()->isLambda()) {
             if (get_unique_id(arg.getAsType()->getAsCXXRecordDecl()->getID())
                     .has_value()) {
@@ -1816,8 +1822,8 @@ translation_unit_visitor::build_template_instantiation(
 
     auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias() &&
-        template_type_decl.getAliasedType()
-            ->getAs<clang::TemplateSpecializationType>())
+        (template_type_decl.getAliasedType()
+                ->getAs<clang::TemplateSpecializationType>() != nullptr))
         template_type_ptr = template_type_decl.getAliasedType()
                                 ->getAs<clang::TemplateSpecializationType>();
 
@@ -1841,8 +1847,9 @@ translation_unit_visitor::build_template_instantiation(
     auto *class_template_decl{
         clang::dyn_cast<clang::ClassTemplateDecl>(template_decl)};
 
-    if (class_template_decl && class_template_decl->getTemplatedDecl() &&
-        class_template_decl->getTemplatedDecl()->getParent() &&
+    if ((class_template_decl != nullptr) &&
+        (class_template_decl->getTemplatedDecl() != nullptr) &&
+        (class_template_decl->getTemplatedDecl()->getParent() != nullptr) &&
         class_template_decl->getTemplatedDecl()->getParent()->isRecord()) {
 
         common::model::namespace_ ns{
@@ -1895,7 +1902,8 @@ translation_unit_visitor::build_template_instantiation(
         clang::dyn_cast_or_null<clang::CXXRecordDecl>(
             template_decl->getTemplatedDecl());
 
-    if (templated_class_decl && templated_class_decl->hasDefinition())
+    if ((templated_class_decl != nullptr) &&
+        templated_class_decl->hasDefinition())
         for (const auto &base : templated_class_decl->bases()) {
             const auto base_class_name = common::to_string(
                 base.getType(), templated_class_decl->getASTContext(), false);
@@ -2124,7 +2132,7 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
     if (expr->isImplicitCXXThis())
         return false;
 
-    if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr))
+    if (clang::dyn_cast_or_null<clang::ImplicitCastExpr>(expr) != nullptr)
         return false;
 
     if (!context().valid())

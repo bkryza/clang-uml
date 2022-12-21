@@ -91,7 +91,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
 
         std::advance(it, res.param.size() + 1);
     }
-    else if (std::isspace(*it)) {
+    else if (std::isspace(*it) != 0) {
         std::advance(it, 1);
     }
 

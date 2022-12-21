@@ -331,7 +331,7 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
                 translation_units = valid_translation_units, verbose]() {
                 try {
                     generate_diagram(
-                        od, name, diagram, db, translation_units, verbose);
+                        od, name, diagram, db, translation_units, verbose != 0);
                 }
                 catch (std::runtime_error &e) {
                     LOG_ERROR(e.what());

@@ -135,31 +135,31 @@ std::vector<std::string> diagram::get_translation_units(
 
 void diagram::initialize_type_aliases()
 {
-    if (!type_aliases().count("std::basic_string<char>")) {
+    if (type_aliases().count("std::basic_string<char>") == 0u) {
         type_aliases().insert({"std::basic_string<char>", "std::string"});
     }
-    if (!type_aliases().count("std::basic_string<char,std::char_traits<"
-                              "char>,std::allocator<char>>")) {
+    if (type_aliases().count("std::basic_string<char,std::char_traits<"
+                             "char>,std::allocator<char>>") == 0u) {
         type_aliases().insert({"std::basic_string<char,std::char_traits<"
                                "char>,std::allocator<char>>",
             "std::string"});
     }
-    if (!type_aliases().count("std::basic_string<wchar_t>")) {
+    if (type_aliases().count("std::basic_string<wchar_t>") == 0u) {
         type_aliases().insert({"std::basic_string<wchar_t>", "std::wstring"});
     }
-    if (!type_aliases().count("std::basic_string<char16_t>")) {
+    if (type_aliases().count("std::basic_string<char16_t>") == 0u) {
         type_aliases().insert(
             {"std::basic_string<char16_t>", "std::u16string"});
     }
-    if (!type_aliases().count("std::basic_string<char32_t>")) {
+    if (type_aliases().count("std::basic_string<char32_t>") == 0u) {
         type_aliases().insert(
             {"std::basic_string<char32_t>", "std::u32string"});
     }
-    if (!type_aliases().count("std::integral_constant<bool,true>")) {
+    if (type_aliases().count("std::integral_constant<bool,true>") == 0u) {
         type_aliases().insert(
             {"std::integral_constant<bool,true>", "std::true_type"});
     }
-    if (!type_aliases().count("std::integral_constant<bool,false>")) {
+    if (type_aliases().count("std::integral_constant<bool,false>") == 0u) {
         type_aliases().insert(
             {"std::integral_constant<bool,false>", "std::false_type"});
     }
@@ -189,24 +189,24 @@ void class_diagram::initialize_relationship_hints()
 {
     using common::model::relationship_t;
 
-    if (!relationship_hints().count("std::vector")) {
+    if (relationship_hints().count("std::vector") == 0u) {
         relationship_hints().insert({"std::vector", {}});
     }
-    if (!relationship_hints().count("std::unique_ptr")) {
+    if (relationship_hints().count("std::unique_ptr") == 0u) {
         relationship_hints().insert({"std::unique_ptr", {}});
     }
-    if (!relationship_hints().count("std::shared_ptr")) {
+    if (relationship_hints().count("std::shared_ptr") == 0u) {
         relationship_hints().insert(
             {"std::shared_ptr", {relationship_t::kAssociation}});
     }
-    if (!relationship_hints().count("std::weak_ptr")) {
+    if (relationship_hints().count("std::weak_ptr") == 0u) {
         relationship_hints().insert(
             {"std::weak_ptr", {relationship_t::kAssociation}});
     }
-    if (!relationship_hints().count("std::tuple")) {
+    if (relationship_hints().count("std::tuple") == 0u) {
         relationship_hints().insert({"std::tuple", {}});
     }
-    if (!relationship_hints().count("std::map")) {
+    if (relationship_hints().count("std::map") == 0u) {
         relationship_hint_t hint{relationship_t::kNone};
         hint.argument_hints.insert({1, relationship_t::kAggregation});
         relationship_hints().insert({"std::tuple", std::move(hint)});

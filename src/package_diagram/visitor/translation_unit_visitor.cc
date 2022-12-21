@@ -221,7 +221,7 @@ void translation_unit_visitor::process_class_children(
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
                 dynamic_cast<const clang::VarDecl *>(decl)};
-            if (variable_declaration &&
+            if ((variable_declaration != nullptr) &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, relationships);
             }
@@ -374,7 +374,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                     // pass
                 }
                 else if (template_argument.getAsType()
-                             ->getAs<clang::FunctionProtoType>()) {
+                             ->getAs<clang::FunctionProtoType>() != nullptr) {
                     for (const auto &param_type :
                         template_argument.getAsType()
                             ->getAs<clang::FunctionProtoType>()
