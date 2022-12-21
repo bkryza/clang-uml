@@ -374,7 +374,7 @@ public:
     }
 
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-        clang::CompilerInstance &CI, clang::StringRef file) override
+        clang::CompilerInstance &CI, clang::StringRef /*file*/) override
     {
         return std::make_unique<
             diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
@@ -433,7 +433,7 @@ template <typename DiagramModel, typename DiagramConfig,
 std::unique_ptr<DiagramModel> generate(
     const clang::tooling::CompilationDatabase &db, const std::string &name,
     DiagramConfig &config, const std::vector<std::string> &translation_units,
-    bool verbose = false)
+    bool /*verbose*/ = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
 

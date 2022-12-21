@@ -1440,7 +1440,8 @@ translation_unit_visitor::build_function_template_instantiation(
 void translation_unit_visitor::
     build_template_instantiation_process_template_arguments(
         model::template_trait *parent,
-        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
+        std::deque<std::tuple<std::string, int, bool>>
+            & /*template_base_params*/,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::template_trait &template_instantiation,
         const std::string &full_template_specialization_name,
@@ -1516,8 +1517,8 @@ void translation_unit_visitor::
 
 void translation_unit_visitor::
     build_template_instantiation_process_tag_argument(
-        model::template_trait &template_instantiation,
-        const std::string &full_template_specialization_name,
+        model::template_trait & /*template_instantiation*/,
+        const std::string & /*full_template_specialization_name*/,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         class_diagram::model::template_parameter &argument) const
@@ -1532,7 +1533,7 @@ void translation_unit_visitor::
 
 void translation_unit_visitor::
     build_template_instantiation_process_type_argument(
-        model::template_trait *parent,
+        model::template_trait * /*parent*/,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
@@ -1623,7 +1624,7 @@ translation_unit_visitor::process_template_specialization(
 void translation_unit_visitor::process_template_specialization_argument(
     const clang::ClassTemplateSpecializationDecl *cls,
     model::class_ &template_instantiation, const clang::TemplateArgument &arg,
-    size_t argument_index, bool in_parameter_pack)
+    size_t argument_index, bool /*in_parameter_pack*/)
 {
     const auto argument_kind = arg.getKind();
 
@@ -1981,7 +1982,8 @@ translation_unit_visitor::build_template_instantiation(
 void translation_unit_visitor::
     process_unexposed_template_specialization_parameters(
         const std::string &type_name,
-        class_diagram::model::template_parameter &tp, model::class_ &c) const
+        class_diagram::model::template_parameter &tp,
+        model::class_ & /*c*/) const
 {
     auto template_params = cx::util::parse_unexposed_template_params(
         type_name, [](const std::string &t) { return t; });

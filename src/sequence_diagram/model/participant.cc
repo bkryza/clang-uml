@@ -68,7 +68,7 @@ template_trait::templates() const
 }
 
 int template_trait::calculate_template_specialization_match(
-    const template_trait &other, const std::string &full_name) const
+    const template_trait &other, const std::string & /*full_name*/) const
 {
     int res{};
 

@@ -1030,7 +1030,7 @@ void translation_unit_visitor::process_function_parameter(
 
 void translation_unit_visitor::
     process_function_parameter_find_relationships_in_template(class_ &c,
-        const std::set<std::string> &template_parameter_names,
+        const std::set<std::string> & /*template_parameter_names*/,
         const clang::TemplateSpecializationType &template_instantiation_type)
 {
     const auto template_field_decl_name =
@@ -1174,7 +1174,7 @@ translation_unit_visitor::process_template_specialization(
 void translation_unit_visitor::process_template_specialization_argument(
     const clang::ClassTemplateSpecializationDecl *cls,
     class_ &template_instantiation, const clang::TemplateArgument &arg,
-    size_t argument_index, bool in_parameter_pack)
+    size_t argument_index, bool /*in_parameter_pack*/)
 {
     const auto argument_kind = arg.getKind();
 

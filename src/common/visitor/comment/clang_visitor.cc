@@ -207,7 +207,7 @@ void clang_visitor::visit_tparam_command(
 
 void clang_visitor::visit_paragraph(
     const clang::comments::ParagraphComment *paragraph,
-    const clang::comments::CommandTraits &traits, std::string &text)
+    const clang::comments::CommandTraits & /*traits*/, std::string &text)
 {
     using clang::comments::Comment;
     using clang::comments::TextComment;

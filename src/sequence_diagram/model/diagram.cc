@@ -190,7 +190,7 @@ void diagram::add_if_stmt(
 
 void diagram::end_if_stmt(
     const common::model::diagram_element::id_t current_caller_id,
-    common::model::message_t type)
+    common::model::message_t /*type*/)
 {
     using clanguml::common::model::message_t;
 
