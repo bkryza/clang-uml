@@ -87,29 +87,34 @@ void clang_visitor::visit(
                 clang::dyn_cast<TParamCommandComment>(block), traits, cmt);
         }
         else if (block_kind == Comment::BlockCommandCommentKind) {
-            const auto *command = clang::dyn_cast<BlockCommandComment>(block);
-            const auto *command_info =
-                traits.getCommandInfo(command->getCommandID());
+            if (const auto *command =
+                    clang::dyn_cast<BlockCommandComment>(block);
+                command != nullptr) {
+                const auto *command_info =
+                    traits.getCommandInfo(command->getCommandID());
 
-            if (command_info->IsBlockCommand && command_info->NumArgs == 0u) {
-                // Visit block command with a single text argument, e.g.:
-                //    \brief text
-                //    \todo text
-                //    ...
-                visit_block_command(command, traits, cmt);
-            }
-            else if (command_info->IsParamCommand) {
-                // Visit function param block:
-                //   \param arg text
-                visit_param_command(
-                    clang::dyn_cast<ParamCommandComment>(command), traits, cmt);
-            }
-            else if (command_info->IsTParamCommand) {
-                // Visit template param block:
-                //   \tparam typename text
-                visit_tparam_command(
-                    clang::dyn_cast<TParamCommandComment>(command), traits,
-                    cmt);
+                if (command_info->IsBlockCommand &&
+                    command_info->NumArgs == 0u) {
+                    // Visit block command with a single text argument, e.g.:
+                    //    \brief text
+                    //    \todo text
+                    //    ...
+                    visit_block_command(command, traits, cmt);
+                }
+                else if (command_info->IsParamCommand) {
+                    // Visit function param block:
+                    //   \param arg text
+                    visit_param_command(
+                        clang::dyn_cast<ParamCommandComment>(command), traits,
+                        cmt);
+                }
+                else if (command_info->IsTParamCommand) {
+                    // Visit template param block:
+                    //   \tparam typename text
+                    visit_tparam_command(
+                        clang::dyn_cast<TParamCommandComment>(command), traits,
+                        cmt);
+                }
             }
         }
     }

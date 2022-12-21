@@ -287,7 +287,7 @@ template <typename C, typename D>
 void generator<C, D>::generate_notes(
     std::ostream &ostr, const model::element &e) const
 {
-    for (auto decorator : e.decorators()) {
+    for (const auto &decorator : e.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
         if (note && note->applies_to_diagram(m_config.name)) {
             ostr << "note " << note->position << " of " << e.alias() << '\n'

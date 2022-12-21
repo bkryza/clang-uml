@@ -59,7 +59,7 @@ decorated_element::get_relationship() const
 
 std::string decorated_element::style_spec() const
 {
-    for (auto d : decorators_)
+    for (const auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::style>(d))
             return std::dynamic_pointer_cast<decorators::style>(d)->spec;
 
@@ -75,14 +75,14 @@ decorated_element::decorators() const
 void decorated_element::add_decorators(
     const std::vector<std::shared_ptr<decorators::decorator>> &decorators)
 {
-    for (auto d : decorators) {
+    for (const auto &d : decorators) {
         decorators_.push_back(d);
     }
 }
 
 void decorated_element::append(const decorated_element &de)
 {
-    for (auto d : de.decorators()) {
+    for (const auto &d : de.decorators()) {
         decorators_.push_back(d);
     }
 }
