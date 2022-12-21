@@ -194,10 +194,14 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         std::string destination;
         try {
-            destination = r.destination();
+            auto target_element = m_model.get(r.destination());
+            if (!target_element.has_value())
+                throw error::uml_alias_missing{
+                    fmt::format("Missing element in the model for ID: {}",
+                        r.destination())};
 
-            // TODO: Refactor destination to a namespace qualified entity
-            //       name
+            destination = target_element.value().full_name(false);
+
             if (util::starts_with(destination, std::string{"::"}))
                 destination = destination.substr(2, destination.size());
 

@@ -244,7 +244,7 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
 
 template <> id_t to_id(const std::string &full_name)
 {
-    return std::hash<std::string>{}(full_name) >> 3;
+    return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3u);
 }
 
 template <> id_t to_id(const clang::NamespaceDecl &declaration)

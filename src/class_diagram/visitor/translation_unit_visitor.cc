@@ -1409,7 +1409,8 @@ std::unique_ptr<class_> translation_unit_visitor::
     template_instantiation.set_name(template_decl->getNameAsString());
     template_instantiation.set_namespace(ns);
     template_instantiation.set_id(template_decl->getID() +
-        (std::hash<std::string>{}(full_template_specialization_name) >> 4));
+        static_cast<id_t>(
+            std::hash<std::string>{}(full_template_specialization_name) >> 4u));
 
     build_template_instantiation_process_template_arguments(parent,
         template_base_params,
@@ -1661,7 +1662,7 @@ void translation_unit_visitor::
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl)
 {
-    auto arg_index = 0U;
+    auto arg_index = 0;
     for (const auto &arg : template_args) {
         const auto argument_kind = arg.getKind();
         template_parameter argument;
