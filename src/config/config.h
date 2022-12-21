@@ -120,7 +120,7 @@ using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
 
-std::string to_string(const hint_t t);
+std::string to_string(hint_t t);
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};

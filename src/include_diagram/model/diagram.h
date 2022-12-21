@@ -45,7 +45,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const common::model::diagram_element::id_t id) const override;
+        common::model::diagram_element::id_t id) const override;
 
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 
@@ -53,7 +53,7 @@ public:
         const std::string &name) const;
 
     common::optional_ref<common::model::source_file> get_file(
-        const common::model::diagram_element::id_t id) const;
+        common::model::diagram_element::id_t id) const;
 
     std::string to_alias(const std::string &full_name) const;
 

@@ -56,11 +56,11 @@ public:
 
         std::optional<common::id_t> process_internal_header(
             const std::filesystem::path &include_path, bool is_system,
-            const common::id_t current_file_id);
+            common::id_t current_file_id);
 
         std::optional<common::id_t> process_external_system_header(
             const std::filesystem::path &include_path,
-            const common::id_t current_file_id);
+            common::id_t current_file_id);
 
         std::optional<common::id_t> process_source_file(
             const std::filesystem::path &file);

@@ -42,7 +42,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const common::model::diagram_element::id_t id) const override;
+        common::model::diagram_element::id_t id) const override;
 
     std::string to_alias(const std::string &full_name) const;
 
@@ -139,8 +139,7 @@ public:
     const std::set<common::model::diagram_element::id_t> &
     active_participants() const;
 
-    void add_catch_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
+    void add_catch_stmt(common::model::diagram_element::id_t current_caller_id,
         std::string caught_type);
 
 private:

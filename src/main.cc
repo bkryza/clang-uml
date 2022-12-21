@@ -123,8 +123,8 @@ void find_translation_units_for_diagrams(
  */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
-    const int verbose, const unsigned int thread_count,
+    const std::unique_ptr<clang::tooling::CompilationDatabase> &db, int verbose,
+    unsigned int thread_count,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map);
 

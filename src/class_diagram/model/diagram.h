@@ -49,7 +49,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     const common::reference_vector<class_> &classes() const;
 
@@ -82,10 +82,10 @@ public:
 
     void get_parents(clanguml::common::reference_set<class_> &parents) const;
 
-    friend void print_diagram_tree(const diagram &d, const int level);
+    friend void print_diagram_tree(const diagram &d, int level);
 
     bool has_element(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     inja::json context() const override;
 

@@ -46,7 +46,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<clanguml::common::model::diagram_element> get(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     void add_package(std::unique_ptr<common::model::package> &&p);
 
@@ -54,10 +54,9 @@ public:
         const std::string &name) const;
 
     common::optional_ref<common::model::package> get_package(
-        const clanguml::common::model::diagram_element::id_t id) const;
+        clanguml::common::model::diagram_element::id_t id) const;
 
-    std::string to_alias(
-        const clanguml::common::model::diagram_element::id_t) const;
+    std::string to_alias(clanguml::common::model::diagram_element::id_t) const;
 
     inja::json context() const override;
 
