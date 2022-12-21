@@ -51,9 +51,9 @@ public:
     get_with_namespace(const std::string &name, const namespace_ &ns) const;
 
     diagram(const diagram &) = delete;
-    diagram(diagram &&);
+    diagram(diagram &&) noexcept;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&);
+    diagram &operator=(diagram &&) noexcept;
 
     void set_name(const std::string &name);
     std::string name() const;

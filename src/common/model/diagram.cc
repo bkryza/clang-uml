@@ -27,9 +27,9 @@ diagram::diagram() = default;
 
 diagram::~diagram() = default;
 
-diagram::diagram(diagram &&) = default;
+diagram::diagram(diagram &&) noexcept = default;
 
-diagram &diagram::operator=(diagram &&) = default;
+diagram &diagram::operator=(diagram &&) noexcept = default;
 
 common::optional_ref<clanguml::common::model::diagram_element>
 diagram::get_with_namespace(const std::string &name, const namespace_ &ns) const

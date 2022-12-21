@@ -30,10 +30,10 @@ public:
     nested_trait() = default;
 
     nested_trait(const nested_trait &) = delete;
-    nested_trait(nested_trait &&) = default;
+    nested_trait(nested_trait &&) noexcept = default;
 
     nested_trait &operator=(const nested_trait &) = delete;
-    nested_trait &operator=(nested_trait &&) = default;
+    nested_trait &operator=(nested_trait &&) noexcept = default;
 
     virtual ~nested_trait() = default;
 

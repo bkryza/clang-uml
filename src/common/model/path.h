@@ -51,7 +51,7 @@ public:
 
     path(path &&right) noexcept = default;
 
-    path &operator=(path &&right) = default;
+    path &operator=(path &&right) noexcept = default;
 
     path(std::initializer_list<std::string> ns)
     {
