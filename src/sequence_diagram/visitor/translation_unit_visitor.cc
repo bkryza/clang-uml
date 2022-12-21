@@ -2125,10 +2125,7 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
         return false;
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
-    if (!diagram().should_include(common::model::source_file{expr_file}))
-        return false;
-
-    return true;
+    return diagram().should_include(common::model::source_file{expr_file});
 }
 
 bool translation_unit_visitor::should_include(

@@ -86,11 +86,9 @@ bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 bool template_parameter::is_specialization_of(
     const template_parameter &ct) const
 {
-    if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
-        !is_template_parameter())
-        return true;
-
-    return false;
+    return (ct.is_template_parameter() ||
+               ct.is_template_template_parameter()) &&
+        !is_template_parameter();
 }
 
 void template_parameter::add_template_param(template_parameter &&ct)

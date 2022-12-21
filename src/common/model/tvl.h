@@ -38,7 +38,7 @@ inline value_t all_of(InputIterator first, InputIterator last, Predicate pred)
     for (InputIterator it = first; it != last; it++) {
         value_t m = pred(*it);
         if (m.has_value()) {
-            if (m.value() == true) {
+            if (m.value()) {
                 res = true;
             }
             else {
@@ -59,7 +59,7 @@ inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
     for (InputIterator it = first; it != last; it++) {
         value_t m = pred(*it);
         if (m.has_value()) {
-            if (m.value() == true) {
+            if (m.value()) {
                 res = true;
                 break;
             }

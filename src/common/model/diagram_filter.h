@@ -347,10 +347,7 @@ public:
         auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
             [this, &e](const auto &in) { return in->match(diagram_, e); });
 
-        if (tvl::is_undefined(inc) || tvl::is_true(inc))
-            return true;
-
-        return false;
+        return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }
 
 private:
