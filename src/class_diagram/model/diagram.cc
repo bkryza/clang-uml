@@ -205,7 +205,7 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
 
     if (!has_enum(*e)) {
         if (add_element(ns, std::move(e))) {
-            enums_.emplace_back(std::move(e_ref));
+            enums_.emplace_back(e_ref);
             return true;
         }
     }

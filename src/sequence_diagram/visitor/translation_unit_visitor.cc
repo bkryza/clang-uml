@@ -1347,7 +1347,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_type_parameter->isParameterPack());
 
-            c.add_template(std::move(ct));
+            c.add_template(ct);
         }
         else if (clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                      parameter) != nullptr) {
@@ -1361,7 +1361,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_nontype_parameter->isParameterPack());
 
-            c.add_template(std::move(ct));
+            c.add_template(ct);
         }
         else if (clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
                      parameter) != nullptr) {
@@ -1375,7 +1375,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_template_parameter->isParameterPack());
 
-            c.add_template(std::move(ct));
+            c.add_template(ct);
         }
         else {
             // pass
@@ -1481,7 +1481,7 @@ void translation_unit_visitor::
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
 
-        template_instantiation.add_template(std::move(argument));
+        template_instantiation.add_template(argument);
 
         arg_index++;
     }
@@ -1769,20 +1769,20 @@ void translation_unit_visitor::process_template_specialization_argument(
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
 
-        template_instantiation.add_template(std::move(argument));
+        template_instantiation.add_template(argument);
     }
     else if (argument_kind == clang::TemplateArgument::Integral) {
         class_diagram::model::template_parameter argument;
         argument.is_template_parameter(false);
         argument.set_type(std::to_string(arg.getAsIntegral().getExtValue()));
-        template_instantiation.add_template(std::move(argument));
+        template_instantiation.add_template(argument);
     }
     else if (argument_kind == clang::TemplateArgument::Expression) {
         class_diagram::model::template_parameter argument;
         argument.is_template_parameter(false);
         argument.set_type(common::get_source_text(
             arg.getAsExpr()->getSourceRange(), source_manager()));
-        template_instantiation.add_template(std::move(argument));
+        template_instantiation.add_template(argument);
     }
     else if (argument_kind == clang::TemplateArgument::TemplateExpansion) {
         class_diagram::model::template_parameter argument;
