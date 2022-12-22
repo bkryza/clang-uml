@@ -1000,7 +1000,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
 
     std::string method_name = method_decl->getQualifiedNameAsString();
 
-    auto *callee_decl =
+    const auto *callee_decl =
         method_decl != nullptr ? method_decl->getParent() : nullptr;
 
     if (callee_decl == nullptr)
@@ -1026,7 +1026,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
 bool translation_unit_visitor::process_class_template_method_call_expression(
     model::message &m, const clang::CallExpr *expr)
 {
-    auto *dependent_member_callee =
+    const auto *dependent_member_callee =
         clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
             expr->getCallee());
 
@@ -1145,7 +1145,7 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
     model::message &m, const clang::CallExpr *expr)
 {
     // This is probably a template
-    auto *unresolved_expr =
+    const auto *unresolved_expr =
         clang::dyn_cast_or_null<clang::UnresolvedLookupExpr>(expr->getCallee());
 
     if (unresolved_expr != nullptr) {
@@ -1153,7 +1153,7 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
             if (clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl) !=
                 nullptr) {
                 // Yes, it's a template
-                auto *ftd =
+                const auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
 
                 if (!get_unique_id(ftd->getID()).has_value())
@@ -1820,14 +1820,14 @@ translation_unit_visitor::build_template_instantiation(
         /*is variadic */ bool>>
         template_base_params{};
 
-    auto *template_type_ptr = &template_type_decl;
+    const auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias() &&
         (template_type_decl.getAliasedType()
                 ->getAs<clang::TemplateSpecializationType>() != nullptr))
         template_type_ptr = template_type_decl.getAliasedType()
                                 ->getAs<clang::TemplateSpecializationType>();
 
-    auto &template_type = *template_type_ptr;
+    const auto &template_type = *template_type_ptr;
 
     //
     // Create class_ instance to hold the template instantiation

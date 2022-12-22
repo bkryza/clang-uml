@@ -255,7 +255,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         cls->getQualifiedNameAsString(),
         cls->getLocation().printToString(source_manager()));
 
-    auto *template_type_specialization_ptr =
+    const auto *template_type_specialization_ptr =
         cls->getTemplatedDecl()
             ->getUnderlyingType()
             ->getAs<clang::TemplateSpecializationType>();
@@ -618,7 +618,7 @@ void translation_unit_visitor::process_record_containment(
 void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl *cls, class_ &c)
 {
-    for (auto &base : cls->bases()) {
+    for (const auto &base : cls->bases()) {
         class_parent cp;
         auto name_and_ns = common::model::namespace_{
             common::to_string(base.getType(), cls->getASTContext())};
@@ -1481,14 +1481,14 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         /*is variadic */ bool>>
         template_base_params{};
 
-    auto *template_type_ptr = &template_type_decl;
+    const auto *template_type_ptr = &template_type_decl;
     if (template_type_decl.isTypeAlias() &&
         (template_type_decl.getAliasedType()
                 ->getAs<clang::TemplateSpecializationType>() != nullptr))
         template_type_ptr = template_type_decl.getAliasedType()
                                 ->getAs<clang::TemplateSpecializationType>();
 
-    auto &template_type = *template_type_ptr;
+    const auto &template_type = *template_type_ptr;
 
     //
     // Create class_ instance to hold the template instantiation
@@ -2129,7 +2129,7 @@ void translation_unit_visitor::resolve_local_to_global_ids()
 {
     // TODO: Refactor to a map with relationships attached to references
     //       to elements
-    for (auto &cls : diagram().classes()) {
+    for (const auto &cls : diagram().classes()) {
         for (auto &rel : cls.get().relationships()) {
             if (rel.type() == relationship_t::kInstantiation) {
                 const auto maybe_local_id = rel.destination();
