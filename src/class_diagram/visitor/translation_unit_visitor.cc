@@ -1413,7 +1413,7 @@ std::unique_ptr<class_> translation_unit_visitor::
     template_instantiation.set_namespace(ns);
     template_instantiation.set_id(template_decl->getID() +
         static_cast<id_t>(
-            std::hash<std::string>{}(full_template_specialization_name) >> 4u));
+            std::hash<std::string>{}(full_template_specialization_name) >> 4U));
 
     build_template_instantiation_process_template_arguments(parent,
         template_base_params,

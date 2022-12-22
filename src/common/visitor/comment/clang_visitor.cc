@@ -94,7 +94,7 @@ void clang_visitor::visit(
                     traits.getCommandInfo(command->getCommandID());
 
                 if (command_info->IsBlockCommand &&
-                    command_info->NumArgs == 0u) {
+                    command_info->NumArgs == 0U) {
                     // Visit block command with a single text argument, e.g.:
                     //    \brief text
                     //    \todo text
