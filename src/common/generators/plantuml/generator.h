@@ -273,6 +273,11 @@ void generator<C, D>::generate_plantuml_directives(
 
             ostr << directive << '\n';
         }
+        catch (const clanguml::error::uml_alias_missing &e) {
+            LOG_ERROR("Failed to render PlantUML directive due to unresolvable "
+                      "alias: {}",
+                e.what());
+        }
         catch (const inja::json::parse_error &e) {
             LOG_ERROR("Failed to parse Jinja template: {}", d);
         }
@@ -547,6 +552,10 @@ template <typename C, typename D> void generator<C, D>::init_env()
         auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
+        if (!element_opt.has_value())
+            throw clanguml::error::uml_alias_missing(
+                args[0]->get<std::string>());
+
         return element_opt.value().alias();
     });
 
@@ -557,16 +566,18 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
         inja::json res{};
-        auto element = m_model.get_with_namespace(
+        auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
-        if (element.has_value()) {
-            auto comment = element.value().comment();
+        if (!element_opt.has_value())
+            throw clanguml::error::uml_alias_missing(
+                args[0]->get<std::string>());
 
-            if (comment.has_value()) {
-                assert(comment.value().is_object());
-                res = comment.value();
-            }
+        auto comment = element_opt.value().comment();
+
+        if (comment.has_value()) {
+            assert(comment.value().is_object());
+            res = comment.value();
         }
 
         return res;
