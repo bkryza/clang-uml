@@ -63,7 +63,7 @@ public:
     }
 
     template <typename T>
-    const common::optional_ref<T> get_participant(
+    common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id) const
     {
         if (participants_.find(id) == participants_.end()) {

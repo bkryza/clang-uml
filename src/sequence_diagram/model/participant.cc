@@ -234,7 +234,7 @@ method::method(const common::model::namespace_ &using_namespace)
 {
 }
 
-const std::string method::method_name() const { return method_name_; }
+std::string method::method_name() const { return method_name_; }
 
 std::string method::alias() const
 {

@@ -185,7 +185,7 @@ struct method : public function {
 
     std::string type_name() const override { return "method"; }
 
-    const std::string method_name() const;
+    std::string method_name() const;
 
     std::string alias() const override;
 
