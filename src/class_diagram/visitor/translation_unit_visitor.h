@@ -148,7 +148,7 @@ private:
         const clang::FriendDecl &f, clanguml::class_diagram::model::class_ &c);
 
     bool find_relationships(const clang::QualType &type,
-        found_relationships_t &,
+        found_relationships_t & /*relationships*/,
         clanguml::common::model::relationship_t relationship_hint);
 
     void add_relationships(clanguml::class_diagram::model::class_ &c,

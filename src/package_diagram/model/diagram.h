@@ -56,7 +56,8 @@ public:
     common::optional_ref<common::model::package> get_package(
         clanguml::common::model::diagram_element::id_t id) const;
 
-    std::string to_alias(clanguml::common::model::diagram_element::id_t) const;
+    std::string to_alias(
+        clanguml::common::model::diagram_element::id_t /*id*/) const;
 
     inja::json context() const override;
 
