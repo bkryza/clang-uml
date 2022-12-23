@@ -32,7 +32,7 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     if (c.find(skip_relationship::label) == 0) {
         return skip_relationship::from_string(c);
     }
-    else if (c.find(skip::label) == 0) {
+    if (c.find(skip::label) == 0) {
         return skip::from_string(c);
     }
     else if (c.find(style::label) == 0) {

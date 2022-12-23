@@ -198,7 +198,7 @@ std::string function::message_name(message_render_mode mode) const
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}(){}", name(), is_const() ? " const" : "");
     }
-    else if (mode == message_render_mode::abbreviated) {
+    if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
                 fmt::format("{}", fmt::join(parameters_, ",")),
@@ -270,7 +270,7 @@ std::string method::message_name(message_render_mode mode) const
         return fmt::format("{}{}(){}{}", style, method_name(),
             is_const() ? " const" : "", style);
     }
-    else if (mode == message_render_mode::abbreviated) {
+    if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
                 fmt::format("{}", fmt::join(parameters(), ",")),
@@ -350,7 +350,7 @@ std::string function_template::message_name(message_render_mode mode) const
         return fmt::format(
             "{}{}(){}", name(), template_params, is_const() ? " const" : "");
     }
-    else if (mode == message_render_mode::abbreviated) {
+    if (mode == message_render_mode::abbreviated) {
         return fmt::format("{}({}){}", name(),
             clanguml::util::abbreviate(
                 fmt::format("{}", fmt::join(parameters(), ",")),
