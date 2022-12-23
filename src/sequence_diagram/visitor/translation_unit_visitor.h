@@ -234,7 +234,7 @@ private:
         model::class_ *parent);
 
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
-        const std::string &full_name);
+        const std::string &full_name) const;
 
     std::string simplify_system_template(const std::string &full_name) const;
 
@@ -258,7 +258,7 @@ private:
         model::message &m, const clang::CallExpr *expr);
 
     bool process_unresolved_lookup_call_expression(
-        model::message &m, const clang::CallExpr *expr);
+        model::message &m, const clang::CallExpr *expr) const;
 
     void push_message(clang::CallExpr *expr, model::message &&m);
 

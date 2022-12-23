@@ -2151,7 +2151,7 @@ void translation_unit_visitor::finalize()
 }
 
 bool translation_unit_visitor::simplify_system_template(
-    template_parameter &ct, const std::string &full_name)
+    template_parameter &ct, const std::string &full_name) const
 {
     if (config().type_aliases().count(full_name) > 0) {
         ct.set_name(config().type_aliases().at(full_name));

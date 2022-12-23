@@ -57,7 +57,7 @@ bool call_expression_context::valid() const
         (current_function_template_decl_ != nullptr);
 }
 
-clang::ASTContext *call_expression_context::get_ast_context()
+clang::ASTContext *call_expression_context::get_ast_context() const
 {
     if (current_class_template_specialization_decl_ != nullptr)
         return &current_class_template_specialization_decl_->getASTContext();

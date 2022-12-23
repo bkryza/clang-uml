@@ -1142,7 +1142,7 @@ bool translation_unit_visitor::process_function_call_expression(
 }
 
 bool translation_unit_visitor::process_unresolved_lookup_call_expression(
-    model::message &m, const clang::CallExpr *expr)
+    model::message &m, const clang::CallExpr *expr) const
 {
     // This is probably a template
     const auto *unresolved_expr =
@@ -2008,7 +2008,8 @@ void translation_unit_visitor::
 }
 
 bool translation_unit_visitor::simplify_system_template(
-    class_diagram::model::template_parameter &ct, const std::string &full_name)
+    class_diagram::model::template_parameter &ct,
+    const std::string &full_name) const
 {
     if (config().type_aliases().count(full_name) > 0) {
         ct.set_name(config().type_aliases().at(full_name));

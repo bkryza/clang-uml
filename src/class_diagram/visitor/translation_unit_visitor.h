@@ -227,7 +227,7 @@ private:
     void resolve_local_to_global_ids();
 
     bool simplify_system_template(
-        model::template_parameter &ct, const std::string &full_name);
+        model::template_parameter &ct, const std::string &full_name) const;
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id

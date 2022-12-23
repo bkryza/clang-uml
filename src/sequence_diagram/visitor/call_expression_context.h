@@ -37,7 +37,7 @@ struct call_expression_context {
 
     bool valid() const;
 
-    clang::ASTContext *get_ast_context();
+    clang::ASTContext *get_ast_context() const;
 
     void update(clang::CXXRecordDecl *cls);
 
