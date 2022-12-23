@@ -233,9 +233,13 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
         return true;
 
     if (!m->isThisDeclarationADefinition()) {
-        if (m->getDefinition() != nullptr)
-            return VisitCXXMethodDecl(
-                static_cast<clang::CXXMethodDecl *>(m->getDefinition()));
+        if (m->getDefinition() != nullptr) {
+            if (auto *method_definition =
+                    clang::dyn_cast<clang::CXXMethodDecl>(m->getDefinition());
+                method_definition != nullptr) {
+                return VisitCXXMethodDecl(method_definition);
+            }
+        }
     }
 
     LOG_TRACE("Visiting method {} in class {} [{}]",
@@ -1232,8 +1236,10 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
         std::optional<common::model::diagram_element::id_t> id_opt;
-        int64_t local_id =
-            static_cast<const clang::RecordDecl *>(parent)->getID();
+        const auto *parent_record_decl =
+            clang::dyn_cast<clang::RecordDecl>(parent);
+
+        int64_t local_id = parent_record_decl->getID();
 
         // First check if the parent has been added to the diagram as
         // regular class
@@ -1241,13 +1247,9 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt &&
-            (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate() != nullptr)) {
-            local_id = static_cast<const clang::RecordDecl *>(parent)
-                           ->getDescribedTemplate()
-                           ->getID();
-            if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate() != nullptr)
+            (parent_record_decl->getDescribedTemplate() != nullptr)) {
+            parent_record_decl->getDescribedTemplate()->getID();
+            if (parent_record_decl->getDescribedTemplate() != nullptr)
                 id_opt = get_unique_id(local_id);
         }
 

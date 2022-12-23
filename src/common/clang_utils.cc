@@ -74,9 +74,11 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
     // Now build up the namespace
     std::deque<std::string> namespace_tokens;
     while ((parent != nullptr) && parent->isNamespace()) {
-        const auto *ns_decl = static_cast<const clang::NamespaceDecl *>(parent);
-        if (!ns_decl->isInline() && !ns_decl->isAnonymousNamespace())
-            namespace_tokens.push_front(ns_decl->getNameAsString());
+        if (const auto *ns_decl = clang::dyn_cast<clang::NamespaceDecl>(parent);
+            ns_decl != nullptr) {
+            if (!ns_decl->isInline() && !ns_decl->isAnonymousNamespace())
+                namespace_tokens.push_front(ns_decl->getNameAsString());
+        }
 
         parent = parent->getParent();
     }
@@ -106,10 +108,11 @@ std::string get_tag_name(const clang::TagDecl &declaration)
 
         const auto *cls_parent{declaration.getParent()};
         while (cls_parent->isRecord()) {
-            auto parent_name =
-                static_cast<const clang::RecordDecl *>(cls_parent)
-                    ->getNameAsString();
-            record_parent_names.push_front(parent_name);
+            if (const auto *record_decl =
+                    clang::dyn_cast<clang::RecordDecl>(cls_parent);
+                record_decl != nullptr) {
+                record_parent_names.push_front(record_decl->getNameAsString());
+            }
             cls_parent = cls_parent->getParent();
         }
         return fmt::format("{}", fmt::join(record_parent_names, "##"));

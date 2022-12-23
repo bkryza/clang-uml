@@ -34,9 +34,7 @@ using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
 using clanguml::class_diagram::model::template_parameter;
-using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
-using clanguml::common::model::decorated_element;
 using clanguml::common::model::namespace_;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
@@ -132,18 +130,18 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
         std::optional<common::model::diagram_element::id_t> id_opt;
-        int64_t local_id =
-            static_cast<const clang::RecordDecl *>(parent)->getID();
+
+        const auto *parent_record_decl =
+            clang::dyn_cast<clang::RecordDecl>(parent);
+
+        int64_t local_id = parent_record_decl->getID();
 
         id_opt = get_ast_local_id(local_id);
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt) {
-            if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate() != nullptr) {
-                local_id = static_cast<const clang::RecordDecl *>(parent)
-                               ->getDescribedTemplate()
-                               ->getID();
+            if (parent_record_decl->getDescribedTemplate() != nullptr) {
+                local_id = parent_record_decl->getDescribedTemplate()->getID();
 
                 id_opt = get_ast_local_id(local_id);
             }
@@ -425,8 +423,11 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
         std::optional<common::model::diagram_element::id_t> id_opt;
-        int64_t local_id =
-            static_cast<const clang::RecordDecl *>(parent)->getID();
+
+        const auto *parent_record_decl =
+            clang::dyn_cast<clang::RecordDecl>(parent);
+
+        int64_t local_id = parent_record_decl->getID();
 
         // First check if the parent has been added to the diagram as regular
         // class
@@ -434,11 +435,8 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt) {
-            local_id = static_cast<const clang::RecordDecl *>(parent)
-                           ->getDescribedTemplate()
-                           ->getID();
-            if (static_cast<const clang::RecordDecl *>(parent)
-                    ->getDescribedTemplate() != nullptr)
+            local_id = parent_record_decl->getDescribedTemplate()->getID();
+            if (parent_record_decl->getDescribedTemplate() != nullptr)
                 id_opt = get_ast_local_id(local_id);
         }
 
@@ -580,16 +578,20 @@ void translation_unit_visitor::process_template_record_containment(
 
     const auto *parent = record.getParent(); //->getOuterLexicalRecordContext();
 
-    if ((parent != nullptr) &&
-        (static_cast<const clang::RecordDecl *>(parent)
-                ->getDescribedTemplate() != nullptr)) {
-        auto id_opt =
-            get_ast_local_id(static_cast<const clang::RecordDecl *>(parent)
-                                 ->getDescribedTemplate()
-                                 ->getID());
+    if (parent != nullptr) {
+        if (const auto *record_decl =
+                clang::dyn_cast<clang::RecordDecl>(parent);
+            record_decl != nullptr) {
+            if (const auto *described_template =
+                    record_decl->getDescribedTemplate();
+                described_template != nullptr) {
+                auto id_opt = get_ast_local_id(described_template->getID());
 
-        if (id_opt) {
-            element.add_relationship({relationship_t::kContainment, *id_opt});
+                if (id_opt) {
+                    element.add_relationship(
+                        {relationship_t::kContainment, *id_opt});
+                }
+            }
         }
     }
 }
@@ -609,10 +611,12 @@ void translation_unit_visitor::process_record_containment(
         element.set_namespace(namespace_declaration.value());
     }
 
-    const auto id = common::to_id(
-        *static_cast<const clang::RecordDecl *>(record.getParent()));
-
-    element.add_relationship({relationship_t::kContainment, id});
+    if (const auto *record_decl =
+            clang::dyn_cast<clang::RecordDecl>(record.getParent());
+        record_decl != nullptr) {
+        element.add_relationship(
+            {relationship_t::kContainment, common::to_id(*record_decl)});
+    }
 }
 
 void translation_unit_visitor::process_class_bases(
