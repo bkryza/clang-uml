@@ -33,11 +33,11 @@
 #include <cli11/CLI11.hpp>
 #include <spdlog/spdlog.h>
 
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <future>
 #include <iostream>
-#include <string.h>
 #include <util/thread_pool_executor.h>
 
 #ifndef NDEBUG
