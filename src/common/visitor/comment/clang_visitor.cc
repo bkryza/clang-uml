@@ -160,6 +160,9 @@ void clang_visitor::visit_param_command(
 
     std::string description;
 
+    if (command == nullptr)
+        return;
+
     const auto name = command->getParamNameAsWritten().str();
 
     for (const auto *it = command->child_begin(); it != command->child_end();
@@ -192,6 +195,9 @@ void clang_visitor::visit_tparam_command(
 
     std::string description;
 
+    if (command == nullptr)
+        return;
+
     const auto name = command->getParamNameAsWritten().str();
 
     for (const auto *it = command->child_begin(); it != command->child_end();
@@ -220,12 +226,16 @@ void clang_visitor::visit_paragraph(
     using clang::comments::Comment;
     using clang::comments::TextComment;
 
+    if (paragraph == nullptr)
+        return;
+
     for (const auto *text_it = paragraph->child_begin();
          text_it != paragraph->child_end(); ++text_it) {
 
-        if ((*text_it)->getCommentKind() == Comment::TextCommentKind) {
+        if ((*text_it)->getCommentKind() == Comment::TextCommentKind &&
+            clang::dyn_cast<TextComment>(*text_it) != nullptr) {
             // Merge paragraph lines into a single string
-            text += clang::dyn_cast<TextComment>((*text_it))->getText();
+            text += clang::dyn_cast<TextComment>(*text_it)->getText();
             text += "\n";
         }
     }

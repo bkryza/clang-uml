@@ -171,7 +171,7 @@ std::string to_string(const clang::Expr *expr)
     clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
-    expr->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+    expr->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
 
     return result;
 }
@@ -181,7 +181,7 @@ std::string to_string(const clang::Stmt *stmt)
     clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
-    stmt->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+    stmt->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
 
     return result;
 }
@@ -284,15 +284,15 @@ template <> id_t to_id(const std::filesystem::path &file)
 template <> id_t to_id(const clang::TemplateArgument &template_argument)
 {
     if (template_argument.getKind() == clang::TemplateArgument::Type) {
-        if (template_argument.getAsType()->getAs<clang::EnumType>() != nullptr)
-            return to_id(*template_argument.getAsType()
-                              ->getAs<clang::EnumType>()
-                              ->getAsTagDecl());
-        if (template_argument.getAsType()->getAs<clang::RecordType>() !=
-            nullptr)
-            return to_id(*template_argument.getAsType()
-                              ->getAs<clang::RecordType>()
-                              ->getAsRecordDecl());
+        if (const auto *enum_type =
+                template_argument.getAsType()->getAs<clang::EnumType>();
+            enum_type != nullptr)
+            return to_id(*enum_type->getAsTagDecl());
+
+        if (const auto *record_type =
+                template_argument.getAsType()->getAs<clang::RecordType>();
+            record_type != nullptr)
+            return to_id(*record_type->getAsRecordDecl());
     }
 
     throw std::runtime_error("Cannot generate id for template argument");

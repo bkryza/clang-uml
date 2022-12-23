@@ -1030,6 +1030,9 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
         clang::dyn_cast_or_null<clang::CXXDependentScopeMemberExpr>(
             expr->getCallee());
 
+    if (dependent_member_callee == nullptr)
+        return false;
+
     if (is_callee_valid_template_specialization(dependent_member_callee)) {
         const auto *template_declaration =
             dependent_member_callee->getBaseType()
@@ -1172,21 +1175,21 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 bool translation_unit_visitor::is_callee_valid_template_specialization(
     const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const
 {
-    const bool base_type_is_not_null =
-        !dependent_member_expr->getBaseType().isNull();
+    if (dependent_member_expr == nullptr)
+        return false;
 
-    const bool base_type_is_specialization_type =
-        dependent_member_expr->getBaseType()
-            ->getAs<clang::TemplateSpecializationType>() != nullptr;
+    if (dependent_member_expr->getBaseType().isNull())
+        return false;
 
-    const bool base_type_is_not_pointer_type =
-        base_type_is_specialization_type &&
-        !dependent_member_expr->getBaseType()
-             ->getAs<clang::TemplateSpecializationType>()
-             ->isPointerType();
+    const auto *tst = dependent_member_expr->getBaseType()
+                          ->getAs<clang::TemplateSpecializationType>();
 
-    return (base_type_is_not_null && base_type_is_specialization_type &&
-        base_type_is_not_pointer_type);
+    if (tst == nullptr)
+        return false;
+
+    return !(dependent_member_expr->getBaseType()
+                 ->getAs<clang::TemplateSpecializationType>()
+                 ->isPointerType());
 }
 
 bool translation_unit_visitor::is_smart_pointer(
@@ -1554,17 +1557,14 @@ void translation_unit_visitor::
     if (arg.getAsType()->getAs<clang::FunctionType>() != nullptr) {
         // TODO
     }
-    else if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
-        nullptr) {
-        const auto *nested_template_type =
-            arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+    else if (const auto *nested_template_type =
+                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+             nested_template_type != nullptr) {
 
         const auto nested_template_name =
             nested_template_type->getTemplateName()
                 .getAsTemplateDecl()
                 ->getQualifiedNameAsString();
-
-        auto [tinst_ns, tinst_name] = cx::util::split_ns(nested_template_name);
 
         argument.set_name(nested_template_name);
 
@@ -1640,10 +1640,9 @@ void translation_unit_visitor::process_template_specialization_argument(
 
         // If this is a nested template type - add nested templates as
         // template arguments
-        if (arg.getAsType()->getAs<clang::TemplateSpecializationType>() !=
-            nullptr) {
-            const auto *nested_template_type =
+        if (const auto *nested_template_type =
                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+            nested_template_type != nullptr) {
 
             const auto nested_template_name =
                 nested_template_type->getTemplateName()
@@ -1653,8 +1652,7 @@ void translation_unit_visitor::process_template_specialization_argument(
             argument.set_name(nested_template_name);
 
             auto nested_template_instantiation = build_template_instantiation(
-                *arg.getAsType()->getAs<clang::TemplateSpecializationType>(),
-                &template_instantiation);
+                *nested_template_type, &template_instantiation);
 
             argument.set_id(nested_template_instantiation->id());
 
