@@ -1132,8 +1132,7 @@ bool translation_unit_visitor::process_function_call_expression(
         m.set_to(get_unique_id(callee_function->getID()).value());
     }
 
-    auto message_name = callee_name;
-    m.set_message_name(message_name.substr(0, message_name.size() - 2));
+    m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
 
     if (f_ptr)
         diagram().add_participant(std::move(f_ptr));
