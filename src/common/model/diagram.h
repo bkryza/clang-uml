@@ -71,7 +71,7 @@ public:
     bool should_include(relationship_t r) const;
     bool should_include(access_t s) const;
 
-    virtual bool has_element(const diagram_element::id_t id) const
+    virtual bool has_element(const diagram_element::id_t  /*id*/) const
     {
         return false;
     }
