@@ -180,5 +180,8 @@ install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 #
 # Enable testing via CTest
 #
-enable_testing()
-add_subdirectory(tests)
+option(BUILD_TESTS "" ON)
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif(BUILD_TESTS)

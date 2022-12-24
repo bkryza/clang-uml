@@ -5,6 +5,8 @@ Checks: >-
   -*osx*,
   -abseil*,
   -android*,
+  -bugprone-branch-clone,
+  -bugprone-exception-escape,
   -clang-analyzer-alpha.*,
   -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
   -cppcoreguidelines-macro-usage,
@@ -38,6 +40,7 @@ Checks: >-
   -readability-redundant-smartptr-get,
   -readability-convert-member-functions-to-static,
   -readability-function-cognitive-complexity,
+  -readability-const-return-type,
   -darwin*,
   -zircon*
 WarningsAsErrors: '*'
