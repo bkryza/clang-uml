@@ -125,33 +125,29 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     const auto *parent = enm->getParent();
 
-    if ((parent != nullptr) && parent->isRecord()) {
-        // Here we have 2 options, either:
-        //  - the parent is a regular C++ class/struct
-        //  - the parent is a class template declaration/specialization
-        std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::model::diagram_element::id_t> id_opt;
 
+    if (parent != nullptr) {
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
-        int64_t local_id = parent_record_decl->getID();
+        if (parent_record_decl != nullptr) {
+            int64_t local_id = parent_record_decl->getID();
 
-        id_opt = get_ast_local_id(local_id);
+            // First check if the parent has been added to the diagram as
+            // regular class
+            id_opt = get_ast_local_id(local_id);
 
-        // If not, check if the parent template declaration is in the model
-        if (!id_opt) {
-            if (parent_record_decl->getDescribedTemplate() != nullptr) {
+            // If not, check if the parent template declaration is in the model
+            if (!id_opt) {
                 local_id = parent_record_decl->getDescribedTemplate()->getID();
-
-                id_opt = get_ast_local_id(local_id);
+                if (parent_record_decl->getDescribedTemplate() != nullptr)
+                    id_opt = get_ast_local_id(local_id);
             }
         }
+    }
 
-        if (!id_opt) {
-            LOG_WARN("Unknown parent for enum {}", qualified_name);
-            return true;
-        }
-
+    if (id_opt) {
         auto parent_class = diagram_.get_class(*id_opt);
 
         assert(parent_class);
@@ -418,30 +414,32 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
     const auto *parent = cls->getParent();
 
-    if ((parent != nullptr) && parent->isRecord()) {
-        // Here we have 2 options, either:
-        //  - the parent is a regular C++ class/struct
-        //  - the parent is a class template declaration/specialization
-        std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::model::diagram_element::id_t> id_opt;
 
+    if (parent != nullptr) {
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
-        int64_t local_id = parent_record_decl->getID();
+        if (parent_record_decl != nullptr) {
+            int64_t local_id = parent_record_decl->getID();
 
-        // First check if the parent has been added to the diagram as regular
-        // class
-        id_opt = get_ast_local_id(local_id);
+            // First check if the parent has been added to the diagram as
+            // regular class
+            id_opt = get_ast_local_id(local_id);
 
-        // If not, check if the parent template declaration is in the model
-        if (!id_opt) {
-            local_id = parent_record_decl->getDescribedTemplate()->getID();
-            if (parent_record_decl->getDescribedTemplate() != nullptr)
-                id_opt = get_ast_local_id(local_id);
+            // If not, check if the parent template declaration is in the model
+            if (!id_opt) {
+                local_id = parent_record_decl->getDescribedTemplate()->getID();
+                if (parent_record_decl->getDescribedTemplate() != nullptr)
+                    id_opt = get_ast_local_id(local_id);
+            }
         }
+    }
 
-        assert(id_opt);
-
+    if (id_opt) {
+        // Here we have 2 options, either:
+        //  - the parent is a regular C++ class/struct
+        //  - the parent is a class template declaration/specialization
         auto parent_class = diagram_.get_class(*id_opt);
 
         assert(parent_class);

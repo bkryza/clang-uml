@@ -1038,47 +1038,25 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
         return false;
 
     if (is_callee_valid_template_specialization(dependent_member_callee)) {
-        const auto *template_declaration =
-            dependent_member_callee->getBaseType()
-                ->getAs<clang::TemplateSpecializationType>()
-                ->getTemplateName()
-                .getAsTemplateDecl();
+        if (const auto *tst = dependent_member_callee->getBaseType()
+                                  ->getAs<clang::TemplateSpecializationType>();
+            tst != nullptr) {
+            const auto *template_declaration =
+                tst->getTemplateName().getAsTemplateDecl();
 
-        std::string callee_method_full_name;
+            std::string callee_method_full_name;
 
-        // First check if the primary template is already in the
-        // participants map
-        if (get_participant(template_declaration).has_value()) {
-            callee_method_full_name =
-                get_participant(template_declaration).value().full_name(false) +
-                "::" + dependent_member_callee->getMember().getAsString();
-
-            for (const auto &[id, p] : diagram().participants()) {
-                const auto p_full_name = p->full_name(false);
-
-                if (p_full_name.find(callee_method_full_name + "(") == 0) {
-                    // TODO: This selects the first matching template method
-                    //       without considering arguments!!!
-                    m.set_to(id);
-                    break;
-                }
-            }
-        }
-        // Otherwise check if it is a smart pointer
-        else if (is_smart_pointer(template_declaration)) {
-            const auto *argument_template =
-                template_declaration->getTemplateParameters()
-                    ->asArray()
-                    .front();
-
-            if (get_participant(argument_template).has_value()) {
-                callee_method_full_name = get_participant(argument_template)
+            // First check if the primary template is already in the
+            // participants map
+            if (get_participant(template_declaration).has_value()) {
+                callee_method_full_name = get_participant(template_declaration)
                                               .value()
                                               .full_name(false) +
                     "::" + dependent_member_callee->getMember().getAsString();
 
                 for (const auto &[id, p] : diagram().participants()) {
                     const auto p_full_name = p->full_name(false);
+
                     if (p_full_name.find(callee_method_full_name + "(") == 0) {
                         // TODO: This selects the first matching template method
                         //       without considering arguments!!!
@@ -1087,15 +1065,43 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                     }
                 }
             }
-            else
-                return false;
+            // Otherwise check if it is a smart pointer
+            else if (is_smart_pointer(template_declaration)) {
+                const auto *argument_template =
+                    template_declaration->getTemplateParameters()
+                        ->asArray()
+                        .front();
+
+                if (get_participant(argument_template).has_value()) {
+                    callee_method_full_name = get_participant(argument_template)
+                                                  .value()
+                                                  .full_name(false) +
+                        "::" +
+                        dependent_member_callee->getMember().getAsString();
+
+                    for (const auto &[id, p] : diagram().participants()) {
+                        const auto p_full_name = p->full_name(false);
+                        if (p_full_name.find(callee_method_full_name + "(") ==
+                            0) {
+                            // TODO: This selects the first matching template
+                            // method
+                            //       without considering arguments!!!
+                            m.set_to(id);
+                            break;
+                        }
+                    }
+                }
+                else
+                    return false;
+            }
+
+            m.set_message_name(
+                dependent_member_callee->getMember().getAsString());
+
+            if (get_unique_id(template_declaration->getID()))
+                diagram().add_active_participant(
+                    get_unique_id(template_declaration->getID()).value());
         }
-
-        m.set_message_name(dependent_member_callee->getMember().getAsString());
-
-        if (get_unique_id(template_declaration->getID()))
-            diagram().add_active_participant(
-                get_unique_id(template_declaration->getID()).value());
     }
     else {
         LOG_DBG("Skipping call due to unresolvable "
@@ -1191,9 +1197,7 @@ bool translation_unit_visitor::is_callee_valid_template_specialization(
     if (tst == nullptr)
         return false;
 
-    return !(dependent_member_expr->getBaseType()
-                 ->getAs<clang::TemplateSpecializationType>()
-                 ->isPointerType());
+    return !(tst->isPointerType());
 }
 
 bool translation_unit_visitor::is_smart_pointer(
@@ -1238,6 +1242,8 @@ translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
         std::optional<common::model::diagram_element::id_t> id_opt;
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
+
+        assert(parent_record_decl != nullptr);
 
         int64_t local_id = parent_record_decl->getID();
 
