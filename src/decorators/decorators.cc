@@ -38,13 +38,13 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     if (c.find(style::label) == 0) {
         return style::from_string(c);
     }
-    else if (c.find(aggregation::label) == 0) {
+    if (c.find(aggregation::label) == 0) {
         return aggregation::from_string(c);
     }
-    else if (c.find(composition::label) == 0) {
+    if (c.find(composition::label) == 0) {
         return composition::from_string(c);
     }
-    else if (c.find(association::label) == 0) {
+    if (c.find(association::label) == 0) {
         return association::from_string(c);
     }
 
