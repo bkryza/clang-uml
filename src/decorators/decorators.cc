@@ -35,7 +35,7 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     if (c.find(skip::label) == 0) {
         return skip::from_string(c);
     }
-    else if (c.find(style::label) == 0) {
+    if (c.find(style::label) == 0) {
         return style::from_string(c);
     }
     else if (c.find(aggregation::label) == 0) {
