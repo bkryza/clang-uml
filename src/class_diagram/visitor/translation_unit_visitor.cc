@@ -1717,7 +1717,7 @@ void translation_unit_visitor::
 
         // In case any of the template arguments are base classes, add
         // them as parents of the current template instantiation class
-        if (template_base_params.size() > 0) {
+        if (!template_base_params.empty()) {
             variadic_params = build_template_instantiation_add_base_classes(
                 template_instantiation, template_base_params, arg_index,
                 variadic_params, argument);
