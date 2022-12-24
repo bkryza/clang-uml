@@ -339,8 +339,6 @@ void generator::generate_participant(
 
         generated_participants_.emplace(participant_id);
     }
-
-    return;
 }
 
 bool generator::is_participant_generated(common::id_t id) const
