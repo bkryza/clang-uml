@@ -76,9 +76,6 @@ public:
      */
     virtual void generate(std::ostream &ostr) const = 0;
 
-    template <typename C, typename D>
-    friend std::ostream &operator<<(std::ostream &os, const generator<C, D> &g);
-
     /**
      * @brief Generate diagram layout hints
      *
