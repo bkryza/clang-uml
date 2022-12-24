@@ -277,7 +277,7 @@ void generator::generate_relationships(
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::stringstream relstr;
-        clanguml::common::id_t destination;
+        clanguml::common::id_t destination{0};
         try {
             destination = r.destination();
 
@@ -381,7 +381,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        clanguml::common::id_t destination;
+        clanguml::common::id_t destination{0};
         std::stringstream relstr;
         try {
             destination = r.destination();
