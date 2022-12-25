@@ -57,16 +57,16 @@ public:
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
-    bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
+    bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
-    bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+    bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
 
-    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
+    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *declaration);
 
     bool VisitClassTemplateSpecializationDecl(
-        clang::ClassTemplateSpecializationDecl *cls);
+        clang::ClassTemplateSpecializationDecl *declaration);
 
-    bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+    bool VisitFunctionDecl(clang::FunctionDecl *declaration);
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
@@ -172,7 +172,10 @@ private:
     bool should_include(const clang::ClassTemplateDecl *decl) const;
 
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
-    create_class_declaration(clang::CXXRecordDecl *cls);
+    create_class_model(clang::CXXRecordDecl *cls);
+
+    std::unique_ptr<clanguml::sequence_diagram::model::method>
+    create_method_model(clang::CXXMethodDecl *cls);
 
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
@@ -180,6 +183,12 @@ private:
 
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
+
+    std::unique_ptr<model::function> build_function_model(
+        const clang::FunctionDecl &declaration);
+
+    std::unique_ptr<model::function_template> build_function_template(
+        const clang::FunctionTemplateDecl &declaration);
 
     void build_template_instantiation_process_template_arguments(
         model::template_trait *parent,

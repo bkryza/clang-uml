@@ -64,149 +64,147 @@ translation_unit_visitor::config() const
     return config_;
 }
 
-bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
+bool translation_unit_visitor::VisitCXXRecordDecl(
+    clang::CXXRecordDecl *declaration)
 {
-    // Skip system headers
-    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
+    if (!should_include(declaration))
         return true;
 
-    if (!should_include(cls))
-        return true;
-
-    if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
-        // If the described templated of this class is already in the model
-        // skip it:
-        auto local_id = cls->getDescribedTemplate()->getID();
-        if (get_unique_id(local_id))
+    // Skip this class if it's parent template is already in the model
+    if (declaration->isTemplated() &&
+        declaration->getDescribedTemplate() != nullptr) {
+        if (get_unique_id(declaration->getDescribedTemplate()->getID()))
             return true;
     }
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass() != nullptr)
+    if (declaration->isLocalClass() != nullptr)
         return true;
 
     LOG_TRACE("Visiting class declaration at {}",
-        cls->getBeginLoc().printToString(source_manager()));
+        declaration->getBeginLoc().printToString(source_manager()));
 
     // Build the class declaration and store it in the diagram, even
     // if we don't need it for any of the participants of this diagram
-    auto c_ptr = this->create_class_declaration(cls);
+    auto class_model_ptr = create_class_model(declaration);
 
-    if (!c_ptr)
+    if (!class_model_ptr)
         return true;
 
     context().reset();
 
-    const auto cls_id = c_ptr->id();
+    const auto class_id = class_model_ptr->id();
 
-    set_unique_id(cls->getID(), cls_id);
+    set_unique_id(declaration->getID(), class_id);
 
     auto &class_model =
         diagram()
-            .get_participant<sequence_diagram::model::class_>(cls_id)
+            .get_participant<sequence_diagram::model::class_>(class_id)
             .has_value()
         ? *diagram()
-               .get_participant<sequence_diagram::model::class_>(cls_id)
+               .get_participant<sequence_diagram::model::class_>(class_id)
                .get()
-        : *c_ptr;
+        : *class_model_ptr;
 
-    auto id = class_model.id();
-    if (!cls->isCompleteDefinition()) {
-        forward_declarations_.emplace(id, std::move(c_ptr));
+    if (!declaration->isCompleteDefinition()) {
+        forward_declarations_.emplace(class_id, std::move(class_model_ptr));
         return true;
     }
-    forward_declarations_.erase(id);
+
+    forward_declarations_.erase(class_id);
 
     if (diagram().should_include(class_model)) {
         LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
             class_model.id());
 
-        assert(class_model.id() == cls_id);
+        assert(class_model.id() == class_id);
 
-        context().set_caller_id(cls_id);
-        context().update(cls);
+        context().set_caller_id(class_id);
+        context().update(declaration);
 
-        diagram().add_participant(std::move(c_ptr));
+        diagram().add_participant(std::move(class_model_ptr));
     }
     else {
-        LOG_DBG("Skipping class {} with id {}", class_model.full_name(),
-            class_model.id());
+        LOG_DBG(
+            "Skipping class {} with id {}", class_model.full_name(), class_id);
     }
 
     return true;
 }
 
 bool translation_unit_visitor::VisitClassTemplateDecl(
-    clang::ClassTemplateDecl *cls)
+    clang::ClassTemplateDecl *declaration)
 {
-    if (!should_include(cls))
+    if (!should_include(declaration))
         return true;
 
     LOG_TRACE("Visiting class template declaration {} at {} [{}]",
-        cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()), (void *)cls);
+        declaration->getQualifiedNameAsString(),
+        declaration->getLocation().printToString(source_manager()),
+        (void *)declaration);
 
-    auto c_ptr = create_class_declaration(cls->getTemplatedDecl());
+    auto class_model_ptr = create_class_model(declaration->getTemplatedDecl());
 
-    if (!c_ptr)
+    if (!class_model_ptr)
         return true;
 
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
-    process_template_parameters(*cls, *c_ptr);
+    process_template_parameters(*declaration, *class_model_ptr);
 
-    const auto cls_full_name = c_ptr->full_name(false);
-    const auto id = common::to_id(cls_full_name);
+    const auto class_full_name = class_model_ptr->full_name(false);
+    const auto id = common::to_id(class_full_name);
 
-    c_ptr->set_id(id);
+    class_model_ptr->set_id(id);
 
-    set_unique_id(cls->getID(), id);
+    set_unique_id(declaration->getID(), id);
 
-    if (!cls->getTemplatedDecl()->isCompleteDefinition()) {
-        forward_declarations_.emplace(id, std::move(c_ptr));
+    if (!declaration->getTemplatedDecl()->isCompleteDefinition()) {
+        forward_declarations_.emplace(id, std::move(class_model_ptr));
         return true;
     }
     forward_declarations_.erase(id);
 
-    if (diagram().should_include(*c_ptr)) {
-        LOG_DBG("Adding class template {} with id {}", cls_full_name, id);
+    if (diagram().should_include(*class_model_ptr)) {
+        LOG_DBG("Adding class template {} with id {}", class_full_name, id);
 
         context().set_caller_id(id);
-        context().update(cls);
+        context().update(declaration);
 
-        diagram().add_participant(std::move(c_ptr));
+        diagram().add_participant(std::move(class_model_ptr));
     }
 
     return true;
 }
 
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
-    clang::ClassTemplateSpecializationDecl *cls)
+    clang::ClassTemplateSpecializationDecl *declaration)
 {
-    if (!should_include(cls))
+    if (!should_include(declaration))
         return true;
 
     LOG_TRACE("Visiting template specialization declaration {} at {}",
-        cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()));
+        declaration->getQualifiedNameAsString(),
+        declaration->getLocation().printToString(source_manager()));
 
     // TODO: Add support for classes defined in function/method bodies
-    if (cls->isLocalClass() != nullptr)
+    if (declaration->isLocalClass() != nullptr)
         return true;
 
-    auto template_specialization_ptr = process_template_specialization(cls);
+    auto template_specialization_ptr =
+        process_template_specialization(declaration);
 
     if (!template_specialization_ptr)
         return true;
 
-    const auto cls_full_name = template_specialization_ptr->full_name(false);
-    const auto id = common::to_id(cls_full_name);
+    const auto class_full_name = template_specialization_ptr->full_name(false);
+    const auto id = common::to_id(class_full_name);
 
     template_specialization_ptr->set_id(id);
 
-    set_unique_id(cls->getID(), id);
+    set_unique_id(declaration->getID(), id);
 
-    if (!cls->isCompleteDefinition()) {
+    if (!declaration->isCompleteDefinition()) {
         forward_declarations_.emplace(
             id, std::move(template_specialization_ptr));
         return true;
@@ -215,10 +213,10 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
     if (diagram().should_include(*template_specialization_ptr)) {
         LOG_DBG("Adding class template specialization {} with id {}",
-            cls_full_name, id);
+            class_full_name, id);
 
         context().set_caller_id(id);
-        context().update(cls);
+        context().update(declaration);
 
         diagram().add_participant(std::move(template_specialization_ptr));
     }
@@ -226,15 +224,17 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     return true;
 }
 
-bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
+bool translation_unit_visitor::VisitCXXMethodDecl(
+    clang::CXXMethodDecl *declaration)
 {
-    if (!should_include(m))
+    if (!should_include(declaration))
         return true;
 
-    if (!m->isThisDeclarationADefinition()) {
-        if (m->getDefinition() != nullptr) {
-            if (auto *method_definition =
-                    clang::dyn_cast<clang::CXXMethodDecl>(m->getDefinition());
+    if (!declaration->isThisDeclarationADefinition()) {
+        if (auto *declaration_definition = declaration->getDefinition();
+            declaration_definition != nullptr) {
+            if (auto *method_definition = clang::dyn_cast<clang::CXXMethodDecl>(
+                    declaration_definition);
                 method_definition != nullptr) {
                 return VisitCXXMethodDecl(method_definition);
             }
@@ -242,194 +242,144 @@ bool translation_unit_visitor::VisitCXXMethodDecl(clang::CXXMethodDecl *m)
     }
 
     LOG_TRACE("Visiting method {} in class {} [{}]",
-        m->getQualifiedNameAsString(),
-        m->getParent()->getQualifiedNameAsString(), (void *)m->getParent());
+        declaration->getQualifiedNameAsString(),
+        declaration->getParent()->getQualifiedNameAsString(),
+        (void *)declaration->getParent());
 
-    context().update(m);
+    context().update(declaration);
 
-    auto m_ptr = std::make_unique<sequence_diagram::model::method>(
-        config().using_namespace());
+    auto method_model_ptr = create_method_model(declaration);
 
-    common::model::namespace_ ns{m->getQualifiedNameAsString()};
-    auto method_name = ns.name();
-    m_ptr->set_method_name(method_name);
-    ns.pop_back();
-    m_ptr->set_name(ns.name());
-    ns.pop_back();
-
-    clang::Decl *parent_decl = m->getParent();
-
-    if (context().current_class_template_decl_ != nullptr)
-        parent_decl = context().current_class_template_decl_;
-
-    LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
-
-    if (!get_participant<model::class_>(parent_decl)) {
-        LOG_DBG("Cannot find parent class_ for method {} in class {}",
-            m->getQualifiedNameAsString(),
-            m->getParent()->getQualifiedNameAsString());
+    if (!method_model_ptr)
         return true;
-    }
 
-    const auto &method_class =
-        get_participant<model::class_>(parent_decl).value();
+    process_comment(*declaration, *method_model_ptr);
 
-    m_ptr->is_void(m->getReturnType()->isVoidType());
+    set_source_location(*declaration, *method_model_ptr);
 
-    m_ptr->set_class_id(method_class.id());
-    m_ptr->set_class_full_name(method_class.full_name(false));
-    m_ptr->set_name(
-        get_participant(m_ptr->class_id()).value().full_name_no_ns() +
-        "::" + m->getNameAsString());
-    m_ptr->is_static(m->isStatic());
+    const auto method_full_name = method_model_ptr->full_name(false);
 
-    for (const auto *param : m->parameters()) {
-        m_ptr->add_parameter(config().using_namespace().relative(
-            simplify_system_template(common::to_string(
-                param->getType(), m->getASTContext(), false))));
-    }
-
-    process_comment(*m, *m_ptr);
-
-    set_source_location(*m, *m_ptr);
-
-    const auto method_full_name = m_ptr->full_name(false);
-
-    m_ptr->set_id(common::to_id(method_full_name));
+    method_model_ptr->set_id(common::to_id(method_full_name));
 
     // Callee methods in call expressions are referred to by first declaration
     // id
-    if (m->isThisDeclarationADefinition()) {
-        set_unique_id(m->getFirstDecl()->getID(), m_ptr->id());
+    if (declaration->isThisDeclarationADefinition()) {
+        set_unique_id(
+            declaration->getFirstDecl()->getID(), method_model_ptr->id());
     }
 
-    set_unique_id(m->getID(), m_ptr->id()); // This is probably not necessary?
+    set_unique_id(declaration->getID(), method_model_ptr->id());
 
-    LOG_TRACE("Set id {} --> {} for method name {} [{}]", m->getID(),
-        m_ptr->id(), method_full_name, m->isThisDeclarationADefinition());
+    LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
+        method_model_ptr->id(), method_full_name,
+        declaration->isThisDeclarationADefinition());
 
-    context().update(m);
+    context().update(declaration);
 
-    context().set_caller_id(m_ptr->id());
+    context().set_caller_id(method_model_ptr->id());
 
-    diagram().add_participant(std::move(m_ptr));
+    diagram().add_participant(std::move(method_model_ptr));
 
     return true;
 }
 
-bool translation_unit_visitor::VisitFunctionDecl(clang::FunctionDecl *f)
+bool translation_unit_visitor::VisitFunctionDecl(
+    clang::FunctionDecl *declaration)
 {
-    if (f->isCXXClassMember())
+    if (declaration->isCXXClassMember())
         return true;
 
-    if (!should_include(f))
+    if (!should_include(declaration))
         return true;
 
-    const auto function_name = f->getQualifiedNameAsString();
-
-    if (!f->isThisDeclarationADefinition()) {
-        if (f->getDefinition() != nullptr)
+    if (!declaration->isThisDeclarationADefinition()) {
+        if (auto *declaration_definition = declaration->getDefinition();
+            declaration_definition != nullptr)
             return VisitFunctionDecl(
-                static_cast<clang::FunctionDecl *>(f->getDefinition()));
+                static_cast<clang::FunctionDecl *>(declaration_definition));
     }
 
-    LOG_TRACE("Visiting function declaration {} at {}", function_name,
-        f->getLocation().printToString(source_manager()));
+    LOG_TRACE("Visiting function declaration {} at {}",
+        declaration->getQualifiedNameAsString(),
+        declaration->getLocation().printToString(source_manager()));
 
-    if (f->isTemplated()) {
-        if (f->getDescribedTemplate() != nullptr) {
+    if (declaration->isTemplated()) {
+        if (declaration->getDescribedTemplate() != nullptr) {
             // If the described templated of this function is already in the
             // model skip it:
-            if (get_unique_id(f->getDescribedTemplate()->getID()))
+            if (get_unique_id(declaration->getDescribedTemplate()->getID()))
                 return true;
         }
     }
 
-    std::unique_ptr<model::function> f_ptr{};
+    std::unique_ptr<model::function> function_model_ptr{};
 
-    if (f->isFunctionTemplateSpecialization()) {
-        f_ptr = build_function_template_instantiation(*f);
+    if (declaration->isFunctionTemplateSpecialization()) {
+        function_model_ptr =
+            build_function_template_instantiation(*declaration);
     }
     else {
-        f_ptr = std::make_unique<sequence_diagram::model::function>(
-            config().using_namespace());
-
-        common::model::namespace_ ns{function_name};
-        f_ptr->set_name(ns.name());
-        ns.pop_back();
-        f_ptr->set_namespace(ns);
-
-        for (const auto *param : f->parameters()) {
-            f_ptr->add_parameter(simplify_system_template(common::to_string(
-                param->getType(), f->getASTContext(), false)));
-        }
+        function_model_ptr = build_function_model(*declaration);
     }
 
-    f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+    if (!function_model_ptr)
+        return true;
 
-    f_ptr->is_void(f->getReturnType()->isVoidType());
+    function_model_ptr->set_id(
+        common::to_id(function_model_ptr->full_name(false)));
 
-    context().update(f);
+    function_model_ptr->is_void(declaration->getReturnType()->isVoidType());
 
-    context().set_caller_id(f_ptr->id());
+    context().update(declaration);
 
-    if (f->isThisDeclarationADefinition()) {
-        set_unique_id(f->getFirstDecl()->getID(), f_ptr->id());
+    context().set_caller_id(function_model_ptr->id());
+
+    if (declaration->isThisDeclarationADefinition()) {
+        set_unique_id(
+            declaration->getFirstDecl()->getID(), function_model_ptr->id());
     }
-    set_unique_id(f->getID(), f_ptr->id());
 
-    process_comment(*f, *f_ptr);
+    set_unique_id(declaration->getID(), function_model_ptr->id());
 
-    set_source_location(*f, *f_ptr);
+    process_comment(*declaration, *function_model_ptr);
 
-    diagram().add_participant(std::move(f_ptr));
+    set_source_location(*declaration, *function_model_ptr);
+
+    diagram().add_participant(std::move(function_model_ptr));
 
     return true;
 }
 
 bool translation_unit_visitor::VisitFunctionTemplateDecl(
-    clang::FunctionTemplateDecl *function_template)
+    clang::FunctionTemplateDecl *declaration)
 {
-    if (!should_include(function_template))
+    if (!should_include(declaration))
         return true;
 
-    const auto function_name = function_template->getQualifiedNameAsString();
+    const auto function_name = declaration->getQualifiedNameAsString();
 
     LOG_TRACE("Visiting function template declaration {} at {}", function_name,
-        function_template->getLocation().printToString(source_manager()));
+        declaration->getLocation().printToString(source_manager()));
 
-    auto f_ptr = std::make_unique<sequence_diagram::model::function_template>(
-        config().using_namespace());
+    auto function_template_model = build_function_template(*declaration);
 
-    common::model::namespace_ ns{function_name};
-    f_ptr->set_name(ns.name());
-    ns.pop_back();
-    f_ptr->set_namespace(ns);
+    process_comment(*declaration, *function_template_model);
 
-    process_template_parameters(*function_template, *f_ptr);
+    set_source_location(*declaration, *function_template_model);
 
-    for (const auto *param :
-        function_template->getTemplatedDecl()->parameters()) {
-        f_ptr->add_parameter(simplify_system_template(common::to_string(
-            param->getType(), function_template->getASTContext(), false)));
-    }
+    function_template_model->is_void(
+        declaration->getAsFunction()->getReturnType()->isVoidType());
 
-    process_comment(*function_template, *f_ptr);
+    function_template_model->set_id(
+        common::to_id(function_template_model->full_name(false)));
 
-    set_source_location(*function_template, *f_ptr);
+    context().update(declaration);
 
-    f_ptr->set_id(common::to_id(f_ptr->full_name(false)));
+    context().set_caller_id(function_template_model->id());
 
-    f_ptr->is_void(
-        function_template->getAsFunction()->getReturnType()->isVoidType());
+    set_unique_id(declaration->getID(), function_template_model->id());
 
-    context().update(function_template);
-
-    context().set_caller_id(f_ptr->id());
-
-    set_unique_id(function_template->getID(), f_ptr->id());
-
-    diagram().add_participant(std::move(f_ptr));
+    diagram().add_participant(std::move(function_template_model));
 
     return true;
 }
@@ -452,35 +402,38 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
     // Create lambda class participant
     auto *cls = expr->getLambdaClass();
-    auto c_ptr = create_class_declaration(cls);
+    auto lambda_class_model_ptr = create_class_model(cls);
 
-    if (!c_ptr)
+    if (!lambda_class_model_ptr)
         return true;
 
-    const auto cls_id = c_ptr->id();
+    const auto cls_id = lambda_class_model_ptr->id();
 
     set_unique_id(cls->getID(), cls_id);
 
     // Create lambda class operator() participant
-    auto m_ptr = std::make_unique<sequence_diagram::model::method>(
-        config().using_namespace());
+    auto lambda_method_model_ptr =
+        std::make_unique<sequence_diagram::model::method>(
+            config().using_namespace());
 
     const auto *method_name = "operator()";
-    m_ptr->set_method_name(method_name);
+    lambda_method_model_ptr->set_method_name(method_name);
 
-    m_ptr->set_class_id(cls_id);
-    m_ptr->set_class_full_name(c_ptr->full_name(false));
+    lambda_method_model_ptr->set_class_id(cls_id);
+    lambda_method_model_ptr->set_class_full_name(
+        lambda_class_model_ptr->full_name(false));
 
-    diagram().add_participant(std::move(c_ptr));
+    diagram().add_participant(std::move(lambda_class_model_ptr));
 
-    m_ptr->set_id(common::to_id(
+    lambda_method_model_ptr->set_id(common::to_id(
         get_participant(cls_id).value().full_name(false) + "::" + method_name));
 
-    context().enter_lambda_expression(m_ptr->id());
+    context().enter_lambda_expression(lambda_method_model_ptr->id());
 
-    set_unique_id(expr->getCallOperator()->getID(), m_ptr->id());
+    set_unique_id(
+        expr->getCallOperator()->getID(), lambda_method_model_ptr->id());
 
-    diagram().add_participant(std::move(m_ptr));
+    diagram().add_participant(std::move(lambda_method_model_ptr));
 
     [[maybe_unused]] const auto is_generic_lambda = expr->isGenericLambda();
 
@@ -494,6 +447,7 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseLambdaExpr(expr);
 
+    // lambda context is entered inside the visitor
     context().leave_lambda_expression();
 
     return true;
@@ -1210,7 +1164,7 @@ bool translation_unit_visitor::is_smart_pointer(
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::class_>
-translation_unit_visitor::create_class_declaration(clang::CXXRecordDecl *cls)
+translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
 {
     assert(cls != nullptr);
 
@@ -1412,6 +1366,30 @@ translation_unit_visitor::get_unique_id(int64_t local_id) const
 }
 
 std::unique_ptr<model::function_template>
+translation_unit_visitor::build_function_template(
+    const clang::FunctionTemplateDecl &declaration)
+{
+    auto function_template_model_ptr =
+        std::make_unique<sequence_diagram::model::function_template>(
+            config().using_namespace());
+
+    common::model::namespace_ ns{declaration.getQualifiedNameAsString()};
+    function_template_model_ptr->set_name(ns.name());
+    ns.pop_back();
+    function_template_model_ptr->set_namespace(ns);
+
+    process_template_parameters(declaration, *function_template_model_ptr);
+
+    for (const auto *param : declaration.getTemplatedDecl()->parameters()) {
+        function_template_model_ptr->add_parameter(
+            simplify_system_template(common::to_string(
+                param->getType(), declaration.getASTContext(), false)));
+    }
+
+    return function_template_model_ptr;
+}
+
+std::unique_ptr<model::function_template>
 translation_unit_visitor::build_function_template_instantiation(
     const clang::FunctionDecl &decl)
 {
@@ -1450,6 +1428,27 @@ translation_unit_visitor::build_function_template_instantiation(
     }
 
     return template_instantiation_ptr;
+}
+
+std::unique_ptr<model::function> translation_unit_visitor::build_function_model(
+    const clang::FunctionDecl &declaration)
+{
+    auto function_model_ptr =
+        std::make_unique<sequence_diagram::model::function>(
+            config().using_namespace());
+
+    common::model::namespace_ ns{declaration.getQualifiedNameAsString()};
+    function_model_ptr->set_name(ns.name());
+    ns.pop_back();
+    function_model_ptr->set_namespace(ns);
+
+    for (const auto *param : declaration.parameters()) {
+        function_model_ptr->add_parameter(
+            simplify_system_template(common::to_string(
+                param->getType(), declaration.getASTContext(), false)));
+    }
+
+    return function_model_ptr;
 }
 
 void translation_unit_visitor::
@@ -2105,6 +2104,55 @@ void translation_unit_visitor::finalize()
             }
         }
     }
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::method>
+translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
+{
+    auto method_model_ptr = std::make_unique<sequence_diagram::model::method>(
+        config().using_namespace());
+
+    common::model::namespace_ ns{declaration->getQualifiedNameAsString()};
+    auto method_name = ns.name();
+    method_model_ptr->set_method_name(method_name);
+    ns.pop_back();
+    method_model_ptr->set_name(ns.name());
+    ns.pop_back();
+
+    clang::Decl *parent_decl = declaration->getParent();
+
+    if (context().current_class_template_decl_ != nullptr)
+        parent_decl = context().current_class_template_decl_;
+
+    LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
+
+    if (!get_participant<model::class_>(parent_decl)) {
+        LOG_DBG("Cannot find parent class_ for method {} in class {}",
+            declaration->getQualifiedNameAsString(),
+            declaration->getParent()->getQualifiedNameAsString());
+        return {};
+    }
+
+    const auto &method_class =
+        get_participant<model::class_>(parent_decl).value();
+
+    method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
+
+    method_model_ptr->set_class_id(method_class.id());
+    method_model_ptr->set_class_full_name(method_class.full_name(false));
+    method_model_ptr->set_name(get_participant(method_model_ptr->class_id())
+                                   .value()
+                                   .full_name_no_ns() +
+        "::" + declaration->getNameAsString());
+    method_model_ptr->is_static(declaration->isStatic());
+
+    for (const auto *param : declaration->parameters()) {
+        method_model_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(common::to_string(
+                param->getType(), declaration->getASTContext(), false))));
+    }
+
+    return method_model_ptr;
 }
 
 bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
