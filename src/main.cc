@@ -407,12 +407,12 @@ void print_version()
     std::cout << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
     std::cout << "Copyright (C) 2021-2022 Bartek Kryza <bkryza@gmail.com>"
               << '\n';
-    std::cout << "Built with LLVM version: "
+    std::cout << "Built against LLVM/Clang libraries version: "
               << std::string{BACKEND_PACKAGE_STRING}.substr(
                      kLLVMBackendPackageStringLength)
               << std::endl;
-    std::cout << "Using LLVM version: " << clang::getClangFullVersion()
-              << std::endl;
+    std::cout << "Using LLVM/Clang libraries version: "
+              << clang::getClangFullVersion() << std::endl;
 }
 
 void print_diagrams_list(const clanguml::config::config &cfg)
