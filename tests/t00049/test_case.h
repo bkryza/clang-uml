@@ -52,8 +52,7 @@ TEST_CASE("t00049", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Public>("a_int_map", "A<intmap>")));
 
     // Check if all relationships exist
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("A<T>"), _A("A<string_vector>")));
+    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<string_vector>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
 
