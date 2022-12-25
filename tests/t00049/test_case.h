@@ -53,7 +53,7 @@ TEST_CASE("t00049", "[test-case][class]")
 
     // Check if all relationships exist
     REQUIRE_THAT(
-        puml, IsInstantiation(_A("A<T>"), _A("A<std::vector<thestring>>")));
+        puml, IsInstantiation(_A("A<T>"), _A("A<string_vector>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
 

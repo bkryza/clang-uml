@@ -43,6 +43,15 @@ translation_unit_visitor::include_visitor::include_visitor(
 {
 }
 
+#if LLVM_VERSION_MAJOR > 14
+void translation_unit_visitor::include_visitor::InclusionDirective(
+    clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
+    clang::StringRef /*file_name*/, bool is_angled,
+    clang::CharSourceRange /*filename_range*/, clang::Optional<clang::FileEntryRef> file,
+    clang::StringRef /*search_path*/, clang::StringRef relative_path,
+    const clang::Module * /*imported*/,
+    clang::SrcMgr::CharacteristicKind file_type)
+#else
 void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
     clang::StringRef /*file_name*/, bool is_angled,
@@ -50,6 +59,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     clang::StringRef /*search_path*/, clang::StringRef relative_path,
     const clang::Module * /*imported*/,
     clang::SrcMgr::CharacteristicKind file_type)
+#endif
 {
     using common::model::relationship;
     using common::model::source_file;
@@ -66,7 +76,11 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 
     assert(diagram().get(current_file_id.value()));
 
+#if LLVM_VERSION_MAJOR > 14
+    auto include_path = std::filesystem::path(file->getDir().getName().str());
+#else
     auto include_path = std::filesystem::path(file->getDir()->getName().str());
+#endif
     include_path = include_path / file->getName().str();
     include_path = include_path.lexically_normal();
 

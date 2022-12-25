@@ -1461,7 +1461,6 @@ void translation_unit_visitor::
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl)
 {
-    auto arg_index = 0U;
     for (const auto &arg : template_args) {
         const auto argument_kind = arg.getKind();
         class_diagram::model::template_parameter argument;
@@ -1490,8 +1489,6 @@ void translation_unit_visitor::
             argument, argument.to_string(config().using_namespace(), false));
 
         template_instantiation.add_template(argument);
-
-        arg_index++;
     }
 }
 

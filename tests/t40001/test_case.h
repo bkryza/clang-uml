@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-TEST_CASE("t40001", "[test-case][package]")
+TEST_CASE("t40001", "[test-case][include]")
 {
     auto [config, db] = load_config("t40001");
 

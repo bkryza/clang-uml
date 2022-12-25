@@ -6,8 +6,7 @@ diagrams:
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40001/**/*.cc
-      - ../../tests/t40001/**/*.h
+      - ../../tests/t40001/src/t40001.cc
     # Render the paths relative to this directory
     relative_to: ../../../tests/t40001
     # Include also external system headers
