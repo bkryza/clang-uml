@@ -73,6 +73,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     assert(!full_name.empty());
 
+    print_debug(c, ostr);
+
     ostr << class_type << " \""
          << m_config.simplify_template_type(render_name(full_name));
 
@@ -84,6 +86,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
 void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
+    print_debug(e, ostr);
+
     if (m_config.generate_packages())
         ostr << "enum"
              << " \"" << e.name();
@@ -126,6 +130,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     for (const auto &m : c.methods()) {
         if (!m_model.should_include(m.access()))
             continue;
+
+        print_debug(m, ostr);
 
         if (m.is_pure_virtual())
             ostr << "{abstract} ";
@@ -236,6 +242,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_config.include_relations_also_as_members() &&
             rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
+
+        print_debug(m, ostr);
 
         if (m.is_static())
             ostr << "{static} ";
@@ -424,6 +432,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
         // Don't generate packages from namespaces filtered out by
         // using_namespace
         if (!uns.starts_with({p.full_name(false)})) {
+            print_debug(p, ostr);
             ostr << "package [" << p.name() << "] ";
             ostr << "as " << p.alias();
 

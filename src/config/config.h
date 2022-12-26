@@ -145,6 +145,7 @@ struct inheritable_diagram_options {
     option<bool> combine_free_functions_into_file_participants{
         "combine_free_functions_into_file_participants", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
+    option<bool> debug_mode{"debug_mode", false};
 
     void inherit(const inheritable_diagram_options &parent);
 

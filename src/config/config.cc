@@ -102,6 +102,7 @@ void inheritable_diagram_options::inherit(
     comment_parser.override(parent.comment_parser);
     combine_free_functions_into_file_participants.override(
         combine_free_functions_into_file_participants);
+    debug_mode.override(parent.debug_mode);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
@@ -551,6 +552,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.generate_links);
     get_option(node, rhs.type_aliases);
     get_option(node, rhs.comment_parser);
+    get_option(node, rhs.debug_mode);
 
     return true;
 }
@@ -734,6 +736,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_links);
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
+        get_option(node, rhs.debug_mode);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);
 

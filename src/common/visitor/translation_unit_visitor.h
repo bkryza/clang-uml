@@ -79,6 +79,9 @@ protected:
     void set_source_location(const clang::Expr &expr,
         clanguml::common::model::source_location &element);
 
+    void set_source_location(const clang::Stmt &stmt,
+        clanguml::common::model::source_location &element);
+
     /**
      * @brief Set source location in diagram element
      *

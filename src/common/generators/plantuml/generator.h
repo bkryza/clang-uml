@@ -125,6 +125,14 @@ public:
     void generate_link(std::ostream &ostr, const E &e) const;
 
     /**
+     * @brief Print debug information in diagram comments
+     *
+     * @param m Diagram element to describe
+     * @param ostr Output stream
+     */
+    void print_debug(
+        const common::model::source_location &e, std::ostream &ostr) const;
+    /**
      * @brief Update diagram Jinja context
      *
      * This method updates the diagram context with models properties
@@ -343,6 +351,14 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 
     ostr << "}";
     ostr << "]]";
+}
+
+template <typename C, typename D>
+void generator<C, D>::print_debug(
+    const common::model::source_location &e, std::ostream &ostr) const
+{
+    if (m_config.debug_mode())
+        ostr << "' " << e.file() << ":" << e.line() << '\n';
 }
 
 template <typename DiagramModel, typename DiagramConfig,

@@ -140,9 +140,11 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
             // If not, check if the parent template declaration is in the model
             if (!id_opt) {
-                local_id = parent_record_decl->getDescribedTemplate()->getID();
-                if (parent_record_decl->getDescribedTemplate() != nullptr)
+                if (parent_record_decl->getDescribedTemplate() != nullptr) {
+                    local_id =
+                        parent_record_decl->getDescribedTemplate()->getID();
                     id_opt = get_ast_local_id(local_id);
+                }
             }
         }
     }
@@ -429,9 +431,11 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
             // If not, check if the parent template declaration is in the model
             if (!id_opt) {
-                local_id = parent_record_decl->getDescribedTemplate()->getID();
-                if (parent_record_decl->getDescribedTemplate() != nullptr)
+                if (parent_record_decl->getDescribedTemplate() != nullptr) {
+                    local_id =
+                        parent_record_decl->getDescribedTemplate()->getID();
                     id_opt = get_ast_local_id(local_id);
+                }
             }
         }
     }

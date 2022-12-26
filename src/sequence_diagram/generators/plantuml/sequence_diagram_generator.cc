@@ -86,6 +86,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const std::string from_alias = generate_alias(from.value());
     const std::string to_alias = generate_alias(to.value());
 
+    print_debug(m, ostr);
+
     ostr << from_alias << " "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " ";
 
@@ -169,57 +171,70 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             visited.pop_back();
         }
         else if (m.type() == message_t::kIf) {
+            print_debug(m, ostr);
             ostr << "alt\n";
         }
         else if (m.type() == message_t::kElseIf) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kElse) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kIfEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kWhile) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kWhileEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kFor) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kForEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kDo) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kTry) {
+            print_debug(m, ostr);
             ostr << "group try\n";
         }
         else if (m.type() == message_t::kCatch) {
+            print_debug(m, ostr);
             ostr << "else " << m.message_name() << '\n';
         }
         else if (m.type() == message_t::kTryEnd) {
+            print_debug(m, ostr);
             ostr << "end\n";
         }
         else if (m.type() == message_t::kSwitch) {
+            print_debug(m, ostr);
             ostr << "group switch\n";
         }
         else if (m.type() == message_t::kCase) {
+            print_debug(m, ostr);
             ostr << "else " << m.message_name() << '\n';
         }
         else if (m.type() == message_t::kSwitchEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kConditional) {
+            print_debug(m, ostr);
             ostr << "alt\n";
         }
         else if (m.type() == message_t::kElse) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kConditionalEnd) {
@@ -279,6 +294,8 @@ void generator::generate_participant(
         const auto &class_participant =
             m_model.get_participant<model::participant>(class_id).value();
 
+        print_debug(class_participant, ostr);
+
         ostr << "participant \""
              << render_name(m_config.using_namespace().relative(
                     class_participant.full_name(false)))
@@ -325,6 +342,8 @@ void generator::generate_participant(
         generated_participants_.emplace(file_id);
     }
     else {
+        print_debug(participant, ostr);
+
         ostr << "participant \""
              << m_config.using_namespace().relative(
                     participant.full_name(false))
