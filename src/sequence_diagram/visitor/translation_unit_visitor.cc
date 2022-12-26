@@ -509,9 +509,9 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
             const auto current_caller_id = context().caller_id();
 
             if (current_caller_id != 0) {
-                diagram()
-                    .get_activity(current_caller_id)
-                    .add_message({message_t::kElse, current_caller_id});
+                model::message m{message_t::kElse, current_caller_id};
+                set_source_location(*stmt, m);
+                diagram().add_message(std::move(m));
             }
         }
     }
@@ -520,9 +520,9 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
             const auto current_caller_id = context().caller_id();
 
             if (current_caller_id != 0) {
-                diagram()
-                    .get_activity(current_caller_id)
-                    .add_message({message_t::kElse, current_caller_id});
+                model::message m{message_t::kElse, current_caller_id};
+                set_source_location(*stmt, m);
+                diagram().add_message(std::move(m));
             }
         }
     }
@@ -556,20 +556,27 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
     }
 
     if ((current_caller_id != 0) && !stmt->isConstexpr()) {
-        context().enter_ifstmt(stmt);
         if (elseif_block) {
             context().enter_elseifstmt(stmt);
-            diagram().add_if_stmt(current_caller_id, message_t::kElseIf);
+
+            message m{message_t::kElseIf, current_caller_id};
+            set_source_location(*stmt, m);
+            diagram().add_block_message(std::move(m));
         }
         else {
-            diagram().add_if_stmt(current_caller_id, message_t::kIf);
+            context().enter_ifstmt(stmt);
+
+            message m{message_t::kIf, current_caller_id};
+            set_source_location(*stmt, m);
+            diagram().add_block_message(std::move(m));
         }
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
     if ((current_caller_id != 0) && !stmt->isConstexpr() && !elseif_block) {
-        diagram().end_if_stmt(current_caller_id, message_t::kIfEnd);
+        diagram().end_block_message(
+            {message_t::kIfEnd, current_caller_id}, message_t::kIf);
     }
 
     return true;
@@ -585,12 +592,15 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
 
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
-        diagram().add_while_stmt(current_caller_id);
+        message m{message_t::kWhile, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
     if (current_caller_id != 0) {
-        diagram().end_while_stmt(current_caller_id);
+        diagram().end_block_message(
+            {message_t::kWhileEnd, current_caller_id}, message_t::kWhile);
         context().leave_loopstmt();
     }
 
@@ -607,14 +617,17 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
 
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
-        diagram().add_do_stmt(current_caller_id);
+        message m{message_t::kDo, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
 
     if (current_caller_id != 0) {
+        diagram().end_block_message(
+            {message_t::kDoEnd, current_caller_id}, message_t::kDo);
         context().leave_loopstmt();
-        diagram().end_do_stmt(current_caller_id);
     }
 
     return true;
@@ -630,14 +643,17 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
 
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
-        diagram().add_for_stmt(current_caller_id);
+        message m{message_t::kFor, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
 
     if (current_caller_id != 0) {
+        diagram().end_block_message(
+            {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
-        diagram().end_for_stmt(current_caller_id);
     }
 
     return true;
@@ -653,14 +669,17 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     if (current_caller_id != 0) {
         context().enter_trystmt(stmt);
-        diagram().add_try_stmt(current_caller_id);
+        message m{message_t::kTry, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
 
     if (current_caller_id != 0) {
+        diagram().end_block_message(
+            {message_t::kTryEnd, current_caller_id}, message_t::kTry);
         context().leave_trystmt();
-        diagram().end_try_stmt(current_caller_id);
     }
 
     return true;
@@ -682,7 +701,9 @@ bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
             caught_type = common::to_string(
                 stmt->getCaughtType(), *context().get_ast_context());
 
-        diagram().add_catch_stmt(current_caller_id, std::move(caught_type));
+        model::message m{message_t::kCatch, current_caller_id};
+        m.set_message_name(std::move(caught_type));
+        diagram().add_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXCatchStmt(stmt);
@@ -701,15 +722,18 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
 
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
-        diagram().add_for_stmt(current_caller_id);
+        message m{message_t::kFor, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
         stmt);
 
     if (current_caller_id != 0) {
+        diagram().end_block_message(
+            {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
-        diagram().end_for_stmt(current_caller_id);
     }
 
     return true;
@@ -717,18 +741,23 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
 
 bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 {
+    using clanguml::common::model::message_t;
+
     const auto current_caller_id = context().caller_id();
 
     if (current_caller_id != 0) {
         context().enter_switchstmt(stmt);
-        diagram().add_switch_stmt(current_caller_id);
+        model::message m{message_t::kSwitch, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
 
     if (current_caller_id != 0) {
         context().leave_switchstmt();
-        diagram().end_switch_stmt(current_caller_id);
+        diagram().end_block_message(
+            {message_t::kSwitchEnd, current_caller_id}, message_t::kSwitch);
     }
 
     return true;
@@ -736,11 +765,14 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 
 bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 {
+    using clanguml::common::model::message_t;
+
     const auto current_caller_id = context().caller_id();
 
     if (current_caller_id != 0) {
-        diagram().add_case_stmt(
-            current_caller_id, common::to_string(stmt->getLHS()));
+        model::message m{message_t::kCase, current_caller_id};
+        m.set_message_name(common::to_string(stmt->getLHS()));
+        diagram().add_case_stmt_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCaseStmt(stmt);
@@ -750,10 +782,14 @@ bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 
 bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 {
+    using clanguml::common::model::message_t;
+
     const auto current_caller_id = context().caller_id();
 
     if (current_caller_id != 0) {
-        diagram().add_default_stmt(current_caller_id);
+        model::message m{message_t::kCase, current_caller_id};
+        m.set_message_name("default");
+        diagram().add_case_stmt_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDefaultStmt(stmt);
@@ -764,11 +800,15 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 bool translation_unit_visitor::TraverseConditionalOperator(
     clang::ConditionalOperator *stmt)
 {
+    using clanguml::common::model::message_t;
+
     const auto current_caller_id = context().caller_id();
 
     if (current_caller_id != 0) {
         context().enter_conditionaloperator(stmt);
-        diagram().add_conditional_stmt(current_caller_id);
+        model::message m{message_t::kConditional, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_block_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
@@ -778,7 +818,9 @@ bool translation_unit_visitor::TraverseConditionalOperator(
         stmt->getTrueExpr());
 
     if (current_caller_id != 0) {
-        diagram().add_conditional_elsestmt(current_caller_id);
+        model::message m{message_t::kElse, current_caller_id};
+        set_source_location(*stmt, m);
+        diagram().add_message(std::move(m));
     }
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
@@ -786,7 +828,9 @@ bool translation_unit_visitor::TraverseConditionalOperator(
 
     if (current_caller_id != 0) {
         context().leave_conditionaloperator();
-        diagram().end_conditional_stmt(current_caller_id);
+        diagram().end_block_message(
+            {message_t::kConditionalEnd, current_caller_id},
+            message_t::kConditional);
     }
 
     return true;
@@ -1975,8 +2019,6 @@ translation_unit_visitor::build_template_instantiation(
 
     auto templated_decl_id =
         template_type.getTemplateName().getAsTemplateDecl()->getID();
-    //    auto templated_decl_local_id =
-    //        get_unique_id(templated_decl_id).value_or(0);
 
     if (best_match_id > 0) {
         destination = best_match_full_name;

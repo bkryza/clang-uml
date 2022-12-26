@@ -96,200 +96,43 @@ activity &diagram::get_activity(common::model::diagram_element::id_t id)
     return sequences_.at(id);
 }
 
-void diagram::add_for_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
+void diagram::add_message(model::message &&message)
 {
-    add_loop_stmt(current_caller_id, common::model::message_t::kFor);
-}
-
-void diagram::end_for_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    end_loop_stmt(current_caller_id, common::model::message_t::kForEnd);
-}
-
-void diagram::add_while_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    add_loop_stmt(current_caller_id, common::model::message_t::kWhile);
-}
-
-void diagram::end_while_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    end_loop_stmt(current_caller_id, common::model::message_t::kWhileEnd);
-}
-
-void diagram::add_do_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    add_loop_stmt(current_caller_id, common::model::message_t::kDo);
-}
-
-void diagram::end_do_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    end_loop_stmt(current_caller_id, common::model::message_t::kDoEnd);
-}
-
-void diagram::add_loop_stmt(
-    const common::model::diagram_element::id_t current_caller_id,
-    common::model::message_t type)
-{
-    using clanguml::common::model::message_t;
-
-    if (current_caller_id == 0)
-        return;
-
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
+    const auto caller_id = message.from();
+    if (sequences_.find(caller_id) == sequences_.end()) {
+        activity a{caller_id};
+        sequences_.insert({caller_id, std::move(a)});
     }
 
-    get_activity(current_caller_id).add_message({type, current_caller_id});
+    get_activity(caller_id).add_message(std::move(message));
 }
 
-void diagram::end_loop_stmt(
-    const common::model::diagram_element::id_t current_caller_id,
-    common::model::message_t type)
+void diagram::add_block_message(model::message &&message)
 {
-    using clanguml::common::model::message_t;
-
-    if (current_caller_id == 0)
-        return;
-
-    message m{type, current_caller_id};
-
-    message_t loop_type = message_t::kWhile;
-
-    if (type == message_t::kForEnd)
-        loop_type = message_t::kFor;
-    else if (type == message_t::kDoEnd)
-        loop_type = message_t::kDo;
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
-
-        fold_or_end_block_statement(std::move(m), loop_type, current_messages);
-    }
+    add_message(std::move(message));
 }
 
-void diagram::add_if_stmt(
-    const common::model::diagram_element::id_t current_caller_id,
-    common::model::message_t type)
+void diagram::end_block_message(
+    model::message &&message, common::model::message_t start_type)
 {
-    using clanguml::common::model::message_t;
+    const auto caller_id = message.from();
 
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
-    }
-
-    get_activity(current_caller_id).add_message({type, current_caller_id});
-}
-
-void diagram::end_if_stmt(
-    const common::model::diagram_element::id_t current_caller_id,
-    common::model::message_t /*type*/)
-{
-    using clanguml::common::model::message_t;
-
-    message m{message_t::kIfEnd, current_caller_id};
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
+    if (sequences_.find(caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(caller_id).messages();
 
         fold_or_end_block_statement(
-            std::move(m), message_t::kIf, current_messages);
+            std::move(message), start_type, current_messages);
     }
 }
 
-void diagram::add_try_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
+void diagram::add_case_stmt_message(
+    model::message &&m)
 {
     using clanguml::common::model::message_t;
+    const auto caller_id = m.from();
 
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
-    }
-
-    get_activity(current_caller_id)
-        .add_message({message_t::kTry, current_caller_id});
-}
-
-void diagram::end_try_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    message m{message_t::kTryEnd, current_caller_id};
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
-
-        fold_or_end_block_statement(
-            std::move(m), message_t::kTry, current_messages);
-    }
-}
-
-void diagram::add_catch_stmt(
-    const int64_t current_caller_id, std::string caught_type)
-{
-    using clanguml::common::model::message_t;
-
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
-    }
-
-    message m{message_t::kCatch, current_caller_id};
-    m.set_message_name(std::move(caught_type));
-
-    get_activity(current_caller_id).add_message(std::move(m));
-}
-
-void diagram::add_switch_stmt(
-    common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
-    }
-
-    message m{message_t::kSwitch, current_caller_id};
-
-    get_activity(current_caller_id).add_message(std::move(m));
-}
-
-void diagram::end_switch_stmt(
-    common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    message m{message_t::kSwitchEnd, current_caller_id};
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
-
-        fold_or_end_block_statement(
-            std::move(m), message_t::kSwitch, current_messages);
-    }
-}
-
-void diagram::add_case_stmt(
-    common::model::diagram_element::id_t current_caller_id,
-    const std::string &case_label)
-{
-    using clanguml::common::model::message_t;
-
-    message m{message_t::kCase, current_caller_id};
-    m.set_message_name(case_label);
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
+    if (sequences_.find(caller_id) != sequences_.end()) {
+        auto &current_messages = get_activity(caller_id).messages();
 
         if (current_messages.back().type() == message_t::kCase) {
             // Do nothing - fallthroughs not supported yet...
@@ -297,66 +140,6 @@ void diagram::add_case_stmt(
         else {
             current_messages.emplace_back(std::move(m));
         }
-    }
-}
-
-void diagram::add_default_stmt(
-    common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    message m{message_t::kCase, current_caller_id};
-    m.set_message_name("default");
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
-
-        if (current_messages.back().type() == message_t::kCase) {
-            current_messages.pop_back();
-        }
-        else {
-            current_messages.emplace_back(std::move(m));
-        }
-    }
-}
-
-void diagram::add_conditional_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    if (sequences_.find(current_caller_id) == sequences_.end()) {
-        activity a{current_caller_id};
-        sequences_.insert({current_caller_id, std::move(a)});
-    }
-
-    get_activity(current_caller_id)
-        .add_message({message_t::kConditional, current_caller_id});
-}
-
-void diagram::add_conditional_elsestmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    using clanguml::common::model::message_t;
-
-    get_activity(current_caller_id)
-        .add_message({message_t::kElse, current_caller_id});
-}
-
-void diagram::end_conditional_stmt(
-    const common::model::diagram_element::id_t current_caller_id)
-{
-    using common::model::message_t;
-
-    message m{message_t::kConditionalEnd, current_caller_id};
-
-    if (sequences_.find(current_caller_id) != sequences_.end()) {
-        auto &current_messages = get_activity(current_caller_id).messages();
-
-        const message_t begin_stmt_message_type{message_t::kConditional};
-
-        fold_or_end_block_statement(
-            std::move(m), begin_stmt_message_type, current_messages);
     }
 }
 

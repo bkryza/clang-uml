@@ -71,7 +71,11 @@ clang::ASTContext *call_expression_context::get_ast_context() const
     if (current_function_template_decl_ != nullptr)
         return &current_function_template_decl_->getASTContext();
 
-    return &current_function_decl_->getASTContext();
+    if (current_function_decl_ != nullptr) {
+        return &current_function_decl_->getASTContext();
+    }
+
+    return nullptr;
 }
 
 void call_expression_context::update(clang::CXXRecordDecl *cls)
