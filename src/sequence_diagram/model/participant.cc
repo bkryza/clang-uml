@@ -72,12 +72,10 @@ int template_trait::calculate_template_specialization_match(
 {
     int res{};
 
-    //    std::string left = name_and_ns();
-    //    // TODO: handle variadic templates
-    //    if ((name_and_ns() != full_name) ||
-    //        (templates().size() != other.templates().size())) {
-    //        return res;
-    //    }
+    // TODO: handle variadic templates
+    if (templates().size() != other.templates().size()) {
+        return res;
+    }
 
     // Iterate over all template arguments
     for (auto i = 0U; i < other.templates().size(); i++) {
