@@ -81,7 +81,6 @@ void translation_unit_visitor::set_source_location(
     set_source_location(stmt.getBeginLoc(), element);
 }
 
-
 void translation_unit_visitor::set_source_location(
     const clang::SourceLocation &location,
     clanguml::common::model::source_location &element)

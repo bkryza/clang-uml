@@ -125,8 +125,7 @@ void diagram::end_block_message(
     }
 }
 
-void diagram::add_case_stmt_message(
-    model::message &&m)
+void diagram::add_case_stmt_message(model::message &&m)
 {
     using clanguml::common::model::message_t;
     const auto caller_id = m.from();
