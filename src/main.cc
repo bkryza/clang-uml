@@ -575,14 +575,17 @@ int add_config_diagram(clanguml::common::model::diagram_t type,
     else if (type == clanguml::common::model::diagram_t::kSequence) {
         doc["diagrams"][name]["type"] = "sequence";
         doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["combine_free_functions_into_file_participants"] =
+            true;
         doc["diagrams"][name]["using_namespace"] =
-            std::vector<std::string>{{"myproject"}};
-        doc["diagrams"][name]["include"]["namespaces"] =
             std::vector<std::string>{{"myproject"}};
         doc["diagrams"][name]["include"]["paths"] =
             std::vector<std::string>{{"src"}};
         doc["diagrams"][name]["exclude"]["namespaces"] =
             std::vector<std::string>{{"myproject::detail"}};
+        doc["diagrams"][name]["start_from"] =
+            std::vector<std::map<std::string, std::string>>{
+                {{"function", "main(int,const char **)"}}};
     }
     else if (type == clanguml::common::model::diagram_t::kPackage) {
         doc["diagrams"][name]["type"] = "package";
