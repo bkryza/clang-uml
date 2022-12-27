@@ -140,6 +140,7 @@ int main(int argc, const char *argv[])
     bool show_version{false};
     int verbose{0};
     bool list_diagrams{false};
+    bool quiet{false};
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -152,7 +153,9 @@ int main(int argc, const char *argv[])
     app.add_option("-t,--thread-count", thread_count,
         "Thread pool size (0 = hardware concurrency)");
     app.add_flag("-V,--version", show_version, "Print version and exit");
-    app.add_flag("-v,--verbose", verbose, "Verbose logging");
+    app.add_flag("-v,--verbose", verbose,
+        "Verbose logging (use multiple times to increase - e.g. -vvv)");
+    app.add_flag("-q,--quiet", quiet, "Minimal logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
 
@@ -162,6 +165,11 @@ int main(int argc, const char *argv[])
         print_version();
         return 0;
     }
+
+    verbose++;
+
+    if (quiet)
+        verbose = 0;
 
     clanguml::util::setup_logging(verbose);
 
