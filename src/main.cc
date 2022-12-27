@@ -62,6 +62,24 @@ void print_version();
 void print_diagrams_list(const clanguml::config::config &cfg);
 
 /**
+ * Generate sample configuration file and exit.
+ *
+ * @return 0 on success or error code
+ */
+int create_config_file();
+
+/**
+ * Add example diagram of given type to the config file.
+ *
+ * @param type Type of the sample diagram to add
+ * @param config_file_path Path to the config file
+ * @param name Name of the new diagram
+ * @return 0 on success or error code
+ */
+int add_config_diagram(clanguml::common::model::diagram_t type,
+    const std::string &config_file_path, const std::string &name);
+
+/**
  * Check if diagram output directory exists, if not create it
  *
  * @param dir Path to the output directory
@@ -141,6 +159,11 @@ int main(int argc, const char *argv[])
     int verbose{0};
     bool list_diagrams{false};
     bool quiet{false};
+    bool initialize{false};
+    std::optional<std::string> add_class_diagram;
+    std::optional<std::string> add_sequence_diagram;
+    std::optional<std::string> add_package_diagram;
+    std::optional<std::string> add_include_diagram;
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -158,6 +181,15 @@ int main(int argc, const char *argv[])
     app.add_flag("-q,--quiet", quiet, "Minimal logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
+    app.add_flag("--init", initialize, "Initialize example config file");
+    app.add_option(
+        "--add-class-diagram", add_class_diagram, "Add class diagram config");
+    app.add_option("--add-sequence-diagram", add_sequence_diagram,
+        "Add sequence diagram config");
+    app.add_option("--add-package-diagram", add_package_diagram,
+        "Add package diagram config");
+    app.add_option("--add-include-diagram", add_include_diagram,
+        "Add include diagram config");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -166,10 +198,34 @@ int main(int argc, const char *argv[])
         return 0;
     }
 
+    if (initialize) {
+        return create_config_file();
+    }
+
     verbose++;
 
     if (quiet)
         verbose = 0;
+
+    if (add_class_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kClass,
+            config_path, *add_class_diagram);
+    }
+
+    if (add_sequence_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kSequence,
+            config_path, *add_sequence_diagram);
+    }
+
+    if (add_package_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kPackage,
+            config_path, *add_package_diagram);
+    }
+
+    if (add_include_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kInclude,
+            config_path, *add_include_diagram);
+    }
 
     clanguml::util::setup_logging(verbose);
 
@@ -432,4 +488,129 @@ void print_diagrams_list(const clanguml::config::config &cfg)
         cout << "  - " << name << " [" << to_string(diagram->type()) << "]";
         cout << '\n';
     }
+}
+
+int create_config_file()
+{
+    namespace fs = std::filesystem;
+    using std::cout;
+
+    fs::path config_file{"./.clang-uml"};
+
+    if (fs::exists(config_file)) {
+        cout << "ERROR: .clang-uml file already exists\n";
+        return 1;
+    }
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+    out << YAML::BeginMap;
+    out << YAML::Comment("Change to directory where compile_commands.json is");
+    out << YAML::Key << "compilation_database_dir" << YAML::Value << ".";
+    out << YAML::Newline
+        << YAML::Comment("Change to directory where diagram should be written");
+    out << YAML::Key << "output_directory" << YAML::Value << "docs/diagrams";
+    out << YAML::Key << "diagrams" << YAML::Value;
+    out << YAML::BeginMap;
+    out << YAML::Key << "example_class_diagram" << YAML::Value;
+    out << YAML::BeginMap;
+    out << YAML::Key << "type" << YAML::Value << "class";
+    out << YAML::Key << "glob" << YAML::Value;
+    out << YAML::BeginSeq << "src/*.cpp" << YAML::EndSeq;
+    out << YAML::Key << "using_namespace" << YAML::Value;
+    out << YAML::BeginSeq << "myproject" << YAML::EndSeq;
+    out << YAML::Key << "include";
+    out << YAML::BeginMap;
+    out << YAML::Key << "namespaces";
+    out << YAML::BeginSeq << "myproject" << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::Key << "exclude";
+    out << YAML::BeginMap;
+    out << YAML::Key << "namespaces";
+    out << YAML::BeginSeq << "myproject::detail" << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::Newline;
+
+    std::ofstream ofs(config_file);
+    ofs << out.c_str();
+    ofs.close();
+
+    return 0;
+}
+
+int add_config_diagram(clanguml::common::model::diagram_t type,
+    const std::string &config_file_path, const std::string &name)
+{
+    fs::path config_file{config_file_path};
+
+    if (!fs::exists(config_file)) {
+        std::cerr << "ERROR: " << config_file_path << " file doesn't exists\n";
+        return 1;
+    }
+
+    YAML::Node doc = YAML::LoadFile(config_file);
+
+    for (YAML::const_iterator it = doc["diagrams"].begin();
+         it != doc["diagrams"].end(); ++it) {
+        if (it->first.as<std::string>() == name) {
+            std::cerr << "ERROR: " << config_file_path
+                      << " file already contains '" << name << "' diagram";
+            return 1;
+        }
+    }
+
+    if (type == clanguml::common::model::diagram_t::kClass) {
+        doc["diagrams"][name]["type"] = "class";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["namespaces"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kSequence) {
+        doc["diagrams"][name]["type"] = "sequence";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["namespaces"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["paths"] =
+            std::vector<std::string>{{"src"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kPackage) {
+        doc["diagrams"][name]["type"] = "package";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["namespaces"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kInclude) {
+        doc["diagrams"][name]["type"] = "include";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["relative_to"] = ".";
+        doc["diagrams"][name]["include"]["paths"] =
+            std::vector<std::string>{{"src"}};
+    }
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+
+    out << doc;
+    out << YAML::Newline;
+
+    std::ofstream ofs(config_file);
+    ofs << out.c_str();
+    ofs.close();
+
+    return 0;
 }
