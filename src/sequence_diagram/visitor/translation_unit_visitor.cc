@@ -1301,7 +1301,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             c.set_namespace(ns);
             c.set_id(common::to_id(c.full_name(false)));
 
-            // Check if lambda is declared as an argument passed to a
+            // TODO: Check if lambda is declared as an argument passed to a
             // function/method call
         }
         else {
@@ -2079,8 +2079,9 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto location = cls->getLocation();
     const auto file_line = source_manager().getSpellingLineNumber(location);
     const auto file_column = source_manager().getSpellingColumnNumber(location);
-    const std::string file_name =
-        util::split(source_manager().getFilename(location).str(), "/").back();
+    const std::string file_name = std::filesystem::relative(
+        source_manager().getFilename(location).str(), config().relative_to())
+                                      .string();
 
     if (context().caller_id() != 0 &&
         get_participant(context().caller_id()).has_value()) {
