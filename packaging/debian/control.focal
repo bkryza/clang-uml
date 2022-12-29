@@ -11,7 +11,7 @@ Homepage: https://github.com/bkryza/clang-uml
 Package: clang-uml
 Architecture: any
 Section: utils
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, clang-12
 Pre-Depends: ${misc:Pre-Depends}
 Description: Automatic C++ UML diagram generator based on Clang.
  .
