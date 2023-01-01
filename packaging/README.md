@@ -22,6 +22,19 @@ dput ppa:bkryza/clang-uml *.changes
 
 ```
 
+## Fedora
+
+```bash
+docker run -v $PWD:$PWD fedora:37 bash
+dnf install fedora-packager rpmdevtools gcc cmake git clang-devel clang-tools-extra ccache yaml-cpp llvm-devel wget
+rpmdev-setuptree
+cd /root/rpmbuild/SOURCES
+wget https://github.com/bkryza/clang-uml/archive/refs/heads/v0.3.0.zip
+cd /root/rpmbuild/SPECS/
+wget https://raw.githubusercontent.com/bkryza/clang-uml/v0.3.0/packaging/fedora/clang-uml.spec
+rpmbuild -ba clang-uml.spec
+```
+
 ## Anaconda
 
 ```bash
