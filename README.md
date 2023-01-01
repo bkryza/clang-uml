@@ -4,8 +4,8 @@
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
 [![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/bkryza/clang-uml/releases)
 
-`clang-uml` is an automatic C++ to UML class, sequence
-and package diagram generator, driven by YAML configuration files. The main idea behind the
+`clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by 
+YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
@@ -41,6 +41,8 @@ Main features supported so far include:
 
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md)
 and examples in [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
+
+More comprehensive documentation can be found [here](./docs/README.md).
 
 ## Installation
 
@@ -449,34 +451,6 @@ exclude:
   # and also exclude ClassF
   elements:
     - clanguml::common::ClassF
-```
-
-### Comment decorators
-
-`clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
-generation of UML diagrams from C++ and overriding default inference rules for relationships.
-
-The following decorators are currently supported:
-
-- [note](docs/test_cases/t00028.md) - add a PlantUML note to a C++ entity
-- [skip](docs/test_cases/t00029.md) - skip the underlying C++ entity
-- [skiprelationship](docs/test_cases/t00029.md) - skip only relationship generation for a class property
-- [composition](docs/test_cases/t00030.md) - document the property as composition
-- [association](docs/test_cases/t00030.md) - document the property as association
-- [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
-- [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
-
-### Doxygen integration
-
-`clang-uml` decorstors can be omitted completely in [Doxygen](https://www.doxygen.nl/index.html), by adding the
-following
-lines to the Doxygen config file:
-
-```
-ALIASES                += clanguml=""
-ALIASES                += clanguml{1}=""
-ALIASES                += clanguml{2}=""
-ALIASES                += clanguml{3}=""
 ```
 
 ### Test cases
