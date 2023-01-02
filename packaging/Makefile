@@ -90,7 +90,7 @@ deb: _BUILD/$(SOURCE_ARCHIVE_DEB)
 		$(call subst_template_dir,MAINTAINER_EMAIL,${MAINTAINER_EMAIL},debian)
 		$(call subst_template_dir,GIT_COMMIT,${COMMIT},debian)
 		$(call subst_template_dir,GIT_BRANCH,${BRANCH},debian)
-		mk-origtargz ../$(NAME)-$(VERSION)-$(REBUILD).tar.$(TAR_EXT)
+		#mk-origtargz ../$(NAME)-$(VERSION)-$(REBUILD).tar.$(TAR_EXT)
 		cp debian/control.$(DIST) debian/control
 		# BUILD SOURCE PACKAGE FOR LAUNCHPAD
 		debuild -S -sa -us -d -k$(GPG_KEY)
