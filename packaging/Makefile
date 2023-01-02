@@ -34,6 +34,7 @@ VERSION	?= $(shell git describe --tags --always --abbrev=7)
 COMMIT ?= $(shell git rev-parse HEAD)
 BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 SOURCE_ARCHIVE ?= $(NAME)-$(VERSION).tar.$(TAR_EXT)
+SOURCE_ARCHIVE_DEB ?= $(NAME)-$(VERSION)-$(REBUILD).tar.$(TAR_EXT)
 CONDA_TOKEN ?=
 
 #
@@ -56,22 +57,29 @@ _BUILD/$(SOURCE_ARCHIVE):
 		echo "Creating source archive from latest commit $(COMMIT) - $(SOURCE_ARCHIVE)"
 		echo "############################"
 		mkdir -p $(build_dir)
-		git-archive-all --prefix=$(NAME)-$(VERSION)/ _BUILD/$(SOURCE_ARCHIVE)
+		git-archive-all --prefix=$(NAME)-$(VERSION)-$(REBUILD)/ _BUILD/$(SOURCE_ARCHIVE)
 
-deb: _BUILD/$(SOURCE_ARCHIVE)
+_BUILD/$(SOURCE_ARCHIVE_DEB):
+		echo "############################"
+		echo "Creating source archive from latest commit $(COMMIT) - $(SOURCE_ARCHIVE)"
+		echo "############################"
+		mkdir -p $(build_dir)
+		git-archive-all --prefix=$(NAME)-$(VERSION)-$(REBUILD)/ _BUILD/$(SOURCE_ARCHIVE_DEB)
+
+deb: _BUILD/$(SOURCE_ARCHIVE_DEB)
 		echo "############################"
 		echo "Creating deb source package for $(OS) $(DIST)"
-		echo "Creating directory: ", $(build_dir)/$(NAME)-$(VERSION)
+		echo "Creating directory: ", $(build_dir)/$(NAME)-$(VERSION)-$(REBUILD)
 		echo "Extracting source archive..."
 		echo "############################"
 		rm -rf $(build_dir)
 		mkdir -p $(build_dir)
-		cp _BUILD/$(SOURCE_ARCHIVE) $(build_dir)
+		cp _BUILD/$(SOURCE_ARCHIVE_DEB) $(build_dir)
 		cd $(build_dir)
-		mkdir -p $(NAME)-$(VERSION)
-		tar xf $(SOURCE_ARCHIVE) -C $(NAME)-$(VERSION) --strip-components 1
-		cp -R ../../../debian $(NAME)-$(VERSION)/debian
-		cd $(NAME)-$(VERSION)
+		mkdir -p $(NAME)-$(VERSION)-$(REBUILD)
+		tar xf $(SOURCE_ARCHIVE_DEB) -C $(NAME)-$(VERSION)-$(REBUILD) --strip-components 1
+		cp -R ../../../debian $(NAME)-$(VERSION)-$(REBUILD)/debian
+		cd $(NAME)-$(VERSION)-$(REBUILD)
 		$(call subst_template_dir,DATETIME,$(shell date -R),debian)
 		$(call subst_template_dir,OS,${OS},debian)
 		$(call subst_template_dir,NAME,${NAME},debian)
@@ -82,7 +90,7 @@ deb: _BUILD/$(SOURCE_ARCHIVE)
 		$(call subst_template_dir,MAINTAINER_EMAIL,${MAINTAINER_EMAIL},debian)
 		$(call subst_template_dir,GIT_COMMIT,${COMMIT},debian)
 		$(call subst_template_dir,GIT_BRANCH,${BRANCH},debian)
-		mk-origtargz ../$(NAME)-$(VERSION).tar.$(TAR_EXT)
+		mk-origtargz ../$(NAME)-$(VERSION)-$(REBUILD).tar.$(TAR_EXT)
 		cp debian/control.$(DIST) debian/control
 		# BUILD SOURCE PACKAGE FOR LAUNCHPAD
 		debuild -S -sa -us -d -k$(GPG_KEY)
