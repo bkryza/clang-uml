@@ -1,7 +1,7 @@
 /**
  * src/config/config.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ struct filter {
 enum class hint_t { up, down, left, right };
 
 struct layout_hint {
-    hint_t hint;
+    hint_t hint{hint_t::up};
     std::string entity;
 };
 
@@ -120,7 +120,7 @@ using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
 
-std::string to_string(const hint_t t);
+std::string to_string(hint_t t);
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};
@@ -145,6 +145,7 @@ struct inheritable_diagram_options {
     option<bool> combine_free_functions_into_file_participants{
         "combine_free_functions_into_file_participants", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
+    option<bool> debug_mode{"debug_mode", false};
 
     void inherit(const inheritable_diagram_options &parent);
 
@@ -166,12 +167,12 @@ struct diagram : public inheritable_diagram_options {
 
 struct source_location {
     enum class location_t { usr, marker, fileline, function };
-    location_t location_type;
+    location_t location_type{location_t::function};
     std::string location;
 };
 
 struct class_diagram : public diagram {
-    virtual ~class_diagram() = default;
+    ~class_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -182,7 +183,7 @@ struct class_diagram : public diagram {
 };
 
 struct sequence_diagram : public diagram {
-    virtual ~sequence_diagram() = default;
+    ~sequence_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -190,7 +191,7 @@ struct sequence_diagram : public diagram {
 };
 
 struct package_diagram : public diagram {
-    virtual ~package_diagram() = default;
+    ~package_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -198,7 +199,7 @@ struct package_diagram : public diagram {
 };
 
 struct include_diagram : public diagram {
-    virtual ~include_diagram() = default;
+    ~include_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
@@ -216,5 +217,5 @@ struct config : public inheritable_diagram_options {
 };
 
 config load(const std::string &config_file);
-}
-}
+} // namespace config
+} // namespace clanguml

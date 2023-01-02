@@ -1,7 +1,7 @@
 /**
  * src/common/generators/plantuml/generator.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 
 namespace clanguml::common::generators::plantuml {
 
-std::string to_plantuml(relationship_t r, std::string style)
+std::string to_plantuml(relationship_t r, const std::string &style)
 {
     switch (r) {
     case relationship_t::kOwnership:
@@ -70,4 +70,4 @@ std::string to_plantuml(message_t r)
     }
 }
 
-}
+} // namespace clanguml::common::generators::plantuml

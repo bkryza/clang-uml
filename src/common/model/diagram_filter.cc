@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram_filter.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  */
 
 #include "diagram_filter.h"
+
+#include <utility>
 
 #include "class_diagram/model/class.h"
 #include "common/model/package.h"
@@ -155,7 +157,7 @@ tvl::value_t anyof_filter::match(
 namespace_filter::namespace_filter(
     filter_t type, std::vector<namespace_> namespaces)
     : filter_visitor{type}
-    , namespaces_{namespaces}
+    , namespaces_{std::move(namespaces)}
 {
 }
 
@@ -192,30 +194,29 @@ tvl::value_t namespace_filter::match(
                 return result;
             });
     }
-    else {
-        return tvl::any_of(
-            namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
-                return e.get_namespace().starts_with(nsit);
-            });
-    }
+    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+        [&e](const auto &nsit) { return e.get_namespace().starts_with(nsit); });
 }
 
 element_filter::element_filter(filter_t type, std::vector<std::string> elements)
     : filter_visitor{type}
-    , elements_{elements}
+    , elements_{std::move(elements)}
 {
 }
 
 tvl::value_t element_filter::match(
     const diagram & /*d*/, const element &e) const
 {
-    return tvl::any_of(elements_.begin(), elements_.end(),
-        [&e](const auto &el) { return e.full_name(false) == el; });
+    return tvl::any_of(
+        elements_.begin(), elements_.end(), [&e](const auto &el) {
+            return (e.full_name(false) == el) ||
+                (fmt::format("::{}", e.full_name(false)) == el);
+        });
 }
 
 subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
     : filter_visitor{type}
-    , roots_{roots}
+    , roots_{std::move(roots)}
 {
 }
 
@@ -265,7 +266,7 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
 relationship_filter::relationship_filter(
     filter_t type, std::vector<relationship_t> relationships)
     : filter_visitor{type}
-    , relationships_{relationships}
+    , relationships_{std::move(relationships)}
 {
 }
 
@@ -278,7 +279,7 @@ tvl::value_t relationship_filter::match(
 
 access_filter::access_filter(filter_t type, std::vector<access_t> access)
     : filter_visitor{type}
-    , access_{access}
+    , access_{std::move(access)}
 {
 }
 
@@ -291,7 +292,7 @@ tvl::value_t access_filter::match(
 
 context_filter::context_filter(filter_t type, std::vector<std::string> context)
     : filter_visitor{type}
-    , context_{context}
+    , context_{std::move(context)}
 {
 }
 
@@ -349,17 +350,29 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    std::vector<std::filesystem::path> p)
+    const std::vector<std::filesystem::path> &p)
     : filter_visitor{type}
     , root_{root}
 {
-    for (auto &&path : p) {
+    for (const auto &path : p) {
         std::filesystem::path absolute_path;
 
-        if (path.is_relative())
+        if (path.string().empty() || path.string() == ".")
+            absolute_path = root;
+        else if (path.is_relative())
             absolute_path = root / path;
+        else
+            absolute_path = path;
 
-        absolute_path = absolute_path.lexically_normal();
+        try {
+            absolute_path =
+                std::filesystem::canonical(absolute_path.lexically_normal());
+        }
+        catch (std::filesystem::filesystem_error &e) {
+            LOG_WARN("Cannot add non-existent path {} to paths filter",
+                path.string());
+            continue;
+        }
 
         paths_.emplace_back(std::move(absolute_path));
     }
@@ -403,7 +416,7 @@ void diagram_filter::add_exclusive_filter(std::unique_ptr<filter_visitor> fv)
 }
 
 bool diagram_filter::should_include(
-    namespace_ ns, const std::string &name) const
+    const namespace_ &ns, const std::string &name) const
 {
     if (should_include(ns)) {
         element e{namespace_{}};
@@ -430,7 +443,7 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kInclusive, c.include().access));
 
         add_inclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kInclusive, c.base_directory(), c.include().paths));
+            filter_t::kInclusive, c.relative_to(), c.include().paths));
 
         // Include any of these matches even if one them does not match
         std::vector<std::unique_ptr<filter_visitor>> element_filters;
@@ -474,21 +487,11 @@ void diagram_filter::init_filters(const config::diagram &c)
 
             for (auto &&path : c.include().dependants) {
                 std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
-
                 dependants.emplace_back(dep_path.lexically_normal().string());
             }
 
             for (auto &&path : c.include().dependencies) {
                 std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
-
                 dependencies.emplace_back(dep_path.lexically_normal().string());
             }
 
@@ -518,7 +521,7 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, c.exclude().namespaces));
 
         add_exclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kExclusive, c.base_directory(), c.exclude().paths));
+            filter_t::kExclusive, c.relative_to(), c.exclude().paths));
 
         add_exclusive_filter(std::make_unique<element_filter>(
             filter_t::kExclusive, c.exclude().elements));
@@ -607,4 +610,4 @@ bool diagram_filter::should_include<std::string>(const std::string &name) const
 
     return should_include(ns, n);
 }
-}
+} // namespace clanguml::common::model

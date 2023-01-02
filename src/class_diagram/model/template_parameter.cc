@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/template_parameter.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,13 @@
 #include "common/model/enums.h"
 #include <common/model/namespace.h>
 
+#include <utility>
+
 namespace clanguml::class_diagram::model {
 
 template_parameter::template_parameter(const std::string &type,
-    const std::string &name, const std::string &default_value, bool is_variadic)
-    : default_value_{default_value}
+    const std::string &name, std::string default_value, bool is_variadic)
+    : default_value_{std::move(default_value)}
     , is_variadic_{is_variadic}
 {
     set_name(name);
@@ -84,11 +86,9 @@ bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 bool template_parameter::is_specialization_of(
     const template_parameter &ct) const
 {
-    if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
-        !is_template_parameter())
-        return true;
-
-    return false;
+    return (ct.is_template_parameter() ||
+               ct.is_template_template_parameter()) &&
+        !is_template_parameter();
 }
 
 void template_parameter::add_template_param(template_parameter &&ct)
@@ -178,7 +178,8 @@ bool template_parameter::find_nested_relationships(
     std::vector<std::pair<int64_t, common::model::relationship_t>>
         &nested_relationships,
     common::model::relationship_t hint,
-    std::function<bool(const std::string &full_name)> should_include) const
+    const std::function<bool(const std::string &full_name)> &should_include)
+    const
 {
     bool added_aggregation_relationship{false};
 
@@ -186,7 +187,7 @@ bool template_parameter::find_nested_relationships(
     // just add it and skip recursion (e.g. this is a user defined type)
     if (should_include(name())) {
         if (id()) {
-            nested_relationships.push_back({id().value(), hint});
+            nested_relationships.emplace_back(id().value(), hint);
             added_aggregation_relationship =
                 (hint == common::model::relationship_t::kAggregation);
         }
@@ -198,8 +199,8 @@ bool template_parameter::find_nested_relationships(
             if (should_include(template_argument.name()) &&
                 template_argument.id()) {
 
-                nested_relationships.push_back(
-                    {template_argument.id().value(), hint});
+                nested_relationships.emplace_back(
+                    template_argument.id().value(), hint);
 
                 added_aggregation_relationship =
                     (hint == common::model::relationship_t::kAggregation);
@@ -215,4 +216,4 @@ bool template_parameter::find_nested_relationships(
     return added_aggregation_relationship;
 }
 
-}
+} // namespace clanguml::class_diagram::model

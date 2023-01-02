@@ -1,7 +1,7 @@
 /**
  * src/common/model/namespace.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,12 +42,12 @@ template <> struct hash<clanguml::common::model::namespace_> {
 
         std::size_t seed = key.size();
         for (const auto &ns : key) {
-            seed ^= std::hash<std::string>{}(ns) + 0x6a3712b5 + (seed << 6) +
-                (seed >> 2);
+            seed ^=
+                std::hash<std::string>{}(ns) + clanguml::util::hash_seed(seed);
         }
 
         return seed;
     }
 };
 
-}
+} // namespace std

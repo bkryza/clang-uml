@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/template_parameter.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ namespace clanguml::class_diagram::model {
 class template_parameter {
 public:
     template_parameter(const std::string &type = "",
-        const std::string &name = "", const std::string &default_value = "",
+        const std::string &name = "", std::string default_value = "",
         bool is_variadic = false);
 
     template_parameter(const template_parameter &right) = default;
@@ -97,7 +97,8 @@ public:
         std::vector<std::pair<int64_t, common::model::relationship_t>>
             &nested_relationships,
         common::model::relationship_t hint,
-        std::function<bool(const std::string &full_name)> should_include) const;
+        const std::function<bool(const std::string &full_name)> &should_include)
+        const;
 
 private:
     /// Represents the type of non-type template parameters
@@ -129,4 +130,4 @@ private:
 
     std::optional<int64_t> id_;
 };
-}
+} // namespace clanguml::class_diagram::model

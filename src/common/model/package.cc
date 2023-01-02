@@ -1,7 +1,7 @@
 /**
  * src/common/model/package.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,4 +40,4 @@ bool package::is_deprecated() const { return is_deprecated_; }
 
 void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
 
-}
+} // namespace clanguml::common::model

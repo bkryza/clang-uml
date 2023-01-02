@@ -1,22 +1,20 @@
-# clang-uml - C++ UML diagram generator based on Clang and PlantUML
+# clang-uml - C++ UML diagram generator based on Clang
 
 [![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
-[![Version](https://img.shields.io/badge/version-0.2.2-blue)](https://github.com/bkryza/clang-uml/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue)](https://github.com/bkryza/clang-uml/releases)
 
-`clang-uml` is an automatic C++ to [PlantUML](https://plantuml.com) class, sequence
-and package diagram generator, driven by YAML configuration files. The main idea behind the
+`clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by 
+YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
+Currently the diagrams are generated in [PlantUML](https://plantuml.com) format.
 
 `clang-uml` currently supports C++ up to version 17.
 
-> Current `master` version (and any release since `0.2.0`) has been refactored to use 
-> [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) instead of libclang.
-> Previous version is available in branch `0.1.x`, however it is not maintained.
-
 ## Features
+
 Main features supported so far include:
 
 * **Class diagram generation**
@@ -34,6 +32,7 @@ Main features supported so far include:
     * Generation of try/catch blocks
     * Handling of template code including constexpr conditionals
     * Handling of lambda expressions
+    * Interactive links to online code to classes and call expressions
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces
     * Interactive links to online code to packages
@@ -43,11 +42,14 @@ Main features supported so far include:
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md)
 and examples in [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
+More comprehensive documentation can be found [here](./docs/README.md).
+
 ## Installation
 
 ### Distribution packages
 
 #### Ubuntu
+
 ```bash
 sudo add-apt-repository ppa:bkryza/clang-uml
 sudo apt update
@@ -55,6 +57,7 @@ sudo apt install clang-uml
 ```
 
 #### Conda
+
 ```bash
 conda config --add channels conda-forge
 conda config --set channel_priority strict
@@ -62,6 +65,7 @@ conda install -c bkryza/label/clang-uml clang-uml
 ```
 
 ### Building from source
+
 First make sure that you have the following dependencies installed:
 
 ```bash
@@ -98,21 +102,27 @@ LLVM_VERSION=14 make release
 ## Usage
 
 ### Generating compile commands database
+
 `clang-uml` requires an up-to-date
 [compile_commands.json](https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 file, containing the list of commands used for compiling the source code.
 Nowadays, this file can be generated rather easily using multiple methods:
-  * For [CMake](https://cmake.org/) projects, simply invoke the `cmake` command
-    as `cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...`
-  * For Make projects checkout [compiledb](https://github.com/nickdiego/compiledb) or [Bear](https://github.com/rizsotto/Bear)
-  * For Boost-based projects try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
-  * For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
+
+* For [CMake](https://cmake.org/) projects, simply invoke the `cmake` command
+  as `cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ...`
+* For Make projects checkout [compiledb](https://github.com/nickdiego/compiledb)
+  or [Bear](https://github.com/rizsotto/Bear)
+* For Boost-based projects
+  try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
+* For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
 
 ### Invocation
+
 By default, `config-uml` will assume that the configuration file `.clang-uml`
 and compilation database `compile_commands.json` files are in the
 current directory, so if they are in the top level directory of a project,
 simply run:
+
 ```bash
 clang-uml
 ```
@@ -121,6 +131,7 @@ The output path for diagrams, as well as alternative location of
 compilation database can be specified in `.clang-uml` configuration file.
 
 For other options checkout help:
+
 ```bash
 clang-uml --help
 ```
@@ -154,6 +165,7 @@ diagrams:
 See [here](docs/configuration_file.md) for detailed configuration file reference guide.
 
 ## Examples
+
 To see what `clang-uml` can do, checkout the test cases documentation [here](./docs/test_cases.md).
 
 In order to see diagrams for the `clang-uml` itself, based on its own [config](.clang-uml) run
@@ -169,7 +181,7 @@ and checkout the SVG diagrams in `docs/diagrams` folder.
 
 #### Example
 
-Source code:
+The following C++ code:
 
 ```cpp
 template <typename T, typename P> struct A {
@@ -403,6 +415,7 @@ generates the following diagram (via PlantUML) based on include directives in th
 | Include (system)                       | ![dependency](docs/img/puml_dependency.png) |
 
 ### Diagram content filtering
+
 For typical code bases, generating a single diagram from entire code or even a single namespace can be too big to
 be useful, e.g. as part of documentation. `clang-uml` allows specifying content to be included and excluded from
 each diagram using simple YAML configuration:
@@ -440,43 +453,20 @@ exclude:
     - clanguml::common::ClassF
 ```
 
-### Comment decorators
-
-`clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
-generation of UML diagrams from C++ and overriding default inference rules for relationships.
-
-The following decorators are currently supported:
-- [note](docs/test_cases/t00028.md) - add a PlantUML note to a C++ entity
-- [skip](docs/test_cases/t00029.md) - skip the underlying C++ entity
-- [skiprelationship](docs/test_cases/t00029.md) - skip only relationship generation for a class property
-- [composition](docs/test_cases/t00030.md) - document the property as composition
-- [association](docs/test_cases/t00030.md) - document the property as association
-- [aggregation](docs/test_cases/t00030.md) - document the property as aggregation
-- [style](docs/test_cases/t00031.md) - add PlantUML style to a C++ entity
-
-### Doxygen integration
-`clang-uml` decorstors can be omitted completely in [Doxygen](https://www.doxygen.nl/index.html), by adding the following
-lines to the Doxygen config file:
-
-```
-ALIASES                += clanguml=""
-ALIASES                += clanguml{1}=""
-ALIASES                += clanguml{2}=""
-ALIASES                += clanguml{3}=""
-```
-
 ### Test cases
 
 The build-in test cases used for unit testing of the `clang-uml`, can be browsed [here](./docs/test_cases.md).
 
 ## Acknowledgements
+
 This project relies on the following great tools:
-  * [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
-  * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
-  * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
-  * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
-  * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
-  * [inja](https://github.com/pantor/inja) - a template engine for modern C++
+
+* [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
+* [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
+* [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
+* [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
+* [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
+* [inja](https://github.com/pantor/inja) - a template engine for modern C++
 
 ## Contributing
 

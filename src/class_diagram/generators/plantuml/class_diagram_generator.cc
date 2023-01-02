@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
     assert(!full_name.empty());
 
+    print_debug(c, ostr);
+
     ostr << class_type << " \""
          << m_config.simplify_template_type(render_name(full_name));
 
@@ -84,6 +86,8 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
 
 void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
+    print_debug(e, ostr);
+
     if (m_config.generate_packages())
         ostr << "enum"
              << " \"" << e.name();
@@ -100,6 +104,8 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
+
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
 
     const auto &uns = m_config.using_namespace();
 
@@ -125,6 +131,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_model.should_include(m.access()))
             continue;
 
+        print_debug(m, ostr);
+
         if (m.is_pure_virtual())
             ostr << "{abstract} ";
 
@@ -148,7 +156,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             auto args_string = fmt::format("{}", fmt::join(params, ", "));
             if (m_config.generate_method_arguments() ==
                 config::method_arguments::abbreviated) {
-                args_string = clanguml::util::abbreviate(args_string, 10);
+                args_string = clanguml::util::abbreviate(
+                    args_string, kAbbreviatedMethodArgumentsLength);
             }
             ostr << args_string;
         }
@@ -191,10 +200,14 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         std::string destination;
         try {
-            destination = r.destination();
+            auto target_element = m_model.get(r.destination());
+            if (!target_element.has_value())
+                throw error::uml_alias_missing{
+                    fmt::format("Missing element in the model for ID: {}",
+                        r.destination())};
 
-            // TODO: Refactor destination to a namespace qualified entity
-            //       name
+            destination = target_element.value().full_name(false);
+
             if (util::starts_with(destination, std::string{"::"}))
                 destination = destination.substr(2, destination.size());
 
@@ -229,6 +242,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         if (!m_config.include_relations_also_as_members() &&
             rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
+
+        print_debug(m, ostr);
 
         if (m.is_static())
             ostr << "{static} ";
@@ -270,7 +285,7 @@ void generator::generate_relationships(
             plantuml_common::to_plantuml(r.type(), r.style()));
 
         std::stringstream relstr;
-        clanguml::common::id_t destination;
+        clanguml::common::id_t destination{0};
         try {
             destination = r.destination();
 
@@ -374,7 +389,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         if (!m_model.should_include(r.type()))
             continue;
 
-        clanguml::common::id_t destination;
+        clanguml::common::id_t destination{0};
         std::stringstream relstr;
         try {
             destination = r.destination();
@@ -417,6 +432,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
         // Don't generate packages from namespaces filtered out by
         // using_namespace
         if (!uns.starts_with({p.full_name(false)})) {
+            print_debug(p, ostr);
             ostr << "package [" << p.name() << "] ";
             ostr << "as " << p.alias();
 
@@ -431,19 +447,19 @@ void generator::generate(const package &p, std::ostream &ostr) const
     }
 
     for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get())) {
+        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty())
                 generate(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(subpackage.get())) {
+        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
                 generate(dynamic_cast<class_ &>(*subpackage), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(subpackage.get())) {
+        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
                 generate(dynamic_cast<enum_ &>(*subpackage), ostr);
@@ -466,19 +482,19 @@ void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
     for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get())) {
+        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty())
                 generate_relationships(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(subpackage.get())) {
+        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<class_ &>(*subpackage), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(subpackage.get())) {
+        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<enum_ &>(*subpackage), ostr);
@@ -496,18 +512,18 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get())) {
+        if (dynamic_cast<package *>(p.get()) != nullptr) {
             const auto &sp = dynamic_cast<package &>(*p);
             if (!sp.is_empty())
                 generate(sp, ostr);
         }
-        else if (dynamic_cast<class_ *>(p.get())) {
+        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_alias(dynamic_cast<class_ &>(*p), ostr);
                 generate(dynamic_cast<class_ &>(*p), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get())) {
+        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_alias(dynamic_cast<enum_ &>(*p), ostr);
                 generate(dynamic_cast<enum_ &>(*p), ostr);
@@ -516,15 +532,15 @@ void generator::generate(std::ostream &ostr) const
     }
 
     for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get())) {
+        if (dynamic_cast<package *>(p.get()) != nullptr) {
             generate_relationships(dynamic_cast<package &>(*p), ostr);
         }
-        else if (dynamic_cast<class_ *>(p.get())) {
+        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_relationships(dynamic_cast<class_ &>(*p), ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get())) {
+        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
             if (m_model.should_include(*p)) {
                 generate_relationships(dynamic_cast<enum_ &>(*p), ostr);
             }
@@ -537,4 +553,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-}
+} // namespace clanguml::class_diagram::generators::plantuml

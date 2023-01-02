@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class_element.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ namespace clanguml::class_diagram::model {
 class class_element : public common::model::decorated_element,
                       public common::model::source_location {
 public:
-    class_element(common::model::access_t scope, const std::string &name,
-        const std::string &type);
+    class_element(
+        common::model::access_t scope, std::string name, std::string type);
 
     common::model::access_t access() const;
     std::string name() const;
@@ -44,4 +44,4 @@ private:
     std::string type_;
 };
 
-}
+} // namespace clanguml::class_diagram::model

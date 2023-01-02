@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/visitor/call_expression_context.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ struct call_expression_context {
 
     bool valid() const;
 
-    clang::ASTContext *get_ast_context();
+    clang::ASTContext *get_ast_context() const;
 
     void update(clang::CXXRecordDecl *cls);
 
@@ -99,16 +99,16 @@ struct call_expression_context {
     bool is_expr_in_current_control_statement_condition(
         const clang::Stmt *stmt) const;
 
-    clang::CXXRecordDecl *current_class_decl_;
-    clang::ClassTemplateDecl *current_class_template_decl_;
+    clang::CXXRecordDecl *current_class_decl_{nullptr};
+    clang::ClassTemplateDecl *current_class_template_decl_{nullptr};
     clang::ClassTemplateSpecializationDecl
-        *current_class_template_specialization_decl_;
-    clang::CXXMethodDecl *current_method_decl_;
-    clang::FunctionDecl *current_function_decl_;
-    clang::FunctionTemplateDecl *current_function_template_decl_;
+        *current_class_template_specialization_decl_{nullptr};
+    clang::CXXMethodDecl *current_method_decl_{nullptr};
+    clang::FunctionDecl *current_function_decl_{nullptr};
+    clang::FunctionTemplateDecl *current_function_template_decl_{nullptr};
 
 private:
-    std::int64_t current_caller_id_;
+    std::int64_t current_caller_id_{0};
     std::stack<std::int64_t> current_lambda_caller_id_;
 
     std::stack<clang::CallExpr *> call_expr_stack_;
@@ -122,4 +122,4 @@ private:
     std::stack<clang::ConditionalOperator *> conditional_operator_stack_;
 };
 
-}
+} // namespace clanguml::sequence_diagram::visitor

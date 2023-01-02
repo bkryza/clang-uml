@@ -19,5 +19,6 @@ diagrams:
         - inheritance
     exclude:
       namespaces:
+        - std
         - clanguml::t00039::detail
         - clanguml::t00039::ns3::detail

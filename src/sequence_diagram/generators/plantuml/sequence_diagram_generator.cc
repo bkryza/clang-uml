@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/generators/plantuml/sequence_diagram_generator.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,25 +58,35 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     std::string message;
 
+    model::function::message_render_mode render_mode =
+        model::function::message_render_mode::full;
+
+    if (m_config.generate_method_arguments() ==
+        config::method_arguments::abbreviated)
+        render_mode = model::function::message_render_mode::abbreviated;
+    else if (m_config.generate_method_arguments() ==
+        config::method_arguments::none)
+        render_mode = model::function::message_render_mode::no_arguments;
+
     if (to.value().type_name() == "method") {
         message = dynamic_cast<const model::function &>(to.value())
-                      .message_name(model::function::message_render_mode::full);
+                      .message_name(render_mode);
     }
     else if (m_config.combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
-            message =
-                dynamic_cast<const model::function &>(to.value())
-                    .message_name(model::function::message_render_mode::full);
+            message = dynamic_cast<const model::function &>(to.value())
+                          .message_name(render_mode);
         }
         else if (to.value().type_name() == "function_template") {
-            message =
-                dynamic_cast<const model::function_template &>(to.value())
-                    .message_name(model::function::message_render_mode::full);
+            message = dynamic_cast<const model::function_template &>(to.value())
+                          .message_name(render_mode);
         }
     }
 
     const std::string from_alias = generate_alias(from.value());
     const std::string to_alias = generate_alias(to.value());
+
+    print_debug(m, ostr);
 
     ostr << from_alias << " "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " ";
@@ -161,57 +171,70 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             visited.pop_back();
         }
         else if (m.type() == message_t::kIf) {
+            print_debug(m, ostr);
             ostr << "alt\n";
         }
         else if (m.type() == message_t::kElseIf) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kElse) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kIfEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kWhile) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kWhileEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kFor) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kForEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kDo) {
+            print_debug(m, ostr);
             ostr << "loop\n";
         }
         else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kTry) {
+            print_debug(m, ostr);
             ostr << "group try\n";
         }
         else if (m.type() == message_t::kCatch) {
+            print_debug(m, ostr);
             ostr << "else " << m.message_name() << '\n';
         }
         else if (m.type() == message_t::kTryEnd) {
+            print_debug(m, ostr);
             ostr << "end\n";
         }
         else if (m.type() == message_t::kSwitch) {
+            print_debug(m, ostr);
             ostr << "group switch\n";
         }
         else if (m.type() == message_t::kCase) {
+            print_debug(m, ostr);
             ostr << "else " << m.message_name() << '\n';
         }
         else if (m.type() == message_t::kSwitchEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kConditional) {
+            print_debug(m, ostr);
             ostr << "alt\n";
         }
         else if (m.type() == message_t::kElse) {
+            print_debug(m, ostr);
             ostr << "else\n";
         }
         else if (m.type() == message_t::kConditionalEnd) {
@@ -271,6 +294,8 @@ void generator::generate_participant(
         const auto &class_participant =
             m_model.get_participant<model::participant>(class_id).value();
 
+        print_debug(class_participant, ostr);
+
         ostr << "participant \""
              << render_name(m_config.using_namespace().relative(
                     class_participant.full_name(false)))
@@ -302,7 +327,7 @@ void generator::generate_participant(
         if (is_participant_generated(file_id))
             return;
 
-        [[maybe_unused]] const auto &relative_to =
+        const auto &relative_to =
             std::filesystem::canonical(m_config.relative_to());
 
         auto participant_name = std::filesystem::relative(
@@ -317,6 +342,8 @@ void generator::generate_participant(
         generated_participants_.emplace(file_id);
     }
     else {
+        print_debug(participant, ostr);
+
         ostr << "participant \""
              << m_config.using_namespace().relative(
                     participant.full_name(false))
@@ -331,8 +358,6 @@ void generator::generate_participant(
 
         generated_participants_.emplace(participant_id);
     }
-
-    return;
 }
 
 bool generator::is_participant_generated(common::id_t id) const
@@ -359,7 +384,7 @@ void generator::generate(std::ostream &ostr) const
 
     for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == source_location::location_t::function) {
-            common::model::diagram_element::id_t start_from;
+            common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : m_model.sequences()) {
                 const auto &caller = *m_model.participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
@@ -368,6 +393,13 @@ void generator::generate(std::ostream &ostr) const
                     start_from = k;
                     break;
                 }
+            }
+
+            if (start_from == 0) {
+                LOG_WARN("Failed to find participant with {} for start_from "
+                         "condition",
+                    sf.location);
+                continue;
             }
 
             // Use this to break out of recurrent loops
@@ -388,13 +420,22 @@ void generator::generate(std::ostream &ostr) const
 
             std::string from_alias = generate_alias(from.value());
 
+            model::function::message_render_mode render_mode =
+                model::function::message_render_mode::full;
+
+            if (m_config.generate_method_arguments() ==
+                config::method_arguments::abbreviated)
+                render_mode = model::function::message_render_mode::abbreviated;
+            else if (m_config.generate_method_arguments() ==
+                config::method_arguments::none)
+                render_mode =
+                    model::function::message_render_mode::no_arguments;
+
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {
                 ostr << "[->"
                      << " " << from_alias << " : "
-                     << from.value().message_name(
-                            model::function::message_render_mode::full)
-                     << std::endl;
+                     << from.value().message_name(render_mode) << std::endl;
             }
 
             ostr << "activate " << from_alias << std::endl;
@@ -437,4 +478,4 @@ std::string generator::generate_alias(
 
     return participant.alias();
 }
-}
+} // namespace clanguml::sequence_diagram::generators::plantuml

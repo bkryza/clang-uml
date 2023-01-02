@@ -1,7 +1,7 @@
 /**
  * src/common/model/source_file.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,8 @@ public:
     {
         LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
 
-        add_element(f->path(), std::move(f));
+        const auto path = f->path();
+        add_element(path, std::move(f));
     }
 
     std::filesystem::path fs_path(const std::filesystem::path &base = {}) const
@@ -118,7 +119,7 @@ private:
     source_file_t type_{source_file_t::kDirectory};
     bool is_absolute_{false};
 };
-}
+} // namespace clanguml::common::model
 
 namespace std {
 
@@ -130,15 +131,15 @@ template <> struct hash<clanguml::common::model::filesystem_path> {
 
         std::size_t seed = key.size();
         for (const auto &ns : key) {
-            seed ^= std::hash<std::string>{}(ns) + 0x6a3712b5 + (seed << 6) +
-                (seed >> 2);
+            seed ^=
+                std::hash<std::string>{}(ns) + clanguml::util::hash_seed(seed);
         }
 
         return seed;
     }
 };
 
-}
+} // namespace std
 
 namespace std {
 template <>
@@ -152,4 +153,4 @@ struct hash<std::reference_wrapper<clanguml::common::model::source_file>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

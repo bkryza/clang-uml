@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/model/participant.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,16 +68,14 @@ template_trait::templates() const
 }
 
 int template_trait::calculate_template_specialization_match(
-    const template_trait &other, const std::string &full_name) const
+    const template_trait &other, const std::string & /*full_name*/) const
 {
     int res{};
 
-    //    std::string left = name_and_ns();
-    //    // TODO: handle variadic templates
-    //    if ((name_and_ns() != full_name) ||
-    //        (templates().size() != other.templates().size())) {
-    //        return res;
-    //    }
+    // TODO: handle variadic templates
+    if (templates().size() != other.templates().size()) {
+        return res;
+    }
 
     // Iterate over all template arguments
     for (auto i = 0U; i < other.templates().size(); i++) {
@@ -193,8 +191,17 @@ std::string function::full_name_no_ns() const
 
 std::string function::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}(){}", name(), is_const() ? " const" : "");
+    }
+    if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters_, ",")),
+                kAbbreviatedMethodArgumentsLength),
+            is_const() ? " const" : "");
     }
 
     return fmt::format("{}({}){}", name(), fmt::join(parameters_, ","),
@@ -225,7 +232,7 @@ method::method(const common::model::namespace_ &using_namespace)
 {
 }
 
-const std::string method::method_name() const { return method_name_; }
+std::string method::method_name() const { return method_name_; }
 
 std::string method::alias() const
 {
@@ -253,11 +260,20 @@ std::string method::full_name(bool /*relative*/) const
 
 std::string method::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     const std::string style = is_static() ? "__" : "";
 
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}{}(){}{}", style, method_name(),
             is_const() ? " const" : "", style);
+    }
+    if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters(), ",")),
+                kAbbreviatedMethodArgumentsLength),
+            is_const() ? " const" : "");
     }
 
     return fmt::format("{}{}({}){}{}", style, method_name(),
@@ -322,6 +338,8 @@ std::string function_template::full_name_no_ns() const
 
 std::string function_template::message_name(message_render_mode mode) const
 {
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
     std::ostringstream s;
     render_template_params(s, using_namespace(), true);
     std::string template_params = s.str();
@@ -330,9 +348,16 @@ std::string function_template::message_name(message_render_mode mode) const
         return fmt::format(
             "{}{}(){}", name(), template_params, is_const() ? " const" : "");
     }
+    if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters(), ",")),
+                kAbbreviatedMethodArgumentsLength),
+            is_const() ? " const" : "");
+    }
 
     return fmt::format("{}{}({}){}", name(), template_params,
         fmt::join(parameters(), ","), is_const() ? " const" : "");
 }
 
-}
+} // namespace clanguml::sequence_diagram::model

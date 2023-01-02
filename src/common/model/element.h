@@ -1,7 +1,7 @@
 /**
  * src/common/model/element.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ namespace clanguml::common::model {
 
 class element : public diagram_element {
 public:
-    element(const namespace_ &using_namespace);
+    element(namespace_ using_namespace);
 
-    virtual ~element() = default;
+    ~element() override = default;
 
     std::string name_and_ns() const
     {
@@ -76,4 +76,4 @@ private:
     namespace_ ns_;
     namespace_ using_namespace_;
 };
-}
+} // namespace clanguml::common::model

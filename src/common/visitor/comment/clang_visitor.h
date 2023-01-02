@@ -1,7 +1,7 @@
 /**
  * src/common/visitor/comment/clang_visitor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,4 +51,4 @@ private:
     void visit_paragraph(const clang::comments::ParagraphComment *paragraph,
         const clang::comments::CommandTraits &traits, std::string &text);
 };
-}
+} // namespace clanguml::common::visitor::comment

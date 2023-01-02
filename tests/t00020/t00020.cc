@@ -66,5 +66,5 @@ public:
         return std::make_unique<ProductB2>();
     }
 };
-}
-}
+} // namespace t00020
+} // namespace clanguml

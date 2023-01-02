@@ -1,7 +1,7 @@
 /**
  * src/common/model/relationship.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,18 @@
 
 #include "relationship.h"
 
+#include <utility>
+
 namespace clanguml::common::model {
 
 relationship::relationship(relationship_t type, int64_t destination,
-    access_t access, const std::string &label,
-    const std::string &multiplicity_source,
-    const std::string &multiplicity_destination)
+    access_t access, std::string label, std::string multiplicity_source,
+    std::string multiplicity_destination)
     : type_{type}
     , destination_{destination}
-    , multiplicity_source_{multiplicity_source}
-    , multiplicity_destination_{multiplicity_destination}
-    , label_{label}
+    , multiplicity_source_{std::move(multiplicity_source)}
+    , multiplicity_destination_{std::move(multiplicity_destination)}
+    , label_{std::move(label)}
     , access_{access}
 {
 }
@@ -82,4 +83,4 @@ bool operator==(const relationship &l, const relationship &r)
     return l.type() == r.type() && l.destination() == r.destination() &&
         l.label() == r.label();
 }
-}
+} // namespace clanguml::common::model

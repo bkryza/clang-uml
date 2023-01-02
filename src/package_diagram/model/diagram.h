@@ -1,7 +1,7 @@
 /**
  * src/package_diagram/model/diagram.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<clanguml::common::model::diagram_element> get(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     void add_package(std::unique_ptr<common::model::package> &&p);
 
@@ -54,17 +54,17 @@ public:
         const std::string &name) const;
 
     common::optional_ref<common::model::package> get_package(
-        const clanguml::common::model::diagram_element::id_t id) const;
+        clanguml::common::model::diagram_element::id_t id) const;
 
     std::string to_alias(
-        const clanguml::common::model::diagram_element::id_t) const;
+        clanguml::common::model::diagram_element::id_t /*id*/) const;
 
     inja::json context() const override;
 
 private:
     common::reference_vector<clanguml::common::model::package> packages_;
 };
-}
+} // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {
 template <>

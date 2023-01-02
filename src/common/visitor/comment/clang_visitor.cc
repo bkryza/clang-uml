@@ -1,7 +1,7 @@
 /**
  * src/common/visitor/comment/clang_visitor.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,28 +87,34 @@ void clang_visitor::visit(
                 clang::dyn_cast<TParamCommandComment>(block), traits, cmt);
         }
         else if (block_kind == Comment::BlockCommandCommentKind) {
-            auto *command = clang::dyn_cast<BlockCommandComment>(block);
-            auto command_info = traits.getCommandInfo(command->getCommandID());
+            if (const auto *command =
+                    clang::dyn_cast<BlockCommandComment>(block);
+                command != nullptr) {
+                const auto *command_info =
+                    traits.getCommandInfo(command->getCommandID());
 
-            if (command_info->IsBlockCommand && command_info->NumArgs == 0) {
-                // Visit block command with a single text argument, e.g.:
-                //    \brief text
-                //    \todo text
-                //    ...
-                visit_block_command(command, traits, cmt);
-            }
-            else if (command_info->IsParamCommand) {
-                // Visit function param block:
-                //   \param arg text
-                visit_param_command(
-                    clang::dyn_cast<ParamCommandComment>(command), traits, cmt);
-            }
-            else if (command_info->IsTParamCommand) {
-                // Visit template param block:
-                //   \tparam typename text
-                visit_tparam_command(
-                    clang::dyn_cast<TParamCommandComment>(command), traits,
-                    cmt);
+                if (command_info->IsBlockCommand &&
+                    command_info->NumArgs == 0U) {
+                    // Visit block command with a single text argument, e.g.:
+                    //    \brief text
+                    //    \todo text
+                    //    ...
+                    visit_block_command(command, traits, cmt);
+                }
+                else if (command_info->IsParamCommand) {
+                    // Visit function param block:
+                    //   \param arg text
+                    visit_param_command(
+                        clang::dyn_cast<ParamCommandComment>(command), traits,
+                        cmt);
+                }
+                else if (command_info->IsTParamCommand) {
+                    // Visit template param block:
+                    //   \tparam typename text
+                    visit_tparam_command(
+                        clang::dyn_cast<TParamCommandComment>(command), traits,
+                        cmt);
+                }
             }
         }
     }
@@ -125,7 +131,7 @@ void clang_visitor::visit_block_command(
 
     std::string command_text;
 
-    for (auto paragraph_it = command->child_begin();
+    for (const auto *paragraph_it = command->child_begin();
          paragraph_it != command->child_end(); ++paragraph_it) {
 
         if ((*paragraph_it)->getCommentKind() ==
@@ -154,9 +160,13 @@ void clang_visitor::visit_param_command(
 
     std::string description;
 
+    if (command == nullptr)
+        return;
+
     const auto name = command->getParamNameAsWritten().str();
 
-    for (auto it = command->child_begin(); it != command->child_end(); ++it) {
+    for (const auto *it = command->child_begin(); it != command->child_end();
+         ++it) {
 
         if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
             visit_paragraph(
@@ -185,9 +195,13 @@ void clang_visitor::visit_tparam_command(
 
     std::string description;
 
+    if (command == nullptr)
+        return;
+
     const auto name = command->getParamNameAsWritten().str();
 
-    for (auto it = command->child_begin(); it != command->child_end(); ++it) {
+    for (const auto *it = command->child_begin(); it != command->child_end();
+         ++it) {
         if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
             visit_paragraph(
                 clang::dyn_cast<ParagraphComment>(*it), traits, description);
@@ -207,20 +221,24 @@ void clang_visitor::visit_tparam_command(
 
 void clang_visitor::visit_paragraph(
     const clang::comments::ParagraphComment *paragraph,
-    const clang::comments::CommandTraits &traits, std::string &text)
+    const clang::comments::CommandTraits & /*traits*/, std::string &text)
 {
     using clang::comments::Comment;
     using clang::comments::TextComment;
 
-    for (auto text_it = paragraph->child_begin();
+    if (paragraph == nullptr)
+        return;
+
+    for (const auto *text_it = paragraph->child_begin();
          text_it != paragraph->child_end(); ++text_it) {
 
-        if ((*text_it)->getCommentKind() == Comment::TextCommentKind) {
+        if ((*text_it)->getCommentKind() == Comment::TextCommentKind &&
+            clang::dyn_cast<TextComment>(*text_it) != nullptr) {
             // Merge paragraph lines into a single string
-            text += clang::dyn_cast<TextComment>((*text_it))->getText();
+            text += clang::dyn_cast<TextComment>(*text_it)->getText();
             text += "\n";
         }
     }
 }
 
-}
+} // namespace clanguml::common::visitor::comment

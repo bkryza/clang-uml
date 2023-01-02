@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,12 @@ using found_relationships_t =
     std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
         common::model::relationship_t>>;
 
+/**
+ * @brief Class diagram translation unit visitor
+ *
+ * This class implements the @link clang::RecursiveASTVisitor interface
+ * for selected visitors relevant to generating class diagrams.
+ */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
       public common::visitor::translation_unit_visitor {
@@ -60,10 +66,28 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
+    /**
+     * @brief Get diagram model reference
+     *
+     * @return Reference to diagram model created by the visitor
+     */
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
+    /**
+     * @brief Get diagram config instance
+     *
+     * @return Reference to config instance
+     */
     const clanguml::config::class_diagram &config() const { return config_; }
 
+    /**
+     * @brief Finalize diagram model
+     *
+     * This method is called after the entire AST has been visited by this
+     * visitor. It is used to perform necessary post processing on the diagram
+     * (e.g. resolve translation unit local element ID's into global ID's based
+     * on elements full names).
+     */
     void finalize();
 
 private:
@@ -124,7 +148,7 @@ private:
         const clang::FriendDecl &f, clanguml::class_diagram::model::class_ &c);
 
     bool find_relationships(const clang::QualType &type,
-        found_relationships_t &,
+        found_relationships_t & /*relationships*/,
         clanguml::common::model::relationship_t relationship_hint);
 
     void add_relationships(clanguml::class_diagram::model::class_ &c,
@@ -203,7 +227,7 @@ private:
     void resolve_local_to_global_ids();
 
     bool simplify_system_template(
-        model::template_parameter &ct, const std::string &full_name);
+        model::template_parameter &ct, const std::string &full_name) const;
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id
@@ -231,4 +255,4 @@ private:
             common::model::access_t>>
         anonymous_struct_relationships_;
 };
-}
+} // namespace clanguml::class_diagram::visitor

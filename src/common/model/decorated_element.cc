@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/decorated_element.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,26 +22,25 @@ namespace clanguml::common::model {
 
 bool decorated_element::skip() const
 {
-    for (auto d : decorators_)
-        if (std::dynamic_pointer_cast<decorators::skip>(d))
-            return true;
-
-    return false;
+    return std::any_of(
+        decorators_.begin(), decorators_.end(), [](const auto &d) {
+            return std::dynamic_pointer_cast<decorators::skip>(d) != nullptr;
+        });
 }
 
 bool decorated_element::skip_relationship() const
 {
-    for (auto d : decorators_)
-        if (std::dynamic_pointer_cast<decorators::skip_relationship>(d))
-            return true;
-
-    return false;
+    return std::any_of(
+        decorators_.begin(), decorators_.end(), [](const auto &d) {
+            return std::dynamic_pointer_cast<decorators::skip_relationship>(
+                       d) != nullptr;
+        });
 }
 
 std::pair<relationship_t, std::string>
 decorated_element::get_relationship() const
 {
-    for (auto &d : decorators_)
+    for (const auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::association>(d))
             return {relationship_t::kAssociation,
                 std::dynamic_pointer_cast<decorators::relationship>(d)
@@ -60,7 +59,7 @@ decorated_element::get_relationship() const
 
 std::string decorated_element::style_spec() const
 {
-    for (auto d : decorators_)
+    for (const auto &d : decorators_)
         if (std::dynamic_pointer_cast<decorators::style>(d))
             return std::dynamic_pointer_cast<decorators::style>(d)->spec;
 
@@ -76,14 +75,14 @@ decorated_element::decorators() const
 void decorated_element::add_decorators(
     const std::vector<std::shared_ptr<decorators::decorator>> &decorators)
 {
-    for (auto d : decorators) {
+    for (const auto &d : decorators) {
         decorators_.push_back(d);
     }
 }
 
 void decorated_element::append(const decorated_element &de)
 {
-    for (auto d : de.decorators()) {
+    for (const auto &d : de.decorators()) {
         decorators_.push_back(d);
     }
 }
@@ -91,4 +90,4 @@ void decorated_element::append(const decorated_element &de)
 std::optional<comment_t> decorated_element::comment() const { return comment_; }
 
 void decorated_element::set_comment(const comment_t &c) { comment_ = c; }
-}
+} // namespace clanguml::common::model

@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/model/diagram.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const common::model::diagram_element::id_t id) const override;
+        common::model::diagram_element::id_t id) const override;
 
     std::string to_alias(const std::string &full_name) const;
 
@@ -63,7 +63,7 @@ public:
     }
 
     template <typename T>
-    const common::optional_ref<T> get_participant(
+    common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id) const
     {
         if (participants_.find(id) == participants_.end()) {
@@ -80,44 +80,14 @@ public:
 
     activity &get_activity(common::model::diagram_element::id_t id);
 
-    void add_if_stmt(common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-    void end_if_stmt(common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
+    void add_message(model::message &&message);
 
-    void add_try_stmt(common::model::diagram_element::id_t current_caller_id);
-    void end_try_stmt(common::model::diagram_element::id_t current_caller_id);
+    void add_block_message(model::message &&message);
 
-    void add_loop_stmt(common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
-    void end_loop_stmt(common::model::diagram_element::id_t current_caller_id,
-        common::model::message_t type);
+    void end_block_message(
+        model::message &&message, common::model::message_t start_type);
 
-    void add_while_stmt(common::model::diagram_element::id_t current_caller_id);
-    void end_while_stmt(common::model::diagram_element::id_t current_caller_id);
-
-    void add_do_stmt(common::model::diagram_element::id_t current_caller_id);
-    void end_do_stmt(common::model::diagram_element::id_t current_caller_id);
-
-    void add_for_stmt(common::model::diagram_element::id_t current_caller_id);
-    void end_for_stmt(common::model::diagram_element::id_t current_caller_id);
-
-    void add_switch_stmt(
-        common::model::diagram_element::id_t current_caller_id);
-    void end_switch_stmt(
-        common::model::diagram_element::id_t current_caller_id);
-    void add_case_stmt(common::model::diagram_element::id_t current_caller_id);
-    void add_case_stmt(common::model::diagram_element::id_t current_caller_id,
-        const std::string &case_label);
-    void add_default_stmt(
-        common::model::diagram_element::id_t current_caller_id);
-
-    void add_conditional_stmt(
-        common::model::diagram_element::id_t current_caller_id);
-    void add_conditional_elsestmt(
-        common::model::diagram_element::id_t current_caller_id);
-    void end_conditional_stmt(
-        common::model::diagram_element::id_t current_caller_id);
+    void add_case_stmt_message(model::message &&m);
 
     bool started() const;
     void started(bool s);
@@ -139,11 +109,11 @@ public:
     const std::set<common::model::diagram_element::id_t> &
     active_participants() const;
 
-    void add_catch_stmt(
-        const common::model::diagram_element::id_t current_caller_id,
-        std::string caught_type);
-
 private:
+    void fold_or_end_block_statement(message &&m,
+        common::model::message_t statement_begin,
+        std::vector<message> &current_messages) const;
+
     bool started_{false};
 
     std::map<common::model::diagram_element::id_t, activity> sequences_;
@@ -154,7 +124,7 @@ private:
     std::set<common::model::diagram_element::id_t> active_participants_;
 };
 
-}
+} // namespace clanguml::sequence_diagram::model
 
 namespace clanguml::common::model {
 template <>

@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/model/participant.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ struct lambda : public class_ {
 };
 
 struct function : public participant {
-    enum class message_render_mode { full, no_arguments };
+    enum class message_render_mode { full, abbreviated, no_arguments };
 
     function(const common::model::namespace_ &using_namespace);
 
@@ -185,7 +185,7 @@ struct method : public function {
 
     std::string type_name() const override { return "method"; }
 
-    const std::string method_name() const;
+    std::string method_name() const;
 
     std::string alias() const override;
 
@@ -206,7 +206,7 @@ struct method : public function {
     std::string to_string() const override;
 
 private:
-    diagram_element::id_t class_id_;
+    diagram_element::id_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
 };
@@ -227,4 +227,4 @@ struct function_template : public function, public template_trait {
 
     std::string message_name(message_render_mode mode) const override;
 };
-}
+} // namespace clanguml::sequence_diagram::model

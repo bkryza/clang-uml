@@ -1,7 +1,7 @@
 /**
  * src/package_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@
 
 namespace clanguml::package_diagram::visitor {
 
-using clanguml::class_diagram::model::type_alias;
 using clanguml::common::model::access_t;
 using clanguml::common::model::namespace_;
 using clanguml::common::model::package;
@@ -198,15 +197,19 @@ void translation_unit_visitor::process_class_children(
         }
     }
 
-    // Iterate over class template methods
-    for (auto const *decl_iterator :
-        clang::dyn_cast_or_null<clang::DeclContext>(&cls)->decls()) {
-        auto const *method_template =
-            llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl_iterator);
-        if (method_template == nullptr)
-            continue;
+    if (const auto *decl_context =
+            clang::dyn_cast_or_null<clang::DeclContext>(&cls);
+        decl_context != nullptr) {
+        // Iterate over class template methods
+        for (auto const *decl_iterator : decl_context->decls()) {
+            auto const *method_template =
+                llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(
+                    decl_iterator);
+            if (method_template == nullptr)
+                continue;
 
-        process_template_method(*method_template, relationships);
+            process_template_method(*method_template, relationships);
+        }
     }
 
     // Iterate over regular class fields
@@ -221,7 +224,7 @@ void translation_unit_visitor::process_class_children(
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
                 dynamic_cast<const clang::VarDecl *>(decl)};
-            if (variable_declaration &&
+            if ((variable_declaration != nullptr) &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, relationships);
             }
@@ -238,7 +241,7 @@ void translation_unit_visitor::process_class_children(
 void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl &cls, found_relationships_t &relationships)
 {
-    for (auto &base : cls.bases()) {
+    for (const auto &base : cls.bases()) {
         find_relationships(base.getType(), relationships);
     }
 }
@@ -333,18 +336,14 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationships, relationship_t::kAggregation);
     }
     else if (type->isEnumeralType()) {
-        relationships.emplace_back(
-            common::to_id(*type->getAs<clang::EnumType>()), relationship_hint);
-    }
-    else if (auto *template_specialization_type =
-                 type->getAs<clang::TemplateSpecializationType>()) {
-        if (template_specialization_type != nullptr) {
-            if (template_specialization_type->isTypeAlias())
-                template_specialization_type =
-                    template_specialization_type->getAliasedType()
-                        ->getAs<clang::TemplateSpecializationType>();
+        if (const auto *enum_type = type->getAs<clang::EnumType>();
+            enum_type != nullptr) {
+            relationships.emplace_back(
+                common::to_id(*enum_type), relationship_hint);
         }
-
+    }
+    else if (const auto *template_specialization_type =
+                 type->getAs<clang::TemplateSpecializationType>()) {
         if (template_specialization_type != nullptr) {
             for (const auto &template_argument :
                 *template_specialization_type) {
@@ -373,12 +372,12 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                     clang::TemplateArgument::ArgKind::TemplateExpansion) {
                     // pass
                 }
-                else if (template_argument.getAsType()
-                             ->getAs<clang::FunctionProtoType>()) {
+                else if (const auto *function_type =
+                             template_argument.getAsType()
+                                 ->getAs<clang::FunctionProtoType>();
+                         function_type != nullptr) {
                     for (const auto &param_type :
-                        template_argument.getAsType()
-                            ->getAs<clang::FunctionProtoType>()
-                            ->param_types()) {
+                        function_type->param_types()) {
                         result = find_relationships(param_type, relationships,
                             relationship_t::kDependency);
                     }
@@ -412,4 +411,4 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     return result;
 }
 
-}
+} // namespace clanguml::package_diagram::visitor

@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class_parent.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ public:
     common::model::access_t access() const;
 
 private:
-    clanguml::common::id_t id_;
+    clanguml::common::id_t id_{};
     std::string name_;
     bool is_virtual_{false};
-    common::model::access_t access_;
+    common::model::access_t access_{common::model::access_t::kPublic};
 };
-}
+} // namespace clanguml::class_diagram::model

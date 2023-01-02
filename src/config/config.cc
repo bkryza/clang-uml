@@ -1,7 +1,7 @@
 /**
  * src/config/config.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@
 
 #include <filesystem>
 
-namespace clanguml {
-namespace config {
+namespace clanguml::config {
 
 config load(const std::string &config_file)
 {
@@ -103,6 +102,7 @@ void inheritable_diagram_options::inherit(
     comment_parser.override(parent.comment_parser);
     combine_free_functions_into_file_participants.override(
         combine_free_functions_into_file_participants);
+    debug_mode.override(parent.debug_mode);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
@@ -136,31 +136,31 @@ std::vector<std::string> diagram::get_translation_units(
 
 void diagram::initialize_type_aliases()
 {
-    if (!type_aliases().count("std::basic_string<char>")) {
+    if (type_aliases().count("std::basic_string<char>") == 0U) {
         type_aliases().insert({"std::basic_string<char>", "std::string"});
     }
-    if (!type_aliases().count("std::basic_string<char,std::char_traits<"
-                              "char>,std::allocator<char>>")) {
+    if (type_aliases().count("std::basic_string<char,std::char_traits<"
+                             "char>,std::allocator<char>>") == 0U) {
         type_aliases().insert({"std::basic_string<char,std::char_traits<"
                                "char>,std::allocator<char>>",
             "std::string"});
     }
-    if (!type_aliases().count("std::basic_string<wchar_t>")) {
+    if (type_aliases().count("std::basic_string<wchar_t>") == 0U) {
         type_aliases().insert({"std::basic_string<wchar_t>", "std::wstring"});
     }
-    if (!type_aliases().count("std::basic_string<char16_t>")) {
+    if (type_aliases().count("std::basic_string<char16_t>") == 0U) {
         type_aliases().insert(
             {"std::basic_string<char16_t>", "std::u16string"});
     }
-    if (!type_aliases().count("std::basic_string<char32_t>")) {
+    if (type_aliases().count("std::basic_string<char32_t>") == 0U) {
         type_aliases().insert(
             {"std::basic_string<char32_t>", "std::u32string"});
     }
-    if (!type_aliases().count("std::integral_constant<bool,true>")) {
+    if (type_aliases().count("std::integral_constant<bool,true>") == 0U) {
         type_aliases().insert(
             {"std::integral_constant<bool,true>", "std::true_type"});
     }
-    if (!type_aliases().count("std::integral_constant<bool,false>")) {
+    if (type_aliases().count("std::integral_constant<bool,false>") == 0U) {
         type_aliases().insert(
             {"std::integral_constant<bool,false>", "std::false_type"});
     }
@@ -190,24 +190,24 @@ void class_diagram::initialize_relationship_hints()
 {
     using common::model::relationship_t;
 
-    if (!relationship_hints().count("std::vector")) {
+    if (relationship_hints().count("std::vector") == 0U) {
         relationship_hints().insert({"std::vector", {}});
     }
-    if (!relationship_hints().count("std::unique_ptr")) {
+    if (relationship_hints().count("std::unique_ptr") == 0U) {
         relationship_hints().insert({"std::unique_ptr", {}});
     }
-    if (!relationship_hints().count("std::shared_ptr")) {
+    if (relationship_hints().count("std::shared_ptr") == 0U) {
         relationship_hints().insert(
             {"std::shared_ptr", {relationship_t::kAssociation}});
     }
-    if (!relationship_hints().count("std::weak_ptr")) {
+    if (relationship_hints().count("std::weak_ptr") == 0U) {
         relationship_hints().insert(
             {"std::weak_ptr", {relationship_t::kAssociation}});
     }
-    if (!relationship_hints().count("std::tuple")) {
+    if (relationship_hints().count("std::tuple") == 0U) {
         relationship_hints().insert({"std::tuple", {}});
     }
-    if (!relationship_hints().count("std::map")) {
+    if (relationship_hints().count("std::map") == 0U) {
         relationship_hint_t hint{relationship_t::kNone};
         hint.argument_hints.insert({1, relationship_t::kAggregation});
         relationship_hints().insert({"std::tuple", std::move(hint)});
@@ -218,8 +218,7 @@ template <> void append_value<plantuml>(plantuml &l, const plantuml &r)
 {
     l.append(r);
 }
-}
-}
+} // namespace clanguml::config
 
 namespace YAML {
 using clanguml::common::model::access_t;
@@ -310,13 +309,13 @@ std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
     if (diagram_type == "class") {
         return std::make_shared<class_diagram>(d.as<class_diagram>());
     }
-    else if (diagram_type == "sequence") {
+    if (diagram_type == "sequence") {
         return std::make_shared<sequence_diagram>(d.as<sequence_diagram>());
     }
-    else if (diagram_type == "package") {
+    if (diagram_type == "package") {
         return std::make_shared<package_diagram>(d.as<package_diagram>());
     }
-    else if (diagram_type == "include") {
+    if (diagram_type == "include") {
         return std::make_shared<include_diagram>(d.as<include_diagram>());
     }
 
@@ -553,6 +552,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.generate_links);
     get_option(node, rhs.type_aliases);
     get_option(node, rhs.comment_parser);
+    get_option(node, rhs.debug_mode);
 
     return true;
 }
@@ -595,6 +595,11 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.participants_order);
+        get_option(node, rhs.generate_method_arguments);
+
+        // Ensure relative_to has a value
+        if (!rhs.relative_to.has_value)
+            rhs.relative_to.set(std::filesystem::current_path());
 
         rhs.initialize_type_aliases();
 
@@ -629,6 +634,9 @@ template <> struct convert<include_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.generate_system_headers);
+
+        if (!rhs.relative_to)
+            rhs.relative_to.set(std::filesystem::current_path());
 
         // Convert the path in relative_to to an absolute path, with respect
         // to the directory where the `.clang-uml` configuration file is located
@@ -728,6 +736,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_links);
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
+        get_option(node, rhs.debug_mode);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);
 
@@ -767,4 +776,4 @@ template <> struct convert<config> {
         return true;
     }
 };
-}
+} // namespace YAML

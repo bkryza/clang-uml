@@ -18,8 +18,8 @@ struct B {
 };
 
 }
-}
-}
+} // namespace ns11
+} // namespace ns1
 
 namespace ns2 {
 namespace ns22 {

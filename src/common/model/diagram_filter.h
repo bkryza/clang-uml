@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram_filter.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@
 #include "tvl.h"
 
 #include <filesystem>
+#include <utility>
 
 namespace clanguml::common::model {
 
@@ -87,7 +88,7 @@ struct anyof_filter : public filter_visitor {
     anyof_filter(
         filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
 
-    virtual ~anyof_filter() = default;
+    ~anyof_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
@@ -102,7 +103,7 @@ private:
 struct namespace_filter : public filter_visitor {
     namespace_filter(filter_t type, std::vector<namespace_> namespaces);
 
-    virtual ~namespace_filter() = default;
+    ~namespace_filter() override = default;
 
     tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
@@ -115,7 +116,7 @@ private:
 struct element_filter : public filter_visitor {
     element_filter(filter_t type, std::vector<std::string> elements);
 
-    virtual ~element_filter() = default;
+    ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -126,7 +127,7 @@ private:
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<std::string> roots);
 
-    virtual ~subclass_filter() = default;
+    ~subclass_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -140,13 +141,13 @@ struct edge_traversal_filter : public filter_visitor {
     edge_traversal_filter(filter_t type, relationship_t relationship,
         std::vector<std::string> roots, bool forward = false)
         : filter_visitor{type}
-        , roots_{roots}
+        , roots_{std::move(roots)}
         , relationship_{relationship}
         , forward_{forward}
     {
     }
 
-    virtual ~edge_traversal_filter() = default;
+    ~edge_traversal_filter() override = default;
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
@@ -280,7 +281,7 @@ struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);
 
-    virtual ~relationship_filter() = default;
+    ~relationship_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const relationship_t &r) const override;
@@ -292,7 +293,7 @@ private:
 struct access_filter : public filter_visitor {
     access_filter(filter_t type, std::vector<access_t> access);
 
-    virtual ~access_filter() = default;
+    ~access_filter() override = default;
 
     tvl::value_t match(const diagram &d, const access_t &a) const override;
 
@@ -303,7 +304,7 @@ private:
 struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<std::string> context);
 
-    virtual ~context_filter() = default;
+    ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
@@ -313,9 +314,9 @@ private:
 
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
-        std::vector<std::filesystem::path> p);
+        const std::vector<std::filesystem::path> &p);
 
-    virtual ~paths_filter() = default;
+    ~paths_filter() override = default;
 
     tvl::value_t match(
         const diagram &d, const common::model::source_file &r) const override;
@@ -333,7 +334,7 @@ public:
 
     void add_exclusive_filter(std::unique_ptr<filter_visitor> fv);
 
-    bool should_include(namespace_ ns, const std::string &name) const;
+    bool should_include(const namespace_ &ns, const std::string &name) const;
 
     template <typename T> bool should_include(const T &e) const
     {
@@ -346,10 +347,7 @@ public:
         auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
             [this, &e](const auto &in) { return in->match(diagram_, e); });
 
-        if (tvl::is_undefined(inc) || tvl::is_true(inc))
-            return true;
-
-        return false;
+        return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }
 
 private:
@@ -363,4 +361,4 @@ private:
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const;
-}
+} // namespace clanguml::common::model

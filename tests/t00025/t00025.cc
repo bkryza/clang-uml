@@ -33,5 +33,5 @@ public:
     Proxy<Target1> proxy1;
     Proxy<Target2> proxy2;
 };
-}
-}
+} // namespace t00025
+} // namespace clanguml

@@ -39,5 +39,5 @@ public:
 
     void foo(::AA &aa) { (void)aa; }
 };
-}
-}
+} // namespace ns2
+} // namespace ns1

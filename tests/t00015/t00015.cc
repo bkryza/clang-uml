@@ -16,7 +16,7 @@ namespace {
 class Anon final : public A {
 };
 }
-}
+} // namespace ns1
 
 namespace ns3 {
 
@@ -28,5 +28,5 @@ class Anon : public t00015::ns1::A {
 class B : public ns1::ns2::Anon {
 };
 }
-}
-}
+} // namespace t00015
+} // namespace clanguml

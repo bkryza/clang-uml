@@ -1,7 +1,7 @@
 /**
  * src/include_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,20 +47,30 @@ public:
             clanguml::include_diagram::model::diagram &diagram,
             const clanguml::config::include_diagram &config);
 
+#if LLVM_VERSION_MAJOR > 14
+        void InclusionDirective(clang::SourceLocation hash_loc,
+            const clang::Token &include_tok, clang::StringRef file_name,
+            bool is_angled, clang::CharSourceRange filename_range,
+            clang::Optional<clang::FileEntryRef> file,
+            clang::StringRef search_path, clang::StringRef relative_path,
+            const clang::Module *imported,
+            clang::SrcMgr::CharacteristicKind file_type) override;
+#else
         void InclusionDirective(clang::SourceLocation hash_loc,
             const clang::Token &include_tok, clang::StringRef file_name,
             bool is_angled, clang::CharSourceRange filename_range,
             const clang::FileEntry *file, clang::StringRef search_path,
             clang::StringRef relative_path, const clang::Module *imported,
             clang::SrcMgr::CharacteristicKind file_type) override;
+#endif
 
         std::optional<common::id_t> process_internal_header(
             const std::filesystem::path &include_path, bool is_system,
-            const common::id_t current_file_id);
+            common::id_t current_file_id);
 
         std::optional<common::id_t> process_external_system_header(
             const std::filesystem::path &include_path,
-            const common::id_t current_file_id);
+            common::id_t current_file_id);
 
         std::optional<common::id_t> process_source_file(
             const std::filesystem::path &file);
@@ -102,4 +112,4 @@ private:
     // Reference to class diagram config
     const clanguml::config::include_diagram &config_;
 };
-}
+} // namespace clanguml::include_diagram::visitor

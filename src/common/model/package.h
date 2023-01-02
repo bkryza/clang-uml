@@ -1,7 +1,7 @@
 /**
  * src/common/model/package.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public:
 private:
     bool is_deprecated_{false};
 };
-}
+} // namespace clanguml::common::model
 
 namespace std {
 template <>
@@ -69,4 +69,4 @@ struct hash<std::reference_wrapper<clanguml::common::model::package>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

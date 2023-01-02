@@ -51,5 +51,5 @@ public:
 };
 }
 
-}
-}
+} // namespace t00004
+} // namespace clanguml

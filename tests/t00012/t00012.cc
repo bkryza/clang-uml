@@ -32,5 +32,5 @@ class R {
         3>
         c1;
 };
-}
-}
+} // namespace t00012
+} // namespace clanguml

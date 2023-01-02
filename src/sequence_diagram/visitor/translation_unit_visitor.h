@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,16 +57,16 @@ public:
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
-    bool VisitCXXMethodDecl(clang::CXXMethodDecl *method);
+    bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
-    bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+    bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
 
-    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *cls);
+    bool VisitClassTemplateDecl(clang::ClassTemplateDecl *declaration);
 
     bool VisitClassTemplateSpecializationDecl(
-        clang::ClassTemplateSpecializationDecl *cls);
+        clang::ClassTemplateSpecializationDecl *declaration);
 
-    bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+    bool VisitFunctionDecl(clang::FunctionDecl *declaration);
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
@@ -120,7 +120,7 @@ public:
     }
 
     template <typename T = model::participant>
-    const common::optional_ref<T> get_participant(const clang::Decl *decl) const
+    common::optional_ref<T> get_participant(const clang::Decl *decl) const
     {
         assert(decl != nullptr);
 
@@ -143,8 +143,8 @@ public:
     }
 
     template <typename T = model::participant>
-    const common::optional_ref<T> get_participant(
-        const common::model::diagram_element::id_t id) const
+    common::optional_ref<T> get_participant(
+        common::model::diagram_element::id_t id) const
     {
         if (diagram().participants().find(id) == diagram().participants().end())
             return {};
@@ -163,8 +163,19 @@ public:
         int64_t local_id) const;
 
 private:
+    bool should_include(const clang::TagDecl *decl) const;
+    bool should_include(const clang::LambdaExpr *expr) const;
+    bool should_include(const clang::CallExpr *expr) const;
+    bool should_include(const clang::CXXMethodDecl *decl) const;
+    bool should_include(const clang::FunctionDecl *decl) const;
+    bool should_include(const clang::FunctionTemplateDecl *decl) const;
+    bool should_include(const clang::ClassTemplateDecl *decl) const;
+
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
-    create_class_declaration(clang::CXXRecordDecl *cls);
+    create_class_model(clang::CXXRecordDecl *cls);
+
+    std::unique_ptr<clanguml::sequence_diagram::model::method>
+    create_method_model(clang::CXXMethodDecl *cls);
 
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
@@ -172,6 +183,12 @@ private:
 
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
+
+    std::unique_ptr<model::function> build_function_model(
+        const clang::FunctionDecl &declaration);
+
+    std::unique_ptr<model::function_template> build_function_template(
+        const clang::FunctionTemplateDecl &declaration);
 
     void build_template_instantiation_process_template_arguments(
         model::template_trait *parent,
@@ -226,7 +243,7 @@ private:
         model::class_ *parent);
 
     bool simplify_system_template(class_diagram::model::template_parameter &ct,
-        const std::string &full_name);
+        const std::string &full_name) const;
 
     std::string simplify_system_template(const std::string &full_name) const;
 
@@ -250,7 +267,7 @@ private:
         model::message &m, const clang::CallExpr *expr);
 
     bool process_unresolved_lookup_call_expression(
-        model::message &m, const clang::CallExpr *expr);
+        model::message &m, const clang::CallExpr *expr) const;
 
     void push_message(clang::CallExpr *expr, model::message &&m);
 
@@ -283,4 +300,4 @@ private:
             common::model::access_t>>
         anonymous_struct_relationships_;
 };
-}
+} // namespace clanguml::sequence_diagram::visitor

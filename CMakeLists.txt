@@ -12,6 +12,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_FIND_DEBUG_MODE OFF)
+if(APPLE)
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+endif(APPLE)
 
 #
 # clang-uml custom defines
@@ -25,7 +28,7 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 #
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries or statically" ON)
 set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
-set(GIT_VERSION "0.1.0" CACHE STRING "clang-uml version")
+set(GIT_VERSION "0.3.0" CACHE STRING "clang-uml version")
 
 #
 # Setup LLVM
@@ -180,5 +183,8 @@ install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 #
 # Enable testing via CTest
 #
-enable_testing()
-add_subdirectory(tests)
+option(BUILD_TESTS "" ON)
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif(BUILD_TESTS)

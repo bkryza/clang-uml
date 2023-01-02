@@ -1,7 +1,7 @@
 /**
  * src/util/util.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,41 +21,40 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
-#include <string.h>
 #include <string>
 #include <type_traits>
 #include <vector>
 
-namespace clanguml {
-namespace util {
+namespace clanguml::util {
 
 std::string ltrim(const std::string &s);
 std::string rtrim(const std::string &s);
 std::string trim(const std::string &s);
 
-#define __FILENAME__                                                           \
+#define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::get("console")->error(std::string("[{}:{}] ") + fmt__,             \
-        __FILENAME__, __LINE__, ##__VA_ARGS__)
+    spdlog::get("console")->error(                                             \
+        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 #define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::get("console")->warn(std::string("[{}:{}] ") + fmt__,              \
-        __FILENAME__, __LINE__, ##__VA_ARGS__)
+    spdlog::get("console")->warn(                                              \
+        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 #define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::get("console")->info(std::string("[{}:{}] ") + fmt__,              \
-        __FILENAME__, __LINE__, ##__VA_ARGS__)
+    spdlog::get("console")->info(                                              \
+        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 #define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::get("console")->debug(std::string("[{}:{}] ") + fmt__,             \
-        __FILENAME__, __LINE__, ##__VA_ARGS__)
+    spdlog::get("console")->debug(                                             \
+        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 #define LOG_TRACE(fmt__, ...)                                                  \
-    spdlog::get("console")->trace(std::string("[{}:{}] ") + fmt__,             \
-        __FILENAME__, __LINE__, ##__VA_ARGS__)
+    spdlog::get("console")->trace(                                             \
+        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 /**
  * @brief Setup spdlog logger.
@@ -114,7 +113,7 @@ std::string unqualify(const std::string &s);
  * @param max_length Maximum length
  * @return Abbreviated string
  */
-std::string abbreviate(const std::string &s, const unsigned int max_length);
+std::string abbreviate(const std::string &s, unsigned int max_length);
 
 /**
  * @brief Find element alias in Puml note
@@ -136,8 +135,8 @@ bool find_element_alias(
  *
  * @return True if at least on replacement was made
  */
-bool replace_all(
-    std::string &input, std::string pattern, std::string replace_with);
+bool replace_all(std::string &input, const std::string &pattern,
+    const std::string &replace_with);
 
 /**
  * @brief Appends a vector to a vector.
@@ -247,5 +246,6 @@ void for_each_if(const T &collection, C &&cond, F &&func)
         });
 }
 
-} // namespace util
-} // namespace clanguml
+std::size_t hash_seed(std::size_t seed);
+
+} // namespace clanguml::util

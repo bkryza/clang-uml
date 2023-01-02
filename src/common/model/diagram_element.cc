@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram_element.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,7 @@
 
 namespace clanguml::common::model {
 
-std::atomic_uint64_t diagram_element::m_nextId = 1;
-
-diagram_element::diagram_element()
-    : id_{0}
-    , nested_{false}
-    , complete_{false}
-{
-}
+diagram_element::diagram_element() = default;
 
 diagram_element::id_t diagram_element::id() const { return id_; }
 
@@ -105,4 +98,4 @@ std::ostream &operator<<(std::ostream &out, const diagram_element &rhs)
     return out;
 }
 
-}
+} // namespace clanguml::common::model

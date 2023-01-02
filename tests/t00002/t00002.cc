@@ -82,5 +82,5 @@ private:
     /// All the A pointers
     std::vector<A *> as;
 };
-}
-}
+} // namespace t00002
+} // namespace clanguml

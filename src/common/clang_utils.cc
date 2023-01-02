@@ -1,7 +1,7 @@
 /**
  * src/common/visitor/clang_utils.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,19 +64,21 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
 {
     model::namespace_ ns;
 
-    auto *parent{declaration.getParent()};
+    const auto *parent{declaration.getParent()};
 
     // First walk up to the nearest namespace, e.g. from nested class or enum
-    while (parent && !parent->isNamespace()) {
+    while ((parent != nullptr) && !parent->isNamespace()) {
         parent = parent->getParent();
     }
 
     // Now build up the namespace
     std::deque<std::string> namespace_tokens;
-    while (parent && parent->isNamespace()) {
-        const auto *ns_decl = static_cast<const clang::NamespaceDecl *>(parent);
-        if (!ns_decl->isInline() && !ns_decl->isAnonymousNamespace())
-            namespace_tokens.push_front(ns_decl->getNameAsString());
+    while ((parent != nullptr) && parent->isNamespace()) {
+        if (const auto *ns_decl = clang::dyn_cast<clang::NamespaceDecl>(parent);
+            ns_decl != nullptr) {
+            if (!ns_decl->isInline() && !ns_decl->isAnonymousNamespace())
+                namespace_tokens.push_front(ns_decl->getNameAsString());
+        }
 
         parent = parent->getParent();
     }
@@ -96,19 +98,21 @@ std::string get_tag_name(const clang::TagDecl &declaration)
             fmt::format("(anonymous_{})", std::to_string(declaration.getID()));
     }
 
-    if (declaration.getParent() && declaration.getParent()->isRecord()) {
+    if ((declaration.getParent() != nullptr) &&
+        declaration.getParent()->isRecord()) {
         // If the record is nested within another record (e.g. class or struct)
         // we have to maintain a containment namespace in order to ensure
         // unique names within the diagram
         std::deque<std::string> record_parent_names;
         record_parent_names.push_front(base_name);
 
-        auto *cls_parent{declaration.getParent()};
+        const auto *cls_parent{declaration.getParent()};
         while (cls_parent->isRecord()) {
-            auto parent_name =
-                static_cast<const clang::RecordDecl *>(cls_parent)
-                    ->getNameAsString();
-            record_parent_names.push_front(parent_name);
+            if (const auto *record_decl =
+                    clang::dyn_cast<clang::RecordDecl>(cls_parent);
+                record_decl != nullptr) {
+                record_parent_names.push_front(record_decl->getNameAsString());
+            }
             cls_parent = cls_parent->getParent();
         }
         return fmt::format("{}", fmt::join(record_parent_names, "##"));
@@ -170,7 +174,7 @@ std::string to_string(const clang::Expr *expr)
     clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
-    expr->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+    expr->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
 
     return result;
 }
@@ -180,7 +184,7 @@ std::string to_string(const clang::Stmt *stmt)
     clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
-    stmt->printPretty(ostream, NULL, clang::PrintingPolicy(lang_options));
+    stmt->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
 
     return result;
 }
@@ -190,7 +194,8 @@ std::string to_string(const clang::FunctionTemplateDecl *decl)
     std::vector<std::string> template_parameters;
     // Handle template function
     for (const auto *parameter : *decl->getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter)) {
+        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter) !=
+            nullptr) {
             const auto *template_type_parameter =
                 clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
 
@@ -238,17 +243,13 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
     if (parent_stmt == sub_stmt)
         return true;
 
-    for (const auto *e : parent_stmt->children()) {
-        if (is_subexpr_of(e, sub_stmt))
-            return true;
-    }
-
-    return false;
+    return std::any_of(parent_stmt->child_begin(), parent_stmt->child_end(),
+        [sub_stmt](const auto *e) { return is_subexpr_of(e, sub_stmt); });
 }
 
 template <> id_t to_id(const std::string &full_name)
 {
-    return std::hash<std::string>{}(full_name) >> 3;
+    return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3U);
 }
 
 template <> id_t to_id(const clang::NamespaceDecl &declaration)
@@ -286,16 +287,17 @@ template <> id_t to_id(const std::filesystem::path &file)
 template <> id_t to_id(const clang::TemplateArgument &template_argument)
 {
     if (template_argument.getKind() == clang::TemplateArgument::Type) {
-        if (template_argument.getAsType()->getAs<clang::EnumType>())
-            return to_id(*template_argument.getAsType()
-                              ->getAs<clang::EnumType>()
-                              ->getAsTagDecl());
-        else if (template_argument.getAsType()->getAs<clang::RecordType>())
-            return to_id(*template_argument.getAsType()
-                              ->getAs<clang::RecordType>()
-                              ->getAsRecordDecl());
+        if (const auto *enum_type =
+                template_argument.getAsType()->getAs<clang::EnumType>();
+            enum_type != nullptr)
+            return to_id(*enum_type->getAsTagDecl());
+
+        if (const auto *record_type =
+                template_argument.getAsType()->getAs<clang::RecordType>();
+            record_type != nullptr)
+            return to_id(*record_type->getAsRecordDecl());
     }
 
     throw std::runtime_error("Cannot generate id for template argument");
 }
-}
+} // namespace clanguml::common

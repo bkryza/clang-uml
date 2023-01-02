@@ -46,5 +46,5 @@ class B : public Item {
 public:
     void accept(const Visitor &visitor) const override { }
 };
-}
-}
+} // namespace t00021
+} // namespace clanguml

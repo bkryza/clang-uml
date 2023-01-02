@@ -1,7 +1,7 @@
 /**
  * src/util/error.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,4 +34,4 @@ struct substring_delimiter_not_found : public virtual std::runtime_error {
     {
     }
 };
-}
+} // namespace clanguml::error

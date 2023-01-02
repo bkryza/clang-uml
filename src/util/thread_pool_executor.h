@@ -1,7 +1,7 @@
 /**
  * src/util/thread_pool_executor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,12 @@ class thread_pool_executor {
 public:
     thread_pool_executor();
 
-    thread_pool_executor(unsigned int pool_size);
+    thread_pool_executor(const thread_pool_executor &) = delete;
+    thread_pool_executor(thread_pool_executor &&) = delete;
+    thread_pool_executor &operator=(const thread_pool_executor &) = delete;
+    thread_pool_executor &operator=(thread_pool_executor &&) = delete;
+
+    explicit thread_pool_executor(unsigned int pool_size);
 
     ~thread_pool_executor();
 
@@ -48,4 +53,4 @@ private:
 
     std::vector<std::thread> threads_;
 };
-}
+} // namespace clanguml::util

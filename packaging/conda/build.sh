@@ -9,7 +9,8 @@ export CLANGUML_GIT_TOPLEVEL_DIR=${SRC_DIR}
 cmake -DCMAKE_BUILD_TYPE=Release \
 	  -DGIT_VERSION=${GIT_VERSION} \
 	  -DCODE_COVERAGE=OFF \
-	  -DWITH_TESTS=ON \
+	  -DBUILD_TESTS=OFF \
+	  -DCMAKE_CXX_FLAGS="-Wno-nonnull -Wno-stringop-overflow" \
 	  -DLLVM_CONFIG_PATH=${BUILD_PREFIX}/bin/llvm-config \
 	  -DCONDA_BUILD_PREFIX=${BUILD_PREFIX} \
 	  -DCMAKE_INSTALL_PREFIX=${PREFIX} \
@@ -17,7 +18,5 @@ cmake -DCMAKE_BUILD_TYPE=Release \
 	  ..
 
 CTEST_OUTPUT_ON_FAILURE=1 make -j${CPU_COUNT}
-
-CTEST_OUTPUT_ON_FAILURE=1 ctest -j${CPU_COUNT}
 
 make install

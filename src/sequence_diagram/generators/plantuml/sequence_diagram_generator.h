@@ -1,7 +1,7 @@
 /**
  * src/sequence_diagram/generators/plantuml/sequence_diagram_generator.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public:
         std::ostream &ostr,
         std::vector<common::model::diagram_element::id_t> &visited) const;
 
-    void generate(std::ostream &ostr) const;
+    void generate(std::ostream &ostr) const override;
 
 private:
     bool is_participant_generated(common::id_t id) const;
@@ -73,7 +73,7 @@ private:
     std::string generate_alias(const model::participant &participant) const;
 };
 
-}
-}
-}
-}
+} // namespace plantuml
+} // namespace generators
+} // namespace sequence_diagram
+} // namespace clanguml

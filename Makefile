@@ -1,6 +1,6 @@
 # Makefile
 #
-# Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+# Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ CMAKE_CXX_FLAGS ?=
 CMAKE_EXE_LINKER_FLAGS ?=
 
 GIT_VERSION	?= $(shell git describe --tags --always --abbrev=7)
+PKG_VERSION	?= $(shell git describe --tags --always --abbrev=7 | tr - .)
+GIT_COMMIT ?= $(shell git rev-parse HEAD)
+GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 .PHONY: clean
 clean:
@@ -95,8 +98,24 @@ clang-format:
 format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
 
+.PHONY: check-formatting
+check-formatting:
+	./util/check_formatting.sh
+
 .PHONY: iwyu_fixes
 iwyu_fixes: debug
 	python3 $(shell which iwyu_tool.py) -p debug > debug/iwyu.out
 	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/src/.*" < debug/iwyu.out
 	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/tests/.*" < debug/iwyu.out
+
+.PHONY: fedora_36
+fedora_36:
+	mkdir -p packaging/_BUILD/fedora/36
+	git archive --format=tar.gz --prefix=clang-uml-$(PKG_VERSION)/ v$(GIT_VERSION) >packaging/_BUILD/fedora/36/clang-uml-$(PKG_VERSION).tar.gz
+	docker run --cpus="8" -v $(PWD):$(PWD) fedora:36 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=36 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
+
+.PHONY: fedora_37
+fedora_37:
+	mkdir -p packaging/_BUILD/fedora/37
+	git archive --format=tar.gz --prefix=clang-uml-$(PKG_VERSION)/ v$(GIT_VERSION) >packaging/_BUILD/fedora/37/clang-uml-$(PKG_VERSION).tar.gz
+	docker run --cpus="8" -v $(PWD):$(PWD) fedora:37 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=37 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"

@@ -15,5 +15,5 @@ public:
     A<std::string> *astring;
     A<std::vector<std::string>> &avector;
 };
-}
-}
+} // namespace t00009
+} // namespace clanguml

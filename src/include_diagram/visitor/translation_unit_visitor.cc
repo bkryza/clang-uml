@@ -1,7 +1,7 @@
 /**
  * src/include_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,23 @@ translation_unit_visitor::include_visitor::include_visitor(
 {
 }
 
+#if LLVM_VERSION_MAJOR > 14
 void translation_unit_visitor::include_visitor::InclusionDirective(
-    clang::SourceLocation hash_loc, const clang::Token &include_tok,
-    clang::StringRef file_name, bool is_angled,
-    clang::CharSourceRange filename_range, const clang::FileEntry *file,
-    clang::StringRef search_path, clang::StringRef relative_path,
-    const clang::Module *imported, clang::SrcMgr::CharacteristicKind file_type)
+    clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
+    clang::StringRef /*file_name*/, bool is_angled,
+    clang::CharSourceRange /*filename_range*/,
+    clang::Optional<clang::FileEntryRef> file, clang::StringRef /*search_path*/,
+    clang::StringRef relative_path, const clang::Module * /*imported*/,
+    clang::SrcMgr::CharacteristicKind file_type)
+#else
+void translation_unit_visitor::include_visitor::InclusionDirective(
+    clang::SourceLocation hash_loc, const clang::Token & /*include_tok*/,
+    clang::StringRef /*file_name*/, bool is_angled,
+    clang::CharSourceRange /*filename_range*/, const clang::FileEntry *file,
+    clang::StringRef /*search_path*/, clang::StringRef relative_path,
+    const clang::Module * /*imported*/,
+    clang::SrcMgr::CharacteristicKind file_type)
+#endif
 {
     using common::model::relationship;
     using common::model::source_file;
@@ -65,7 +76,11 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 
     assert(diagram().get(current_file_id.value()));
 
+#if LLVM_VERSION_MAJOR > 14
+    auto include_path = std::filesystem::path(file->getDir().getName().str());
+#else
     auto include_path = std::filesystem::path(file->getDir()->getName().str());
+#endif
     include_path = include_path / file->getName().str();
     include_path = include_path.lexically_normal();
 
@@ -229,4 +244,4 @@ translation_unit_visitor::include_visitor::process_source_file(
     return {};
 }
 
-}
+} // namespace clanguml::include_diagram::visitor

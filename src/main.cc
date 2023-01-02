@@ -1,7 +1,7 @@
 /**
  * src/main.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,97 +24,125 @@
 #include "util/util.h"
 #include "version.h"
 
+#ifndef NDEBUG
+#include <backward-cpp/backward.hpp>
+#endif
+
 #include <clang/Basic/Version.h>
 #include <clang/Config/config.h>
 #include <cli11/CLI11.hpp>
 #include <spdlog/spdlog.h>
 
+#include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <future>
 #include <iostream>
-#include <string.h>
 #include <util/thread_pool_executor.h>
+
+#ifndef NDEBUG
+namespace backward {
+backward::SignalHandling sh; // NOLINT
+} // namespace backward
+#endif
 
 using namespace clanguml;
 using config::config;
 
-///
-/// Print the program version and basic information
-///
+/**
+ * Print the program version and basic information
+ */
 void print_version();
 
-////
-/// Print list of diagrams available in the configuration file
-///
-/// \param cfg Configuration instance loaded from configuration file
-///
+/**
+ * Print list of diagrams available in the configuration file
+ *
+ *  @param cfg Configuration instance loaded from configuration file
+ */
 void print_diagrams_list(const clanguml::config::config &cfg);
 
-///
-/// Check if diagram output directory exists, if not create it
-///
-/// \param dir Path to the output directory
-/// \return True if directory exists or has been created
-///
+/**
+ * Generate sample configuration file and exit.
+ *
+ * @return 0 on success or error code
+ */
+int create_config_file();
+
+/**
+ * Add example diagram of given type to the config file.
+ *
+ * @param type Type of the sample diagram to add
+ * @param config_file_path Path to the config file
+ * @param name Name of the new diagram
+ * @return 0 on success or error code
+ */
+int add_config_diagram(clanguml::common::model::diagram_t type,
+    const std::string &config_file_path, const std::string &name);
+
+/**
+ * Check if diagram output directory exists, if not create it
+ *
+ * @param dir Path to the output directory
+ * @return True if directory exists or has been created
+ */
 bool ensure_output_directory_exists(const std::string &dir);
 
-///
-/// Generate specific diagram identified by name
-///
-/// \param od Diagram output directory
-/// \param name Name of the diagram as specified in the config file
-/// \param diagram Diagram model instance
-/// \param db Compilation database
-/// \param translation_units List of translation units to be used for this
-///        diagram
-/// \param verbose Logging level
-///
+/**
+ * Generate specific diagram identified by name
+ *
+ * @param od Diagram output directory
+ * @param name Name of the diagram as specified in the config file
+ * @param diagram Diagram model instance
+ * @param db Compilation database
+ * @param translation_units List of translation units to be used for this
+ *        diagram
+ * @param verbose Logging level
+ */
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const clang::tooling::CompilationDatabase &db,
     const std::vector<std::string> &translation_units, bool verbose);
 
-///
-/// Find translation units for diagrams.
-///
-/// For each diagram to be generated, this function selects translation units
-/// to be used for this diagram. The files are selected as an intersection
-/// between all translation units found in the compilation database and the
-/// `glob` patterns specified for each diagram in the configuration file.
-///
-/// \param diagram_names List of diagram names to be generated
-/// \param config Configuration instance
-/// \param compilation_database_files All translation units in compilation
-/// database
-/// \param translation_units_map The output map containing translation
-///                 units for each diagram by name
-///
+/**
+ * Find translation units for diagrams.
+ *
+ *  For each diagram to be generated, this function selects translation units
+ *  to be used for this diagram. The files are selected as an intersection
+ *  between all translation units found in the compilation database and the
+ *  `glob` patterns specified for each diagram in the configuration file.
+ *
+ *  @param diagram_names List of diagram names to be generated
+ *  @param config Configuration instance
+ *  @param compilation_database_files All translation units in compilation
+ *  database
+ *  @param translation_units_map The output map containing translation
+ *                  units for each diagram by name
+ */
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
-///
-/// Generate diagrams.
-///
-/// This function generates all diagrams specified in the configuration file
-/// and in the command line.
-///
-/// \param diagram_names List of diagram names to be generated
-/// \param config Configuration instance
-/// \param od Output directory where diagrams should be written
-/// \param db Compilation database instance
-/// \param verbose Verbosity level
-/// \param thread_count Number of diagrams to be generated in parallel
-/// \param translation_units_map List of translation units to be used for each
-///        diagram
-///
+/**
+ *  Generate diagrams.
+ *
+ *  This function generates all diagrams specified in the configuration file
+ *  and in the command line.
+ *
+ *  @param diagram_names List of diagram names to be generated
+ *  @param config Configuration instance
+ *  @param od Output directory where diagrams should be written
+ *  @param db Compilation database instance
+ *  @param verbose Verbosity level
+ *  @param thread_count Number of diagrams to be generated in parallel
+ *  @param translation_units_map List of translation units to be used for each
+ *         diagram
+ */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
-    const int verbose, const unsigned int thread_count,
+    const std::unique_ptr<clang::tooling::CompilationDatabase> &db, int verbose,
+    unsigned int thread_count,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map);
 
@@ -130,6 +158,12 @@ int main(int argc, const char *argv[])
     bool show_version{false};
     int verbose{0};
     bool list_diagrams{false};
+    bool quiet{false};
+    bool initialize{false};
+    std::optional<std::string> add_class_diagram;
+    std::optional<std::string> add_sequence_diagram;
+    std::optional<std::string> add_package_diagram;
+    std::optional<std::string> add_include_diagram;
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -142,15 +176,55 @@ int main(int argc, const char *argv[])
     app.add_option("-t,--thread-count", thread_count,
         "Thread pool size (0 = hardware concurrency)");
     app.add_flag("-V,--version", show_version, "Print version and exit");
-    app.add_flag("-v,--verbose", verbose, "Verbose logging");
+    app.add_flag("-v,--verbose", verbose,
+        "Verbose logging (use multiple times to increase - e.g. -vvv)");
+    app.add_flag("-q,--quiet", quiet, "Minimal logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
+    app.add_flag("--init", initialize, "Initialize example config file");
+    app.add_option(
+        "--add-class-diagram", add_class_diagram, "Add class diagram config");
+    app.add_option("--add-sequence-diagram", add_sequence_diagram,
+        "Add sequence diagram config");
+    app.add_option("--add-package-diagram", add_package_diagram,
+        "Add package diagram config");
+    app.add_option("--add-include-diagram", add_include_diagram,
+        "Add include diagram config");
 
     CLI11_PARSE(app, argc, argv);
 
     if (show_version) {
         print_version();
         return 0;
+    }
+
+    if (initialize) {
+        return create_config_file();
+    }
+
+    verbose++;
+
+    if (quiet)
+        verbose = 0;
+
+    if (add_class_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kClass,
+            config_path, *add_class_diagram);
+    }
+
+    if (add_sequence_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kSequence,
+            config_path, *add_sequence_diagram);
+    }
+
+    if (add_package_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kPackage,
+            config_path, *add_package_diagram);
+    }
+
+    if (add_include_diagram) {
+        return add_config_diagram(clanguml::common::model::diagram_t::kInclude,
+            config_path, *add_include_diagram);
     }
 
     clanguml::util::setup_logging(verbose);
@@ -207,87 +281,6 @@ int main(int argc, const char *argv[])
         translation_units_map);
 
     return 0;
-}
-
-void generate_diagrams(const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
-    const int verbose, const unsigned int thread_count,
-    const std::map<std::string, std::vector<std::string>>
-        &translation_units_map)
-{
-    util::thread_pool_executor generator_executor{thread_count};
-    std::vector<std::future<void>> futs;
-
-    for (const auto &[name, diagram] : config.diagrams) {
-        // If there are any specific diagram names provided on the command line,
-        // and this diagram is not in that list - skip it
-        if (!diagram_names.empty() && !util::contains(diagram_names, name))
-            continue;
-
-        const auto &valid_translation_units = translation_units_map.at(name);
-
-        if (valid_translation_units.empty()) {
-            LOG_ERROR(
-                "Diagram {} generation failed: no translation units found",
-                name);
-            continue;
-        }
-
-        futs.emplace_back(generator_executor.add(
-            [&od, &name = name, &diagram = diagram, db = std::ref(*db),
-                translation_units = valid_translation_units, verbose]() {
-                try {
-                    generate_diagram(
-                        od, name, diagram, db, translation_units, verbose);
-                }
-                catch (std::runtime_error &e) {
-                    LOG_ERROR(e.what());
-                }
-            }));
-    }
-
-    for (auto &fut : futs) {
-        fut.get();
-    }
-}
-
-void find_translation_units_for_diagrams(
-    const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config,
-    const std::vector<std::string> &compilation_database_files,
-    std::map<std::string, std::vector<std::string>> &translation_units_map)
-{
-    const auto current_directory = std::filesystem::current_path();
-
-    for (const auto &[name, diagram] : config.diagrams) {
-        // If there are any specific diagram names provided on the command line,
-        // and this diagram is not in that list - skip it
-        if (!diagram_names.empty() && !util::contains(diagram_names, name))
-            continue;
-
-        // If glob is not defined use all translation units from the
-        // compilation database
-        if (!diagram->glob.has_value) {
-            translation_units_map[name] = compilation_database_files;
-        }
-        // Otherwise, get all translation units matching the glob from diagram
-        // configuration
-        else {
-            const std::vector<std::string> translation_units =
-                diagram->get_translation_units(current_directory);
-
-            std::vector<std::string> valid_translation_units{};
-            std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(),
-                std::back_inserter(valid_translation_units),
-                [&translation_units](const auto &tu) {
-                    return util::contains(translation_units, tu);
-                });
-
-            translation_units_map[name] = std::move(valid_translation_units);
-        }
-    }
 }
 
 void generate_diagram(const std::string &od, const std::string &name,
@@ -372,6 +365,87 @@ void generate_diagram(const std::string &od, const std::string &name,
     ofs.close();
 }
 
+void generate_diagrams(const std::vector<std::string> &diagram_names,
+    clanguml::config::config &config, const std::string &od,
+    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
+    const int verbose, const unsigned int thread_count,
+    const std::map<std::string, std::vector<std::string>>
+        &translation_units_map)
+{
+    util::thread_pool_executor generator_executor{thread_count};
+    std::vector<std::future<void>> futs;
+
+    for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
+            continue;
+
+        const auto &valid_translation_units = translation_units_map.at(name);
+
+        if (valid_translation_units.empty()) {
+            LOG_ERROR(
+                "Diagram {} generation failed: no translation units found",
+                name);
+            continue;
+        }
+
+        futs.emplace_back(generator_executor.add(
+            [&od, &name = name, &diagram = diagram, db = std::ref(*db),
+                translation_units = valid_translation_units, verbose]() {
+                try {
+                    generate_diagram(
+                        od, name, diagram, db, translation_units, verbose != 0);
+                }
+                catch (std::runtime_error &e) {
+                    LOG_ERROR(e.what());
+                }
+            }));
+    }
+
+    for (auto &fut : futs) {
+        fut.get();
+    }
+}
+
+void find_translation_units_for_diagrams(
+    const std::vector<std::string> &diagram_names,
+    clanguml::config::config &config,
+    const std::vector<std::string> &compilation_database_files,
+    std::map<std::string, std::vector<std::string>> &translation_units_map)
+{
+    const auto current_directory = std::filesystem::current_path();
+
+    for (const auto &[name, diagram] : config.diagrams) {
+        // If there are any specific diagram names provided on the command line,
+        // and this diagram is not in that list - skip it
+        if (!diagram_names.empty() && !util::contains(diagram_names, name))
+            continue;
+
+        // If glob is not defined use all translation units from the
+        // compilation database
+        if (!diagram->glob.has_value) {
+            translation_units_map[name] = compilation_database_files;
+        }
+        // Otherwise, get all translation units matching the glob from diagram
+        // configuration
+        else {
+            const std::vector<std::string> translation_units =
+                diagram->get_translation_units(current_directory);
+
+            std::vector<std::string> valid_translation_units{};
+            std::copy_if(compilation_database_files.begin(),
+                compilation_database_files.end(),
+                std::back_inserter(valid_translation_units),
+                [&translation_units](const auto &tu) {
+                    return util::contains(translation_units, tu);
+                });
+
+            translation_units_map[name] = std::move(valid_translation_units);
+        }
+    }
+}
+
 bool ensure_output_directory_exists(const std::string &dir)
 {
     namespace fs = std::filesystem;
@@ -393,13 +467,16 @@ bool ensure_output_directory_exists(const std::string &dir)
 
 void print_version()
 {
+    constexpr auto kLLVMBackendPackageStringLength{5};
     std::cout << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
-    std::cout << "Copyright (C) 2021-2022 Bartek Kryza <bkryza@gmail.com>"
+    std::cout << "Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>"
               << '\n';
-    std::cout << "Built with LLVM version: "
-              << std::string{BACKEND_PACKAGE_STRING}.substr(5) << std::endl;
-    std::cout << "Using LLVM version: " << clang::getClangFullVersion()
+    std::cout << "Built against LLVM/Clang libraries version: "
+              << std::string{BACKEND_PACKAGE_STRING}.substr(
+                     kLLVMBackendPackageStringLength)
               << std::endl;
+    std::cout << "Using LLVM/Clang libraries version: "
+              << clang::getClangFullVersion() << std::endl;
 }
 
 void print_diagrams_list(const clanguml::config::config &cfg)
@@ -411,4 +488,132 @@ void print_diagrams_list(const clanguml::config::config &cfg)
         cout << "  - " << name << " [" << to_string(diagram->type()) << "]";
         cout << '\n';
     }
+}
+
+int create_config_file()
+{
+    namespace fs = std::filesystem;
+    using std::cout;
+
+    fs::path config_file{"./.clang-uml"};
+
+    if (fs::exists(config_file)) {
+        cout << "ERROR: .clang-uml file already exists\n";
+        return 1;
+    }
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+    out << YAML::BeginMap;
+    out << YAML::Comment("Change to directory where compile_commands.json is");
+    out << YAML::Key << "compilation_database_dir" << YAML::Value << ".";
+    out << YAML::Newline
+        << YAML::Comment("Change to directory where diagram should be written");
+    out << YAML::Key << "output_directory" << YAML::Value << "docs/diagrams";
+    out << YAML::Key << "diagrams" << YAML::Value;
+    out << YAML::BeginMap;
+    out << YAML::Key << "example_class_diagram" << YAML::Value;
+    out << YAML::BeginMap;
+    out << YAML::Key << "type" << YAML::Value << "class";
+    out << YAML::Key << "glob" << YAML::Value;
+    out << YAML::BeginSeq << "src/*.cpp" << YAML::EndSeq;
+    out << YAML::Key << "using_namespace" << YAML::Value;
+    out << YAML::BeginSeq << "myproject" << YAML::EndSeq;
+    out << YAML::Key << "include";
+    out << YAML::BeginMap;
+    out << YAML::Key << "namespaces";
+    out << YAML::BeginSeq << "myproject" << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::Key << "exclude";
+    out << YAML::BeginMap;
+    out << YAML::Key << "namespaces";
+    out << YAML::BeginSeq << "myproject::detail" << YAML::EndSeq;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+    out << YAML::Newline;
+
+    std::ofstream ofs(config_file);
+    ofs << out.c_str();
+    ofs.close();
+
+    return 0;
+}
+
+int add_config_diagram(clanguml::common::model::diagram_t type,
+    const std::string &config_file_path, const std::string &name)
+{
+    fs::path config_file{config_file_path};
+
+    if (!fs::exists(config_file)) {
+        std::cerr << "ERROR: " << config_file_path << " file doesn't exists\n";
+        return 1;
+    }
+
+    YAML::Node doc = YAML::LoadFile(config_file);
+
+    for (YAML::const_iterator it = doc["diagrams"].begin();
+         it != doc["diagrams"].end(); ++it) {
+        if (it->first.as<std::string>() == name) {
+            std::cerr << "ERROR: " << config_file_path
+                      << " file already contains '" << name << "' diagram";
+            return 1;
+        }
+    }
+
+    if (type == clanguml::common::model::diagram_t::kClass) {
+        doc["diagrams"][name]["type"] = "class";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["namespaces"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kSequence) {
+        doc["diagrams"][name]["type"] = "sequence";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["combine_free_functions_into_file_participants"] =
+            true;
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["paths"] =
+            std::vector<std::string>{{"src"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+        doc["diagrams"][name]["start_from"] =
+            std::vector<std::map<std::string, std::string>>{
+                {{"function", "main(int,const char **)"}}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kPackage) {
+        doc["diagrams"][name]["type"] = "package";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["using_namespace"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["include"]["namespaces"] =
+            std::vector<std::string>{{"myproject"}};
+        doc["diagrams"][name]["exclude"]["namespaces"] =
+            std::vector<std::string>{{"myproject::detail"}};
+    }
+    else if (type == clanguml::common::model::diagram_t::kInclude) {
+        doc["diagrams"][name]["type"] = "include";
+        doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
+        doc["diagrams"][name]["relative_to"] = ".";
+        doc["diagrams"][name]["include"]["paths"] =
+            std::vector<std::string>{{"src"}};
+    }
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+
+    out << doc;
+    out << YAML::Newline;
+
+    std::ofstream ofs(config_file);
+    ofs << out.c_str();
+    ofs.close();
+
+    return 0;
 }

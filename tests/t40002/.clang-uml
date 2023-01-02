@@ -6,18 +6,19 @@ diagrams:
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40002/**/*.cc
-      - ../../tests/t40002/**/*.h
+      - ../../tests/t40002/src/t40002.cc
+      - ../../tests/t40002/src/lib1/lib1.cc
+      - ../../tests/t40002/src/lib2/lib2.cc
     # Render the paths relative to this directory
     relative_to: ../../../tests/t40002
     include:
-      # Include only files belonging to these paths
+      # Include only files belonging to these paths relative to relative_to
       paths:
-        - ../../../tests/t40002
+        - .
     exclude:
       paths:
-        # Exclude single header
-        - ../../../tests/t40002/include/lib2/lib2_detail.h
+        # Exclude single header relative to relative_to
+        - include/lib2/lib2_detail.h
     plantuml:
       before:
         - "' t40002 test include diagram"

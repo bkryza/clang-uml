@@ -8,10 +8,11 @@ Vcs-Browser: https://github.com/bkryza/clang-uml
 Vcs-Git: https://github.com/bkryza/clang-uml.git
 Homepage: https://github.com/bkryza/clang-uml
 
+
 Package: clang-uml
 Architecture: any
 Section: utils
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, clang-14
 Pre-Depends: ${misc:Pre-Depends}
 Description: Automatic C++ UML diagram generator based on Clang.
  .

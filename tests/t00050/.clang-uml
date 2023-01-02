@@ -13,9 +13,13 @@ diagrams:
     plantuml:
       after:
         - >
-           note left of {{ alias("A") }}          
-              {{ comment("clanguml::t00050::A").formatted }}          
-           end note
+          note left of {{ alias("NoSuchClass") }}
+             {{ comment("NoSuchClass").formatted }}
+          end note
+        - >
+          note left of {{ alias("A") }}
+             {{ comment("clanguml::t00050::A").formatted }}
+          end note
         - >
           note right of {{ element("clanguml::t00050::A").alias }}
              {% set e=element("clanguml::t00050::A") %} {{ e.comment.formatted }}          

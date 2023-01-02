@@ -62,5 +62,5 @@ public:
 private:
     mutable E<std::string> estring;
 };
-}
-}
+} // namespace t00013
+} // namespace clanguml

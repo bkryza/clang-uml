@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,7 @@ template <typename T> class optional_ref {
 public:
     using optional_type = T;
 
-    optional_ref()
-        : value_{nullptr}
-    {
-    }
+    optional_ref() = default;
 
     optional_ref(T *value) { value_ = value; }
 
@@ -112,7 +109,7 @@ public:
     T *get() const { return value_; }
 
 private:
-    T *value_;
+    T *value_{nullptr};
 };
 
 template <typename T>
@@ -121,4 +118,4 @@ using reference_vector = std::vector<std::reference_wrapper<T>>;
 template <typename T>
 using reference_set = std::unordered_set<std::reference_wrapper<T>>;
 
-} // namespace clang::common
+} // namespace clanguml::common

@@ -1,7 +1,7 @@
 /**
  * src/common/generators/plantuml/generator.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,24 @@ using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 
-std::string to_plantuml(relationship_t r, std::string style);
+std::string to_plantuml(relationship_t r, const std::string &style);
 std::string to_plantuml(access_t scope);
 std::string to_plantuml(message_t r);
 
+/**
+ * @brief Base class for diagram generators
+ *
+ * @tparam ConfigType Configuration type
+ * @tparam DiagramType Diagram model type
+ */
 template <typename ConfigType, typename DiagramType> class generator {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param config Reference to instance of @link clanguml::config::diagram
+     * @param model Reference to instance of @link clanguml::model::diagram
+     */
     generator(ConfigType &config, DiagramType &model)
         : m_config{config}
         , m_model{model}
@@ -53,22 +65,80 @@ public:
 
     virtual ~generator() = default;
 
+    /**
+     * @brief Generate diagram
+     *
+     * This method must be implemented in subclasses for specific diagram
+     * types. It is responsible for calling other methods in appropriate
+     * order to generate the diagram into the output stream.
+     *
+     * @param ostr Output stream
+     */
     virtual void generate(std::ostream &ostr) const = 0;
 
-    template <typename C, typename D>
-    friend std::ostream &operator<<(std::ostream &os, const generator<C, D> &g);
-
+    /**
+     * @brief Generate diagram layout hints
+     *
+     * This method adds to the diagram any layout hints that were provided
+     * in the configuration file.
+     *
+     * @param ostr Output stream
+     */
     void generate_config_layout_hints(std::ostream &ostr) const;
 
+    /**
+     * @brief Generate PlantUML directives from config file.
+     *
+     * This method renders the PlantUML directives provided in the configuration
+     * file, including resolving any element aliases and Jinja templates.
+     *
+     * @param ostr Output stream
+     * @param directives List of directives from the configuration file
+     */
     void generate_plantuml_directives(
         std::ostream &ostr, const std::vector<std::string> &directives) const;
 
+    /**
+     * @brief Generate diagram notes
+     *
+     * This method adds any notes in the diagram, which were declared in the
+     * code using inline directives
+     *
+     * @param ostr Output stream
+     * @param element Element to which the note should be attached
+     */
     void generate_notes(
         std::ostream &ostr, const model::element &element) const;
 
+    /**
+     * @brief Generate hyper link to element
+     *
+     * This method renders links to URL's based on templates provided
+     * in the configuration file (e.g. Git browser with specific line and
+     * column offset)
+     *
+     * @param ostr Output stream
+     * @param e Reference to diagram element
+     * @tparam E Diagram element type
+     */
     template <typename E>
     void generate_link(std::ostream &ostr, const E &e) const;
 
+    /**
+     * @brief Print debug information in diagram comments
+     *
+     * @param m Diagram element to describe
+     * @param ostr Output stream
+     */
+    void print_debug(
+        const common::model::source_location &e, std::ostream &ostr) const;
+    /**
+     * @brief Update diagram Jinja context
+     *
+     * This method updates the diagram context with models properties
+     * which can be used to render Jinja templates in the diagram (e.g.
+     * in notes or links)
+     */
     void update_context() const;
 
 protected:
@@ -208,6 +278,11 @@ void generator<C, D>::generate_plantuml_directives(
 
             ostr << directive << '\n';
         }
+        catch (const clanguml::error::uml_alias_missing &e) {
+            LOG_ERROR("Failed to render PlantUML directive due to unresolvable "
+                      "alias: {}",
+                e.what());
+        }
         catch (const inja::json::parse_error &e) {
             LOG_ERROR("Failed to parse Jinja template: {}", d);
         }
@@ -222,7 +297,7 @@ template <typename C, typename D>
 void generator<C, D>::generate_notes(
     std::ostream &ostr, const model::element &e) const
 {
-    for (auto decorator : e.decorators()) {
+    for (const auto &decorator : e.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
         if (note && note->applies_to_diagram(m_config.name)) {
             ostr << "note " << note->position << " of " << e.alias() << '\n'
@@ -278,6 +353,14 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
     ostr << "]]";
 }
 
+template <typename C, typename D>
+void generator<C, D>::print_debug(
+    const common::model::source_location &e, std::ostream &ostr) const
+{
+    if (m_config.debug_mode())
+        ostr << "' " << e.file() << ":" << e.line() << '\n';
+}
+
 template <typename DiagramModel, typename DiagramConfig,
     typename TranslationUnitVisitor>
 class diagram_ast_consumer : public clang::ASTConsumer {
@@ -290,7 +373,7 @@ public:
     {
     }
 
-    virtual void HandleTranslationUnit(clang::ASTContext &ast_context)
+    void HandleTranslationUnit(clang::ASTContext &ast_context) override
     {
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
         visitor_.finalize();
@@ -309,7 +392,7 @@ public:
     }
 
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-        clang::CompilerInstance &CI, clang::StringRef file) override
+        clang::CompilerInstance &CI, clang::StringRef /*file*/) override
     {
         return std::make_unique<
             diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
@@ -368,7 +451,7 @@ template <typename DiagramModel, typename DiagramConfig,
 std::unique_ptr<DiagramModel> generate(
     const clang::tooling::CompilationDatabase &db, const std::string &name,
     DiagramConfig &config, const std::vector<std::string> &translation_units,
-    bool verbose = false)
+    bool /*verbose*/ = false)
 {
     LOG_INFO("Generating diagram {}.puml", name);
 
@@ -482,6 +565,10 @@ template <typename C, typename D> void generator<C, D>::init_env()
         auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
+        if (!element_opt.has_value())
+            throw clanguml::error::uml_alias_missing(
+                args[0]->get<std::string>());
+
         return element_opt.value().alias();
     });
 
@@ -492,19 +579,21 @@ template <typename C, typename D> void generator<C, D>::init_env()
     //
     m_env.add_callback("comment", 1, [this](inja::Arguments &args) {
         inja::json res{};
-        auto element = m_model.get_with_namespace(
+        auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
-        if (element.has_value()) {
-            auto comment = element.value().comment();
+        if (!element_opt.has_value())
+            throw clanguml::error::uml_alias_missing(
+                args[0]->get<std::string>());
 
-            if (comment.has_value()) {
-                assert(comment.value().is_object());
-                res = comment.value();
-            }
+        auto comment = element_opt.value().comment();
+
+        if (comment.has_value()) {
+            assert(comment.value().is_object());
+            res = comment.value();
         }
 
         return res;
     });
 }
-}
+} // namespace clanguml::common::generators::plantuml

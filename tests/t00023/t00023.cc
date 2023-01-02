@@ -36,5 +36,5 @@ public:
 private:
     std::unique_ptr<Strategy> m_strategy;
 };
-}
-}
+} // namespace t00023
+} // namespace clanguml

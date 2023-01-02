@@ -53,5 +53,5 @@ private:
 };
 
 int A::static_int = 1;
-}
-}
+} // namespace t00003
+} // namespace clanguml

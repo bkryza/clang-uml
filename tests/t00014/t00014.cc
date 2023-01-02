@@ -76,5 +76,5 @@ public:
     VoidCallback vcb;
     VectorPtr<B> vps;
 };
-}
-}
+} // namespace t00014
+} // namespace clanguml

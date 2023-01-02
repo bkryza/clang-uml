@@ -24,5 +24,5 @@ template <> struct is_numeric<int> {
 template <> struct is_numeric<bool> {
     enum { value = false };
 };
-}
-}
+} // namespace t00016
+} // namespace clanguml

@@ -1,7 +1,7 @@
 /**
  * src/common/model/nested_trait.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,10 @@ public:
     nested_trait() = default;
 
     nested_trait(const nested_trait &) = delete;
-    nested_trait(nested_trait &&) = default;
+    nested_trait(nested_trait &&) noexcept = default;
 
     nested_trait &operator=(const nested_trait &) = delete;
-    nested_trait &operator=(nested_trait &&) = default;
+    nested_trait &operator=(nested_trait &&) noexcept = default;
 
     virtual ~nested_trait() = default;
 
@@ -70,11 +70,9 @@ public:
         if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
             return dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
-        else {
-            spdlog::info("No parent element found at: {}", path.to_string());
-            throw std::runtime_error(
-                "No parent element found for " + path.to_string());
-        }
+        spdlog::info("No parent element found at: {}", path.to_string());
+        throw std::runtime_error(
+            "No parent element found for " + path.to_string());
     }
 
     template <typename V = T> auto get_element(const Path &path) const
@@ -171,4 +169,4 @@ private:
     std::vector<std::unique_ptr<T>> elements_;
 };
 
-}
+} // namespace clanguml::common::model

@@ -1,7 +1,7 @@
 /**
  * tests/test_config.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,7 +154,7 @@ TEST_CASE("Test config layout", "[unit-test]")
 
     CHECK(cfg.diagrams.size() == 2);
 
-    auto &def = static_cast<clanguml::config::class_diagram &>(
+    [[maybe_unused]] auto &def = static_cast<clanguml::config::class_diagram &>(
         *cfg.diagrams["class_main"]);
 
     auto check_layout = [](const auto &diagram,

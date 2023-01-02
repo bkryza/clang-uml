@@ -1,7 +1,7 @@
 /**
  * src/util/thread_pool_executor.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ thread_pool_executor::thread_pool_executor(unsigned int pool_size)
         pool_size = std::thread::hardware_concurrency();
 
     for (auto i = 0U; i < pool_size; i++) {
-        threads_.push_back(std::thread{&thread_pool_executor::worker, this});
+        threads_.emplace_back(&thread_pool_executor::worker, this);
     }
 }
 
@@ -90,4 +90,4 @@ std::packaged_task<void()> thread_pool_executor::get()
     return res;
 }
 
-}
+} // namespace clanguml::util

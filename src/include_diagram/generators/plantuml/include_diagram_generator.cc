@@ -1,7 +1,7 @@
 /**
  * src/include_diagram/generators/plantuml/include_diagram_generator.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ void generator::generate(std::ostream &ostr) const
 
     // Generate files and folders
     util::for_each_if(
-        m_model, [](const auto &f) { return true; },
+        m_model, [](const auto & /*f*/) { return true; },
         [this, &ostr](const auto &f) {
             generate(dynamic_cast<source_file &>(*f), ostr);
         });
@@ -120,4 +120,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
-}
+} // namespace clanguml::include_diagram::generators::plantuml

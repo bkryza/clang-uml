@@ -19,5 +19,5 @@ struct R {
 
     void set_int_map(A<std::map<int, int>> &&int_map) { a_int_map = int_map; }
 };
-}
-}
+} // namespace t00049
+} // namespace clanguml

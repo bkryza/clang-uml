@@ -1,7 +1,7 @@
 /**
  * src/util/util.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@
 
 #include <regex>
 
-namespace clanguml {
-namespace util {
+namespace clanguml::util {
 
-const std::string WHITESPACE = " \n\r\t\f\v";
+static const auto WHITESPACE = " \n\r\t\f\v";
 
 void setup_logging(int verbose)
 {
@@ -49,7 +48,9 @@ void setup_logging(int verbose)
 
 std::string get_process_output(const std::string &command)
 {
-    std::array<char, 1024> buffer;
+    constexpr size_t kBufferSize{1024};
+
+    std::array<char, kBufferSize> buffer{};
     std::string result;
     std::unique_ptr<FILE, decltype(&pclose)> pipe(
         popen(command.c_str(), "r"), pclose);
@@ -67,7 +68,7 @@ std::string get_process_output(const std::string &command)
 
 std::string get_env(const std::string &name)
 {
-    const char *value = std::getenv(name.c_str());
+    const char *value = std::getenv(name.c_str()); // NOLINT
 
     if (value == nullptr)
         return {};
@@ -93,7 +94,7 @@ bool is_git_repository()
 
 std::string get_git_branch()
 {
-    const auto env = get_env("CLANGUML_GIT_BRANCH");
+    auto env = get_env("CLANGUML_GIT_BRANCH");
 
     if (!env.empty())
         return env;
@@ -103,7 +104,7 @@ std::string get_git_branch()
 
 std::string get_git_revision()
 {
-    const auto env = get_env("CLANGUML_GIT_REVISION");
+    auto env = get_env("CLANGUML_GIT_REVISION");
 
     if (!env.empty())
         return env;
@@ -113,7 +114,7 @@ std::string get_git_revision()
 
 std::string get_git_commit()
 {
-    const auto env = get_env("CLANGUML_GIT_COMMIT");
+    auto env = get_env("CLANGUML_GIT_COMMIT");
 
     if (!env.empty())
         return env;
@@ -123,7 +124,7 @@ std::string get_git_commit()
 
 std::string get_git_toplevel_dir()
 {
-    const auto env = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
+    auto env = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
 
     if (!env.empty())
         return env;
@@ -153,7 +154,7 @@ std::vector<std::string> split(
     if (!contains(str, delimiter))
         result.push_back(str);
     else
-        while (str.size()) {
+        while (static_cast<unsigned int>(!str.empty()) != 0U) {
             auto index = str.find(delimiter);
             if (index != std::string::npos) {
                 auto tok = str.substr(0, index);
@@ -210,7 +211,7 @@ std::string abbreviate(const std::string &s, const unsigned int max_length)
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result)
 {
-    std::regex alias_regex("(@A\\([^\\).]+\\))");
+    std::regex alias_regex(R"((@A\([^\).]+\)))");
 
     auto alias_it =
         std::sregex_iterator(input.begin(), input.end(), alias_regex);
@@ -229,8 +230,8 @@ bool find_element_alias(
     return true;
 }
 
-bool replace_all(
-    std::string &input, std::string pattern, std::string replace_with)
+bool replace_all(std::string &input, const std::string &pattern,
+    const std::string &replace_with)
 {
     bool replaced{false};
 
@@ -280,5 +281,13 @@ template <> bool ends_with(const std::string &value, const std::string &suffix)
     return std::equal(suffix.rbegin(), suffix.rend(), value.rbegin());
 }
 
+std::size_t hash_seed(std::size_t seed)
+{
+    constexpr auto kSeedStart{0x6a3712b5};
+    constexpr auto kSeedShiftFirst{6};
+    constexpr auto kSeedShiftSecond{2};
+
+    return kSeedStart + (seed << kSeedShiftFirst) + (seed >> kSeedShiftSecond);
 }
-}
+
+} // namespace clanguml::util

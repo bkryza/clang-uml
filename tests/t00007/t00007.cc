@@ -17,5 +17,5 @@ public:
     std::shared_ptr<B> b;
     std::weak_ptr<C> c;
 };
-}
-}
+} // namespace t00007
+} // namespace clanguml

@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public:
     void add_member(class_member &&member);
     void add_method(class_method &&method);
     void add_parent(class_parent &&parent);
-    void add_template(template_parameter tmplt);
+    void add_template(template_parameter &&tmplt);
 
     const std::vector<class_member> &members() const;
     const std::vector<class_method> &methods() const;
@@ -105,7 +105,7 @@ private:
     std::string full_name_;
 };
 
-}
+} // namespace clanguml::class_diagram::model
 
 namespace std {
 template <>
@@ -119,4 +119,4 @@ struct hash<std::reference_wrapper<clanguml::class_diagram::model::class_>> {
         return std::hash<id_t>{}(key.get().id());
     }
 };
-}
+} // namespace std

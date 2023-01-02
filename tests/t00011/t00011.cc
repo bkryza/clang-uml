@@ -29,5 +29,5 @@ public:
     void foo() { m_a->foo(); }
     A *m_a;
 };
-}
-}
+} // namespace t00011
+} // namespace clanguml

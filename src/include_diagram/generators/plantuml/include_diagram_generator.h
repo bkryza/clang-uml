@@ -1,7 +1,7 @@
 /**
  * src/include_diagram/generators/plantuml/include_diagram_generator.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,10 @@ public:
 
     void generate(const source_file &e, std::ostream &ostr) const;
 
-    void generate(std::ostream &ostr) const;
+    void generate(std::ostream &ostr) const override;
 };
 
-}
-}
-}
-}
+} // namespace plantuml
+} // namespace generators
+} // namespace include_diagram
+} // namespace clanguml

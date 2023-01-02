@@ -1,7 +1,7 @@
 /**
  * src/include_diagram/model/diagram.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const common::model::diagram_element::id_t id) const override;
+        common::model::diagram_element::id_t id) const override;
 
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 
@@ -53,7 +53,7 @@ public:
         const std::string &name) const;
 
     common::optional_ref<common::model::source_file> get_file(
-        const common::model::diagram_element::id_t id) const;
+        common::model::diagram_element::id_t id) const;
 
     std::string to_alias(const std::string &full_name) const;
 
@@ -64,7 +64,7 @@ public:
 private:
     common::reference_vector<common::model::source_file> files_;
 };
-}
+} // namespace clanguml::include_diagram::model
 
 namespace clanguml::common::model {
 template <>

@@ -1,7 +1,7 @@
 /**
  * src/cx/util.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ std::pair<common::model::namespace_, std::string> split_ns(
 
 std::vector<class_diagram::model::template_parameter>
 parse_unexposed_template_params(const std::string &params,
-    std::function<std::string(const std::string &)> ns_resolve, int depth = 0);
+    const std::function<std::string(const std::string &)> &ns_resolve,
+    int depth = 0);
 
 } // namespace clanguml::cx::util

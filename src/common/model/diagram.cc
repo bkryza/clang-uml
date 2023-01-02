@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ diagram::diagram() = default;
 
 diagram::~diagram() = default;
 
-diagram::diagram(diagram &&) = default;
+diagram::diagram(diagram &&) noexcept = default;
 
-diagram &diagram::operator=(diagram &&) = default;
+diagram &diagram::operator=(diagram &&) noexcept = default;
 
 common::optional_ref<clanguml::common::model::diagram_element>
 diagram::get_with_namespace(const std::string &name, const namespace_ &ns) const
@@ -108,4 +108,4 @@ bool diagram::should_include(const common::model::source_file &f) const
     return filter_->should_include(f);
 }
 
-}
+} // namespace clanguml::common::model

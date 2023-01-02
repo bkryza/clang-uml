@@ -35,5 +35,5 @@ public:
 private:
     std::shared_ptr<Target> m_target;
 };
-}
-}
+} // namespace t00024
+} // namespace clanguml

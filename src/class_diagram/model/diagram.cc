@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/diagram.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -205,7 +205,7 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
 
     if (!has_enum(*e)) {
         if (add_element(ns, std::move(e))) {
-            enums_.emplace_back(std::move(e_ref));
+            enums_.emplace_back(e_ref);
             return true;
         }
     }
@@ -239,17 +239,14 @@ void diagram::get_parents(
 bool diagram::has_element(
     clanguml::common::model::diagram_element::id_t id) const
 {
-    for (const auto &c : classes_) {
-        if (c.get().id() == id)
-            return true;
-    }
+    const auto has_class = std::any_of(classes_.begin(), classes_.end(),
+        [id](const auto &c) { return c.get().id() == id; });
 
-    for (const auto &c : enums_) {
-        if (c.get().id() == id)
-            return true;
-    }
+    if (has_class)
+        return true;
 
-    return false;
+    return std::any_of(enums_.begin(), enums_.end(),
+        [id](const auto &c) { return c.get().id() == id; });
 }
 
 std::string diagram::to_alias(
@@ -294,7 +291,7 @@ inja::json diagram::context() const
     return ctx;
 }
 
-}
+} // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {
 template <>

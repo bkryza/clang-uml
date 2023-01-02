@@ -51,5 +51,5 @@ struct Window {
     Text<Color, Weight> title;
     Text<Color> description;
 };
-}
-}
+} // namespace t00027
+} // namespace clanguml

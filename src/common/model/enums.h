@@ -1,7 +1,7 @@
 /**
  * src/common/model/enums.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,4 +79,4 @@ std::string to_string(message_t m);
 
 std::string to_string(diagram_t r);
 
-}
+} // namespace clanguml::common::model

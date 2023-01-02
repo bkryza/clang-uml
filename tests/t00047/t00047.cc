@@ -22,5 +22,5 @@ struct conditional_t<std::false_type, Result, Tail...> {
 template <typename... Ts>
 using conditional = typename conditional_t<Ts...>::type;
 
-}
-}
+} // namespace t00047
+} // namespace clanguml

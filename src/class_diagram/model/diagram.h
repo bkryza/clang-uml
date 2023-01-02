@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/diagram.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public:
         const std::string &full_name) const override;
 
     common::optional_ref<common::model::diagram_element> get(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     const common::reference_vector<class_> &classes() const;
 
@@ -82,10 +82,10 @@ public:
 
     void get_parents(clanguml::common::reference_set<class_> &parents) const;
 
-    friend void print_diagram_tree(const diagram &d, const int level);
+    friend void print_diagram_tree(const diagram &d, int level);
 
     bool has_element(
-        const clanguml::common::model::diagram_element::id_t id) const override;
+        clanguml::common::model::diagram_element::id_t id) const override;
 
     inja::json context() const override;
 
@@ -96,7 +96,7 @@ private:
 
     std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
-}
+} // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {
 template <>

@@ -11,4 +11,4 @@ int foo() { return foo1(); }
 
 int foo22() { return 22; }
 
-}
+} // namespace clanguml::t40002::lib2

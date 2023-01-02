@@ -1,13 +1,26 @@
 type: sequence
+# Group free functions into one participant per file
+combine_free_functions_into_file_participants: true
+# Do not generate method or function arguments
+generate_method_arguments: none
 glob:
   - src/sequence_diagram/visitor/*.cc
   - src/sequence_diagram/model/*.cc
+  - src/common/visitor/*.cc
+  - src/common/model/*.cc
 include:
   namespaces:
-    - clanguml::sequence_diagram::visitor
-    - clanguml::sequence_diagram::model
+    - clanguml
+  paths:
+    - .
+exclude:
+  namespaces:
+    - clanguml::model::tvl
+    - clanguml::decorators
+  paths:
+    - src/common/model/source_location.h
 using_namespace:
-  - clanguml::sequence_diagram::visitor
+  - clanguml
 plantuml:
   before:
     - 'title clang-uml sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl sequence diagram'

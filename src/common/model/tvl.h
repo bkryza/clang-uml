@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/tvl.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ inline value_t all_of(InputIterator first, InputIterator last, Predicate pred)
     for (InputIterator it = first; it != last; it++) {
         value_t m = pred(*it);
         if (m.has_value()) {
-            if (m.value() == true) {
+            if (m.value()) {
                 res = true;
             }
             else {
@@ -59,16 +59,14 @@ inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
     for (InputIterator it = first; it != last; it++) {
         value_t m = pred(*it);
         if (m.has_value()) {
-            if (m.value() == true) {
+            if (m.value()) {
                 res = true;
                 break;
             }
-            else {
-                res = false;
-            }
+            res = false;
         }
     }
 
     return res;
 }
-};
+} // namespace clanguml::common::model::tvl

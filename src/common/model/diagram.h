@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public:
         const std::string &full_name) const = 0;
 
     virtual common::optional_ref<clanguml::common::model::diagram_element> get(
-        const diagram_element::id_t id) const = 0;
+        diagram_element::id_t id) const = 0;
 
     /// \brief Find element in diagram which can have full name or be
     ///        relative to ns
@@ -51,9 +51,9 @@ public:
     get_with_namespace(const std::string &name, const namespace_ &ns) const;
 
     diagram(const diagram &) = delete;
-    diagram(diagram &&);
+    diagram(diagram && /*unused*/) noexcept;
     diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram &&);
+    diagram &operator=(diagram && /*unused*/) noexcept;
 
     void set_name(const std::string &name);
     std::string name() const;
@@ -67,11 +67,11 @@ public:
     bool should_include(const element &e) const;
     bool should_include(const std::string &e) const;
     bool should_include(const source_file &path) const;
-    bool should_include(const relationship r) const;
-    bool should_include(const relationship_t r) const;
-    bool should_include(const access_t s) const;
+    bool should_include(relationship r) const;
+    bool should_include(relationship_t r) const;
+    bool should_include(access_t s) const;
 
-    virtual bool has_element(const diagram_element::id_t id) const
+    virtual bool has_element(const diagram_element::id_t /*id*/) const
     {
         return false;
     }
@@ -88,4 +88,4 @@ private:
 };
 
 template <typename DiagramT> bool check_diagram_type(diagram_t t);
-}
+} // namespace clanguml::common::model

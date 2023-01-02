@@ -1,7 +1,7 @@
 /**
  * src/class_diagram/model/class_parent.cc
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,4 +35,4 @@ void class_parent::set_access(common::model::access_t access)
 
 common::model::access_t class_parent::access() const { return access_; }
 
-}
+} // namespace clanguml::class_diagram::model

@@ -1,7 +1,7 @@
 /**
  * src/common/model/source_location.h
  *
- * Copyright (c) 2021-2022 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 namespace clanguml::common::model {
 
@@ -25,8 +26,8 @@ class source_location {
 public:
     source_location() = default;
 
-    source_location(const std::string &f, unsigned int l)
-        : file_{f}
+    source_location(std::string f, unsigned int l)
+        : file_{std::move(f)}
         , line_{l}
     {
     }
@@ -46,6 +47,6 @@ public:
 private:
     std::string file_;
     unsigned int line_{0};
-    unsigned int hash_;
+    unsigned int hash_{0};
 };
-}
+} // namespace clanguml::common::model
