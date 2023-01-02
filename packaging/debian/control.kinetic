@@ -2,7 +2,7 @@ Source: clang-uml
 Maintainer: Bartek Kryza <bkryza@gmail.com>
 Section: devel
 Priority: optional
-Build-Depends: debhelper, make, gcc-12, g++-12, cmake (>= 3.16), libyaml-cpp-dev, llvm-15, llvm-15-dev, clang-15, clang-tools-15, libclang-15-dev, libclang-cpp15-dev, libmlir-15-dev
+Build-Depends: debhelper, make, gcc-12, g++-12, cmake (>= 3.16), libyaml-cpp-dev, llvm-15, llvm-15-dev, clang-15, clang-tools-15, libclang-15-dev, libclang-cpp15-dev, libmlir-15-dev, mlir-15-tools
 Standards-Version: 4.3.0
 Vcs-Browser: https://github.com/bkryza/clang-uml
 Vcs-Git: https://github.com/bkryza/clang-uml.git
