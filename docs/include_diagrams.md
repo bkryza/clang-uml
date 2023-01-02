@@ -33,6 +33,13 @@ diagrams:
 One distinctive option in `include` diagrams is `relative_to`, which tells `clang-uml` to render all filename
 paths relative to this directory.
 
+The following table presents the PlantUML arrows representing relationships in the include diagrams.
+
+| UML                                    | PlantUML   |
+| ----                                   | ---        |
+| Include (local)                        | ![association](img/puml_association.png) |
+| Include (system)                       | ![dependency](img/puml_dependency.png) |
+
 ## Tracking system headers directly included by projects files
 
 In case you would like to include the information about what system headers your projects file include simply add

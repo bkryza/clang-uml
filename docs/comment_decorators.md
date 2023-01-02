@@ -16,7 +16,7 @@ or
 
 The optional `:<diagram_name>` suffix will apply this decorator only to a specific diagram.
 
-Currently the following decorators are supported.
+Currently, the following decorators are supported.
 
 ## `note`
 

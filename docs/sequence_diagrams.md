@@ -33,19 +33,19 @@ Consider the following diagram:
 
 ![extension](test_cases/t20029_sequence.svg)
 
-`clang-uml` generated sequence diagrams are not stricly speaking conforming to the UML specification, in order to 
+`clang-uml` generated sequence diagrams are not strictly speaking conforming to the UML specification. In order to 
 make them more useful for documenting modern C++ code, the following assumptions were made:
  * Free functions are included in the sequence diagrams as standalone participants (in fact `clang-uml` can be used
    to generate sequence diagrams from plain old C code). Functions can also be aggregated into file participants,
    based on their place of declaration
  * Call expressions in conditional expressions in block statements (e.g. `if` or `while`) are rendered inside the
-   UML `alt` or `loop` blocks but wrapped in `[`, `]` brackets
- * Lambda expressions are generated as standalone participants, whose name comprises of the parent context where they
+   PlantUML `alt` or `loop` blocks but wrapped in `[`, `]` brackets
+ * Lambda expressions are generated as standalone participants, whose name comprises the parent context where they
    are defined and the exact source code location
 
 ## Specifying diagram entry point
 Sequence diagrams require an entry point for the diagram in order to determine, at which point in the code the sequence
-diagram should start. Currently the entry point can only be a method or a free function, both specified using `start_from`
+diagram should start. Currently, the entry point can only be a method or a free function, both specified using `start_from`
 configuration property, for instance:
 ```yaml
     start_from:
@@ -58,7 +58,8 @@ start_from:
 ```
 
 The entrypoints must be fully qualified and they must match exactly the string representation of given function or
-method in the `clang-uml` model, which can be tricky. If not sure, the best way is to put anything in the `function`
+method in the `clang-uml` model, which can be frustrating after few attempts.
+If not sure, the best way is to put anything in the `function`
 property value at first, run the `clang-uml` on the diagram with verbose set to `-vvv` and look in the logs
 for the relevant function signature. At the end of the diagram generation at this verbosity level, `clang-uml` will
 generate a textual representation of all discovered activities relevant for this diagram, for instance if you're looking
@@ -97,7 +98,7 @@ following rules:
 
 Another issue is the naming of lambda participants. Currently, each lambda is rendered in the diagram as a separate
 class whose name is composed of the lambda location in the code (the only unique way of identifying lambdas I was able
-to find). For example the follwing code:
+to find). For example the following code:
 ```cpp
 #include <algorithm>
 #include <functional>
