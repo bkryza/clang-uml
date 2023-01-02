@@ -51,9 +51,22 @@ More comprehensive documentation can be found [here](./docs/README.md).
 #### Ubuntu
 
 ```bash
+# Currently supported Ubuntu versions are Focal, Jammy and Kinetic
 sudo add-apt-repository ppa:bkryza/clang-uml
 sudo apt update
 sudo apt install clang-uml
+```
+
+#### Fedora
+
+```bash
+# Fedora 36
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc36.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.0-1.fc36.x86_64.rpm
+
+# Fedora 37
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.0-1.fc37.x86_64.rpm
 ```
 
 #### Conda
