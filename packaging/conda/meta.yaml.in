@@ -9,7 +9,7 @@ source:
   url: "{{PKG_SOURCE}}"
 
 build:
-  binary_relocation: true
+  binary_relocation: false
   script_env:
     - PKG_VERSION
     - GIT_VERSION={{PKG_VERSION}}
@@ -23,14 +23,16 @@ requirements:
     - {{ compiler('cxx') }}
     - conda-forge::pkg-config
     - conda-forge::yaml-cpp 0.7.0
-    - conda-forge::clangdev 14.0.4
-    - conda-forge::libclang 14.0.4
+    - conda-forge::clangdev 15.0.6
+    - conda-forge::libclang 15.0.6
+    - conda-forge::libclang-cpp 15.0.6
     - conda-forge::cmake
     - conda-forge::git
     - conda-forge::make # [unix]
   run:
     - conda-forge::yaml-cpp 0.7.0
-    - conda-forge::libclang 14.0.4
+    - conda-forge::libclang 15.0.6
+    - conda-forge::libclang-cpp 15.0.6
 
 test:
   commands:

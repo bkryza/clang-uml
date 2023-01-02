@@ -34,8 +34,8 @@ find packaging/_BUILD/fedora
 ## Anaconda
 
 ```bash
-docker run --rm -v $PWD:$PWD continuum/miniconda3 bash
-conda install conda-build
+docker run --rm -v $PWD:$PWD continuumio/miniconda3 bash
+conda install conda-build make
 cd packaging
-make conda
+make CONDA_TOKEN=<TOKEN> conda
 ```
