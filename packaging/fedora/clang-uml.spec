@@ -1,13 +1,12 @@
-# %define git_version %(git describe --tags --always --abbrev=7)
 %define _unpackaged_files_terminate_build 0
 
 Name:     clang-uml
-Version:  0.3.0
+Version:  %{?git_version}
 Release:  1%{?dist}
 Summary:  C++ UML diagram generator based on Clang
 License:  ASL 2.0
 URL:      https://github.com/bkryza/clang-uml
-Source0:  https://github.com/bkryza/clang-uml/archive/refs/heads/v%{version}.zip
+Source0:  clang-uml-%{version}.tar.gz
 
 BuildRequires: cmake
 BuildRequires: git
@@ -61,7 +60,7 @@ fi
 %files
 %{_bindir}/clang-uml
 
-%doc CHANGELOG.md README.md AUTHORS.md
+%doc CHANGELOG.md README.md AUTHORS.md LICENSE.md
 %license LICENSE.md
 
 %changelog
