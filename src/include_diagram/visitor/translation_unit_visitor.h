@@ -104,7 +104,7 @@ public:
     void finalize() { }
 
 private:
-    clang::SourceManager &source_manager_;
+    [[maybe_unused]] clang::SourceManager &source_manager_;
 
     // Reference to the output diagram model
     clanguml::include_diagram::model::diagram &diagram_;

@@ -2,6 +2,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace clanguml {
 namespace t30002 {

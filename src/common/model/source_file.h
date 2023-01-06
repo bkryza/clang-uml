@@ -53,7 +53,7 @@ public:
     explicit source_file(const std::filesystem::path &p)
     {
         set_path({p.parent_path().string()});
-        set_name(p.filename());
+        set_name(p.filename().string());
         is_absolute_ = p.is_absolute();
         set_id(common::to_id(p));
     }

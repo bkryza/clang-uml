@@ -49,12 +49,16 @@ void setup_logging(int verbose)
 std::string get_process_output(const std::string &command)
 {
     constexpr size_t kBufferSize{1024};
-
     std::array<char, kBufferSize> buffer{};
     std::string result;
+
+#if defined(__linux) || defined(__unix)
     std::unique_ptr<FILE, decltype(&pclose)> pipe(
         popen(command.c_str(), "r"), pclose);
-
+#elif defined(WINDOWS) || defined(_WIN32) || defined(WIN32)
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(
+        _popen(command.c_str(), "r"), _pclose);
+#endif
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
@@ -68,12 +72,25 @@ std::string get_process_output(const std::string &command)
 
 std::string get_env(const std::string &name)
 {
+#if defined(__linux) || defined(__unix)
     const char *value = std::getenv(name.c_str()); // NOLINT
 
     if (value == nullptr)
         return {};
 
     return std::string{value};
+#elif defined(WINDOWS) || defined(_WIN32) || defined(WIN32)
+    static constexpr auto kMaxEnvLength = 2096U;
+    static char value[kMaxEnvLength];
+    const DWORD ret =
+        GetEnvironmentVariableA(name.c_str(), value, kMaxEnvLength);
+    if (ret == 0 || ret > kMaxEnvLength)
+        return {};
+    else
+        return value;
+#else
+    return {};
+#endif
 }
 
 bool is_git_repository()
@@ -83,13 +100,9 @@ bool is_git_repository()
     if (!env.empty())
         return true;
 
-#if defined(_WIN32) || defined(_WIN64)
-    return false;
-#else
     return contains(
-        trim(get_process_output("git rev-parse --git-dir 2> /dev/null")),
+        trim(get_process_output("git rev-parse --git-dir")),
         ".git");
-#endif
 }
 
 std::string get_git_branch()

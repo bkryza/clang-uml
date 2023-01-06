@@ -184,12 +184,12 @@ tvl::value_t namespace_filter::match(
                 auto namespace_starts_with_element_qualified_name =
                     nsit.starts_with(e.get_namespace());
 
-                auto result = element_full_name_starts_with_namespace |
+                auto result = element_full_name_starts_with_namespace ||
                     element_full_name_equals_pattern;
 
                 if (is_inclusive)
                     result =
-                        result | namespace_starts_with_element_qualified_name;
+                        result || namespace_starts_with_element_qualified_name;
 
                 return result;
             });

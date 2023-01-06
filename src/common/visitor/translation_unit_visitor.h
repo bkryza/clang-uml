@@ -103,7 +103,7 @@ protected:
 private:
     clang::SourceManager &source_manager_;
 
-    const clanguml::config::diagram &config_;
+    [[maybe_unused]] const clanguml::config::diagram &config_;
 
     std::unique_ptr<comment::comment_visitor> comment_visitor_;
 };

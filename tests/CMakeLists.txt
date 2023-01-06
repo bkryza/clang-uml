@@ -4,9 +4,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(TEST_DISABLE_WARNINGS_DEBUG "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull")
-set(TEST_DISABLE_WARNINGS_RELEASE "${TEST_DISABLE_WARNINGS} -Wno-aggressive-loop-optimizations")
-
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(TEST_DISABLE_WARNINGS_DEBUG "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull")
+    set(TEST_DISABLE_WARNINGS_RELEASE "${TEST_DISABLE_WARNINGS} -Wno-aggressive-loop-optimizations")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(TEST_DISABLE_WARNINGS_DEBUG "-Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable -Wno-attributes -Wno-nonnull")
+    set(TEST_DISABLE_WARNINGS_RELEASE "${TEST_DISABLE_WARNINGS} -Wno-aggressive-loop-optimizations")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W1 /std:c++17 /bigobj /wd4624")
+endif()
 
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISABLE_WARNINGS_DEBUG}")
@@ -27,6 +33,10 @@ set(CLANG_UML_TEST_LIBRARIES
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
         Threads::Threads)
+
+if(MSVC)
+    list(APPEND CLANG_UML_TEST_LIBRARIES "Version.lib")
+endif(MSVC)
 
 
 set(CLANG_UML_TEST_UTIL_SRC test_util.cc ${TEST_UTIL_SOURCES})

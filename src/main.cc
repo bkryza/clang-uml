@@ -551,7 +551,7 @@ int add_config_diagram(clanguml::common::model::diagram_t type,
         return 1;
     }
 
-    YAML::Node doc = YAML::LoadFile(config_file);
+    YAML::Node doc = YAML::LoadFile(config_file.string());
 
     for (YAML::const_iterator it = doc["diagrams"].begin();
          it != doc["diagrams"].end(); ++it) {
