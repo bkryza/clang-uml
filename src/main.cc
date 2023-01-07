@@ -245,7 +245,7 @@ int main(int argc, const char *argv[])
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
 
-    if(!compilation_database_dir.empty()) {
+    if (!compilation_database_dir.empty()) {
         config.compilation_database_dir.set(compilation_database_dir);
     }
 
