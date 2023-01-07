@@ -122,7 +122,7 @@ Build and install `clang-uml`:
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
-cmake -S .\clang-uml\ -B .\clang-uml-build\ -DCMAKE_PREFIX_PATH="C:\clang-uml" -Thost=x64
+cmake -S .\clang-uml\ -B .\clang-uml-build\ -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -DCMAKE_PREFIX_PATH="C:\clang-uml" -DBUILD_TESTS=OFF -Thost=x64
 cd clang-uml-build
 msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
 ```
@@ -139,4 +139,10 @@ clang-uml 0.3.0
 Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>
 Built against LLVM/Clang libraries version: 15.0.6
 Using LLVM/Clang libraries version: clang version 15.0.6 (https://github.com/llvm/llvm-project.git 088f33605d8a61ff519c580a71b1dd57d16a03f8)
+```
+
+Finally, remove the temporary build directory:
+
+```bash
+rm -r C:\clang-uml-tmp
 ```
