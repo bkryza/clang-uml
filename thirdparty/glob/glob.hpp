@@ -177,7 +177,7 @@ static inline fs::path expand_tilde(fs::path path)
 #ifdef _WIN32
     char *home;
     size_t sz;
-    errno_t err = _dupenv_s(&home, &sz, "USERPROFILE");
+    [[maybe_unused]] errno_t err = _dupenv_s(&home, &sz, "USERPROFILE");
 #else
     const char *home = std::getenv("HOME");
 #endif

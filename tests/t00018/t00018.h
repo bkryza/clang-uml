@@ -1,6 +1,8 @@
 #pragma once
 
+#ifndef _MSC_VER
 #include <experimental/propagate_const>
+#endif
 #include <iostream>
 #include <memory>
 

@@ -49,6 +49,11 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
 
+if(MSVC)
+    # LLVM_BUILD_LLVM_DYLIB is not available on Windows
+    set(LINK_LLVM_SHARED NO)
+endif(MSVC)
+
 if(LINK_LLVM_SHARED)
     set(LIBTOOLING_LIBS clang-cpp LLVM)
 else(LINK_LLVM_SHARED)
@@ -59,6 +64,7 @@ else(LINK_LLVM_SHARED)
         clangDriver
         clangParse
         clangSema
+        clangSupport
         clangAnalysis
         clangAST
         clangBasic
@@ -78,7 +84,18 @@ else(LINK_LLVM_SHARED)
         LLVMBitReader
         LLVMCore
         LLVMSupport)
+    if(MSVC)
+        list(APPEND LIBTOOLING_LIBS
+                    LLVMWindowsDriver
+                    LLVMWindowsManifest)
+    endif(MSVC)
 endif(LINK_LLVM_SHARED)
+
+if("${LIBTOOLING_LIBS}" STREQUAL "")
+    message(FATAL_ERROR "Failed to find LibTooling libraries!")
+else()
+    message(STATUS "Found LibTooling libraries: ${LIBTOOLING_LIBS}")
+endif()
 
 #
 # Setup threads library
@@ -90,22 +107,28 @@ find_package(Threads REQUIRED)
 #
 message(STATUS "Checking for yaml-cpp...")
 if(APPLE)
-find_package(PkgConfig)
-if(PKG_CONFIG_FOUND)
-    pkg_check_modules(YAML_CPP yaml-cpp)
-    find_path(YAML_CPP_INCLUDE_DIR
-            NAMES yaml.h
-	    PATHS ${YAML_CPP_INCLUDE_DIR} /usr/local/include/yaml-cpp)
-    find_library(YAML_CPP_LIBRARY
-            NAMES yaml-cpp
-	    PATHS ${YAML_CPP_LIBRARIES} /usr/local/lib)
-    set(YAML_CPP_LIBRARY_DIR /usr/local/lib)
-endif()
-else(APPLE)
+    find_package(PkgConfig)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(YAML_CPP yaml-cpp)
+        find_path(YAML_CPP_INCLUDE_DIR
+                NAMES yaml.h
+	        PATHS ${YAML_CPP_INCLUDE_DIR} /usr/local/include/yaml-cpp)
+        find_library(YAML_CPP_LIBRARY
+                NAMES yaml-cpp
+	        PATHS ${YAML_CPP_LIBRARIES} /usr/local/lib)
+        set(YAML_CPP_LIBRARY_DIR /usr/local/lib)
+    endif(PKG_CONFIG_FOUND)
+elseif(MSVC)
+    set(YAML_CPP_LIBRARIES "yaml-cpp")
+else()
     find_package(yaml-cpp REQUIRED)
-endif(APPLE)
+endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
+if("${YAML_CPP_LIBRARIES}" STREQUAL "")
+    message(FATAL_ERROR "Failed to find yaml-cpp library!")
+else()
+    message(STATUS "Found yaml-cpp libraries: ${YAML_CPP_LIBRARIES}")
+endif()
 
 link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
 
@@ -129,7 +152,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
                     OUTPUT_VARIABLE GCC_STDDEF_INCLUDE)
     message(STATUS "FOUND GCC STDDEF INCLUDE ${GCC_STDDEF_INCLUDE}")
     include_directories(${GCC_STDDEF_INCLUDE})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE}")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLLVM_FORCE_USE_OLD_TOOLCHAIN /W1 /std:c++17 /bigobj /wd4291 /wd4624 /wd4244")
+    set(LINK_OPTIONS "${LINK_OPTIONS} /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCRTD")
 endif()
 
 message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
@@ -145,7 +174,6 @@ include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 include_directories(${PROJECT_BINARY_DIR}/src/version)
 
-
 #
 # Generate source list dynamically
 #
@@ -153,19 +181,25 @@ file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
 set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
 list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
 
-
 #
 # Define library target for linking with test cases and output executable
 #
-add_library(clang-umllib OBJECT ${SOURCES})
+if(MSVC)
+    add_library(clang-umllib STATIC ${SOURCES})
+    set(MSVC_LIBRARIES "version")
+else(MSVC)
+    add_library(clang-umllib OBJECT ${SOURCES})
+endif(MSVC)
 
 #
 # Define the target executable clang-uml
 #
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
+
 target_link_libraries(clang-uml
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
+        ${MSVC_LIBRARIES}
         clang-umllib
         Threads::Threads)
 

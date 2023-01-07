@@ -763,6 +763,7 @@ void translation_unit_visitor::process_class_children(
 
     // Static fields have to be processed by iterating over variable
     // declarations
+#ifndef _MSC_VER
     for (const auto *decl : cls->decls()) {
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
@@ -788,7 +789,7 @@ void translation_unit_visitor::process_class_children(
             }
         }
     }
-
+#endif
     if (cls->isCompleteDefinition())
         for (const auto *friend_declaration : cls->friends()) {
             if (friend_declaration != nullptr)
@@ -1429,7 +1430,7 @@ std::unique_ptr<class_> translation_unit_visitor::
     template_instantiation.set_name(template_decl->getNameAsString());
     template_instantiation.set_namespace(ns);
     template_instantiation.set_id(template_decl->getID() +
-        static_cast<id_t>(
+        static_cast<common::id_t>(
             std::hash<std::string>{}(full_template_specialization_name) >> 4U));
 
     build_template_instantiation_process_template_arguments(parent,

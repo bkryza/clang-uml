@@ -37,7 +37,11 @@ namespace clanguml::common::model {
 enum class source_file_t { kDirectory, kHeader, kImplementation };
 
 struct fs_path_sep {
+#ifdef _WIN32
+    static constexpr std::string_view value = "\\";
+#else
     static constexpr std::string_view value = "/";
+#endif
 };
 
 using filesystem_path = common::model::path<fs_path_sep>;
@@ -53,7 +57,7 @@ public:
     explicit source_file(const std::filesystem::path &p)
     {
         set_path({p.parent_path().string()});
-        set_name(p.filename());
+        set_name(p.filename().string());
         is_absolute_ = p.is_absolute();
         set_id(common::to_id(p));
     }
@@ -107,7 +111,7 @@ public:
         res /= name();
 
         if (is_absolute_)
-            res = "/" / res;
+            res = fs_path_sep::value / res;
         else
             res = base / res;
 

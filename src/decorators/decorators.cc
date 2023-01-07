@@ -62,7 +62,7 @@ decorator_toks decorator::tokenize(const std::string &label, std::string_view c)
     decorator_toks res;
     res.label = label;
     size_t pos{};
-    const auto *it = c.begin();
+    auto it = c.begin();
     std::advance(it, label.size());
 
     if (*it == ':') {

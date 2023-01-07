@@ -20,7 +20,15 @@
 
 .DEFAULT_GOAL := debug
 
-NUMPROC ?= $(shell nproc)
+OS_UNAME := $(shell uname -s)
+
+ifeq ($(OS_UNAME),Linux)
+	NUMPROC ?= $(shell nproc)
+else ifeq ($(OS_UNAME),Darwin)
+	NUMPROC ?= $(shell sysctl -n hw.logicalcpu)
+else
+	NUMPROC ?= 1
+endif
 
 LLVM_VERSION ?=
 CMAKE_CXX_FLAGS ?=

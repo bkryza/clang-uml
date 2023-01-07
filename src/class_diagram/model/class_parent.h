@@ -32,8 +32,6 @@ public:
     clanguml::common::id_t id() const noexcept { return id_; }
     void set_id(clanguml::common::id_t id) { id_ = id; }
 
-    void set_id(id_t id);
-
     void is_virtual(bool is_virtual);
     bool is_virtual() const;
 

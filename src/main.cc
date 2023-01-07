@@ -151,7 +151,7 @@ int main(int argc, const char *argv[])
     CLI::App app{"Clang-based PlantUML diagram generator for C++"};
 
     std::string config_path{".clang-uml"};
-    std::string compilation_database_dir{'.'};
+    std::string compilation_database_dir{};
     std::vector<std::string> diagram_names{};
     std::optional<std::string> output_directory;
     unsigned int thread_count{0};
@@ -244,6 +244,10 @@ int main(int argc, const char *argv[])
     }
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
+
+    if (!compilation_database_dir.empty()) {
+        config.compilation_database_dir.set(compilation_database_dir);
+    }
 
     LOG_INFO("Loading compilation database from {} directory",
         config.compilation_database_dir());
@@ -551,7 +555,7 @@ int add_config_diagram(clanguml::common::model::diagram_t type,
         return 1;
     }
 
-    YAML::Node doc = YAML::LoadFile(config_file);
+    YAML::Node doc = YAML::LoadFile(config_file.string());
 
     for (YAML::const_iterator it = doc["diagrams"].begin();
          it != doc["diagrams"].end(); ++it) {

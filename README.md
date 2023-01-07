@@ -9,7 +9,7 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
-Currently the diagrams are generated in [PlantUML](https://plantuml.com) format.
+Currently, the diagrams are generated in [PlantUML](https://plantuml.com) format.
 
 `clang-uml` currently supports C++ up to version 17.
 
@@ -46,71 +46,7 @@ More comprehensive documentation can be found [here](./docs/README.md).
 
 ## Installation
 
-### Distribution packages
-
-#### Ubuntu
-
-```bash
-# Currently supported Ubuntu versions are Focal, Jammy and Kinetic
-sudo add-apt-repository ppa:bkryza/clang-uml
-sudo apt update
-sudo apt install clang-uml
-```
-
-#### Fedora
-
-```bash
-# Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.0-1.fc36.x86_64.rpm
-
-# Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.0-1.fc37.x86_64.rpm
-```
-
-#### Conda
-
-```bash
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda install -c bkryza/label/clang-uml clang-uml
-```
-
-### Building from source
-
-First make sure that you have the following dependencies installed:
-
-```bash
-# Ubuntu (clang version will vary depending on Ubuntu version)
-apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
-
-# macos
-brew install ccache cmake llvm yaml-cpp
-```
-
-Then proceed with building the sources:
-
-```bash
-git clone https://github.com/bkryza/clang-uml
-cd clang-uml
-# Please note that top level Makefile is just a convenience wrapper for CMake
-make release
-release/clang-uml --help
-
-# To build using a specific installed version of LLVM use:
-LLVM_VERSION=14 make release
-
-# Optionally
-make install
-# or
-export PATH=$PATH:$PWD/release
-
-# On macos, it is necessary to build clang-uml using the same llvm against which it is linked, e.g.
-export CC=/usr/local/opt/llvm/bin/clang
-export CCX=/usr/local/opt/llvm/bin/clang++
-LLVM_VERSION=14 make release
-```
+Installation instructions for `Linux`, `macos` and `Windows` can be found [here](./docs/installation.md).
 
 ## Usage
 
@@ -128,6 +64,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
 * For Boost-based projects
   try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
 * For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
+* For Microsoft Visual Studio projects try [Clang Power Tools](https://www.clangpowertools.com)
 
 ### Invocation
 
@@ -466,6 +403,8 @@ exclude:
     - clanguml::common::ClassF
 ```
 
+More details on this can be found in the [diagram filters](./docs/diagram_filters.md) documentation section.
+
 ### Test cases
 
 The build-in test cases used for unit testing of the `clang-uml`, can be browsed [here](./docs/test_cases.md).
@@ -483,7 +422,7 @@ This project relies on the following great tools:
 
 ## Contributing
 
-If you would like to contribute to the project, please checkout [contributing guidelines](./CONTRIBUTING.md).
+If you would like to contribute to the project, please check out [contributing guidelines](./CONTRIBUTING.md).
 
 ## LICENSE
 
