@@ -599,7 +599,7 @@ template <> struct convert<sequence_diagram> {
 
         // Ensure relative_to has a value
         if (!rhs.relative_to.has_value)
-            rhs.relative_to.set(std::filesystem::current_path());
+            rhs.relative_to.set(std::filesystem::current_path().lexically_normal());
 
         rhs.initialize_type_aliases();
 
