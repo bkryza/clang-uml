@@ -81,11 +81,13 @@ First, install the following dependencies manually:
 * [Git](https://git-scm.com/download/win)
 * [CMake](https://cmake.org/download/)
 * [Visual Studio](https://visualstudio.microsoft.com/vs/community/)
-* [Clang Power Tools](https://clangpowertools.com/) - this can be installed from VS Extension manager
+
+> All the following steps should be invoked in `Developer PowerShell for VS`.
 
 Create installation directory for `clang-uml` and its dependencies:
+
 ```bash
-# This is where our working clang-uml binary will be located
+# This is where clang-uml binary and its dependencies will be installed after build
 # If you change this path, adapt all consecutive steps
 mkdir C:\clang-uml
 # This directory will be removed after build
@@ -93,7 +95,7 @@ mkdir C:\clang-uml-tmp
 cd C:\clang-uml-tmp
 ```
 
-Build and install yaml-cpp:
+Build and install `yaml-cpp`:
 
 ```bash
 git clone https://github.com/jbeder/yaml-cpp
@@ -105,18 +107,36 @@ cd yaml-cpp-build
 msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
 ```
 
-Build and install LLVM:
+Build and install `LLVM`:
 
 ```bash 
 pip install psutil
-git clone --branch llvmorg-15.0.6 --depth 1 https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-15.0.6.zip
+# Update the LLVM branch if necessary
+git clone --branch llvmorg-15.0.6 --depth 1 https://github.com/llvm/llvm-project.git llvm
 cmake -S .\llvm\llvm -B llvm-build -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -Thost=x64
-msbuild .\INSTALL.sln  -maxcpucount /p:Configuration=Release
+cd llvm-build
+msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
 ```
 
-Build and install clang-uml:
+Build and install `clang-uml`:
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
 cmake -S .\clang-uml\ -B .\clang-uml-build\ -DCMAKE_PREFIX_PATH="C:\clang-uml" -Thost=x64
+cd clang-uml-build
+msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
+```
+
+Check if `clang-uml` works:
+
+```bash
+cd C:\clang-uml
+bin\clang-uml.exe --version
+```
+It should produce something like:
+```bash
+clang-uml 0.3.0
+Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+Built against LLVM/Clang libraries version: 15.0.6
+Using LLVM/Clang libraries version: clang version 15.0.6 (https://github.com/llvm/llvm-project.git 088f33605d8a61ff519c580a71b1dd57d16a03f8)
 ```

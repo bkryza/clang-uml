@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Added support for building with Microsoft Visual Studio
+
 ### 0.3.0
   * Added support for sequence diagrams with template code
 
