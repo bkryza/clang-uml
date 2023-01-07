@@ -26,7 +26,6 @@ namespace clanguml::common::visitor {
 translation_unit_visitor::translation_unit_visitor(
     clang::SourceManager &sm, const clanguml::config::diagram &config)
     : source_manager_{sm}
-    , config_{config}
 {
     if (config.comment_parser() == config::comment_parser_t::plain) {
         comment_visitor_ =

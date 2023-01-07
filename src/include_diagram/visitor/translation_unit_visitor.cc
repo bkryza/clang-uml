@@ -24,11 +24,11 @@
 
 namespace clanguml::include_diagram::visitor {
 
-translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
+translation_unit_visitor::translation_unit_visitor(
+    clang::SourceManager & /*sm*/,
     clanguml::include_diagram::model::diagram &diagram,
     const clanguml::config::include_diagram &config)
-    : source_manager_{sm}
-    , diagram_{diagram}
+    : diagram_{diagram}
     , config_{config}
 {
 }

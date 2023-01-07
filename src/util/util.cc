@@ -52,13 +52,14 @@ std::string get_process_output(const std::string &command)
     std::array<char, kBufferSize> buffer{};
     std::string result;
 
-#if defined(__linux) || defined(__unix)
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
     std::unique_ptr<FILE, decltype(&pclose)> pipe(
         popen(command.c_str(), "r"), pclose);
-#elif defined(WINDOWS) || defined(_WIN32) || defined(WIN32)
+#elif defined(_WIN32)
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(
         _popen(command.c_str(), "r"), _pclose);
 #endif
+
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
