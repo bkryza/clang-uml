@@ -46,71 +46,7 @@ More comprehensive documentation can be found [here](./docs/README.md).
 
 ## Installation
 
-### Distribution packages
-
-#### Ubuntu
-
-```bash
-# Currently supported Ubuntu versions are Focal, Jammy and Kinetic
-sudo add-apt-repository ppa:bkryza/clang-uml
-sudo apt update
-sudo apt install clang-uml
-```
-
-#### Fedora
-
-```bash
-# Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.0-1.fc36.x86_64.rpm
-
-# Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.0/clang-uml-0.3.0-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.0-1.fc37.x86_64.rpm
-```
-
-#### Conda
-
-```bash
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda install -c bkryza/label/clang-uml clang-uml
-```
-
-### Building from source
-
-First make sure that you have the following dependencies installed:
-
-```bash
-# Ubuntu (clang version will vary depending on Ubuntu version)
-apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
-
-# macos
-brew install ccache cmake llvm yaml-cpp
-```
-
-Then proceed with building the sources:
-
-```bash
-git clone https://github.com/bkryza/clang-uml
-cd clang-uml
-# Please note that top level Makefile is just a convenience wrapper for CMake
-make release
-release/clang-uml --help
-
-# To build using a specific installed version of LLVM use:
-LLVM_VERSION=14 make release
-
-# Optionally
-make install
-# or
-export PATH=$PATH:$PWD/release
-
-# On macos, it is necessary to build clang-uml using the same llvm against which it is linked, e.g.
-export CC=/usr/local/opt/llvm/bin/clang
-export CCX=/usr/local/opt/llvm/bin/clang++
-LLVM_VERSION=14 make release
-```
+Installation instruction for `Linux`, `macos` and `Windows` can be found [here](./docs/installation.md).
 
 ## Usage
 

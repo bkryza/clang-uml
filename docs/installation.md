@@ -33,14 +33,12 @@ conda install -c bkryza/label/clang-uml clang-uml
 
 ### Building from source
 
+#### Linux
 First make sure that you have the following dependencies installed:
 
 ```bash
 # Ubuntu (clang version will vary depending on Ubuntu version)
 apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
-
-# macos
-brew install ccache cmake llvm yaml-cpp
 ```
 
 Then proceed with building the sources:
@@ -62,9 +60,9 @@ export PATH=$PATH:$PWD/release
 ```
 
 #### macos
+
 ```bash
-# On macos, it is necessary to build clang-uml using the same llvm against which it is linked, e.g.
-brew install llvm
+brew install ccache cmake llvm yaml-cpp
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CCX=/usr/local/opt/llvm/bin/clang++
@@ -75,10 +73,9 @@ LLVM_VERSION=14 make release
 
 ##### Visual Studio native build
 
-These steps present how to build and use `clang-uml` using Visual Studio only without any
-`vcpkg` or `choco` dependencies package managers.
+These steps present how to build and use `clang-uml` natively using Visual Studio only.
 
-First, install the following dependencies:
+First, install the following dependencies manually:
 
 * [Python 3](https://www.python.org/downloads/windows/)
 * [Git](https://git-scm.com/download/win)
@@ -89,6 +86,7 @@ First, install the following dependencies:
 Create installation directory for `clang-uml` and its dependencies:
 ```bash
 # This is where our working clang-uml binary will be located
+# If you change this path, adapt all consecutive steps
 mkdir C:\clang-uml
 # This directory will be removed after build
 mkdir C:\clang-uml-tmp
