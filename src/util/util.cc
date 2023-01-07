@@ -101,8 +101,7 @@ bool is_git_repository()
         return true;
 
     return contains(
-        trim(get_process_output("git rev-parse --git-dir")),
-        ".git");
+        trim(get_process_output("git rev-parse --git-dir")), ".git");
 }
 
 std::string get_git_branch()

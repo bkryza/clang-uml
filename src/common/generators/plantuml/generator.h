@@ -197,7 +197,8 @@ inja::json generator<C, D>::element_context(const E &e) const
         if (file.is_absolute() && ctx.template contains("git"))
 #endif
             relative_path =
-                std::filesystem::relative(file, ctx["git"]["toplevel"]).string();
+                std::filesystem::relative(file, ctx["git"]["toplevel"])
+                    .string();
 
         ctx["element"]["source"]["path"] = relative_path;
         ctx["element"]["source"]["full_path"] = file.string();

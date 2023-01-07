@@ -1,8 +1,8 @@
 #include <array>
 #include <map>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace clanguml {
 namespace t30002 {
