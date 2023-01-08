@@ -28,7 +28,35 @@ set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 #
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries or statically" ON)
 set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
-set(GIT_VERSION "0.3.0" CACHE STRING "clang-uml version")
+
+#
+# Setup version string
+#
+find_package(Git)
+
+if(NOT DEFINED GIT_VERSION)
+    if(GIT_EXECUTABLE)
+        execute_process(
+                COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE GIT_VERSION
+                RESULT_VARIABLE GIT_ERROR_CODE
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+    endif(GIT_EXECUTABLE)
+endif(NOT DEFINED GIT_VERSION)
+
+if(NOT DEFINED GIT_VERSION)
+    set(GIT_VERSION "0.0.0-unknown")
+endif(NOT DEFINED GIT_VERSION)
+
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
+        GIT_VERSION_MATCH ${GIT_VERSION})
+set(GIT_VERSION_MAJOR ${CMAKE_MATCH_1})
+set(GIT_VERSION_MINOR ${CMAKE_MATCH_2})
+set(GIT_VERSION_PATCH ${CMAKE_MATCH_3})
+
+message(STATUS "clang-uml version: ${GIT_VERSION_MAJOR}.${GIT_VERSION_MINOR}.${GIT_VERSION_PATCH}")
 
 #
 # Setup LLVM
@@ -213,6 +241,32 @@ include(GNUInstallDirs)
 install(TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+
+#
+# Setup installer
+#
+set(CPACK_PACKAGE_NAME "clang-uml")
+set(CPACK_PACKAGE_VENDOR "Bartek Kryza <bkryza@gmail.com>")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "clang-uml - C++ UML diagram generator based on Clang")
+set(CPACK_PACKAGE_VERSION "${GIT_VERSION}")
+set(CPACK_PACKAGE_VERSION_MAJOR "${GIT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${GIT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${GIT_VERSION_PATCH}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "clang-uml")
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md)
+
+if(MSVC)
+    set(CPACK_GENERATOR "NSIS")
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    set(CPACK_NSIS_DISPLAY_NAME "clang-uml")
+    set(CPACK_NSIS_HELP_LINK "https://github.com/bkryza/clang-uml")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/bkryza/clang-uml")
+    set(CPACK_NSIS_CONTACT "Bartek Kryza <bkryza@gmail.com>")
+    set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_SOURCE_GENERATOR "ZIP")
+endif(MSVC)
+
+include(CPack)
 
 #
 # Enable testing via CTest

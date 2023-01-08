@@ -39,3 +39,13 @@ conda install conda-build make
 cd packaging
 make CONDA_TOKEN=<TOKEN> conda
 ```
+
+## Windows
+
+First build release configuration using `cmake` and `msbuild` according
+to the [documentation](../docs/installation.md#visual-studio-native-build).
+
+```bash
+cd <MSBUILD_BUILD_DIRECTORY>
+cpack -C "Release" -G NSIS64
+```
