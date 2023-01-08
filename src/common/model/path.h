@@ -128,7 +128,13 @@ public:
         }
     }
 
-    void pop_back() { path_.pop_back(); }
+    void pop_back()
+    {
+        if (!path_.empty())
+        {
+            path_.pop_back();
+        }
+    }
 
     std::optional<path> parent() const
     {
