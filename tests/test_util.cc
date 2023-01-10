@@ -169,3 +169,26 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
     CHECK(declaration_template[1].type() == "Result");
     CHECK(declaration_template[2].type() == "Tail");
 }
+
+TEST_CASE("Test path_to_url", "[unit-test]")
+{
+    namespace fs = std::filesystem;
+    using namespace clanguml::util;
+
+    fs::path p1{""};
+    p1.make_preferred();
+
+    CHECK(path_to_url(p1) == "");
+
+    fs::path p2{"a/b/c/d"};
+    p2.make_preferred();
+    CHECK(path_to_url(p2) == "a/b/c/d");
+
+    fs::path p3{"/a/b/c/d"};
+    p3.make_preferred();
+    CHECK(path_to_url(p3) == "/a/b/c/d");
+
+    fs::path p4{"/"};
+    p4.make_preferred();
+    CHECK(path_to_url(p4) == "/");
+}
