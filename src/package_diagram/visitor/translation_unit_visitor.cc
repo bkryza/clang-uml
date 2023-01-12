@@ -220,18 +220,16 @@ void translation_unit_visitor::process_class_children(
 
     // Static fields have to be processed by iterating over variable
     // declarations
-#ifndef _MSC_VER
     for (const auto *decl : cls.decls()) {
         if (decl->getKind() == clang::Decl::Var) {
             const clang::VarDecl *variable_declaration{
-                dynamic_cast<const clang::VarDecl *>(decl)};
+                clang::dyn_cast_or_null<clang::VarDecl>(decl)};
             if ((variable_declaration != nullptr) &&
                 variable_declaration->isStaticDataMember()) {
                 process_static_field(*variable_declaration, relationships);
             }
         }
     }
-#endif
 
     if (cls.isCompleteDefinition())
         for (const auto *friend_declaration : cls.friends()) {

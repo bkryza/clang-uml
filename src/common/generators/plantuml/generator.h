@@ -569,6 +569,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
         auto element_opt = m_model.get_with_namespace(
             args[0]->get<std::string>(), m_config.using_namespace());
 
+
         if (!element_opt.has_value())
             throw clanguml::error::uml_alias_missing(
                 args[0]->get<std::string>());

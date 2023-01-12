@@ -21,6 +21,7 @@
 
 #include "common/model/namespace.h"
 
+
 TEST_CASE("Test namespace_", "[unit-test]")
 {
     using clanguml::common::model::namespace_;

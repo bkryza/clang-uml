@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "test_cases.h"
 #include "common/generators/plantuml/generator.h"
 
