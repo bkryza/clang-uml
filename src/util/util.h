@@ -257,6 +257,6 @@ std::size_t hash_seed(std::size_t seed);
  * @param p Path to convert
  * @return String representation of the path in URL format
  */
-std::string path_to_url(const std::filesystem::path& p);
+std::string path_to_url(const std::filesystem::path &p);
 
 } // namespace clanguml::util

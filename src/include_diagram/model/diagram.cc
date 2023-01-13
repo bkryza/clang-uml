@@ -140,7 +140,8 @@ diagram::files() const
 }
 
 common::optional_ref<clanguml::common::model::diagram_element>
-diagram::get_with_namespace(const std::string &name, const common::model::namespace_ &ns) const
+diagram::get_with_namespace(
+    const std::string &name, const common::model::namespace_ &ns) const
 {
     // Convert to preferred OS path
     std::filesystem::path namePath{name};
