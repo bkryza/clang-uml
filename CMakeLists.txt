@@ -83,7 +83,7 @@ if(MSVC)
 endif(MSVC)
 
 if(LINK_LLVM_SHARED)
-    set(LIBTOOLING_LIBS clang-cpp LLVM)
+    set(LIBTOOLING_LIBS clang-cpp12 LLVM)
 else(LINK_LLVM_SHARED)
     set(LIBTOOLING_LIBS
         clangLex

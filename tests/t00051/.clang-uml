@@ -1,0 +1,17 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00051_class:
+    type: class
+    glob:
+      - ../../tests/t00051/t00051.cc
+    comment_parser: clang
+    include:
+      namespaces:
+        - clanguml
+        - clanguml::t00051
+      context:
+        - clanguml::A
+        - clanguml::t00051::B
+        - clanguml::t00051::::C
+    using_namespace: clanguml

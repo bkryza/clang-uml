@@ -147,6 +147,9 @@ test_cases:
     - name: t00050
       title: Test case for generating notes from comments using jinja templates
       description:
+    - name: t00051
+      title: Test case for anonymous namespace within named namespace
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
