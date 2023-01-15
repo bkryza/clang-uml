@@ -15,7 +15,11 @@ public:
 /// \brief This is class B
 class B : public A {
 public:
+    B() { }
     virtual void foo_a() override { }
+
+protected:
+    void foo_b() const { }
 };
 
 /// @brief This is class C - class C has a long comment
@@ -81,6 +85,17 @@ public:
 private:
     /// All the A pointers
     std::vector<A *> as;
+};
+
+class F : public B {
+public:
+    using B::B;
+    using B::foo_b;
+};
+
+struct G : private B {
+    using B::B;
+    using B::foo_b;
 };
 } // namespace t00002
 } // namespace clanguml

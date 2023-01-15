@@ -1,5 +1,6 @@
 #include <functional>
 #include <string>
+#include <thread>
 
 namespace clanguml {
 namespace t00003 {
@@ -50,8 +51,35 @@ private:
 
     int private_member;
     int a_, b_, c_;
+
+    class custom_thread1 : private std::thread {
+    public:
+        template <class Function, class... Args>
+        explicit custom_thread1(Function &&f, Args &&...args)
+            : std::thread::thread(
+                  std::forward<Function>(f), std::forward<Args>(args)...)
+        {
+        }
+    };
+    static custom_thread1 start_thread1();
+
+    class custom_thread2 : private std::thread {
+        using std::thread::thread;
+    };
+    static custom_thread2 start_thread2();
 };
 
 int A::static_int = 1;
+
+A::custom_thread1 A::start_thread1()
+{
+    return custom_thread1{[]() {}};
+}
+
+A::custom_thread2 A::start_thread2()
+{
+    return custom_thread2{[]() {}};
+}
+
 } // namespace t00003
 } // namespace clanguml
