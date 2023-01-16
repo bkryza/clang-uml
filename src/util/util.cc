@@ -327,8 +327,8 @@ std::string path_to_url(const std::filesystem::path &p)
 
     if (p.has_root_directory())
         return fmt::format("/{}", fmt::join(path_tokens, "/"));
-    else
-        return fmt::format("{}", fmt::join(path_tokens, "/"));
+
+    return fmt::format("{}", fmt::join(path_tokens, "/"));
 }
 
 } // namespace clanguml::util
