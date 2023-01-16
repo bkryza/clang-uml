@@ -64,6 +64,11 @@ Thanks for taking interest in `clang-uml`!
   make format
   git add . && git commit -m "Fixed formatting"
   ```
+* Make sure the code doesn't introduce any `clang-tidy` warnings:
+  ```bash
+  make tidy
+  ```
+
 * Create a pull request from your branch to `master` branch
 
 ## If you would like to add a feature
@@ -79,6 +84,7 @@ Thanks for taking interest in `clang-uml`!
   * 80-character line width
   * snakes over camels
   * use `make format` before submitting PR to ensure consistent formatting
+  * use `make tidy` to check if your code doesn't introduce any `clang-tidy` warnings
 * Add test case (or multiple test cases), which cover the new feature
 * Finally, create a pull request!
 
