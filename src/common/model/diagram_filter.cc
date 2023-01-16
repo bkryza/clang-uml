@@ -374,6 +374,8 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
             continue;
         }
 
+        absolute_path.make_preferred();
+
         paths_.emplace_back(std::move(absolute_path));
     }
 }
@@ -386,13 +388,15 @@ tvl::value_t paths_filter::match(
     }
 
     // Matching source paths doesn't make sens if they are not absolute
-    if (!p.is_absolute())
+    if (!p.is_absolute()) {
         return {};
+    }
 
     auto pp = p.fs_path(root_);
     for (const auto &path : paths_) {
         if (pp.root_name().string() == path.root_name().string() &&
-            util::starts_with(pp, path)) {
+            util::starts_with(pp.relative_path(), path.relative_path())) {
+
             return true;
         }
     }

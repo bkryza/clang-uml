@@ -200,7 +200,7 @@ inja::json generator<C, D>::element_context(const E &e) const
                 std::filesystem::relative(file, ctx["git"]["toplevel"])
                     .string();
 
-        ctx["element"]["source"]["path"] = relative_path;
+        ctx["element"]["source"]["path"] = util::path_to_url(relative_path);
         ctx["element"]["source"]["full_path"] = file.string();
         ctx["element"]["source"]["name"] = file.filename().string();
         ctx["element"]["source"]["line"] = e.line();

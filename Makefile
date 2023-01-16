@@ -41,7 +41,7 @@ GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 .PHONY: clean
 clean:
-	rm -rf debug release
+	rm -rf debug release debug_tidy
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
@@ -59,11 +59,25 @@ release/CMakeLists.txt:
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
 		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
-        -DLLVM_VERSION=${LLVM_VERSION}
+		-DLLVM_VERSION=${LLVM_VERSION}
+
+debug_tidy/CMakeLists.txt:
+	cmake -S . -B debug_tidy \
+		-DGIT_VERSION=$(GIT_VERSION) \
+		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DBUILD_TESTS=OFF \
+		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
+		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
+		-DLLVM_VERSION=${LLVM_VERSION}
 
 debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
 	make -C debug -j$(NUMPROC)
+
+debug_tidy: debug_tidy/CMakeLists.txt
+	echo "Using ${NUMPROC} cores"
+	make -C debug_tidy -j$(NUMPROC)
 
 release: release/CMakeLists.txt
 	make -C release -j$(NUMPROC)
@@ -105,6 +119,10 @@ clang-format:
 .PHONY: format
 format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
+
+.PHONY: debug_tidy
+tidy: debug_tidy
+	run-clang-tidy-12 -p debug_tidy ./src
 
 .PHONY: check-formatting
 check-formatting:

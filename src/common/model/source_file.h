@@ -56,10 +56,12 @@ public:
 
     explicit source_file(const std::filesystem::path &p)
     {
-        set_path({p.parent_path().string()});
-        set_name(p.filename().string());
-        is_absolute_ = p.is_absolute();
-        set_id(common::to_id(p));
+        auto preferred = p;
+        preferred.make_preferred();
+        set_path({preferred.parent_path().string()});
+        set_name(preferred.filename().string());
+        is_absolute_ = preferred.is_absolute();
+        set_id(common::to_id(preferred));
     }
 
     void set_path(const filesystem_path &p) { path_ = p; }
@@ -116,6 +118,17 @@ public:
             res = base / res;
 
         return res.lexically_normal();
+    }
+
+    inja::json context() const override
+    {
+        inja::json ctx = diagram_element::context();
+
+        std::filesystem::path fullNamePath{ctx["full_name"].get<std::string>()};
+        fullNamePath.make_preferred();
+        ctx["full_name"] = fullNamePath.string();
+
+        return ctx;
     }
 
 private:

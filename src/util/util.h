@@ -248,4 +248,15 @@ void for_each_if(const T &collection, C &&cond, F &&func)
 
 std::size_t hash_seed(std::size_t seed);
 
+/**
+ * @brief Convert filesystem path to url path
+ *
+ * The purpose of this function is to make sure that a path can
+ * be used in a URL, e.g. it's separators are POSIX-style.
+ *
+ * @param p Path to convert
+ * @return String representation of the path in URL format
+ */
+std::string path_to_url(const std::filesystem::path &p);
+
 } // namespace clanguml::util

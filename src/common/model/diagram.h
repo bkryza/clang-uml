@@ -47,7 +47,7 @@ public:
 
     /// \brief Find element in diagram which can have full name or be
     ///        relative to ns
-    common::optional_ref<clanguml::common::model::diagram_element>
+    virtual common::optional_ref<clanguml::common::model::diagram_element>
     get_with_namespace(const std::string &name, const namespace_ &ns) const;
 
     diagram(const diagram &) = delete;

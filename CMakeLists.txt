@@ -80,6 +80,7 @@ message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
 if(MSVC)
     # LLVM_BUILD_LLVM_DYLIB is not available on Windows
     set(LINK_LLVM_SHARED NO)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
 
 if(LINK_LLVM_SHARED)
@@ -113,9 +114,13 @@ else(LINK_LLVM_SHARED)
         LLVMCore
         LLVMSupport)
     if(MSVC)
-        list(APPEND LIBTOOLING_LIBS
-                    LLVMWindowsDriver
-                    LLVMWindowsManifest)
+        if(${LLVM_PACKAGE_VERSION} VERSION_LESS "15.0")
+            list(REMOVE_ITEM LIBTOOLING_LIBS clangSupport)
+        else()
+            list(APPEND LIBTOOLING_LIBS
+                        LLVMWindowsDriver
+                        LLVMWindowsManifest)
+        endif()
     endif(MSVC)
 endif(LINK_LLVM_SHARED)
 

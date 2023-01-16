@@ -89,8 +89,12 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 common::optional_ref<common::model::source_file> diagram::get_file(
     const std::string &name) const
 {
+    // Convert the name to the OS preferred path
+    std::filesystem::path namePath{name};
+    namePath.make_preferred();
+
     for (const auto &p : files_) {
-        if (p.get().full_name(false) == name) {
+        if (p.get().full_name(false) == namePath.string()) {
             return {p};
         }
     }
@@ -133,6 +137,26 @@ const common::reference_vector<common::model::source_file> &
 diagram::files() const
 {
     return files_;
+}
+
+common::optional_ref<clanguml::common::model::diagram_element>
+diagram::get_with_namespace(
+    const std::string &name, const common::model::namespace_ &ns) const
+{
+    // Convert to preferred OS path
+    std::filesystem::path namePath{name};
+    auto namePreferred = namePath.make_preferred().string();
+
+    auto element_opt = get(namePreferred);
+
+    if (!element_opt) {
+        // If no element matches, try to prepend the 'using_namespace'
+        // value to the element and search again
+        auto fully_qualified_name = ns | namePreferred;
+        element_opt = get(fully_qualified_name.to_string());
+    }
+
+    return element_opt;
 }
 
 inja::json diagram::context() const
