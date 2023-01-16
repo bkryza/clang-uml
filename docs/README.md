@@ -2,6 +2,7 @@
 
 
 * [Quick start](./quick_start.md)
+* [Installation](./installation.md)
 * Generating diagrams
   * [Common options](./common_options.md) 
   * [Class diagrams](./class_diagrams.md)

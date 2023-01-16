@@ -104,7 +104,7 @@ git checkout yaml-cpp-0.7.0
 cd ..
 cmake -S .\yaml-cpp\ -B .\yaml-cpp-build\ -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -Thost=x64
 cd yaml-cpp-build
-msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
+msbuild .\INSTALL.vcxproj -maxcpucount /p:Configuration=Release
 ```
 
 Build and install `LLVM`:
@@ -115,7 +115,7 @@ pip install psutil
 git clone --branch llvmorg-15.0.6 --depth 1 https://github.com/llvm/llvm-project.git llvm
 cmake -S .\llvm\llvm -B llvm-build -DLLVM_ENABLE_PROJECTS=clang -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD=X86 -Thost=x64
 cd llvm-build
-msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
+msbuild .\INSTALL.vcxproj -maxcpucount /p:Configuration=Release
 ```
 
 Build and install `clang-uml`:
@@ -124,7 +124,7 @@ Build and install `clang-uml`:
 git clone https://github.com/bkryza/clang-uml
 cmake -S .\clang-uml\ -B .\clang-uml-build\ -DCMAKE_INSTALL_PREFIX="C:\clang-uml" -DCMAKE_PREFIX_PATH="C:\clang-uml" -DBUILD_TESTS=OFF -Thost=x64
 cd clang-uml-build
-msbuild .\INSTALL.sln -maxcpucount /p:Configuration=Release
+msbuild .\INSTALL.vcxproj -maxcpucount /p:Configuration=Release
 ```
 
 Check if `clang-uml` works:
