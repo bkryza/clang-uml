@@ -2081,7 +2081,7 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto file_column = source_manager().getSpellingColumnNumber(location);
     const std::string file_name = util::path_to_url(std::filesystem::relative(
         source_manager().getFilename(location).str(), config().relative_to())
-                                      .string());
+                                                        .string());
 
     if (context().caller_id() != 0 &&
         get_participant(context().caller_id()).has_value()) {

@@ -332,7 +332,7 @@ void generator::generate_participant(
 
         auto participant_name = util::path_to_url(std::filesystem::relative(
             std::filesystem::path{file_path}, relative_to)
-                                    .string());
+                                                      .string());
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "
              << fmt::format("C_{:022}", file_id);
