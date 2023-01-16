@@ -307,8 +307,20 @@ std::string path_to_url(const std::filesystem::path &p)
 {
     std::vector<std::string> path_tokens;
     auto it = p.begin();
-    if (p.has_root_directory())
+    if (p.has_root_directory()) {
+#ifdef _MSC_VER
+        // On Windows convert the root path using its drive letter, e.g.:
+        //   C:\A\B\include.h -> /c/A/B/include.h
+        if(p.root_name().string().size() > 1) {
+            if(p.is_absolute()) {
+                path_tokens.push_back(std::string{
+                    std::tolower(p.root_name().string().at(0), std::locale())});
+            }
+            it++;
+        }
+#endif
         it++;
+    }
 
     for (; it != p.end(); it++)
         path_tokens.push_back(it->string());

@@ -191,4 +191,15 @@ TEST_CASE("Test path_to_url", "[unit-test]")
     fs::path p4{"/"};
     p4.make_preferred();
     CHECK(path_to_url(p4) == "/");
+
+#ifdef _MSC_VER
+    fs::path p5{"C:\\A\\B\\include.h"};
+    CHECK(path_to_url(p5) == "/c/A/B/include.h");
+
+    fs::path p6{"C:A\\B\\include.h"};
+    CHECK(path_to_url(p6) == "C:/A/B/include.h");
+
+    fs::path p7{"A\\B\\include.h"};
+    CHECK(path_to_url(p7) == "A/B/include.h");
+#endif
 }
