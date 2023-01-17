@@ -21,7 +21,7 @@
 namespace clanguml::sequence_diagram::generators::plantuml {
 
 using clanguml::common::model::message_t;
-using clanguml::config::source_location;
+using clanguml::config::location_t;
 using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
 using namespace clanguml::util;
@@ -383,7 +383,7 @@ void generator::generate(std::ostream &ostr) const
     }
 
     for (const auto &sf : m_config.start_from()) {
-        if (sf.location_type == source_location::location_t::function) {
+        if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : m_model.sequences()) {
                 const auto &caller = *m_model.participants().at(v.from());

@@ -188,3 +188,29 @@ TEST_CASE("Test config layout", "[unit-test]")
                      *cfg.diagrams["package_main"]),
         clanguml::common::model::diagram_t::kPackage);
 }
+
+TEST_CASE("Test config emitters", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/complete.yml");
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+
+    out << cfg;
+    out << YAML::Newline;
+
+    // Write the emitted YAML to a temp file
+    auto tmp_file = std::filesystem::temp_directory_path() /
+        fmt::format("clang-uml-{:16}", rand());
+
+    {
+        std::ofstream stream(tmp_file.string().c_str(), std::ios::binary);
+        stream << out.c_str();
+    }
+
+    auto cfg_emitted = clanguml::config::load(tmp_file.string());
+
+    REQUIRE(cfg.diagrams.size() == cfg_emitted.diagrams.size());
+
+    std::filesystem::remove(tmp_file);
+}

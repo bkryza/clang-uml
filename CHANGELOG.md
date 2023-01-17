@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Added command line option (--dump-config) to print effective config (#77)
   * Added support for building with Microsoft Visual Studio
 
 ### 0.3.0

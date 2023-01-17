@@ -21,6 +21,12 @@ do not override this option.
 
 For detailed reference of all configuration options see [here](./configuration_file.md).
 
+Effective configuration, including default values can be printed out in YAML format using the following option:
+
+```bash
+clang-uml --dump-config
+```
+
 ## Translation unit glob patterns
 One of the key options of the diagram configuration is the list of translation units, which should be parsed to
 get all necessary information for a diagram. 

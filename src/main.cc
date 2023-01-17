@@ -62,6 +62,13 @@ void print_version();
 void print_diagrams_list(const clanguml::config::config &cfg);
 
 /**
+ * Print effective config after loading and setting default values.
+ *
+ *  @param cfg Configuration instance loaded from configuration file
+ */
+void print_config(const clanguml::config::config &cfg);
+
+/**
  * Generate sample configuration file and exit.
  *
  * @return 0 on success or error code
@@ -164,6 +171,7 @@ int main(int argc, const char *argv[])
     std::optional<std::string> add_sequence_diagram;
     std::optional<std::string> add_package_diagram;
     std::optional<std::string> add_include_diagram;
+    bool dump_config{false};
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -190,6 +198,8 @@ int main(int argc, const char *argv[])
         "Add package diagram config");
     app.add_option("--add-include-diagram", add_include_diagram,
         "Add include diagram config");
+    app.add_flag(
+        "--dump-config", dump_config, "Print effective config to stdout");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -240,6 +250,11 @@ int main(int argc, const char *argv[])
 
     if (list_diagrams) {
         print_diagrams_list(config);
+        return 0;
+    }
+
+    if (dump_config) {
+        print_config(config);
         return 0;
     }
 
@@ -620,4 +635,15 @@ int add_config_diagram(clanguml::common::model::diagram_t type,
     ofs.close();
 
     return 0;
+}
+
+void print_config(const clanguml::config::config &cfg)
+{
+    YAML::Emitter out;
+    out.SetIndent(2);
+
+    out << cfg;
+    out << YAML::Newline;
+
+    std::cout << out.c_str();
 }

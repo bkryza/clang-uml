@@ -37,7 +37,11 @@ namespace config {
 
 enum class method_arguments { full, abbreviated, none };
 
+std::string to_string(method_arguments ma);
+
 enum class comment_parser_t { plain, clang };
+
+std::string to_string(comment_parser_t cp);
 
 struct plantuml {
     std::vector<std::string> before;
@@ -77,6 +81,8 @@ struct filter {
 };
 
 enum class hint_t { up, down, left, right };
+
+std::string to_string(hint_t t);
 
 struct layout_hint {
     hint_t hint{hint_t::up};
@@ -120,7 +126,14 @@ using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
 
-std::string to_string(hint_t t);
+enum class location_t { marker, fileline, function };
+
+std::string to_string(location_t cp);
+
+struct source_location {
+    location_t location_type{location_t::function};
+    std::string location;
+};
 
 struct inheritable_diagram_options {
     option<std::vector<std::string>> glob{"glob"};
@@ -165,18 +178,11 @@ struct diagram : public inheritable_diagram_options {
     std::string name;
 };
 
-struct source_location {
-    enum class location_t { usr, marker, fileline, function };
-    location_t location_type{location_t::function};
-    std::string location;
-};
-
 struct class_diagram : public diagram {
     ~class_diagram() override = default;
 
     common::model::diagram_t type() const override;
 
-    option<std::vector<std::string>> classes{"classes"};
     option<layout_hints> layout{"layout"};
 
     void initialize_relationship_hints();
@@ -216,6 +222,60 @@ struct config : public inheritable_diagram_options {
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
 };
 
+//
+// YAML serialization emitters
+//
+YAML::Emitter &operator<<(YAML::Emitter &out, const config &c);
+
+YAML::Emitter &operator<<(
+    YAML::Emitter &out, const inheritable_diagram_options &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const plantuml &p);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const method_arguments &ma);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const generate_links_config &glc);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const git_config &gc);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const relationship_hint_t &rh);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const comment_parser_t &cp);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const hint_t &h);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const class_diagram &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const sequence_diagram &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const include_diagram &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const package_diagram &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c);
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc);
+
+template <typename T>
+YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
+{
+    if (o.has_value) {
+        out << YAML::Key << o.name;
+        out << YAML::Value << o.value;
+    }
+    return out;
+}
+
 config load(const std::string &config_file);
 } // namespace config
+
+namespace common::model {
+YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_ &n);
+YAML::Emitter &operator<<(YAML::Emitter &out, const relationship_t &r);
+YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &r);
+YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d);
+} // namespace common::model
+
 } // namespace clanguml
