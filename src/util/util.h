@@ -97,15 +97,6 @@ std::string join(
     const std::vector<std::string> &toks, std::string_view delimiter);
 
 /**
- * @brief Remove any qualifiers (e.g. const) from type.
- *
- * @param s String spelling of the type.
- *
- * @return Unqualified type spelling.
- */
-std::string unqualify(const std::string &s);
-
-/**
  * @brief Abbreviate string to max_length, and replace last 3 characters
  *        with ellipsis.
  *

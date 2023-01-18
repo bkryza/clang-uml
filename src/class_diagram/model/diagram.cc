@@ -126,14 +126,6 @@ common::optional_ref<enum_> diagram::get_enum(
     return {};
 }
 
-void diagram::add_type_alias(std::unique_ptr<type_alias> &&ta)
-{
-    LOG_DBG(
-        "Adding global alias: {} -> {}", ta->alias(), ta->underlying_type());
-
-    type_aliases_[ta->alias()] = std::move(ta);
-}
-
 bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));

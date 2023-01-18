@@ -51,12 +51,6 @@ struct call_expression_context {
 
     void update(clang::FunctionTemplateDecl *function_template);
 
-    bool in_class_method() const;
-
-    bool in_function() const;
-
-    bool in_function_template() const;
-
     std::int64_t caller_id() const;
 
     std::int64_t lambda_caller_id() const;
@@ -73,7 +67,6 @@ struct call_expression_context {
     void leave_ifstmt();
 
     void enter_elseifstmt(clang::IfStmt *stmt);
-    void leave_elseifstmt();
     clang::IfStmt *current_elseifstmt() const;
 
     clang::Stmt *current_loopstmt() const;

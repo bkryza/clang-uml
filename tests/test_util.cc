@@ -170,6 +170,30 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
     CHECK(declaration_template[2].type() == "Tail");
 }
 
+TEST_CASE("Test remove_prefix", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    const std::vector<std::string> collection_base = {"aa", "bb", "cc", "dd"};
+    std::vector<std::string> collection = collection_base;
+
+    const std::vector<std::string> prefix1 = {"xx", "yy"};
+    const std::vector<std::string> prefix2 = {"aa", "bb"};
+    const std::vector<std::string> prefix3 = {"cc", "dd"};
+
+    remove_prefix(collection, prefix1);
+
+    CHECK(collection == collection_base);
+
+    remove_prefix(collection, prefix2);
+
+    CHECK(collection == prefix3);
+
+    remove_prefix(collection, prefix3);
+
+    CHECK(collection.empty());
+}
+
 TEST_CASE("Test path_to_url", "[unit-test]")
 {
     namespace fs = std::filesystem;
@@ -202,4 +226,13 @@ TEST_CASE("Test path_to_url", "[unit-test]")
     fs::path p7{"A\\B\\include.h"};
     CHECK(path_to_url(p7) == "A/B/include.h");
 #endif
+}
+
+TEST_CASE("Test hash_seed", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    CHECK(hash_seed(1) != 1);
+    CHECK(hash_seed(1) == hash_seed(1));
+    CHECK(hash_seed(1) != hash_seed(2));
 }

@@ -93,12 +93,6 @@ std::string class_::base_template() const { return base_template_full_name_; }
 
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
-void class_::add_type_alias(type_alias &&ta)
-{
-    LOG_DBG("Adding class alias: {} -> {}", ta.alias(), ta.underlying_type());
-    type_aliases_[ta.alias()] = std::move(ta);
-}
-
 std::string class_::full_name_no_ns() const
 {
     using namespace clanguml::util;

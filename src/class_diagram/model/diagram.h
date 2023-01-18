@@ -23,7 +23,6 @@
 #include "common/model/package.h"
 #include "common/types.h"
 #include "enum.h"
-#include "type_alias.h"
 
 #include <string>
 #include <unordered_set>
@@ -69,8 +68,6 @@ public:
     common::optional_ref<enum_> get_enum(
         clanguml::common::model::diagram_element::id_t id) const;
 
-    void add_type_alias(std::unique_ptr<type_alias> &&ta);
-
     bool add_class(std::unique_ptr<class_> &&c);
 
     bool add_enum(std::unique_ptr<enum_> &&e);
@@ -93,8 +90,6 @@ private:
     common::reference_vector<class_> classes_;
 
     common::reference_vector<enum_> enums_;
-
-    std::map<std::string, std::unique_ptr<type_alias>> type_aliases_;
 };
 } // namespace clanguml::class_diagram::model
 

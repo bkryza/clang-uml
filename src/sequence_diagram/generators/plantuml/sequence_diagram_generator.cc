@@ -369,6 +369,8 @@ bool generator::is_participant_generated(common::id_t id) const
 
 void generator::generate(std::ostream &ostr) const
 {
+    update_context();
+
     m_model.print();
 
     ostr << "@startuml" << std::endl;

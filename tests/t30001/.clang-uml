@@ -15,7 +15,7 @@ diagrams:
       - clanguml::t30001
     plantuml:
       before:
-        - "' t30001 test package diagram"
+        - "' t30001 test diagram of type {{ diagram.type }}"
       after:
         - 'note right of {{ alias("A::AA::AAA") }}: A AAA note...'
         - '{% set e=element("A::AA") %} note top of {{ alias("A::AA") }} : {{ e.comment.formatted }}'

@@ -18,7 +18,6 @@
 #pragma once
 
 #include "class_diagram/model/template_parameter.h"
-#include "class_diagram/model/type_alias.h"
 #include "common/model/element.h"
 
 #include <string>
@@ -121,9 +120,6 @@ private:
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_lambda_{false};
-
-    std::map<std::string, clanguml::class_diagram::model::type_alias>
-        type_aliases_;
 
     std::string full_name_;
 };

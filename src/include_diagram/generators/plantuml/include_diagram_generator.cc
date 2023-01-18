@@ -96,6 +96,8 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
 
 void generator::generate(std::ostream &ostr) const
 {
+    update_context();
+
     ostr << "@startuml" << '\n';
 
     if (m_config.puml)

@@ -201,7 +201,7 @@ TEST_CASE("Test config emitters", "[unit-test]")
 
     // Write the emitted YAML to a temp file
     auto tmp_file = std::filesystem::temp_directory_path() /
-        fmt::format("clang-uml-{:16}", rand());
+        fmt::format("clang-uml-{:016}", rand());
 
     {
         std::ofstream stream(tmp_file.string().c_str(), std::ios::binary);

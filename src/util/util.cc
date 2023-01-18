@@ -191,20 +191,6 @@ std::string join(
     return fmt::format("{}", fmt::join(toks, delimiter));
 }
 
-std::string unqualify(const std::string &s)
-{
-    auto toks = clanguml::util::split(s, " ");
-    const std::vector<std::string> qualifiers = {"static", "const", "volatile",
-        "register", "constexpr", "mutable", "struct", "enum"};
-
-    toks.erase(toks.begin(),
-        std::find_if(toks.begin(), toks.end(), [&qualifiers](const auto &t) {
-            return std::count(qualifiers.begin(), qualifiers.end(), t) == 0;
-        }));
-
-    return fmt::format("{}", fmt::join(toks, " "));
-}
-
 std::string abbreviate(const std::string &s, const unsigned int max_length)
 {
     if (s.size() <= max_length)

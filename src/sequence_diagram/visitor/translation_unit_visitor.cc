@@ -577,6 +577,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
     if ((current_caller_id != 0) && !stmt->isConstexpr() && !elseif_block) {
         diagram().end_block_message(
             {message_t::kIfEnd, current_caller_id}, message_t::kIf);
+        context().leave_ifstmt();
     }
 
     return true;
@@ -769,7 +770,8 @@ bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if ((current_caller_id != 0) &&
+        (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name(common::to_string(stmt->getLHS()));
         diagram().add_case_stmt_message(std::move(m));
@@ -786,7 +788,8 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if ((current_caller_id != 0) &&
+        (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name("default");
         diagram().add_case_stmt_message(std::move(m));

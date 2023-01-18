@@ -97,6 +97,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
 void generator::generate(std::ostream &ostr) const
 {
+    update_context();
+
     ostr << "@startuml" << '\n';
 
     generate_plantuml_directives(ostr, m_config.puml().before);

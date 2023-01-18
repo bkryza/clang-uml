@@ -25,7 +25,6 @@
 #include "common/model/stylable_element.h"
 #include "common/types.h"
 #include "template_parameter.h"
-#include "type_alias.h"
 
 #include <string>
 #include <vector>
@@ -68,8 +67,6 @@ public:
 
     friend bool operator==(const class_ &l, const class_ &r);
 
-    void add_type_alias(type_alias &&ta);
-
     std::string full_name(bool relative = true) const override;
 
     std::string full_name_no_ns() const override;
@@ -100,7 +97,6 @@ private:
     std::vector<class_parent> bases_;
     std::vector<template_parameter> templates_;
     std::string base_template_full_name_;
-    std::map<std::string, type_alias> type_aliases_;
 
     std::string full_name_;
 };

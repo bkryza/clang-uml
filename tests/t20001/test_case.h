@@ -44,6 +44,8 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
 
+    REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
+
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -110,6 +110,22 @@ public:
     active_participants() const;
 
 private:
+    /**
+     * This method checks the last messages in sequence (current_messages),
+     * if they represent a block sequence identified by statement_begin
+     * (e.g. if/else) and there are no actual call expressions within this block
+     * statement the entire block statement is removed from the end of the
+     * sequence.
+     *
+     * Otherwise the block statement is ended with a proper statement
+     * (e.g. endif)
+     *
+     * @param m Message to add to the sequence
+     * @param statement_begin Type of message which begins this type of block
+     *                        statement (e.g. message_t::kIf)
+     * @param current_messages Reference to the sequence messages which should
+     *                         be amended
+     */
     void fold_or_end_block_statement(message &&m,
         common::model::message_t statement_begin,
         std::vector<message> &current_messages) const;

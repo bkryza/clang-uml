@@ -25,14 +25,12 @@
 namespace clanguml::util {
 class thread_pool_executor {
 public:
-    thread_pool_executor();
+    explicit thread_pool_executor(unsigned int pool_size);
 
     thread_pool_executor(const thread_pool_executor &) = delete;
     thread_pool_executor(thread_pool_executor &&) = delete;
     thread_pool_executor &operator=(const thread_pool_executor &) = delete;
     thread_pool_executor &operator=(thread_pool_executor &&) = delete;
-
-    explicit thread_pool_executor(unsigned int pool_size);
 
     ~thread_pool_executor();
 

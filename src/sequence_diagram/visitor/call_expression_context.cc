@@ -126,22 +126,6 @@ void call_expression_context::update(
     current_function_template_decl_ = function_template;
 }
 
-bool call_expression_context::in_class_method() const
-{
-    return current_class_decl_ != nullptr;
-}
-
-bool call_expression_context::in_function() const
-{
-    return current_class_decl_ == nullptr && current_function_decl_ != nullptr;
-}
-
-bool call_expression_context::in_function_template() const
-{
-    return current_function_decl_ != nullptr &&
-        current_function_template_decl_ != nullptr;
-}
-
 std::int64_t call_expression_context::caller_id() const
 {
     return current_caller_id_;
@@ -205,12 +189,6 @@ void call_expression_context::leave_ifstmt()
 void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 {
     elseif_stmt_stack_.push(stmt);
-}
-
-void call_expression_context::leave_elseifstmt()
-{
-    if (!elseif_stmt_stack_.empty())
-        elseif_stmt_stack_.pop();
 }
 
 clang::IfStmt *call_expression_context::current_elseifstmt() const

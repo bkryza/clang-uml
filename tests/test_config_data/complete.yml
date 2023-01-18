@@ -59,3 +59,19 @@ diagrams:
       # Add this line to the beginning of the resulting puml file
       before:
         - 'title clang-uml class diagram model'
+  config_sequence:
+    type: sequence
+    start_from:
+      - function: main(int,const char**)
+  config_include:
+    type: include
+    include:
+      paths:
+        - src
+  config_package:
+    type: package
+    using_namespace:
+      - ns1
+    include:
+      namespaces:
+        - ns1::ns2

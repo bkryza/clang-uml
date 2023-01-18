@@ -423,6 +423,13 @@ ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,
         fmt::format("{} -[hidden]{}- {}", from, hint, to), caseSensitivity));
 }
 
+ContainsMatcher HasComment(std::string const &comment,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("' {}", comment), caseSensitivity));
+}
+
 ContainsMatcher HasNote(std::string const &cls, std::string const &position,
     std::string const &note = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)

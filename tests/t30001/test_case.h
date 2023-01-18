@@ -43,7 +43,7 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE_THAT(puml, IsPackage("AAA"));
 
     // TODO: Fix _A() to handle fully qualified names, right
-    //       now it only finds the first element with unqalified
+    //       now it only finds the first element with unqualified
     //       name match
     REQUIRE_THAT(
         puml, HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
@@ -61,6 +61,8 @@ TEST_CASE("t30001", "[test-case][package]")
                         "t30001/t30001.cc#L8",
                 clanguml::util::get_git_commit()),
             "BBB"));
+
+    REQUIRE_THAT(puml, HasComment("t30001 test diagram of type package"));
 
     save_puml(
         "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);

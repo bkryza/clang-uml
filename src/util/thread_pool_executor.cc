@@ -19,10 +19,6 @@
 #include "thread_pool_executor.h"
 
 namespace clanguml::util {
-thread_pool_executor::thread_pool_executor()
-    : thread_pool_executor{0}
-{
-}
 
 thread_pool_executor::thread_pool_executor(unsigned int pool_size)
     : done_{false}

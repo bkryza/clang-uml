@@ -28,10 +28,4 @@ struct uml_alias_missing : public virtual std::runtime_error {
     }
 };
 
-struct substring_delimiter_not_found : public virtual std::runtime_error {
-    substring_delimiter_not_found(const std::string &message)
-        : std::runtime_error(message)
-    {
-    }
-};
 } // namespace clanguml::error

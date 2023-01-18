@@ -149,9 +149,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c)
 YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc)
 {
     out << YAML::BeginMap;
-    out << YAML::Key << "location" << YAML::Value << sc.location;
-    out << YAML::Key << "location_type" << YAML::Value
-        << to_string(sc.location_type);
+    out << YAML::Key << to_string(sc.location_type) << YAML::Value
+        << sc.location;
     out << YAML::EndMap;
     return out;
 }
