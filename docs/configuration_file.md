@@ -1,5 +1,13 @@
 # Configuration file reference
 
+<!-- toc -->
+
+* [Top level options](#top-level-options)
+  * [Diagram options](#diagram-options)
+* [Example complete config](#example-complete-config)
+
+<!-- tocstop -->
+
 ## Top level options
 * `compilation_database_dir` - path to the directory containing `compile_commands.json`
 * `output_directory` - path to the directory where PlantUML diagrams will be generated

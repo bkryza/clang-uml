@@ -1,4 +1,13 @@
 # Template engine
+
+<!-- toc -->
+
+* [Accessing comment content](#accessing-comment-content)
+  * [`plain` comment parser](#plain-comment-parser)
+  * [`clang` comment parser](#clang-comment-parser)
+
+<!-- tocstop -->
+
 `clang-uml` integrates [inja](https://github.com/pantor/inja) template engine, with several
 additional functions which can be used in textual directives within the configuration files,
 notes and to generate links and tooltips in diagrams.

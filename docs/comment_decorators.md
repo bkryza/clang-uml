@@ -1,5 +1,14 @@
 # Comment decorators
 
+<!-- toc -->
+
+* [`note`](#note)
+* [`skip` and `skiprelationship`](#skip-and-skiprelationship)
+* [`composition`, `association` and `aggregation`](#composition-association-and-aggregation)
+* [`style`](#style)
+
+<!-- tocstop -->
+
 `clang-uml` provides a set of in-comment directives, called decorators, which allow custom control over
 generation of UML diagrams from C++ and overriding default inference rules for relationships.
 
@@ -82,7 +91,7 @@ generates the following class diagram:
 
 ![note](./test_cases/t00028_class.svg)
 
-# `skip` and `skiprelationship`
+## `skip` and `skiprelationship`
 This decorator allows to skip the specific classes or methods from the diagrams, for instance the following code:
 ```cpp
 

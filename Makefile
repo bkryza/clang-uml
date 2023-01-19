@@ -134,6 +134,10 @@ iwyu_fixes: debug
 	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/src/.*" < debug/iwyu.out
 	python3 $(shell which fix_includes.py) -h --re_only="${PWD}/tests/.*" < debug/iwyu.out
 
+.PHONY: docs
+docs:
+	make -C docs toc
+
 .PHONY: fedora_36
 fedora_36:
 	mkdir -p packaging/_BUILD/fedora/36

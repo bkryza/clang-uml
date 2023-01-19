@@ -1,5 +1,15 @@
 # Generating sequence diagrams
 
+<!-- toc -->
+
+* [Sequence diagram overview](#sequence-diagram-overview)
+* [Specifying diagram entry point](#specifying-diagram-entry-point)
+* [Grouping free functions by file](#grouping-free-functions-by-file)
+* [Lambda expressions in sequence diagrams](#lambda-expressions-in-sequence-diagrams)
+* [Customizing participants order](#customizing-participants-order)
+
+<!-- tocstop -->
+
 The minimal config required to generate a sequence diagram is presented below:
 ```yaml
 # Path to the directory where `compile_commands.json` can be found

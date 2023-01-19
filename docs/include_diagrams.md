@@ -1,5 +1,11 @@
 # Generating include diagrams
 
+<!-- toc -->
+
+* [Tracking system headers directly included by projects files](#tracking-system-headers-directly-included-by-projects-files)
+
+<!-- tocstop -->
+
 Include diagrams allow to document the include dependencies among different parts of the project. This can be very useful
 for instance to detect that a file was included from a module directory, on which specific part of the project
 should not ever depend.

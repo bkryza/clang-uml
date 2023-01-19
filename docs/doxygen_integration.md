@@ -1,5 +1,11 @@
 # Doxygen integration
 
+<!-- toc -->
+
+
+
+<!-- tocstop -->
+
 `clang-uml` diagrams can be easily added to the Doxygen documentation using the image tag, however
 [Doxygen](https://www.doxygen.nl/index.html) does not support the `clang-uml` specific commands.
 

@@ -1,5 +1,18 @@
 # Generating class diagrams
 
+<!-- toc -->
+
+* [Classes and their properties](#classes-and-their-properties)
+  * [Excluding private or protected members from the diagram](#excluding-private-or-protected-members-from-the-diagram)
+* [Relationships](#relationships)
+  * [Relationships to classes in containers or smart pointers](#relationships-to-classes-in-containers-or-smart-pointers)
+* [Inheritance diagrams](#inheritance-diagrams)
+* [Namespaces as packages](#namespaces-as-packages)
+* [Class context diagram](#class-context-diagram)
+* [Disabling dependency relationships](#disabling-dependency-relationships)
+
+<!-- tocstop -->
+
 The minimal config required to generate a class diagram is presented below:
 ```yaml
 # Path to the directory where `compile_commands.json` can be found

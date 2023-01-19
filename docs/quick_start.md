@@ -1,5 +1,11 @@
 # Quick start
 
+<!-- toc -->
+
+
+
+<!-- tocstop -->
+
 To add an initial class diagram to your project, follow these steps:
 
 1. Enter your projects top level directory and run:

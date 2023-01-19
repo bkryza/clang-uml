@@ -1,6 +1,5 @@
 # Documentation
 
-
 * [Quick start](./quick_start.md)
 * [Installation](./installation.md)
 * Generating diagrams

@@ -1,5 +1,11 @@
 # Interactive SVG diagrams
 
+<!-- toc -->
+
+
+
+<!-- tocstop -->
+
 `clang-uml` in combination with PlantUML's link generation in diagrams allows to generate interactive diagrams,
 where clicking on any class, method or call expression can direct the user directly to the source code or some other
 diagram or document available online.

@@ -1,5 +1,19 @@
 # Installation
 
+<!-- toc -->
+
+* [Distribution packages](#distribution-packages)
+  * [Ubuntu](#ubuntu)
+  * [Fedora](#fedora)
+  * [Conda](#conda)
+* [Building from source](#building-from-source)
+  * [Linux](#linux)
+  * [macos](#macos)
+  * [Windows](#windows)
+    * [Visual Studio native build](#visual-studio-native-build)
+
+<!-- tocstop -->
+
 ### Distribution packages
 
 #### Ubuntu

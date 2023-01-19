@@ -1,4 +1,15 @@
 # Test cases index
+
+<!-- toc -->
+
+* [Class diagrams](#class-diagrams)
+* [Sequence diagrams](#sequence-diagrams)
+* [Package diagrams](#package-diagrams)
+* [Include diagrams](#include-diagrams)
+* [Configuration diagrams](#configuration-diagrams)
+
+<!-- tocstop -->
+
 ## Class diagrams
  * [t00002](./test_cases/t00002.md) - Basic class inheritance
  * [t00003](./test_cases/t00003.md) - Class field and methods

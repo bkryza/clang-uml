@@ -1,5 +1,17 @@
 # Troubleshooting
 
+<!-- toc -->
+
+* [General issues](#general-issues)
+  * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
+* [Class diagrams](#class-diagrams)
+  * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+* [Sequence diagrams](#sequence-diagrams)
+  * [Generated diagram is empty](#generated-diagram-is-empty)
+  * [Generated diagram contains several empty control blocks or calls which should not be there](#generated-diagram-contains-several-empty-control-blocks-or-calls-which-should-not-be-there)
+
+<!-- tocstop -->
+
 ## General issues
 ### Diagram generated with PlantUML is cropped
 When generating diagrams with PlantUML without specifying an output file format, the default is PNG. 

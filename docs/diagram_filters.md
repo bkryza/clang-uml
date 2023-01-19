@@ -1,5 +1,17 @@
 # Diagram filters
 
+<!-- toc -->
+
+* [`namespaces`](#namespaces)
+* [`elements`](#elements)
+* [`context`](#context)
+* [`relationships`](#relationships)
+* [`subclasses`](#subclasses)
+* [`specializations`](#specializations)
+* [`dependants` and `dependencies`](#dependants-and-dependencies)
+
+<!-- tocstop -->
+
 Diagram filters are at the core of generating diagrams with `clang-uml`, as they allow to fine tune the scope
 of each diagram, and thus provide you with a several small, but readable diagrams instead of a single huge diagram
 that cannot be effectively browsed, printed or included in an online documentation of your project.

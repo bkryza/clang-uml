@@ -1,5 +1,11 @@
 # Generating package diagrams
 
+<!-- toc -->
+
+
+
+<!-- tocstop -->
+
 Package diagrams are simple diagrams which can be useful to determine the high level structure of a C++ project, 
 by rendering all projects namespaces as UML packages and their interdependencies.
 

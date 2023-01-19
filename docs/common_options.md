@@ -1,5 +1,14 @@
 # Common diagram generation options
 
+<!-- toc -->
+
+* [Overall configuration file structure](#overall-configuration-file-structure)
+* [Translation unit glob patterns](#translation-unit-glob-patterns)
+* [PlantUML custom directives](#plantuml-custom-directives)
+* [Adding debug information in the generated diagrams](#adding-debug-information-in-the-generated-diagrams)
+
+<!-- tocstop -->
+
 ## Overall configuration file structure
 By default, `clang-uml` will look for file `.clang-uml` in the projects directory and read all diagrams definitions
 from it. The file must be specified in YAML and it's overall structure is as follows:
