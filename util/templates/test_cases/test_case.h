@@ -36,6 +36,5 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
 
     {{ examples }}
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

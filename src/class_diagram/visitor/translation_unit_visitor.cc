@@ -828,9 +828,13 @@ void translation_unit_visitor::process_method(
     if (mf.isDefaulted() && !mf.isExplicitlyDefaulted())
         return;
 
+    auto method_return_type =
+        common::to_string(mf.getReturnType(), mf.getASTContext());
+
+    ensure_lambda_type_is_relative(method_return_type);
+
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()),
-        common::to_string(mf.getReturnType(), mf.getASTContext())};
+        util::trim(mf.getNameAsString()), std::move(method_return_type)};
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -923,13 +927,6 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         const auto *type_instantiation_decl =
             type->getAs<clang::TemplateSpecializationType>();
 
-        //        if (type_instantiation_decl != nullptr) {
-        //            if (type_instantiation_decl->isTypeAlias())
-        //                type_instantiation_decl =
-        //                    type_instantiation_decl->getAliasedType()
-        //                        ->getAs<clang::TemplateSpecializationType>();
-        //        }
-
         if (type_instantiation_decl != nullptr) {
             for (const auto &template_argument : *type_instantiation_decl) {
                 const auto template_argument_kind = template_argument.getKind();
@@ -996,7 +993,12 @@ void translation_unit_visitor::process_function_parameter(
     if (parameter.skip())
         return;
 
-    parameter.set_type(common::to_string(p.getType(), p.getASTContext()));
+    auto parameter_type = common::to_string(p.getType(), p.getASTContext());
+
+    // Is there no better way to determine that 'type' is a lambda?
+    ensure_lambda_type_is_relative(parameter_type);
+
+    parameter.set_type(parameter_type);
 
     if (p.hasDefaultArg()) {
         const auto *default_arg = p.getDefaultArg();
@@ -1046,6 +1048,30 @@ void translation_unit_visitor::process_function_parameter(
     }
 
     method.add_parameter(std::move(parameter));
+}
+
+void translation_unit_visitor::ensure_lambda_type_is_relative(
+    std::string &parameter_type) const
+{
+    std::string lambda_prefix{"(lambda at /"};
+
+    while (parameter_type.find(lambda_prefix) != std::string::npos) {
+        auto lambda_begin = parameter_type.find(lambda_prefix);
+
+        auto absolute_lambda_path_end = parameter_type.find(":", lambda_begin);
+        auto absolute_lambda_path =
+            parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
+                absolute_lambda_path_end -
+                    (lambda_begin + lambda_prefix.size() - 1));
+
+        auto relative_lambda_path = std::filesystem::relative(
+            absolute_lambda_path, config().relative_to())
+                                        .string();
+
+        parameter_type = fmt::format("{}(lambda at {}{}",
+            parameter_type.substr(0, lambda_begin), relative_lambda_path,
+            parameter_type.substr(absolute_lambda_path_end));
+    }
 }
 
 void translation_unit_visitor::

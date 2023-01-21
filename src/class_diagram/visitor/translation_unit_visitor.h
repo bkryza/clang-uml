@@ -254,5 +254,6 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
+    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 };
 } // namespace clanguml::class_diagram::visitor
