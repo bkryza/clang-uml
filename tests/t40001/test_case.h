@@ -50,6 +50,5 @@ TEST_CASE("t40001", "[test-case][include]")
 
     REQUIRE_THAT(puml, HasComment("t40001 test diagram of type include"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

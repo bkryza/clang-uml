@@ -40,6 +40,5 @@ TEST_CASE("t30004", "[test-case][package]")
     REQUIRE_THAT(puml, !IsPackage("DDD"));
     REQUIRE_THAT(puml, IsPackage("EEE"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

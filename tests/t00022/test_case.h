@@ -38,6 +38,5 @@ TEST_CASE("t00022", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("A1")));
     REQUIRE_THAT(puml, IsClass(_A("A2")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

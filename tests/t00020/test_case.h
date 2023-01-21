@@ -44,6 +44,5 @@ TEST_CASE("t00020", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("Factory1")));
     REQUIRE_THAT(puml, IsClass(_A("Factory2")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

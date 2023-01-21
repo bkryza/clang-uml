@@ -571,7 +571,30 @@ template <> struct convert<config> {
 } // namespace YAML
 
 namespace clanguml::config {
-config load(const std::string &config_file)
+
+namespace {
+void resolve_option_path(YAML::Node &doc, const std::string &option)
+{
+    std::filesystem::path relative_to_path{
+        doc["relative_to"].as<std::string>()};
+
+    assert(relative_to_path.is_absolute());
+
+    std::filesystem::path option_path{doc[option].as<std::string>()};
+
+    if (option_path.is_absolute())
+        return;
+
+    option_path = relative_to_path / option_path.string();
+    option_path = option_path.lexically_normal();
+    option_path.make_preferred();
+
+    doc[option] = option_path.string();
+}
+} // namespace
+
+config load(
+    const std::string &config_file, std::optional<bool> paths_relative_to_pwd)
 {
     try {
         YAML::Node doc = YAML::LoadFile(config_file);
@@ -582,6 +605,32 @@ config load(const std::string &config_file)
             std::filesystem::absolute(std::filesystem::path{config_file});
         doc.force_insert(
             "__parent_path", config_file_path.parent_path().string());
+
+        //
+        // If no relative_to path is specified in the config, make all paths
+        // resolvable against the parent directory of the .clang-uml config
+        // file, or against the $PWD if it was specified so in the command
+        // line
+        //
+        if (!doc["relative_to"]) {
+            bool paths_relative_to_config_file = true;
+            if (doc["paths_relative_to_config_file"] &&
+                !doc["paths_relative_to_config_file"].as<bool>())
+                paths_relative_to_config_file = false;
+            if (paths_relative_to_pwd && *paths_relative_to_pwd)
+                paths_relative_to_config_file = false;
+
+            if (paths_relative_to_config_file)
+                doc["relative_to"] = config_file_path.parent_path().string();
+            else
+                doc["relative_to"] = std::filesystem::current_path().string();
+        }
+
+        //
+        // Resolve common path-like config options relative to `relative_to`
+        //
+        resolve_option_path(doc, "output_directory");
+        resolve_option_path(doc, "compilation_database_dir");
 
         // If the current directory is also a git repository,
         // load some config values, which can be included in the

@@ -42,6 +42,6 @@ TEST_CASE("t00046", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("R")));
 
     REQUIRE_THAT(puml, IsField<Public>("i", "std::vector<std::uint8_t>"));
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

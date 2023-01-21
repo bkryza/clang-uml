@@ -64,6 +64,5 @@ TEST_CASE("t00045", "[test-case][class]")
     // TODO:
     // REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAAA<T>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -45,6 +45,5 @@ TEST_CASE("t20013", "[test-case][sequence]")
         puml, HasCall(_A("tmain(int,char **)"), _A("B"), "b(const char *)"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "a3(const char *)"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

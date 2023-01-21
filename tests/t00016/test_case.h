@@ -49,6 +49,5 @@ TEST_CASE("t00016", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

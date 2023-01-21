@@ -46,6 +46,5 @@ TEST_CASE("t40003", "[test-case][include]")
     REQUIRE_THAT(puml, IsFile("t5.h"));
     REQUIRE_THAT(puml, !IsFile("t6.h"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

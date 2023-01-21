@@ -65,6 +65,5 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Private>("b_", "int")));
     REQUIRE_THAT(puml, (IsField<Private>("c_", "int")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

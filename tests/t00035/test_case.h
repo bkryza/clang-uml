@@ -46,6 +46,5 @@ TEST_CASE("t00035", "[test-case][class]")
     REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "right", _A("Right")));
     REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

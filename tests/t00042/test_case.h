@@ -39,6 +39,5 @@ TEST_CASE("t00042", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("B", "T,K"));
     REQUIRE_THAT(puml, !IsClassTemplate("C", "T"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

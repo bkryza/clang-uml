@@ -50,6 +50,5 @@ TEST_CASE("t00025", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
     REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

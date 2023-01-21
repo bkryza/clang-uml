@@ -51,6 +51,5 @@ TEST_CASE("t00032", "[test-case][class]")
     REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
     REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -53,6 +53,5 @@ TEST_CASE("t00031", "[test-case][class]")
         IsAssociationWithStyle(
             _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

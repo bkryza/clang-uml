@@ -56,6 +56,5 @@ TEST_CASE("t00049", "[test-case][class]")
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
     REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

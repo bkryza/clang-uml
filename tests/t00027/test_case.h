@@ -54,6 +54,5 @@ TEST_CASE("t00027", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

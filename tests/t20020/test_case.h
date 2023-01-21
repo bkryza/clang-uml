@@ -50,6 +50,5 @@ TEST_CASE("t20020", "[test-case][sequence]")
     REQUIRE_THAT(
         puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c3(int)"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

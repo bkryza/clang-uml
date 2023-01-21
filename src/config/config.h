@@ -170,8 +170,7 @@ struct diagram : public inheritable_diagram_options {
 
     virtual common::model::diagram_t type() const = 0;
 
-    std::vector<std::string> get_translation_units(
-        const std::filesystem::path &root_directory) const;
+    std::vector<std::string> get_translation_units() const;
 
     void initialize_type_aliases();
 
@@ -268,7 +267,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
     return out;
 }
 
-config load(const std::string &config_file);
+config load(const std::string &config_file,
+    std::optional<bool> paths_relative_to_pwd = {});
 } // namespace config
 
 namespace common::model {

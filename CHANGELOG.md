@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Fixed relative paths in config files to be relative to the parent of
+    the configuration file by default (#69)
   * Added command line option (--dump-config) to print effective config (#77)
   * Added support for building with Microsoft Visual Studio
 

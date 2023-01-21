@@ -62,6 +62,5 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE_THAT(puml,
         IsInstantiation(_A("G<T,Args...>"), _A("G<int,float,std::string>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

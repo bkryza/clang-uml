@@ -43,6 +43,5 @@ TEST_CASE("t00037", "[test-case][class]")
         puml, IsAggregation(_A("ST"), _A("ST::(dimensions)"), "+dimensions"));
     REQUIRE_THAT(puml, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

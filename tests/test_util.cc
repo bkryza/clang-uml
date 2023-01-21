@@ -228,6 +228,18 @@ TEST_CASE("Test path_to_url", "[unit-test]")
 #endif
 }
 
+TEST_CASE("Test ensure_path_is_absolute", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    CHECK(ensure_path_is_absolute("a/b/c", "/tmp").string() == "/tmp/a/b/c");
+    CHECK(ensure_path_is_absolute("/a/b/c", "/tmp").string() == "/a/b/c");
+    CHECK(ensure_path_is_absolute("", "/tmp").string() == "/tmp/");
+    CHECK(ensure_path_is_absolute(".", "/tmp").string() == "/tmp/");
+    CHECK(ensure_path_is_absolute("..", "/tmp").string() == "/");
+    CHECK(ensure_path_is_absolute("/", "/tmp").string() == "/");
+}
+
 TEST_CASE("Test hash_seed", "[unit-test]")
 {
     using namespace clanguml::util;
