@@ -130,8 +130,7 @@ public:
 
     void pop_back()
     {
-        if (!path_.empty())
-        {
+        if (!path_.empty()) {
             path_.pop_back();
         }
     }

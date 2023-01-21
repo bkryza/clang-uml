@@ -162,8 +162,7 @@ template <>
 bool starts_with(
     const std::filesystem::path &path, const std::filesystem::path &prefix);
 
-template <>
-bool starts_with(const std::string &s, const std::string &prefix);
+template <> bool starts_with(const std::string &s, const std::string &prefix);
 
 template <typename T> bool ends_with(const T &value, const T &suffix);
 
