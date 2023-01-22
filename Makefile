@@ -142,10 +142,10 @@ docs:
 fedora_36:
 	mkdir -p packaging/_BUILD/fedora/36
 	git archive --format=tar.gz --prefix=clang-uml-$(PKG_VERSION)/ v$(GIT_VERSION) >packaging/_BUILD/fedora/36/clang-uml-$(PKG_VERSION).tar.gz
-	docker run --cpus="8" -v $(PWD):$(PWD) fedora:36 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=36 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
+	docker run --cpuset-cpus=0-7 -v $(PWD):$(PWD) fedora:36 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=36 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
 
 .PHONY: fedora_37
 fedora_37:
 	mkdir -p packaging/_BUILD/fedora/37
 	git archive --format=tar.gz --prefix=clang-uml-$(PKG_VERSION)/ v$(GIT_VERSION) >packaging/_BUILD/fedora/37/clang-uml-$(PKG_VERSION).tar.gz
-	docker run --cpus="8" -v $(PWD):$(PWD) fedora:37 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=37 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
+	docker run --cpuset-cpus=0-7 -v $(PWD):$(PWD) fedora:37 sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=37 VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
