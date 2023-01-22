@@ -63,6 +63,5 @@ TEST_CASE("t00039", "[test-case][class]")
     REQUIRE_THAT(puml, IsClassTemplate("ns3::FE", "T,M"));
     REQUIRE_THAT(puml, IsClassTemplate("ns3::FFF", "T,M,N"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

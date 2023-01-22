@@ -123,16 +123,18 @@ std::string inheritable_diagram_options::simplify_template_type(
     return full_name;
 }
 
-std::vector<std::string> diagram::get_translation_units(
-    const std::filesystem::path &root_directory) const
+std::vector<std::string> diagram::get_translation_units() const
 {
     std::vector<std::string> translation_units{};
 
     for (const auto &g : glob()) {
-        const auto matches = glob::glob(g, root_directory);
+        std::string glob_path =
+            fmt::format("{}/{}", relative_to().string(), g.c_str());
+
+        auto matches = glob::glob(glob_path, true, false);
+
         for (const auto &match : matches) {
-            const auto path =
-                std::filesystem::canonical(root_directory / match);
+            const auto path = std::filesystem::canonical(relative_to() / match);
             translation_units.emplace_back(path.string());
         }
     }

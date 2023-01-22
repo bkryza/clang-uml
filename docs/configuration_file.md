@@ -5,6 +5,7 @@
 * [Top level options](#top-level-options)
   * [Diagram options](#diagram-options)
 * [Example complete config](#example-complete-config)
+* [Paths](#paths)
 
 <!-- tocstop -->
 
@@ -114,3 +115,19 @@ diagrams:
       before:
         - 'title clang-uml class diagram model'
 ```
+
+## Paths
+By default, all paths specified in the configuration file, including:
+
+* `glob`
+* `output_directory`
+* `compilation_database_dir`
+* `paths` filter
+
+are relative to the parent directory of the configuration file. This can be
+changed in the following ways:
+* by specifying `relative_to` option in the configuration file
+* by providing `--paths-relative-to-pwd` command line option, in which
+  case all paths will be relative to the directory where `clang-uml` is
+  executed (this only makes sense for automation where `clang-uml` is executed
+  from the same location relative to the project directory

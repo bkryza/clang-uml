@@ -46,6 +46,5 @@ TEST_CASE("t20024", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "orange()"));
     REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "green()"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

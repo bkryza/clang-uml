@@ -56,6 +56,5 @@ TEST_CASE("t20029", "[test-case][sequence]")
     REQUIRE_THAT(puml,
         !HasCall(_A("ConnectionPool"), _A("ConnectionPool"), "connect_impl()"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

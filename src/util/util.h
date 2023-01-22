@@ -250,4 +250,17 @@ std::size_t hash_seed(std::size_t seed);
  */
 std::string path_to_url(const std::filesystem::path &p);
 
+/**
+ * @brief Ensure path is absolute.
+ *
+ * If path is absolute, return the p. If path is not absolute, make it
+ * absolute with respect to root directory.
+ *
+ * @param p Path to modify
+ * @param root Root against which the path should be made absolute
+ * @return Absolute path
+ */
+std::filesystem::path ensure_path_is_absolute(const std::filesystem::path &p,
+    const std::filesystem::path &root = std::filesystem::current_path());
+
 } // namespace clanguml::util

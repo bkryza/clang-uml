@@ -48,6 +48,5 @@ TEST_CASE("t00008", "[test-case][class]")
     // REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
     REQUIRE_THAT(puml, (IsField<Public>("comparator", "CMP")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -67,6 +67,5 @@ TEST_CASE("t00004", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("detail::D::DD")));
     REQUIRE_THAT(puml, IsEnum(_A("detail::D::AA")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

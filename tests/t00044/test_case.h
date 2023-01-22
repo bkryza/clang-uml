@@ -39,6 +39,5 @@ TEST_CASE("t00044", "[test-case][class]")
     // Check dependants filter<void(int), bool>
     // REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "Ret,Args...,A"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

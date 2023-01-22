@@ -42,6 +42,5 @@ TEST_CASE("t00024", "[test-case][class]")
     REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Target2")));
     REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Proxy")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

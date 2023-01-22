@@ -55,6 +55,5 @@ note.)";
     REQUIRE_THAT(puml, !HasNote(_A("G"), "left", "G class note."));
     REQUIRE_THAT(puml, HasNote(_A("R"), "right", "R class note."));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

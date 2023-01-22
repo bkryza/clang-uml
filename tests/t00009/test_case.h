@@ -51,6 +51,5 @@ TEST_CASE("t00009", "[test-case][class]")
     REQUIRE_THAT(puml,
         IsAssociation(_A("B"), _A("A<std::vector<std::string>>"), "+avector"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

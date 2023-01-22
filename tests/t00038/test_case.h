@@ -91,6 +91,5 @@ TEST_CASE("t00038", "[test-case][class]")
             _A("map<std::integral_constant<thirdparty::ns1::color_t,"
                "thirdparty::ns1::color_t::red>>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

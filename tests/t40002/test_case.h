@@ -79,6 +79,5 @@ TEST_CASE("t40002", "[test-case][include]")
                 clanguml::util::get_git_commit()),
             "lib2.h"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -46,6 +46,5 @@ TEST_CASE("t00034", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

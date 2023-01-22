@@ -228,6 +228,26 @@ TEST_CASE("Test path_to_url", "[unit-test]")
 #endif
 }
 
+TEST_CASE("Test ensure_path_is_absolute", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    using std::filesystem::path;
+
+    CHECK(ensure_path_is_absolute("a/b/c", "/tmp").string() ==
+        path{"/tmp/a/b/c"}.make_preferred());
+    CHECK(ensure_path_is_absolute("/a/b/c", "/tmp").string() ==
+        path{"/a/b/c"}.make_preferred());
+    CHECK(ensure_path_is_absolute("", "/tmp").string() ==
+        path{"/tmp/"}.make_preferred());
+    CHECK(ensure_path_is_absolute(".", "/tmp").string() ==
+        path{"/tmp/"}.make_preferred());
+    CHECK(ensure_path_is_absolute("..", "/tmp").string() ==
+        path{"/"}.make_preferred());
+    CHECK(ensure_path_is_absolute("/", "/tmp").string() ==
+        path{"/"}.make_preferred());
+}
+
 TEST_CASE("Test hash_seed", "[unit-test]")
 {
     using namespace clanguml::util;

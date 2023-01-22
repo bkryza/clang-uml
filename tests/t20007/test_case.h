@@ -44,6 +44,5 @@ TEST_CASE("t20007", "[test-case][sequence]")
         HasCall(_A("tmain()"), _A("Adder<std::string,std::string,std::string>"),
             "add(std::string &&,std::string &&,std::string &&)"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

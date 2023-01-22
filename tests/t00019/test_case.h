@@ -54,6 +54,5 @@ TEST_CASE("t00019", "[test-case][class]")
 
     REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Base"), "+layers"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

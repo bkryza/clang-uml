@@ -138,6 +138,24 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const comment_parser_t &cp)
     return out;
 }
 
+#ifdef _MSC_VER
+YAML::Emitter &operator<<(YAML::Emitter &out, const std::filesystem::path &p)
+{
+    out << p.string();
+    return out;
+}
+
+YAML::Emitter &operator<<(
+    YAML::Emitter &out, const std::vector<std::filesystem::path> &paths)
+{
+    out << YAML::BeginSeq;
+    for (const auto &p : paths)
+        out << p;
+    out << YAML::EndSeq;
+    return out;
+}
+#endif
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c)
 {
     out << YAML::BeginMap;

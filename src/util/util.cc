@@ -317,4 +317,17 @@ std::string path_to_url(const std::filesystem::path &p)
     return fmt::format("{}", fmt::join(path_tokens, "/"));
 }
 
+std::filesystem::path ensure_path_is_absolute(
+    const std::filesystem::path &p, const std::filesystem::path &root)
+{
+    if (p.is_absolute())
+        return p;
+
+    auto result = root / p;
+    result = result.lexically_normal();
+    result.make_preferred();
+
+    return result;
+}
+
 } // namespace clanguml::util

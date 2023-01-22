@@ -48,6 +48,5 @@ TEST_CASE("t20017", "[test-case][sequence]")
         HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
     REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

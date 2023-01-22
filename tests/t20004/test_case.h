@@ -56,6 +56,5 @@ TEST_CASE("t20004", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
     REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

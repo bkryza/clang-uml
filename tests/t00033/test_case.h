@@ -54,6 +54,5 @@ TEST_CASE("t00033", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -43,6 +43,5 @@ TEST_CASE("t00012", "[test-case][class]")
             _A("C<std::map<int,"
                "std::vector<std::vector<std::vector<std::string>>>>,3,3,3>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

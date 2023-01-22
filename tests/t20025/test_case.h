@@ -41,6 +41,5 @@ TEST_CASE("t20025", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("add(int,int)"), ""));
     REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("add2(int,int)"), ""));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

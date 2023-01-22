@@ -42,6 +42,5 @@ TEST_CASE("t00011", "[test-case][class]")
     REQUIRE_THAT(puml, IsFriend<Public>(_A("A"), _A("B")));
     // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

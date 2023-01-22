@@ -40,6 +40,5 @@ TEST_CASE("t00015", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("ns3::ns1::ns2::Anon")));
     REQUIRE_THAT(puml, IsClass(_A("ns3::B")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

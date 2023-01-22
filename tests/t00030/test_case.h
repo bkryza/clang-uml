@@ -46,6 +46,5 @@ TEST_CASE("t00030", "[test-case][class]")
     REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
     REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -35,7 +35,7 @@ std::pair<clanguml::config::config,
     std::unique_ptr<clang::tooling::CompilationDatabase>>
 load_config(const std::string &test_name)
 {
-    auto config = clanguml::config::load(test_name + "/.clang-uml");
+    auto config = clanguml::config::load(test_name + "/.clang-uml", true);
 
     std::string err{};
     auto compilation_database =
@@ -62,7 +62,7 @@ generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
-        diagram->get_translation_units(std::filesystem::current_path()));
+        diagram->get_translation_units());
 
     return model;
 }
@@ -81,7 +81,7 @@ std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
     auto model = clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units(std::filesystem::current_path()));
+        diagram->get_translation_units());
 
     return model;
 }
@@ -100,7 +100,7 @@ generate_package_diagram(clang::tooling::CompilationDatabase &db,
     return clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units(std::filesystem::current_path()));
+        diagram->get_translation_units());
 }
 
 std::unique_ptr<clanguml::include_diagram::model::diagram>
@@ -117,7 +117,7 @@ generate_include_diagram(clang::tooling::CompilationDatabase &db,
     return clanguml::common::generators::plantuml::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units(std::filesystem::current_path()));
+        diagram->get_translation_units());
 }
 
 std::string generate_sequence_puml(
@@ -244,6 +244,7 @@ using namespace clanguml::test::matchers;
 #include "t00048/test_case.h"
 #include "t00049/test_case.h"
 #include "t00050/test_case.h"
+#include "t00051/test_case.h"
 
 ///
 /// Sequence diagram tests

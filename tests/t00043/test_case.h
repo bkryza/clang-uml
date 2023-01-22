@@ -62,6 +62,5 @@ TEST_CASE("t00043", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("I"), _A("H")));
     REQUIRE_THAT(puml, IsDependency(_A("J"), _A("I")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

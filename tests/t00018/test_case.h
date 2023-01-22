@@ -42,6 +42,5 @@ TEST_CASE("t00018", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("impl::widget"), _A("widget")));
     REQUIRE_THAT(puml, !IsDependency(_A("widget"), _A("widget")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

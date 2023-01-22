@@ -114,6 +114,5 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<char,std::string>")));
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<wchar_t,std::string>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

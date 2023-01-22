@@ -46,6 +46,5 @@ TEST_CASE("t00010", "[test-case][class]")
         puml, IsAggregation(_A("B<T>"), _A("A<T,std::string>"), "+astring"));
     REQUIRE_THAT(puml, IsAggregation(_A("C"), _A("B<int>"), "+aintstring"));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

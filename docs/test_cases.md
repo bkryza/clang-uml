@@ -1,15 +1,4 @@
 # Test cases index
-
-<!-- toc -->
-
-* [Class diagrams](#class-diagrams)
-* [Sequence diagrams](#sequence-diagrams)
-* [Package diagrams](#package-diagrams)
-* [Include diagrams](#include-diagrams)
-* [Configuration diagrams](#configuration-diagrams)
-
-<!-- tocstop -->
-
 ## Class diagrams
  * [t00002](./test_cases/t00002.md) - Basic class inheritance
  * [t00003](./test_cases/t00003.md) - Class field and methods
@@ -60,6 +49,7 @@
  * [t00048](./test_cases/t00048.md) - Test case for unique entity id with multiple translation units
  * [t00049](./test_cases/t00049.md) - Test case configurable type aliases
  * [t00050](./test_cases/t00050.md) - Test case for generating notes from comments using jinja templates
+ * [t00051](./test_cases/t00051.md) - Test case for relative paths in lambda names
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

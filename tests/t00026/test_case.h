@@ -42,6 +42,5 @@ TEST_CASE("t00026", "[test-case][class]")
     REQUIRE_THAT(puml,
         IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
 
-    save_puml(
-        "./" + config.output_directory() + "/" + diagram->name + ".puml", puml);
+    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

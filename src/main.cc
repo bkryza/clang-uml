@@ -158,9 +158,9 @@ int main(int argc, const char *argv[])
     CLI::App app{"Clang-based PlantUML diagram generator for C++"};
 
     std::string config_path{".clang-uml"};
-    std::string compilation_database_dir{};
+    std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};
-    std::optional<std::string> output_directory;
+    std::optional<std::string> output_directory{};
     unsigned int thread_count{0};
     bool show_version{false};
     int verbose{0};
@@ -172,6 +172,7 @@ int main(int argc, const char *argv[])
     std::optional<std::string> add_package_diagram;
     std::optional<std::string> add_include_diagram;
     bool dump_config{false};
+    std::optional<bool> paths_relative_to_pwd{};
 
     app.add_option(
         "-c,--config", config_path, "Location of configuration file");
@@ -200,6 +201,9 @@ int main(int argc, const char *argv[])
         "Add include diagram config");
     app.add_flag(
         "--dump-config", dump_config, "Print effective config to stdout");
+    app.add_flag("--paths-relative-to-pwd", paths_relative_to_pwd,
+        "If true, all paths in configuration files are relative to the $PWD "
+        "instead of actual location of `.clang-uml` file.");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -241,7 +245,7 @@ int main(int argc, const char *argv[])
 
     clanguml::config::config config;
     try {
-        config = clanguml::config::load(config_path);
+        config = clanguml::config::load(config_path, paths_relative_to_pwd);
     }
     catch (std::runtime_error &e) {
         LOG_ERROR(e.what());
@@ -253,15 +257,19 @@ int main(int argc, const char *argv[])
         return 0;
     }
 
-    if (dump_config) {
-        print_config(config);
-        return 0;
-    }
-
     LOG_INFO("Loaded clang-uml config from {}", config_path);
 
-    if (!compilation_database_dir.empty()) {
-        config.compilation_database_dir.set(compilation_database_dir);
+    //
+    // Override selected config options from command line
+    //
+    if (compilation_database_dir) {
+        config.compilation_database_dir.set(
+            util::ensure_path_is_absolute(compilation_database_dir.value())
+                .string());
+    }
+    if (output_directory) {
+        config.output_directory.set(
+            util::ensure_path_is_absolute(output_directory.value()).string());
     }
 
     LOG_INFO("Loading compilation database from {} directory",
@@ -270,6 +278,11 @@ int main(int argc, const char *argv[])
     auto od = config.output_directory();
     if (output_directory)
         od = output_directory.value();
+
+    if (dump_config) {
+        print_config(config);
+        return 0;
+    }
 
     if (!ensure_output_directory_exists(od))
         return 1;
@@ -433,8 +446,6 @@ void find_translation_units_for_diagrams(
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map)
 {
-    const auto current_directory = std::filesystem::current_path();
-
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command line,
         // and this diagram is not in that list - skip it
@@ -450,7 +461,7 @@ void find_translation_units_for_diagrams(
         // configuration
         else {
             const std::vector<std::string> translation_units =
-                diagram->get_translation_units(current_directory);
+                diagram->get_translation_units();
 
             std::vector<std::string> valid_translation_units{};
             std::copy_if(compilation_database_files.begin(),
@@ -563,6 +574,8 @@ int create_config_file()
 int add_config_diagram(clanguml::common::model::diagram_t type,
     const std::string &config_file_path, const std::string &name)
 {
+    namespace fs = std::filesystem;
+
     fs::path config_file{config_file_path};
 
     if (!fs::exists(config_file)) {
