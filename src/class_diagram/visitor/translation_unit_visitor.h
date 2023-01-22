@@ -208,6 +208,11 @@ private:
         const clang::TemplateArgument &arg,
         model::template_parameter &argument) const;
 
+    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
+
+    void process_function_parameter_find_relatinoships_in_autotype(
+        model::class_ &c, const clang::AutoType *atsp);
+
     void process_function_parameter_find_relationships_in_template(
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names,
@@ -254,6 +259,5 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
-    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 };
 } // namespace clanguml::class_diagram::visitor

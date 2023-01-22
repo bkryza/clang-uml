@@ -53,5 +53,24 @@ TEST_CASE("t00051", "[test-case][class]")
         (IsMethod<Private>(
             "get_function", "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
 
+    REQUIRE_THAT(puml, IsClassTemplate("B", "F,FF"));
+    REQUIRE_THAT(puml, (IsMethod<Public>("f", "void")));
+    REQUIRE_THAT(puml, (IsMethod<Public>("ff", "void")));
+
+    REQUIRE_THAT(puml,
+        IsClassTemplate("B",
+            "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+            "../../tests/t00051/t00051.cc:43:27)"));
+
+    REQUIRE_THAT(puml,
+        IsInstantiation(_A("B<F,FF>"),
+            _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+               "../../tests/t00051/t00051.cc:43:27)>")));
+
+    REQUIRE_THAT(puml,
+        IsDependency(_A("A"),
+            _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+               "../../tests/t00051/t00051.cc:43:27)>")));
+
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

@@ -1,5 +1,9 @@
 # CHANGELOG
-
+  
+  * Added relationship deduction from `auto` return types which are template
+    specializations (#82)
+  * Fixed lambda names in class diagrams to be based on relative paths
+    with respect to `relative_to` config option (#78)
   * Fixed relative paths in config files to be relative to the parent of
     the configuration file by default (#69)
   * Added command line option (--dump-config) to print effective config (#77)

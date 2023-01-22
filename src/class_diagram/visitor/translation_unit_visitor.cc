@@ -834,7 +834,7 @@ void translation_unit_visitor::process_method(
     ensure_lambda_type_is_relative(method_return_type);
 
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()), std::move(method_return_type)};
+        util::trim(mf.getNameAsString()), method_return_type};
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -852,9 +852,99 @@ void translation_unit_visitor::process_method(
             process_function_parameter(*param, method, c);
     }
 
+    //  find relationship for return type
+    found_relationships_t relationships;
+
+    find_relationships(
+        mf.getReturnType(), relationships, relationship_t::kDependency);
+
+    for (const auto &[type_element_id, relationship_type] : relationships) {
+        if (type_element_id != c.id() &&
+            (relationship_type != relationship_t::kNone)) {
+            relationship r{relationship_t::kDependency, type_element_id};
+
+            LOG_DBG("Adding method return type relationship from {}::{} to "
+                    "{}: {}",
+                c.full_name(), mf.getNameAsString(),
+                clanguml::common::model::to_string(r.type()), r.label());
+
+            c.add_relationship(std::move(r));
+        }
+    }
+
+    // Also consider the container itself if it is a template
+    // instantiation it's arguments could count as reference to relevant
+    // types
+    auto underlying_type = mf.getReturnType();
+    if (underlying_type->isReferenceType())
+        underlying_type = underlying_type.getNonReferenceType();
+    if (underlying_type->isPointerType())
+        underlying_type = underlying_type->getPointeeType();
+
+    if (const auto *tsp =
+            underlying_type->getAs<clang::TemplateSpecializationType>();
+        tsp != nullptr) {
+        process_function_parameter_find_relationships_in_template(c, {}, *tsp);
+    }
+    else if (const auto *atsp = underlying_type->getAs<clang::AutoType>();
+             atsp != nullptr) {
+        process_function_parameter_find_relatinoships_in_autotype(c, atsp);
+    }
+
     LOG_DBG("Adding method: {}", method.name());
 
     c.add_method(std::move(method));
+}
+
+void translation_unit_visitor::
+    process_function_parameter_find_relatinoships_in_autotype(
+        class_ &c, const clang::AutoType *atsp)
+{
+    auto desugared_atsp = atsp->getDeducedType();
+
+    if (atsp->isSugared()) {
+        const auto *deduced_type =
+            atsp->desugar()->getAs<clang::DeducedTemplateSpecializationType>();
+
+        if (deduced_type != nullptr)
+            desugared_atsp = deduced_type->getDeducedType();
+    }
+
+    const auto *deduced_record_type =
+        desugared_atsp->getAs<clang::RecordType>();
+
+    if (deduced_record_type != nullptr) {
+        if (auto *deduced_auto_decl =
+                llvm::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(
+                    deduced_record_type->getDecl());
+            deduced_auto_decl != nullptr) {
+
+            const auto diagram_class_count_before_visit =
+                diagram().classes().size();
+
+            VisitClassTemplateSpecializationDecl(deduced_auto_decl);
+
+            const bool visitor_added_new_template_specialization =
+                (diagram().classes().size() -
+                    diagram_class_count_before_visit) > 0;
+
+            if (visitor_added_new_template_specialization) {
+                const auto &template_specialization_model =
+                    diagram().classes().back();
+
+                const auto template_field_decl_name =
+                    deduced_auto_decl->getQualifiedNameAsString();
+
+                if (diagram().should_include(template_field_decl_name)) {
+
+                    relationship r{relationship_t::kDependency,
+                        template_specialization_model.get().id()};
+
+                    c.add_relationship(std::move(r));
+                }
+            }
+        }
+    }
 }
 
 void translation_unit_visitor::process_template_method(
@@ -1058,7 +1148,7 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
     while (parameter_type.find(lambda_prefix) != std::string::npos) {
         auto lambda_begin = parameter_type.find(lambda_prefix);
 
-        auto absolute_lambda_path_end = parameter_type.find(":", lambda_begin);
+        auto absolute_lambda_path_end = parameter_type.find(':', lambda_begin);
         auto absolute_lambda_path =
             parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
                 absolute_lambda_path_end -
@@ -1290,6 +1380,7 @@ void translation_unit_visitor::process_template_specialization_argument(
         else {
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
+            ensure_lambda_type_is_relative(type_name);
             if (type_name.find('<') != std::string::npos) {
                 // Sometimes template instantiation is reported as
                 // RecordType in the AST and getAs to
@@ -1302,7 +1393,11 @@ void translation_unit_visitor::process_template_specialization_argument(
                         type_name.size() - (type_name.find('<') + 2)),
                     argument, template_instantiation);
 
-                argument.set_name(type_name.substr(0, type_name.find('<')));
+                auto unexposed_type_name =
+                    type_name.substr(0, type_name.find('<'));
+                ensure_lambda_type_is_relative(unexposed_type_name);
+
+                argument.set_name(unexposed_type_name);
             }
             else if (type_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
@@ -1329,8 +1424,9 @@ void translation_unit_visitor::process_template_specialization_argument(
                 // whatever clang says
                 argument.set_name(type_name);
             }
-            else
+            else {
                 argument.set_name(type_name);
+            }
         }
 
         LOG_DBG("Adding template instantiation argument {}",
@@ -1527,8 +1623,9 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     const auto *template_type_ptr = &template_type_decl;
 
     if (template_type_decl.isTypeAlias()) {
-        if (const auto *tsp = template_type_decl.getAliasedType()
-                                  ->getAs<clang::TemplateSpecializationType>();
+        if (const auto *tsp =
+                template_type_decl.getAliasedType()
+                    ->template getAs<clang::TemplateSpecializationType>();
             tsp != nullptr)
             template_type_ptr = tsp;
     }
@@ -2006,11 +2103,13 @@ void translation_unit_visitor::process_field(
     // The field name
     const auto field_name = field_declaration.getNameAsString();
 
+    auto field_type_str =
+        common::to_string(field_type, field_declaration.getASTContext(), false);
+    ensure_lambda_type_is_relative(field_type_str);
+
     class_member field{
         common::access_specifier_to_access_t(field_declaration.getAccess()),
-        field_name,
-        common::to_string(
-            field_type, field_declaration.getASTContext(), false)};
+        field_name, field_type_str};
 
     // Parse the field comment
     process_comment(field_declaration, field);
