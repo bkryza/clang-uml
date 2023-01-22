@@ -34,8 +34,8 @@ find packaging/_BUILD/fedora
 ## Anaconda
 
 ```bash
-docker run --rm -v $PWD:$PWD continuumio/miniconda3 bash
-conda install conda-build make
+docker run --rm -v $PWD:$PWD -it continuumio/miniconda3 bash
+conda install conda-build make anaconda-client
 cd packaging
 make CONDA_TOKEN=<TOKEN> conda
 ```
@@ -46,6 +46,8 @@ First build release configuration using `cmake` and `msbuild` according
 to the [documentation](../docs/installation.md#visual-studio-native-build).
 
 ```bash
-cd <MSBUILD_BUILD_DIRECTORY>
-cpack -C "Release" -G NSIS64
+cmake -S clang-uml -B .\clang-uml-build-pkg\ -DCMAKE_PREFIX_PATH="C:\clang-uml" -Thost=x64
+cd .\clang-uml-build-pkg\
+msbuild .\clang-uml.vcxproj -maxcpucount /p:Configuration=RelWithDebInfo
+cpack -C "RelWithDebInfo" -G NSIS64
 ```
