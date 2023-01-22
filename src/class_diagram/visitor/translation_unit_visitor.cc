@@ -1147,7 +1147,7 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
     auto root_name = fmt::format(
         "{}\\", std::filesystem::current_path().root_name().string());
 #else
-    auto root_name = "/";
+    auto root_name = std::string{"/"};
 #endif
     std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
 
