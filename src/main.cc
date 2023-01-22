@@ -264,11 +264,12 @@ int main(int argc, const char *argv[])
     //
     if (compilation_database_dir) {
         config.compilation_database_dir.set(
-            util::ensure_path_is_absolute(compilation_database_dir.value()));
+            util::ensure_path_is_absolute(compilation_database_dir.value())
+                .string());
     }
     if (output_directory) {
         config.output_directory.set(
-            util::ensure_path_is_absolute(output_directory.value()));
+            util::ensure_path_is_absolute(output_directory.value()).string());
     }
 
     LOG_INFO("Loading compilation database from {} directory",

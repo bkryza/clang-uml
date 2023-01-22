@@ -255,6 +255,13 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const package_diagram &c);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c);
 
+#ifdef _MSC_VER
+YAML::Emitter &operator<<(YAML::Emitter &out, const std::filesystem::path &p);
+
+YAML::Emitter &operator<<(
+    YAML::Emitter &out, const std::vector<std::filesystem::path> &p);
+#endif
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const source_location &sc);
 
 template <typename T>
@@ -262,7 +269,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 {
     if (o.has_value) {
         out << YAML::Key << o.name;
-        out << YAML::Value << o.value;
+        if constexpr (std::is_same_v<T, std::filesystem::path>)
+            out << YAML::Value << o.value.string();
+        else
+            out << YAML::Value << o.value;
     }
     return out;
 }

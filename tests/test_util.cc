@@ -232,12 +232,20 @@ TEST_CASE("Test ensure_path_is_absolute", "[unit-test]")
 {
     using namespace clanguml::util;
 
-    CHECK(ensure_path_is_absolute("a/b/c", "/tmp").string() == "/tmp/a/b/c");
-    CHECK(ensure_path_is_absolute("/a/b/c", "/tmp").string() == "/a/b/c");
-    CHECK(ensure_path_is_absolute("", "/tmp").string() == "/tmp/");
-    CHECK(ensure_path_is_absolute(".", "/tmp").string() == "/tmp/");
-    CHECK(ensure_path_is_absolute("..", "/tmp").string() == "/");
-    CHECK(ensure_path_is_absolute("/", "/tmp").string() == "/");
+    using std::filesystem::path;
+
+    CHECK(ensure_path_is_absolute("a/b/c", "/tmp").string() ==
+        path{"/tmp/a/b/c"}.make_preferred());
+    CHECK(ensure_path_is_absolute("/a/b/c", "/tmp").string() ==
+        path{"/a/b/c"}.make_preferred());
+    CHECK(ensure_path_is_absolute("", "/tmp").string() ==
+        path{"/tmp/"}.make_preferred());
+    CHECK(ensure_path_is_absolute(".", "/tmp").string() ==
+        path{"/tmp/"}.make_preferred());
+    CHECK(ensure_path_is_absolute("..", "/tmp").string() ==
+        path{"/"}.make_preferred());
+    CHECK(ensure_path_is_absolute("/", "/tmp").string() ==
+        path{"/"}.make_preferred());
 }
 
 TEST_CASE("Test hash_seed", "[unit-test]")

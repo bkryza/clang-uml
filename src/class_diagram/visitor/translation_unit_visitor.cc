@@ -1143,20 +1143,27 @@ void translation_unit_visitor::process_function_parameter(
 void translation_unit_visitor::ensure_lambda_type_is_relative(
     std::string &parameter_type) const
 {
-    std::string lambda_prefix{"(lambda at /"};
+#ifdef _MSC_VER
+    auto root_name = fmt::format(
+        "{}\\", std::filesystem::current_path().root_name().string());
+#else
+    auto root_name = "/";
+#endif
+    std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
 
     while (parameter_type.find(lambda_prefix) != std::string::npos) {
         auto lambda_begin = parameter_type.find(lambda_prefix);
 
-        auto absolute_lambda_path_end = parameter_type.find(':', lambda_begin);
+        auto absolute_lambda_path_end =
+            parameter_type.find(':', lambda_begin + lambda_prefix.size());
         auto absolute_lambda_path =
             parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
                 absolute_lambda_path_end -
                     (lambda_begin + lambda_prefix.size() - 1));
 
-        auto relative_lambda_path = std::filesystem::relative(
+        auto relative_lambda_path = util::path_to_url(std::filesystem::relative(
             absolute_lambda_path, config().relative_to())
-                                        .string();
+                                                          .string());
 
         parameter_type = fmt::format("{}(lambda at {}{}",
             parameter_type.substr(0, lambda_begin), relative_lambda_path,
