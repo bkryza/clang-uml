@@ -1,5 +1,6 @@
 # CHANGELOG
-  
+
+### 0.3.1
   * Added relationship deduction from `auto` return types which are template
     specializations (#82)
   * Fixed lambda names in class diagrams to be based on relative paths
