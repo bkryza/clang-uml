@@ -6,10 +6,11 @@
   * [Ubuntu](#ubuntu)
   * [Fedora](#fedora)
   * [Conda](#conda)
+  * [Windows](#windows)
 * [Building from source](#building-from-source)
   * [Linux](#linux)
   * [macos](#macos)
-  * [Windows](#windows)
+  * [Windows](#windows-1)
     * [Visual Studio native build](#visual-studio-native-build)
 
 <!-- tocstop -->
@@ -44,6 +45,11 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 conda install -c bkryza/label/clang-uml clang-uml
 ```
+
+#### Windows
+
+Download and run the latest Windows installer from
+[Releases page](https://github.com/bkryza/clang-uml/releases).
 
 ### Building from source
 
