@@ -144,6 +144,10 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
+        if (!m.templates().empty()) {
+            m.render_template_params(ostr, m_config.using_namespace(), false);
+        }
+
         ostr << "(";
         if (m_config.generate_method_arguments() !=
             config::method_arguments::none) {

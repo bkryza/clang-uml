@@ -61,4 +61,5 @@ void class_method::add_parameter(method_parameter &&parameter)
 {
     parameters_.emplace_back(std::move(parameter));
 }
+
 } // namespace clanguml::class_diagram::model

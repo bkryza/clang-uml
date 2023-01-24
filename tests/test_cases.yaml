@@ -150,6 +150,9 @@ test_cases:
     - name: t00051
       title: Test case for relative paths in lambda names
       description:
+    - name: t00052
+      title: Test case for template methods rendering
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

@@ -26,19 +26,6 @@
 
 namespace clanguml::class_diagram::visitor {
 
-using clanguml::class_diagram::model::class_;
-using clanguml::class_diagram::model::class_member;
-using clanguml::class_diagram::model::class_method;
-using clanguml::class_diagram::model::class_parent;
-using clanguml::class_diagram::model::diagram;
-using clanguml::class_diagram::model::enum_;
-using clanguml::class_diagram::model::method_parameter;
-using clanguml::class_diagram::model::template_parameter;
-using clanguml::common::model::access_t;
-using clanguml::common::model::namespace_;
-using clanguml::common::model::relationship;
-using clanguml::common::model::relationship_t;
-
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::class_diagram::model::diagram &diagram,
     const clanguml::config::class_diagram &config)
@@ -513,7 +500,8 @@ void translation_unit_visitor::process_class_declaration(
 }
 
 bool translation_unit_visitor::process_template_parameters(
-    const clang::ClassTemplateDecl &template_declaration, class_ &c)
+    const clang::TemplateDecl &template_declaration,
+    common::model::template_trait &c)
 {
     LOG_DBG("Processing class {} template parameters...",
         common::get_qualified_name(template_declaration));
@@ -965,6 +953,8 @@ void translation_unit_visitor::process_template_method(
     method.is_const(false);
     method.is_defaulted(mf.getTemplatedDecl()->isDefaulted());
     method.is_static(mf.getTemplatedDecl()->isStatic());
+
+    process_template_parameters(mf, method);
 
     process_comment(mf, method);
 

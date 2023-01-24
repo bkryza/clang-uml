@@ -18,6 +18,8 @@
 #pragma once
 
 #include "class_element.h"
+#include "common/model/template_parameter.h"
+#include "common/model/template_trait.h"
 #include "method_parameter.h"
 
 #include <string>
@@ -25,7 +27,9 @@
 
 namespace clanguml::class_diagram::model {
 
-class class_method : public class_element {
+using clanguml::common::model::template_trait;
+
+class class_method : public class_element, public template_trait {
 public:
     class_method(common::model::access_t access, const std::string &name,
         const std::string &type);
@@ -52,6 +56,7 @@ public:
 
 private:
     std::vector<method_parameter> parameters_;
+
     bool is_pure_virtual_{false};
     bool is_virtual_{false};
     bool is_const_{false};

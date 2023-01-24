@@ -21,7 +21,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <class_diagram/model/template_parameter.h>
 #include <list>
 
 namespace clanguml::cx::util {
@@ -39,12 +38,12 @@ std::pair<common::model::namespace_, std::string> split_ns(
     return {ns, name};
 }
 
-std::vector<class_diagram::model::template_parameter>
-parse_unexposed_template_params(const std::string &params,
+std::vector<common::model::template_parameter> parse_unexposed_template_params(
+    const std::string &params,
     const std::function<std::string(const std::string &)> &ns_resolve,
     int depth)
 {
-    using class_diagram::model::template_parameter;
+    using common::model::template_parameter;
 
     std::vector<template_parameter> res;
 

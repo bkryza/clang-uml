@@ -17,39 +17,16 @@
  */
 #pragma once
 
-#include "class_diagram/model/template_parameter.h"
 #include "common/model/element.h"
+#include "common/model/template_parameter.h"
+#include "common/model/template_trait.h"
 
 #include <string>
 #include <vector>
 
 namespace clanguml::sequence_diagram::model {
 
-struct template_trait {
-    std::ostringstream &render_template_params(std::ostringstream &ostr,
-        const common::model::namespace_ &using_namespace, bool relative) const;
-
-    void set_base_template(const std::string &full_name);
-
-    std::string base_template() const;
-
-    void add_template(class_diagram::model::template_parameter tmplt);
-
-    const std::vector<class_diagram::model::template_parameter> &
-    templates() const;
-
-    int calculate_template_specialization_match(
-        const template_trait &other, const std::string &full_name) const;
-
-    bool is_implicit() const;
-
-    void set_implicit(bool implicit);
-
-private:
-    std::vector<class_diagram::model::template_parameter> templates_;
-    std::string base_template_full_name_;
-    bool is_implicit_{false};
-};
+using clanguml::common::model::template_trait;
 
 struct participant : public common::model::element,
                      public common::model::stylable_element {

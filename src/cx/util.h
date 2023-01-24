@@ -19,7 +19,8 @@
 
 #include "common/model/namespace.h"
 
-#include <class_diagram/model/template_parameter.h>
+#include "common/model/template_parameter.h"
+
 #include <string>
 
 namespace clanguml::cx::util {
@@ -27,8 +28,8 @@ namespace clanguml::cx::util {
 std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name);
 
-std::vector<class_diagram::model::template_parameter>
-parse_unexposed_template_params(const std::string &params,
+std::vector<common::model::template_parameter> parse_unexposed_template_params(
+    const std::string &params,
     const std::function<std::string(const std::string &)> &ns_resolve,
     int depth = 0);
 

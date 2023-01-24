@@ -40,8 +40,8 @@ TEST_CASE("t00051", "[test-case][class]")
     REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread2")));
 
     REQUIRE_THAT(puml,
-        (IsMethod<Public>(
-            "custom_thread1", "void", "Function && f, Args &&... args")));
+        (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
+            "Function && f, Args &&... args")));
     REQUIRE_THAT(puml,
         (IsMethod<Public>("thread", "void",
             "(lambda at ../../tests/t00051/t00051.cc:59:27) && ")));
