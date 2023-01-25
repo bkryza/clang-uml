@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/template_parameter.cc
+ * src/common/model/template_parameter.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -22,7 +22,7 @@
 
 #include <utility>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 template_parameter::template_parameter(const std::string &type,
     const std::string &name, std::string default_value, bool is_variadic)
@@ -216,4 +216,4 @@ bool template_parameter::find_nested_relationships(
     return added_aggregation_relationship;
 }
 
-} // namespace clanguml::class_diagram::model
+} // namespace clanguml::common::model

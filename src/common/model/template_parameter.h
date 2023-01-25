@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/template_parameter.h
+ * src/common/model/template_parameter.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-namespace clanguml::class_diagram::model {
+namespace clanguml::common::model {
 
 /// @brief Represents template parameter or template argument
 ///
@@ -130,4 +130,4 @@ private:
 
     std::optional<int64_t> id_;
 };
-} // namespace clanguml::class_diagram::model
+} // namespace clanguml::common::model

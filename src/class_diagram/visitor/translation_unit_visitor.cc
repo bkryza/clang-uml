@@ -18,26 +18,12 @@
 
 #include "translation_unit_visitor.h"
 #include "common/clang_utils.h"
-#include "cx/util.h"
 
 #include <clang/Basic/FileManager.h>
 #include <clang/Lex/Preprocessor.h>
 #include <spdlog/spdlog.h>
 
 namespace clanguml::class_diagram::visitor {
-
-using clanguml::class_diagram::model::class_;
-using clanguml::class_diagram::model::class_member;
-using clanguml::class_diagram::model::class_method;
-using clanguml::class_diagram::model::class_parent;
-using clanguml::class_diagram::model::diagram;
-using clanguml::class_diagram::model::enum_;
-using clanguml::class_diagram::model::method_parameter;
-using clanguml::class_diagram::model::template_parameter;
-using clanguml::common::model::access_t;
-using clanguml::common::model::namespace_;
-using clanguml::common::model::relationship;
-using clanguml::common::model::relationship_t;
 
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::class_diagram::model::diagram &diagram,
@@ -513,7 +499,8 @@ void translation_unit_visitor::process_class_declaration(
 }
 
 bool translation_unit_visitor::process_template_parameters(
-    const clang::ClassTemplateDecl &template_declaration, class_ &c)
+    const clang::TemplateDecl &template_declaration,
+    common::model::template_trait &c)
 {
     LOG_DBG("Processing class {} template parameters...",
         common::get_qualified_name(template_declaration));
@@ -966,6 +953,8 @@ void translation_unit_visitor::process_template_method(
     method.is_defaulted(mf.getTemplatedDecl()->isDefaulted());
     method.is_static(mf.getTemplatedDecl()->isStatic());
 
+    process_template_parameters(mf, method);
+
     process_comment(mf, method);
 
     if (method.skip())
@@ -1368,9 +1357,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -1414,9 +1402,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -1482,7 +1469,7 @@ void translation_unit_visitor::
     process_unexposed_template_specialization_parameters(
         const std::string &type_name, template_parameter &tp, class_ &c)
 {
-    auto template_params = cx::util::parse_unexposed_template_params(
+    auto template_params = common::parse_unexposed_template_params(
         type_name, [](const std::string &t) { return t; });
 
     found_relationships_t relationships;
@@ -2221,7 +2208,7 @@ void translation_unit_visitor::process_field(
                             [&d = diagram()](const std::string &full_name) {
                                 if (full_name.empty())
                                     return false;
-                                auto [ns, name] = cx::util::split_ns(full_name);
+                                auto [ns, name] = common::split_ns(full_name);
                                 return d.should_include(ns, name);
                             });
                 }

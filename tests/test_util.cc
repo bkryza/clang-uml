@@ -18,7 +18,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include "util/util.h"
-#include <cx/util.h>
+#include <common/clang_utils.h>
 
 #include <filesystem>
 
@@ -96,7 +96,7 @@ TEST_CASE("Test replace_all", "[unit-test]")
 
 TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 {
-    using namespace clanguml::cx::util;
+    using namespace clanguml::common;
 
     const std::string int_template_str{"ns1::ns2::class1<int>"};
 

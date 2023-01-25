@@ -30,6 +30,8 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
+using common::model::template_parameter;
+
 std::string to_string(const clang::FunctionTemplateDecl *decl);
 
 class translation_unit_visitor
@@ -179,7 +181,7 @@ private:
 
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
-        sequence_diagram::model::template_trait &c);
+        common::model::template_trait &c);
 
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
@@ -200,22 +202,22 @@ private:
 
     void build_template_instantiation_process_template_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_integral_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_expression_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_tag_argument(
         model::template_trait &template_instantiation,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_type_argument(
         model::template_trait *parent,
@@ -223,7 +225,7 @@ private:
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         model::template_trait &template_instantiation,
-        class_diagram::model::template_parameter &argument);
+        common::model::template_parameter &argument);
 
     std::unique_ptr<model::class_> process_template_specialization(
         clang::ClassTemplateSpecializationDecl *cls);
@@ -235,14 +237,14 @@ private:
         bool in_parameter_pack = false);
 
     void process_unexposed_template_specialization_parameters(
-        const std::string &type_name,
-        class_diagram::model::template_parameter &tp, model::class_ &c) const;
+        const std::string &type_name, common::model::template_parameter &tp,
+        model::class_ &c) const;
 
     std::unique_ptr<model::class_> build_template_instantiation(
         const clang::TemplateSpecializationType &template_type_decl,
         model::class_ *parent);
 
-    bool simplify_system_template(class_diagram::model::template_parameter &ct,
+    bool simplify_system_template(common::model::template_parameter &ct,
         const std::string &full_name) const;
 
     std::string simplify_system_template(const std::string &full_name) const;

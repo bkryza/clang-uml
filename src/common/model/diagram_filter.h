@@ -18,12 +18,12 @@
 #pragma once
 
 #include "class_diagram/model/diagram.h"
+#include "common/clang_utils.h"
 #include "common/model/diagram.h"
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
 #include "config/config.h"
-#include "cx/util.h"
 #include "diagram.h"
 #include "include_diagram/model/diagram.h"
 #include "source_file.h"

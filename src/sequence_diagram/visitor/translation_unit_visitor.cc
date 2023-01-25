@@ -18,8 +18,8 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/clang_utils.h"
 #include "common/model/namespace.h"
-#include "cx/util.h"
 
 namespace clanguml::sequence_diagram::visitor {
 
@@ -1336,7 +1336,7 @@ bool translation_unit_visitor::process_template_parameters(
     const clang::TemplateDecl &template_declaration,
     sequence_diagram::model::template_trait &c)
 {
-    using class_diagram::model::template_parameter;
+    using common::model::template_parameter;
 
     LOG_TRACE("Processing class {} template parameters...",
         common::get_qualified_name(template_declaration));
@@ -1357,7 +1357,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_type_parameter->isParameterPack());
 
-            c.add_template(ct);
+            c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                      parameter) != nullptr) {
@@ -1371,7 +1371,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_nontype_parameter->isParameterPack());
 
-            c.add_template(ct);
+            c.add_template(std::move(ct));
         }
         else if (clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
                      parameter) != nullptr) {
@@ -1385,7 +1385,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_template_parameter->isParameterPack());
 
-            c.add_template(ct);
+            c.add_template(std::move(ct));
         }
         else {
             // pass
@@ -1510,7 +1510,7 @@ void translation_unit_visitor::
 {
     for (const auto &arg : template_args) {
         const auto argument_kind = arg.getKind();
-        class_diagram::model::template_parameter argument;
+        common::model::template_parameter argument;
         if (argument_kind == clang::TemplateArgument::Template) {
             build_template_instantiation_process_template_argument(
                 arg, argument);
@@ -1535,14 +1535,14 @@ void translation_unit_visitor::
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
 
-        template_instantiation.add_template(argument);
+        template_instantiation.add_template(std::move(argument));
     }
 }
 
 void translation_unit_visitor::
     build_template_instantiation_process_template_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const
+        common::model::template_parameter &argument) const
 {
     argument.is_template_parameter(true);
     auto arg_name =
@@ -1553,7 +1553,7 @@ void translation_unit_visitor::
 void translation_unit_visitor::
     build_template_instantiation_process_integral_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const
+        common::model::template_parameter &argument) const
 {
     assert(arg.getKind() == clang::TemplateArgument::Integral);
 
@@ -1564,7 +1564,7 @@ void translation_unit_visitor::
 void translation_unit_visitor::
     build_template_instantiation_process_expression_argument(
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const
+        common::model::template_parameter &argument) const
 {
     assert(arg.getKind() == clang::TemplateArgument::Expression);
 
@@ -1579,7 +1579,7 @@ void translation_unit_visitor::
         const std::string & /*full_template_specialization_name*/,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        class_diagram::model::template_parameter &argument) const
+        common::model::template_parameter &argument) const
 {
     assert(arg.getKind() == clang::TemplateArgument::Type);
 
@@ -1596,7 +1596,7 @@ void translation_unit_visitor::
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         model::template_trait &template_instantiation,
-        class_diagram::model::template_parameter &argument)
+        common::model::template_parameter &argument)
 {
     assert(arg.getKind() == clang::TemplateArgument::Type);
 
@@ -1685,7 +1685,7 @@ void translation_unit_visitor::process_template_specialization_argument(
     const auto argument_kind = arg.getKind();
 
     if (argument_kind == clang::TemplateArgument::Type) {
-        class_diagram::model::template_parameter argument;
+        common::model::template_parameter argument;
         argument.is_template_parameter(false);
 
         // If this is a nested template type - add nested templates as
@@ -1731,9 +1731,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -1789,9 +1788,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -1816,23 +1814,23 @@ void translation_unit_visitor::process_template_specialization_argument(
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
 
-        template_instantiation.add_template(argument);
+        template_instantiation.add_template(std::move(argument));
     }
     else if (argument_kind == clang::TemplateArgument::Integral) {
-        class_diagram::model::template_parameter argument;
+        common::model::template_parameter argument;
         argument.is_template_parameter(false);
         argument.set_type(std::to_string(arg.getAsIntegral().getExtValue()));
-        template_instantiation.add_template(argument);
+        template_instantiation.add_template(std::move(argument));
     }
     else if (argument_kind == clang::TemplateArgument::Expression) {
-        class_diagram::model::template_parameter argument;
+        common::model::template_parameter argument;
         argument.is_template_parameter(false);
         argument.set_type(common::get_source_text(
             arg.getAsExpr()->getSourceRange(), source_manager()));
-        template_instantiation.add_template(argument);
+        template_instantiation.add_template(std::move(argument));
     }
     else if (argument_kind == clang::TemplateArgument::TemplateExpansion) {
-        class_diagram::model::template_parameter argument;
+        common::model::template_parameter argument;
         argument.is_template_parameter(true);
 
         cls->getLocation().dump(source_manager());
@@ -2040,11 +2038,10 @@ translation_unit_visitor::build_template_instantiation(
 
 void translation_unit_visitor::
     process_unexposed_template_specialization_parameters(
-        const std::string &type_name,
-        class_diagram::model::template_parameter &tp,
+        const std::string &type_name, common::model::template_parameter &tp,
         model::class_ & /*c*/) const
 {
-    auto template_params = cx::util::parse_unexposed_template_params(
+    auto template_params = common::parse_unexposed_template_params(
         type_name, [](const std::string &t) { return t; });
 
     for (auto &param : template_params) {
@@ -2053,8 +2050,7 @@ void translation_unit_visitor::
 }
 
 bool translation_unit_visitor::simplify_system_template(
-    class_diagram::model::template_parameter &ct,
-    const std::string &full_name) const
+    common::model::template_parameter &ct, const std::string &full_name) const
 {
     if (config().type_aliases().count(full_name) > 0) {
         ct.set_name(config().type_aliases().at(full_name));

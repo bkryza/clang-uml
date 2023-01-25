@@ -68,28 +68,11 @@ void class_::add_parent(class_parent &&parent)
     bases_.emplace_back(std::move(parent));
 }
 
-void class_::add_template(template_parameter &&tmplt)
-{
-    templates_.emplace_back(std::move(tmplt));
-}
-
 const std::vector<class_member> &class_::members() const { return members_; }
 
 const std::vector<class_method> &class_::methods() const { return methods_; }
 
 const std::vector<class_parent> &class_::parents() const { return bases_; }
-
-const std::vector<template_parameter> &class_::templates() const
-{
-    return templates_;
-}
-
-void class_::set_base_template(const std::string &full_name)
-{
-    base_template_full_name_ = full_name;
-}
-
-std::string class_::base_template() const { return base_template_full_name_; }
 
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
@@ -101,7 +84,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr, false);
+    render_template_params(ostr, using_namespace(), false);
 
     return ostr.str();
 }
@@ -114,7 +97,8 @@ std::string class_::full_name(bool relative) const
     std::ostringstream ostr;
 
     ostr << name_and_ns();
-    render_template_params(ostr, relative);
+
+    render_template_params(ostr, using_namespace(), relative);
 
     std::string res;
 
@@ -127,26 +111,6 @@ std::string class_::full_name(bool relative) const
         return "<<anonymous>>";
 
     return res;
-}
-
-std::ostringstream &class_::render_template_params(
-    std::ostringstream &ostr, bool relative) const
-{
-    using clanguml::common::model::namespace_;
-
-    if (!templates_.empty()) {
-        std::vector<std::string> tnames;
-        std::vector<std::string> tnames_simplified;
-
-        std::transform(templates_.cbegin(), templates_.cend(),
-            std::back_inserter(tnames),
-            [ns = using_namespace(), relative](
-                const auto &tmplt) { return tmplt.to_string(ns, relative); });
-
-        ostr << fmt::format("<{}>", fmt::join(tnames, ","));
-    }
-
-    return ostr;
 }
 
 bool class_::is_abstract() const

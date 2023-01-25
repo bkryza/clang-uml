@@ -20,6 +20,7 @@
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
+#include "common/model/template_trait.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 
@@ -33,6 +34,20 @@
 #include <string>
 
 namespace clanguml::class_diagram::visitor {
+
+using clanguml::class_diagram::model::class_;
+using clanguml::class_diagram::model::class_member;
+using clanguml::class_diagram::model::class_method;
+using clanguml::class_diagram::model::class_parent;
+using clanguml::class_diagram::model::diagram;
+using clanguml::class_diagram::model::enum_;
+using clanguml::class_diagram::model::method_parameter;
+using clanguml::common::model::access_t;
+using clanguml::common::model::namespace_;
+using clanguml::common::model::relationship;
+using clanguml::common::model::relationship_t;
+using clanguml::common::model::template_parameter;
+using clanguml::common::model::template_trait;
 
 using found_relationships_t =
     std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
@@ -108,12 +123,11 @@ private:
         clang::ClassTemplateSpecializationDecl *cls);
 
     void process_template_specialization_children(
-        const clang::ClassTemplateSpecializationDecl *cls,
-        clanguml::class_diagram::model::class_ &c);
+        const clang::ClassTemplateSpecializationDecl *cls, class_ &c);
 
     bool process_template_parameters(
-        const clang::ClassTemplateDecl &template_declaration,
-        clanguml::class_diagram::model::class_ &c);
+        const clang::TemplateDecl &template_declaration,
+        clanguml::common::model::template_trait &t);
 
     void process_template_specialization_argument(
         const clang::ClassTemplateSpecializationDecl *cls,
@@ -171,7 +185,7 @@ private:
         clanguml::class_diagram::model::class_ &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         int arg_index, bool variadic_params,
-        const clanguml::class_diagram::model::template_parameter &ct) const;
+        const clanguml::common::model::template_parameter &ct) const;
 
     void build_template_instantiation_process_template_arguments(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
@@ -186,15 +200,15 @@ private:
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        model::template_parameter &argument);
+        common::model::template_parameter &argument);
 
     void build_template_instantiation_process_expression_argument(
         const clang::TemplateArgument &arg,
-        model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_integral_argument(
         const clang::TemplateArgument &arg,
-        model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void build_template_instantiation_process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
@@ -202,11 +216,11 @@ private:
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         model::class_ &template_instantiation,
-        model::template_parameter &argument);
+        common::model::template_parameter &argument);
 
     void build_template_instantiation_process_template_argument(
         const clang::TemplateArgument &arg,
-        model::template_parameter &argument) const;
+        common::model::template_parameter &argument) const;
 
     void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 
@@ -220,19 +234,19 @@ private:
 
     void process_unexposed_template_specialization_parameters(
         const std::string &tspec,
-        clanguml::class_diagram::model::template_parameter &tp,
+        clanguml::common::model::template_parameter &tp,
         clanguml::class_diagram::model::class_ &c);
 
     bool find_relationships_in_unexposed_template_params(
-        const clanguml::class_diagram::model::template_parameter &ct,
+        const clanguml::common::model::template_parameter &ct,
         found_relationships_t &relationships);
 
     void add_incomplete_forward_declarations();
 
     void resolve_local_to_global_ids();
 
-    bool simplify_system_template(
-        model::template_parameter &ct, const std::string &full_name) const;
+    bool simplify_system_template(common::model::template_parameter &ct,
+        const std::string &full_name) const;
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id

@@ -19,7 +19,6 @@ set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS} ${LIBCLANG_CXXFLAGS} ${TEST_DISAB
 
 if(APPLE)
     # Without this, clang-uml test cases fail with error saying that clang cannot find stdarg.h
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
     set(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}  -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
 endif(APPLE)

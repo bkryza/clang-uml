@@ -23,8 +23,9 @@
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/stylable_element.h"
+#include "common/model/template_parameter.h"
+#include "common/model/template_trait.h"
 #include "common/types.h"
-#include "template_parameter.h"
 
 #include <string>
 #include <vector>
@@ -32,7 +33,8 @@
 namespace clanguml::class_diagram::model {
 
 class class_ : public common::model::element,
-               public common::model::stylable_element {
+               public common::model::stylable_element,
+               public template_trait {
 public:
     class_(const common::model::namespace_ &using_namespace);
 
@@ -55,12 +57,10 @@ public:
     void add_member(class_member &&member);
     void add_method(class_method &&method);
     void add_parent(class_parent &&parent);
-    void add_template(template_parameter &&tmplt);
 
     const std::vector<class_member> &members() const;
     const std::vector<class_method> &methods() const;
     const std::vector<class_parent> &parents() const;
-    const std::vector<template_parameter> &templates() const;
 
     void set_base_template(const std::string &full_name);
     std::string base_template() const;
@@ -85,9 +85,6 @@ public:
         const class_ &other, const std::string &full_name) const;
 
 private:
-    std::ostringstream &render_template_params(
-        std::ostringstream &ostr, bool relative) const;
-
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
@@ -95,7 +92,6 @@ private:
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;
-    std::vector<template_parameter> templates_;
     std::string base_template_full_name_;
 
     std::string full_name_;

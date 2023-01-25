@@ -20,7 +20,6 @@
 
 #include "common/clang_utils.h"
 #include "common/model/namespace.h"
-#include "cx/util.h"
 
 #include <spdlog/spdlog.h>
 
