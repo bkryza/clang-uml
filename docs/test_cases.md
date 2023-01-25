@@ -50,6 +50,7 @@
  * [t00049](./test_cases/t00049.md) - Test case configurable type aliases
  * [t00050](./test_cases/t00050.md) - Test case for generating notes from comments using jinja templates
  * [t00051](./test_cases/t00051.md) - Test case for relative paths in lambda names
+ * [t00052](./test_cases/t00052.md) - Test case for template methods rendering
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
