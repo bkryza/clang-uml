@@ -1,3 +1,5 @@
+#include <cmath>
+
 namespace clanguml {
 namespace t00052 {
 
@@ -15,5 +17,19 @@ public:
     template <typename F> T bb(F &&f, T t) { return f(t); }
 };
 
+template <typename T> class C {
+    template <typename P> T c(P p) { return static_cast<T>(p); }
+};
+
+template <> template <> int C<int>::c<double>(double p)
+{
+    return std::floor(p);
+}
+
+struct R {
+    A a;
+    B<int> b;
+    C<int> c;
+};
 }
 }
