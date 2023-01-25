@@ -18,8 +18,8 @@
 
 #include "translation_unit_visitor.h"
 
+#include "common/clang_utils.h"
 #include "common/model/namespace.h"
-#include "cx/util.h"
 
 namespace clanguml::sequence_diagram::visitor {
 
@@ -1731,9 +1731,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -1789,9 +1788,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text.find(cls->getNameAsString()) +
                     cls->getNameAsString().size() + 1);
 
-                auto template_params =
-                    cx::util::parse_unexposed_template_params(
-                        declaration_text, [](const auto &t) { return t; });
+                auto template_params = common::parse_unexposed_template_params(
+                    declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
                     type_name = template_params[argument_index].to_string(
@@ -2043,7 +2041,7 @@ void translation_unit_visitor::
         const std::string &type_name, common::model::template_parameter &tp,
         model::class_ & /*c*/) const
 {
-    auto template_params = cx::util::parse_unexposed_template_params(
+    auto template_params = common::parse_unexposed_template_params(
         type_name, [](const std::string &t) { return t; });
 
     for (auto &param : template_params) {

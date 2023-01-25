@@ -17,8 +17,11 @@
  */
 #pragma once
 
-#include "cx/util.h"
+#include "common/model/enums.h"
+#include "common/model/namespace.h"
+#include "common/model/template_parameter.h"
 #include "types.h"
+#include "util/util.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
 
@@ -131,4 +134,12 @@ template <> id_t to_id(const clang::EnumType &type);
 template <> id_t to_id(const clang::TemplateSpecializationType &type);
 
 template <> id_t to_id(const std::filesystem::path &type);
+
+std::pair<common::model::namespace_, std::string> split_ns(
+    const std::string &full_name);
+
+std::vector<common::model::template_parameter> parse_unexposed_template_params(
+    const std::string &params,
+    const std::function<std::string(const std::string &)> &ns_resolve,
+    int depth = 0);
 } // namespace clanguml::common
