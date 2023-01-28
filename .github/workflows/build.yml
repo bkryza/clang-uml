@@ -1,6 +1,24 @@
 name: build
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'packaging/**'
+      - 'util/**'
+      - 'uml/**'
+      - '**.md'
+    branches-ignore:
+      - 'noactions/*'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'packaging/**'
+      - 'util/**'
+      - 'uml/**'
+      - '**.md'
+    branches-ignore:
+      - 'noactions/*'
 
 jobs:
   build-ubuntu:
