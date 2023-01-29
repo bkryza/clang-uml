@@ -1,8 +1,11 @@
-# clang-uml - C++ UML diagram generator based on Clang
+[<div align="center"><img width="600" src="https://raw.githubusercontent.com/bkryza/clang-uml/add-logo/docs/img/clang-uml-logo.svg?sanitize=true"></div>](https://github.com/bkryza/clang-uml/releases)
+
+# C++ UML diagram generator based on Clang
 
 [![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
 [![Version](https://img.shields.io/badge/version-0.3.1-blue)](https://github.com/bkryza/clang-uml/releases)
+
 
 `clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by 
 YAML configuration files. The main idea behind the
