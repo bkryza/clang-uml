@@ -266,6 +266,26 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     ostr << "}" << '\n';
 
     generate_notes(ostr, c);
+
+    for (const auto &member : c.members())
+        generate_member_notes(ostr, member, c.alias());
+
+    for (const auto &method : c.methods())
+        generate_member_notes(ostr, method, c.alias());
+}
+
+void generator::generate_member_notes(std::ostream &ostr,
+    const class_element &member, const std::string &alias) const
+{
+    for (const auto &decorator : member.decorators()) {
+        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+        if (note && note->applies_to_diagram(m_config.name)) {
+            ostr << "note " << note->position << " of " << alias
+                 << "::" << member.name() << '\n'
+                 << note->text << '\n'
+                 << "end note\n";
+        }
+    }
 }
 
 void generator::generate_relationships(
@@ -557,4 +577,5 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
+
 } // namespace clanguml::class_diagram::generators::plantuml

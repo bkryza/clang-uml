@@ -10,3 +10,9 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00028
+    plantuml:
+      after:
+        - >
+          note left of {{ alias("R") }}::ccc
+            Reference to C.
+          end note

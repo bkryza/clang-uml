@@ -1,5 +1,8 @@
 # CHANGELOG
 
+  * Enabled adding notes to class methods and members (#87)
+  * Improved rendering of template methods in class diagrams (#83)
+
 ### 0.3.1
   * Added relationship deduction from `auto` return types which are template
     specializations (#82)

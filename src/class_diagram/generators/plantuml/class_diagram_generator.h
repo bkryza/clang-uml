@@ -45,6 +45,7 @@ using common_generator =
     clanguml::common::generators::plantuml::generator<C, D>;
 
 using clanguml::class_diagram::model::class_;
+using clanguml::class_diagram::model::class_element;
 using clanguml::class_diagram::model::enum_;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
@@ -74,6 +75,9 @@ public:
     void generate(const package &p, std::ostream &ostr) const;
 
     void generate_relationships(const package &p, std::ostream &ostr) const;
+
+    void generate_member_notes(std::ostream &ostream,
+        const class_element &member, const std::string &basicString) const;
 
     void generate(std::ostream &ostr) const override;
 

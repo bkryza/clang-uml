@@ -44,8 +44,10 @@ class R {
     {
     }
 
+    /// \uml{note[left] R contains an instance of A.}
     A aaa;
 
+    /// \uml{note:other_diagram[right] R contains an pointer to B.}
     B *bbb;
 
     C &ccc;
