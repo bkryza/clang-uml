@@ -438,6 +438,15 @@ ContainsMatcher HasNote(std::string const &cls, std::string const &position,
         fmt::format("note {} of {}", position, cls), caseSensitivity));
 }
 
+ContainsMatcher HasMemberNote(std::string const &cls, std::string const &member,
+    std::string const &position, std::string const &note = "",
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("note {} of {}::{}", position, cls, member),
+            caseSensitivity));
+}
+
 ContainsMatcher HasLink(std::string const &alias, std::string const &link,
     std::string const &tooltip,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
