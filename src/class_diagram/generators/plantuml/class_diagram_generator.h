@@ -83,6 +83,9 @@ public:
 
 private:
     std::string render_name(std::string name) const;
+
+    mutable std::map<std::string, std::vector<common::model::element *>>
+        current_level_together_groups_;
 };
 
 } // namespace plantuml

@@ -80,13 +80,13 @@ struct filter {
     std::vector<std::filesystem::path> paths;
 };
 
-enum class hint_t { up, down, left, right };
+enum class hint_t { up, down, left, right, together };
 
 std::string to_string(hint_t t);
 
 struct layout_hint {
     hint_t hint{hint_t::up};
-    std::string entity;
+    std::variant<std::string, std::vector<std::string>> entity;
 };
 
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
@@ -183,6 +183,9 @@ struct class_diagram : public diagram {
     common::model::diagram_t type() const override;
 
     option<layout_hints> layout{"layout"};
+
+    std::optional<std::string> get_together_group(
+        const std::string &full_name) const;
 
     void initialize_relationship_hints();
 };

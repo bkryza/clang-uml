@@ -142,6 +142,31 @@ std::vector<std::string> diagram::get_translation_units() const
     return translation_units;
 }
 
+std::optional<std::string> class_diagram::get_together_group(
+    const std::string &full_name) const
+{
+    const auto relative_name = using_namespace().relative(full_name);
+
+    for (const auto &[hint_target, hints] : layout()) {
+        for (const auto &hint : hints) {
+            if (hint.hint == hint_t::together) {
+                const auto &together_others =
+                    std::get<std::vector<std::string>>(hint.entity);
+
+                if ((full_name == hint_target) ||
+                    util::contains(together_others, full_name))
+                    return hint_target;
+
+                if ((relative_name == hint_target) ||
+                    util::contains(together_others, relative_name))
+                    return hint_target;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
 void diagram::initialize_type_aliases()
 {
     if (type_aliases().count("std::basic_string<char>") == 0U) {

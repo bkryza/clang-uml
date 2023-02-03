@@ -159,7 +159,13 @@ YAML::Emitter &operator<<(
 YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c)
 {
     out << YAML::BeginMap;
-    out << YAML::Key << c.hint << YAML::Value << c.entity;
+
+    out << YAML::Key << c.hint << YAML::Value;
+    if (std::holds_alternative<std::string>(c.entity))
+        out << std::get<std::string>(c.entity);
+    else if (std::holds_alternative<std::vector<std::string>>(c.entity))
+        out << std::get<std::vector<std::string>>(c.entity);
+
     out << YAML::EndMap;
     return out;
 }

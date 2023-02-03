@@ -479,14 +479,30 @@ void generator::generate(const package &p, std::ostream &ostr) const
         }
         else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
-                generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
-                generate(dynamic_cast<class_ &>(*subpackage), ostr);
+                auto together_group =
+                    m_config.get_together_group(subpackage->full_name(false));
+                if (together_group) {
+                    current_level_together_groups_[together_group.value()]
+                        .push_back(subpackage.get());
+                }
+                else {
+                    generate_alias(dynamic_cast<class_ &>(*subpackage), ostr);
+                    generate(dynamic_cast<class_ &>(*subpackage), ostr);
+                }
             }
         }
         else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
             if (m_model.should_include(*subpackage)) {
-                generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
-                generate(dynamic_cast<enum_ &>(*subpackage), ostr);
+                auto together_group =
+                    m_config.get_together_group(subpackage->full_name(false));
+                if (together_group) {
+                    current_level_together_groups_[together_group.value()]
+                        .push_back(subpackage.get());
+                }
+                else {
+                    generate_alias(dynamic_cast<enum_ &>(*subpackage), ostr);
+                    generate(dynamic_cast<enum_ &>(*subpackage), ostr);
+                }
             }
         }
     }
@@ -536,37 +552,71 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get()) != nullptr) {
-            const auto &sp = dynamic_cast<package &>(*p);
-            if (!sp.is_empty())
-                generate(sp, ostr);
+        if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
+            if (!pkg->is_empty())
+                generate(*pkg, ostr);
         }
-        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
-            if (m_model.should_include(*p)) {
-                generate_alias(dynamic_cast<class_ &>(*p), ostr);
-                generate(dynamic_cast<class_ &>(*p), ostr);
+        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
+            if (m_model.should_include(*cls)) {
+                auto together_group =
+                    m_config.get_together_group(cls->full_name(false));
+                if (together_group) {
+                    current_level_together_groups_[together_group.value()]
+                        .push_back(cls);
+                }
+                else {
+                    generate_alias(*cls, ostr);
+                    generate(*cls, ostr);
+                }
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
-            if (m_model.should_include(*p)) {
-                generate_alias(dynamic_cast<enum_ &>(*p), ostr);
-                generate(dynamic_cast<enum_ &>(*p), ostr);
+        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
+            if (m_model.should_include(*enm)) {
+                auto together_group =
+                    m_config.get_together_group(enm->full_name(false));
+                if (together_group) {
+                    current_level_together_groups_[together_group.value()]
+                        .push_back(enm);
+                }
+                else {
+                    generate_alias(*enm, ostr);
+                    generate(*enm, ostr);
+                }
             }
         }
     }
 
-    for (const auto &p : m_model) {
-        if (dynamic_cast<package *>(p.get()) != nullptr) {
-            generate_relationships(dynamic_cast<package &>(*p), ostr);
-        }
-        else if (dynamic_cast<class_ *>(p.get()) != nullptr) {
-            if (m_model.should_include(*p)) {
-                generate_relationships(dynamic_cast<class_ &>(*p), ostr);
+    // Now generate any diagram elements which are in together groups
+    for (const auto &[group_name, group_elements] :
+        current_level_together_groups_) {
+
+        ostr << "' together group for " << group_name << "\n";
+        ostr << "together {\n";
+        for (auto *e : group_elements) {
+            if (auto *cls = dynamic_cast<class_ *>(e); cls) {
+                generate_alias(*cls, ostr);
+                generate(*cls, ostr);
+            }
+            if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
+                generate_alias(*enm, ostr);
+                generate(*enm, ostr);
             }
         }
-        else if (dynamic_cast<enum_ *>(p.get()) != nullptr) {
-            if (m_model.should_include(*p)) {
-                generate_relationships(dynamic_cast<enum_ &>(*p), ostr);
+        ostr << "}\n";
+    }
+
+    for (const auto &p : m_model) {
+        if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
+            generate_relationships(*pkg, ostr);
+        }
+        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
+            if (m_model.should_include(*cls)) {
+                generate_relationships(*cls, ostr);
+            }
+        }
+        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
+            if (m_model.should_include(*enm)) {
+                generate_relationships(*enm, ostr);
             }
         }
     }

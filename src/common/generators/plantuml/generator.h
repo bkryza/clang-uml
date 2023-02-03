@@ -224,15 +224,22 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
     for (const auto &[entity_name, hints] : m_config.layout()) {
         for (const auto &hint : hints) {
             std::stringstream hint_str;
+
+            // 'together' layout hint is handled separately
+            if (hint.hint == config::hint_t::together)
+                continue;
+
+            const auto &hint_entity = std::get<std::string>(hint.entity);
+
             try {
                 auto element_opt = m_model.get(entity_name);
                 if (!element_opt)
                     element_opt = m_model.get((uns | entity_name).to_string());
 
-                auto hint_element_opt = m_model.get(hint.entity);
+                auto hint_element_opt = m_model.get(hint_entity);
                 if (!hint_element_opt)
                     hint_element_opt =
-                        m_model.get((uns | hint.entity).to_string());
+                        m_model.get((uns | hint_entity).to_string());
 
                 if (!element_opt || !hint_element_opt)
                     continue;
@@ -244,7 +251,7 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
             catch (clanguml::error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping layout hint from {} to {} due "
                         "to: {}",
-                    entity_name, hint.entity, e.what());
+                    entity_name, hint_entity, e.what());
             }
         }
     }

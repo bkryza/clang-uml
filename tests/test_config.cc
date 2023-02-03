@@ -150,6 +150,8 @@ TEST_CASE("Test config includes", "[unit-test]")
 
 TEST_CASE("Test config layout", "[unit-test]")
 {
+    using namespace std::string_literals;
+
     auto cfg = clanguml::config::load("./test_config_data/layout.yml");
 
     CHECK(cfg.diagrams.size() == 2);
@@ -157,35 +159,78 @@ TEST_CASE("Test config layout", "[unit-test]")
     [[maybe_unused]] auto &def = static_cast<clanguml::config::class_diagram &>(
         *cfg.diagrams["class_main"]);
 
-    auto check_layout = [](const auto &diagram,
-                            const clanguml::common::model::diagram_t type) {
-        CHECK(diagram.type() == type);
+    auto check_class_layout =
+        [](const clanguml::config::class_diagram &diagram,
+            const clanguml::common::model::diagram_t type) {
+            CHECK(diagram.type() == type);
 
-        CHECK(diagram.layout().at("ABCD").size() == 2);
-        CHECK(diagram.layout().at("ABCD")[0].hint ==
-            clanguml::config::hint_t::up);
-        CHECK(diagram.layout().at("ABCD")[0].entity == "ABCD_SUBCLASS");
-        CHECK(diagram.layout().at("ABCD")[1].hint ==
-            clanguml::config::hint_t::left);
-        CHECK(diagram.layout().at("ABCD")[1].entity == "ABCD_SIBLING");
+            const auto &ABCD = diagram.layout().at("ABCD");
 
-        CHECK(diagram.layout().at("ABCD_SIBLING").size() == 2);
-        CHECK(diagram.layout().at("ABCD_SIBLING")[0].hint ==
-            clanguml::config::hint_t::right);
-        CHECK(diagram.layout().at("ABCD_SIBLING")[0].entity ==
-            "ABCD_OTHER_SIBLING");
-        CHECK(diagram.layout().at("ABCD_SIBLING")[1].hint ==
-            clanguml::config::hint_t::down);
-        CHECK(diagram.layout().at("ABCD_SIBLING")[1].entity ==
-            "ABCD_SIBLING_SIBLING");
-    };
+            CHECK(ABCD.size() == 3);
 
-    check_layout(static_cast<clanguml::config::class_diagram &>(
-                     *cfg.diagrams["class_main"]),
+            CHECK(ABCD[0].hint == clanguml::config::hint_t::up);
+            CHECK(std::get<std::string>(ABCD[0].entity) == "ABCD_SUBCLASS");
+
+            CHECK(ABCD[1].hint == clanguml::config::hint_t::left);
+            CHECK(std::get<std::string>(ABCD[1].entity) == "ABCD_SIBLING");
+
+            CHECK(ABCD[2].hint == clanguml::config::hint_t::together);
+            CHECK(std::get<std::vector<std::string>>(ABCD[2].entity) ==
+                std::vector{"A"s, "B"s, "C"s, "D"s});
+
+            CHECK(diagram.get_together_group("ABCD").value() == "ABCD");
+            CHECK(
+                diagram.get_together_group("clanguml::ABCD").value() == "ABCD");
+            CHECK(diagram.get_together_group("B").value() == "ABCD");
+            CHECK(diagram.get_together_group("clanguml::B").value() == "ABCD");
+            CHECK(!diagram.get_together_group("clanguml::E"));
+            CHECK(!diagram.get_together_group("E"));
+
+            const auto &ABCD_SIBLING = diagram.layout().at("ABCD_SIBLING");
+            CHECK(ABCD_SIBLING.size() == 2);
+
+            CHECK(ABCD_SIBLING[0].hint == clanguml::config::hint_t::right);
+            CHECK(std::get<std::string>(ABCD_SIBLING[0].entity) ==
+                "ABCD_OTHER_SIBLING");
+
+            CHECK(ABCD_SIBLING[1].hint == clanguml::config::hint_t::down);
+            CHECK(std::get<std::string>(ABCD_SIBLING[1].entity) ==
+                "ABCD_SIBLING_SIBLING");
+        };
+
+    auto check_package_layout =
+        [](const clanguml::config::package_diagram &diagram,
+            const clanguml::common::model::diagram_t type) {
+            CHECK(diagram.type() == type);
+
+            const auto &ABCD = diagram.layout().at("ABCD");
+
+            CHECK(ABCD.size() == 2);
+
+            CHECK(ABCD[0].hint == clanguml::config::hint_t::up);
+            CHECK(std::get<std::string>(ABCD[0].entity) == "ABCD_SUBCLASS");
+
+            CHECK(ABCD[1].hint == clanguml::config::hint_t::left);
+            CHECK(std::get<std::string>(ABCD[1].entity) == "ABCD_SIBLING");
+
+            const auto &ABCD_SIBLING = diagram.layout().at("ABCD_SIBLING");
+            CHECK(ABCD_SIBLING.size() == 2);
+
+            CHECK(ABCD_SIBLING[0].hint == clanguml::config::hint_t::right);
+            CHECK(std::get<std::string>(ABCD_SIBLING[0].entity) ==
+                "ABCD_OTHER_SIBLING");
+
+            CHECK(ABCD_SIBLING[1].hint == clanguml::config::hint_t::down);
+            CHECK(std::get<std::string>(ABCD_SIBLING[1].entity) ==
+                "ABCD_SIBLING_SIBLING");
+        };
+
+    check_class_layout(static_cast<clanguml::config::class_diagram &>(
+                           *cfg.diagrams["class_main"]),
         clanguml::common::model::diagram_t::kClass);
 
-    check_layout(static_cast<clanguml::config::package_diagram &>(
-                     *cfg.diagrams["package_main"]),
+    check_package_layout(static_cast<clanguml::config::package_diagram &>(
+                             *cfg.diagrams["package_main"]),
         clanguml::common::model::diagram_t::kPackage);
 }
 

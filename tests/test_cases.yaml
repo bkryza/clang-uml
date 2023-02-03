@@ -153,6 +153,9 @@ test_cases:
     - name: t00052
       title: Test case for template methods rendering
       description:
+    - name: t00053
+      title: Test case for `together` layout hint
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

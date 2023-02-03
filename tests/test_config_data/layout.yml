@@ -13,6 +13,7 @@ diagrams:
       ABCD:
         - up: ABCD_SUBCLASS
         - left: ABCD_SIBLING
+        - together: [A, B, C, D]
       ABCD_SIBLING:
         - right: ABCD_OTHER_SIBLING
         - down: ABCD_SIBLING_SIBLING

@@ -1,0 +1,19 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00053_class:
+    type: class
+    glob:
+      - ../../tests/t00053/t00053.cc
+    include:
+      namespaces:
+        - clanguml::t00053
+    using_namespace:
+      - clanguml::t00053
+    layout:
+      a:
+        - together: [c,e,f]
+      A:
+        - together: [C,E,F]
+      h:
+        - together: [j]
