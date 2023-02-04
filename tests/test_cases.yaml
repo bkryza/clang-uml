@@ -154,7 +154,10 @@ test_cases:
       title: Test case for template methods rendering
       description:
     - name: t00053
-      title: Test case for `together` layout hint
+      title: Test case for `together` layout hint in class diagram
+      description:
+    - name: t00054
+      title: Test case for `together` layout hint in class diagram with rendered namespaces
       description:
   Sequence diagrams:
     - name: t20001
