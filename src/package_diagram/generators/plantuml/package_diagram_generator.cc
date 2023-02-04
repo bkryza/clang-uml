@@ -24,6 +24,7 @@ namespace clanguml::package_diagram::generators::plantuml {
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
+    , together_group_stack_{false}
 {
 }
 
@@ -62,6 +63,8 @@ void generator::generate(const package &p, std::ostream &ostr) const
 {
     LOG_DBG("Generating package {}", p.name());
 
+    together_group_stack_.enter();
+
     const auto &uns = m_config.using_namespace();
 
     // Don't generate packages from namespaces filtered out by
@@ -84,15 +87,29 @@ void generator::generate(const package &p, std::ostream &ostr) const
     }
 
     for (const auto &subpackage : p) {
-        if (m_model.should_include(dynamic_cast<package &>(*subpackage)))
-            generate(dynamic_cast<const package &>(*subpackage), ostr);
+        auto &pkg = dynamic_cast<package &>(*subpackage);
+        if (m_model.should_include(pkg)) {
+            auto together_group =
+                m_config.get_together_group(pkg.full_name(false));
+            if (together_group) {
+                together_group_stack_.group_together(
+                    together_group.value(), &pkg);
+            }
+            else {
+                generate(pkg, ostr);
+            }
+        }
     }
+
+    generate_groups(ostr);
 
     if (!uns.starts_with({p.full_name(false)})) {
         ostr << "}" << '\n';
     }
 
     generate_notes(ostr, p);
+
+    together_group_stack_.leave();
 }
 
 void generator::generate(std::ostream &ostr) const
@@ -104,9 +121,21 @@ void generator::generate(std::ostream &ostr) const
     generate_plantuml_directives(ostr, m_config.puml().before);
 
     for (const auto &p : m_model) {
-        if (m_model.should_include(dynamic_cast<package &>(*p)))
-            generate(dynamic_cast<package &>(*p), ostr);
+        auto &pkg = dynamic_cast<package &>(*p);
+        if (m_model.should_include(pkg)) {
+            auto together_group =
+                m_config.get_together_group(pkg.full_name(false));
+            if (together_group) {
+                together_group_stack_.group_together(
+                    together_group.value(), &pkg);
+            }
+            else {
+                generate(pkg, ostr);
+            }
+        }
     }
+
+    generate_groups(ostr);
 
     // Process package relationships
     for (const auto &p : m_model) {
@@ -120,4 +149,19 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << "@enduml" << '\n';
 }
+
+void generator::generate_groups(std::ostream &ostr) const
+{
+    for (const auto &[group_name, group_elements] :
+        together_group_stack_.get_current_groups()) {
+        ostr << "together {\n";
+
+        for (auto *pkg : group_elements) {
+            generate(*pkg, ostr);
+        }
+
+        ostr << "}\n";
+    }
+}
+
 } // namespace clanguml::package_diagram::generators::plantuml

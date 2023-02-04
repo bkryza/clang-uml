@@ -142,7 +142,7 @@ std::vector<std::string> diagram::get_translation_units() const
     return translation_units;
 }
 
-std::optional<std::string> class_diagram::get_together_group(
+std::optional<std::string> diagram::get_together_group(
     const std::string &full_name) const
 {
     const auto relative_name = using_namespace().relative(full_name);

@@ -272,6 +272,9 @@ test_cases:
     - name: t30008
       title: Dependants and dependencies package diagram filter test
       description:
+    - name: t30009
+      title: Together layout hint test
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case
