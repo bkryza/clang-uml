@@ -95,6 +95,11 @@ diagrams:
       ClassA:
         - up: ClassB
         - left: ClassC
+      ClassD:
+        - together: [ClassE, ClassF, EnumG]
+      ClassX:
+        - row: [ClassY1, ClassZ1]
+        - column: [ClassY2, ClassZ2]
     # Specify customized relationship hints for types which are
     # arguments in template instantiations
     relationship_hints:

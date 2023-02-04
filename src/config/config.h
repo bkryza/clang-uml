@@ -80,13 +80,13 @@ struct filter {
     std::vector<std::filesystem::path> paths;
 };
 
-enum class hint_t { up, down, left, right };
+enum class hint_t { up, down, left, right, together, row, column };
 
 std::string to_string(hint_t t);
 
 struct layout_hint {
     hint_t hint{hint_t::up};
-    std::string entity;
+    std::variant<std::string, std::vector<std::string>> entity;
 };
 
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
@@ -148,6 +148,7 @@ struct inheritable_diagram_options {
     option<bool> generate_packages{"generate_packages", false};
     option<generate_links_config> generate_links{"generate_links"};
     option<git_config> git{"git"};
+    option<layout_hints> layout{"layout"};
     option<std::filesystem::path> base_directory{"__parent_path"};
     option<std::filesystem::path> relative_to{"relative_to"};
     option<bool> generate_system_headers{"generate_system_headers", false};
@@ -172,6 +173,9 @@ struct diagram : public inheritable_diagram_options {
 
     std::vector<std::string> get_translation_units() const;
 
+    std::optional<std::string> get_together_group(
+        const std::string &full_name) const;
+
     void initialize_type_aliases();
 
     std::string name;
@@ -181,8 +185,6 @@ struct class_diagram : public diagram {
     ~class_diagram() override = default;
 
     common::model::diagram_t type() const override;
-
-    option<layout_hints> layout{"layout"};
 
     void initialize_relationship_hints();
 };
@@ -199,16 +201,12 @@ struct package_diagram : public diagram {
     ~package_diagram() override = default;
 
     common::model::diagram_t type() const override;
-
-    option<layout_hints> layout{"layout"};
 };
 
 struct include_diagram : public diagram {
     ~include_diagram() override = default;
 
     common::model::diagram_t type() const override;
-
-    option<layout_hints> layout{"layout"};
 };
 
 struct config : public inheritable_diagram_options {

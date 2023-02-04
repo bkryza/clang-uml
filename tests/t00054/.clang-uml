@@ -1,0 +1,24 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00054_class:
+    type: class
+    glob:
+      - ../../tests/t00054/t00054.cc
+    include:
+      namespaces:
+        - clanguml::t00054
+    using_namespace:
+      - clanguml::t00054
+    generate_packages: true
+    layout:
+      a:
+        - together: [f]
+      "detail::c":
+        - together: [detail::e]
+      A:
+        - together: [B,G]
+      "detail2::detail3::D":
+        - together: [detail2::detail3::E]
+      "detail4::h":
+        - together: [detail4::i,detail4::j]

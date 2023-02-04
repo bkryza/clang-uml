@@ -246,6 +246,9 @@ using namespace clanguml::test::matchers;
 #include "t00050/test_case.h"
 #include "t00051/test_case.h"
 #include "t00052/test_case.h"
+#include "t00053/test_case.h"
+#include "t00054/test_case.h"
+#include "t00055/test_case.h"
 
 ///
 /// Sequence diagram tests
@@ -295,6 +298,7 @@ using namespace clanguml::test::matchers;
 #include "t30006/test_case.h"
 #include "t30007/test_case.h"
 #include "t30008/test_case.h"
+#include "t30009/test_case.h"
 
 ///
 /// Include diagram tests

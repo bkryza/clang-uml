@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Added 'row' and 'column' layout hints for aligning elements (#90)
+  * Added 'together' layout hint for grouping elements (#43)
   * Enabled adding notes to class methods and members (#87)
   * Improved rendering of template methods in class diagrams (#83)
 

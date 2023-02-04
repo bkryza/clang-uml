@@ -153,6 +153,15 @@ test_cases:
     - name: t00052
       title: Test case for template methods rendering
       description:
+    - name: t00053
+      title: Test case for `together` layout hint in class diagram
+      description:
+    - name: t00054
+      title: Test case for `together` layout hint in class diagram with rendered namespaces
+      description:
+    - name: t00055
+      title: Test case for `row` and `column` layout hints
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -265,6 +274,9 @@ test_cases:
       description:
     - name: t30008
       title: Dependants and dependencies package diagram filter test
+      description:
+    - name: t30009
+      title: Together layout hint test
       description:
   Include diagrams:
     - name: t40001

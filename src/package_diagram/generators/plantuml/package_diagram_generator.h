@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/generators/nested_element_stack.h"
 #include "common/generators/plantuml/generator.h"
 #include "common/model/package.h"
 #include "common/model/relationship.h"
@@ -58,6 +59,12 @@ public:
     void generate(const package &e, std::ostream &ostr) const;
 
     void generate(std::ostream &ostr) const override;
+
+    void generate_groups(std::ostream &ostr) const;
+
+private:
+    mutable common::generators::nested_element_stack<common::model::package>
+        together_group_stack_;
 };
 
 } // namespace plantuml

@@ -21,6 +21,7 @@
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
+#include "common/generators/nested_element_stack.h"
 #include "common/generators/plantuml/generator.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
@@ -66,6 +67,10 @@ public:
 
     void generate(const class_ &c, std::ostream &ostr) const;
 
+    void generate_top_level_elements(std::ostream &ostr) const;
+
+    void generate_relationships(std::ostream &ostr) const;
+
     void generate_relationships(const class_ &c, std::ostream &ostr) const;
 
     void generate(const enum_ &e, std::ostream &ostr) const;
@@ -79,10 +84,15 @@ public:
     void generate_member_notes(std::ostream &ostream,
         const class_element &member, const std::string &basicString) const;
 
+    void generate_groups(std::ostream &ostr) const;
+
     void generate(std::ostream &ostr) const override;
 
 private:
     std::string render_name(std::string name) const;
+
+    mutable common::generators::nested_element_stack<common::model::element>
+        together_group_stack_;
 };
 
 } // namespace plantuml

@@ -51,6 +51,9 @@
  * [t00050](./test_cases/t00050.md) - Test case for generating notes from comments using jinja templates
  * [t00051](./test_cases/t00051.md) - Test case for relative paths in lambda names
  * [t00052](./test_cases/t00052.md) - Test case for template methods rendering
+ * [t00053](./test_cases/t00053.md) - Test case for `together` layout hint in class diagram
+ * [t00054](./test_cases/t00054.md) - Test case for `together` layout hint in class diagram with rendered namespaces
+ * [t00055](./test_cases/t00055.md) - Test case for `row` and `column` layout hints
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -90,6 +93,7 @@
  * [t30006](./test_cases/t30006.md) - Package split namespace test case
  * [t30007](./test_cases/t30007.md) - Package diagram layout hints test case
  * [t30008](./test_cases/t30008.md) - Dependants and dependencies package diagram filter test
+ * [t30009](./test_cases/t30009.md) - Together layout hint test
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case
