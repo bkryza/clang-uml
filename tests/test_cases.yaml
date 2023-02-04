@@ -159,6 +159,9 @@ test_cases:
     - name: t00054
       title: Test case for `together` layout hint in class diagram with rendered namespaces
       description:
+    - name: t00055
+      title: Test case for `row` and `column` layout hints
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

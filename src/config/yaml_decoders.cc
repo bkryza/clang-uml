@@ -472,6 +472,14 @@ template <> struct convert<layout_hint> {
             rhs.hint = hint_t::together;
             rhs.entity = node["together"].as<std::vector<std::string>>();
         }
+        else if (node["row"]) {
+            rhs.hint = hint_t::row;
+            rhs.entity = node["row"].as<std::vector<std::string>>();
+        }
+        else if (node["column"]) {
+            rhs.hint = hint_t::column;
+            rhs.entity = node["column"].as<std::vector<std::string>>();
+        }
         else
             return false;
 

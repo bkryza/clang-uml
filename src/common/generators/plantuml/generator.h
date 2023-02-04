@@ -149,6 +149,12 @@ protected:
     template <typename E> inja::json element_context(const E &e) const;
 
 private:
+    void generate_row_column_hints(std::ostream &ostr,
+        const std::string &entity_name, const config::layout_hint &hint) const;
+
+    void generate_position_hints(std::ostream &ostr,
+        const std::string &entity_name, const config::layout_hint &hint) const;
+
     void init_context();
 
     void init_env();
@@ -218,43 +224,100 @@ void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
 {
     using namespace clanguml::util;
 
-    const auto &uns = m_config.using_namespace();
-
     // Generate layout hints
     for (const auto &[entity_name, hints] : m_config.layout()) {
         for (const auto &hint : hints) {
-            std::stringstream hint_str;
-
-            // 'together' layout hint is handled separately
-            if (hint.hint == config::hint_t::together)
-                continue;
-
-            const auto &hint_entity = std::get<std::string>(hint.entity);
-
             try {
-                auto element_opt = m_model.get(entity_name);
-                if (!element_opt)
-                    element_opt = m_model.get((uns | entity_name).to_string());
-
-                auto hint_element_opt = m_model.get(hint_entity);
-                if (!hint_element_opt)
-                    hint_element_opt =
-                        m_model.get((uns | hint_entity).to_string());
-
-                if (!element_opt || !hint_element_opt)
-                    continue;
-                hint_str << element_opt.value().alias() << " -[hidden]"
-                         << clanguml::config::to_string(hint.hint) << "- "
-                         << hint_element_opt.value().alias() << '\n';
-                ostr << hint_str.str();
+                if (hint.hint == config::hint_t::together) {
+                    // 'together' layout hint is handled separately
+                }
+                else if (hint.hint == config::hint_t::row ||
+                    hint.hint == config::hint_t::column) {
+                    generate_row_column_hints(ostr, entity_name, hint);
+                }
+                else {
+                    generate_position_hints(ostr, entity_name, hint);
+                }
             }
             catch (clanguml::error::uml_alias_missing &e) {
-                LOG_DBG("=== Skipping layout hint from {} to {} due "
+                LOG_DBG("=== Skipping layout hint '{}' from {} due "
                         "to: {}",
-                    entity_name, hint_entity, e.what());
+                    to_string(hint.hint), entity_name, e.what());
             }
         }
     }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_row_column_hints(std::ostream &ostr,
+    const std::string &entity_name, const config::layout_hint &hint) const
+{
+    const auto &uns = m_config.using_namespace();
+
+    std::vector<std::string> group_elements;
+    std::vector<std::pair<std::string, std::string>> element_aliases_pairs;
+
+    group_elements.push_back(entity_name);
+    const auto &group_tail = std::get<std::vector<std::string>>(hint.entity);
+    std::copy(group_tail.begin(), group_tail.end(),
+        std::back_inserter(group_elements));
+
+    auto element_opt = this->m_model.get(entity_name);
+    if (!element_opt)
+        element_opt = this->m_model.get((uns | entity_name).to_string());
+
+    for (auto it = cbegin(group_elements);
+         it != cend(group_elements) && std::next(it) != cend(group_elements);
+         ++it) {
+        const auto &first = *it;
+        const auto &second = *std::next(it);
+
+        auto first_opt = this->m_model.get(first);
+        if (!first_opt)
+            first_opt = this->m_model.get((uns | first).to_string());
+
+        auto second_opt = this->m_model.get(second);
+        if (!second_opt)
+            second_opt = this->m_model.get((uns | second).to_string());
+
+        element_aliases_pairs.emplace_back(
+            first_opt.value().alias(), second_opt.value().alias());
+    }
+
+    std::string hint_direction =
+        hint.hint == clanguml::config::hint_t::row ? "right" : "down";
+
+    for (const auto &[f, s] : element_aliases_pairs) {
+        ostr << f << " -[hidden]" << hint_direction << "- " << s << '\n';
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_position_hints(std::ostream &ostr,
+    const std::string &entity_name, const config::layout_hint &hint) const
+{
+    const auto &uns = m_config.using_namespace();
+
+    const auto &hint_entity = std::get<std::string>(hint.entity);
+
+    auto element_opt = m_model.get(entity_name);
+    if (!element_opt)
+        element_opt = m_model.get((uns | entity_name).to_string());
+
+    auto hint_element_opt = m_model.get(hint_entity);
+    if (!hint_element_opt)
+        hint_element_opt = m_model.get((uns | hint_entity).to_string());
+
+    if (!element_opt || !hint_element_opt)
+        return;
+
+    std::stringstream hint_str;
+
+    hint_str << element_opt.value().alias() << " -[hidden]"
+             << clanguml::config::to_string(hint.hint) << "- "
+             << hint_element_opt.value().alias() << '\n';
+
+    ostr << hint_str.str();
 }
 
 template <typename C, typename D>

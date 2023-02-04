@@ -34,6 +34,12 @@ std::string to_string(const hint_t t)
         return "left";
     case hint_t::right:
         return "right";
+    case hint_t::together:
+        return "together";
+    case hint_t::row:
+        return "row";
+    case hint_t::column:
+        return "column";
     default:
         assert(false);
         return "";

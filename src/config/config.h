@@ -80,7 +80,7 @@ struct filter {
     std::vector<std::filesystem::path> paths;
 };
 
-enum class hint_t { up, down, left, right, together };
+enum class hint_t { up, down, left, right, together, row, column };
 
 std::string to_string(hint_t t);
 
