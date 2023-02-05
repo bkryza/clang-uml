@@ -18,7 +18,8 @@
 
 TEST_CASE("t00048", "[test-case][class]")
 {
-    auto [config, db] = load_config("t00048");
+    auto [config, db] =
+        load_config("t00048", {"t00048.cc", "a_t00048.cc", "b_t00048.cc"});
 
     auto diagram = config.diagrams["t00048_class"];
 

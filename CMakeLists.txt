@@ -3,17 +3,27 @@ cmake_minimum_required(VERSION 3.12)
 #
 # Project name
 #
-project(clang-uml)
+project(clang-uml C CXX)
 
 #
 # CMake standard defines
 #
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_FIND_DEBUG_MODE OFF)
+
+#
+# C++ setup
+#
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(APPLE)
-    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
+            ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif(APPLE)
 
 #
@@ -22,41 +32,21 @@ endif(APPLE)
 set(CLANG_UML_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 #
 # CMake build options
 #
-option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries or statically" ON)
+option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries" ON)
 set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
 
 #
 # Setup version string
 #
-find_package(Git)
-
-if(NOT DEFINED GIT_VERSION)
-    if(GIT_EXECUTABLE)
-        execute_process(
-                COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                OUTPUT_VARIABLE GIT_VERSION
-                RESULT_VARIABLE GIT_ERROR_CODE
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    endif(GIT_EXECUTABLE)
-endif(NOT DEFINED GIT_VERSION)
-
-if(NOT DEFINED GIT_VERSION)
-    set(GIT_VERSION "0.0.0-unknown")
-endif(NOT DEFINED GIT_VERSION)
-
-string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
-        GIT_VERSION_MATCH ${GIT_VERSION})
-set(GIT_VERSION_MAJOR ${CMAKE_MATCH_1})
-set(GIT_VERSION_MINOR ${CMAKE_MATCH_2})
-set(GIT_VERSION_PATCH ${CMAKE_MATCH_3})
-
-message(STATUS "clang-uml version: ${GIT_VERSION_MAJOR}.${GIT_VERSION_MINOR}.${GIT_VERSION_PATCH}")
+include(GitVersion)
+setup_git_version()
+message(STATUS "clang-uml version: "
+               "${GIT_VERSION_MAJOR}.${GIT_VERSION_MINOR}.${GIT_VERSION_PATCH}")
 
 #
 # Setup LLVM
@@ -171,32 +161,6 @@ link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
 set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
 
 #
-# Configure clang-uml executable version
-#
-file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/src/version)
-configure_file(src/version.h.in ${PROJECT_BINARY_DIR}/src/version/version.h)
-
-#
-# Handle various compiler quirks
-#
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    execute_process(COMMAND gcc --print-file-name=include
-                    OUTPUT_STRIP_TRAILING_WHITESPACE
-                    OUTPUT_VARIABLE GCC_STDDEF_INCLUDE)
-    message(STATUS "FOUND GCC STDDEF INCLUDE ${GCC_STDDEF_INCLUDE}")
-    include_directories(${GCC_STDDEF_INCLUDE})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GCC_STDDEF_INCLUDE}")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wextra -std=c++17 -Wno-unused-parameter -Wno-unused-private-field")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLLVM_FORCE_USE_OLD_TOOLCHAIN /W1 /std:c++17 /bigobj /wd4291 /wd4624 /wd4244")
-    set(LINK_OPTIONS "${LINK_OPTIONS} /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:MSVCRTD")
-endif()
-
-message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-
-#
 # Setup include directories
 #
 include_directories(${LLVM_INCLUDE_DIRS})
@@ -207,71 +171,7 @@ include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 include_directories(${PROJECT_BINARY_DIR}/src/version)
 
-#
-# Generate source list dynamically
-#
-file(GLOB_RECURSE SOURCES src/*.cc include/*.h)
-set(MAIN_SOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
-list(REMOVE_ITEM SOURCES ${MAIN_SOURCE_FILE})
-
-#
-# Define library target for linking with test cases and output executable
-#
-if(MSVC)
-    add_library(clang-umllib STATIC ${SOURCES})
-    set(MSVC_LIBRARIES "version")
-else(MSVC)
-    add_library(clang-umllib OBJECT ${SOURCES})
-endif(MSVC)
-
-#
-# Define the target executable clang-uml
-#
-add_executable(clang-uml ${MAIN_SOURCE_FILE})
-
-target_link_libraries(clang-uml
-        ${YAML_CPP_LIBRARIES}
-        ${LIBTOOLING_LIBS}
-        ${MSVC_LIBRARIES}
-        clang-umllib
-        Threads::Threads)
-
-target_compile_features(clang-uml PRIVATE cxx_std_17)
-
-#
-# Setup install options
-#
-include(GNUInstallDirs)
-
-install(TARGETS clang-uml DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
-install(FILES README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
-
-#
-# Setup installer
-#
-set(CPACK_PACKAGE_NAME "clang-uml")
-set(CPACK_PACKAGE_VENDOR "Bartek Kryza <bkryza@gmail.com>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "clang-uml - C++ UML diagram generator based on Clang")
-set(CPACK_PACKAGE_VERSION "${GIT_VERSION}")
-set(CPACK_PACKAGE_VERSION_MAJOR "${GIT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${GIT_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "${GIT_VERSION_PATCH}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "clang-uml")
-set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md)
-
-if(MSVC)
-    set(CPACK_GENERATOR "NSIS")
-    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
-    set(CPACK_NSIS_DISPLAY_NAME "clang-uml")
-    set(CPACK_NSIS_HELP_LINK "https://github.com/bkryza/clang-uml")
-    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/bkryza/clang-uml")
-    set(CPACK_NSIS_CONTACT "Bartek Kryza <bkryza@gmail.com>")
-    set(CPACK_NSIS_MODIFY_PATH ON)
-    set(CPACK_SOURCE_GENERATOR "ZIP")
-endif(MSVC)
-
-include(CPack)
+add_subdirectory(src)
 
 #
 # Enable testing via CTest
