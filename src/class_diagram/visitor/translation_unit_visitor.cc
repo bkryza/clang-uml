@@ -1135,7 +1135,7 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
 #ifdef _MSC_VER
     auto root_name = fmt::format(
         "{}\\", std::filesystem::current_path().root_name().string());
-    if(root_name.back() == '\\') {
+    if (root_name.back() == '\\') {
         root_name.pop_back();
         root_name.push_back('/');
     }
