@@ -37,13 +37,19 @@ load_config(const std::string &test_name)
 {
     auto config = clanguml::config::load(test_name + "/.clang-uml", true);
 
+    LOG_DBG("Loading compilation database from {}",
+        config.compilation_database_dir());
+
     std::string err{};
     auto compilation_database =
         clang::tooling::CompilationDatabase::autoDetectFromDirectory(
             config.compilation_database_dir(), err);
 
-    if (!err.empty())
+    if (!err.empty()) {
+        LOG_ERROR("Failed to load compilation database from {}",
+            config.compilation_database_dir());
         throw std::runtime_error{err};
+    }
 
     return std::make_pair(std::move(config), std::move(compilation_database));
 }
