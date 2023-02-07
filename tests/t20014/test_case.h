@@ -18,8 +18,7 @@
 
 TEST_CASE("t20014", "[test-case][sequence]")
 {
-    auto [config, db] = load_config(
-        "t20014", {"t20014.cc", "t20014_a.cc", "t20014_b.cc", "t20014_c.cc"});
+    auto [config, db] = load_config("t20014");
 
     auto diagram = config.diagrams["t20014_sequence"];
 

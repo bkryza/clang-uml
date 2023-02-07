@@ -1,4 +1,3 @@
-
 if(APPLE)
     # Without this, clang-uml test cases fail with error saying that
     # clang cannot find stdarg.h
@@ -33,16 +32,18 @@ set(TEST_CASES
         test_filters
         test_thread_pool_executor)
 
-foreach(TEST_CASE_NAME ${TEST_CASES})
-    add_executable(${TEST_CASE_NAME}
-            ${TEST_CASE_NAME}.cc catch.h)
-    target_compile_options(${TEST_CASE_NAME} PRIVATE
+foreach(TEST_NAME ${TEST_CASES})
+    add_executable(${TEST_NAME}
+            ${TEST_NAME}.cc
+            $<$<STREQUAL:${TEST_NAME},test_cases>:${TEST_CASE_SOURCES}>
+            catch.h)
+    target_compile_options(${TEST_NAME} PRIVATE
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
             -Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable
             -Wno-attributes -Wno-nonnull>
             $<$<CXX_COMPILER_ID:MSVC>:
-            /W1 /std:c++17 /bigobj /wd4624>)
-    target_link_libraries(${TEST_CASE_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
+            /MP /W1 /std:c++17 /bigobj /wd4624>)
+    target_link_libraries(${TEST_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
 endforeach()
 
 foreach(TEST_CASE_CONFIG ${TEST_CASE_CONFIGS})
@@ -69,6 +70,6 @@ foreach(TEST_CONFIG_YML ${TEST_CONFIG_YMLS})
             COPYONLY)
 endforeach()
 
-foreach(TEST_CASE_NAME ${TEST_CASES})
-    add_test(NAME ${TEST_CASE_NAME} COMMAND ${TEST_CASE_NAME})
+foreach(TEST_NAME ${TEST_CASES})
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 endforeach()

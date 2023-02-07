@@ -18,65 +18,8 @@
 
 #include "test_cases.h"
 #include "common/generators/plantuml/generator.h"
-#include "util/util.h"
 
-#include <clang/Tooling/CompilationDatabase.h>
 #include <spdlog/spdlog.h>
-
-#include <algorithm>
-
-namespace clanguml::tests::util {
-class TestCaseCompilationDatabase : public clang::tooling::CompilationDatabase {
-public:
-    TestCaseCompilationDatabase(clang::tooling::CompileCommand &&cc)
-        : compile_commands_{{std::move(cc)}}
-    {
-    }
-
-    TestCaseCompilationDatabase(
-        std::vector<clang::tooling::CompileCommand> &&ccs)
-        : compile_commands_{std::move(ccs)}
-    {
-    }
-
-    virtual ~TestCaseCompilationDatabase() { }
-
-    static std::unique_ptr<CompilationDatabase> fromCompileCommand(
-        clang::tooling::CompileCommand &&cc)
-    {
-        return std::make_unique<TestCaseCompilationDatabase>(std::move(cc));
-    }
-
-    std::vector<clang::tooling::CompileCommand> getCompileCommands(
-        clang::StringRef FilePath) const override
-    {
-        std::vector<clang::tooling::CompileCommand> ccs;
-        std::copy_if(begin(compile_commands_), end(compile_commands_),
-            std::back_inserter(ccs), [&](const auto &cc) {
-                return clanguml::util::starts_with(cc.Filename, FilePath.str());
-            });
-        return ccs;
-    }
-
-    std::vector<std::string> getAllFiles() const override
-    {
-        std::vector<std::string> files;
-        std::transform(begin(compile_commands_), end(compile_commands_),
-            std::back_inserter(files),
-            [](const auto &cc) { return cc.Filename; });
-        return files;
-    }
-
-    std::vector<clang::tooling::CompileCommand>
-    getAllCompileCommands() const override
-    {
-        return compile_commands_;
-    }
-
-private:
-    std::vector<clang::tooling::CompileCommand> compile_commands_;
-};
-}
 
 void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -90,10 +33,8 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 
 std::pair<clanguml::config::config,
     std::unique_ptr<clang::tooling::CompilationDatabase>>
-load_config(const std::string &test_name, const std::vector<std::string> &tus)
+load_config(const std::string &test_name)
 {
-    using std::filesystem::path;
-
     auto config = clanguml::config::load(test_name + "/.clang-uml", true);
 
     std::string err{};
@@ -101,56 +42,10 @@ load_config(const std::string &test_name, const std::vector<std::string> &tus)
         clang::tooling::CompilationDatabase::autoDetectFromDirectory(
             config.compilation_database_dir(), err);
 
-    for (const auto &cc : compilation_database->getAllCompileCommands()) {
-        if (clanguml::util::ends_with(
-                cc.Filename, std::string{"/test_cases.cc"})) {
-            // Create artificial CompileCommand for each source file of a
-            // specific test case, based on command line options for the
-            // test_cases.cc translation_unit, which imports specific test
-            // cases using #include directive
-            std::vector<clang::tooling::CompileCommand> compile_commands;
-            for (const auto &tu : tus) {
-                auto test_case_path =
-                    path{cc.Filename}.parent_path() / test_name / path(tu);
-
-                auto test_case_command = cc;
-                auto &cline = test_case_command.CommandLine;
-                // We don't want to worry about all minor warnings in test
-                // cases during Clang parsing
-                cline.erase(std::remove(cline.begin(), cline.end(), "-Wall"),
-                    cline.end());
-                cline.erase(std::remove(cline.begin(), cline.end(), "-Wextra"),
-                    cline.end());
-                cline.erase(std::remove(cline.begin(), cline.end(), "-Werror"),
-                    cline.end());
-
-                test_case_command.CommandLine.pop_back();
-                test_case_command.CommandLine.push_back(
-                    test_case_path.string());
-                test_case_command.Filename = test_case_path.string();
-
-                compile_commands.push_back(std::move(test_case_command));
-            }
-
-            auto test_case_db = std::make_unique<
-                clanguml::tests::util::TestCaseCompilationDatabase>(
-                std::move(compile_commands));
-
-            return std::make_pair(std::move(config), std::move(test_case_db));
-        }
-    }
-
     if (!err.empty())
         throw std::runtime_error{err};
 
     return std::make_pair(std::move(config), std::move(compilation_database));
-}
-
-std::pair<clanguml::config::config,
-    std::unique_ptr<clang::tooling::CompilationDatabase>>
-load_config(const std::string &test_name)
-{
-    return load_config(test_name, {fmt::format("{}.cc", test_name)});
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::diagram>

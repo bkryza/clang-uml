@@ -18,8 +18,7 @@
 
 TEST_CASE("t40002", "[test-case][include]")
 {
-    auto [config, db] = load_config(
-        "t40002", {"src/t40002.cc", "src/lib1/lib1.cc", "src/lib2/lib2.cc"});
+    auto [config, db] = load_config("t40002");
 
     auto diagram = config.diagrams["t40002_include"];
 

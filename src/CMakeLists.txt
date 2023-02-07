@@ -22,13 +22,12 @@ else(MSVC)
     add_library(clang-umllib OBJECT ${SOURCES})
 endif(MSVC)
 
-target_compile_options(clang-umllib PUBLIC
+target_compile_options(clang-umllib PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field>
         $<$<CXX_COMPILER_ID:MSVC>:
-        /W1 /std:c++17 /bigobj /wd4291 /wd4624 /wd4244 /NODEFAULTLIB:MSVCRT
-        /NODEFAULTLIB:MSVCRTD>)
-target_compile_definitions(clang-umllib PUBLIC
+        /MP /W1 /std:c++17 /bigobj /wd4291 /wd4624 /wd4244>)
+target_compile_definitions(clang-umllib PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:
         -DLLVM_FORCE_USE_OLD_TOOLCHAIN>)
 
@@ -36,6 +35,12 @@ target_compile_definitions(clang-umllib PUBLIC
 # Define the target executable clang-uml
 #
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
+
+target_compile_options(clang-uml PRIVATE
+        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
+        -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field>
+        $<$<CXX_COMPILER_ID:MSVC>:
+        /MP /W1 /std:c++17 /bigobj /wd4291 /wd4624 /wd4244>)
 
 target_link_libraries(clang-uml
         ${YAML_CPP_LIBRARIES}
