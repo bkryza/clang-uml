@@ -1,13 +1,3 @@
-if(APPLE)
-    # Without this, clang-uml test cases fail with error saying that
-    # clang cannot find stdarg.h
-    set(CMAKE_CXX_FLAGS_RELEASE
-            "${CMAKE_CXX_FLAGS_RELEASE}
-            -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
-    set(CMAKE_CXX_FLAGS_DEBUG
-            "${CMAKE_CXX_FLAGS_DEBUG}
-            -I${LLVM_LIBRARY_DIR}/clang/${LLVM_PACKAGE_VERSION}/include")
-endif(APPLE)
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
@@ -37,12 +27,12 @@ foreach(TEST_NAME ${TEST_CASES})
             ${TEST_NAME}.cc
             $<$<STREQUAL:${TEST_NAME},test_cases>:${TEST_CASE_SOURCES}>
             catch.h)
+    target_compile_features(${TEST_NAME} PRIVATE cxx_std_17)
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
             -Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable
             -Wno-attributes -Wno-nonnull>
-            $<$<CXX_COMPILER_ID:MSVC>:
-            /MP /W1 /std:c++17 /bigobj /wd4624>)
+            $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4624>)
     target_link_libraries(${TEST_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
 endforeach()
 
