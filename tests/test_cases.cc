@@ -255,6 +255,9 @@ using namespace clanguml::test::matchers;
 #include "t00053/test_case.h"
 #include "t00054/test_case.h"
 #include "t00055/test_case.h"
+#if defined(ENABLE_CXX_STD_20_TEST_CASES)
+#include "t00056/test_case.h"
+#endif
 #include "t00057/test_case.h"
 
 ///

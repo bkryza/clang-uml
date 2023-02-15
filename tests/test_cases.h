@@ -334,11 +334,13 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
     if (!label.empty()) {
         format_string += " : {}";
         return ContainsMatcher(CasedString(
-            fmt::format(format_string, from, to, label), caseSensitivity));
+            fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
     }
     else
         return ContainsMatcher(
-            CasedString(fmt::format(format_string, from, to), caseSensitivity));
+            CasedString(fmt::format(fmt::runtime(format_string), from, to),
+                caseSensitivity));
 }
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
@@ -357,8 +359,9 @@ ContainsMatcher IsComposition(std::string const &from, std::string const &to,
 
     format_string += " {} : {}";
 
-    return ContainsMatcher(CasedString(
-        fmt::format(format_string, from, to, label), caseSensitivity));
+    return ContainsMatcher(
+        CasedString(fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
 }
 
 ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
@@ -377,8 +380,9 @@ ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
 
     format_string += " {} : {}";
 
-    return ContainsMatcher(CasedString(
-        fmt::format(format_string, from, to, label), caseSensitivity));
+    return ContainsMatcher(
+        CasedString(fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
 }
 
 ContainsMatcher IsAggregationWithStyle(std::string const &from,

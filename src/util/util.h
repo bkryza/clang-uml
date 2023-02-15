@@ -27,6 +27,31 @@
 #include <type_traits>
 #include <vector>
 
+#define LOG_ERROR(fmt__, ...)                                                  \
+    spdlog::get("console")->error(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_WARN(fmt__, ...)                                                   \
+    spdlog::get("console")->warn(                                              \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_INFO(fmt__, ...)                                                   \
+    spdlog::get("console")->info(                                              \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_DBG(fmt__, ...)                                                    \
+    spdlog::get("console")->debug(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_TRACE(fmt__, ...)                                                  \
+    spdlog::get("console")->trace(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
 namespace clanguml::util {
 
 std::string ltrim(const std::string &s);
@@ -35,26 +60,6 @@ std::string trim(const std::string &s);
 
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-
-#define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::get("console")->error(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::get("console")->warn(                                              \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::get("console")->info(                                              \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::get("console")->debug(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_TRACE(fmt__, ...)                                                  \
-    spdlog::get("console")->trace(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 /**
  * @brief Setup spdlog logger.
