@@ -68,7 +68,7 @@ git clone https://github.com/bkryza/clang-uml
 cd clang-uml
 # Please note that top level Makefile is just a convenience wrapper for CMake
 make release
-release/clang-uml --help
+release/src/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
 LLVM_VERSION=14 make release
