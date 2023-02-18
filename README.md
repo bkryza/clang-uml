@@ -422,6 +422,7 @@ This project relies on the following great tools:
 * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
 * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
 * [inja](https://github.com/pantor/inja) - a template engine for modern C++
+* [backward-cpp](https://github.com/bombela/backward-cpp) - stack trace pretty printer for C++
 
 ## Contributing
 

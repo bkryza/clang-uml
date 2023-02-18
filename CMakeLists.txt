@@ -14,6 +14,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_FIND_DEBUG_MODE OFF)
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 #
 # C++ setup
 #
@@ -154,6 +158,17 @@ else()
 endif()
 
 link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
+
+#
+# Setup libdw and libunwind
+#
+if(LINUX AND (CMAKE_BUILD_TYPE MATCHES Debug))
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(DW REQUIRED IMPORTED_TARGET libdw)
+    pkg_check_modules(UNWIND REQUIRED IMPORTED_TARGET libunwind)
+    set(BACKWARD_CPP_LIBRARIES PkgConfig::DW PkgConfig::UNWIND)
+    set(ENABLE_BACKWARD_CPP -DENABLE_BACKWARD_CPP)
+endif()
 
 #
 # Setup thirdparty sources

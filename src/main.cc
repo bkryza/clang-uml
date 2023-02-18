@@ -24,7 +24,9 @@
 #include "util/util.h"
 #include "version.h"
 
-#ifndef NDEBUG
+#ifdef ENABLE_BACKWARD_CPP
+#define BACKWARD_HAS_DW 1
+#define BACKWARD_HAS_LIBUNWIND 1
 #include <backward-cpp/backward.hpp>
 #endif
 
@@ -40,7 +42,7 @@
 #include <iostream>
 #include <util/thread_pool_executor.h>
 
-#ifndef NDEBUG
+#ifdef ENABLE_BACKWARD_CPP
 namespace backward {
 backward::SignalHandling sh; // NOLINT
 } // namespace backward

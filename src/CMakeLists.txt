@@ -43,10 +43,13 @@ target_compile_options(clang-uml PRIVATE
         -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field
         -Wno-deprecated-declarations>
         $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4291 /wd4624 /wd4244>)
+target_compile_definitions(clang-uml PRIVATE
+        ${ENABLE_BACKWARD_CPP})
 target_link_libraries(clang-uml
         ${YAML_CPP_LIBRARIES}
         ${LIBTOOLING_LIBS}
         ${MSVC_LIBRARIES}
+        ${BACKWARD_CPP_LIBRARIES}
         clang-umllib
         Threads::Threads)
 
