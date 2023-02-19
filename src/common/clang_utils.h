@@ -125,6 +125,8 @@ template <> id_t to_id(const clang::NamespaceDecl &declaration);
 
 template <> id_t to_id(const clang::CXXRecordDecl &declaration);
 
+template <> id_t to_id(const clang::RecordDecl &declaration);
+
 template <> id_t to_id(const clang::EnumDecl &declaration);
 
 template <> id_t to_id(const clang::TagDecl &declaration);

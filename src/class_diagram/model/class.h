@@ -54,6 +54,12 @@ public:
     bool is_template_instantiation() const;
     void is_template_instantiation(bool is_template_instantiation);
 
+    bool is_alias() const { return is_alias_; }
+    void is_alias(bool alias) { is_alias_ = alias; }
+
+    bool is_union() const { return is_union_; }
+    void is_union(bool u) { is_union_ = u; }
+
     void add_member(class_member &&member);
     void add_method(class_method &&method);
     void add_parent(class_parent &&parent);
@@ -73,10 +79,6 @@ public:
 
     bool is_abstract() const;
 
-    bool is_alias() const { return is_alias_; }
-
-    void is_alias(bool alias) { is_alias_ = alias; }
-
     void find_relationships(
         std::vector<std::pair<std::string, common::model::relationship_t>>
             &nested_relationships);
@@ -89,6 +91,7 @@ private:
     bool is_template_{false};
     bool is_template_instantiation_{false};
     bool is_alias_{false};
+    bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;

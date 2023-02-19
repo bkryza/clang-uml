@@ -116,6 +116,10 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     ostr << class_type << " " << c.alias();
 
+    if (c.is_union())
+        ostr << " "
+             << "<<union>>";
+
     if (m_config.generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
     }

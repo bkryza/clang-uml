@@ -28,6 +28,7 @@ Main features supported so far include:
     * Diagram content filtering based on namespaces, elements and relationships
     * Optional package generation from namespaces
     * Interactive links to online code to classes, methods and class fields in SVG diagrams
+    * Support for plain C99/C11 code (struct and units relationships)
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function
     * Generation of loop and conditional statements

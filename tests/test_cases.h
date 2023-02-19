@@ -266,6 +266,13 @@ ContainsMatcher IsClass(std::string const &str,
     return ContainsMatcher(CasedString("class " + str, caseSensitivity));
 }
 
+ContainsMatcher IsUnion(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString("class " + str + " <<union>>", caseSensitivity));
+}
+
 ContainsMatcher IsClassTemplate(std::string const &str,
     std::string const &tmplt,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
