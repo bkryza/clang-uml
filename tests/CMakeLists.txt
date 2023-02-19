@@ -1,5 +1,5 @@
 
-file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc)
+file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 

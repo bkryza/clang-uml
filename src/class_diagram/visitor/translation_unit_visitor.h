@@ -69,6 +69,8 @@ public:
 
     virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
+    virtual bool VisitRecordDecl(clang::RecordDecl *D);
+
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *d);
 
     virtual bool VisitEnumDecl(clang::EnumDecl *e);
@@ -109,6 +111,9 @@ private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_class_declaration(clang::CXXRecordDecl *cls);
 
+    std::unique_ptr<clanguml::class_diagram::model::class_>
+    create_record_declaration(clang::RecordDecl *rec);
+
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
 
@@ -117,6 +122,8 @@ private:
 
     void process_class_children(const clang::CXXRecordDecl *cls,
         clanguml::class_diagram::model::class_ &c);
+
+    void process_record_members(const clang::RecordDecl *cls, class_ &c);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
     process_template_specialization(
@@ -223,6 +230,9 @@ private:
         common::model::template_parameter &argument) const;
 
     void ensure_lambda_type_is_relative(std::string &parameter_type) const;
+
+    void process_record_parent(
+        clang::RecordDecl *cls, class_ &c, const namespace_ &ns);
 
     void process_function_parameter_find_relatinoships_in_autotype(
         model::class_ &c, const clang::AutoType *atsp);

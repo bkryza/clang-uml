@@ -310,6 +310,63 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     return true;
 }
 
+bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
+{
+    // Skip system headers
+    if (source_manager().isInSystemHeader(rec->getSourceRange().getBegin()))
+        return true;
+
+    if (clang::dyn_cast_or_null<clang::CXXRecordDecl>(rec))
+        // This is handled by VisitCXXRecordDecl()
+        return true;
+
+    // It seems we are in a C (not C++) translation unit
+    if (!diagram().should_include(rec->getQualifiedNameAsString()))
+        return true;
+
+    LOG_DBG("= Visiting record declaration {} at {}",
+        rec->getQualifiedNameAsString(),
+        rec->getLocation().printToString(source_manager()));
+
+    auto record_ptr = create_record_declaration(rec);
+
+    if (!record_ptr)
+        return true;
+
+    const auto rec_id = record_ptr->id();
+
+    set_ast_local_id(rec->getID(), rec_id);
+
+    auto &record_model = diagram().get_class(rec_id).has_value()
+        ? *diagram().get_class(rec_id).get()
+        : *record_ptr;
+
+    if (rec->isCompleteDefinition() && !record_model.complete()) {
+        process_record_members(rec, record_model);
+        record_model.complete(true);
+    }
+
+    auto id = record_model.id();
+    if (!rec->isCompleteDefinition()) {
+        forward_declarations_.emplace(id, std::move(record_ptr));
+        return true;
+    }
+    forward_declarations_.erase(id);
+
+    if (diagram_.should_include(record_model)) {
+        LOG_DBG("Adding struct/union {} with id {}",
+            record_model.full_name(false), record_model.id());
+
+        diagram_.add_class(std::move(record_ptr));
+    }
+    else {
+        LOG_DBG("Skipping struct/union {} with id {}", record_model.full_name(),
+            record_model.id());
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 {
     // Skip system headers
@@ -383,6 +440,42 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     return true;
 }
 
+std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
+    clang::RecordDecl *rec)
+{
+    assert(rec != nullptr);
+
+    auto record_ptr{std::make_unique<class_>(config_.using_namespace())};
+    auto &record = *record_ptr;
+
+    auto qualified_name = rec->getQualifiedNameAsString();
+
+    if (!diagram().should_include(qualified_name))
+        return {};
+
+    process_record_parent(rec, record, namespace_{});
+
+    if (!record.is_nested()) {
+        record.set_name(common::get_tag_name(*rec));
+        record.set_id(common::to_id(record.full_name(false)));
+    }
+
+    process_comment(*rec, record);
+    set_source_location(*rec, record);
+
+    const auto record_full_name = record_ptr->full_name(false);
+
+    record.is_struct(rec->isStruct());
+    record.is_union(rec->isUnion());
+
+    if (record.skip())
+        return {};
+
+    record.set_style(record.style_spec());
+
+    return record_ptr;
+}
+
 std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     clang::CXXRecordDecl *cls)
 {
@@ -392,14 +485,37 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     auto &c = *c_ptr;
 
     // TODO: refactor to method get_qualified_name()
-    auto qualified_name =
-        cls->getQualifiedNameAsString(); //  common::get_qualified_name(*cls);
+    auto qualified_name = cls->getQualifiedNameAsString();
 
     if (!diagram().should_include(qualified_name))
         return {};
 
     auto ns = common::get_tag_namespace(*cls);
 
+    process_record_parent(cls, c, ns);
+
+    if (!c.is_nested()) {
+        c.set_name(common::get_tag_name(*cls));
+        c.set_namespace(ns);
+        c.set_id(common::to_id(c.full_name(false)));
+    }
+
+    c.is_struct(cls->isStruct());
+
+    process_comment(*cls, c);
+    set_source_location(*cls, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+void translation_unit_visitor::process_record_parent(
+    clang::RecordDecl *cls, class_ &c, const namespace_ &ns)
+{
     const auto *parent = cls->getParent();
 
     std::optional<common::model::diagram_element::id_t> id_opt;
@@ -435,7 +551,8 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
         assert(parent_class);
 
         c.set_namespace(ns);
-        if (cls->getNameAsString().empty()) {
+        const auto cls_name = cls->getNameAsString();
+        if (cls_name.empty()) {
             // Nested structs can be anonymous
             if (anonymous_struct_relationships_.count(cls->getID()) > 0) {
                 const auto &[label, hint, access] =
@@ -467,23 +584,6 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
         c.nested(true);
     }
-    else {
-        c.set_name(common::get_tag_name(*cls));
-        c.set_namespace(ns);
-        c.set_id(common::to_id(c.full_name(false)));
-    }
-
-    c.is_struct(cls->isStruct());
-
-    process_comment(*cls, c);
-    set_source_location(*cls, c);
-
-    if (c.skip())
-        return {};
-
-    c.set_style(c.style_spec());
-
-    return c_ptr;
 }
 
 void translation_unit_visitor::process_class_declaration(
@@ -712,6 +812,16 @@ void translation_unit_visitor::process_template_specialization_children(
 
     for (const auto *friend_declaration : cls->friends()) {
         process_friend(*friend_declaration, c);
+    }
+}
+
+void translation_unit_visitor::process_record_members(
+    const clang::RecordDecl *cls, class_ &c)
+{
+    // Iterate over regular class fields
+    for (const auto *field : cls->fields()) {
+        if (field != nullptr)
+            process_field(*field, c);
     }
 }
 
@@ -1054,8 +1164,13 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 }
             }
         }
-        else {
+        else if (type->getAsCXXRecordDecl()) {
             const auto target_id = common::to_id(*type->getAsCXXRecordDecl());
+            relationships.emplace_back(target_id, relationship_hint);
+            result = true;
+        }
+        else {
+            const auto target_id = common::to_id(*type->getAsRecordDecl());
             relationships.emplace_back(target_id, relationship_hint);
             result = true;
         }
@@ -2092,6 +2207,9 @@ bool translation_unit_visitor::build_template_instantiation_add_base_classes(
 void translation_unit_visitor::process_field(
     const clang::FieldDecl &field_declaration, class_ &c)
 {
+    LOG_DBG(
+        "== Visiting record member {}", field_declaration.getNameAsString());
+
     // Default hint for relationship is aggregation
     auto relationship_hint = relationship_t::kAggregation;
     // If the first type of the template instantiation of this field type
@@ -2108,6 +2226,7 @@ void translation_unit_visitor::process_field(
 
     auto field_type_str =
         common::to_string(field_type, field_declaration.getASTContext(), false);
+
     ensure_lambda_type_is_relative(field_type_str);
 
     class_member field{
@@ -2239,11 +2358,11 @@ void translation_unit_visitor::process_field(
         // Find relationship for the type if the type has not been added
         // as aggregation
         if (!template_instantiation_added_as_aggregation) {
-            if ((field_type->getAsCXXRecordDecl() != nullptr) &&
-                field_type->getAsCXXRecordDecl()->getNameAsString().empty()) {
+            if ((field_type->getAsRecordDecl() != nullptr) &&
+                field_type->getAsRecordDecl()->getNameAsString().empty()) {
                 // Relationships to fields whose type is an anonymous nested
                 // struct have to be handled separately here
-                anonymous_struct_relationships_[field_type->getAsCXXRecordDecl()
+                anonymous_struct_relationships_[field_type->getAsRecordDecl()
                                                     ->getID()] =
                     std::make_tuple(
                         field.name(), relationship_hint, field.access());

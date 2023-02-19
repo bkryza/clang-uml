@@ -53,7 +53,7 @@ with open(r'tests/test_cases.yaml') as f:
                 tc.write("\n```\n")
                 tc.write("## Source code\n")
                 for source_file in os.listdir(f'tests/{name}/'):
-                    if source_file.endswith(".h") or source_file.endswith(".cc"):
+                    if source_file.endswith(".h") or source_file.endswith(".cc") or source_file.endswith(".c"):
                         if source_file == "test_case.h":
                             continue
                         tc.write(f'File {source_file}\n')

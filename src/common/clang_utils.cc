@@ -152,7 +152,12 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     // it has some default name
     if (result.empty())
         result = "(anonymous)";
-    else if (util::contains(result, "unnamed struct")) {
+    else if (util::contains(result, "unnamed struct") ||
+        util::contains(result, "unnamed union")) {
+        result = common::get_tag_name(*type->getAsTagDecl());
+    }
+    else if (util::contains(result, "anonymous struct") ||
+        util::contains(result, "anonymous union")) {
         result = common::get_tag_name(*type->getAsTagDecl());
     }
 

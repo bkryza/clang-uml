@@ -162,6 +162,9 @@ test_cases:
     - name: t00055
       title: Test case for `row` and `column` layout hints
       description:
+    - name: t00057
+      title: Test case C99/C11 translation units with structs and unions
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
