@@ -97,7 +97,7 @@ document_test_cases: test_plantuml
 
 clanguml_diagrams: debug
 	mkdir -p docs/diagrams
-	debug/clang-uml
+	debug/src/clang-uml
 	plantuml -tsvg -nometadata docs/diagrams/*.puml
 	python3 util/format_svg.py docs/diagrams/*.svg
 

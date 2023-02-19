@@ -897,8 +897,12 @@ void translation_unit_visitor::
             desugared_atsp = deduced_type->getDeducedType();
     }
 
-    const auto *deduced_record_type =
-        desugared_atsp->getAs<clang::RecordType>();
+    if (desugared_atsp.isNull())
+        return;
+
+    const auto *deduced_record_type = desugared_atsp->isRecordType()
+        ? desugared_atsp->getAs<clang::RecordType>()
+        : nullptr;
 
     if (deduced_record_type != nullptr) {
         if (auto *deduced_auto_decl =

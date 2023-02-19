@@ -29,7 +29,7 @@ jobs:
     - name: Update package database
       run: sudo apt -y update
     - name: Install deps
-      run: sudo apt -y install git make gcc-10 g++-10 ccache cmake libyaml-cpp-dev llvm-12 clang-12 libclang-12-dev libclang-cpp12-dev clang-format-12 lcov zlib1g-dev
+      run: sudo apt -y install git make pkg-config gcc-10 g++-10 ccache cmake libyaml-cpp-dev llvm-12 clang-12 libclang-12-dev libclang-cpp12-dev clang-format-12 lcov zlib1g-dev libunwind-dev libdw-dev
     - name: Select g++ version
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
