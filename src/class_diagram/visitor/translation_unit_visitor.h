@@ -83,6 +83,13 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
+//    bool TraverseTypeConstraint(const clang::TypeConstraint *C);
+//    bool TraverseConceptRequirement(clang::concepts::Requirement *R);
+//    bool TraverseConceptTypeRequirement(clang::concepts::TypeRequirement *R);
+//    bool TraverseConceptExprRequirement(clang::concepts::ExprRequirement *R);
+//    bool TraverseConceptNestedRequirement(
+//        clang::concepts::NestedRequirement *R);
+
     /**
      * @brief Get diagram model reference
      *
