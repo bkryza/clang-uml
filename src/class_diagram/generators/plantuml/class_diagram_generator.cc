@@ -102,6 +102,23 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
     m_generated_aliases.emplace(e.alias());
 }
 
+void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
+{
+    print_debug(c, ostr);
+
+    if (m_config.generate_packages())
+        ostr << "annotation"
+             << " \"" << c.name();
+    else
+        ostr << "annotation"
+             << " \"" << render_name(c.full_name());
+
+    ostr << "\" as " << c.alias() << '\n';
+
+    // Register the added alias
+    m_generated_aliases.emplace(c.alias());
+}
+
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
@@ -279,6 +296,26 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         generate_member_notes(ostr, method, c.alias());
 }
 
+void generator::generate(const concept_ &c, std::ostream &ostr) const
+{
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+
+    std::string class_type{"annotation"};
+
+    ostr << class_type << " " << c.alias() << " <<concept>>";
+
+    if (m_config.generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
+    }
+
+    if (!c.style().empty())
+        ostr << " " << c.style();
+
+    ostr << " {" << '\n';
+
+    ostr << "}" << '\n';
+}
+
 void generator::generate_member_notes(std::ostream &ostr,
     const class_element &member, const std::string &alias) const
 {
@@ -307,6 +344,11 @@ void generator::generate_relationships(std::ostream &ostr) const
         else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
             if (m_model.should_include(*enm)) {
                 generate_relationships(*enm, ostr);
+            }
+        }
+        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
+            if (m_model.should_include(*cpt)) {
+                generate_relationships(*cpt, ostr);
             }
         }
     }
@@ -403,6 +445,82 @@ void generator::generate_relationships(
                         "to: {}",
                     b.name(), c.name(), e.what());
             }
+        }
+    }
+
+    ostr << all_relations_str.str();
+}
+
+void generator::generate_relationships(
+    const concept_ &c, std::ostream &ostr) const
+{
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+
+    //
+    // Process relationships
+    //
+    std::set<std::string> rendered_relations;
+
+    std::stringstream all_relations_str;
+    std::set<std::string> unique_relations;
+
+    for (const auto &r : c.relationships()) {
+        if (!m_model.should_include(r.type()))
+            continue;
+
+        LOG_DBG("== Processing relationship {}",
+            plantuml_common::to_plantuml(r.type(), r.style()));
+
+        std::stringstream relstr;
+        clanguml::common::id_t destination{0};
+        try {
+            destination = r.destination();
+
+            std::string puml_relation;
+            if (!r.multiplicity_source().empty())
+                puml_relation += "\"" + r.multiplicity_source() + "\" ";
+
+            puml_relation += plantuml_common::to_plantuml(r.type(), r.style());
+
+            if (!r.multiplicity_destination().empty())
+                puml_relation += " \"" + r.multiplicity_destination() + "\"";
+
+            std::string target_alias;
+            try {
+                target_alias = m_model.to_alias(destination);
+            }
+            catch (...) {
+                LOG_DBG("Failed to find alias to {}", destination);
+                continue;
+            }
+
+            if (m_generated_aliases.find(target_alias) ==
+                m_generated_aliases.end())
+                continue;
+
+            relstr << c.alias() << " " << puml_relation << " " << target_alias;
+
+            if (!r.label().empty()) {
+                relstr << " : " << plantuml_common::to_plantuml(r.access())
+                       << r.label();
+                rendered_relations.emplace(r.label());
+            }
+
+            if (unique_relations.count(relstr.str()) == 0) {
+                unique_relations.emplace(relstr.str());
+
+                relstr << '\n';
+
+                LOG_DBG("=== Adding relation {}", relstr.str());
+
+                all_relations_str << relstr.str();
+            }
+        }
+        catch (error::uml_alias_missing &e) {
+            LOG_DBG("=== Skipping {} relation from {} to {} due "
+                    "to: {}",
+                plantuml_common::to_plantuml(r.type(), r.style()),
+                c.full_name(), destination, e.what());
         }
     }
 
@@ -534,6 +652,20 @@ void generator::generate(const package &p, std::ostream &ostr) const
                 }
             }
         }
+        else if (auto *cpt = dynamic_cast<concept_ *>(subpackage.get()); cpt) {
+            if (m_model.should_include(*subpackage)) {
+                auto together_group =
+                    m_config.get_together_group(cpt->full_name(false));
+                if (together_group) {
+                    together_group_stack_.group_together(
+                        together_group.value(), cpt);
+                }
+                else {
+                    generate_alias(*cpt, ostr);
+                    generate(*cpt, ostr);
+                }
+            }
+        }
     }
 
     if (m_config.generate_packages()) {
@@ -551,6 +683,10 @@ void generator::generate(const package &p, std::ostream &ostr) const
                 if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
                     generate_alias(*enm, ostr);
                     generate(*enm, ostr);
+                }
+                if (auto *cpt = dynamic_cast<concept_ *>(e); cpt) {
+                    generate_alias(*cpt, ostr);
+                    generate(*cpt, ostr);
                 }
             }
 
@@ -587,6 +723,12 @@ void generator::generate_relationships(
             if (m_model.should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<enum_ &>(*subpackage), ostr);
+            }
+        }
+        else if (dynamic_cast<concept_ *>(subpackage.get()) != nullptr) {
+            if (m_model.should_include(*subpackage)) {
+                generate_relationships(
+                    dynamic_cast<concept_ &>(*subpackage), ostr);
             }
         }
     }
@@ -648,6 +790,20 @@ void generator::generate_top_level_elements(std::ostream &ostr) const
                 }
             }
         }
+        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
+            if (m_model.should_include(*cpt)) {
+                auto together_group =
+                    m_config.get_together_group(cpt->full_name(false));
+                if (together_group) {
+                    together_group_stack_.group_together(
+                        together_group.value(), cpt);
+                }
+                else {
+                    generate_alias(*cpt, ostr);
+                    generate(*cpt, ostr);
+                }
+            }
+        }
     }
 }
 
@@ -665,6 +821,10 @@ void generator::generate_groups(std::ostream &ostr) const
             if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
                 generate_alias(*enm, ostr);
                 generate(*enm, ostr);
+            }
+            if (auto *cpt = dynamic_cast<concept_ *>(e); cpt) {
+                generate_alias(*cpt, ostr);
+                generate(*cpt, ostr);
             }
         }
 

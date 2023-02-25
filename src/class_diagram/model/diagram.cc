@@ -32,6 +32,11 @@ const common::reference_vector<class_> &diagram::classes() const
 
 const common::reference_vector<enum_> &diagram::enums() const { return enums_; }
 
+const common::reference_vector<concept_> &diagram::concepts() const
+{
+    return concepts_;
+}
+
 common::model::diagram_t diagram::type() const
 {
     return common::model::diagram_t::kClass;
@@ -48,6 +53,11 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 
     res = get_enum(full_name);
 
+    if (res.has_value())
+        return res;
+
+    res = get_concept(full_name);
+
     return res;
 }
 
@@ -63,6 +73,11 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 
     res = get_enum(id);
 
+    if (res.has_value())
+        return res;
+
+    res = get_concept(id);
+
     return res;
 }
 
@@ -76,6 +91,12 @@ bool diagram::has_enum(const enum_ &e) const
 {
     return std::any_of(enums_.cbegin(), enums_.cend(),
         [&e](const auto &ee) { return ee.get().full_name() == e.full_name(); });
+}
+
+bool diagram::has_concept(const concept_ &c) const
+{
+    return std::any_of(concepts_.cbegin(), concepts_.cend(),
+        [&c](const auto &cc) { return cc.get() == c; });
 }
 
 common::optional_ref<class_> diagram::get_class(const std::string &name) const
@@ -120,6 +141,32 @@ common::optional_ref<enum_> diagram::get_enum(
     for (const auto &e : enums_) {
         if (e.get().id() == id) {
             return {e};
+        }
+    }
+
+    return {};
+}
+
+common::optional_ref<concept_> diagram::get_concept(
+    const std::string &name) const
+{
+    for (const auto &c : concepts_) {
+        const auto full_name = c.get().full_name(false);
+
+        if (full_name == name) {
+            return {c};
+        }
+    }
+
+    return {};
+}
+
+common::optional_ref<concept_> diagram::get_concept(
+    clanguml::common::model::diagram_element::id_t id) const
+{
+    for (const auto &c : concepts_) {
+        if (c.get().id() == id) {
+            return {c};
         }
     }
 
@@ -173,8 +220,8 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
         }
     }
     catch (const std::runtime_error &e) {
-        LOG_WARN("Cannot add template specialization {} with id {} due to: {}",
-            name, id, e.what());
+        LOG_WARN(
+            "Cannot add concept {} with id {} due to: {}", name, id, e.what());
         return false;
     }
 
@@ -203,6 +250,55 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
     }
 
     LOG_DBG("Enum {} already in the model", full_name);
+
+    return false;
+}
+
+bool diagram::add_concept(std::unique_ptr<concept_> &&c)
+{
+    const auto base_name = c->name();
+    const auto full_name = c->full_name(false);
+
+    LOG_DBG("Adding concept: {}::{}, {}", c->get_namespace().to_string(),
+        base_name, full_name);
+
+    if (util::contains(base_name, "::"))
+        throw std::runtime_error("Name cannot contain namespace: " + base_name);
+
+    if (util::contains(base_name, "*"))
+        throw std::runtime_error("Name cannot contain *: " + base_name);
+
+    const auto ns = c->get_relative_namespace();
+    auto name = base_name;
+    auto name_with_ns = c->name_and_ns();
+    auto name_and_ns = ns | name;
+    auto &cc = *c;
+    auto id = cc.id();
+
+    try {
+        if (!has_concept(cc)) {
+            if (add_element(ns, std::move(c)))
+                concepts_.push_back(std::ref(cc));
+
+            const auto &el = get_element<concept_>(name_and_ns).value();
+
+            if ((el.name() != name) || !(el.get_relative_namespace() == ns))
+                throw std::runtime_error(
+                    "Invalid element stored in the diagram tree");
+
+            LOG_DBG("Added concept {} ({} - [{}])", base_name, full_name, id);
+
+            return true;
+        }
+    }
+    catch (const std::runtime_error &e) {
+        LOG_WARN(
+            "Cannot add concept {} with id {} due to: {}", name, id, e.what());
+        return false;
+    }
+
+    LOG_DBG("Concept {} ({} - [{}]) already in the model", base_name, full_name,
+        id);
 
     return false;
 }
@@ -255,6 +351,11 @@ std::string diagram::to_alias(
     for (const auto &e : enums_) {
         if (e.get().id() == id)
             return e.get().alias();
+    }
+
+    for (const auto &c : concepts_) {
+        if (c.get().id() == id)
+            return c.get().alias();
     }
 
     throw error::uml_alias_missing(fmt::format("Missing alias for {}", id));

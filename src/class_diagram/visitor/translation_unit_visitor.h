@@ -18,6 +18,7 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
+#include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
@@ -83,12 +84,7 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
-//    bool TraverseTypeConstraint(const clang::TypeConstraint *C);
-//    bool TraverseConceptRequirement(clang::concepts::Requirement *R);
-//    bool TraverseConceptTypeRequirement(clang::concepts::TypeRequirement *R);
-//    bool TraverseConceptExprRequirement(clang::concepts::ExprRequirement *R);
-//    bool TraverseConceptNestedRequirement(
-//        clang::concepts::NestedRequirement *R);
+    virtual bool TraverseConceptDecl(clang::ConceptDecl *cpt);
 
     /**
      * @brief Get diagram model reference
@@ -121,6 +117,9 @@ private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_record_declaration(clang::RecordDecl *rec);
 
+    std::unique_ptr<clanguml::class_diagram::model::concept_>
+    create_concept_declaration(clang::ConceptDecl *cpt);
+
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
 
@@ -141,7 +140,8 @@ private:
 
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
-        clanguml::common::model::template_trait &t);
+        clanguml::common::model::template_trait &t,
+        common::optional_ref<common::model::element> templated_element = {});
 
     void process_template_specialization_argument(
         const clang::ClassTemplateSpecializationDecl *cls,
@@ -248,6 +248,9 @@ private:
         clanguml::class_diagram::model::class_ &c,
         const std::set<std::string> &template_parameter_names,
         const clang::TemplateSpecializationType &template_instantiation_type);
+
+    void find_relationships_in_constraint_expression(
+        clanguml::common::model::element &c, const clang::Expr *expr);
 
     void process_unexposed_template_specialization_parameters(
         const std::string &tspec,

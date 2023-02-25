@@ -79,9 +79,6 @@ public:
 
     bool is_abstract() const;
 
-    bool is_concept() const { return is_concept_; }
-    void is_concept(bool concept_) { is_concept_ = concept_; }
-
     void find_relationships(
         std::vector<std::pair<std::string, common::model::relationship_t>>
             &nested_relationships);
@@ -95,7 +92,6 @@ private:
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_union_{false};
-    bool is_concept_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;

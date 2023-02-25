@@ -90,6 +90,14 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
     return ns;
 }
 
+model::namespace_ get_template_namespace(const clang::TemplateDecl &declaration)
+{
+    model::namespace_ ns{declaration.getQualifiedNameAsString()};
+    ns.pop_back();
+
+    return ns;
+}
+
 std::string get_tag_name(const clang::TagDecl &declaration)
 {
     auto base_name = declaration.getNameAsString();

@@ -19,6 +19,7 @@
 #include "translation_unit_visitor.h"
 #include "common/clang_utils.h"
 
+#include <clang/AST/ExprConcepts.h>
 #include <clang/Basic/FileManager.h>
 #include <clang/Lex/Preprocessor.h>
 #include <spdlog/spdlog.h>
@@ -284,7 +285,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
 
-    process_template_parameters(*cls, *c_ptr);
+    process_template_parameters(*cls, *c_ptr, *c_ptr);
 
     const auto cls_full_name = c_ptr->full_name(false);
     const auto id = common::to_id(cls_full_name);
@@ -292,6 +293,15 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     c_ptr->set_id(id);
 
     set_ast_local_id(cls->getID(), id);
+
+    llvm::SmallVector<const clang::Expr *, 24> constraints{};
+    if (cls->hasAssociatedConstraints()) {
+        cls->getAssociatedConstraints(constraints);
+    }
+
+    for (const auto *expr : constraints) {
+        find_relationships_in_constraint_expression(*c_ptr, expr);
+    }
 
     if (!cls->getTemplatedDecl()->isCompleteDefinition()) {
         forward_declarations_.emplace(id, std::move(c_ptr));
@@ -367,6 +377,155 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     return true;
 }
 
+bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
+{
+    // Skip system headers
+    if (source_manager().isInSystemHeader(cpt->getSourceRange().getBegin()))
+        return true;
+
+    if (!diagram().should_include(cpt->getQualifiedNameAsString()))
+        return true;
+
+    LOG_DBG("= Visiting concept (isType: {}) declaration {} at {}",
+        cpt->isTypeConcept(), cpt->getQualifiedNameAsString(),
+        cpt->getLocation().printToString(source_manager()));
+
+    auto concept_model = create_concept_declaration(cpt);
+
+    if (!concept_model)
+        return true;
+
+    const auto concept_id = concept_model->id();
+
+    set_ast_local_id(cpt->getID(), concept_id);
+
+    process_template_parameters(*cpt, *concept_model);
+
+    if (const auto *constraint =
+            clang::dyn_cast<clang::RequiresExpr>(cpt->getConstraintExpr());
+        constraint) {
+
+        auto constraint_source = common::to_string(constraint);
+
+        LOG_DBG("== Processing constraint: '{}'", constraint_source);
+
+        for (const auto *requirement : constraint->getRequirements()) {
+            LOG_DBG("== Processing requirement: '{}'", requirement->getKind());
+        }
+
+        // process 'requires (...)' declaration
+        for (const auto *decl : constraint->getBody()->decls()) {
+            // decl->dump();
+
+            if (const auto *parm_var_decl =
+                    clang::dyn_cast<clang::ParmVarDecl>(decl);
+                parm_var_decl) {
+                parm_var_decl->getQualifiedNameAsString();
+
+                LOG_DBG("=== Processing parameter variable declaration: {}, {}",
+                    parm_var_decl->getQualifiedNameAsString(),
+                    common::to_string(
+                        parm_var_decl->getType(), cpt->getASTContext()));
+            }
+            else {
+                LOG_DBG(
+                    "=== Processing some other declaration: {}", decl->getID());
+            }
+        }
+
+        // process concept body requirements '{ }' if any
+        for (const auto *req : constraint->getRequirements()) {
+            if (req->getKind() == clang::concepts::Requirement::RK_Simple) {
+                const auto *simple_req =
+                    clang::dyn_cast<clang::concepts::ExprRequirement>(req);
+                LOG_DBG("=== Processing expression requirement: {}",
+                    common::to_string(simple_req->getExpr()));
+            }
+            else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
+                const auto *type_req =
+                    clang::dyn_cast<clang::concepts::TypeRequirement>(req);
+                LOG_DBG(
+                    "=== Processing type requirement: {}", type_req->getKind());
+            }
+            else if (req->getKind() ==
+                clang::concepts::Requirement::RK_Nested) {
+                const auto *nested_req =
+                    clang::dyn_cast<clang::concepts::NestedRequirement>(req);
+                LOG_DBG("=== Processing nested requirement: {}",
+                    common::to_string(nested_req->getConstraintExpr()));
+            }
+            else if (req->getKind() ==
+                clang::concepts::Requirement::RK_Compound) {
+                const auto *nested_req =
+                    clang::dyn_cast<clang::concepts::ExprRequirement>(req);
+                LOG_DBG("=== Processing compound requirement: {}",
+                    common::to_string(nested_req->getExpr()));
+            }
+        }
+    }
+    else {
+        // TODO
+    }
+
+    if (cpt->getConstraintExpr())
+        find_relationships_in_constraint_expression(
+            *concept_model, cpt->getConstraintExpr());
+
+    if (diagram_.should_include(*concept_model)) {
+        LOG_DBG("Adding concept {} with id {}", concept_model->full_name(false),
+            concept_model->id());
+
+        diagram_.add_concept(std::move(concept_model));
+    }
+    else {
+        LOG_DBG("Skipping concept {} with id {}", concept_model->full_name(),
+            concept_model->id());
+    }
+
+    return true;
+}
+
+void translation_unit_visitor::find_relationships_in_constraint_expression(
+    clanguml::common::model::element &c, const clang::Expr *expr)
+{
+    if (expr == nullptr)
+        return;
+
+    if (const auto *concept_specialization =
+            clang::dyn_cast<clang::ConceptSpecializationExpr>(expr);
+        concept_specialization) {
+        if (concept_specialization->getNamedConcept() &&
+            diagram().should_include(concept_specialization->getNamedConcept()
+                                         ->getQualifiedNameAsString())) {
+            auto target_id = get_ast_local_id(
+                concept_specialization->getNamedConcept()->getID())
+                                 .value();
+
+            for (const auto ta :
+                concept_specialization->getTemplateArguments()) {
+                if (ta.getKind() == clang::TemplateArgument::Template)
+                    ta.getAsTemplateOrTemplatePattern().dump();
+            }
+
+            c.add_relationship({relationship_t::kDependency, target_id});
+        }
+    }
+    else if (const auto *constraint =
+                 clang::dyn_cast<clang::RequiresExpr>(expr);
+             constraint) {
+        // TODO
+    }
+    else if (const auto *binop = clang::dyn_cast<clang::BinaryOperator>(expr);
+             binop) {
+        find_relationships_in_constraint_expression(c, binop->getLHS());
+        find_relationships_in_constraint_expression(c, binop->getRHS());
+    }
+    else if (const auto *unop = clang::dyn_cast<clang::UnaryOperator>(expr);
+             unop) {
+        find_relationships_in_constraint_expression(c, unop->getSubExpr());
+    }
+}
+
 bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 {
     // Skip system headers
@@ -440,6 +599,37 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     return true;
 }
 
+std::unique_ptr<clanguml::class_diagram::model::concept_>
+translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
+{
+    assert(cpt != nullptr);
+
+    auto concept_ptr{
+        std::make_unique<model::concept_>(config_.using_namespace())};
+    auto &concept_model = *concept_ptr;
+
+    auto qualified_name = cpt->getQualifiedNameAsString();
+
+    if (!diagram().should_include(qualified_name))
+        return {};
+
+    auto ns = common::get_template_namespace(*cpt);
+
+    concept_model.set_name(cpt->getNameAsString());
+    concept_model.set_namespace(ns);
+    concept_model.set_id(common::to_id(concept_model.full_name(false)));
+
+    process_comment(*cpt, concept_model);
+    set_source_location(*cpt, concept_model);
+
+    if (concept_model.skip())
+        return {};
+
+    concept_model.set_style(concept_model.style_spec());
+
+    return concept_ptr;
+}
+
 std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
     clang::RecordDecl *rec)
 {
@@ -490,7 +680,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     if (!diagram().should_include(qualified_name))
         return {};
 
-    auto ns = common::get_tag_namespace(*cls);
+    auto ns{common::get_tag_namespace(*cls)};
 
     process_record_parent(cls, c, ns);
 
@@ -531,7 +721,8 @@ void translation_unit_visitor::process_record_parent(
             // regular class
             id_opt = get_ast_local_id(local_id);
 
-            // If not, check if the parent template declaration is in the model
+            // If not, check if the parent template declaration is in the
+            // model
             if (!id_opt) {
                 if (parent_record_decl->getDescribedTemplate() != nullptr) {
                     local_id =
@@ -600,7 +791,8 @@ void translation_unit_visitor::process_class_declaration(
 
 bool translation_unit_visitor::process_template_parameters(
     const clang::TemplateDecl &template_declaration,
-    common::model::template_trait &c)
+    common::model::template_trait &c,
+    common::optional_ref<common::model::element> templated_element)
 {
     LOG_DBG("Processing class {} template parameters...",
         common::get_qualified_name(template_declaration));
@@ -620,6 +812,16 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_name(template_type_parameter->getNameAsString());
             ct.set_default_value("");
             ct.is_variadic(template_type_parameter->isParameterPack());
+
+            if (template_type_parameter->getTypeConstraint()) {
+                util::apply_if_not_null(
+                    template_type_parameter->getTypeConstraint()
+                        ->getNamedConcept(),
+                    [&ct](const clang::ConceptDecl *named_concept) mutable {
+                        ct.set_concept_constraint(
+                            named_concept->getQualifiedNameAsString());
+                    });
+            }
 
             c.add_template(std::move(ct));
         }
@@ -2402,6 +2604,17 @@ void translation_unit_visitor::resolve_local_to_global_ids()
                         maybe_local_id, *get_ast_local_id(maybe_local_id));
                     rel.set_destination(*get_ast_local_id(maybe_local_id));
                 }
+            }
+        }
+    }
+    for (const auto &cpt : diagram().concepts()) {
+        for (auto &rel : cpt.get().relationships()) {
+            const auto maybe_local_id = rel.destination();
+            if (get_ast_local_id(maybe_local_id)) {
+                LOG_DBG("= Resolved instantiation destination from local "
+                        "id {} to global id {}",
+                    maybe_local_id, *get_ast_local_id(maybe_local_id));
+                rel.set_destination(*get_ast_local_id(maybe_local_id));
             }
         }
     }

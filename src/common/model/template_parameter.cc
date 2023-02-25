@@ -138,6 +138,8 @@ std::string template_parameter::to_string(
 {
     using clanguml::common::model::namespace_;
 
+    assert(!(!type().empty() && concept_constraint().has_value()));
+
     std::string res;
     if (!type().empty()) {
         if (!relative)
@@ -146,8 +148,17 @@ std::string template_parameter::to_string(
             res += namespace_{type()}.relative_to(using_namespace).to_string();
     }
 
+    if (concept_constraint()) {
+        if (!relative)
+            res += namespace_{concept_constraint().value()}.to_string();
+        else
+            res += namespace_{concept_constraint().value()}
+                       .relative_to(using_namespace)
+                       .to_string();
+    }
+
     if (!name().empty()) {
-        if (!type().empty())
+        if (!type().empty() || concept_constraint())
             res += " ";
         if (!relative)
             res += namespace_{name()}.to_string();
@@ -214,6 +225,16 @@ bool template_parameter::find_nested_relationships(
     }
 
     return added_aggregation_relationship;
+}
+
+void template_parameter::set_concept_constraint(std::string constraint)
+{
+    concept_constraint_ = std::move(constraint);
+}
+
+const std::optional<std::string> &template_parameter::concept_constraint() const
+{
+    return concept_constraint_;
 }
 
 } // namespace clanguml::common::model
