@@ -147,4 +147,16 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
     const std::string &params,
     const std::function<std::string(const std::string &)> &ns_resolve,
     int depth = 0);
+
+template <typename T, typename P, typename F>
+void if_dyn_cast(P pointer, F &&func)
+{
+    if (pointer == nullptr)
+        return;
+
+    if (const auto *dyn_cast_value = clang::dyn_cast<T>(pointer);
+        dyn_cast_value) {
+        std::forward<F>(func)(dyn_cast_value);
+    }
+}
 } // namespace clanguml::common

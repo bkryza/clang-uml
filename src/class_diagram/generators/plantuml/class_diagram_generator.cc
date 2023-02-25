@@ -107,10 +107,10 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
     print_debug(c, ostr);
 
     if (m_config.generate_packages())
-        ostr << "annotation"
+        ostr << "class"
              << " \"" << c.name();
     else
-        ostr << "annotation"
+        ostr << "class"
              << " \"" << render_name(c.full_name());
 
     ostr << "\" as " << c.alias() << '\n';
@@ -300,7 +300,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    std::string class_type{"annotation"};
+    std::string class_type{"class"};
 
     ostr << class_type << " " << c.alias() << " <<concept>>";
 

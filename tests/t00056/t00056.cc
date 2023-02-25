@@ -4,10 +4,10 @@ namespace clanguml {
 namespace t00056 {
 
 template <typename T, typename L>
-concept greater_than = sizeof(T) > sizeof(L);
+concept greater_than_simple = sizeof(T) > sizeof(L);
 
 template <typename T, typename P>
-concept greater_than_requires = requires(T l, P r)
+concept greater_than_with_requires = requires(T l, P r)
 {
     sizeof(l) > sizeof(r);
 };
@@ -60,8 +60,8 @@ struct B {
     T b;
 };
 
-// Anonymous concept requirement
-template <typename T>
+// Anonymous concept requirement (TODO)
+template <convertible_to_string T>
 requires requires(T t)
 {
     --t;
@@ -71,5 +71,25 @@ struct C {
     T c;
 };
 
+template <iterable T1, typename T2, iterable T3, typename T4, typename T5>
+requires max_four_bytes<T2> && max_four_bytes<T5>
+struct D {
+};
+
+template <typename T1, typename T2, typename T3>
+requires greater_than_with_requires<T1, T3>
+struct E {
+    T1 e1;
+    T2 e2;
+    T3 e3;
+};
+
+template <typename T1, typename T2, typename T3>
+requires greater_than_simple<T1, T3>
+struct F {
+    T1 f1;
+    T2 f2;
+    T3 f3;
+};
 }
 }

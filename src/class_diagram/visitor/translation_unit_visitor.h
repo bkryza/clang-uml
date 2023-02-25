@@ -293,5 +293,7 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
+    void process_concept_specialization_relationships(common::model::element &c,
+        const clang::ConceptSpecializationExpr *concept_specialization);
 };
 } // namespace clanguml::class_diagram::visitor
