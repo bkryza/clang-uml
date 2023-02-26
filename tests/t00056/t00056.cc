@@ -32,9 +32,16 @@ concept has_value_type = requires
 };
 
 template <typename T>
-concept convertible_to_string = requires(T s)
+concept convertible_to_string = max_four_bytes<T> && requires(T s)
 {
     std::string{s};
+    {
+        std::to_string(s)
+    }
+    noexcept;
+    {
+        std::to_string(s)
+        } -> std::same_as<std::string>;
 };
 
 // Compound requirement

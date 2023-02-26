@@ -270,6 +270,9 @@ private:
     bool simplify_system_template(common::model::template_parameter &ct,
         const std::string &full_name) const;
 
+    void process_constraint_requirements(const clang::ConceptDecl *cpt,
+        const clang::Expr *expr, model::concept_ &concept_model) const;
+
     void process_concept_specialization_relationships(common::model::element &c,
         const clang::ConceptSpecializationExpr *concept_specialization);
 

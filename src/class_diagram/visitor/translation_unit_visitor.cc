@@ -401,73 +401,13 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 
     process_template_parameters(*cpt, *concept_model);
 
-    if (const auto *constraint =
-            clang::dyn_cast<clang::RequiresExpr>(cpt->getConstraintExpr());
-        constraint) {
+    if (cpt->getConstraintExpr()) {
+        process_constraint_requirements(
+            cpt, cpt->getConstraintExpr(), *concept_model);
 
-        auto constraint_source = common::to_string(constraint);
-
-        LOG_DBG("== Processing constraint: '{}'", constraint_source);
-
-        for (const auto *requirement : constraint->getRequirements()) {
-            LOG_DBG("== Processing requirement: '{}'", requirement->getKind());
-        }
-
-        // process 'requires (...)' declaration
-        for (const auto *decl : constraint->getBody()->decls()) {
-            if (const auto *parm_var_decl =
-                    clang::dyn_cast<clang::ParmVarDecl>(decl);
-                parm_var_decl) {
-                parm_var_decl->getQualifiedNameAsString();
-
-                LOG_DBG("=== Processing parameter variable declaration: {}, {}",
-                    parm_var_decl->getQualifiedNameAsString(),
-                    common::to_string(
-                        parm_var_decl->getType(), cpt->getASTContext()));
-            }
-            else {
-                LOG_DBG(
-                    "=== Processing some other declaration: {}", decl->getID());
-            }
-        }
-
-        // process concept body requirements '{ }' if any
-        for (const auto *req : constraint->getRequirements()) {
-            if (req->getKind() == clang::concepts::Requirement::RK_Simple) {
-                const auto *simple_req =
-                    clang::dyn_cast<clang::concepts::ExprRequirement>(req);
-                LOG_DBG("=== Processing expression requirement: {}",
-                    common::to_string(simple_req->getExpr()));
-            }
-            else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
-                const auto *type_req =
-                    clang::dyn_cast<clang::concepts::TypeRequirement>(req);
-                LOG_DBG(
-                    "=== Processing type requirement: {}", type_req->getKind());
-            }
-            else if (req->getKind() ==
-                clang::concepts::Requirement::RK_Nested) {
-                const auto *nested_req =
-                    clang::dyn_cast<clang::concepts::NestedRequirement>(req);
-                LOG_DBG("=== Processing nested requirement: {}",
-                    common::to_string(nested_req->getConstraintExpr()));
-            }
-            else if (req->getKind() ==
-                clang::concepts::Requirement::RK_Compound) {
-                const auto *nested_req =
-                    clang::dyn_cast<clang::concepts::ExprRequirement>(req);
-                LOG_DBG("=== Processing compound requirement: {}",
-                    common::to_string(nested_req->getExpr()));
-            }
-        }
-    }
-    else {
-        // TODO
-    }
-
-    if (cpt->getConstraintExpr())
         find_relationships_in_constraint_expression(
             *concept_model, cpt->getConstraintExpr());
+    }
 
     if (diagram_.should_include(*concept_model)) {
         LOG_DBG("Adding concept {} with id {}", concept_model->full_name(false),
@@ -481,6 +421,112 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
     }
 
     return true;
+}
+
+void translation_unit_visitor::process_constraint_requirements(
+    const clang::ConceptDecl *cpt, const clang::Expr *expr,
+    model::concept_ &concept_model) const
+{
+    if (const auto *constraint = llvm::dyn_cast<clang::RequiresExpr>(expr);
+        constraint) {
+
+        auto constraint_source = common::to_string(constraint);
+
+        LOG_DBG("== Processing constraint: '{}'", constraint_source);
+
+        for (const auto *requirement : constraint->getRequirements()) {
+            LOG_DBG("== Processing requirement: '{}'", requirement->getKind());
+        }
+
+        // process 'requires (...)' declaration
+        for (const auto *decl : constraint->getBody()->decls()) {
+            if (const auto *parm_var_decl =
+                    llvm::dyn_cast<clang::ParmVarDecl>(decl);
+                parm_var_decl) {
+                parm_var_decl->getQualifiedNameAsString();
+
+                auto param_name = parm_var_decl->getQualifiedNameAsString();
+                auto param_type = common::to_string(
+                    parm_var_decl->getType(), cpt->getASTContext());
+
+                LOG_DBG("=== Processing parameter variable declaration: {}, {}",
+                    param_name, param_type);
+
+                concept_model.add_parameter(
+                    {std::move(param_type), std::move(param_name)});
+            }
+            else {
+                LOG_DBG("=== Processing some other concept declaration: {}",
+                    decl->getID());
+            }
+        }
+
+        // process concept body requirements '{ }' if any
+        for (const auto *req : constraint->getRequirements()) {
+            if (req->getKind() == clang::concepts::Requirement::RK_Simple) {
+                const auto *simple_req =
+                    llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
+
+                auto simple_expr = common::to_string(simple_req->getExpr());
+
+                LOG_DBG(
+                    "=== Processing expression requirement: {}", simple_expr);
+
+                concept_model.add_statement(std::move(simple_expr));
+            }
+            else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
+                const auto *type_req =
+                    llvm::dyn_cast<clang::concepts::TypeRequirement>(req);
+
+                auto type_name = common::to_string(
+                    type_req->getType()->getType(), cpt->getASTContext());
+
+                LOG_DBG("=== Processing type requirement: {}", type_name);
+
+                concept_model.add_statement(std::move(type_name));
+            }
+            else if (req->getKind() ==
+                clang::concepts::Requirement::RK_Nested) {
+                const auto *nested_req =
+                    llvm::dyn_cast<clang::concepts::NestedRequirement>(req);
+
+                LOG_DBG("=== Processing nested requirement: {}",
+                    common::to_string(nested_req->getConstraintExpr()));
+            }
+            else if (req->getKind() ==
+                clang::concepts::Requirement::RK_Compound) {
+                const auto *compound_req =
+                    llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
+
+                auto compound_expr = common::to_string(compound_req->getExpr());
+
+                auto req_return_type = compound_req->getReturnTypeRequirement();
+
+                if (!req_return_type.isEmpty()) {
+                    compound_expr = fmt::format("{{{}}} -> {}", compound_expr,
+                        common::to_string(req_return_type.getTypeConstraint()));
+                }
+                else if (compound_req->hasNoexceptRequirement()) {
+                    compound_expr =
+                        fmt::format("{{{}}} noexcept", compound_expr);
+                }
+
+                LOG_DBG(
+                    "=== Processing compound requirement: {}", compound_expr);
+
+                concept_model.add_statement(std::move(compound_expr));
+            }
+        }
+    }
+    else if (const auto *binop = llvm::dyn_cast<clang::BinaryOperator>(expr);
+             binop) {
+        process_constraint_requirements(cpt, binop->getLHS(), concept_model);
+        process_constraint_requirements(cpt, binop->getRHS(), concept_model);
+    }
+    else if (const auto *unop = llvm::dyn_cast<clang::UnaryOperator>(expr);
+             unop) {
+        process_constraint_requirements(cpt, unop->getSubExpr(), concept_model);
+    }
 }
 
 void translation_unit_visitor::find_relationships_in_constraint_expression(

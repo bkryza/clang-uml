@@ -445,6 +445,13 @@ ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
             fmt::format("{} ..> {} : {}", from, to, label), caseSensitivity));
 }
 
+ContainsMatcher IsConceptRequirement(std::string const &cpt,
+    std::string const &requirement,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(requirement, caseSensitivity));
+}
+
 ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,
     std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)

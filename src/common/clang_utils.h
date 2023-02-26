@@ -90,6 +90,8 @@ std::string to_string(const clang::Stmt *stmt);
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);
 
+std::string to_string(const clang::TypeConstraint *tc);
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm);
 

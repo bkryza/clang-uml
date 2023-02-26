@@ -17,6 +17,7 @@
  */
 
 #include "concept.h"
+#include "method_parameter.h"
 
 #include <sstream>
 
@@ -67,6 +68,26 @@ std::string concept_::full_name(bool relative) const
         return "<<anonymous>>";
 
     return res;
+}
+
+void concept_::add_parameter(method_parameter mp)
+{
+    requires_parameters_.emplace_back(std::move(mp));
+}
+
+const std::vector<method_parameter> &concept_::requires_parameters() const
+{
+    return requires_parameters_;
+}
+
+void concept_::add_statement(std::string stmt)
+{
+    requires_statements_.emplace_back(std::move(stmt));
+}
+
+const std::vector<std::string> &concept_::requires_statements() const
+{
+    return requires_statements_;
 }
 
 }

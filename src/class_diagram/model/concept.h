@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "class_diagram/model/method_parameter.h"
 #include "common/model/element.h"
 #include "common/model/stylable_element.h"
 #include "common/model/template_parameter.h"
@@ -52,8 +53,19 @@ public:
 
     std::string full_name_no_ns() const override;
 
+    void add_parameter(method_parameter mp);
+
+    const std::vector<method_parameter> &requires_parameters() const;
+
+    void add_statement(std::string stmt);
+
+    const std::vector<std::string> &requires_statements() const;
+
+private:
     std::vector<std::string> requires_expression_;
 
-    std::string full_name_;
+    std::vector<method_parameter> requires_parameters_;
+
+    std::vector<std::string> requires_statements_;
 };
 }

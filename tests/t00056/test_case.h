@@ -44,6 +44,24 @@ TEST_CASE("t00056", "[test-case][class]")
     REQUIRE_THAT(puml, IsConcept(_A("iterable_with_value_type<T>")));
     REQUIRE_THAT(puml, IsConcept(_A("iterable_or_small_value_type<T>")));
 
+    REQUIRE_THAT(puml,
+        IsConceptRequirement(
+            _A("greater_than_with_requires<T,P>"), "sizeof (l) > sizeof (r)"));
+
+    REQUIRE_THAT(
+        puml, IsConceptRequirement(_A("iterable<T>"), "container.begin()"));
+    REQUIRE_THAT(
+        puml, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
+
+    REQUIRE_THAT(puml,
+        IsConceptRequirement(_A("convertible_to_string<T>"), "std::string{s}"));
+    REQUIRE_THAT(puml,
+        IsConceptRequirement(
+            _A("convertible_to_string<T>"), "{std::to_string(s)} noexcept"));
+    REQUIRE_THAT(puml,
+        IsConceptRequirement(_A("convertible_to_string<T>"),
+            "{std::to_string(s)} -> std::same_as<std::string>"));
+
     // Check if class templates exist
     REQUIRE_THAT(puml, IsClassTemplate("A", "max_four_bytes T"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T"));

@@ -228,6 +228,21 @@ std::string to_string(const clang::FunctionTemplateDecl *decl)
         fmt::join(template_parameters, ","), "");
 }
 
+std::string to_string(const clang::TypeConstraint *tc)
+{
+    if (tc == nullptr)
+        return {};
+
+    const clang::PrintingPolicy print_policy(
+        tc->getNamedConcept()->getASTContext().getLangOpts());
+
+    std::string ostream_buf;
+    llvm::raw_string_ostream ostream{ostream_buf};
+    tc->print(ostream, print_policy);
+
+    return ostream.str();
+}
+
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm)
 {
