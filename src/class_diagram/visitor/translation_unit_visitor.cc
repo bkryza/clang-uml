@@ -512,8 +512,14 @@ void translation_unit_visitor::process_concept_specialization_relationships(
     common::model::element &c,
     const clang::ConceptSpecializationExpr *concept_specialization)
 {
-    const auto *cpt = concept_specialization->getNamedConcept();
-    if (cpt && diagram().should_include(cpt->getQualifiedNameAsString())) {
+    if (const auto *cpt = concept_specialization->getNamedConcept();
+        should_include(cpt)) {
+
+        const auto cpt_name = cpt->getNameAsString();
+
+        if (!get_ast_local_id(cpt->getID()))
+            return;
+
         auto target_id = get_ast_local_id(cpt->getID()).value();
 
         std::vector<std::string> constrained_template_params;
@@ -524,43 +530,9 @@ void translation_unit_visitor::process_concept_specialization_relationships(
             if (ta.getKind() == clang::TemplateArgument::Type) {
                 auto type_name =
                     common::to_string(ta.getAsType(), cpt->getASTContext());
-
-                if (const auto *nested_template_type =
-                        ta.getAsType()->getAs<clang::TemplateTypeParmType>();
-                    nested_template_type != nullptr) {
-
-                    auto declaration_text = common::get_source_text_raw(
-                        concept_specialization->getSourceRange(),
-                        source_manager());
-
-                    if (!declaration_text.empty()) {
-                        // Handle typename constraint in requires clause
-                        if (type_name.find("type-parameter-") == 0) {
-                            declaration_text = declaration_text.substr(
-                                declaration_text.find(cpt->getNameAsString()) +
-                                cpt->getNameAsString().size() + 1);
-
-                            auto template_params =
-                                common::parse_unexposed_template_params(
-                                    declaration_text,
-                                    [](const auto &t) { return t; });
-
-                            if (template_params.size() > argument_index)
-                                type_name =
-                                    template_params[argument_index].to_string(
-                                        config().using_namespace(), false);
-                            else {
-                                LOG_DBG("Failed to find type specialization "
-                                        "for argument "
-                                        "{} at index {} in declaration "
-                                        "\n===\n{}\n===\n",
-                                    type_name, argument_index,
-                                    declaration_text);
-                            }
-                        }
-                        constrained_template_params.push_back(type_name);
-                    }
-                }
+                extract_constrained_template_param_name(concept_specialization,
+                    cpt, constrained_template_params, argument_index,
+                    type_name);
             }
             else {
                 auto type_name =
@@ -572,7 +544,7 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         }
         if (!constrained_template_params.empty())
             c.add_relationship(
-                {relationship_t::kDependency, target_id, access_t::kNone,
+                {relationship_t::kConstraint, target_id, access_t::kNone,
                     fmt::format(
                         "{}", fmt::join(constrained_template_params, ","))});
     }
@@ -877,7 +849,7 @@ bool translation_unit_visitor::process_template_parameters(
                             diagram().should_include(
                                 named_concept->getQualifiedNameAsString())) {
                             templated_element.value().add_relationship(
-                                {relationship_t::kDependency,
+                                {relationship_t::kConstraint,
                                     get_ast_local_id(named_concept->getID())
                                         .value(),
                                     access_t::kNone, ct.name()});
@@ -1301,7 +1273,6 @@ void translation_unit_visitor::
                     deduced_auto_decl->getQualifiedNameAsString();
 
                 if (diagram().should_include(template_field_decl_name)) {
-
                     relationship r{relationship_t::kDependency,
                         template_specialization_model.get().id()};
 
@@ -2715,4 +2686,38 @@ translation_unit_visitor::get_ast_local_id(int64_t local_id) const
 
     return local_ast_id_map_.at(local_id);
 }
+
+void translation_unit_visitor::extract_constrained_template_param_name(
+    const clang::ConceptSpecializationExpr *concept_specialization,
+    const clang::ConceptDecl *cpt,
+    std::vector<std::string> &constrained_template_params,
+    size_t argument_index, std::string &type_name) const
+{
+    const auto full_declaration_text = common::get_source_text_raw(
+        concept_specialization->getSourceRange(), source_manager());
+
+    if (!full_declaration_text.empty()) {
+        // Handle typename constraint in requires clause
+        if (type_name.find("type-parameter-") == 0) {
+            const auto concept_declaration_text = full_declaration_text.substr(
+                full_declaration_text.find(cpt->getNameAsString()) +
+                cpt->getNameAsString().size() + 1);
+
+            auto template_params = common::parse_unexposed_template_params(
+                concept_declaration_text, [](const auto &t) { return t; });
+
+            if (template_params.size() > argument_index)
+                type_name = template_params[argument_index].to_string(
+                    config().using_namespace(), false);
+        }
+        constrained_template_params.push_back(type_name);
+    }
+}
+
+bool translation_unit_visitor::should_include(const clang::NamedDecl *decl)
+{
+    return decl != nullptr &&
+        diagram().should_include(decl->getQualifiedNameAsString());
+}
+
 } // namespace clanguml::class_diagram::visitor

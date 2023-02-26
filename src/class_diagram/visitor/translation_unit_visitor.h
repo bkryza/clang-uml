@@ -111,6 +111,8 @@ public:
     void finalize();
 
 private:
+    bool should_include(const clang::NamedDecl *decl);
+
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_class_declaration(clang::CXXRecordDecl *cls);
 
@@ -268,6 +270,15 @@ private:
     bool simplify_system_template(common::model::template_parameter &ct,
         const std::string &full_name) const;
 
+    void process_concept_specialization_relationships(common::model::element &c,
+        const clang::ConceptSpecializationExpr *concept_specialization);
+
+    void extract_constrained_template_param_name(
+        const clang::ConceptSpecializationExpr *concept_specialization,
+        const clang::ConceptDecl *cpt,
+        std::vector<std::string> &constrained_template_params,
+        size_t argument_index, std::string &type_name) const;
+
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id
     void set_ast_local_id(
@@ -293,7 +304,5 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
-    void process_concept_specialization_relationships(common::model::element &c,
-        const clang::ConceptSpecializationExpr *concept_specialization);
 };
 } // namespace clanguml::class_diagram::visitor

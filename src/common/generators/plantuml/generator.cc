@@ -37,6 +37,8 @@ std::string to_plantuml(relationship_t r, const std::string &style)
         return style.empty() ? "<.." : fmt::format("<.[{}].", style);
     case relationship_t::kDependency:
         return style.empty() ? "..>" : fmt::format(".[{}].>", style);
+    case relationship_t::kConstraint:
+        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
     case relationship_t::kAlias:
         return style.empty() ? ".." : fmt::format(".[{}].", style);
     default:

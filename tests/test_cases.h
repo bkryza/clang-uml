@@ -281,6 +281,13 @@ ContainsMatcher IsClassTemplate(std::string const &str,
         fmt::format("class \"{}<{}>\"", str, tmplt), caseSensitivity));
 }
 
+ContainsMatcher IsConcept(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString("class " + str + " <<concept>>", caseSensitivity));
+}
+
 ContainsMatcher IsEnum(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -424,6 +431,18 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
 {
     return ContainsMatcher(
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+}
+
+ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
+    std::string const &label = {},
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    if (label.empty())
+        return ContainsMatcher(
+            CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+    else
+        return ContainsMatcher(CasedString(
+            fmt::format("{} ..> {} : {}", from, to, label), caseSensitivity));
 }
 
 ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,

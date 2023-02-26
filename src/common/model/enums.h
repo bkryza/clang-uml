@@ -36,7 +36,8 @@ enum class relationship_t {
     kInstantiation,
     kFriendship,
     kAlias,
-    kDependency
+    kDependency,
+    kConstraint
 };
 
 /// Types of sequence diagram activity elements
