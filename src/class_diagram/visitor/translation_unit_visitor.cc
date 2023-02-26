@@ -556,7 +556,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
         return true;
 
-    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+    if (!should_include(cls))
         return true;
 
     LOG_DBG("= Visiting class declaration {} at {}",
@@ -628,14 +628,12 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
 {
     assert(cpt != nullptr);
 
+    if (!should_include(cpt))
+        return {};
+
     auto concept_ptr{
         std::make_unique<model::concept_>(config_.using_namespace())};
     auto &concept_model = *concept_ptr;
-
-    auto qualified_name = cpt->getQualifiedNameAsString();
-
-    if (!diagram().should_include(qualified_name))
-        return {};
 
     auto ns = common::get_template_namespace(*cpt);
 
@@ -659,13 +657,11 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
 {
     assert(rec != nullptr);
 
+    if (!should_include(rec))
+        return {};
+
     auto record_ptr{std::make_unique<class_>(config_.using_namespace())};
     auto &record = *record_ptr;
-
-    auto qualified_name = rec->getQualifiedNameAsString();
-
-    if (!diagram().should_include(qualified_name))
-        return {};
 
     process_record_parent(rec, record, namespace_{});
 
@@ -695,14 +691,11 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 {
     assert(cls != nullptr);
 
+    if (!should_include(cls))
+        return {};
+
     auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
     auto &c = *c_ptr;
-
-    // TODO: refactor to method get_qualified_name()
-    auto qualified_name = cls->getQualifiedNameAsString();
-
-    if (!diagram().should_include(qualified_name))
-        return {};
 
     auto ns{common::get_tag_namespace(*cls)};
 
@@ -846,8 +839,7 @@ bool translation_unit_visitor::process_template_parameters(
                         ct.set_concept_constraint(
                             named_concept->getQualifiedNameAsString());
                         if (templated_element &&
-                            diagram().should_include(
-                                named_concept->getQualifiedNameAsString())) {
+                            should_include(named_concept)) {
                             templated_element.value().add_relationship(
                                 {relationship_t::kConstraint,
                                     get_ast_local_id(named_concept->getID())
@@ -1139,9 +1131,7 @@ void translation_unit_visitor::process_friend(
             // TODO: handle template friend
         }
         else if (friend_type->getAs<clang::RecordType>() != nullptr) {
-            const auto friend_type_name =
-                friend_type->getAsRecordDecl()->getQualifiedNameAsString();
-            if (diagram().should_include(friend_type_name)) {
+            if (should_include(friend_type->getAsRecordDecl())) {
                 relationship r{relationship_t::kFriendship,
                     common::to_id(*friend_type->getAsRecordDecl()),
                     common::access_specifier_to_access_t(f.getAccess()),
@@ -1269,10 +1259,7 @@ void translation_unit_visitor::
                 const auto &template_specialization_model =
                     diagram().classes().back();
 
-                const auto template_field_decl_name =
-                    deduced_auto_decl->getQualifiedNameAsString();
-
-                if (diagram().should_include(template_field_decl_name)) {
+                if (should_include(deduced_auto_decl)) {
                     relationship r{relationship_t::kDependency,
                         template_specialization_model.get().id()};
 
@@ -1524,33 +1511,30 @@ void translation_unit_visitor::
         const std::set<std::string> & /*template_parameter_names*/,
         const clang::TemplateSpecializationType &template_instantiation_type)
 {
-    const auto template_field_decl_name =
-        template_instantiation_type.getTemplateName()
-            .getAsTemplateDecl()
-            ->getQualifiedNameAsString();
+    if (!should_include(
+            template_instantiation_type.getTemplateName().getAsTemplateDecl()))
+        return;
 
     auto template_specialization_ptr =
         build_template_instantiation(template_instantiation_type);
 
-    if (diagram().should_include(template_field_decl_name)) {
-        if (template_instantiation_type.isDependentType()) {
-            if (template_specialization_ptr) {
-                relationship r{relationship_t::kDependency,
-                    template_specialization_ptr->id()};
+    if (template_instantiation_type.isDependentType()) {
+        if (template_specialization_ptr) {
+            relationship r{
+                relationship_t::kDependency, template_specialization_ptr->id()};
 
-                c.add_relationship(std::move(r));
-            }
+            c.add_relationship(std::move(r));
         }
-        else {
-            if (template_specialization_ptr) {
-                relationship r{relationship_t::kDependency,
-                    template_specialization_ptr->id()};
+    }
+    else {
+        if (template_specialization_ptr) {
+            relationship r{
+                relationship_t::kDependency, template_specialization_ptr->id()};
 
-                if (!diagram().has_element(template_specialization_ptr->id()))
-                    diagram().add_class(std::move(template_specialization_ptr));
+            if (!diagram().has_element(template_specialization_ptr->id()))
+                diagram().add_class(std::move(template_specialization_ptr));
 
-                c.add_relationship(std::move(r));
-            }
+            c.add_relationship(std::move(r));
         }
     }
 }
