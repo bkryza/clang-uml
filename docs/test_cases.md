@@ -54,6 +54,7 @@
  * [t00053](./test_cases/t00053.md) - Test case for `together` layout hint in class diagram
  * [t00054](./test_cases/t00054.md) - Test case for `together` layout hint in class diagram with rendered namespaces
  * [t00055](./test_cases/t00055.md) - Test case for `row` and `column` layout hints
+ * [t00056](./test_cases/t00056.md) - Basic C++ concepts test case
  * [t00057](./test_cases/t00057.md) - Test case C99/C11 translation units with structs and unions
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
