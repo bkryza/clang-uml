@@ -163,10 +163,13 @@ test_cases:
       title: Test case for `row` and `column` layout hints
       description:
     - name: t00056
-      title: Basic C++ concepts test case
+      title: Basic C++20 concepts test case
       description:
     - name: t00057
       title: Test case C99/C11 translation units with structs and unions
+      description:
+    - name: t00058
+      title: Test case for concepts with variadic parameters and type aliases
       description:
   Sequence diagrams:
     - name: t20001

@@ -31,6 +31,12 @@ CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if class templates exist
     //REQUIRE_THAT(puml, IsClassTemplate("A", "T,P,CMP,int N"));
     
+    // Check concepts
+    //REQUIRE_THAT(puml, IsConcept(_A("AConcept<T>")));
+    //REQUIRE_THAT(puml,
+    //    IsConceptRequirement(
+    //        _A("AConcept<T,P>"), "sizeof (T) > sizeof (P)"));
+
     // Check if all enums exist
     //REQUIRE_THAT(puml, IsEnum(_A("Lights")));
     
@@ -49,8 +55,8 @@ CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if all relationships exist
     //REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
     //REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-    //REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("D")));
-    //REQUIRE_THAT(puml, IsComposition(_A("R"), _A("D")));
+    //REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("D"), "-ag"));
+    //REQUIRE_THAT(puml, IsComposition(_A("R"), _A("D"), "-ac"));
     //REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
 """
 
