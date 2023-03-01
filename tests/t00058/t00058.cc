@@ -23,13 +23,13 @@ concept same_as_first_type = std::is_same_v<std::remove_cvref_t<T>,
     std::remove_cvref_t<first_type_t<Args...>>>;
 
 template <typename T, typename... Args>
-    requires same_as_first_type<T, Args...>
+requires same_as_first_type<T, Args...>
 struct A {
     std::vector<T> a;
 };
 
 template <typename T, typename P, typename... Args>
-    requires same_as_first_type<T, Args...>
+requires same_as_first_type<T, Args...>
 struct B {
     std::vector<T> b;
     P bb;

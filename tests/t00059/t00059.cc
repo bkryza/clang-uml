@@ -4,16 +4,23 @@ namespace clanguml {
 namespace t00059 {
 
 template <typename T>
-concept fruit_c = requires(T t) {
-                      T{};
-                      t.get_name();
-                  };
+concept fruit_c = requires(T t)
+{
+    T{};
+    t.get_name();
+};
 
 template <typename T>
-concept apple_c = fruit_c<T> && requires(T t) { t.get_sweetness(); };
+concept apple_c = fruit_c<T> && requires(T t)
+{
+    t.get_sweetness();
+};
 
 template <typename T>
-concept orange_c = fruit_c<T> && requires(T t) { t.get_bitterness(); };
+concept orange_c = fruit_c<T> && requires(T t)
+{
+    t.get_bitterness();
+};
 
 class gala_apple {
 public:
