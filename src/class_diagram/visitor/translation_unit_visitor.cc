@@ -401,6 +401,15 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 
     process_template_parameters(*cpt, *concept_model);
 
+    llvm::SmallVector<const clang::Expr *, 24> constraints{};
+    if (cpt->hasAssociatedConstraints()) {
+        cpt->getAssociatedConstraints(constraints);
+    }
+
+    for (const auto *expr : constraints) {
+        find_relationships_in_constraint_expression(*concept_model, expr);
+    }
+
     if (cpt->getConstraintExpr()) {
         process_constraint_requirements(
             cpt, cpt->getConstraintExpr(), *concept_model);
@@ -534,6 +543,14 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
 {
     if (expr == nullptr)
         return;
+    found_relationships_t relationships;
+
+    common::if_dyn_cast<clang::UnresolvedLookupExpr>(expr, [&](const auto *ul) {
+        for (const auto ta : ul->template_arguments()) {
+            find_relationships(ta.getArgument().getAsType(), relationships,
+                relationship_t::kConstraint);
+        }
+    });
 
     common::if_dyn_cast<clang::ConceptSpecializationExpr>(
         expr, [&](const auto *cs) {
@@ -552,12 +569,23 @@ void translation_unit_visitor::find_relationships_in_constraint_expression(
     common::if_dyn_cast<clang::UnaryOperator>(expr, [&](const auto *op) {
         find_relationships_in_constraint_expression(c, op->getSubExpr());
     });
+
+    for (const auto &[type_element_id, relationship_type] : relationships) {
+        if (type_element_id != c.id() &&
+            (relationship_type != relationship_t::kNone)) {
+
+            relationship r{relationship_type, type_element_id};
+
+            c.add_relationship(std::move(r));
+        }
+    }
 }
 
 void translation_unit_visitor::process_concept_specialization_relationships(
     common::model::element &c,
     const clang::ConceptSpecializationExpr *concept_specialization)
 {
+
     if (const auto *cpt = concept_specialization->getNamedConcept();
         should_include(cpt)) {
 
@@ -580,6 +608,18 @@ void translation_unit_visitor::process_concept_specialization_relationships(
                     cpt, constrained_template_params, argument_index,
                     type_name);
             }
+            else if (ta.getKind() == clang::TemplateArgument::Pack) {
+                if (ta.getPackAsArray().size() > 0 &&
+                    ta.getPackAsArray().front().isPackExpansion()) {
+                    const auto &pack_head =
+                        ta.getPackAsArray().front().getAsType();
+                    auto type_name =
+                        common::to_string(pack_head, cpt->getASTContext());
+                    extract_constrained_template_param_name(
+                        concept_specialization, cpt,
+                        constrained_template_params, argument_index, type_name);
+                }
+            }
             else {
                 auto type_name =
                     common::to_string(ta.getAsType(), cpt->getASTContext());
@@ -588,6 +628,7 @@ void translation_unit_visitor::process_concept_specialization_relationships(
             }
             argument_index++;
         }
+
         if (!constrained_template_params.empty())
             c.add_relationship(
                 {relationship_t::kConstraint, target_id, access_t::kNone,
@@ -857,7 +898,7 @@ bool translation_unit_visitor::process_template_parameters(
     common::model::template_trait &c,
     common::optional_ref<common::model::element> templated_element)
 {
-    LOG_DBG("Processing class {} template parameters...",
+    LOG_DBG("Processing {} template parameters...",
         common::get_qualified_name(template_declaration));
 
     if (template_declaration.getTemplateParameters() == nullptr)
@@ -1389,6 +1430,16 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             type->getAs<clang::TemplateSpecializationType>();
 
         if (type_instantiation_decl != nullptr) {
+            // If this template should be included in the diagram
+            // add it - and then process recursively its arguments
+            if (should_include(type_instantiation_decl->getTemplateName()
+                                   .getAsTemplateDecl())) {
+                relationships.emplace_back(
+                    type_instantiation_decl->getTemplateName()
+                        .getAsTemplateDecl()
+                        ->getID(),
+                    relationship_hint);
+            }
             for (const auto &template_argument : *type_instantiation_decl) {
                 const auto template_argument_kind = template_argument.getKind();
                 if (template_argument_kind ==
@@ -1562,7 +1613,7 @@ void translation_unit_visitor::
         return;
 
     auto template_specialization_ptr =
-        build_template_instantiation(template_instantiation_type);
+        build_template_instantiation(template_instantiation_type, &c);
 
     if (template_instantiation_type.isDependentType()) {
         if (template_specialization_ptr) {
