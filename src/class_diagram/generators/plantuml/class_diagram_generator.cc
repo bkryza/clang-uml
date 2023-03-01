@@ -298,8 +298,6 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
 {
-    namespace plantuml_common = clanguml::common::generators::plantuml;
-
     std::string class_type{"class"};
 
     ostr << class_type << " " << c.alias() << " <<concept>>";
@@ -313,9 +311,8 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 
     ostr << " {" << '\n';
 
-    if (true &&
-        (c.requires_parameters().size() + c.requires_statements().size()) >
-            0) { // TODO: add option to enable/disable this
+    // TODO: add option to enable/disable this
+    if (c.requires_parameters().size() + c.requires_statements().size() > 0) {
         std::vector<std::string> parameters;
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {

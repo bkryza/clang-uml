@@ -294,7 +294,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     set_ast_local_id(cls->getID(), id);
 
-    llvm::SmallVector<const clang::Expr *, 24> constraints{};
+    constexpr auto kMaxConstraintCount = 24U;
+    llvm::SmallVector<const clang::Expr *, kMaxConstraintCount> constraints{};
     if (cls->hasAssociatedConstraints()) {
         cls->getAssociatedConstraints(constraints);
     }
@@ -326,7 +327,7 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     if (source_manager().isInSystemHeader(rec->getSourceRange().getBegin()))
         return true;
 
-    if (clang::dyn_cast_or_null<clang::CXXRecordDecl>(rec))
+    if (clang::dyn_cast_or_null<clang::CXXRecordDecl>(rec) != nullptr)
         // This is handled by VisitCXXRecordDecl()
         return true;
 
@@ -401,7 +402,8 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 
     process_template_parameters(*cpt, *concept_model);
 
-    llvm::SmallVector<const clang::Expr *, 24> constraints{};
+    constexpr auto kMaxConstraintCount = 24U;
+    llvm::SmallVector<const clang::Expr *, kMaxConstraintCount> constraints{};
     if (cpt->hasAssociatedConstraints()) {
         cpt->getAssociatedConstraints(constraints);
     }
@@ -410,7 +412,7 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
         find_relationships_in_constraint_expression(*concept_model, expr);
     }
 
-    if (cpt->getConstraintExpr()) {
+    if (cpt->getConstraintExpr() != nullptr) {
         process_constraint_requirements(
             cpt, cpt->getConstraintExpr(), *concept_model);
 
@@ -476,54 +478,76 @@ void translation_unit_visitor::process_constraint_requirements(
                 const auto *simple_req =
                     llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
 
-                auto simple_expr = common::to_string(simple_req->getExpr());
+                if (simple_req != nullptr) {
+                    util::apply_if_not_null(
+                        simple_req->getExpr(), [&concept_model](const auto *e) {
+                            auto simple_expr = common::to_string(e);
 
-                LOG_DBG(
-                    "=== Processing expression requirement: {}", simple_expr);
+                            LOG_DBG("=== Processing expression requirement: {}",
+                                simple_expr);
 
-                concept_model.add_statement(std::move(simple_expr));
+                            concept_model.add_statement(std::move(simple_expr));
+                        });
+                }
             }
             else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
-                const auto *type_req =
-                    llvm::dyn_cast<clang::concepts::TypeRequirement>(req);
+                util::apply_if_not_null(
+                    llvm::dyn_cast<clang::concepts::TypeRequirement>(req),
+                    [&concept_model, cpt](const auto *t) {
+                        auto type_name = common::to_string(
+                            t->getType()->getType(), cpt->getASTContext());
 
-                auto type_name = common::to_string(
-                    type_req->getType()->getType(), cpt->getASTContext());
+                        LOG_DBG(
+                            "=== Processing type requirement: {}", type_name);
 
-                LOG_DBG("=== Processing type requirement: {}", type_name);
-
-                concept_model.add_statement(std::move(type_name));
+                        concept_model.add_statement(std::move(type_name));
+                    });
             }
             else if (req->getKind() ==
                 clang::concepts::Requirement::RK_Nested) {
                 const auto *nested_req =
                     llvm::dyn_cast<clang::concepts::NestedRequirement>(req);
 
-                LOG_DBG("=== Processing nested requirement: {}",
-                    common::to_string(nested_req->getConstraintExpr()));
+                if (nested_req != nullptr) {
+                    util::apply_if_not_null(
+                        nested_req->getConstraintExpr(), [](const auto *e) {
+                            LOG_DBG("=== Processing nested requirement: {}",
+                                common::to_string(e));
+                        });
+                }
             }
             else if (req->getKind() ==
                 clang::concepts::Requirement::RK_Compound) {
                 const auto *compound_req =
                     llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
 
-                auto compound_expr = common::to_string(compound_req->getExpr());
+                if (compound_req != nullptr) {
+                    const auto *compound_expr_ptr = compound_req->getExpr();
 
-                auto req_return_type = compound_req->getReturnTypeRequirement();
+                    if (compound_expr_ptr != nullptr) {
+                        auto compound_expr =
+                            common::to_string(compound_expr_ptr);
 
-                if (!req_return_type.isEmpty()) {
-                    compound_expr = fmt::format("{{{}}} -> {}", compound_expr,
-                        common::to_string(req_return_type.getTypeConstraint()));
+                        auto req_return_type =
+                            compound_req->getReturnTypeRequirement();
+
+                        if (!req_return_type.isEmpty()) {
+                            compound_expr =
+                                fmt::format("{{{}}} -> {}", compound_expr,
+                                    common::to_string(
+                                        req_return_type.getTypeConstraint()));
+                        }
+                        else if (compound_req->hasNoexceptRequirement()) {
+                            compound_expr =
+                                fmt::format("{{{}}} noexcept", compound_expr);
+                        }
+
+                        LOG_DBG("=== Processing compound requirement: {}",
+                            compound_expr);
+
+                        concept_model.add_statement(std::move(compound_expr));
+                    }
                 }
-                else if (compound_req->hasNoexceptRequirement()) {
-                    compound_expr =
-                        fmt::format("{{{}}} noexcept", compound_expr);
-                }
-
-                LOG_DBG(
-                    "=== Processing compound requirement: {}", compound_expr);
-
-                concept_model.add_statement(std::move(compound_expr));
             }
         }
     }
@@ -609,7 +633,7 @@ void translation_unit_visitor::process_concept_specialization_relationships(
                     type_name);
             }
             else if (ta.getKind() == clang::TemplateArgument::Pack) {
-                if (ta.getPackAsArray().size() > 0 &&
+                if (!ta.getPackAsArray().empty() &&
                     ta.getPackAsArray().front().isPackExpansion()) {
                     const auto &pack_head =
                         ta.getPackAsArray().front().getAsType();
@@ -917,7 +941,7 @@ bool translation_unit_visitor::process_template_parameters(
             ct.set_default_value("");
             ct.is_variadic(template_type_parameter->isParameterPack());
 
-            if (template_type_parameter->getTypeConstraint()) {
+            if (template_type_parameter->getTypeConstraint() != nullptr) {
                 util::apply_if_not_null(
                     template_type_parameter->getTypeConstraint()
                         ->getNamedConcept(),
@@ -1483,7 +1507,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 }
             }
         }
-        else if (type->getAsCXXRecordDecl()) {
+        else if (type->getAsCXXRecordDecl() != nullptr) {
             const auto target_id = common::to_id(*type->getAsCXXRecordDecl());
             relationships.emplace_back(target_id, relationship_hint);
             result = true;

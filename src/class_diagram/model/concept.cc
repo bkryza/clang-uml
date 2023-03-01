@@ -90,4 +90,4 @@ const std::vector<std::string> &concept_::requires_statements() const
     return requires_statements_;
 }
 
-}
+} // namespace clanguml::class_diagram::model

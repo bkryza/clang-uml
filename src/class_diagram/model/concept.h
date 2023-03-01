@@ -68,4 +68,4 @@ private:
 
     std::vector<std::string> requires_statements_;
 };
-}
+} // namespace clanguml::class_diagram::model
