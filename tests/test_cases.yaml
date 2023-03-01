@@ -171,6 +171,9 @@ test_cases:
     - name: t00058
       title: Test case for concepts with variadic parameters and type aliases
       description:
+    - name: t00059
+      title: Non-virtual abstract factory pattern using concepts test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

@@ -3,7 +3,7 @@ file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml)
 
-set(TEST_CASES_REQUIRING_CXX20 t00056 t00058)
+set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059)
 
 set(CLANG_UML_TEST_LIBRARIES
         clang-umllib
