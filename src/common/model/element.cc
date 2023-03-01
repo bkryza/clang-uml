@@ -45,8 +45,8 @@ inja::json element::context() const
     ctx["alias"] = alias();
     ctx["full_name"] = full_name(false);
     ctx["namespace"] = get_namespace().to_string();
-    if (comment().has_value()) {
-        ctx["comment"] = comment().value();
+    if (const auto maybe_comment = comment(); maybe_comment.has_value()) {
+        ctx["comment"] = maybe_comment.value();
     }
 
     return ctx;

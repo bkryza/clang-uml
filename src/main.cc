@@ -49,7 +49,6 @@ backward::SignalHandling sh; // NOLINT
 #endif
 
 using namespace clanguml;
-using config::config;
 
 /**
  * Print the program version and basic information

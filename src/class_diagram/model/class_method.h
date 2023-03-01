@@ -34,7 +34,7 @@ public:
     class_method(common::model::access_t access, const std::string &name,
         const std::string &type);
 
-    virtual ~class_method() = default;
+    ~class_method() override = default;
 
     bool is_pure_virtual() const;
     void is_pure_virtual(bool is_pure_virtual);

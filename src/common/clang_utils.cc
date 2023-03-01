@@ -184,7 +184,7 @@ std::string to_string(const clang::RecordType &type,
 
 std::string to_string(const clang::Expr *expr)
 {
-    clang::LangOptions lang_options;
+    const clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
     expr->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
@@ -194,7 +194,7 @@ std::string to_string(const clang::Expr *expr)
 
 std::string to_string(const clang::Stmt *stmt)
 {
-    clang::LangOptions lang_options;
+    const clang::LangOptions lang_options;
     std::string result;
     llvm::raw_string_ostream ostream(result);
     stmt->printPretty(ostream, nullptr, clang::PrintingPolicy(lang_options));
@@ -254,7 +254,7 @@ std::string get_source_text_raw(
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm)
 {
-    clang::LangOptions lo;
+    const clang::LangOptions lo;
 
     auto start_loc = sm.getSpellingLoc(range.getBegin());
     auto last_token_loc = sm.getSpellingLoc(range.getEnd());
@@ -386,8 +386,7 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
                 nested_params_str, ns_resolve, depth + 1);
 
             if (nested_params.empty())
-                nested_params.emplace_back(
-                    template_parameter{nested_params_str});
+                nested_params.emplace_back(nested_params_str);
 
             it = bracket_match_end - 1;
         }

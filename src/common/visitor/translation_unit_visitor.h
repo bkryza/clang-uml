@@ -53,6 +53,8 @@ public:
     explicit translation_unit_visitor(
         clang::SourceManager &sm, const clanguml::config::diagram &config);
 
+    virtual ~translation_unit_visitor() = default;
+
     /**
      * @brief Get clang::SourceManager
      * @return Reference to @link clang::SourceManager used by this translation

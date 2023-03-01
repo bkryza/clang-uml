@@ -1098,9 +1098,10 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
             m.set_message_name(
                 dependent_member_callee->getMember().getAsString());
 
-            if (get_unique_id(template_declaration->getID()))
-                diagram().add_active_participant(
-                    get_unique_id(template_declaration->getID()).value());
+            if (const auto maybe_id =
+                    get_unique_id(template_declaration->getID());
+                maybe_id.has_value())
+                diagram().add_active_participant(maybe_id.value());
         }
     }
     else {
@@ -1137,12 +1138,13 @@ bool translation_unit_visitor::process_function_call_expression(
 
     std::unique_ptr<model::function_template> f_ptr;
 
-    if (!get_unique_id(callee_function->getID()).has_value()) {
+    const auto maybe_id = get_unique_id(callee_function->getID());
+    if (!maybe_id.has_value()) {
         // This is hopefully not an interesting call...
         m.set_to(callee_function->getID());
     }
     else {
-        m.set_to(get_unique_id(callee_function->getID()).value());
+        m.set_to(maybe_id.value());
     }
 
     m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
@@ -1168,10 +1170,11 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                 const auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
 
-                if (!get_unique_id(ftd->getID()).has_value())
+                const auto maybe_id = get_unique_id(ftd->getID());
+                if (!maybe_id.has_value())
                     m.set_to(ftd->getID());
                 else {
-                    m.set_to(get_unique_id(ftd->getID()).value());
+                    m.set_to(maybe_id.value());
                 }
 
                 break;
@@ -1748,14 +1751,11 @@ void translation_unit_visitor::process_template_specialization_argument(
         }
         else if ((arg.getAsType()->getAsCXXRecordDecl() != nullptr) &&
             arg.getAsType()->getAsCXXRecordDecl()->isLambda()) {
-            if (get_unique_id(arg.getAsType()->getAsCXXRecordDecl()->getID())
-                    .has_value()) {
-                argument.set_name(get_participant(
-                    get_unique_id(
-                        arg.getAsType()->getAsCXXRecordDecl()->getID())
-                        .value())
-                                      .value()
-                                      .full_name(false));
+            const auto maybe_id =
+                get_unique_id(arg.getAsType()->getAsCXXRecordDecl()->getID());
+            if (maybe_id.has_value()) {
+                argument.set_name(
+                    get_participant(maybe_id.value()).value().full_name(false));
             }
             else {
                 const auto type_name =

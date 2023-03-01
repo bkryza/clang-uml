@@ -45,6 +45,8 @@ public:
         clanguml::package_diagram::model::diagram &diagram,
         const clanguml::config::package_diagram &config);
 
+    ~translation_unit_visitor() override = default;
+
     virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);

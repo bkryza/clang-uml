@@ -207,11 +207,11 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     // Process template specialization bases
     process_class_bases(cls, template_specialization);
 
-    if (get_ast_local_id(cls->getSpecializedTemplate()->getID()).has_value())
+    const auto maybe_id =
+        get_ast_local_id(cls->getSpecializedTemplate()->getID());
+    if (maybe_id.has_value())
         template_specialization.add_relationship(
-            {relationship_t::kInstantiation,
-                get_ast_local_id(cls->getSpecializedTemplate()->getID())
-                    .value()});
+            {relationship_t::kInstantiation, maybe_id.value()});
 
     if (diagram_.should_include(template_specialization)) {
         const auto name = template_specialization.full_name(false);
@@ -615,10 +615,11 @@ void translation_unit_visitor::process_concept_specialization_relationships(
 
         const auto cpt_name = cpt->getNameAsString();
 
-        if (!get_ast_local_id(cpt->getID()))
+        const auto maybe_id = get_ast_local_id(cpt->getID());
+        if (!maybe_id)
             return;
 
-        auto target_id = get_ast_local_id(cpt->getID()).value();
+        const auto target_id = maybe_id.value();
 
         std::vector<std::string> constrained_template_params;
 
@@ -2529,14 +2530,15 @@ bool translation_unit_visitor::build_template_instantiation_add_base_classes(
         }
     }
 
-    if (add_template_argument_as_base_class && ct.id()) {
+    const auto maybe_id = ct.id();
+    if (add_template_argument_as_base_class && maybe_id) {
         LOG_DBG("Adding template argument as base class '{}'",
             ct.to_string({}, false));
 
         class_parent cp;
         cp.set_access(access_t::kPublic);
         cp.set_name(ct.to_string({}, false));
-        cp.set_id(ct.id().value());
+        cp.set_id(maybe_id.value());
 
         tinst.add_parent(std::move(cp));
     }
@@ -2735,24 +2737,24 @@ void translation_unit_visitor::resolve_local_to_global_ids()
     for (const auto &cls : diagram().classes()) {
         for (auto &rel : cls.get().relationships()) {
             if (rel.type() == relationship_t::kInstantiation) {
-                const auto maybe_local_id = rel.destination();
-                if (get_ast_local_id(maybe_local_id)) {
+                const auto maybe_id = get_ast_local_id(rel.destination());
+                if (maybe_id) {
                     LOG_DBG("= Resolved instantiation destination from local "
                             "id {} to global id {}",
-                        maybe_local_id, *get_ast_local_id(maybe_local_id));
-                    rel.set_destination(*get_ast_local_id(maybe_local_id));
+                        rel.destination(), *maybe_id);
+                    rel.set_destination(*maybe_id);
                 }
             }
         }
     }
     for (const auto &cpt : diagram().concepts()) {
         for (auto &rel : cpt.get().relationships()) {
-            const auto maybe_local_id = rel.destination();
-            if (get_ast_local_id(maybe_local_id)) {
+            const auto maybe_id = get_ast_local_id(rel.destination());
+            if (maybe_id) {
                 LOG_DBG("= Resolved instantiation destination from local "
                         "id {} to global id {}",
-                    maybe_local_id, *get_ast_local_id(maybe_local_id));
-                rel.set_destination(*get_ast_local_id(maybe_local_id));
+                    rel.destination(), *maybe_id);
+                rel.set_destination(*maybe_id);
             }
         }
     }
