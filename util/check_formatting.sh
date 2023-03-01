@@ -49,5 +49,5 @@ if [[ ${#EFFECTIVE_FILE_LIST[@]} -eq 0 ]]; then
     echo ".clang-format-include patterns did not match any files."
     exit 0
 else
-    clang-format-12 --dry-run --Werror ${EFFECTIVE_FILE_LIST}
+    clang-format-15 --dry-run --Werror ${EFFECTIVE_FILE_LIST}
 fi

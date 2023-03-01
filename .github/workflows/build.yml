@@ -22,24 +22,24 @@ on:
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
     - name: Update package database
       run: sudo apt -y update
     - name: Install deps
-      run: sudo apt -y install git make pkg-config gcc-10 g++-10 ccache cmake libyaml-cpp-dev llvm-12 clang-12 libclang-12-dev libclang-cpp12-dev clang-format-12 lcov zlib1g-dev libunwind-dev libdw-dev
+      run: sudo apt -y install git make pkg-config gcc-11 g++-11 ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15 lcov zlib1g-dev libunwind-dev libdw-dev
     - name: Select g++ version
       run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
     - name: Check code formatting
       run: |
         make check-formatting
     - name: Build and unit test
       run: |
-        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" LLVM_VERSION=12 make test
+        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" LLVM_VERSION=15 make test
     - name: Run coverage
       run: |
         lcov -c -d debug -o coverage.info
