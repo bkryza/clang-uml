@@ -8,72 +8,55 @@ namespace clanguml {
 namespace t30002 {
 namespace A::AA {
 namespace A1 {
-struct CA {
-};
+struct CA { };
 }
 namespace A2 {
-struct CB {
-};
+struct CB { };
 }
 namespace A3 {
-struct CC {
-};
+struct CC { };
 }
 namespace A4 {
-struct CD {
-};
+struct CD { };
 }
 namespace A5 {
-struct CE {
-};
+struct CE { };
 }
 namespace A6 {
-struct CF {
-};
+struct CF { };
 }
 namespace A7 {
-struct CG {
-};
+struct CG { };
 }
 namespace A8 {
-struct CH {
-};
+struct CH { };
 }
 namespace A9 {
-struct CI {
-};
+struct CI { };
 }
 namespace A10 {
-struct CJ {
-};
+struct CJ { };
 }
 namespace A11 {
-struct CK {
-};
+struct CK { };
 }
 namespace A12 {
-struct CL {
-};
+struct CL { };
 }
 namespace A13 {
-struct CM {
-};
+struct CM { };
 }
 namespace A14 {
-struct CN {
-};
+struct CN { };
 }
 namespace A15 {
-struct CO {
-};
+struct CO { };
 }
 namespace A16 {
-struct CP {
-};
+struct CP { };
 }
 namespace A17 {
-struct CR {
-};
+struct CR { };
 }
 }
 namespace B::BB::BBB {

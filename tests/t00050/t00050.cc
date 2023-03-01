@@ -1,14 +1,12 @@
 namespace clanguml {
 
 /// Vivamus integer non suscipit taciti mus
-class A {
-};
+class A { };
 
 namespace t00050 {
 
 /// Lorem ipsum dolor sit
-class A {
-};
+class A { };
 
 /**
  * \brief Lorem ipsum
@@ -23,8 +21,7 @@ class A {
  * \todo 2. Write tests
  * \todo 3. Implement
  */
-class B {
-};
+class B { };
 
 /// \brief Long comment example
 ///
@@ -53,8 +50,7 @@ class B {
 /// imperdiet praesent magnis ridiculus congue gravida curabitur dictum
 /// sagittis, enim et magna sit inceptos sodales parturient pharetra mollis,
 /// aenean vel nostra tellus commodo pretium sapien sociosqu.
-class C {
-};
+class C { };
 
 /// Mollis pretium lorem primis
 namespace utils {
@@ -66,8 +62,7 @@ namespace utils {
 /// tellus ligula porttitor metus.
 ///
 /// \todo Implement...
-class D {
-};
+class D { };
 
 } // namespace utils
 
@@ -93,11 +88,9 @@ template <typename T, typename V, int N> class F {
 /// This is an intermediate description of class G.
 ///
 /// This is a long description of class G.
-class G {
-};
+class G { };
 
-class NoComment {
-};
+class NoComment { };
 
 } // namespace t00050
 } // namespace clanguml

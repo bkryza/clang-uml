@@ -114,11 +114,11 @@ init_compile_commands: debug
 
 .PHONY: clang-format
 clang-format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.4
 
 .PHONY: format
 format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.3
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.4
 
 .PHONY: debug_tidy
 tidy: debug_tidy

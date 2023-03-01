@@ -5,8 +5,7 @@ namespace clanguml {
 namespace t00031 {
 
 /// @uml{style[#back:lightgreen|yellow;header:blue/red]}
-class A {
-};
+class A { };
 
 /// @uml{style[#line.dotted:blue]}
 enum B { one, two, three };
@@ -16,8 +15,7 @@ template <typename T> class C {
     T ttt;
 };
 
-class D {
-};
+class D { };
 
 struct R {
     /// @uml{style[#red,dashed,thickness=2]}

@@ -82,26 +82,19 @@ template <typename T, typename... Ts> constexpr bool has_type() noexcept
     return (std::is_same_v<T, Ts> || ... || false);
 }
 
-struct Public {
-};
+struct Public { };
 
-struct Protected {
-};
+struct Protected { };
 
-struct Private {
-};
+struct Private { };
 
-struct Abstract {
-};
+struct Abstract { };
 
-struct Static {
-};
+struct Static { };
 
-struct Const {
-};
+struct Const { };
 
-struct Default {
-};
+struct Default { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(

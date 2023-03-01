@@ -2,8 +2,7 @@ namespace clanguml {
 namespace t30006 {
 
 namespace B {
-struct BB {
-};
+struct BB { };
 }
 
 /// \uml{note[top] Top A note.}
@@ -14,8 +13,7 @@ struct A1 {
 }
 
 namespace C {
-struct CC {
-};
+struct CC { };
 }
 
 /// \uml{note[bottom] Bottom A note.}

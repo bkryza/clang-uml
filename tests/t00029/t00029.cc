@@ -4,12 +4,10 @@
 namespace clanguml {
 namespace t00029 {
 
-class A {
-};
+class A { };
 
 /// \uml{skip}
-class B {
-};
+class B { };
 
 template <typename T> class C {
     T param;
@@ -25,17 +23,13 @@ enum class E { one, two, three };
 /// \uml{skip}
 enum class F { red, green, blue };
 
-class G1 {
-};
+class G1 { };
 
-class G2 {
-};
+class G2 { };
 
-class G3 {
-};
+class G3 { };
 
-class G4 {
-};
+class G4 { };
 
 struct R {
     G1 g1;

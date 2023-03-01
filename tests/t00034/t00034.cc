@@ -40,8 +40,7 @@ template <> struct drop_void<Void> {
 
 template <typename T> using drop_void_t = typename drop_void<T>::type;
 
-struct A {
-};
+struct A { };
 
 struct R {
     lift_void_t<A> *la;

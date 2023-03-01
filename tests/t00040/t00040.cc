@@ -1,7 +1,6 @@
 namespace clanguml::t00040 {
 
-struct B {
-};
+struct B { };
 
 struct A {
 public:

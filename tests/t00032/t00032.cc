@@ -4,11 +4,9 @@
 namespace clanguml {
 namespace t00032 {
 
-struct Base {
-};
+struct Base { };
 
-struct TBase {
-};
+struct TBase { };
 
 struct A {
     void operator()() { }
