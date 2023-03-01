@@ -53,8 +53,14 @@ TEST_CASE("t00056", "[test-case][class]")
     REQUIRE_THAT(
         puml, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
 
+#ifdef _MSC_VER
+    REQUIRE_THAT(puml,
+        IsConceptRequirement(
+            _A("convertible_to_string<T>"), "std::string({s})"));
+#else
     REQUIRE_THAT(puml,
         IsConceptRequirement(_A("convertible_to_string<T>"), "std::string{s}"));
+#endif
     REQUIRE_THAT(puml,
         IsConceptRequirement(
             _A("convertible_to_string<T>"), "{std::to_string(s)} noexcept"));

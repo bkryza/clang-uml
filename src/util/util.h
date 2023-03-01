@@ -248,7 +248,7 @@ void apply_if_not_null(const T *pointer, F &&func, FElse &&func_else)
     if (pointer != nullptr) {
         std::forward<F>(func)(pointer);
     }
-    else if (func_else) {
+    else {
         std::forward<FElse>(func_else)();
     }
 }
@@ -265,7 +265,7 @@ void apply_if(const bool condition, F &&func, FElse &&func_else)
     if (condition) {
         std::forward<F>(func)();
     }
-    else if (func_else) {
+    else {
         std::forward<FElse>(func_else)();
     }
 }
