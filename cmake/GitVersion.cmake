@@ -6,16 +6,15 @@ function(setup_git_version)
             execute_process(
                     COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                    OUTPUT_VARIABLE GIT_VERSION_FROM_TAG
+                    OUTPUT_VARIABLE GIT_VERSION
                     RESULT_VARIABLE GIT_ERROR_CODE
                     OUTPUT_STRIP_TRAILING_WHITESPACE
             )
         endif(GIT_EXECUTABLE)
-        set(GIT_VERSION ${GIT_VERSION_FROM_TAG} PARENT_SCOPE)
     endif(NOT DEFINED GIT_VERSION)
 
     if(NOT DEFINED GIT_VERSION)
-        set(GIT_VERSION "0.0.0-unknown" PARENT_SCOPE)
+        set(GIT_VERSION "0.0.0-unknown")
     endif(NOT DEFINED GIT_VERSION)
 
     string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
@@ -23,4 +22,6 @@ function(setup_git_version)
     set(GIT_VERSION_MAJOR ${CMAKE_MATCH_1} PARENT_SCOPE)
     set(GIT_VERSION_MINOR ${CMAKE_MATCH_2} PARENT_SCOPE)
     set(GIT_VERSION_PATCH ${CMAKE_MATCH_3} PARENT_SCOPE)
+    set(GIT_VERSION ${GIT_VERSION} PARENT_SCOPE)
+
 endfunction()
