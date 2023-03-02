@@ -6,11 +6,12 @@ function(setup_git_version)
             execute_process(
                     COMMAND ${GIT_EXECUTABLE} describe --tags --always --abbrev=7
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                    OUTPUT_VARIABLE GIT_VERSION
+                    OUTPUT_VARIABLE GIT_VERSION_FROM_TAG
                     RESULT_VARIABLE GIT_ERROR_CODE
                     OUTPUT_STRIP_TRAILING_WHITESPACE
             )
         endif(GIT_EXECUTABLE)
+        set(GIT_VERSION ${GIT_VERSION_FROM_TAG} PARENT_SCOPE)
     endif(NOT DEFINED GIT_VERSION)
 
     if(NOT DEFINED GIT_VERSION)
