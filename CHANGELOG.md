@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.2
   * Added initial support for C++20 concept rendering (#96)
   * Added support for plain C11 translation units (#97)
   * Added 'row' and 'column' layout hints for aligning elements (#90)

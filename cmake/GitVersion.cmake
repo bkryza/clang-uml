@@ -14,7 +14,7 @@ function(setup_git_version)
     endif(NOT DEFINED GIT_VERSION)
 
     if(NOT DEFINED GIT_VERSION)
-        set(GIT_VERSION "0.0.0-unknown" PARENT_SCOPE)
+        set(GIT_VERSION "0.0.0-unknown")
     endif(NOT DEFINED GIT_VERSION)
 
     string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
@@ -22,4 +22,6 @@ function(setup_git_version)
     set(GIT_VERSION_MAJOR ${CMAKE_MATCH_1} PARENT_SCOPE)
     set(GIT_VERSION_MINOR ${CMAKE_MATCH_2} PARENT_SCOPE)
     set(GIT_VERSION_PATCH ${CMAKE_MATCH_3} PARENT_SCOPE)
+    set(GIT_VERSION ${GIT_VERSION} PARENT_SCOPE)
+
 endfunction()
