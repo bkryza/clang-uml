@@ -27,12 +27,10 @@
 
 namespace clanguml::package_diagram::visitor {
 
-using clanguml::common::model::access_t;
 using clanguml::common::model::namespace_;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
-using clanguml::package_diagram::model::diagram;
 
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::package_diagram::model::diagram &diagram,

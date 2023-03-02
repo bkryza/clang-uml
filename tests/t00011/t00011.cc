@@ -1,6 +1,5 @@
 namespace external {
-class C {
-};
+class C { };
 }
 
 namespace clanguml {

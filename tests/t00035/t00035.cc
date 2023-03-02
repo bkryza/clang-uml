@@ -1,20 +1,15 @@
 namespace clanguml {
 namespace t00035 {
 
-struct Top {
-};
+struct Top { };
 
-struct Left {
-};
+struct Left { };
 
-struct Center {
-};
+struct Center { };
 
-struct Bottom {
-};
+struct Bottom { };
 
-struct Right {
-};
+struct Right { };
 
 } // namespace t00035
 } // namespace clanguml

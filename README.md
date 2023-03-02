@@ -29,6 +29,7 @@ Main features supported so far include:
     * Optional package generation from namespaces
     * Interactive links to online code to classes, methods and class fields in SVG diagrams
     * Support for plain C99/C11 code (struct and units relationships)
+    * C++20 concept constraints
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function
     * Generation of loop and conditional statements

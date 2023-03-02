@@ -5,8 +5,7 @@ namespace dependants {
 namespace X {
 }
 namespace A {
-struct AA {
-};
+struct AA { };
 }
 namespace B {
 struct BB {
@@ -26,8 +25,7 @@ namespace Y {
 }
 
 namespace D {
-struct DD {
-};
+struct DD { };
 }
 namespace E {
 struct EE {

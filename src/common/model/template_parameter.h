@@ -100,6 +100,9 @@ public:
         const std::function<bool(const std::string &full_name)> &should_include)
         const;
 
+    void set_concept_constraint(std::string constraint);
+    const std::optional<std::string> &concept_constraint() const;
+
 private:
     /// Represents the type of non-type template parameters
     /// e.g. 'int'
@@ -124,6 +127,10 @@ private:
 
     /// Whether the argument specializes argument pack from parent template
     bool is_pack_{false};
+
+    /// Stores optional fully qualified name of constraint for this template
+    /// parameter
+    std::optional<std::string> concept_constraint_;
 
     // Nested template parameters
     std::vector<template_parameter> template_params_;

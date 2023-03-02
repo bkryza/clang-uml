@@ -53,7 +53,7 @@ std::string get_process_output(const std::string &command)
     std::string result;
 
 #if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(
+    const std::unique_ptr<FILE, decltype(&pclose)> pipe(
         popen(command.c_str(), "r"), pclose);
 #elif defined(_WIN32)
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(
@@ -147,13 +147,13 @@ std::string get_git_toplevel_dir()
 
 std::string ltrim(const std::string &s)
 {
-    size_t start = s.find_first_not_of(WHITESPACE);
+    const size_t start = s.find_first_not_of(WHITESPACE);
     return (start == std::string::npos) ? "" : s.substr(start);
 }
 
 std::string rtrim(const std::string &s)
 {
-    size_t end = s.find_last_not_of(WHITESPACE);
+    const size_t end = s.find_last_not_of(WHITESPACE);
     return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
 
@@ -210,7 +210,7 @@ std::string abbreviate(const std::string &s, const unsigned int max_length)
 bool find_element_alias(
     const std::string &input, std::tuple<std::string, size_t, size_t> &result)
 {
-    std::regex alias_regex(R"((@A\([^\).]+\)))");
+    const std::regex alias_regex(R"((@A\([^\).]+\)))");
 
     auto alias_it =
         std::sregex_iterator(input.begin(), input.end(), alias_regex);
@@ -219,8 +219,8 @@ bool find_element_alias(
     if (alias_it == end_it)
         return false;
 
-    std::smatch match = *alias_it;
-    std::string alias = match.str().substr(3, match.str().size() - 4);
+    const std::smatch &match = *alias_it;
+    const std::string alias = match.str().substr(3, match.str().size() - 4);
 
     std::get<0>(result) = alias;
     std::get<1>(result) = match.position();

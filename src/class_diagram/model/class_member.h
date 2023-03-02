@@ -28,7 +28,7 @@ public:
     class_member(common::model::access_t access, const std::string &name,
         const std::string &type);
 
-    virtual ~class_member() = default;
+    ~class_member() override = default;
 
     bool is_relationship() const;
     void is_relationship(bool is_relationship);

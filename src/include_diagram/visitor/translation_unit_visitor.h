@@ -47,6 +47,8 @@ public:
             clanguml::include_diagram::model::diagram &diagram,
             const clanguml::config::include_diagram &config);
 
+        ~include_visitor() override = default;
+
 #if LLVM_VERSION_MAJOR > 14
         void InclusionDirective(clang::SourceLocation hash_loc,
             const clang::Token &include_tok, clang::StringRef file_name,

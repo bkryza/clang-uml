@@ -27,6 +27,10 @@ namespace clanguml::class_diagram::model {
 
 class method_parameter : public common::model::decorated_element {
 public:
+    method_parameter() = default;
+    method_parameter(
+        std::string type, std::string name, std::string default_value = {});
+
     void set_type(const std::string &type);
     std::string type() const;
 

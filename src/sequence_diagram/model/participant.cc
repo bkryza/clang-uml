@@ -265,7 +265,7 @@ std::string function_template::message_name(message_render_mode mode) const
 
     std::ostringstream s;
     render_template_params(s, using_namespace(), true);
-    std::string template_params = s.str();
+    const std::string template_params = s.str();
 
     if (mode == message_render_mode::no_arguments) {
         return fmt::format(

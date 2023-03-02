@@ -138,6 +138,8 @@ std::string template_parameter::to_string(
 {
     using clanguml::common::model::namespace_;
 
+    assert(!(!type().empty() && concept_constraint().has_value()));
+
     std::string res;
     if (!type().empty()) {
         if (!relative)
@@ -146,9 +148,21 @@ std::string template_parameter::to_string(
             res += namespace_{type()}.relative_to(using_namespace).to_string();
     }
 
+    const auto &maybe_concept_constraint = concept_constraint();
+
+    if (maybe_concept_constraint) {
+        if (!relative)
+            res += namespace_{maybe_concept_constraint.value()}.to_string();
+        else
+            res += namespace_{maybe_concept_constraint.value()}
+                       .relative_to(using_namespace)
+                       .to_string();
+    }
+
     if (!name().empty()) {
-        if (!type().empty())
+        if (!type().empty() || maybe_concept_constraint)
             res += " ";
+
         if (!relative)
             res += namespace_{name()}.to_string();
         else
@@ -158,6 +172,7 @@ std::string template_parameter::to_string(
     // Render nested template params
     if (!template_params_.empty()) {
         std::vector<std::string> params;
+        params.reserve(template_params_.size());
         for (const auto &template_param : template_params_) {
             params.push_back(
                 template_param.to_string(using_namespace, relative));
@@ -186,8 +201,9 @@ bool template_parameter::find_nested_relationships(
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
     if (should_include(name())) {
-        if (id()) {
-            nested_relationships.emplace_back(id().value(), hint);
+        const auto maybe_id = id();
+        if (maybe_id) {
+            nested_relationships.emplace_back(maybe_id.value(), hint);
             added_aggregation_relationship =
                 (hint == common::model::relationship_t::kAggregation);
         }
@@ -196,11 +212,10 @@ bool template_parameter::find_nested_relationships(
     // interested what is stored inside it
     else {
         for (const auto &template_argument : template_params()) {
-            if (should_include(template_argument.name()) &&
-                template_argument.id()) {
+            const auto maybe_id = template_argument.id();
+            if (should_include(template_argument.name()) && maybe_id) {
 
-                nested_relationships.emplace_back(
-                    template_argument.id().value(), hint);
+                nested_relationships.emplace_back(maybe_id.value(), hint);
 
                 added_aggregation_relationship =
                     (hint == common::model::relationship_t::kAggregation);
@@ -214,6 +229,16 @@ bool template_parameter::find_nested_relationships(
     }
 
     return added_aggregation_relationship;
+}
+
+void template_parameter::set_concept_constraint(std::string constraint)
+{
+    concept_constraint_ = std::move(constraint);
+}
+
+const std::optional<std::string> &template_parameter::concept_constraint() const
+{
+    return concept_constraint_;
 }
 
 } // namespace clanguml::common::model

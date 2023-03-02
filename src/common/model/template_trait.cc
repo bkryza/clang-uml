@@ -27,7 +27,6 @@ std::ostream &template_trait::render_template_params(std::ostream &ostr,
 
     if (!templates_.empty()) {
         std::vector<std::string> tnames;
-        std::vector<std::string> tnames_simplified;
 
         std::transform(templates_.cbegin(), templates_.cend(),
             std::back_inserter(tnames),

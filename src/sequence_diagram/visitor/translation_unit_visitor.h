@@ -42,6 +42,8 @@ public:
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
+    ~translation_unit_visitor() override = default;
+
     bool shouldVisitTemplateInstantiations();
 
     bool VisitCallExpr(clang::CallExpr *expr);

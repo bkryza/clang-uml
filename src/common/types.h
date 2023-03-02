@@ -33,23 +33,38 @@ public:
 
     optional_ref() = default;
 
-    optional_ref(T *value) { value_ = value; }
+    optional_ref(T *value)
+        : value_{value}
+    {
+    }
 
-    optional_ref(const T *value) { value_ = value; }
+    optional_ref(const T *value)
+        : value_{value}
+    {
+    }
 
-    optional_ref(T &value) { value_ = &value; }
+    optional_ref(T &value)
+        : value_{&value}
+    {
+    }
 
-    optional_ref(const T &value) { value_ = &value; }
+    optional_ref(const T &value)
+        : value_{&value}
+    {
+    }
 
-    optional_ref(optional_ref &right) { value_ = right.get(); }
+    optional_ref(optional_ref &right)
+        : value_{right.get()}
+    {
+    }
 
     template <typename V,
         typename = std::enable_if<
             std::is_base_of_v<optional_type, typename V::optional_type> ||
             std::is_same_v<optional_type, typename V::optional_type>>>
     optional_ref(const V &t)
+        : value_{t.get()}
     {
-        value_ = t.get();
     }
 
     template <typename V,
@@ -57,16 +72,16 @@ public:
             std::is_base_of_v<optional_type, typename V::optional_type> ||
             std::is_same_v<optional_type, typename V::optional_type>>>
     optional_ref(V &&t)
+        : value_{t.get()}
     {
-        value_ = t.get();
         t.reset();
     }
 
     template <typename V,
         typename = std::enable_if<std::is_base_of_v<optional_type, V>>>
     optional_ref(const std::reference_wrapper<V> &t)
+        : value_{&t.get()}
     {
-        value_ = &t.get();
     }
 
     optional_ref &operator=(const optional_ref &right)

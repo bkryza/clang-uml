@@ -23,7 +23,7 @@ namespace clanguml::common::model {
 
 enum class diagram_t { kClass, kSequence, kPackage, kInclude };
 
-enum class access_t { kPublic, kProtected, kPrivate };
+enum class access_t { kPublic, kProtected, kPrivate, kNone };
 
 enum class relationship_t {
     kNone,
@@ -36,7 +36,8 @@ enum class relationship_t {
     kInstantiation,
     kFriendship,
     kAlias,
-    kDependency
+    kDependency,
+    kConstraint
 };
 
 /// Types of sequence diagram activity elements

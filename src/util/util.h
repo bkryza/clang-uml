@@ -27,6 +27,31 @@
 #include <type_traits>
 #include <vector>
 
+#define LOG_ERROR(fmt__, ...)                                                  \
+    spdlog::get("console")->error(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_WARN(fmt__, ...)                                                   \
+    spdlog::get("console")->warn(                                              \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_INFO(fmt__, ...)                                                   \
+    spdlog::get("console")->info(                                              \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_DBG(fmt__, ...)                                                    \
+    spdlog::get("console")->debug(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
+#define LOG_TRACE(fmt__, ...)                                                  \
+    spdlog::get("console")->trace(                                             \
+        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
+        ##__VA_ARGS__)
+
 namespace clanguml::util {
 
 std::string ltrim(const std::string &s);
@@ -35,26 +60,6 @@ std::string trim(const std::string &s);
 
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-
-#define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::get("console")->error(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::get("console")->warn(                                              \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::get("console")->info(                                              \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::get("console")->debug(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
-
-#define LOG_TRACE(fmt__, ...)                                                  \
-    spdlog::get("console")->trace(                                             \
-        std::string("[{}:{}] ") + fmt__, FILENAME_, __LINE__, ##__VA_ARGS__)
 
 /**
  * @brief Setup spdlog logger.
@@ -235,6 +240,39 @@ void for_each_if(const T &collection, C &&cond, F &&func)
             if (cond(e))
                 func(e);
         });
+}
+
+template <typename T, typename F, typename FElse>
+void apply_if_not_null(const T *pointer, F &&func, FElse &&func_else)
+{
+    if (pointer != nullptr) {
+        std::forward<F>(func)(pointer);
+    }
+    else {
+        std::forward<FElse>(func_else)();
+    }
+}
+
+template <typename T, typename F>
+void apply_if_not_null(const T *pointer, F &&func)
+{
+    apply_if_not_null(pointer, std::forward<F>(func), []() {});
+}
+
+template <typename F, typename FElse>
+void apply_if(const bool condition, F &&func, FElse &&func_else)
+{
+    if (condition) {
+        std::forward<F>(func)();
+    }
+    else {
+        std::forward<FElse>(func_else)();
+    }
+}
+
+template <typename F> void apply_if(const bool condition, F &&func)
+{
+    apply_if(condition, std::forward<F>(func), []() {});
 }
 
 std::size_t hash_seed(std::size_t seed);

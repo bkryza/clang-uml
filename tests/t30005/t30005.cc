@@ -2,8 +2,7 @@ namespace clanguml {
 namespace t30005 {
 
 namespace A::AA::AAA {
-struct C1 {
-};
+struct C1 { };
 }
 
 namespace B::BB::BBB {

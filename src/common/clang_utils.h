@@ -72,6 +72,9 @@ template <typename T> std::string get_qualified_name(const T &declaration)
 
 model::namespace_ get_tag_namespace(const clang::TagDecl &declaration);
 
+model::namespace_ get_template_namespace(
+    const clang::TemplateDecl &declaration);
+
 std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
     const clang::DeclContext *decl);
 
@@ -86,6 +89,8 @@ std::string to_string(const clang::Expr *expr);
 std::string to_string(const clang::Stmt *stmt);
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);
+
+std::string to_string(const clang::TypeConstraint *tc);
 
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm);
@@ -144,4 +149,16 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
     const std::string &params,
     const std::function<std::string(const std::string &)> &ns_resolve,
     int depth = 0);
+
+template <typename T, typename P, typename F>
+void if_dyn_cast(P pointer, F &&func)
+{
+    if (pointer == nullptr)
+        return;
+
+    if (const auto *dyn_cast_value = clang::dyn_cast<T>(pointer);
+        dyn_cast_value) {
+        std::forward<F>(func)(dyn_cast_value);
+    }
+}
 } // namespace clanguml::common

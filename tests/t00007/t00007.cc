@@ -2,14 +2,11 @@
 
 namespace clanguml {
 namespace t00007 {
-class A {
-};
+class A { };
 
-class B {
-};
+class B { };
 
-class C {
-};
+class C { };
 
 class R {
 public:

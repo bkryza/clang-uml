@@ -22,6 +22,7 @@
 #include "common/model/nested_trait.h"
 #include "common/model/package.h"
 #include "common/types.h"
+#include "concept.h"
 #include "enum.h"
 
 #include <string>
@@ -54,9 +55,13 @@ public:
 
     const common::reference_vector<enum_> &enums() const;
 
+    const common::reference_vector<concept_> &concepts() const;
+
     bool has_class(const class_ &c) const;
 
     bool has_enum(const enum_ &e) const;
+
+    bool has_concept(const concept_ &e) const;
 
     common::optional_ref<class_> get_class(const std::string &name) const;
 
@@ -68,9 +73,16 @@ public:
     common::optional_ref<enum_> get_enum(
         clanguml::common::model::diagram_element::id_t id) const;
 
+    common::optional_ref<concept_> get_concept(const std::string &name) const;
+
+    common::optional_ref<concept_> get_concept(
+        clanguml::common::model::diagram_element::id_t id) const;
+
     bool add_class(std::unique_ptr<class_> &&c);
 
     bool add_enum(std::unique_ptr<enum_> &&e);
+
+    bool add_concept(std::unique_ptr<concept_> &&e);
 
     bool add_package(std::unique_ptr<common::model::package> &&p);
 
@@ -90,6 +102,8 @@ private:
     common::reference_vector<class_> classes_;
 
     common::reference_vector<enum_> enums_;
+
+    common::reference_vector<concept_> concepts_;
 };
 } // namespace clanguml::class_diagram::model
 

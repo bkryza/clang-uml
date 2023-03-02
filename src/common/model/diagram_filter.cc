@@ -492,12 +492,12 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.include().dependants) {
-                std::filesystem::path dep_path{path};
+                const std::filesystem::path dep_path{path};
                 dependants.emplace_back(dep_path.lexically_normal().string());
             }
 
             for (auto &&path : c.include().dependencies) {
-                std::filesystem::path dep_path{path};
+                const std::filesystem::path dep_path{path};
                 dependencies.emplace_back(dep_path.lexically_normal().string());
             }
 

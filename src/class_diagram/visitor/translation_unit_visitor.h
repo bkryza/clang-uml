@@ -18,6 +18,7 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
+#include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
@@ -83,6 +84,8 @@ public:
 
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
+    virtual bool TraverseConceptDecl(clang::ConceptDecl *cpt);
+
     /**
      * @brief Get diagram model reference
      *
@@ -108,11 +111,16 @@ public:
     void finalize();
 
 private:
+    bool should_include(const clang::NamedDecl *decl);
+
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_class_declaration(clang::CXXRecordDecl *cls);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_record_declaration(clang::RecordDecl *rec);
+
+    std::unique_ptr<clanguml::class_diagram::model::concept_>
+    create_concept_declaration(clang::ConceptDecl *cpt);
 
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
@@ -134,7 +142,8 @@ private:
 
     bool process_template_parameters(
         const clang::TemplateDecl &template_declaration,
-        clanguml::common::model::template_trait &t);
+        clanguml::common::model::template_trait &t,
+        common::optional_ref<common::model::element> templated_element = {});
 
     void process_template_specialization_argument(
         const clang::ClassTemplateSpecializationDecl *cls,
@@ -242,6 +251,9 @@ private:
         const std::set<std::string> &template_parameter_names,
         const clang::TemplateSpecializationType &template_instantiation_type);
 
+    void find_relationships_in_constraint_expression(
+        clanguml::common::model::element &c, const clang::Expr *expr);
+
     void process_unexposed_template_specialization_parameters(
         const std::string &tspec,
         clanguml::common::model::template_parameter &tp,
@@ -257,6 +269,18 @@ private:
 
     bool simplify_system_template(common::model::template_parameter &ct,
         const std::string &full_name) const;
+
+    void process_constraint_requirements(const clang::ConceptDecl *cpt,
+        const clang::Expr *expr, model::concept_ &concept_model) const;
+
+    void process_concept_specialization_relationships(common::model::element &c,
+        const clang::ConceptSpecializationExpr *concept_specialization);
+
+    void extract_constrained_template_param_name(
+        const clang::ConceptSpecializationExpr *concept_specialization,
+        const clang::ConceptDecl *cpt,
+        std::vector<std::string> &constrained_template_params,
+        size_t argument_index, std::string &type_name) const;
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id

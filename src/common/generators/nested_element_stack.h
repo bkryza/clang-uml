@@ -27,7 +27,6 @@ template <typename T> class nested_element_stack {
 public:
     nested_element_stack(bool is_flat)
         : is_flat_{is_flat}
-        , current_level_{0}
     {
         current_level_groups_.push_back({});
     }
@@ -66,7 +65,7 @@ public:
 private:
     bool is_flat_;
 
-    uint32_t current_level_;
+    uint32_t current_level_{0};
 
     std::vector<std::map<std::string, std::vector<T *>>> current_level_groups_;
 };

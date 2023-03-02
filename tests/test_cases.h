@@ -82,26 +82,19 @@ template <typename T, typename... Ts> constexpr bool has_type() noexcept
     return (std::is_same_v<T, Ts> || ... || false);
 }
 
-struct Public {
-};
+struct Public { };
 
-struct Protected {
-};
+struct Protected { };
 
-struct Private {
-};
+struct Private { };
 
-struct Abstract {
-};
+struct Abstract { };
 
-struct Static {
-};
+struct Static { };
 
-struct Const {
-};
+struct Const { };
 
-struct Default {
-};
+struct Default { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(
@@ -281,6 +274,13 @@ ContainsMatcher IsClassTemplate(std::string const &str,
         fmt::format("class \"{}<{}>\"", str, tmplt), caseSensitivity));
 }
 
+ContainsMatcher IsConcept(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString("class " + str + " <<concept>>", caseSensitivity));
+}
+
 ContainsMatcher IsEnum(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -334,11 +334,13 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
     if (!label.empty()) {
         format_string += " : {}";
         return ContainsMatcher(CasedString(
-            fmt::format(format_string, from, to, label), caseSensitivity));
+            fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
     }
     else
         return ContainsMatcher(
-            CasedString(fmt::format(format_string, from, to), caseSensitivity));
+            CasedString(fmt::format(fmt::runtime(format_string), from, to),
+                caseSensitivity));
 }
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
@@ -357,8 +359,9 @@ ContainsMatcher IsComposition(std::string const &from, std::string const &to,
 
     format_string += " {} : {}";
 
-    return ContainsMatcher(CasedString(
-        fmt::format(format_string, from, to, label), caseSensitivity));
+    return ContainsMatcher(
+        CasedString(fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
 }
 
 ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
@@ -377,8 +380,9 @@ ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
 
     format_string += " {} : {}";
 
-    return ContainsMatcher(CasedString(
-        fmt::format(format_string, from, to, label), caseSensitivity));
+    return ContainsMatcher(
+        CasedString(fmt::format(fmt::runtime(format_string), from, to, label),
+            caseSensitivity));
 }
 
 ContainsMatcher IsAggregationWithStyle(std::string const &from,
@@ -420,6 +424,25 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
 {
     return ContainsMatcher(
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+}
+
+ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
+    std::string const &label = {},
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    if (label.empty())
+        return ContainsMatcher(
+            CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+    else
+        return ContainsMatcher(CasedString(
+            fmt::format("{} ..> {} : {}", from, to, label), caseSensitivity));
+}
+
+ContainsMatcher IsConceptRequirement(std::string const &cpt,
+    std::string const &requirement,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(requirement, caseSensitivity));
 }
 
 ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,

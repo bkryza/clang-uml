@@ -126,7 +126,7 @@ int class_::calculate_template_specialization_match(
 {
     int res{};
 
-    std::string left = name_and_ns();
+    const std::string left = name_and_ns();
     // TODO: handle variadic templates
     if ((name_and_ns() != full_name) ||
         (templates().size() != other.templates().size())) {

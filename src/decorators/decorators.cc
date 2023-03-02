@@ -185,7 +185,7 @@ std::vector<std::shared_ptr<decorator>> parse(
         documentation_block, "\\" + clanguml_tag, "@" + clanguml_tag);
     documentation_block = util::trim(documentation_block);
 
-    std::string_view block_view{documentation_block};
+    const std::string_view block_view{documentation_block};
 
     auto pos = block_view.find("@" + clanguml_tag + "{");
     while (pos < documentation_block.size()) {

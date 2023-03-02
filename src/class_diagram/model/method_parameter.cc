@@ -22,6 +22,14 @@
 
 namespace clanguml::class_diagram::model {
 
+method_parameter::method_parameter(
+    std::string type, std::string name, std::string default_value)
+    : type_{std::move(type)}
+    , name_{std::move(name)}
+    , default_value_{std::move(default_value)}
+{
+}
+
 void method_parameter::set_type(const std::string &type) { type_ = type; }
 
 std::string method_parameter::type() const { return type_; }
@@ -43,10 +51,14 @@ std::string method_parameter::to_string(
     using namespace clanguml::util;
     auto type_ns =
         using_namespace.relative(common::model::namespace_{type()}.to_string());
-    if (default_value().empty())
-        return fmt::format("{} {}", type_ns, name());
 
-    return fmt::format("{} {} = {}", type_ns, name(), default_value());
+    auto name_ns =
+        using_namespace.relative(common::model::namespace_{name()}.to_string());
+
+    if (default_value().empty())
+        return fmt::format("{} {}", type_ns, name_ns);
+
+    return fmt::format("{} {} = {}", type_ns, name_ns, default_value());
 }
 
 } // namespace clanguml::class_diagram::model

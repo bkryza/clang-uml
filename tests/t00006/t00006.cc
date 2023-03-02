@@ -4,53 +4,37 @@
 
 namespace clanguml {
 namespace t00006 {
-class A {
-};
+class A { };
 
-class B {
-};
+class B { };
 
-class C {
-};
+class C { };
 
-class D {
-};
+class D { };
 
-class E {
-};
+class E { };
 
-class F {
-};
+class F { };
 
-class G {
-};
+class G { };
 
-class H {
-};
+class H { };
 
-class I {
-};
+class I { };
 
-class J {
-};
+class J { };
 
-class K {
-};
+class K { };
 
-class L {
-};
+class L { };
 
-class M {
-};
+class M { };
 
-class N {
-};
+class N { };
 
-class NN {
-};
+class NN { };
 
-class NNN {
-};
+class NNN { };
 
 template <typename T> class custom_container {
 public:

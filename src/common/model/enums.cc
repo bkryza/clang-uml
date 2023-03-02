@@ -46,6 +46,8 @@ std::string to_string(relationship_t r)
         return "dependency";
     case relationship_t::kAlias:
         return "alias";
+    case relationship_t::kConstraint:
+        return "constraint";
     default:
         assert(false);
         return "";

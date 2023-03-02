@@ -18,6 +18,7 @@
 #pragma once
 
 #include "class_diagram/model/class.h"
+#include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
@@ -47,6 +48,7 @@ using common_generator =
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_element;
+using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
@@ -65,6 +67,8 @@ public:
 
     void generate_alias(const enum_ &e, std::ostream &ostr) const;
 
+    void generate_alias(const concept_ &c, std::ostream &ostr) const;
+
     void generate(const class_ &c, std::ostream &ostr) const;
 
     void generate_top_level_elements(std::ostream &ostr) const;
@@ -76,6 +80,10 @@ public:
     void generate(const enum_ &e, std::ostream &ostr) const;
 
     void generate_relationships(const enum_ &c, std::ostream &ostr) const;
+
+    void generate(const concept_ &c, std::ostream &ostr) const;
+
+    void generate_relationships(const concept_ &c, std::ostream &ostr) const;
 
     void generate(const package &p, std::ostream &ostr) const;
 
