@@ -35,18 +35,18 @@ generated in PlantUML format.
 %setup -q -n clang-uml-%{version}
 
 %build
-cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DCMAKE_CXX_FLAGS="-Wno-nonnull -Wno-stringop-overflow" \
-        -DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON \
-        -DCMAKE_INSTALL_PREFIX=%{_exec_prefix} \
-        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-        -DGIT_VERSION=%{version} \
-        -DBUILD_TESTS=OFF
+%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+       -DCMAKE_CXX_FLAGS="-Wno-nonnull -Wno-stringop-overflow" \
+       -DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON \
+       -DCMAKE_INSTALL_PREFIX=%{_exec_prefix} \
+       -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+       -DGIT_VERSION=%{version} \
+       -DBUILD_TESTS=OFF
 
-make %{_smp_mflags} clang-uml
+%cmake_build
 
 %install
-%make_install
+%cmake_install
 rm -f %{buildroot}/%{_infodir}/dir
 
 %post
