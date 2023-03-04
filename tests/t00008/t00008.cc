@@ -32,5 +32,20 @@ struct D {
 
     void add(int i) { ints.template_template.values.push_back(i); }
 };
+
+struct E {
+    template <typename ET> struct nested_template {
+        using DT = ET;
+
+        static DT *get(ET *d) { return d; }
+    };
+};
+
+template <> struct E::nested_template<char> {
+    using DeclType = char;
+
+    static DeclType *getDecl(char *c) { return c; }
+};
+
 } // namespace t00008
 } // namespace clanguml

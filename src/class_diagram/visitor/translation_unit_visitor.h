@@ -287,6 +287,10 @@ private:
     void set_ast_local_id(
         int64_t local_id, common::model::diagram_element::id_t global_id);
 
+    void add_processed_template_class(std::string qualified_name);
+
+    bool has_processed_template_class(const std::string &qualified_name) const;
+
     /// Retrieve the global clang-uml entity id based on the clang local id
     std::optional<common::model::diagram_element::id_t> get_ast_local_id(
         int64_t local_id) const;
@@ -307,5 +311,11 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
+
+    // When visiting CXX records we need to know if they have already been
+    // process in VisitClassTemplateDecl or VisitClassTemplateSpecializationDecl
+    // If yes, then we need to skip it
+    // TODO: There must be a better way to do this...
+    std::set<std::string> processed_template_qualified_names_;
 };
 } // namespace clanguml::class_diagram::visitor

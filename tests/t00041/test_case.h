@@ -48,6 +48,7 @@ TEST_CASE("t00041", "[test-case][class]")
     REQUIRE_THAT(puml, IsClass(_A("RR")));
     REQUIRE_THAT(puml, IsClass(_A("RRR")));
     REQUIRE_THAT(puml, !IsClass(_A("detail::G")));
+    REQUIRE_THAT(puml, !IsClass(_A("H")));
 
     REQUIRE_THAT(puml, IsBaseClass(_A("R"), _A("RR")));
     REQUIRE_THAT(puml, IsBaseClass(_A("RR"), _A("RRR")));
@@ -55,6 +56,7 @@ TEST_CASE("t00041", "[test-case][class]")
     REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("RR"), "+rr"));
     REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("E"), "+e"));
     REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("F"), "+f"));
+    REQUIRE_THAT(puml, !IsDependency(_A("RR"), _A("H")));
 
     REQUIRE_THAT(puml, IsClass(_A("ns1::N")));
     REQUIRE_THAT(puml, IsClass(_A("ns1::NN")));

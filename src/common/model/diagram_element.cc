@@ -46,8 +46,8 @@ void diagram_element::add_relationship(relationship &&cr)
         return;
     }
 
-    LOG_DBG("Adding relationship: '{}' - {} - '{}'", cr.destination(),
-        to_string(cr.type()), full_name(true));
+    LOG_DBG("Adding relationship from: '{}' ({}) - {} - '{}'", id(),
+        full_name(true), to_string(cr.type()), cr.destination());
 
     if (!util::contains(relationships_, cr))
         relationships_.emplace_back(std::move(cr));

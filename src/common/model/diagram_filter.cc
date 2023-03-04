@@ -301,6 +301,8 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
     if (d.type() != diagram_t::kClass)
         return {};
 
+    // Running this filter makes sense only after the entire diagram is
+    // generated - i.e. during diagram generation
     if (!d.complete())
         return {};
 
@@ -319,11 +321,13 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
                 // relationship with any of the context_root's
                 for (const relationship &rel :
                     context_root.value().relationships()) {
-                    if (rel.destination() == e.id())
+                    if (d.should_include(rel.type()) &&
+                        rel.destination() == e.id())
                         return true;
                 }
                 for (const relationship &rel : e.relationships()) {
-                    if (rel.destination() == context_root.value().id())
+                    if (d.should_include(rel.type()) &&
+                        rel.destination() == context_root.value().id())
                         return true;
                 }
 
