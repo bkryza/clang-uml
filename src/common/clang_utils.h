@@ -75,9 +75,6 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration);
 model::namespace_ get_template_namespace(
     const clang::TemplateDecl &declaration);
 
-std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
-    const clang::DeclContext *decl);
-
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical = true);
 

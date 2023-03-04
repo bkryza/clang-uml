@@ -167,11 +167,6 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         e.constants().push_back(ev->getNameAsString());
     }
 
-    auto namespace_declaration = common::get_enclosing_namespace(enm);
-    if (namespace_declaration.has_value()) {
-        e.set_namespace(namespace_declaration.value());
-    }
-
     if (diagram().should_include(qualified_name))
         diagram().add_enum(std::move(e_ptr));
 
@@ -202,10 +197,13 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
     auto &template_specialization = *template_specialization_ptr;
 
-    process_template_specialization_children(cls, template_specialization);
+    if (cls->hasBody()) {
+        process_template_specialization_children(cls, template_specialization);
+    }
 
-    // Process template specialization bases
-    process_class_bases(cls, template_specialization);
+    if (cls->hasDefinition())
+        // Process template specialization bases
+        process_class_bases(cls, template_specialization);
 
     const auto maybe_id =
         get_ast_local_id(cls->getSpecializedTemplate()->getID());
@@ -1035,10 +1033,8 @@ void translation_unit_visitor::process_record_containment(
     auto parent_name = static_cast<const clang::RecordDecl *>(parent)
                            ->getQualifiedNameAsString();
 
-    auto namespace_declaration = common::get_enclosing_namespace(parent);
-    if (namespace_declaration.has_value()) {
-        element.set_namespace(namespace_declaration.value());
-    }
+    auto namespace_declaration = common::get_tag_namespace(record);
+    element.set_namespace(namespace_declaration);
 
     if (const auto *record_decl =
             clang::dyn_cast<clang::RecordDecl>(record.getParent());
@@ -1150,8 +1146,10 @@ void translation_unit_visitor::process_template_specialization_children(
         }
     }
 
-    for (const auto *friend_declaration : cls->friends()) {
-        process_friend(*friend_declaration, c);
+    if (cls->hasFriends()) {
+        for (const auto *friend_declaration : cls->friends()) {
+            process_friend(*friend_declaration, c);
+        }
     }
 }
 
@@ -1746,6 +1744,14 @@ translation_unit_visitor::process_template_specialization(
     template_instantiation.set_namespace(ns);
 
     template_instantiation.is_struct(cls->isStruct());
+
+    process_record_parent(cls, template_instantiation, namespace_{});
+
+    if (!template_instantiation.is_nested()) {
+        template_instantiation.set_name(common::get_tag_name(*cls));
+        template_instantiation.set_id(
+            common::to_id(template_instantiation.full_name(false)));
+    }
 
     process_comment(*cls, template_instantiation);
     set_source_location(*cls, template_instantiation);

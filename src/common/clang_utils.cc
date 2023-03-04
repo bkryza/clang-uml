@@ -43,23 +43,6 @@ model::access_t access_specifier_to_access_t(
     return access;
 }
 
-std::optional<clanguml::common::model::namespace_> get_enclosing_namespace(
-    const clang::DeclContext *decl)
-{
-    if (!decl->getEnclosingNamespaceContext()->isNamespace())
-        return {};
-
-    const auto *namespace_declaration =
-        clang::cast<clang::NamespaceDecl>(decl->getEnclosingNamespaceContext());
-
-    if (namespace_declaration == nullptr) {
-        return {};
-    }
-
-    return clanguml::common::model::namespace_{
-        common::get_qualified_name(*namespace_declaration)};
-}
-
 model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
 {
     model::namespace_ ns;
