@@ -22,10 +22,14 @@ namespace detail {
 struct G { };
 } // namespace detail
 
+struct H { };
+
 struct RR : public R {
     E *e;
     F *f;
     detail::G *g;
+
+    void foo(H *h) { }
 };
 
 struct RRR : public RR { };

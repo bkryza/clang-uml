@@ -18,3 +18,5 @@ diagrams:
     exclude:
       namespaces:
         - clanguml::t00041::detail
+      relationships:
+        - dependency
