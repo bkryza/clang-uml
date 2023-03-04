@@ -48,5 +48,12 @@ TEST_CASE("t00008", "[test-case][class]")
     // REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
     REQUIRE_THAT(puml, (IsField<Public>("comparator", "CMP")));
 
+    REQUIRE_THAT(puml, !IsClass(_A("E::nested_template")));
+    REQUIRE_THAT(puml, IsClassTemplate("E::nested_template", "ET"));
+    REQUIRE_THAT(puml, IsClassTemplate("E::nested_template", "char"));
+    REQUIRE_THAT(puml,
+        IsInstantiation(
+            _A("E::nested_template<ET>"), _A("E::nested_template<char>")));
+
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
 }

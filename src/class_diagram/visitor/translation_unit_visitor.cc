@@ -182,9 +182,13 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!diagram().should_include(cls->getQualifiedNameAsString()))
         return true;
 
-    LOG_DBG("= Visiting template specialization declaration {} at {}",
+    LOG_DBG("= Visiting template specialization declaration {} at {} "
+            "(described class id {})",
         cls->getQualifiedNameAsString(),
-        cls->getLocation().printToString(source_manager()));
+        cls->getLocation().printToString(source_manager()),
+        cls->getSpecializedTemplate()
+            ? cls->getSpecializedTemplate()->getTemplatedDecl()->getID()
+            : 0);
 
     // TODO: Add support for classes defined in function/method bodies
     if (cls->isLocalClass() != nullptr)
@@ -212,10 +216,11 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
             {relationship_t::kInstantiation, maybe_id.value()});
 
     if (diagram_.should_include(template_specialization)) {
-        const auto name = template_specialization.full_name(false);
+        const auto full_name = template_specialization.full_name(false);
         const auto id = template_specialization.id();
 
-        LOG_DBG("Adding class template specialization {} with id {}", name, id);
+        LOG_DBG("Adding class template specialization {} with id {}", full_name,
+            id);
 
         diagram_.add_class(std::move(template_specialization_ptr));
     }
@@ -279,6 +284,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     if (!c_ptr)
         return true;
+
+    add_processed_template_class(cls->getQualifiedNameAsString());
 
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
@@ -679,11 +686,17 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
     LOG_DBG("== getParent()->isRecord()() = {}", cls->getParent()->isRecord());
-    if (cls->getParent()->isRecord()) {
+    if (const auto *parent_record =
+            clang::dyn_cast<clang::RecordDecl>(cls->getParent());
+        parent_record != nullptr) {
         LOG_DBG("== getParent()->getQualifiedNameAsString() = {}",
-            clang::dyn_cast<clang::RecordDecl>(cls->getParent())
-                ->getQualifiedNameAsString());
+            parent_record->getQualifiedNameAsString());
     }
+
+    if (has_processed_template_class(cls->getQualifiedNameAsString()))
+        // If we have already processed the template of this class
+        // skip it
+        return true;
 
     if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
@@ -837,11 +850,14 @@ void translation_unit_visitor::process_record_parent(
 
     std::optional<common::model::diagram_element::id_t> id_opt;
 
+    auto parent_ns = ns;
     if (parent != nullptr) {
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
         if (parent_record_decl != nullptr) {
+            parent_ns = common::get_tag_namespace(*parent_record_decl);
+
             int64_t local_id = parent_record_decl->getID();
 
             // First check if the parent has been added to the diagram as
@@ -868,7 +884,7 @@ void translation_unit_visitor::process_record_parent(
 
         assert(parent_class);
 
-        c.set_namespace(ns);
+        c.set_namespace(parent_ns);
         const auto cls_name = cls->getNameAsString();
         if (cls_name.empty()) {
             // Nested structs can be anonymous
@@ -1745,7 +1761,7 @@ translation_unit_visitor::process_template_specialization(
 
     template_instantiation.is_struct(cls->isStruct());
 
-    process_record_parent(cls, template_instantiation, namespace_{});
+    process_record_parent(cls, template_instantiation, ns);
 
     if (!template_instantiation.is_nested()) {
         template_instantiation.set_name(common::get_tag_name(*cls));
@@ -2831,6 +2847,18 @@ bool translation_unit_visitor::should_include(const clang::NamedDecl *decl)
 {
     return decl != nullptr &&
         diagram().should_include(decl->getQualifiedNameAsString());
+}
+
+void translation_unit_visitor::add_processed_template_class(
+    std::string qualified_name)
+{
+    processed_template_qualified_names_.emplace(std::move(qualified_name));
+}
+
+bool translation_unit_visitor::has_processed_template_class(
+    const std::string &qualified_name) const
+{
+    return util::contains(processed_template_qualified_names_, qualified_name);
 }
 
 } // namespace clanguml::class_diagram::visitor
