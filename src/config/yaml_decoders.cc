@@ -609,14 +609,32 @@ config load(
     const std::string &config_file, std::optional<bool> paths_relative_to_pwd)
 {
     try {
-        YAML::Node doc = YAML::LoadFile(config_file);
+        YAML::Node doc;
+        std::filesystem::path config_file_path{};
+
+        if (config_file == "-") {
+            std::istreambuf_iterator<char> stdin_stream_begin{std::cin};
+            std::istreambuf_iterator<char> stdin_stream_end{};
+            std::string stdin_stream_str{stdin_stream_begin, stdin_stream_end};
+
+            doc = YAML::Load(stdin_stream_str);
+        }
+        else {
+            doc = YAML::LoadFile(config_file);
+        }
 
         // Store the parent path of the config_file to properly resolve
         // the include files paths
-        auto config_file_path =
-            std::filesystem::absolute(std::filesystem::path{config_file});
-        doc.force_insert(
-            "__parent_path", config_file_path.parent_path().string());
+        if (config_file == "-") {
+            config_file_path = std::filesystem::current_path();
+            doc.force_insert("__parent_path", config_file_path.string());
+        }
+        else {
+            config_file_path =
+                std::filesystem::absolute(std::filesystem::path{config_file});
+            doc.force_insert(
+                "__parent_path", config_file_path.parent_path().string());
+        }
 
         //
         // If no relative_to path is specified in the config, make all paths

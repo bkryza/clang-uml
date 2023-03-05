@@ -162,9 +162,9 @@ int main(int argc, const char *argv[])
     std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};
     std::optional<std::string> output_directory{};
-    unsigned int thread_count{0};
+    unsigned int thread_count{};
     bool show_version{false};
-    int verbose{0};
+    int verbose{};
     bool list_diagrams{false};
     bool quiet{false};
     bool initialize{false};
@@ -175,8 +175,8 @@ int main(int argc, const char *argv[])
     bool dump_config{false};
     std::optional<bool> paths_relative_to_pwd{};
 
-    app.add_option(
-        "-c,--config", config_path, "Location of configuration file");
+    app.add_option("-c,--config", config_path,
+        "Location of configuration file, when '-' read from stdin");
     app.add_option("-d,--compile-database", compilation_database_dir,
         "Location of compilation database directory");
     app.add_option("-n,--diagram-name", diagram_names,
@@ -208,41 +208,59 @@ int main(int argc, const char *argv[])
 
     CLI11_PARSE(app, argc, argv);
 
+    if (quiet || dump_config)
+        verbose = 0;
+    else
+        verbose++;
+
+    clanguml::util::setup_logging(verbose);
+
     if (show_version) {
         print_version();
         return 0;
+    }
+
+    if ((config_path == "-") &&
+        (initialize || add_class_diagram.has_value() ||
+            add_sequence_diagram.has_value() ||
+            add_package_diagram.has_value() ||
+            add_include_diagram.has_value())) {
+
+        LOG_ERROR(
+            "ERROR: Cannot add a diagram config to configuration from stdin");
+
+        return 1;
     }
 
     if (initialize) {
         return create_config_file();
     }
 
-    verbose++;
+    if (config_path != "-") {
+        if (add_class_diagram) {
+            return add_config_diagram(
+                clanguml::common::model::diagram_t::kClass, config_path,
+                *add_class_diagram);
+        }
 
-    if (quiet)
-        verbose = 0;
+        if (add_sequence_diagram) {
+            return add_config_diagram(
+                clanguml::common::model::diagram_t::kSequence, config_path,
+                *add_sequence_diagram);
+        }
 
-    if (add_class_diagram) {
-        return add_config_diagram(clanguml::common::model::diagram_t::kClass,
-            config_path, *add_class_diagram);
+        if (add_package_diagram) {
+            return add_config_diagram(
+                clanguml::common::model::diagram_t::kPackage, config_path,
+                *add_package_diagram);
+        }
+
+        if (add_include_diagram) {
+            return add_config_diagram(
+                clanguml::common::model::diagram_t::kInclude, config_path,
+                *add_include_diagram);
+        }
     }
-
-    if (add_sequence_diagram) {
-        return add_config_diagram(clanguml::common::model::diagram_t::kSequence,
-            config_path, *add_sequence_diagram);
-    }
-
-    if (add_package_diagram) {
-        return add_config_diagram(clanguml::common::model::diagram_t::kPackage,
-            config_path, *add_package_diagram);
-    }
-
-    if (add_include_diagram) {
-        return add_config_diagram(clanguml::common::model::diagram_t::kInclude,
-            config_path, *add_include_diagram);
-    }
-
-    clanguml::util::setup_logging(verbose);
 
     clanguml::config::config config;
     try {
