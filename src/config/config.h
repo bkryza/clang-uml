@@ -69,6 +69,8 @@ struct filter {
 
     std::vector<std::string> subclasses;
 
+    std::vector<std::string> parents;
+
     std::vector<std::string> specializations;
 
     std::vector<std::string> dependants;

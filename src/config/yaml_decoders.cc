@@ -275,6 +275,9 @@ template <> struct convert<filter> {
         if (node["subclasses"])
             rhs.subclasses = node["subclasses"].as<decltype(rhs.subclasses)>();
 
+        if (node["parents"])
+            rhs.parents = node["parents"].as<decltype(rhs.parents)>();
+
         if (node["specializations"])
             rhs.specializations =
                 node["specializations"].as<decltype(rhs.specializations)>();

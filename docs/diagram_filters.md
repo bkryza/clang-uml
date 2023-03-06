@@ -7,6 +7,7 @@
 * [`context`](#context)
 * [`relationships`](#relationships)
 * [`subclasses`](#subclasses)
+* [`parents`](#parents)
 * [`specializations`](#specializations)
 * [`dependants` and `dependencies`](#dependants-and-dependencies)
 
@@ -88,6 +89,10 @@ The following relationships can be used in this filter:
 ## `subclasses`
 
 This filter allows to include or exclude all subclasses of a given class in the diagram.
+
+## `parents`
+
+This filter allows to include or exclude all parents (base classes) of a given class in the diagram.
 
 ## `specializations`
 
