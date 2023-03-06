@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Added parents (base classes) diagram filter
   * Fixed namespace handling for nested template specializations
 
 ### 0.3.2
