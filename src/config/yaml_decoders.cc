@@ -23,6 +23,7 @@ using clanguml::common::model::access_t;
 using clanguml::common::model::relationship_t;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
+using clanguml::config::diagram_template;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
 using clanguml::config::git_config;
@@ -99,6 +100,21 @@ void get_option<clanguml::config::comment_parser_t>(const Node &node,
         else
             throw std::runtime_error("Invalid comment_parser value: " + val);
     }
+}
+
+template <>
+void get_option<std::map<std::string, clanguml::config::diagram_template>>(
+    const Node &node,
+    clanguml::config::option<
+        std::map<std::string, clanguml::config::diagram_template>> &option)
+{
+    if (!node[option.name]) {
+        return;
+    }
+
+    option.set(
+        node[option.name]
+            .as<std::map<std::string, clanguml::config::diagram_template>>());
 }
 
 std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
@@ -527,6 +543,31 @@ template <> struct convert<relationship_hint_t> {
 };
 
 //
+// diagram_template Yaml decoder
+//
+template <> struct convert<diagram_template> {
+    static bool decode(const Node &node, diagram_template &rhs)
+    {
+        assert(node.Type() == NodeType::Map || node.Type() == NodeType::Scalar);
+
+        if (node.Type() == NodeType::Scalar) {
+            // Check that the template provided as string is at least valid YAML
+            const auto yaml_node = Load(node.as<std::string>());
+            const auto diagram_type = yaml_node["type"].as<std::string>();
+            rhs.type = clanguml::common::model::from_string(diagram_type);
+            rhs.jinja_template = Dump(yaml_node);
+        }
+        else {
+            const auto diagram_type = node["type"].as<std::string>();
+            rhs.type = clanguml::common::model::from_string(diagram_type);
+            rhs.jinja_template = Dump(node);
+        }
+
+        return true;
+    }
+};
+
+//
 // config Yaml decoder
 //
 template <> struct convert<config> {
@@ -546,6 +587,8 @@ template <> struct convert<config> {
         get_option(node, rhs.debug_mode);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);
+
+        get_option(node, rhs.diagram_templates);
 
         auto diagrams = node["diagrams"];
 

@@ -50,6 +50,11 @@ struct plantuml {
     void append(const plantuml &r);
 };
 
+struct diagram_template {
+    common::model::diagram_t type;
+    std::string jinja_template;
+};
+
 struct filter {
     std::vector<common::model::namespace_> namespaces;
 
@@ -217,6 +222,9 @@ struct config : public inheritable_diagram_options {
     option<std::string> compilation_database_dir{
         "compilation_database_dir", "."};
     option<std::string> output_directory{"output_directory"};
+
+    option<std::map<std::string, diagram_template>> diagram_templates{
+        "diagram_templates"};
 
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
 };
