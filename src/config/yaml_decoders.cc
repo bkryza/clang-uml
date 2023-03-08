@@ -553,12 +553,20 @@ template <> struct convert<diagram_template> {
         if (node.Type() == NodeType::Scalar) {
             // Check that the template provided as string is at least valid YAML
             const auto yaml_node = Load(node.as<std::string>());
-            const auto diagram_type = yaml_node["type"].as<std::string>();
+            const auto template_root_it = yaml_node.begin();
+            const auto diagram_name_template =
+                template_root_it->first.as<std::string>();
+            const auto diagram_type =
+                template_root_it->second["type"].as<std::string>();
             rhs.type = clanguml::common::model::from_string(diagram_type);
             rhs.jinja_template = Dump(yaml_node);
         }
         else {
-            const auto diagram_type = node["type"].as<std::string>();
+            const auto template_root_it = node.begin();
+            const auto diagram_name_template =
+                template_root_it->first.as<std::string>();
+            const auto diagram_type =
+                template_root_it->second["type"].as<std::string>();
             rhs.type = clanguml::common::model::from_string(diagram_type);
             rhs.jinja_template = Dump(node);
         }

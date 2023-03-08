@@ -3,37 +3,37 @@ output_directory: output
 
 diagram_templates:
   bases_hierarchy_tmpl:
-    name: '{{ class_name }}_parents_hierarchy'
-    type: class
-    include:
-      parents: '{{ class_name }}'
-      namespaces: '{{ namespace_name }}'
-    relationships:
-      - inheritance
-    exclude:
-      access: [public, protected, private]
-    plantuml:
-      before:
-        - left to right direction
+    '{{ class_name }}_parents_hierarchy':
+      type: class
+      include:
+        parents: '{{ class_name }}'
+        namespaces: '{{ namespace_name }}'
+      relationships:
+        - inheritance
+      exclude:
+        access: [public, protected, private]
+      plantuml:
+        before:
+          - left to right direction
   children_hierarchy_tmpl: |
-    name: '{{ class_name }}_children_hierarchy'
-    type: class
-    include:
-      subclasses: '{{ class_name }}'
-      namespaces: '{{ namespace_name }}'
-    relationships:
-      - inheritance
-    exclude:
-      access: [public, protected, private]
-    plantuml:
-      before:
-        - left to right direction
+    '{{ class_name }}_children_hierarchy':
+      type: class
+      include:
+        subclasses: '{{ class_name }}'
+        namespaces: '{{ namespace_name }}'
+      relationships:
+        - inheritance
+      exclude:
+        access: [public, protected, private]
+      plantuml:
+        before:
+          - left to right direction
   main_sequence_tmpl: |
-    name: main_sequence_diargam
-    type: sequence
-    glob: [ {{ }} ]
-    start_from:
-      - function: 'main(int,const char**)'
+    main_sequence_diagram:
+      type: sequence
+      glob: [ {{ glob }} ]
+      start_from:
+        - function: 'main(int,const char**)'
 diagrams:
   diagram1:
     type: class

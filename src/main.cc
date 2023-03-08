@@ -63,6 +63,14 @@ void print_version();
 void print_diagrams_list(const clanguml::config::config &cfg);
 
 /**
+ * Print list of available diagram templates, including their names
+ * and types.
+ *
+ * @param cfg
+ */
+void print_diagram_templates(const clanguml::config::config &cfg);
+
+/**
  * Print effective config after loading and setting default values.
  *
  *  @param cfg Configuration instance loaded from configuration file
@@ -86,6 +94,18 @@ int create_config_file();
  */
 int add_config_diagram(clanguml::common::model::diagram_t type,
     const std::string &config_file_path, const std::string &name);
+
+/**
+ * Add diagram based on template
+ * @param config_file_path
+ * @param cfg
+ * @param template_name
+ * @param template_variables
+ * @return
+ */
+int add_config_diagram_from_template(const std::string &config_file_path,
+    const config::config &cfg, const std::string &template_name,
+    const std::vector<std::string> &template_variables);
 
 /**
  * Check if diagram output directory exists, if not create it
@@ -172,8 +192,11 @@ int main(int argc, const char *argv[])
     std::optional<std::string> add_sequence_diagram;
     std::optional<std::string> add_package_diagram;
     std::optional<std::string> add_include_diagram;
+    std::optional<std::string> add_diagram_from_template;
     bool dump_config{false};
     std::optional<bool> paths_relative_to_pwd{};
+    std::vector<std::string> template_variables{};
+    bool list_templates{false};
 
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");
@@ -200,6 +223,12 @@ int main(int argc, const char *argv[])
         "Add package diagram config");
     app.add_option("--add-include-diagram", add_include_diagram,
         "Add include diagram config");
+    app.add_option("--add-diagram-from-template", add_diagram_from_template,
+        "Add diagram config based on diagram template");
+    app.add_option("--template-variable", template_variables,
+        "Specify a value for a template variable");
+    app.add_flag("--list-templates", list_templates,
+        "List all available diagram templates");
     app.add_flag(
         "--dump-config", dump_config, "Print effective config to stdout");
     app.add_flag("--paths-relative-to-pwd", paths_relative_to_pwd,
@@ -221,8 +250,8 @@ int main(int argc, const char *argv[])
     }
 
     if ((config_path == "-") &&
-        (initialize || add_class_diagram.has_value() ||
-            add_sequence_diagram.has_value() ||
+        (initialize || add_diagram_from_template ||
+            add_class_diagram.has_value() || add_sequence_diagram.has_value() ||
             add_package_diagram.has_value() ||
             add_include_diagram.has_value())) {
 
@@ -274,6 +303,16 @@ int main(int argc, const char *argv[])
     if (list_diagrams) {
         print_diagrams_list(config);
         return 0;
+    }
+
+    if (list_templates) {
+        print_diagram_templates(config);
+        return 0;
+    }
+
+    if (config_path != "-" && add_diagram_from_template) {
+        return add_config_diagram_from_template(config_path, config,
+            add_diagram_from_template.value(), template_variables);
     }
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
@@ -539,6 +578,23 @@ void print_diagrams_list(const clanguml::config::config &cfg)
     }
 }
 
+void print_diagram_templates(const clanguml::config::config &cfg)
+{
+    using std::cout;
+
+    if (!cfg.diagram_templates) {
+        cout << "No diagram templates are defined in the config file\n";
+        return;
+    }
+
+    cout << "The following diagram templates are available:\n";
+    for (const auto &[name, diagram_template] : cfg.diagram_templates()) {
+        cout << "  - " << name << " [" << to_string(diagram_template.type)
+             << "]";
+        cout << '\n';
+    }
+}
+
 int create_config_file()
 {
     namespace fs = std::filesystem;
@@ -655,6 +711,65 @@ int add_config_diagram(clanguml::common::model::diagram_t type,
         doc["diagrams"][name]["include"]["paths"] =
             std::vector<std::string>{{"src"}};
     }
+
+    YAML::Emitter out;
+    out.SetIndent(2);
+
+    out << doc;
+    out << YAML::Newline;
+
+    std::ofstream ofs(config_file);
+    ofs << out.c_str();
+    ofs.close();
+
+    return 0;
+}
+
+int add_config_diagram_from_template(const std::string &config_file_path,
+    const config::config &cfg, const std::string &template_name,
+    const std::vector<std::string> &template_variables)
+{
+    if (!cfg.diagram_templates ||
+        !(cfg.diagram_templates().find(template_name) !=
+            cfg.diagram_templates().end())) {
+        std::cerr << "ERROR: No such diagram template: " << template_name
+                  << "\n";
+        return 1;
+    }
+
+    // First, try to render the template using inja and create a YAML node from
+    // it
+    inja::json ctx;
+    for (const auto &tv : template_variables) {
+        const auto var = util::split(tv, "=");
+        if (var.size() != 2) {
+            std::cerr << "ERROR: Invalid template variable " << tv << "\n";
+            return 1;
+        }
+
+        ctx[var.at(0)] = var.at(1);
+    }
+
+    auto diagram_template_str =
+        cfg.diagram_templates().at(template_name).jinja_template;
+
+    auto diagram_str = inja::render(diagram_template_str, ctx);
+
+    auto diagram_node = YAML::Load(diagram_str);
+
+    namespace fs = std::filesystem;
+
+    fs::path config_file{config_file_path};
+
+    if (!fs::exists(config_file)) {
+        std::cerr << "ERROR: " << config_file_path << " file doesn't exists\n";
+        return 1;
+    }
+
+    YAML::Node doc = YAML::LoadFile(config_file.string());
+
+    const auto diagram_name = diagram_node.begin()->first.as<std::string>();
+    doc["diagrams"][diagram_name] = diagram_node.begin()->second;
 
     YAML::Emitter out;
     out.SetIndent(2);

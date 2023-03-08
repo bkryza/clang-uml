@@ -270,34 +270,34 @@ TEST_CASE("Test config diagram_templates", "[unit-test]")
     REQUIRE(cfg.diagram_templates()["bases_hierarchy_tmpl"].type ==
         clanguml::common::model::diagram_t::kClass);
     REQUIRE(cfg.diagram_templates()["bases_hierarchy_tmpl"].jinja_template ==
-        R"(name: "{{ class_name }}_parents_hierarchy"
-type: class
-include:
-  parents: "{{ class_name }}"
-  namespaces: "{{ namespace_name }}"
-relationships:
-  - inheritance
-exclude:
-  access: [public, protected, private]
-plantuml:
-  before:
-    - left to right direction)");
+        R"("{{ class_name }}_parents_hierarchy":
+  type: class
+  include:
+    parents: "{{ class_name }}"
+    namespaces: "{{ namespace_name }}"
+  relationships:
+    - inheritance
+  exclude:
+    access: [public, protected, private]
+  plantuml:
+    before:
+      - left to right direction)");
 
     REQUIRE(cfg.diagram_templates()["children_hierarchy_tmpl"].type ==
         clanguml::common::model::diagram_t::kClass);
     REQUIRE(cfg.diagram_templates()["children_hierarchy_tmpl"].jinja_template ==
-        R"(name: "{{ class_name }}_children_hierarchy"
-type: class
-include:
-  subclasses: "{{ class_name }}"
-  namespaces: "{{ namespace_name }}"
-relationships:
-  - inheritance
-exclude:
-  access: [public, protected, private]
-plantuml:
-  before:
-    - left to right direction)");
+        R"("{{ class_name }}_children_hierarchy":
+  type: class
+  include:
+    subclasses: "{{ class_name }}"
+    namespaces: "{{ namespace_name }}"
+  relationships:
+    - inheritance
+  exclude:
+    access: [public, protected, private]
+  plantuml:
+    before:
+      - left to right direction)");
 
     REQUIRE(cfg.diagram_templates()["main_sequence_tmpl"].type ==
         clanguml::common::model::diagram_t::kSequence);
