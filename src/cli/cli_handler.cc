@@ -56,7 +56,7 @@ void cli_handler::setup_logging()
     }
 }
 
-cli_flow_t cli_handler::parse(int argc, const char *argv[])
+cli_flow_t cli_handler::parse(int argc, const char **argv)
 {
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");
@@ -104,7 +104,7 @@ cli_flow_t cli_handler::parse(int argc, const char *argv[])
         return cli_flow_t::kExit;
     }
     catch (const CLI::ParseError &e) {
-        exit(app.exit(e));
+        exit(app.exit(e)); // NOLINT(concurrency-mt-unsafe)
     }
 
     if (quiet || dump_config)
@@ -115,7 +115,7 @@ cli_flow_t cli_handler::parse(int argc, const char *argv[])
     return cli_flow_t::kContinue;
 }
 
-cli_flow_t cli_handler::handle_options(int argc, const char *argv[])
+cli_flow_t cli_handler::handle_options(int argc, const char **argv)
 {
     auto res = parse(argc, argv);
 
@@ -558,4 +558,4 @@ cli_flow_t cli_handler::print_config()
 
     return cli_flow_t::kExit;
 }
-} // namespace clanguml::options
+} // namespace clanguml::cli

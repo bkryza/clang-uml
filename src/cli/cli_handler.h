@@ -41,7 +41,7 @@ public:
      * @param argv
      * @return
      */
-    cli_flow_t handle_options(int argc, const char *argv[]);
+    cli_flow_t handle_options(int argc, const char **argv);
 
     /**
      * Print the program version and basic information
@@ -135,7 +135,7 @@ public:
     clanguml::config::config config;
 
 private:
-    cli_flow_t parse(int argc, const char *argv[]);
+    cli_flow_t parse(int argc, const char **argv);
 
     cli_flow_t handle_pre_config_options();
 
@@ -149,5 +149,4 @@ private:
     std::shared_ptr<spdlog::logger> logger_;
     CLI::App app{"Clang-based UML diagram generator for C++"};
 };
-
-} // namespace clanguml::options
+} // namespace clanguml::cli

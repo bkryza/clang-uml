@@ -52,7 +52,7 @@ struct plantuml {
 
 struct diagram_template {
     std::string description;
-    common::model::diagram_t type;
+    common::model::diagram_t type{common::model::diagram_t::kClass};
     std::string jinja_template;
 };
 
