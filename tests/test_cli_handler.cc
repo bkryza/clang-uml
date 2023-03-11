@@ -72,3 +72,88 @@ TEST_CASE("Test cli handler print_config", "[unit-test]")
 
     REQUIRE(doc["diagrams"]["class_main"]);
 }
+
+TEST_CASE("Test cli handler print_diagrams_list", "[unit-test]")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {
+        "clang-uml", "--config", "./test_config_data/simple.yml", "-l"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kExit);
+
+    auto output = ostr.str();
+
+    REQUIRE(output ==
+        "The following diagrams are defined in the config file:"
+        R"(
+  - class_main [class]
+)");
+}
+
+TEST_CASE("Test cli handler print_diagram_templates", "[unit-test]")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {"clang-uml", "--config",
+        "./test_config_data/simple.yml", "--list-templates"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kExit);
+
+    auto output = ostr.str();
+
+    REQUIRE(output ==
+        "The following diagram templates are available:"
+        R"(
+  - class_context_tmpl [class]: Generate class context diagram
+  - parents_hierarchy_tmpl [class]: Generate class parents inheritance diagram
+  - subclass_hierarchy_tmpl [class]: Generate class children inheritance diagram
+)");
+}
+
+TEST_CASE("Test cli handler print_diagram_template", "[unit-test]")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {"clang-uml", "--config",
+        "./test_config_data/simple.yml", "--show-template",
+        "class_context_tmpl"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kExit);
+
+    auto output = ostr.str();
+
+    REQUIRE(output ==
+        "\"{{ diagram_name }}\":"
+        R"(
+  type: class
+  {% if exists("glob") %}
+  glob: [{{ glob }}]
+  {% endif %}
+  {% if exists("using_namespace") %}
+  using_namespace: {{ using_namespace }}
+  {% endif %}
+  include:
+    context: [{{ class_name }}]
+    namespaces: [{{ namespace_name }}]
+
+)");
+}
