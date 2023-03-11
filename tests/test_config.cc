@@ -281,7 +281,7 @@ TEST_CASE("Test config diagram_templates", "[unit-test]")
   {% endif %}
   include:
     parents: [{{ class_name }}]
-    namespaces: [{{ namespace_names }}]
+    namespaces: [{{ namespace_name }}]
   relationships:
     - inheritance
   exclude:
