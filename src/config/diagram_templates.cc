@@ -39,7 +39,7 @@ parents_hierarchy_tmpl:
       {% endif %}
       include:
         parents: [{{ class_name }}]
-        namespaces: [{{ namespace_names }}]
+        namespaces: [{{ namespace_name }}]
       relationships:
         - inheritance
       exclude:

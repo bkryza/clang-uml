@@ -26,15 +26,3 @@ diagrams:
     include!: uml/package_model_class_diagram.yml
   include_graph:
     include!: uml/include_diagram.yml
-  include3_diagram_parents_hierarchy:
-    type: class
-    include:
-      parents: [clanguml::config::include_diagram]
-      namespaces: [clanguml]
-    relationships:
-      - inheritance
-    exclude:
-      access: [public, protected, private]
-    plantuml:
-      before:
-        - left to right direction
