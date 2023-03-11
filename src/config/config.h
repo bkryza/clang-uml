@@ -51,6 +51,7 @@ struct plantuml {
 };
 
 struct diagram_template {
+    std::string description;
     common::model::diagram_t type;
     std::string jinja_template;
 };
@@ -227,6 +228,8 @@ struct config : public inheritable_diagram_options {
         "diagram_templates"};
 
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
+
+    void initialize_diagram_templates();
 };
 
 //
@@ -287,6 +290,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 
 config load(const std::string &config_file,
     std::optional<bool> paths_relative_to_pwd = {});
+
+config load_plain(const std::string &config_file);
 } // namespace config
 
 namespace common::model {

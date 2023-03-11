@@ -25,27 +25,6 @@ namespace clanguml::util {
 
 static const auto WHITESPACE = " \n\r\t\f\v";
 
-void setup_logging(int verbose)
-{
-    auto console =
-        spdlog::stdout_color_mt("console", spdlog::color_mode::automatic);
-
-    console->set_pattern("[%^%l%^] [tid %t] %v");
-
-    if (verbose == 0) {
-        console->set_level(spdlog::level::err);
-    }
-    else if (verbose == 1) {
-        console->set_level(spdlog::level::info);
-    }
-    else if (verbose == 2) {
-        console->set_level(spdlog::level::debug);
-    }
-    else {
-        console->set_level(spdlog::level::trace);
-    }
-}
-
 std::string get_process_output(const std::string &command)
 {
     constexpr size_t kBufferSize{1024};

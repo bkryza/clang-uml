@@ -17,6 +17,7 @@
  */
 
 #include "config.h"
+#include "diagram_templates.h"
 
 namespace YAML {
 using clanguml::common::model::access_t;
@@ -112,9 +113,24 @@ void get_option<std::map<std::string, clanguml::config::diagram_template>>(
         return;
     }
 
-    option.set(
-        node[option.name]
-            .as<std::map<std::string, clanguml::config::diagram_template>>());
+    if (node[option.name].IsMap() && node[option.name]["include!"]) {
+        auto parent_path = node["__parent_path"].as<std::string>();
+
+        // Load templates from file
+        auto include_path = std::filesystem::path{parent_path};
+        include_path /= node[option.name]["include!"].as<std::string>();
+
+        YAML::Node included_node = YAML::LoadFile(include_path.string());
+
+        //        diagram_config = parse_diagram_config(included_node);
+        option.set(
+            included_node.as<
+                std::map<std::string, clanguml::config::diagram_template>>());
+    }
+    else
+        option.set(node[option.name]
+                       .as<std::map<std::string,
+                           clanguml::config::diagram_template>>());
 }
 
 std::shared_ptr<clanguml::config::diagram> parse_diagram_config(const Node &d)
@@ -548,28 +564,12 @@ template <> struct convert<relationship_hint_t> {
 template <> struct convert<diagram_template> {
     static bool decode(const Node &node, diagram_template &rhs)
     {
-        assert(node.Type() == NodeType::Map || node.Type() == NodeType::Scalar);
+        assert(node.Type() == NodeType::Map);
 
-        if (node.Type() == NodeType::Scalar) {
-            // Check that the template provided as string is at least valid YAML
-            const auto yaml_node = Load(node.as<std::string>());
-            const auto template_root_it = yaml_node.begin();
-            const auto diagram_name_template =
-                template_root_it->first.as<std::string>();
-            const auto diagram_type =
-                template_root_it->second["type"].as<std::string>();
-            rhs.type = clanguml::common::model::from_string(diagram_type);
-            rhs.jinja_template = Dump(yaml_node);
-        }
-        else {
-            const auto template_root_it = node.begin();
-            const auto diagram_name_template =
-                template_root_it->first.as<std::string>();
-            const auto diagram_type =
-                template_root_it->second["type"].as<std::string>();
-            rhs.type = clanguml::common::model::from_string(diagram_type);
-            rhs.jinja_template = Dump(node);
-        }
+        rhs.type = clanguml::common::model::from_string(
+            node["type"].as<std::string>());
+        rhs.jinja_template = node["template"].as<std::string>();
+        rhs.description = node["description"].as<std::string>();
 
         return true;
     }
@@ -611,10 +611,11 @@ template <> struct convert<config> {
                 auto include_path = std::filesystem::path{parent_path};
                 include_path /= d.second["include!"].as<std::string>();
 
-                YAML::Node node = YAML::LoadFile(include_path.string());
-                node.force_insert("__parent_path", parent_path);
+                YAML::Node included_node =
+                    YAML::LoadFile(include_path.string());
+                included_node.force_insert("__parent_path", parent_path);
 
-                diagram_config = parse_diagram_config(node);
+                diagram_config = parse_diagram_config(included_node);
             }
             else {
                 d.second.force_insert("__parent_path", parent_path);
@@ -637,6 +638,20 @@ template <> struct convert<config> {
 } // namespace YAML
 
 namespace clanguml::config {
+
+void config::initialize_diagram_templates()
+{
+    const auto &predefined_templates_str = get_predefined_diagram_templates();
+
+    YAML::Node predefined_templates = YAML::Load(predefined_templates_str);
+
+    if (!diagram_templates) {
+        diagram_templates.set({});
+    }
+
+    diagram_templates().merge(
+        predefined_templates.as<std::map<std::string, diagram_template>>());
+}
 
 namespace {
 void resolve_option_path(YAML::Node &doc, const std::string &option)
@@ -728,6 +743,30 @@ config load(
 
             doc["git"] = git_config;
         }
+
+        auto d = doc.as<config>();
+
+        d.initialize_diagram_templates();
+
+        return d;
+    }
+    catch (YAML::BadFile &e) {
+        throw std::runtime_error(fmt::format(
+            "Could not open config file {}: {}", config_file, e.what()));
+    }
+    catch (YAML::Exception &e) {
+        throw std::runtime_error(fmt::format(
+            "Cannot parse YAML file {}: {}", config_file, e.what()));
+    }
+}
+
+config load_plain(const std::string &config_file)
+{
+    try {
+        YAML::Node doc;
+        std::filesystem::path config_file_path{};
+
+        doc = YAML::LoadFile(config_file);
 
         auto d = doc.as<config>();
         return d;

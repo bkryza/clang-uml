@@ -28,29 +28,29 @@
 #include <vector>
 
 #define LOG_ERROR(fmt__, ...)                                                  \
-    spdlog::get("console")->error(                                             \
-        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
-        ##__VA_ARGS__)
+    spdlog::get("clanguml-logger")                                             \
+        ->error(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
+            __LINE__, ##__VA_ARGS__)
 
 #define LOG_WARN(fmt__, ...)                                                   \
-    spdlog::get("console")->warn(                                              \
-        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
-        ##__VA_ARGS__)
+    spdlog::get("clanguml-logger")                                             \
+        ->warn(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,       \
+            __LINE__, ##__VA_ARGS__)
 
 #define LOG_INFO(fmt__, ...)                                                   \
-    spdlog::get("console")->info(                                              \
-        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
-        ##__VA_ARGS__)
+    spdlog::get("clanguml-logger")                                             \
+        ->info(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,       \
+            __LINE__, ##__VA_ARGS__)
 
 #define LOG_DBG(fmt__, ...)                                                    \
-    spdlog::get("console")->debug(                                             \
-        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
-        ##__VA_ARGS__)
+    spdlog::get("clanguml-logger")                                             \
+        ->debug(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
+            __LINE__, ##__VA_ARGS__)
 
 #define LOG_TRACE(fmt__, ...)                                                  \
-    spdlog::get("console")->trace(                                             \
-        fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_, __LINE__,    \
-        ##__VA_ARGS__)
+    spdlog::get("clanguml-logger")                                             \
+        ->trace(fmt::runtime(std::string("[{}:{}] ") + fmt__), FILENAME_,      \
+            __LINE__, ##__VA_ARGS__)
 
 namespace clanguml::util {
 
@@ -60,13 +60,6 @@ std::string trim(const std::string &s);
 
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-
-/**
- * @brief Setup spdlog logger.
- *
- * @param verbose Whether the logging should be verbose or not.
- */
-void setup_logging(int verbose);
 
 std::string get_process_output(const std::string &command);
 

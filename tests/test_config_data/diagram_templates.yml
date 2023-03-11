@@ -2,33 +2,10 @@ compilation_database_dir: debug
 output_directory: output
 
 diagram_templates:
-  bases_hierarchy_tmpl:
-    '{{ class_name }}_parents_hierarchy':
-      type: class
-      include:
-        parents: '{{ class_name }}'
-        namespaces: '{{ namespace_name }}'
-      relationships:
-        - inheritance
-      exclude:
-        access: [public, protected, private]
-      plantuml:
-        before:
-          - left to right direction
-  children_hierarchy_tmpl: |
-    '{{ class_name }}_children_hierarchy':
-      type: class
-      include:
-        subclasses: '{{ class_name }}'
-        namespaces: '{{ namespace_name }}'
-      relationships:
-        - inheritance
-      exclude:
-        access: [public, protected, private]
-      plantuml:
-        before:
-          - left to right direction
-  main_sequence_tmpl: |
+  main_sequence_tmpl:
+    description: Sequence diagram of the main() function
+    type: sequence
+    template: |
     main_sequence_diagram:
       type: sequence
       glob: [ {{ glob }} ]
