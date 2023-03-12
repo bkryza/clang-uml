@@ -1,5 +1,5 @@
 /**
- * src/options/cli_options.h
+ * src/options/cli_handler.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -131,6 +131,8 @@ public:
     std::vector<std::string> template_variables{};
     bool list_templates{false};
     std::optional<std::string> show_template;
+    std::vector<clanguml::common::generator_type_t> generators{
+        clanguml::common::generator_type_t::plantuml};
 
     clanguml::config::config config;
 

@@ -19,7 +19,7 @@
 #include "test_cases.h"
 
 #include "cli/cli_handler.h"
-#include "common/generators/plantuml/generator.h"
+#include "common/generators/generators.h"
 
 #include <spdlog/spdlog.h>
 
@@ -67,7 +67,7 @@ generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
 
     inject_diagram_options(diagram);
 
-    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+    auto model = clanguml::common::generators::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
         diagram->get_translation_units());
@@ -86,7 +86,7 @@ std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
 
     inject_diagram_options(diagram);
 
-    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+    auto model = clanguml::common::generators::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
         diagram->get_translation_units());
@@ -105,8 +105,8 @@ generate_package_diagram(clang::tooling::CompilationDatabase &db,
 
     inject_diagram_options(diagram);
 
-    return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
+    return clanguml::common::generators::generate<diagram_model, diagram_config,
+        diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
         diagram->get_translation_units());
 }
@@ -122,8 +122,8 @@ generate_include_diagram(clang::tooling::CompilationDatabase &db,
 
     inject_diagram_options(diagram);
 
-    return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
+    return clanguml::common::generators::generate<diagram_model, diagram_config,
+        diagram_visitor>(db, diagram->name,
         dynamic_cast<diagram_config &>(*diagram),
         diagram->get_translation_units());
 }

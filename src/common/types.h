@@ -27,6 +27,8 @@ namespace clanguml::common {
 
 using id_t = int64_t;
 
+enum class generator_type_t { plantuml, cppidx };
+
 template <typename T> class optional_ref {
 public:
     using optional_type = T;

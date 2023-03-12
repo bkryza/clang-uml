@@ -23,6 +23,12 @@
 
 namespace clanguml::common::generators {
 
+/**
+ * This is a helper class for generating nested groups of elements
+ * in the diagrams, e.g. PlantUML `together` option.
+ *
+ * @tparam T Type of stack elements
+ */
 template <typename T> class nested_element_stack {
 public:
     nested_element_stack(bool is_flat)
