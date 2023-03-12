@@ -18,6 +18,7 @@
 #include "enums.h"
 
 #include <cassert>
+#include <stdexcept>
 
 namespace clanguml::common::model {
 
@@ -133,6 +134,20 @@ std::string to_string(const diagram_t t)
         assert(false);
         return "";
     }
+}
+
+diagram_t from_string(const std::string &s)
+{
+    if (s == "class")
+        return diagram_t::kClass;
+    if (s == "sequence")
+        return diagram_t::kSequence;
+    if (s == "include")
+        return diagram_t::kInclude;
+    if (s == "package")
+        return diagram_t::kPackage;
+
+    throw std::runtime_error{"Invalid diagram type: " + s};
 }
 
 } // namespace clanguml::common::model

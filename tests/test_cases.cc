@@ -17,6 +17,8 @@
  */
 
 #include "test_cases.h"
+
+#include "cli/cli_handler.h"
 #include "common/generators/plantuml/generator.h"
 
 #include <spdlog/spdlog.h>
@@ -263,6 +265,8 @@ using namespace clanguml::test::matchers;
 #include "t00058/test_case.h"
 #include "t00059/test_case.h"
 #endif
+#include "t00060/test_case.h"
+
 ///
 /// Sequence diagram tests
 ///
@@ -343,7 +347,17 @@ int main(int argc, char *argv[])
     if (returnCode != 0)
         return returnCode;
 
-    clanguml::util::setup_logging(debug_log ? 3 : 1);
+    clanguml::cli::cli_handler clih;
+
+    std::vector<const char *> argvv = {
+        "clang-uml", "--config", "./test_config_data/simple.yml"};
+
+    if (debug_log)
+        argvv.push_back("-vvv");
+    else
+        argvv.push_back("-q");
+
+    clih.handle_options(argvv.size(), argvv.data());
 
     return session.run();
 }

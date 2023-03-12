@@ -38,6 +38,7 @@ set(TEST_CASES
         test_cases
         test_decorator_parser
         test_config
+        test_cli_handler
         test_filters
         test_thread_pool_executor)
 

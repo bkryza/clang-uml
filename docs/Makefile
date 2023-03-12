@@ -28,6 +28,7 @@ toc:
 		$(UPDATE_TOC) include_diagrams.md
 		$(UPDATE_TOC) installation.md
 		$(UPDATE_TOC) interactive_svg_diagrams.md
+		$(UPDATE_TOC) diagram_templates.md
 		$(UPDATE_TOC) jinja_templates.md
 		$(UPDATE_TOC) package_diagrams.md
 		$(UPDATE_TOC) quick_start.md

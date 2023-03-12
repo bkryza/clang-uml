@@ -14,7 +14,7 @@ legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
 Currently, the diagrams are generated in [PlantUML](https://plantuml.com) format.
 
-`clang-uml` currently supports C++ up to version 17.
+`clang-uml` currently supports C++ up to version 17 and partial support for C++ 20.
 
 ## Features
 

@@ -5,6 +5,7 @@
 * [Top level options](#top-level-options)
   * [Diagram options](#diagram-options)
 * [Example complete config](#example-complete-config)
+* [Determining config file location](#determining-config-file-location)
 * [Paths](#paths)
 
 <!-- tocstop -->
@@ -120,6 +121,18 @@ diagrams:
       before:
         - 'title clang-uml class diagram model'
 ```
+
+## Determining config file location
+
+If `-c,--config` option is not provided, `clang-uml` will try to open file
+`.clang-uml` in the current directory and fail if it doesn't exist.
+
+With `-c,--config` option pointing to a valid `.clang-uml` file path, the file
+configuration will be loaded from that file.
+
+Furthermore, when the value of `-c,--config` option is `-` - the entire config
+will be read from `stdin`, which can be useful for scripting and generating
+config Yaml documents on the fly.
 
 ## Paths
 By default, all paths specified in the configuration file, including:

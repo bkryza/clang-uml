@@ -1,5 +1,9 @@
 # CHANGELOG
 
+  * Added diagram templates support (#105)
+  * Added parents (base classes) diagram filter
+  * Fixed namespace handling for nested template specializations
+
 ### 0.3.2
   * Added initial support for C++20 concept rendering (#96)
   * Added support for plain C11 translation units (#97)

@@ -263,6 +263,45 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     return false;
 }
 
+parents_filter::parents_filter(filter_t type, std::vector<std::string> children)
+    : filter_visitor{type}
+    , children_{std::move(children)}
+{
+}
+
+tvl::value_t parents_filter::match(const diagram &d, const element &e) const
+{
+    if (d.type() != diagram_t::kClass)
+        return {};
+
+    if (children_.empty())
+        return {};
+
+    if (!d.complete())
+        return {};
+
+    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+    // First get all parents of element e
+    clanguml::common::reference_set<class_diagram::model::class_> parents;
+
+    for (const auto &child : children_) {
+        auto child_ref = cd.get_class(child);
+        if (!child_ref.has_value())
+            continue;
+        parents.emplace(child_ref.value());
+    }
+
+    cd.get_parents(parents);
+
+    for (const auto &parent : parents) {
+        if (e == parent.get())
+            return true;
+    }
+
+    return false;
+}
+
 relationship_filter::relationship_filter(
     filter_t type, std::vector<relationship_t> relationships)
     : filter_visitor{type}
@@ -465,6 +504,9 @@ void diagram_filter::init_filters(const config::diagram &c)
             element_filters.emplace_back(std::make_unique<subclass_filter>(
                 filter_t::kInclusive, c.include().subclasses));
 
+            element_filters.emplace_back(std::make_unique<parents_filter>(
+                filter_t::kInclusive, c.include().parents));
+
             element_filters.emplace_back(std::make_unique<
                 edge_traversal_filter<class_diagram::model::diagram,
                     class_diagram::model::class_>>(filter_t::kInclusive,
@@ -544,6 +586,9 @@ void diagram_filter::init_filters(const config::diagram &c)
 
         add_exclusive_filter(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));
+
+        add_exclusive_filter(std::make_unique<parents_filter>(
+            filter_t::kExclusive, c.exclude().parents));
 
         add_exclusive_filter(std::make_unique<edge_traversal_filter<
                 class_diagram::model::diagram, class_diagram::model::class_>>(

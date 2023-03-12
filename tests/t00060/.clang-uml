@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00060_class:
+    type: class
+    glob:
+      - ../../tests/t00060/t00060.cc
+    include:
+      namespaces:
+        - clanguml::t00060
+      parents:
+        - clanguml::t00060::D
+        - clanguml::t00060::H<T,P>
+    using_namespace:
+      - clanguml::t00060

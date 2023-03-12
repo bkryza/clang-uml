@@ -1,0 +1,16 @@
+compilation_database_dir: debug
+output_directory: output
+
+diagram_templates:
+  main_sequence_tmpl:
+    description: Sequence diagram of the main() function
+    type: sequence
+    template: |
+    main_sequence_diagram:
+      type: sequence
+      glob: [ {{ glob }} ]
+      start_from:
+        - function: 'main(int,const char**)'
+diagrams:
+  diagram1:
+    type: class

@@ -259,3 +259,62 @@ TEST_CASE("Test config emitters", "[unit-test]")
 
     std::filesystem::remove(tmp_file);
 }
+
+TEST_CASE("Test config diagram_templates", "[unit-test]")
+{
+    auto cfg =
+        clanguml::config::load("./test_config_data/diagram_templates.yml");
+
+    REQUIRE(cfg.diagram_templates().size() == 4);
+
+    REQUIRE(cfg.diagram_templates()["parents_hierarchy_tmpl"].type ==
+        clanguml::common::model::diagram_t::kClass);
+    REQUIRE(cfg.diagram_templates()["parents_hierarchy_tmpl"].jinja_template ==
+        "{{ diagram_name }}:"
+        R"(
+  type: class
+  {% if exists("glob") %}
+  glob: [{{ glob }}]
+  {% endif %}
+  {% if exists("using_namespace") %}
+  using_namespace: {{ using_namespace }}
+  {% endif %}
+  include:
+    parents: [{{ class_name }}]
+    namespaces: [{{ namespace_name }}]
+  relationships:
+    - inheritance
+  exclude:
+    access: [public, protected, private]
+  plantuml:
+    before:
+      - left to right direction
+)");
+
+    REQUIRE(cfg.diagram_templates()["children_hierarchy_tmpl"].type ==
+        clanguml::common::model::diagram_t::kClass);
+    REQUIRE(cfg.diagram_templates()["subclass_hierarchy_tmpl"].jinja_template ==
+        "{{ diagram_name }}:"
+        R"(
+  type: class
+  {% if exists("glob") %}
+  glob: [{{ glob }}]
+  {% endif %}
+  {% if exists("using_namespace") %}
+  using_namespace: {{ using_namespace }}
+  {% endif %}
+  include:
+    parents: [{{ class_name }}]
+    namespaces: [{{ namespace_name }}]
+  relationships:
+    - inheritance
+  exclude:
+    access: [public, protected, private]
+  plantuml:
+    before:
+      - left to right direction
+)");
+
+    REQUIRE(cfg.diagram_templates()["main_sequence_tmpl"].type ==
+        clanguml::common::model::diagram_t::kSequence);
+}

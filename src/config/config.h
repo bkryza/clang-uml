@@ -50,6 +50,12 @@ struct plantuml {
     void append(const plantuml &r);
 };
 
+struct diagram_template {
+    std::string description;
+    common::model::diagram_t type{common::model::diagram_t::kClass};
+    std::string jinja_template;
+};
+
 struct filter {
     std::vector<common::model::namespace_> namespaces;
 
@@ -68,6 +74,8 @@ struct filter {
     std::vector<common::model::access_t> access;
 
     std::vector<std::string> subclasses;
+
+    std::vector<std::string> parents;
 
     std::vector<std::string> specializations;
 
@@ -216,7 +224,12 @@ struct config : public inheritable_diagram_options {
         "compilation_database_dir", "."};
     option<std::string> output_directory{"output_directory"};
 
+    option<std::map<std::string, diagram_template>> diagram_templates{
+        "diagram_templates"};
+
     std::map<std::string, std::shared_ptr<diagram>> diagrams;
+
+    void initialize_diagram_templates();
 };
 
 //
@@ -277,6 +290,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 
 config load(const std::string &config_file,
     std::optional<bool> paths_relative_to_pwd = {});
+
+config load_plain(const std::string &config_file);
 } // namespace config
 
 namespace common::model {

@@ -17,6 +17,7 @@
  */
 
 #include "config.h"
+#include "diagram_templates.h"
 #include "glob/glob.hpp"
 
 #include <filesystem>

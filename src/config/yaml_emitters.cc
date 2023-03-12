@@ -69,6 +69,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
             << f.specializations;
     if (!f.subclasses.empty())
         out << YAML::Key << "subclasses" << YAML::Value << f.subclasses;
+    if (!f.parents.empty())
+        out << YAML::Key << "parents" << YAML::Value << f.parents;
 
     out << YAML::EndMap;
     return out;

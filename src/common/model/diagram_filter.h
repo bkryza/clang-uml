@@ -135,6 +135,17 @@ private:
     std::vector<std::string> roots_;
 };
 
+struct parents_filter : public filter_visitor {
+    parents_filter(filter_t type, std::vector<std::string> roots);
+
+    ~parents_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &e) const override;
+
+private:
+    std::vector<std::string> children_;
+};
+
 template <typename DiagramT, typename ElementT,
     typename MatchOverrideT = common::model::element>
 struct edge_traversal_filter : public filter_visitor {
