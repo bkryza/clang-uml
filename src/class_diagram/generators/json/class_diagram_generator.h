@@ -60,15 +60,30 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
-    void generate(const class_ &c, std::ostream &ostr) const;
+    void generate(const class_ &c, nlohmann::json &parent) const;
 
-    void generate_top_level_elements(std::ostream &ostr) const;
+    void generate(const enum_ &c, nlohmann::json &parent) const;
+
+    void generate(const concept_ &c, nlohmann::json &parent) const;
+
+    void generate(const package &p, nlohmann::json &parent) const;
+
+    void generate_top_level_elements(nlohmann::json &parent) const;
 
     void generate(std::ostream &ostr) const override;
 
-private:
-    std::string render_name(std::string name) const;
+    void generate_relationships(nlohmann::json &parent) const;
 
+    void generate_relationships(const class_ &c, nlohmann::json &parent) const;
+
+    void generate_relationships(const enum_ &c, nlohmann::json &parent) const;
+
+    void generate_relationships(
+        const concept_ &c, nlohmann::json &parent) const;
+
+    void generate_relationships(const package &p, nlohmann::json &parent) const;
+
+private:
     mutable nlohmann::json json_;
 };
 
