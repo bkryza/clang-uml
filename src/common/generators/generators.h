@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "class_diagram/generators/cppidx/class_diagram_generator.h"
+#include "class_diagram/generators/json/class_diagram_generator.h"
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/generators/generators.h"
@@ -237,12 +237,12 @@ void generate_diagram(const std::string &od, const std::string &name,
 
                 LOG_INFO("Written {} diagram to {}", name, path.string());
             }
-            else if (generator_type == generator_type_t::cppidx) {
+            else if (generator_type == generator_type_t::json) {
                 auto path =
                     std::filesystem::path{od} / fmt::format("{}.json", name);
                 std::ofstream ofs;
                 ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::class_diagram::generators::cppidx::generator(
+                ofs << clanguml::class_diagram::generators::json::generator(
                     dynamic_cast<diagram_config &>(*diagram), *model);
 
                 ofs.close();

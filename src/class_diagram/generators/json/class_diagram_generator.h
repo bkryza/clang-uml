@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/cppidx/class_diagram_generator.h
+ * src/class_diagram/generators/json/class_diagram_generator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -22,7 +22,7 @@
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/model/enum.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
-#include "common/generators/cppidx/generator.h"
+#include "common/generators/json/generator.h"
 #include "common/generators/nested_element_stack.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
@@ -39,12 +39,12 @@
 namespace clanguml {
 namespace class_diagram {
 namespace generators {
-namespace cppidx {
+namespace json {
 
 using diagram_config = clanguml::config::class_diagram;
 using diagram_model = clanguml::class_diagram::model::diagram;
 template <typename C, typename D>
-using common_generator = clanguml::common::generators::cppidx::generator<C, D>;
+using common_generator = clanguml::common::generators::json::generator<C, D>;
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_element;
@@ -72,7 +72,7 @@ private:
     mutable nlohmann::json json_;
 };
 
-} // namespace cppidx
+} // namespace json
 } // namespace generators
 } // namespace class_diagram
 } // namespace clanguml

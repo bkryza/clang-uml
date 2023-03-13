@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/cppidx/class_diagram_generator.cc
+ * src/class_diagram/generators/json/class_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -20,7 +20,7 @@
 
 #include "util/error.h"
 
-namespace clanguml::class_diagram::generators::cppidx {
+namespace clanguml::class_diagram::generators::json {
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}

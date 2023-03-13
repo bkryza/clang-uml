@@ -1,5 +1,5 @@
 /**
- * src/common/generators/cppidx/generator.h
+ * src/common/generators/json/generator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -29,7 +29,7 @@
 
 #include <ostream>
 
-namespace clanguml::common::generators::cppidx {
+namespace clanguml::common::generators::json {
 
 using clanguml::common::model::access_t;
 using clanguml::common::model::element;
@@ -83,4 +83,4 @@ std::ostream &operator<<(
     return os;
 }
 
-} // namespace clanguml::common::generators::cppidx
+} // namespace clanguml::common::generators::json
