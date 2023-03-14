@@ -34,6 +34,9 @@ void to_json(nlohmann::json &j, const element &c)
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
         {"display_name", c.full_name(false)}};
 
+    if (c.comment())
+        j["comment"] = c.comment().value();
+
     if (!c.file().empty())
         j["source_location"] =
             dynamic_cast<const common::model::source_location &>(c);
@@ -60,7 +63,12 @@ void to_json(nlohmann::json &j, const relationship &c)
         j["multiplicity_source"] = c.multiplicity_source();
     if (!c.multiplicity_destination().empty())
         j["multiplicity_destination"] = c.multiplicity_destination();
-    j["access"] = to_string(c.access());
+    if (c.access() != access_t::kNone)
+        j["access"] = to_string(c.access());
+    if (!c.label().empty())
+        j["label"] = c.label();
+    if (c.comment())
+        j["comment"] = c.comment().value();
 }
 
 }
@@ -69,11 +77,15 @@ namespace clanguml::class_diagram::model {
 using nlohmann::json;
 void to_json(nlohmann::json &j, const class_element &c)
 {
-    j = {{"name", c.name()}, {"type", c.type()},
-        {"access", to_string(c.access())}};
+    j["name"] = c.name();
+    j["type"] = c.type();
+    if (c.access() != common::model::access_t::kNone)
+        j["access"] = to_string(c.access());
     if (!c.file().empty())
         j["source_location"] =
             dynamic_cast<const common::model::source_location &>(c);
+    if (c.comment())
+        j["comment"] = c.comment().value();
 }
 
 void to_json(nlohmann::json &j, const class_member &c)
@@ -92,6 +104,8 @@ void to_json(nlohmann::json &j, const method_parameter &c)
 
 void to_json(nlohmann::json &j, const class_method &c)
 {
+    j = dynamic_cast<const class_element &>(c);
+
     j["is_static"] = c.is_static();
     j["is_const"] = c.is_const();
     j["is_defaulted"] = c.is_defaulted();
@@ -106,7 +120,8 @@ void to_json(nlohmann::json &j, const class_parent &c)
 {
     j["is_virtual"] = c.is_virtual();
     j["id"] = std::to_string(c.id());
-    j["access"] = to_string(c.access());
+    if (c.access() != common::model::access_t::kNone)
+        j["access"] = to_string(c.access());
     j["name"] = c.name();
 }
 
@@ -152,6 +167,8 @@ void generator::generate(std::ostream &ostr) const
 {
     generate_top_level_elements(json_);
 
+    generate_relationships(json_);
+
     ostr << json_;
 }
 
@@ -167,6 +184,16 @@ void generator::generate_top_level_elements(nlohmann::json &parent) const
                 generate(*cls, parent);
             }
         }
+        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
+            if (m_model.should_include(*enm)) {
+                generate(*enm, parent);
+            }
+        }
+        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
+            if (m_model.should_include(*cpt)) {
+                generate(*cpt, parent);
+            }
+        }
     }
 }
 
@@ -177,11 +204,11 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     nlohmann::json package_object;
 
     if (m_config.generate_packages()) {
-        LOG_DBG("Generating package {}", p.name());
-
         // Don't generate packages from namespaces filtered out by
         // using_namespace
         if (!uns.starts_with({p.full_name(false)})) {
+            LOG_DBG("Generating package {}", p.name());
+
             package_object["type"] = "namespace";
             package_object["name"] = p.name();
             package_object["display_name"] = p.full_name(false);
@@ -190,7 +217,6 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
-            // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty()) {
                 if (m_config.generate_packages())
@@ -200,35 +226,32 @@ void generator::generate(const package &p, nlohmann::json &parent) const
             }
         }
         else if (auto *cls = dynamic_cast<class_ *>(subpackage.get()); cls) {
-            const auto &sp = dynamic_cast<class_ &>(*subpackage);
-            if (m_model.should_include(*subpackage)) {
+            if (m_model.should_include(*cls)) {
                 if (m_config.generate_packages())
-                    generate(sp, package_object);
+                    generate(*cls, package_object);
                 else
-                    generate(sp, parent);
+                    generate(*cls, parent);
             }
         }
         else if (auto *enm = dynamic_cast<enum_ *>(subpackage.get()); enm) {
-            const auto &sp = dynamic_cast<enum_ &>(*subpackage);
-            if (m_model.should_include(*subpackage)) {
+            if (m_model.should_include(*enm)) {
                 if (m_config.generate_packages())
-                    generate(sp, package_object);
+                    generate(*enm, package_object);
                 else
-                    generate(sp, parent);
+                    generate(*enm, parent);
             }
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(subpackage.get()); cpt) {
-            const auto &sp = dynamic_cast<concept_ &>(*subpackage);
-            if (m_model.should_include(*subpackage)) {
+            if (m_model.should_include(*cpt)) {
                 if (m_config.generate_packages())
-                    generate(sp, package_object);
+                    generate(*cpt, package_object);
                 else
-                    generate(sp, parent);
+                    generate(*cpt, parent);
             }
         }
     }
 
-    if (m_config.generate_packages()) {
+    if (m_config.generate_packages() && !package_object.empty()) {
         parent["elements"].push_back(std::move(package_object));
     }
 }
@@ -236,20 +259,19 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
-    json_["elements"].push_back(std::move(object));
+    parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const enum_ &e, nlohmann::json &parent) const
 {
     nlohmann::json object = e;
-    json_["elements"].push_back(std::move(object));
+    parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const concept_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
-    json_["elements"].push_back(std::move(object));
-    generate_relationships(json_);
+    parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate_relationships(nlohmann::json &parent) const
@@ -280,6 +302,14 @@ void generator::generate_relationships(
     const class_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        auto target_element = m_model.get(r.destination());
+        if (!target_element.has_value()) {
+            LOG_DBG("Skipping {} relation from {} to {} due "
+                    "to unresolved destination id",
+                to_string(r.type()), c.full_name(), r.destination());
+            continue;
+        }
+
         nlohmann::json rel = r;
         rel["source"] = std::to_string(c.id());
         parent["relationships"].push_back(rel);
@@ -300,6 +330,14 @@ void generator::generate_relationships(
     const enum_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        auto target_element = m_model.get(r.destination());
+        if (!target_element.has_value()) {
+            LOG_DBG("Skipping {} relation from {} to {} due "
+                    "to unresolved destination id",
+                to_string(r.type()), c.full_name(), r.destination());
+            continue;
+        }
+
         nlohmann::json rel = r;
         rel["source"] = std::to_string(c.id());
         parent["relationships"].push_back(rel);
@@ -310,6 +348,14 @@ void generator::generate_relationships(
     const concept_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        auto target_element = m_model.get(r.destination());
+        if (!target_element.has_value()) {
+            LOG_DBG("Skipping {} relation from {} to {} due "
+                    "to unresolved destination id",
+                to_string(r.type()), c.full_name(), r.destination());
+            continue;
+        }
+
         nlohmann::json rel = r;
         rel["source"] = std::to_string(c.id());
         parent["relationships"].push_back(rel);
@@ -319,6 +365,31 @@ void generator::generate_relationships(
 void generator::generate_relationships(
     const package &p, nlohmann::json &parent) const
 {
+    for (const auto &subpackage : p) {
+        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
+            const auto &sp = dynamic_cast<package &>(*subpackage);
+            if (!sp.is_empty())
+                generate_relationships(sp, parent);
+        }
+        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
+            if (m_model.should_include(*subpackage)) {
+                generate_relationships(
+                    dynamic_cast<class_ &>(*subpackage), parent);
+            }
+        }
+        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
+            if (m_model.should_include(*subpackage)) {
+                generate_relationships(
+                    dynamic_cast<enum_ &>(*subpackage), parent);
+            }
+        }
+        else if (dynamic_cast<concept_ *>(subpackage.get()) != nullptr) {
+            if (m_model.should_include(*subpackage)) {
+                generate_relationships(
+                    dynamic_cast<concept_ &>(*subpackage), parent);
+            }
+        }
+    }
 }
 
 } // namespace clanguml::class_diagram::generators::plantuml

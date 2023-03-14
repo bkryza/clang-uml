@@ -156,6 +156,20 @@ std::string generate_class_puml(
     return ss.str();
 }
 
+nlohmann::json generate_class_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::class_diagram::model::diagram &model)
+{
+    using namespace clanguml::class_diagram::generators::json;
+
+    std::stringstream ss;
+
+    ss << generator(
+        dynamic_cast<clanguml::config::class_diagram &>(*config), model);
+
+    return nlohmann::json::parse(ss.str());
+}
+
 std::string generate_package_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::package_diagram::model::diagram &model)
@@ -195,6 +209,16 @@ void save_puml(const std::string &path, const std::string &puml)
     std::ofstream ofs;
     ofs.open(p, std::ofstream::out | std::ofstream::trunc);
     ofs << puml;
+    ofs.close();
+}
+
+void save_json(const std::string &path, const nlohmann::json &j)
+{
+    std::filesystem::path p{path};
+    std::filesystem::create_directory(p.parent_path());
+    std::ofstream ofs;
+    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
+    ofs << std::setw(2) << j;
     ofs.close();
 }
 

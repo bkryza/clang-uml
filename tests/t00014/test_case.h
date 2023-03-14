@@ -115,4 +115,965 @@ TEST_CASE("t00014", "[test-case][class]")
     REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<wchar_t,std::string>")));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    std::string expected_json = R"##(
+{
+  "elements": [
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<T,P>",
+      "id": "765890579167335652",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": true,
+      "is_template": false,
+      "is_union": false,
+      "members": [
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "t",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 22
+          },
+          "type": "T"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "p",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 23
+          },
+          "type": "P"
+        }
+      ],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "source_location": {
+        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "line": 21
+      },
+      "template_parameters": [
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "T",
+          "type": ""
+        },
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "P",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::B",
+      "id": "934136012292043506",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": true,
+      "is_template": false,
+      "is_union": false,
+      "members": [
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "value",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 27
+          },
+          "type": "std::string"
+        }
+      ],
+      "methods": [],
+      "name": "B",
+      "namespace": "clanguml::t00014",
+      "source_location": {
+        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "line": 26
+      },
+      "template_parameters": [],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<T,std::string>",
+      "id": "2186387853087008570",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "T",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<T,std::unique_ptr<std::string>>",
+      "id": "947292733740993297",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "T",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::unique_ptr",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<long,T>",
+      "id": "1700006390494465667",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "long",
+          "type": ""
+        },
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "T",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<double,T>",
+      "id": "2017665567517853203",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "double",
+          "type": ""
+        },
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "T",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<long,U>",
+      "id": "906557320263235873",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "long",
+          "type": ""
+        },
+        {
+          "is_template_parameter": true,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "U",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<long,bool>",
+      "id": "378898020828430636",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "long",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "bool",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<double,bool>",
+      "id": "2082013375525130414",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "double",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "bool",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<long,float>",
+      "id": "51978493292659230",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "long",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "float",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<double,float>",
+      "id": "197769253782961588",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "double",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "float",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<bool,std::string>",
+      "id": "895940711566401184",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "bool",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<float,std::unique_ptr<std::string>>",
+      "id": "1751732625010742161",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "float",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::unique_ptr",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<int,std::string>",
+      "id": "887121441210847583",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "int",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<std::string,std::string>",
+      "id": "1119452495635561975",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<char,std::string>",
+      "id": "640294848489463071",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "char",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::A<wchar_t,std::string>",
+      "id": "139599686499155694",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [],
+      "methods": [],
+      "name": "A",
+      "namespace": "clanguml::t00014",
+      "template_parameters": [
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "wchar_t",
+          "type": ""
+        },
+        {
+          "is_template_parameter": false,
+          "is_template_template_parameter": false,
+          "is_variadic": false,
+          "name": "std::string",
+          "type": ""
+        }
+      ],
+      "type": "class"
+    },
+    {
+      "bases": [],
+      "display_name": "clanguml::t00014::R",
+      "id": "1192822659863756768",
+      "is_abstract": false,
+      "is_nested": false,
+      "is_struct": false,
+      "is_template": false,
+      "is_union": false,
+      "members": [
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "bapair",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 58
+          },
+          "type": "PairPairBA<bool>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "abool",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 60
+          },
+          "type": "APtr<bool>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "aboolfloat",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 61
+          },
+          "type": "AAPtr<bool,float>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "afloat",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 62
+          },
+          "type": "ASharedPtr<float>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "boolstring",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 63
+          },
+          "type": "A<bool,std::string>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "floatstring",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 64
+          },
+          "type": "AStringPtr<float>"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "intstring",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 65
+          },
+          "type": "clanguml::t00014::AIntString"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "stringstring",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 66
+          },
+          "type": "clanguml::t00014::AStringString"
+        },
+        {
+          "access": "private",
+          "is_static": false,
+          "name": "bstringstring",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 67
+          },
+          "type": "clanguml::t00014::BStringString"
+        },
+        {
+          "access": "protected",
+          "is_static": false,
+          "name": "bs",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 70
+          },
+          "type": "clanguml::t00014::BVector"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "bs2",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 73
+          },
+          "type": "clanguml::t00014::BVector2"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "cb",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 74
+          },
+          "type": "SimpleCallback<clanguml::t00014::ACharString>"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "gcb",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 75
+          },
+          "type": "GenericCallback<clanguml::t00014::R::AWCharString>"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "vcb",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 76
+          },
+          "type": "clanguml::t00014::VoidCallback"
+        },
+        {
+          "access": "public",
+          "is_static": false,
+          "name": "vps",
+          "source_location": {
+            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "line": 77
+          },
+          "type": "VectorPtr<clanguml::t00014::B>"
+        }
+      ],
+      "methods": [],
+      "name": "R",
+      "namespace": "clanguml::t00014",
+      "source_location": {
+        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "line": 55
+      },
+      "template_parameters": [],
+      "type": "class"
+    }
+  ],
+  "relationships": [
+    {
+      "access": "public",
+      "destination": "765890579167335652",
+      "source": "2186387853087008570",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "765890579167335652",
+      "source": "947292733740993297",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "765890579167335652",
+      "source": "1700006390494465667",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "765890579167335652",
+      "source": "2017665567517853203",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "1700006390494465667",
+      "source": "906557320263235873",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "1700006390494465667",
+      "source": "378898020828430636",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2017665567517853203",
+      "source": "2082013375525130414",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "1700006390494465667",
+      "source": "51978493292659230",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2017665567517853203",
+      "source": "197769253782961588",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2186387853087008570",
+      "source": "895940711566401184",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "947292733740993297",
+      "source": "1751732625010742161",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2186387853087008570",
+      "source": "887121441210847583",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2186387853087008570",
+      "source": "1119452495635561975",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2186387853087008570",
+      "source": "640294848489463071",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "2186387853087008570",
+      "source": "139599686499155694",
+      "type": "instantiation"
+    },
+    {
+      "access": "public",
+      "destination": "378898020828430636",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "private",
+      "destination": "934136012292043506",
+      "label": "bapair",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "378898020828430636",
+      "label": "bapair",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "public",
+      "destination": "2082013375525130414",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "private",
+      "destination": "2082013375525130414",
+      "label": "abool",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "public",
+      "destination": "51978493292659230",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "private",
+      "destination": "2082013375525130414",
+      "label": "aboolfloat",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "51978493292659230",
+      "label": "aboolfloat",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "public",
+      "destination": "197769253782961588",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "private",
+      "destination": "197769253782961588",
+      "label": "afloat",
+      "source": "1192822659863756768",
+      "type": "association"
+    },
+    {
+      "access": "private",
+      "destination": "895940711566401184",
+      "label": "boolstring",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "1751732625010742161",
+      "label": "floatstring",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "887121441210847583",
+      "label": "intstring",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "1119452495635561975",
+      "label": "stringstring",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "private",
+      "destination": "1119452495635561975",
+      "label": "bstringstring",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "protected",
+      "destination": "934136012292043506",
+      "label": "bs",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "public",
+      "destination": "934136012292043506",
+      "label": "bs2",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    },
+    {
+      "access": "public",
+      "destination": "640294848489463071",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "public",
+      "destination": "139599686499155694",
+      "source": "1192822659863756768",
+      "type": "dependency"
+    },
+    {
+      "access": "public",
+      "destination": "934136012292043506",
+      "label": "vps",
+      "source": "1192822659863756768",
+      "type": "aggregation"
+    }
+  ]
+}
+)##";
+    auto j = generate_class_json(diagram, *model);
+
+    REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }
