@@ -4,6 +4,7 @@
 
 * [General issues](#general-issues)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
+  * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
 * [Sequence diagrams](#sequence-diagrams)
@@ -16,17 +17,51 @@
 ### Diagram generated with PlantUML is cropped
 When generating diagrams with PlantUML without specifying an output file format, the default is PNG. 
 Unfortunately PlantUML will not check if the diagram will fit in the default PNG size, and often the diagram
-will be be incomplete in the picture. A better option is to specify SVG as output format and then convert 
+will be incomplete in the picture. A better option is to specify SVG as output format and then convert 
 to PNG, e.g.:
 ```bash
 $ plantuml -tsvg mydiagram.puml
 $ convert +antialias mydiagram.svg mydiagram.png
 ```
 
+### YAML anchors and aliases are not fully supported
+`clang-uml` uses [yaml-cpp](https://github.com/jbeder/yaml-cpp) library, which
+currently does not support
+[merging YAML anchor dictionaries](https://github.com/jbeder/yaml-cpp/issues/41), 
+e.g. in the following configuration file the `main_sequence_diagram` will work,
+but the `foo_sequence_diagram` will fail with parse error:
+
+```yaml
+compilation_database_dir: debug
+output_directory: output
+
+.sequence_diagram_anchor: &sequence_diagram_anchor
+  type: sequence
+  glob: []
+  start_from:
+    - function: 'main(int,const char**)'
+
+diagrams:
+  main_sequence_diagram: *sequence_diagram_anchor
+  foo_sequence_diagram:
+    <<: *sequence_diagram_anchor
+    glob: [src/foo.cc]
+    start_from:
+      - function: 'foo(int,float)'
+```
+
+One option around this is to use some YAML preprocessor, such as
+[yq](https://github.com/mikefarah/yq) on such file and passing
+the configuration file to `clang-uml` using `stdin`, e.g.:
+
+```bash
+yq 'explode(.)' .clang-uml | clang-uml --config -
+```
+
 ## Class diagrams
 ### "fatal error: 'stddef.h' file not found"
 This error means that Clang cannot find some standard headers in the include paths
-specified in the `compile_commands.json`. This typically happens on macos and sometimes on Linux, when 
+specified in the `compile_commands.json`. This typically happens on macOS and sometimes on Linux, when 
 the code was compiled with different Clang version than `clang-uml` itself.
 
 One solution to this issue is to add the following line to your `CMakeLists.txt` file:
