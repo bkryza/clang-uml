@@ -34,8 +34,8 @@ void to_json(nlohmann::json &j, const element &c)
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
         {"display_name", c.full_name(false)}};
 
-    if (c.comment())
-        j["comment"] = c.comment().value();
+    if (const auto &comment = c.comment(); comment)
+        j["comment"] = comment.value();
 
     if (!c.file().empty())
         j["source_location"] =
@@ -50,8 +50,8 @@ void to_json(nlohmann::json &j, const template_parameter &c)
         j["default_value"] = c.default_value();
     j["is_template_parameter"] = c.is_template_parameter();
     j["is_template_template_parameter"] = c.is_template_template_parameter();
-    if (c.concept_constraint())
-        j["concept_constraint"] = c.concept_constraint().value();
+    if (const auto &constraint = c.concept_constraint(); constraint)
+        j["concept_constraint"] = constraint.value();
     j["is_variadic"] = c.is_variadic();
 }
 
@@ -67,11 +67,11 @@ void to_json(nlohmann::json &j, const relationship &c)
         j["access"] = to_string(c.access());
     if (!c.label().empty())
         j["label"] = c.label();
-    if (c.comment())
-        j["comment"] = c.comment().value();
+    if (const auto &comment = c.comment(); comment)
+        j["comment"] = comment.value();
 }
 
-}
+} // namespace clanguml::common::model
 
 namespace clanguml::class_diagram::model {
 using nlohmann::json;
@@ -84,8 +84,8 @@ void to_json(nlohmann::json &j, const class_element &c)
     if (!c.file().empty())
         j["source_location"] =
             dynamic_cast<const common::model::source_location &>(c);
-    if (c.comment())
-        j["comment"] = c.comment().value();
+    if (const auto &comment = c.comment(); comment)
+        j["comment"] = comment.value();
 }
 
 void to_json(nlohmann::json &j, const class_member &c)
@@ -154,7 +154,8 @@ void to_json(nlohmann::json &j, const concept_ &c)
     j["parameters"] = c.requires_parameters();
     j["statements"] = c.requires_statements();
 }
-}
+
+} // namespace clanguml::class_diagram::model
 
 namespace clanguml::class_diagram::generators::json {
 
@@ -392,4 +393,4 @@ void generator::generate_relationships(
     }
 }
 
-} // namespace clanguml::class_diagram::generators::plantuml
+} // namespace clanguml::class_diagram::generators::json
