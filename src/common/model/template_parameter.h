@@ -43,8 +43,6 @@ std::string to_string(template_parameter_kind_t k);
 /// including variadic parameters and instantiations with
 /// nested templates
 class template_parameter {
-    template_parameter() = default;
-
 public:
     static template_parameter make_template_type(std::string name,
         const std::optional<std::string> &default_value = {},
@@ -107,13 +105,6 @@ public:
         return p;
     }
 
-    //    template_parameter(const std::optional<std::string> &type = {},
-    //        const std::optional<std::string> &name = {},
-    //        const std::optional<std::string> &default_value = {},
-    //        bool is_variadic = false);
-
-    //    template_parameter(const template_parameter &right) = default;
-
     void set_type(const std::string &type);
     std::optional<std::string> type() const;
 
@@ -128,9 +119,6 @@ public:
 
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
-
-    void is_pack(bool is_pack) noexcept;
-    bool is_pack() const noexcept;
 
     bool is_specialization_of(const template_parameter &ct) const;
 
@@ -188,6 +176,8 @@ public:
     void set_unexposed(bool unexposed) { is_unexposed_ = unexposed; }
 
 private:
+    template_parameter() = default;
+
     template_parameter_kind_t kind_;
 
     /// Represents the type of non-type template parameters
@@ -210,9 +200,6 @@ private:
 
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
-
-    /// Whether the argument specializes argument pack from parent template
-    bool is_pack_{false};
 
     /// Stores optional fully qualified name of constraint for this template
     /// parameter

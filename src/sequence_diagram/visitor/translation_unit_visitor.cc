@@ -1588,7 +1588,6 @@ void translation_unit_visitor::
     assert(arg.getKind() == clang::TemplateArgument::Type);
 
     argument.is_template_parameter(false);
-
     argument.set_type(
         common::to_string(arg.getAsType(), template_decl->getASTContext()));
 }
@@ -1603,9 +1602,7 @@ translation_unit_visitor::build_template_instantiation_process_type_argument(
 {
     assert(arg.getKind() == clang::TemplateArgument::Type);
 
-    auto argument = template_parameter::make_argument({});
-
-    argument.is_template_parameter(false);
+    std::optional<template_parameter> argument;
 
     // If this is a nested template type - add nested templates as
     // template arguments
@@ -1621,27 +1618,27 @@ translation_unit_visitor::build_template_instantiation_process_type_argument(
                 .getAsTemplateDecl()
                 ->getQualifiedNameAsString();
 
-        argument.set_type(nested_template_name);
+        argument = template_parameter::make_argument(nested_template_name);
 
         // Check if this template should be simplified (e.g. system
         // template aliases such as 'std:basic_string<char>' should
         // be simply 'std::string')
-        simplify_system_template(
-            argument, argument.to_string(config().using_namespace(), false));
+        simplify_system_template(*argument,
+            argument.value().to_string(config().using_namespace(), false));
     }
     else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() != nullptr) {
-        argument.is_template_parameter(true);
-        argument.set_type(
+        argument = template_parameter::make_template_type(
             common::to_string(arg.getAsType(), template_decl->getASTContext()));
     }
     else {
+        argument = template_parameter::make_argument({});
         // This is just a regular record type
         build_template_instantiation_process_tag_argument(
             template_instantiation, full_template_specialization_name,
-            template_decl, arg, argument);
+            template_decl, arg, *argument);
     }
 
-    return argument;
+    return *argument;
 }
 
 std::unique_ptr<model::class_>

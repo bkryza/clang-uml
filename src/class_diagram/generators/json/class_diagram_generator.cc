@@ -45,21 +45,13 @@ void to_json(nlohmann::json &j, const element &c)
 void to_json(nlohmann::json &j, const template_parameter &c)
 {
     j["kind"] = to_string(c.kind());
-
-    if (c.kind() == template_parameter_kind_t::template_type) {
+    if (c.type())
+        j["type"] = c.type().value();
+    if (c.name())
         j["name"] = c.name().value();
-    }
-
-    //    j["type"] = c.type();
-    //    j["name"] = c.name();
-    //    if (!c.default_value().empty())
-    //        j["default_value"] = c.default_value();
-    //    j["is_template_parameter"] = c.is_template_parameter();
-    //    j["is_template_template_parameter"] =
-    //    c.is_template_template_parameter(); if (const auto &constraint =
-    //    c.concept_constraint(); constraint)
-    //        j["concept_constraint"] = constraint.value();
-    //    j["is_variadic"] = c.is_variadic();
+    if (c.default_value())
+        j["default"] = c.default_value().value();
+    j["is_variadic"] = c.is_variadic();
 }
 
 void to_json(nlohmann::json &j, const relationship &c)

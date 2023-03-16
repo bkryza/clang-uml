@@ -40,16 +40,6 @@ std::string to_string(template_parameter_kind_t k)
         assert(0);
     }
 }
-// template_parameter::template_parameter(const std::optional<std::string>
-// &type,
-//     const std::optional<std::string> &name,
-//     const std::optional<std::string> &default_value, bool is_variadic)
-//     : type_{type}
-//     , name_{name}
-//     , default_value_{std::move(default_value)}
-//     , is_variadic_{is_variadic}
-//{
-// }
 
 void template_parameter::set_type(const std::string &type)
 {
