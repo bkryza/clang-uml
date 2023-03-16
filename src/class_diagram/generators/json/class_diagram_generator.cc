@@ -25,7 +25,7 @@ using nlohmann::json;
 
 void to_json(nlohmann::json &j, const source_location &sl)
 {
-    j = json{{"file", sl.file()}, {"line", sl.line()}};
+    j = json{{"file", sl.file_relative()}, {"line", sl.line()}};
 }
 
 void to_json(nlohmann::json &j, const element &c)
@@ -37,9 +37,10 @@ void to_json(nlohmann::json &j, const element &c)
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();
 
-    if (!c.file().empty())
+    if (!c.file().empty()) {
         j["source_location"] =
             dynamic_cast<const common::model::source_location &>(c);
+    }
 }
 
 void to_json(nlohmann::json &j, const template_parameter &c)

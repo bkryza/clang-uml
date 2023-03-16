@@ -134,7 +134,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "t",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 22
           },
           "type": "T"
@@ -144,7 +144,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "p",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 23
           },
           "type": "P"
@@ -154,23 +154,19 @@ TEST_CASE("t00014", "[test-case][class]")
       "name": "A",
       "namespace": "clanguml::t00014",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "file": "../../tests/t00014/t00014.cc",
         "line": 21
       },
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "template_type",
+          "name": "T"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "P",
-          "type": ""
+          "kind": "template_type",
+          "name": "P"
         }
       ],
       "type": "class"
@@ -190,7 +186,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "value",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 27
           },
           "type": "std::string"
@@ -200,7 +196,7 @@ TEST_CASE("t00014", "[test-case][class]")
       "name": "B",
       "namespace": "clanguml::t00014",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "file": "../../tests/t00014/t00014.cc",
         "line": 26
       },
       "template_parameters": [],
@@ -221,18 +217,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "argument",
+          "type": "T"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -252,18 +244,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "argument",
+          "type": "T"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::unique_ptr",
-          "type": ""
+          "kind": "argument",
+          "type": "std::unique_ptr"
         }
       ],
       "type": "class"
@@ -283,18 +271,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "long",
-          "type": ""
+          "kind": "argument",
+          "type": "long"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "argument",
+          "type": "T"
         }
       ],
       "type": "class"
@@ -314,18 +298,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "double",
-          "type": ""
+          "kind": "argument",
+          "type": "double"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "argument",
+          "type": "T"
         }
       ],
       "type": "class"
@@ -345,18 +325,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "long",
-          "type": ""
+          "kind": "argument",
+          "type": "long"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "U",
-          "type": ""
+          "kind": "argument",
+          "type": "U"
         }
       ],
       "type": "class"
@@ -376,18 +352,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "long",
-          "type": ""
+          "kind": "argument",
+          "type": "long"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "bool",
-          "type": ""
+          "kind": "argument",
+          "type": "bool"
         }
       ],
       "type": "class"
@@ -407,18 +379,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "double",
-          "type": ""
+          "kind": "argument",
+          "type": "double"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "bool",
-          "type": ""
+          "kind": "argument",
+          "type": "bool"
         }
       ],
       "type": "class"
@@ -438,18 +406,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "long",
-          "type": ""
+          "kind": "argument",
+          "type": "long"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "float",
-          "type": ""
+          "kind": "argument",
+          "type": "float"
         }
       ],
       "type": "class"
@@ -469,18 +433,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "double",
-          "type": ""
+          "kind": "argument",
+          "type": "double"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "float",
-          "type": ""
+          "kind": "argument",
+          "type": "float"
         }
       ],
       "type": "class"
@@ -500,18 +460,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "bool",
-          "type": ""
+          "kind": "argument",
+          "type": "bool"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -531,18 +487,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "float",
-          "type": ""
+          "kind": "argument",
+          "type": "float"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::unique_ptr",
-          "type": ""
+          "kind": "argument",
+          "type": "std::unique_ptr"
         }
       ],
       "type": "class"
@@ -562,18 +514,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "int",
-          "type": ""
+          "kind": "argument",
+          "type": "int"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -593,18 +541,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -624,18 +568,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "char",
-          "type": ""
+          "kind": "argument",
+          "type": "char"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -655,18 +595,14 @@ TEST_CASE("t00014", "[test-case][class]")
       "namespace": "clanguml::t00014",
       "template_parameters": [
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "wchar_t",
-          "type": ""
+          "kind": "argument",
+          "type": "wchar_t"
         },
         {
-          "is_template_parameter": false,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "std::string",
-          "type": ""
+          "kind": "argument",
+          "type": "std::string"
         }
       ],
       "type": "class"
@@ -686,7 +622,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "bapair",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 58
           },
           "type": "PairPairBA<bool>"
@@ -696,7 +632,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "abool",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 60
           },
           "type": "APtr<bool>"
@@ -706,7 +642,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "aboolfloat",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 61
           },
           "type": "AAPtr<bool,float>"
@@ -716,7 +652,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "afloat",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 62
           },
           "type": "ASharedPtr<float>"
@@ -726,7 +662,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "boolstring",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 63
           },
           "type": "A<bool,std::string>"
@@ -736,7 +672,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "floatstring",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 64
           },
           "type": "AStringPtr<float>"
@@ -746,7 +682,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "intstring",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 65
           },
           "type": "clanguml::t00014::AIntString"
@@ -756,7 +692,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "stringstring",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 66
           },
           "type": "clanguml::t00014::AStringString"
@@ -766,7 +702,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "bstringstring",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 67
           },
           "type": "clanguml::t00014::BStringString"
@@ -776,7 +712,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "bs",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 70
           },
           "type": "clanguml::t00014::BVector"
@@ -786,7 +722,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "bs2",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 73
           },
           "type": "clanguml::t00014::BVector2"
@@ -796,7 +732,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "cb",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 74
           },
           "type": "SimpleCallback<clanguml::t00014::ACharString>"
@@ -806,7 +742,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "gcb",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 75
           },
           "type": "GenericCallback<clanguml::t00014::R::AWCharString>"
@@ -816,7 +752,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "vcb",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 76
           },
           "type": "clanguml::t00014::VoidCallback"
@@ -826,7 +762,7 @@ TEST_CASE("t00014", "[test-case][class]")
           "is_static": false,
           "name": "vps",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+            "file": "../../tests/t00014/t00014.cc",
             "line": 77
           },
           "type": "VectorPtr<clanguml::t00014::B>"
@@ -836,7 +772,7 @@ TEST_CASE("t00014", "[test-case][class]")
       "name": "R",
       "namespace": "clanguml::t00014",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00014/t00014.cc",
+        "file": "../../tests/t00014/t00014.cc",
         "line": 55
       },
       "template_parameters": [],
@@ -1073,7 +1009,7 @@ TEST_CASE("t00014", "[test-case][class]")
 )##";
     auto j = generate_class_json(diagram, *model);
 
-    //    REQUIRE(j == nlohmann::json::parse(expected_json));
+    REQUIRE(j == nlohmann::json::parse(expected_json));
 
     save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

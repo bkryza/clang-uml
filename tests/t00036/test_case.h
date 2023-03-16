@@ -64,7 +64,7 @@ TEST_CASE("t00036", "[test-case][class]")
           "name": "E",
           "namespace": "clanguml::t00036::ns1",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+            "file": "../../tests/t00036/t00036.cc",
             "line": 6
           },
           "type": "enum"
@@ -87,7 +87,7 @@ TEST_CASE("t00036", "[test-case][class]")
                   "is_static": false,
                   "name": "a",
                   "source_location": {
-                    "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+                    "file": "../../tests/t00036/t00036.cc",
                     "line": 11
                   },
                   "type": "T"
@@ -97,16 +97,14 @@ TEST_CASE("t00036", "[test-case][class]")
               "name": "A",
               "namespace": "clanguml::t00036::ns1::ns11",
               "source_location": {
-                "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+                "file": "../../tests/t00036/t00036.cc",
                 "line": 10
               },
               "template_parameters": [
                 {
-                  "is_template_parameter": true,
-                  "is_template_template_parameter": false,
                   "is_variadic": false,
-                  "name": "T",
-                  "type": ""
+                  "kind": "template_type",
+                  "name": "T"
                 }
               ],
               "type": "class"
@@ -129,7 +127,7 @@ TEST_CASE("t00036", "[test-case][class]")
                       "is_static": false,
                       "name": "a_int",
                       "source_location": {
-                        "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+                        "file": "../../tests/t00036/t00036.cc",
                         "line": 17
                       },
                       "type": "A<int>"
@@ -139,7 +137,7 @@ TEST_CASE("t00036", "[test-case][class]")
                   "name": "B",
                   "namespace": "clanguml::t00036::ns1::ns11::ns111",
                   "source_location": {
-                    "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+                    "file": "../../tests/t00036/t00036.cc",
                     "line": 16
                   },
                   "template_parameters": [],
@@ -164,11 +162,9 @@ TEST_CASE("t00036", "[test-case][class]")
               "namespace": "clanguml::t00036::ns1::ns11",
               "template_parameters": [
                 {
-                  "is_template_parameter": false,
-                  "is_template_template_parameter": false,
                   "is_variadic": false,
-                  "name": "int",
-                  "type": ""
+                  "kind": "argument",
+                  "type": "int"
                 }
               ],
               "type": "class"
@@ -201,7 +197,7 @@ TEST_CASE("t00036", "[test-case][class]")
               "name": "C",
               "namespace": "clanguml::t00036::ns2::ns22",
               "source_location": {
-                "file": "/home/bartek/devel/clang-uml/tests/t00036/t00036.cc",
+                "file": "../../tests/t00036/t00036.cc",
                 "line": 28
               },
               "template_parameters": [],
@@ -236,7 +232,7 @@ TEST_CASE("t00036", "[test-case][class]")
 
     auto j = generate_class_json(diagram, *model);
 
-    //    REQUIRE(j == nlohmann::json::parse(expected_json));
+    REQUIRE(j == nlohmann::json::parse(expected_json));
 
     save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

@@ -125,7 +125,7 @@ TEST_CASE("t00056", "[test-case][class]")
       "namespace": "clanguml::t00056",
       "parameters": [],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 7
       },
       "statements": [],
@@ -147,7 +147,7 @@ TEST_CASE("t00056", "[test-case][class]")
         }
       ],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 10
       },
       "statements": [
@@ -162,7 +162,7 @@ TEST_CASE("t00056", "[test-case][class]")
       "namespace": "clanguml::t00056",
       "parameters": [],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 15
       },
       "statements": [],
@@ -180,7 +180,7 @@ TEST_CASE("t00056", "[test-case][class]")
         }
       ],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 19
       },
       "statements": [
@@ -196,7 +196,7 @@ TEST_CASE("t00056", "[test-case][class]")
       "namespace": "clanguml::t00056",
       "parameters": [],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 26
       },
       "statements": [
@@ -216,7 +216,7 @@ TEST_CASE("t00056", "[test-case][class]")
         }
       ],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 29
       },
       "statements": [
@@ -233,7 +233,7 @@ TEST_CASE("t00056", "[test-case][class]")
       "namespace": "clanguml::t00056",
       "parameters": [],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 45
       },
       "statements": [],
@@ -246,7 +246,7 @@ TEST_CASE("t00056", "[test-case][class]")
       "namespace": "clanguml::t00056",
       "parameters": [],
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 48
       },
       "statements": [],
@@ -267,7 +267,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "a",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 53
           },
           "type": "T"
@@ -277,17 +277,14 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "A",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 52
       },
       "template_parameters": [
         {
-          "concept_constraint": "clanguml::t00056::max_four_bytes",
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "template_type",
+          "name": "T"
         }
       ],
       "type": "class"
@@ -307,7 +304,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "b",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 60
           },
           "type": "T"
@@ -317,16 +314,14 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "B",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 59
       },
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "template_type",
+          "name": "T"
         }
       ],
       "type": "class"
@@ -346,7 +341,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "c",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 70
           },
           "type": "T"
@@ -356,17 +351,14 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "C",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 69
       },
       "template_parameters": [
         {
-          "concept_constraint": "clanguml::t00056::convertible_to_string",
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T",
-          "type": ""
+          "kind": "template_type",
+          "name": "T"
         }
       ],
       "type": "class"
@@ -385,46 +377,34 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "D",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 75
       },
       "template_parameters": [
         {
-          "concept_constraint": "clanguml::t00056::iterable",
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T1",
-          "type": ""
+          "kind": "template_type",
+          "name": "T1"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T2",
-          "type": ""
+          "kind": "template_type",
+          "name": "T2"
         },
         {
-          "concept_constraint": "clanguml::t00056::iterable",
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T3",
-          "type": ""
+          "kind": "template_type",
+          "name": "T3"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T4",
-          "type": ""
+          "kind": "template_type",
+          "name": "T4"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T5",
-          "type": ""
+          "kind": "template_type",
+          "name": "T5"
         }
       ],
       "type": "class"
@@ -444,7 +424,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "e1",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 80
           },
           "type": "T1"
@@ -454,7 +434,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "e2",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 81
           },
           "type": "T2"
@@ -464,7 +444,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "e3",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 82
           },
           "type": "T3"
@@ -474,30 +454,24 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "E",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 79
       },
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T1",
-          "type": ""
+          "kind": "template_type",
+          "name": "T1"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T2",
-          "type": ""
+          "kind": "template_type",
+          "name": "T2"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T3",
-          "type": ""
+          "kind": "template_type",
+          "name": "T3"
         }
       ],
       "type": "class"
@@ -517,7 +491,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "f1",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 88
           },
           "type": "T1"
@@ -527,7 +501,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "f2",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 89
           },
           "type": "T2"
@@ -537,7 +511,7 @@ TEST_CASE("t00056", "[test-case][class]")
           "is_static": false,
           "name": "f3",
           "source_location": {
-            "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+            "file": "../../tests/t00056/t00056.cc",
             "line": 90
           },
           "type": "T3"
@@ -547,30 +521,24 @@ TEST_CASE("t00056", "[test-case][class]")
       "name": "F",
       "namespace": "clanguml::t00056",
       "source_location": {
-        "file": "/home/bartek/devel/clang-uml/tests/t00056/t00056.cc",
+        "file": "../../tests/t00056/t00056.cc",
         "line": 87
       },
       "template_parameters": [
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T1",
-          "type": ""
+          "kind": "template_type",
+          "name": "T1"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T2",
-          "type": ""
+          "kind": "template_type",
+          "name": "T2"
         },
         {
-          "is_template_parameter": true,
-          "is_template_template_parameter": false,
           "is_variadic": false,
-          "name": "T3",
-          "type": ""
+          "kind": "template_type",
+          "name": "T3"
         }
       ],
       "type": "class"
@@ -666,7 +634,7 @@ TEST_CASE("t00056", "[test-case][class]")
 )##";
     auto j = generate_class_json(diagram, *model);
 
-    //    REQUIRE(j == nlohmann::json::parse(expected_json));
+    REQUIRE(j == nlohmann::json::parse(expected_json));
 
     save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }
