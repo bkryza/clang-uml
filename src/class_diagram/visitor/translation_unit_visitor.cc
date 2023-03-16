@@ -1806,38 +1806,41 @@ void translation_unit_visitor::process_template_specialization_argument(
     const auto argument_kind = arg.getKind();
 
     if (argument_kind == clang::TemplateArgument::Type) {
-        auto argument = template_parameter::make_argument({});
+        std::optional<template_parameter> argument;
 
         // If this is a nested template type - add nested templates as
         // template arguments
         if (const auto *nested_template_type =
                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
             nested_template_type != nullptr) {
+            argument = template_parameter::make_argument({});
 
             const auto nested_template_name =
                 nested_template_type->getTemplateName()
                     .getAsTemplateDecl()
                     ->getQualifiedNameAsString();
 
-            argument.set_type(nested_template_name);
+            argument->set_type(nested_template_name);
 
             auto nested_template_instantiation = build_template_instantiation(
                 *nested_template_type, {&template_instantiation});
 
-            argument.set_id(nested_template_instantiation->id());
+            argument->set_id(nested_template_instantiation->id());
 
             for (const auto &t : nested_template_instantiation->templates())
-                argument.add_template_param(t);
+                argument->add_template_param(t);
         }
         else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() !=
             nullptr) {
-            auto type_name =
+            argument = template_parameter::make_template_type({});
+
+            auto parameter_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
 
             // clang does not provide declared template parameter/argument
             // names in template specializations - so we have to extract
             // them from raw source code...
-            if (type_name.find("type-parameter-") == 0) {
+            if (parameter_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
                     cls->getSourceRange(), source_manager());
 
@@ -1849,22 +1852,24 @@ void translation_unit_visitor::process_template_specialization_argument(
                     declaration_text, [](const auto &t) { return t; });
 
                 if (template_params.size() > argument_index)
-                    type_name = template_params[argument_index].to_string(
+                    parameter_name = template_params[argument_index].to_string(
                         config().using_namespace(), false);
                 else {
                     LOG_DBG("Failed to find type specialization for argument "
                             "{} at index {} in declaration \n===\n{}\n===\n",
-                        type_name, argument_index, declaration_text);
+                        parameter_name, argument_index, declaration_text);
                 }
             }
 
-            argument.set_type(type_name);
+            argument->set_name(parameter_name);
         }
         else {
             auto type_name =
                 common::to_string(arg.getAsType(), cls->getASTContext());
             ensure_lambda_type_is_relative(type_name);
             if (type_name.find('<') != std::string::npos) {
+                argument = template_parameter::make_argument({});
+
                 // Sometimes template instantiation is reported as
                 // RecordType in the AST and getAs to
                 // TemplateSpecializationType returns null pointer so we
@@ -1874,15 +1879,17 @@ void translation_unit_visitor::process_template_specialization_argument(
                 process_unexposed_template_specialization_parameters(
                     type_name.substr(type_name.find('<') + 1,
                         type_name.size() - (type_name.find('<') + 2)),
-                    argument, template_instantiation);
+                    *argument, template_instantiation);
 
                 auto unexposed_type_name =
                     type_name.substr(0, type_name.find('<'));
                 ensure_lambda_type_is_relative(unexposed_type_name);
 
-                argument.set_type(unexposed_type_name);
+                argument->set_type(unexposed_type_name);
             }
             else if (type_name.find("type-parameter-") == 0) {
+                argument = template_parameter::make_template_type({});
+
                 auto declaration_text = common::get_source_text_raw(
                     cls->getSourceRange(), source_manager());
 
@@ -1904,20 +1911,24 @@ void translation_unit_visitor::process_template_specialization_argument(
 
                 // Otherwise just set the name for the template argument to
                 // whatever clang says
-                argument.set_type(type_name);
+                argument->set_name(type_name);
             }
             else {
-                argument.set_type(type_name);
+                argument = template_parameter::make_argument({});
+                argument->set_type(type_name);
             }
         }
 
+        if (!argument)
+            return;
+
         LOG_DBG("Adding template instantiation argument {}",
-            argument.to_string(config().using_namespace(), false));
+            argument.value().to_string(config().using_namespace(), false));
 
-        simplify_system_template(
-            argument, argument.to_string(config().using_namespace(), false));
+        simplify_system_template(*argument,
+            argument.value().to_string(config().using_namespace(), false));
 
-        template_instantiation.add_template(std::move(argument));
+        template_instantiation.add_template(std::move(argument.value()));
     }
     else if (argument_kind == clang::TemplateArgument::Integral) {
         auto argument = template_parameter::make_argument(

@@ -1589,7 +1589,7 @@ void translation_unit_visitor::
 
     argument.is_template_parameter(false);
 
-    argument.set_name(
+    argument.set_type(
         common::to_string(arg.getAsType(), template_decl->getASTContext()));
 }
 
@@ -1751,20 +1751,20 @@ void translation_unit_visitor::process_template_specialization_argument(
                 }
             }
 
-            argument.set_name(type_name);
+            argument.set_type(type_name);
         }
         else if ((arg.getAsType()->getAsCXXRecordDecl() != nullptr) &&
             arg.getAsType()->getAsCXXRecordDecl()->isLambda()) {
             const auto maybe_id =
                 get_unique_id(arg.getAsType()->getAsCXXRecordDecl()->getID());
             if (maybe_id.has_value()) {
-                argument.set_name(
+                argument.set_type(
                     get_participant(maybe_id.value()).value().full_name(false));
             }
             else {
                 const auto type_name =
                     make_lambda_name(arg.getAsType()->getAsCXXRecordDecl());
-                argument.set_name(type_name);
+                argument.set_type(type_name);
             }
         }
         else {
@@ -1782,7 +1782,7 @@ void translation_unit_visitor::process_template_specialization_argument(
                         type_name.size() - (type_name.find('<') + 2)),
                     argument, template_instantiation);
 
-                argument.set_name(type_name.substr(0, type_name.find('<')));
+                argument.set_type(type_name.substr(0, type_name.find('<')));
             }
             else if (type_name.find("type-parameter-") == 0) {
                 auto declaration_text = common::get_source_text_raw(
@@ -1809,7 +1809,7 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.set_name(type_name);
             }
             else
-                argument.set_name(type_name);
+                argument.set_type(type_name);
         }
 
         LOG_TRACE("Adding template instantiation argument {}",
@@ -2052,7 +2052,7 @@ bool translation_unit_visitor::simplify_system_template(
     common::model::template_parameter &ct, const std::string &full_name) const
 {
     if (config().type_aliases().count(full_name) > 0) {
-        ct.set_name(config().type_aliases().at(full_name));
+        ct.set_type(config().type_aliases().at(full_name));
         ct.clear_params();
         return true;
     }
