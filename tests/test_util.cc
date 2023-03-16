@@ -105,8 +105,8 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 
     CHECK(int_template.size() == 1);
     CHECK(int_template[0].template_params().size() == 1);
-    CHECK(int_template[0].type() == "ns1::ns2::class1");
-    CHECK(int_template[0].template_params()[0].type() == "int");
+    CHECK(int_template[0].type().value() == "ns1::ns2::class1");
+    CHECK(int_template[0].template_params()[0].type().value() == "int");
 
     const std::string int_int_template_str{"ns1::ns2::class1<int, int>"};
 
@@ -115,9 +115,9 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 
     CHECK(int_int_template.size() == 1);
     CHECK(int_int_template[0].template_params().size() == 2);
-    CHECK(int_int_template[0].type() == "ns1::ns2::class1");
-    CHECK(int_int_template[0].template_params()[0].type() == "int");
-    CHECK(int_int_template[0].template_params()[1].type() == "int");
+    CHECK(int_int_template[0].type().value() == "ns1::ns2::class1");
+    CHECK(int_int_template[0].template_params()[0].type().value() == "int");
+    CHECK(int_int_template[0].template_params()[1].type().value() == "int");
 
     const std::string nested_template_str{
         "class1<int, ns1::class2<int, std::vector<std::string>>>"};
@@ -127,13 +127,13 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 
     CHECK(nested_template.size() == 1);
     CHECK(nested_template[0].template_params().size() == 2);
-    CHECK(nested_template[0].type() == "class1");
-    CHECK(nested_template[0].template_params()[0].type() == "int");
+    CHECK(nested_template[0].type().value() == "class1");
+    CHECK(nested_template[0].template_params()[0].type().value() == "int");
     const auto &class2 = nested_template[0].template_params()[1];
     CHECK(class2.type() == "ns1::class2");
-    CHECK(class2.template_params()[0].type() == "int");
-    CHECK(class2.template_params()[1].type() == "std::vector");
-    CHECK(class2.template_params()[1].template_params()[0].type() ==
+    CHECK(class2.template_params()[0].type().value() == "int");
+    CHECK(class2.template_params()[1].type().value() == "std::vector");
+    CHECK(class2.template_params()[1].template_params()[0].type().value() ==
         "std::string");
 
     const std::string empty_string = R"(
@@ -153,7 +153,7 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
         single_template_string, [](const auto &n) { return n; });
 
     CHECK(single_template.size() == 1);
-    CHECK(single_template[0].type() == "Else");
+    CHECK(single_template[0].type().value() == "Else");
 
     const std::string declaration_string = R"(
 
@@ -165,9 +165,9 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
         declaration_string, [](const auto &n) { return n; });
 
     CHECK(declaration_template.size() == 3);
-    CHECK(declaration_template[0].type() == "std::true_type");
-    CHECK(declaration_template[1].type() == "Result");
-    CHECK(declaration_template[2].type() == "Tail");
+    CHECK(declaration_template[0].type().value() == "std::true_type");
+    CHECK(declaration_template[1].type().value() == "Result");
+    CHECK(declaration_template[2].type().value() == "Tail");
 }
 
 TEST_CASE("Test remove_prefix", "[unit-test]")

@@ -23,18 +23,38 @@
 #include <utility>
 
 namespace clanguml::common::model {
-
-template_parameter::template_parameter(const std::string &type,
-    const std::string &name, std::string default_value, bool is_variadic)
-    : default_value_{std::move(default_value)}
-    , is_variadic_{is_variadic}
+std::string to_string(template_parameter_kind_t k)
 {
-    set_name(name);
-    set_type(type);
+    switch (k) {
+    case template_parameter_kind_t::template_type:
+        return "template_type";
+    case template_parameter_kind_t::template_template_type:
+        return "template_template_type";
+    case template_parameter_kind_t::non_type_template:
+        return "non_type_template";
+    case template_parameter_kind_t::argument:
+        return "argument";
+    case template_parameter_kind_t::concept_constraint:
+        return "concept_constraint";
+    default:
+        assert(0);
+    }
 }
+// template_parameter::template_parameter(const std::optional<std::string>
+// &type,
+//     const std::optional<std::string> &name,
+//     const std::optional<std::string> &default_value, bool is_variadic)
+//     : type_{type}
+//     , name_{name}
+//     , default_value_{std::move(default_value)}
+//     , is_variadic_{is_variadic}
+//{
+// }
 
 void template_parameter::set_type(const std::string &type)
 {
+    assert(kind_ != template_parameter_kind_t::template_type);
+
     if (util::ends_with(type, std::string{"..."})) {
         type_ = type.substr(0, type.size() - 3);
         is_variadic_ = true;
@@ -43,16 +63,24 @@ void template_parameter::set_type(const std::string &type)
         type_ = type;
 }
 
-std::string template_parameter::type() const
+std::optional<std::string> template_parameter::type() const
 {
-    if (is_variadic_ && !type_.empty())
-        return type_ + "...";
+    if (!type_)
+        return {};
+
+    if (is_variadic_)
+        return type_.value() + "...";
 
     return type_;
 }
 
 void template_parameter::set_name(const std::string &name)
 {
+    assert(kind_ != template_parameter_kind_t::argument);
+
+    if (name.empty())
+        return;
+
     if (util::ends_with(name, std::string{"..."})) {
         name_ = name.substr(0, name.size() - 3);
         is_variadic_ = true;
@@ -61,10 +89,13 @@ void template_parameter::set_name(const std::string &name)
         name_ = name;
 }
 
-std::string template_parameter::name() const
+std::optional<std::string> template_parameter::name() const
 {
-    if (is_variadic_ && type_.empty())
-        return name_ + "...";
+    if (!name_)
+        return {};
+
+    if (is_variadic_ && (kind_ != template_parameter_kind_t::non_type_template))
+        return name_.value() + "...";
 
     return name_;
 }
@@ -74,7 +105,10 @@ void template_parameter::set_default_value(const std::string &value)
     default_value_ = value;
 }
 
-std::string template_parameter::default_value() const { return default_value_; }
+const std::optional<std::string> &template_parameter::default_value() const
+{
+    return default_value_;
+}
 
 void template_parameter::is_variadic(bool is_variadic) noexcept
 {
@@ -138,14 +172,17 @@ std::string template_parameter::to_string(
 {
     using clanguml::common::model::namespace_;
 
-    assert(!(!type().empty() && concept_constraint().has_value()));
+    assert(!(type().has_value() && concept_constraint().has_value()));
 
     std::string res;
-    if (!type().empty()) {
+    const auto maybe_type = type();
+    if (maybe_type) {
         if (!relative)
-            res += namespace_{type()}.to_string();
+            res += namespace_{*maybe_type}.to_string();
         else
-            res += namespace_{type()}.relative_to(using_namespace).to_string();
+            res += namespace_{*maybe_type}
+                       .relative_to(using_namespace)
+                       .to_string();
     }
 
     const auto &maybe_concept_constraint = concept_constraint();
@@ -159,14 +196,19 @@ std::string template_parameter::to_string(
                        .to_string();
     }
 
-    if (!name().empty()) {
-        if (!type().empty() || maybe_concept_constraint)
+    const auto maybe_name = name();
+
+    if (maybe_name) {
+        if ((maybe_type && !maybe_type.value().empty()) ||
+            maybe_concept_constraint)
             res += " ";
 
         if (!relative)
-            res += namespace_{name()}.to_string();
+            res += namespace_{*maybe_name}.to_string();
         else
-            res += namespace_{name()}.relative_to(using_namespace).to_string();
+            res += namespace_{*maybe_name}
+                       .relative_to(using_namespace)
+                       .to_string();
     }
 
     // Render nested template params
@@ -181,9 +223,10 @@ std::string template_parameter::to_string(
         res += fmt::format("<{}>", fmt::join(params, ","));
     }
 
-    if (!default_value().empty()) {
+    const auto &maybe_default_value = default_value();
+    if (maybe_default_value) {
         res += "=";
-        res += default_value();
+        res += maybe_default_value.value();
     }
 
     return res;
@@ -200,7 +243,8 @@ bool template_parameter::find_nested_relationships(
 
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
-    if (should_include(name())) {
+    const auto maybe_type = type();
+    if (maybe_type && should_include(maybe_type.value())) {
         const auto maybe_id = id();
         if (maybe_id) {
             nested_relationships.emplace_back(maybe_id.value(), hint);
@@ -212,8 +256,11 @@ bool template_parameter::find_nested_relationships(
     // interested what is stored inside it
     else {
         for (const auto &template_argument : template_params()) {
+
             const auto maybe_id = template_argument.id();
-            if (should_include(template_argument.name()) && maybe_id) {
+            const auto maybe_arg_type = template_argument.type();
+
+            if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
 
                 nested_relationships.emplace_back(maybe_id.value(), hint);
 

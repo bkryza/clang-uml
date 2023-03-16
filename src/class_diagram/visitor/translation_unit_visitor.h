@@ -218,25 +218,22 @@ private:
         const clang::TemplateArgument &arg,
         common::model::template_parameter &argument);
 
-    void build_template_instantiation_process_expression_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    template_parameter build_template_instantiation_process_expression_argument(
+        const clang::TemplateArgument &arg) const;
 
-    void build_template_instantiation_process_integral_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    template_parameter build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg) const;
 
-    void build_template_instantiation_process_type_argument(
+    template_parameter build_template_instantiation_process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        model::class_ &template_instantiation,
-        common::model::template_parameter &argument);
+        model::class_ &template_instantiation);
 
-    void build_template_instantiation_process_template_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    common::model::template_parameter
+    build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg) const;
 
     void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 

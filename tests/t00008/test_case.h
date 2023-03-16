@@ -36,7 +36,7 @@ TEST_CASE("t00008", "[test-case][class]")
     // TODO: add option to resolve using declared types
     // REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int), int
     // N"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T,P,CMP,int N"));
+    REQUIRE_THAT(puml, IsClassTemplate("A", "T,P=T,CMP=nullptr,int N=3"));
     REQUIRE_THAT(puml, IsClassTemplate("B", "T,C<>"));
 
     REQUIRE_THAT(puml, (IsField<Public>("value", "T")));

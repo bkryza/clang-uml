@@ -202,17 +202,17 @@ private:
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl);
 
-    void build_template_instantiation_process_template_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    common::model::template_parameter
+    build_template_instantiation_process_template_argument(
+        const clang::TemplateArgument &arg) const;
 
-    void build_template_instantiation_process_integral_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    common::model::template_parameter
+    build_template_instantiation_process_integral_argument(
+        const clang::TemplateArgument &arg) const;
 
-    void build_template_instantiation_process_expression_argument(
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
+    common::model::template_parameter
+    build_template_instantiation_process_expression_argument(
+        const clang::TemplateArgument &arg) const;
 
     void build_template_instantiation_process_tag_argument(
         model::template_trait &template_instantiation,
@@ -221,13 +221,12 @@ private:
         const clang::TemplateArgument &arg,
         common::model::template_parameter &argument) const;
 
-    void build_template_instantiation_process_type_argument(
+    common::model::template_parameter build_template_instantiation_process_type_argument(
         model::template_trait *parent,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        model::template_trait &template_instantiation,
-        common::model::template_parameter &argument);
+        model::template_trait &template_instantiation);
 
     std::unique_ptr<model::class_> process_template_specialization(
         clang::ClassTemplateSpecializationDecl *cls);
