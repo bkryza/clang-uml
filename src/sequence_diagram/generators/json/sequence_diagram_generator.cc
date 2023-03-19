@@ -97,9 +97,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                           .message_name(render_mode);
         }
     }
-    //
-    //    const std::string from_alias = generate_alias(from.value());
-    //    const std::string to_alias = generate_alias(to.value());
 
     nlohmann::json msg;
 
@@ -149,230 +146,316 @@ void generator::generate_activity(
 {
     // Generate calls from this activity to other activities
     for (const auto &m : a.messages()) {
-        if (m.type() == message_t::kCall) {
-            const auto &to =
-                m_model.get_participant<model::participant>(m.to());
-            if (!to || to.value().skip())
-                continue;
-
-            visited.push_back(m.from());
-
-            LOG_DBG("Generating message {} --> {}", m.from(), m.to());
-
-            generate_call(m, current_block_statement());
-
-            if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
-                if (std::find(visited.begin(), visited.end(), m.to()) ==
-                    visited
-                        .end()) { // break infinite recursion on recursive calls
-
-                    LOG_DBG("Creating activity {} --> {} - missing sequence {}",
-                        m.from(), m.to(), m.to());
-
-                    generate_activity(m.to(), m_model.get_activity(m.to()),
-                        current_block_statement(), visited, {});
-                }
-            }
-            else
-                LOG_DBG("Skipping activity {} --> {} - missing sequence {}",
-                    m.from(), m.to(), m.to());
-        }
-        else if (m.type() == message_t::kIf) {
-            nlohmann::json if_block;
-            if_block["type"] = "alt";
-            if_block["name"] = "if";
-            if_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(if_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-
-            nlohmann::json branch;
-            branch["type"] = "consequent";
-            current_block_statement()["branches"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["branches"].back()));
-        }
-        else if (m.type() == message_t::kElseIf ||
-            m.type() == message_t::kElse) {
-            // remove previous branch from the stack
-            block_statements_stack_.pop_back();
-
-            nlohmann::json branch;
-            branch["type"] = "alternative";
-            current_block_statement()["branches"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["branches"].back()));
-        }
-        else if (m.type() == message_t::kIfEnd) {
-            // Remove last if branch from the stack
-            block_statements_stack_.pop_back();
-
-            // Remove the if statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kWhile) {
-            nlohmann::json while_block;
-            while_block["type"] = "loop";
-            while_block["name"] = "while";
-            while_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(while_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-        }
-        else if (m.type() == message_t::kWhileEnd) {
-            // Remove the while statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kFor) {
-            nlohmann::json for_block;
-            for_block["type"] = "loop";
-            for_block["name"] = "for";
-            for_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(for_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-        }
-        else if (m.type() == message_t::kForEnd) {
-            // Remove the while statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kDo) {
-            nlohmann::json do_block;
-            do_block["type"] = "loop";
-            do_block["name"] = "do";
-            do_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(do_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-        }
-        else if (m.type() == message_t::kDoEnd) {
-            // Remove the do statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kTry) {
-            nlohmann::json try_block;
-            try_block["type"] = "break";
-            try_block["name"] = "try";
-            try_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(try_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-
-            nlohmann::json branch;
-            branch["type"] = "main";
-            current_block_statement()["blocks"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["blocks"].back()));
-        }
-        else if (m.type() == message_t::kCatch) {
-            // remove previous block from the stack
-            block_statements_stack_.pop_back();
-
-            nlohmann::json branch;
-            branch["type"] = "catch";
-            current_block_statement()["blocks"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["blocks"].back()));
-        }
-        else if (m.type() == message_t::kTryEnd) {
-            // Remove last if block from the stack
-            block_statements_stack_.pop_back();
-
-            // Remove the try statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kSwitch) {
-            nlohmann::json if_block;
-            if_block["type"] = "alt";
-            if_block["name"] = "switch";
-            if_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(if_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-        }
-        else if (m.type() == message_t::kCase) {
-            if (current_block_statement()["type"] == "case")
-                block_statements_stack_.pop_back();
-
-            nlohmann::json case_block;
-            case_block["type"] = "case";
-            case_block["name"] = m.message_name();
-            current_block_statement()["cases"].push_back(std::move(case_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["cases"].back()));
-        }
-        else if (m.type() == message_t::kSwitchEnd) {
-            // Remove last case block from the stack
-            block_statements_stack_.pop_back();
-
-            // Remove the switch statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else if (m.type() == message_t::kConditional) {
-            nlohmann::json if_block;
-            if_block["type"] = "alt";
-            if_block["name"] = "conditional";
-            if_block["activity_id"] = std::to_string(m.from());
-
-            current_block_statement()["messages"].push_back(
-                std::move(if_block));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["messages"].back()));
-
-            nlohmann::json branch;
-            branch["type"] = "consequent";
-            current_block_statement()["branches"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["branches"].back()));
-        }
-        else if (m.type() == message_t::kElse) {
-            // remove previous branch from the stack
-            block_statements_stack_.pop_back();
-
-            nlohmann::json branch;
-            branch["type"] = "alternative";
-            current_block_statement()["branches"].push_back(std::move(branch));
-
-            block_statements_stack_.push_back(
-                std::ref(current_block_statement()["branches"].back()));
-        }
-        else if (m.type() == message_t::kConditionalEnd) {
-            // Remove last if branch from the stack
-            block_statements_stack_.pop_back();
-
-            // Remove the if statement block from the stack
-            block_statements_stack_.pop_back();
-        }
-        else {
-            // Unhandled message_t case
-            assert(false);
+        switch (m.type()) {
+        case message_t::kCall:
+            process_call_message(m, visited);
+            break;
+        case message_t::kIf:
+            process_if_message(m);
+            break;
+        case message_t::kElseIf:
+        case message_t::kElse:
+            process_else_if_message();
+            break;
+        case message_t::kIfEnd:
+            process_end_if_message();
+            break;
+        case message_t::kWhile:
+            process_while_message(m);
+            break;
+        case message_t::kWhileEnd:
+            process_end_while_message();
+            break;
+        case message_t::kFor:
+            process_for_message(m);
+            break;
+        case message_t::kForEnd:
+            process_end_for_message();
+            break;
+        case message_t::kDo:
+            process_do_message(m);
+            break;
+        case message_t::kDoEnd:
+            process_end_do_message();
+            break;
+        case message_t::kTry:
+            process_try_message(m);
+            break;
+        case message_t::kCatch:
+            process_catch_message();
+            break;
+        case message_t::kTryEnd:
+            process_end_try_message();
+            break;
+        case message_t::kSwitch:
+            process_switch_message(m);
+            break;
+        case message_t::kCase:
+            process_case_message(m);
+            break;
+        case message_t::kSwitchEnd:
+            process_end_switch_message();
+            break;
+        case message_t::kConditional:
+            process_conditional_message(m);
+            break;
+        case message_t::kConditionalElse:
+            process_conditional_else_message();
+            break;
+        case message_t::kConditionalEnd:
+            process_end_conditional_message();
+            break;
+        case message_t::kNone:
+        case message_t::kReturn:; // noop
         }
     }
+}
+
+void generator::process_call_message(const model::message &m,
+    std::vector<common::model::diagram_element::id_t> &visited) const
+{
+    const auto &to = m_model.get_participant<model::participant>(m.to());
+    if (!to || to.value().skip())
+        return;
+
+    visited.push_back(m.from());
+
+    LOG_DBG("Generating message {} --> {}", m.from(), m.to());
+
+    generate_call(m, current_block_statement());
+
+    if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
+        if (std::find(visited.begin(), visited.end(), m.to()) ==
+            visited.end()) { // break infinite recursion on recursive calls
+
+            LOG_DBG("Creating activity {} --> {} - missing sequence {}",
+                m.from(), m.to(), m.to());
+
+            generate_activity(m.to(), m_model.get_activity(m.to()),
+                current_block_statement(), visited, {});
+        }
+    }
+    else
+        LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from(),
+            m.to(), m.to());
+}
+
+void generator::process_while_message(const message &m) const
+{
+    nlohmann::json while_block;
+    while_block["type"] = "loop";
+    while_block["name"] = "while";
+    while_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(while_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+}
+
+void generator::process_end_while_message() const
+{
+    // Remove the while statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_for_message(const message &m) const
+{
+    nlohmann::json for_block;
+    for_block["type"] = "loop";
+    for_block["name"] = "for";
+    for_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(for_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+}
+
+void generator::process_end_for_message() const
+{
+    // Remove the while statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_do_message(const message &m) const
+{
+    nlohmann::json do_block;
+    do_block["type"] = "loop";
+    do_block["name"] = "do";
+    do_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(do_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+}
+
+void generator::process_end_do_message() const
+{
+    // Remove the do statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_try_message(const message &m) const
+{
+    nlohmann::json try_block;
+    try_block["type"] = "break";
+    try_block["name"] = "try";
+    try_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(try_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+
+    nlohmann::json branch;
+    branch["type"] = "main";
+    current_block_statement()["blocks"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["blocks"].back()));
+}
+
+void generator::process_catch_message() const
+{
+    // remove previous block from the stack
+    block_statements_stack_.pop_back();
+
+    nlohmann::json branch;
+    branch["type"] = "catch";
+    current_block_statement()["blocks"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["blocks"].back()));
+}
+
+void generator::process_end_try_message() const
+{
+    // Remove last if block from the stack
+    block_statements_stack_.pop_back();
+
+    // Remove the try statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_switch_message(const message &m) const
+{
+    nlohmann::json if_block;
+    if_block["type"] = "alt";
+    if_block["name"] = "switch";
+    if_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(if_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+}
+
+void generator::process_case_message(const message &m) const
+{
+    if (current_block_statement()["type"] == "case")
+        block_statements_stack_.pop_back();
+
+    nlohmann::json case_block;
+    case_block["type"] = "case";
+    case_block["name"] = m.message_name();
+    current_block_statement()["cases"].push_back(std::move(case_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["cases"].back()));
+}
+
+void generator::process_end_switch_message() const
+{ // Remove last case block from the stack
+    block_statements_stack_.pop_back();
+
+    // Remove the switch statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_conditional_message(const message &m) const
+{
+    nlohmann::json if_block;
+    if_block["type"] = "alt";
+    if_block["name"] = "conditional";
+    if_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(if_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+
+    nlohmann::json branch;
+    branch["type"] = "consequent";
+    current_block_statement()["branches"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["branches"].back()));
+}
+
+void generator::process_conditional_else_message() const
+{
+    // remove previous branch from the stack
+    block_statements_stack_.pop_back();
+
+    nlohmann::json branch;
+    branch["type"] = "alternative";
+    current_block_statement()["branches"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["branches"].back()));
+}
+
+void generator::process_end_conditional_message() const
+{
+    // Remove last if branch from the stack
+    block_statements_stack_.pop_back();
+
+    // Remove the if statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_end_if_message() const
+{
+    // Remove last if branch from the stack
+    block_statements_stack_.pop_back();
+
+    // Remove the if statement block from the stack
+    block_statements_stack_.pop_back();
+}
+
+void generator::process_else_if_message() const
+{
+    // remove previous branch from the stack
+    block_statements_stack_.pop_back();
+
+    nlohmann::json branch;
+    branch["type"] = "alternative";
+    current_block_statement()["branches"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["branches"].back()));
+}
+
+void generator::process_if_message(const message &m) const
+{
+    nlohmann::json if_block;
+    if_block["type"] = "alt";
+    if_block["name"] = "if";
+    if_block["activity_id"] = std::to_string(m.from());
+
+    current_block_statement()["messages"].push_back(std::move(if_block));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["messages"].back()));
+
+    nlohmann::json branch;
+    branch["type"] = "consequent";
+    current_block_statement()["branches"].push_back(std::move(branch));
+
+    block_statements_stack_.push_back(
+        std::ref(current_block_statement()["branches"].back()));
 }
 
 void generator::generate_participant(

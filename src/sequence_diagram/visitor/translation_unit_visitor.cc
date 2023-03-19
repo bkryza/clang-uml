@@ -821,7 +821,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
         stmt->getTrueExpr());
 
     if (current_caller_id != 0) {
-        model::message m{message_t::kElse, current_caller_id};
+        model::message m{message_t::kConditionalElse, current_caller_id};
         set_source_location(*stmt, m);
         diagram().add_message(std::move(m));
     }

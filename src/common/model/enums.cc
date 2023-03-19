@@ -111,6 +111,8 @@ std::string to_string(message_t r)
         return "end switch";
     case message_t::kConditional:
         return "conditional";
+    case message_t::kConditionalElse:
+        return "conditional else";
     case message_t::kConditionalEnd:
         return "end conditional";
     default:

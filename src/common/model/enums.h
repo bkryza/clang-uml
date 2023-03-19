@@ -61,6 +61,7 @@ enum class message_t {
     kCase,
     kSwitchEnd,
     kConditional,
+    kConditionalElse,
     kConditionalEnd,
     kNone
 };

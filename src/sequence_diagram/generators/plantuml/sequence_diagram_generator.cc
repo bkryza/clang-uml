@@ -233,7 +233,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             print_debug(m, ostr);
             ostr << "alt\n";
         }
-        else if (m.type() == message_t::kElse) {
+        else if (m.type() == message_t::kConditionalElse) {
             print_debug(m, ostr);
             ostr << "else\n";
         }
