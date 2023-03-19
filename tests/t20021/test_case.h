@@ -58,4 +58,10 @@ TEST_CASE("t20021", "[test-case][sequence]")
         puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "contents()"));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

@@ -142,6 +142,20 @@ std::string generate_sequence_puml(
     return ss.str();
 }
 
+nlohmann::json generate_sequence_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    using namespace clanguml::sequence_diagram::generators::json;
+
+    std::stringstream ss;
+
+    ss << generator(
+        dynamic_cast<clanguml::config::sequence_diagram &>(*config), model);
+
+    return nlohmann::json::parse(ss.str());
+}
+
 std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::class_diagram::model::diagram &model)

@@ -25,6 +25,7 @@
 #include "config/config.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
+#include "sequence_diagram/generators/json/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "util/util.h"
 #include "version.h"

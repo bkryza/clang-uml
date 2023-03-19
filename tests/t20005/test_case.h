@@ -40,4 +40,10 @@ TEST_CASE("t20005", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("B<T>"), _A("A<T>"), "a(T)"));
     REQUIRE_THAT(puml, HasExitpoint(_A("C<T>")));
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

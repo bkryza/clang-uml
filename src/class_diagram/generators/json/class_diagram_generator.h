@@ -60,6 +60,8 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    void generate(std::ostream &ostr) const override;
+
     void generate(const class_ &c, nlohmann::json &parent) const;
 
     void generate(const enum_ &c, nlohmann::json &parent) const;
@@ -69,8 +71,6 @@ public:
     void generate(const package &p, nlohmann::json &parent) const;
 
     void generate_top_level_elements(nlohmann::json &parent) const;
-
-    void generate(std::ostream &ostr) const override;
 
     void generate_relationships(nlohmann::json &parent) const;
 

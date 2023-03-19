@@ -433,6 +433,10 @@ void generator::generate(std::ostream &ostr) const
                 render_mode =
                     model::function::message_render_mode::no_arguments;
 
+            // For methods or functions in diagrams where they are combined into
+            // file participants, we need to add an 'entry' point call to know
+            // which method relates to the first activity for this 'start_from'
+            // condition
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {
                 ostr << "[->"

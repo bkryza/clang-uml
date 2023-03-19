@@ -136,6 +136,19 @@ std::string to_string(const diagram_t t)
     }
 }
 
+std::string to_string(const message_scope_t t)
+{
+    switch (t) {
+    case message_scope_t::kNormal:
+        return "normal";
+    case message_scope_t::kCondition:
+        return "condition";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 diagram_t from_string(const std::string &s)
 {
     if (s == "class")

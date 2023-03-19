@@ -52,4 +52,10 @@ TEST_CASE("t20008", "[test-case][sequence]")
         HasCall(_A("B<std::string>"), _A("A<std::string>"), "a3(std::string)"));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

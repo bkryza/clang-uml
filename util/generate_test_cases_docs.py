@@ -68,3 +68,12 @@ with open(r'tests/test_cases.yaml') as f:
                     copyfile(f'debug/tests/puml/{diagram_name}.svg',
                              f'docs/test_cases/{diagram_name}.svg')
                     tc.write(f'![{diagram_name}](./{diagram_name}.svg "{test_case["title"]}")\n')
+
+                tc.write("## Generated JSON models\n")
+                for diagram_name, _ in config_dict['diagrams'].items():
+                    if os.path.exists(f'debug/tests/puml/{diagram_name}.json'):
+                        with open(f'debug/tests/puml/{diagram_name}.json') as f:
+                            contents = f.read()
+                            tc.write("```json\n")
+                            tc.write(contents)
+                            tc.write("\n```\n")

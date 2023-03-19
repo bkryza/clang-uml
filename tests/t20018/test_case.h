@@ -52,4 +52,10 @@ TEST_CASE("t20018", "[test-case][sequence]")
         HasCall(_A("Factorial<1>"), _A("Factorial<0>"), "__print(int)__"));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

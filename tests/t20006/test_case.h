@@ -70,4 +70,10 @@ TEST_CASE("t20006", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("BB<int,float>"), _A("AA<int>"), "aa2(int)"));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

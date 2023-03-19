@@ -41,4 +41,10 @@ TEST_CASE("t20019", "[test-case][sequence]")
     REQUIRE_THAT(puml, HasCall(_A("Base<D2>"), _A("D2"), "impl()"));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_sequence_json(diagram, *model);
+
+    // REQUIRE(j == nlohmann::json::parse(expected_json));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

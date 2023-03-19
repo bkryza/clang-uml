@@ -29,6 +29,18 @@
 
 #include <ostream>
 
+namespace clanguml::common::model {
+using nlohmann::json;
+
+void to_json(nlohmann::json &j, const source_location &sl);
+
+void to_json(nlohmann::json &j, const element &c);
+
+void to_json(nlohmann::json &j, const template_parameter &c);
+
+void to_json(nlohmann::json &j, const relationship &c);
+} // namespace clanguml::common::model
+
 namespace clanguml::common::generators::json {
 
 using clanguml::common::model::access_t;

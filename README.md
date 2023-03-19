@@ -12,7 +12,7 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
-Currently, the diagrams are generated in [PlantUML](https://plantuml.com) format.
+Currently, the diagrams are generated in [PlantUML](https://plantuml.com) and JSON formats.
 
 `clang-uml` currently supports C++ up to version 17 and partial support for C++ 20.
 
