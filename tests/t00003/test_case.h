@@ -66,4 +66,20 @@ TEST_CASE("t00003", "[test-case][class]")
     REQUIRE_THAT(puml, (IsField<Private>("c_", "int")));
 
     save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+
+    auto j = generate_class_json(diagram, *model);
+
+    REQUIRE(json::IsClass(j, "clanguml::t00003::A"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "A"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "~A"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "basic_method"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "static_method"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "const_method"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "default_int"));
+    REQUIRE(json::IsMethod(j, "clanguml::t00003::A", "default_string"));
+
+    REQUIRE(
+        !json::IsDependency(j, "clanguml::t00002::A", "clanguml::t00002::A"));
+
+    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
 }

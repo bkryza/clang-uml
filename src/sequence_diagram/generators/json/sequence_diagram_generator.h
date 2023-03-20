@@ -67,19 +67,8 @@ public:
 
 private:
     bool is_participant_generated(common::id_t id) const;
-
-    std::string render_name(std::string name) const;
-
-    mutable std::set<common::id_t> generated_participants_;
-
-    mutable nlohmann::json json_;
-
-    mutable std::vector<std::reference_wrapper<nlohmann::json>>
-        block_statements_stack_;
-
     void process_call_message(const model::message &m,
         std::vector<common::model::diagram_element::id_t> &visited) const;
-
     void process_if_message(const model::message &m) const;
     void process_else_if_message() const;
     void process_end_if_message() const;
@@ -98,6 +87,13 @@ private:
     void process_for_message(const model::message &m) const;
     void process_end_while_message() const;
     void process_while_message(const model::message &m) const;
+
+    mutable std::set<common::id_t> generated_participants_;
+
+    mutable nlohmann::json json_;
+
+    mutable std::vector<std::reference_wrapper<nlohmann::json>>
+        block_statements_stack_;
 };
 
 } // namespace clanguml::sequence_diagram::generators::json

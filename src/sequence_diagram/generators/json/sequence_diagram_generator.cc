@@ -58,13 +58,6 @@ generator::generator(
 {
 }
 
-std::string generator::render_name(std::string name) const
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-
 void generator::generate_call(const message &m, nlohmann::json &parent) const
 {
     const auto &from = m_model.get_participant<model::participant>(m.from());

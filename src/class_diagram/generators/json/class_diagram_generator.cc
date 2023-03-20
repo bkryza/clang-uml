@@ -113,6 +113,9 @@ generator::generator(diagram_config &config, diagram_model &model)
 
 void generator::generate(std::ostream &ostr) const
 {
+    json_["elements"] = std::vector<nlohmann::json>{};
+    json_["relationships"] = std::vector<nlohmann::json>{};
+
     generate_top_level_elements(json_);
 
     generate_relationships(json_);

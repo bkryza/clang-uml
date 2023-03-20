@@ -77,6 +77,15 @@ using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
 using Catch::Matchers::StdString::RegexMatcher;
 
+struct JsonMatcherBase : Catch::MatcherBase<nlohmann::json> {
+    JsonMatcherBase(
+        std::string const &operation, CasedString const &comparator);
+    std::string describe() const override;
+
+    CasedString m_comparator;
+    std::string m_operation;
+};
+
 template <typename T, typename... Ts> constexpr bool has_type() noexcept
 {
     return (std::is_same_v<T, Ts> || ... || false);
@@ -589,6 +598,125 @@ ContainsMatcher IsDeprecated(std::string const &str,
     return ContainsMatcher(
         CasedString(str + " <<deprecated>> ", caseSensitivity));
 }
+
+namespace json {
+namespace detail {
+auto get_element(const nlohmann::json &j, const std::string &name)
+{
+    return std::find_if(j["elements"].begin(), j["elements"].end(),
+        [&](const auto &it) { return it["display_name"] == name; });
+}
+
+auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
+    const nlohmann::json &to, const std::string &type)
+{
+    return std::find_if(j["relationships"].begin(), j["relationships"].end(),
+        [&](const auto &it) {
+            return (it["source"] == from) && (it["destination"] == to) &&
+                (it["type"] == type);
+        });
+}
+
+auto get_relationship(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &type)
+{
+    auto from_it = detail::get_element(j, from);
+    auto to_it = detail::get_element(j, to);
+
+    if (from_it == j["elements"].end() || to_it == j["elements"].end())
+        return j["relationships"].end();
+
+    return detail::get_relationship(
+        j, from_it->at("id"), to_it->at("id"), type);
+}
+} // namespace detail
+
+bool IsClass(const nlohmann::json &j, const std::string &name)
+{
+    return detail::get_element(j, name) != j["elements"].end();
+}
+
+bool IsBaseClass(const nlohmann::json &j, const std::string &base,
+    const std::string &subclass)
+{
+    auto sc = detail::get_element(j, subclass);
+
+    if (sc == j["elements"].end())
+        return false;
+
+    const nlohmann::json &bases = (*sc)["bases"];
+
+    return std::find_if(bases.begin(), bases.end(), [&](const auto &it) {
+        return it["name"] == base;
+    }) != bases.end();
+}
+
+bool IsMethod(
+    const nlohmann::json &j, const std::string &cls, const std::string &name)
+{
+    auto sc = detail::get_element(j, cls);
+
+    if (sc == j["elements"].end())
+        return false;
+
+    const nlohmann::json &methods = (*sc)["methods"];
+
+    return std::find_if(methods.begin(), methods.end(), [&](const auto &it) {
+        return it["name"] == name;
+    }) != methods.end();
+}
+
+bool IsAssociation(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = detail::get_relationship(j, from, to, "association");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+bool IsComposition(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = detail::get_relationship(j, from, to, "composition");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+bool IsAggregation(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = detail::get_relationship(j, from, to, "aggregation");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+bool IsDependency(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = detail::get_relationship(j, from, to, "aggregation");
+
+    return rel != j["relationships"].end();
+}
+
+} // namespace json
 }
 }
 }
