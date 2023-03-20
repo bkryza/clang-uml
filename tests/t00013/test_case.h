@@ -31,36 +31,48 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE(model->should_include("clanguml::t00013::B"));
     REQUIRE(model->should_include("ABCD::F"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
-    REQUIRE_THAT(puml, IsClassTemplate("G", "T,Args..."));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("G", "T,Args..."));
 
-    REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("R")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("C")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("D")));
-    REQUIRE_THAT(puml, IsDependency(_A("D"), _A("R")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<T>")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<int>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<int>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
-    REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
+        REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("R")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("C")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("D")));
+        REQUIRE_THAT(puml, IsDependency(_A("D"), _A("R")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<T>")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<int>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<int>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
 
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("G<T,Args...>"), _A("G<int,float,std::string>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("G<T,Args...>"), _A("G<int,float,std::string>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

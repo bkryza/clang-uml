@@ -29,38 +29,48 @@ TEST_CASE("t00043", "[test-case][class]")
 
     REQUIRE(model->name() == "t00043_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check dependants filter
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("BB")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClass(_A("E")));
-    REQUIRE_THAT(puml, !IsClass(_A("F")));
+        // Check dependants filter
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("BB")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("E")));
+        REQUIRE_THAT(puml, !IsClass(_A("F")));
 
-    REQUIRE_THAT(puml, IsDependency(_A("B"), _A("A")));
-    REQUIRE_THAT(puml, IsDependency(_A("BB"), _A("A")));
-    REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
-    REQUIRE_THAT(puml, IsDependency(_A("D"), _A("C")));
-    REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
+        REQUIRE_THAT(puml, IsDependency(_A("B"), _A("A")));
+        REQUIRE_THAT(puml, IsDependency(_A("BB"), _A("A")));
+        REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
+        REQUIRE_THAT(puml, IsDependency(_A("D"), _A("C")));
+        REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
 
-    // Check dependencies filter
-    REQUIRE_THAT(puml, IsClass(_A("G")));
-    REQUIRE_THAT(puml, IsClass(_A("GG")));
-    REQUIRE_THAT(puml, IsClass(_A("H")));
-    REQUIRE_THAT(puml, !IsClass(_A("HH")));
-    REQUIRE_THAT(puml, IsClass(_A("I")));
-    REQUIRE_THAT(puml, IsClass(_A("J")));
+        // Check dependencies filter
+        REQUIRE_THAT(puml, IsClass(_A("G")));
+        REQUIRE_THAT(puml, IsClass(_A("GG")));
+        REQUIRE_THAT(puml, IsClass(_A("H")));
+        REQUIRE_THAT(puml, !IsClass(_A("HH")));
+        REQUIRE_THAT(puml, IsClass(_A("I")));
+        REQUIRE_THAT(puml, IsClass(_A("J")));
 
-    REQUIRE_THAT(puml, IsDependency(_A("H"), _A("G")));
-    REQUIRE_THAT(puml, IsDependency(_A("H"), _A("GG")));
-    REQUIRE_THAT(puml, IsDependency(_A("I"), _A("H")));
-    REQUIRE_THAT(puml, IsDependency(_A("J"), _A("I")));
+        REQUIRE_THAT(puml, IsDependency(_A("H"), _A("G")));
+        REQUIRE_THAT(puml, IsDependency(_A("H"), _A("GG")));
+        REQUIRE_THAT(puml, IsDependency(_A("I"), _A("H")));
+        REQUIRE_THAT(puml, IsDependency(_A("J"), _A("I")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

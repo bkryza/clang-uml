@@ -28,41 +28,50 @@ TEST_CASE("t00041", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00041_class");
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, !IsClass(_A("A")));
+        REQUIRE_THAT(puml, !IsClass(_A("AA")));
+        REQUIRE_THAT(puml, !IsClass(_A("AAA")));
 
-    REQUIRE_THAT(puml, !IsClass(_A("A")));
-    REQUIRE_THAT(puml, !IsClass(_A("AA")));
-    REQUIRE_THAT(puml, !IsClass(_A("AAA")));
+        REQUIRE_THAT(puml, !IsClass(_A("B")));
 
-    REQUIRE_THAT(puml, !IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("E")));
+        REQUIRE_THAT(puml, IsClass(_A("F")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, IsClass(_A("RR")));
+        REQUIRE_THAT(puml, IsClass(_A("RRR")));
+        REQUIRE_THAT(puml, !IsClass(_A("detail::G")));
+        REQUIRE_THAT(puml, !IsClass(_A("H")));
 
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClass(_A("E")));
-    REQUIRE_THAT(puml, IsClass(_A("F")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
-    REQUIRE_THAT(puml, IsClass(_A("RR")));
-    REQUIRE_THAT(puml, IsClass(_A("RRR")));
-    REQUIRE_THAT(puml, !IsClass(_A("detail::G")));
-    REQUIRE_THAT(puml, !IsClass(_A("H")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("R"), _A("RR")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("RR"), _A("RRR")));
 
-    REQUIRE_THAT(puml, IsBaseClass(_A("R"), _A("RR")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("RR"), _A("RRR")));
+        REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("RR"), "+rr"));
+        REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("E"), "+e"));
+        REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("F"), "+f"));
+        REQUIRE_THAT(puml, !IsDependency(_A("RR"), _A("H")));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("RR"), "+rr"));
-    REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("E"), "+e"));
-    REQUIRE_THAT(puml, IsAssociation(_A("RR"), _A("F"), "+f"));
-    REQUIRE_THAT(puml, !IsDependency(_A("RR"), _A("H")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::N")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::NN")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::NM")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NN")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NM")));
 
-    REQUIRE_THAT(puml, IsClass(_A("ns1::N")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::NN")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::NM")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NN")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::N"), _A("ns1::NM")));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

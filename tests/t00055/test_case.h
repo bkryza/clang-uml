@@ -28,33 +28,44 @@ TEST_CASE("t00055", "[test-case][class]")
 
     REQUIRE(model->name() == "t00055_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check if all classes exist
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClass(_A("E")));
-    REQUIRE_THAT(puml, IsClass(_A("F")));
-    REQUIRE_THAT(puml, IsClass(_A("G")));
-    REQUIRE_THAT(puml, IsClass(_A("H")));
-    REQUIRE_THAT(puml, IsClass(_A("I")));
-    REQUIRE_THAT(puml, IsClass(_A("J")));
+        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("E")));
+        REQUIRE_THAT(puml, IsClass(_A("F")));
+        REQUIRE_THAT(puml, IsClass(_A("G")));
+        REQUIRE_THAT(puml, IsClass(_A("H")));
+        REQUIRE_THAT(puml, IsClass(_A("I")));
+        REQUIRE_THAT(puml, IsClass(_A("J")));
 
-    REQUIRE_THAT(puml, IsLayoutHint(_A("A"), "right", _A("C")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "right", _A("E")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("E"), "right", _A("G")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("G"), "right", _A("I")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("A"), "right", _A("C")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "right", _A("E")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("E"), "right", _A("G")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("G"), "right", _A("I")));
 
-    REQUIRE_THAT(puml, IsLayoutHint(_A("B"), "down", _A("D")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("D"), "down", _A("F")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("F"), "down", _A("H")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("H"), "down", _A("J")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("B"), "down", _A("D")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("D"), "down", _A("F")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("F"), "down", _A("H")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("H"), "down", _A("J")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

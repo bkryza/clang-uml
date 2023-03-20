@@ -28,19 +28,29 @@ TEST_CASE("t00011", "[test-case][class]")
 
     REQUIRE(model->name() == "t00011_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, !IsClass(_A("external::C")));
-    REQUIRE_THAT(puml, IsClass(_A("D<T>")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, !IsClass(_A("external::C")));
+        REQUIRE_THAT(puml, IsClass(_A("D<T>")));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("B"), _A("A")));
-    REQUIRE_THAT(puml, IsFriend<Public>(_A("A"), _A("B")));
-    // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
+        REQUIRE_THAT(puml, IsAssociation(_A("B"), _A("A")));
+        REQUIRE_THAT(puml, IsFriend<Public>(_A("A"), _A("B")));
+        // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

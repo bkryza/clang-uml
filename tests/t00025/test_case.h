@@ -29,26 +29,38 @@ TEST_CASE("t00025", "[test-case][class]")
     REQUIRE(model->name() == "t00025_class");
     REQUIRE(model->should_include("clanguml::t00025::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("Target1")));
-    REQUIRE_THAT(puml, IsClass(_A("Target2")));
-    REQUIRE_THAT(puml, IsClassTemplate("Proxy", "T"));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target1>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target2>")));
-    REQUIRE_THAT(puml,
-        IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
-    REQUIRE_THAT(puml,
-        IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
-    REQUIRE_THAT(
-        puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
-    REQUIRE_THAT(
-        puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
-    REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
-    REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("Target1")));
+        REQUIRE_THAT(puml, IsClass(_A("Target2")));
+        REQUIRE_THAT(puml, IsClassTemplate("Proxy", "T"));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target1>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target2>")));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
+        REQUIRE_THAT(
+            puml, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
+        REQUIRE_THAT(
+            puml, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
+        REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
+        REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,42 +28,53 @@ TEST_CASE("t00058", "[test-case][class]")
 
     REQUIRE(model->name() == "t00058_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClassTemplate("A", "int,int,double,std::string"));
-    REQUIRE_THAT(
-        puml, IsClassTemplate("B", "int,std::string,int,double,A<int,int>"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "int,int,double,std::string"));
+        REQUIRE_THAT(puml,
+            IsClassTemplate("B", "int,std::string,int,double,A<int,int>"));
 
-    REQUIRE_THAT(puml, IsConcept(_A("same_as_first_type<T,Args...>")));
+        REQUIRE_THAT(puml, IsConcept(_A("same_as_first_type<T,Args...>")));
 
-    REQUIRE_THAT(puml,
-        IsConstraint(_A("A<T,Args...>"), _A("same_as_first_type<T,Args...>"),
-            "T,Args..."));
+        REQUIRE_THAT(puml,
+            IsConstraint(_A("A<T,Args...>"),
+                _A("same_as_first_type<T,Args...>"), "T,Args..."));
 
-    REQUIRE_THAT(puml,
-        IsConstraint(_A("B<T,P,Args...>"), _A("same_as_first_type<T,Args...>"),
-            "T,Args..."));
+        REQUIRE_THAT(puml,
+            IsConstraint(_A("B<T,P,Args...>"),
+                _A("same_as_first_type<T,Args...>"), "T,Args..."));
 
-    REQUIRE_THAT(puml,
-        IsAggregation(_A("R"), _A("A<int,int,double,std::string>"), "+aa"));
-    REQUIRE_THAT(puml,
-        IsAggregation(
-            _A("R"), _A("B<int,std::string,int,double,A<int,int>>"), "+bb"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("R"), _A("A<int,int,double,std::string>"), "+aa"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("R"),
+                _A("B<int,std::string,int,double,A<int,int>>"), "+bb"));
 
-    REQUIRE_THAT(puml,
-        IsInstantiation(
-            _A("A<T,Args...>"), _A("A<int,int,double,std::string>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("B<T,P,Args...>"),
-            _A("B<int,std::string,int,double,A<int,int>>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("A<T,Args...>"), _A("A<int,int,double,std::string>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("B<T,P,Args...>"),
+                _A("B<int,std::string,int,double,A<int,int>>")));
 
-    REQUIRE_THAT(puml,
-        IsDependency(
-            _A("same_as_first_type<T,Args...>"), _A("first_type<T,Args...>")));
+        REQUIRE_THAT(puml,
+            IsDependency(_A("same_as_first_type<T,Args...>"),
+                _A("first_type<T,Args...>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

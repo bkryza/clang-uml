@@ -29,25 +29,35 @@ TEST_CASE("t00016", "[test-case][class]")
     REQUIRE(model->name() == "t00016_class");
     REQUIRE(model->should_include("clanguml::t00016::is_numeric"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", ""));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "int"));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "bool"));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "char"));
-    REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "float"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", ""));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "int"));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "bool"));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "char"));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "float"));
 
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<int>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<bool>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<char>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<int>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<bool>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<char>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

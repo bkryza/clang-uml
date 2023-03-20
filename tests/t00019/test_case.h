@@ -28,31 +28,43 @@ TEST_CASE("t00019", "[test-case][class]")
 
     REQUIRE(model->name() == "t00019_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("Base")));
-    REQUIRE_THAT(puml, IsClassTemplate("Layer1", "LowerLayer"));
-    REQUIRE_THAT(puml, IsClassTemplate("Layer2", "LowerLayer"));
-    REQUIRE_THAT(puml, IsClassTemplate("Layer3", "LowerLayer"));
-    REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Layer3<Base>")));
-    REQUIRE_THAT(
-        puml, IsBaseClass(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
-    REQUIRE_THAT(puml,
-        IsBaseClass(
-            _A("Layer2<Layer3<Base>>"), _A("Layer1<Layer2<Layer3<Base>>>")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("Base")));
+        REQUIRE_THAT(puml, IsClassTemplate("Layer1", "LowerLayer"));
+        REQUIRE_THAT(puml, IsClassTemplate("Layer2", "LowerLayer"));
+        REQUIRE_THAT(puml, IsClassTemplate("Layer3", "LowerLayer"));
+        REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Layer3<Base>")));
+        REQUIRE_THAT(
+            puml, IsBaseClass(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
+        REQUIRE_THAT(puml,
+            IsBaseClass(_A("Layer2<Layer3<Base>>"),
+                _A("Layer1<Layer2<Layer3<Base>>>")));
 
-    REQUIRE_THAT(puml,
-        IsAggregation(_A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
+        REQUIRE_THAT(puml,
+            IsAggregation(
+                _A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
 
-    REQUIRE_THAT(
-        puml, !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));
+        REQUIRE_THAT(puml,
+            !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));
 
-    REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Layer3<Base>"), "+layers"));
+        REQUIRE_THAT(
+            puml, !IsAggregation(_A("A"), _A("Layer3<Base>"), "+layers"));
 
-    REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Base"), "+layers"));
+        REQUIRE_THAT(puml, !IsAggregation(_A("A"), _A("Base"), "+layers"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -29,22 +29,32 @@ TEST_CASE("t00034", "[test-case][class]")
     REQUIRE(model->name() == "t00034_class");
     REQUIRE(model->should_include("clanguml::t00034::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClassTemplate("lift_void", "T"));
-    REQUIRE_THAT(puml, IsClassTemplate("drop_void", "T"));
-    REQUIRE_THAT(puml, IsClass(_A("Void")));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, IsClassTemplate("lift_void", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("drop_void", "T"));
+        REQUIRE_THAT(puml, IsClass(_A("Void")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("lift_void<T>"), _A("lift_void<void>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("lift_void<T>"), _A("lift_void<void>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

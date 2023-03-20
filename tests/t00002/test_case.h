@@ -38,57 +38,62 @@ TEST_CASE("t00002", "[test-case][class]")
     REQUIRE(model->should_include({"clanguml", "t00002"}, "A"));
     REQUIRE(!model->should_include({"std"}, "vector"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("B")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("C")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("D")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("D")));
-    REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_a")));
-    REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_c")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("B")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("C")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("D")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("D")));
+        REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_a")));
+        REQUIRE_THAT(puml, (IsMethod<Public, Abstract>("foo_c")));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
+        REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
 
-    REQUIRE_THAT(puml, HasNote(_A("A"), "left", "This is class A"));
-    REQUIRE_THAT(puml, HasNote(_A("B"), "top", "This is class B"));
+        REQUIRE_THAT(puml, HasNote(_A("A"), "left", "This is class A"));
+        REQUIRE_THAT(puml, HasNote(_A("B"), "top", "This is class B"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("A"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t00002/t00002.cc#L7",
-                clanguml::util::get_git_commit()),
-            "This is class A"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("A"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L7",
+                    clanguml::util::get_git_commit()),
+                "This is class A"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("B"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t00002/t00002.cc#L16",
-                clanguml::util::get_git_commit()),
-            "This is class B"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("B"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L16",
+                    clanguml::util::get_git_commit()),
+                "This is class B"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    auto j = generate_class_json(diagram, *model);
+        using namespace json;
 
-    REQUIRE(json::IsClass(j, "clanguml::t00002::A"));
-    REQUIRE(json::IsClass(j, "clanguml::t00002::B"));
-    REQUIRE(json::IsClass(j, "clanguml::t00002::C"));
-    REQUIRE(json::IsBaseClass(j, "clanguml::t00002::A", "clanguml::t00002::B"));
-    REQUIRE(json::IsBaseClass(j, "clanguml::t00002::A", "clanguml::t00002::C"));
-    REQUIRE(json::IsBaseClass(j, "clanguml::t00002::B", "clanguml::t00002::D"));
-    REQUIRE(json::IsBaseClass(j, "clanguml::t00002::C", "clanguml::t00002::D"));
-    REQUIRE(json::IsMethod(j, "clanguml::t00002::A", "foo_a"));
-    REQUIRE(json::IsMethod(j, "clanguml::t00002::C", "foo_c"));
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(IsClass(j, "C"));
+        REQUIRE(IsBaseClass(j, "A", "B"));
+        REQUIRE(IsBaseClass(j, "A", "C"));
+        REQUIRE(IsBaseClass(j, "B", "D"));
+        REQUIRE(IsBaseClass(j, "C", "D"));
+        REQUIRE(IsMethod(j, "A", "foo_a"));
+        REQUIRE(IsMethod(j, "C", "foo_c"));
+        REQUIRE(IsMember(j, "E", "as", "std::vector<A *>"));
+        REQUIRE(IsAssociation(j, "D", "A", "as"));
 
-    REQUIRE(json::IsAssociation(
-        j, "clanguml::t00002::D", "clanguml::t00002::A", "as"));
-
-    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

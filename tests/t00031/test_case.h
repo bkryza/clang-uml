@@ -29,29 +29,39 @@ TEST_CASE("t00031", "[test-case][class]")
     REQUIRE(model->name() == "t00031_class");
     REQUIRE(model->should_include("clanguml::t00031::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsEnum(_A("B")));
-    REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsEnum(_A("B")));
+        REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
 
-    REQUIRE_THAT(puml,
-        IsAssociationWithStyle(
-            _A("R"), _A("A"), "+aaa", "#red,dashed,thickness=2"));
-    REQUIRE_THAT(puml,
-        IsCompositionWithStyle(
-            _A("R"), _A("B"), "+bbb", "#green,dashed,thickness=4"));
-    REQUIRE_THAT(puml,
-        IsAggregationWithStyle(
-            _A("R"), _A("C<int>"), "+ccc", "#blue,dotted,thickness=8"));
-    REQUIRE_THAT(puml,
-        IsAssociationWithStyle(
-            _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
+        REQUIRE_THAT(puml,
+            IsAssociationWithStyle(
+                _A("R"), _A("A"), "+aaa", "#red,dashed,thickness=2"));
+        REQUIRE_THAT(puml,
+            IsCompositionWithStyle(
+                _A("R"), _A("B"), "+bbb", "#green,dashed,thickness=4"));
+        REQUIRE_THAT(puml,
+            IsAggregationWithStyle(
+                _A("R"), _A("C<int>"), "+ccc", "#blue,dotted,thickness=8"));
+        REQUIRE_THAT(puml,
+            IsAssociationWithStyle(
+                _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

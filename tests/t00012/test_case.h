@@ -28,20 +28,32 @@ TEST_CASE("t00012", "[test-case][class]")
 
     REQUIRE(model->name() == "t00012_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T,Ts..."));
-    REQUIRE_THAT(puml, IsClassTemplate("B", "int... Is"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "T,Ts..."));
+        REQUIRE_THAT(puml, IsClassTemplate("B", "int... Is"));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<int... Is>"), _A("B<3,2,1>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<int... Is>"), _A("B<1,1,1,1>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("C<T,int... Is>"),
-            _A("C<std::map<int,"
-               "std::vector<std::vector<std::vector<std::string>>>>,3,3,3>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("B<int... Is>"), _A("B<3,2,1>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("B<int... Is>"), _A("B<1,1,1,1>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("C<T,int... Is>"),
+                _A("C<std::map<int,"
+                   "std::vector<std::vector<std::vector<std::string>>>>,3,3,"
+                   "3>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

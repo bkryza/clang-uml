@@ -28,28 +28,40 @@ TEST_CASE("t00032", "[test-case][class]")
 
     REQUIRE(model->name() == "t00032_class");
     REQUIRE(model->should_include("clanguml::t00032::A"));
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("Base")));
+        REQUIRE_THAT(puml, IsClass(_A("TBase")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(puml, IsClass(_A("Base")));
-    REQUIRE_THAT(puml, IsClass(_A("TBase")));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, IsClassTemplate("Overload", "T,L,Ts..."));
 
-    REQUIRE_THAT(puml, IsClassTemplate("Overload", "T,L,Ts..."));
+        REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Overload<T,L,Ts...>")));
+        REQUIRE_THAT(
+            puml, IsBaseClass(_A("TBase"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            puml, IsBaseClass(_A("A"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            puml, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            puml, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
 
-    REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Overload<T,L,Ts...>")));
-    REQUIRE_THAT(
-        puml, IsBaseClass(_A("TBase"), _A("Overload<TBase,int,A,B,C>")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("Overload<TBase,int,A,B,C>")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

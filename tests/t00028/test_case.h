@@ -29,37 +29,49 @@ TEST_CASE("t00028", "[test-case][class]")
     REQUIRE(model->name() == "t00028_class");
     REQUIRE(model->should_include("clanguml::t00028::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
-    REQUIRE_THAT(puml, IsEnum(_A("F")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
-    REQUIRE_THAT(puml, HasNote(_A("A"), "top", "A class note."));
-    REQUIRE_THAT(puml, HasNote(_A("B"), "left", "B class note."));
-    REQUIRE_THAT(puml, HasNote(_A("C"), "bottom", "C class note."));
-    const auto d_note = R"(
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
+        REQUIRE_THAT(puml, IsEnum(_A("F")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, HasNote(_A("A"), "top", "A class note."));
+        REQUIRE_THAT(puml, HasNote(_A("B"), "left", "B class note."));
+        REQUIRE_THAT(puml, HasNote(_A("C"), "bottom", "C class note."));
+        const auto d_note = R"(
 D
 class
 note.)";
-    REQUIRE_THAT(puml, HasNote(_A("D"), "left", d_note));
-    REQUIRE_THAT(puml, HasNote(_A("E<T>"), "left", "E template class note."));
-    REQUIRE_THAT(puml, HasNote(_A("F"), "bottom", "F enum note."));
-    REQUIRE_THAT(puml, !HasNote(_A("G"), "left", "G class note."));
-    REQUIRE_THAT(puml, HasNote(_A("R"), "right", "R class note."));
-    REQUIRE_THAT(puml,
-        HasMemberNote(_A("R"), "aaa", "left", "R contains an instance of A."));
-    REQUIRE_THAT(
-        puml, !HasMemberNote(_A("R"), "bbb", "right", "R class note."));
-    REQUIRE_THAT(
-        puml, HasMemberNote(_A("R"), "ccc", "left", "Reference to C."));
+        REQUIRE_THAT(puml, HasNote(_A("D"), "left", d_note));
+        REQUIRE_THAT(
+            puml, HasNote(_A("E<T>"), "left", "E template class note."));
+        REQUIRE_THAT(puml, HasNote(_A("F"), "bottom", "F enum note."));
+        REQUIRE_THAT(puml, !HasNote(_A("G"), "left", "G class note."));
+        REQUIRE_THAT(puml, HasNote(_A("R"), "right", "R class note."));
+        REQUIRE_THAT(puml,
+            HasMemberNote(
+                _A("R"), "aaa", "left", "R contains an instance of A."));
+        REQUIRE_THAT(
+            puml, !HasMemberNote(_A("R"), "bbb", "right", "R class note."));
+        REQUIRE_THAT(
+            puml, HasMemberNote(_A("R"), "ccc", "left", "Reference to C."));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

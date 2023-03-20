@@ -84,6 +84,8 @@ public:
     void generate_relationships(const package &p, nlohmann::json &parent) const;
 
 private:
+    std::string render_name(std::string name) const;
+
     mutable nlohmann::json json_;
 };
 

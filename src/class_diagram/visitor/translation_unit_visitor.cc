@@ -296,6 +296,7 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     const auto id = common::to_id(cls_full_name);
 
     c_ptr->set_id(id);
+    c_ptr->is_template(true);
 
     set_ast_local_id(cls->getID(), id);
 

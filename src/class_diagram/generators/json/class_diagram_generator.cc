@@ -22,6 +22,7 @@
 
 namespace clanguml::class_diagram::model {
 using nlohmann::json;
+
 void to_json(nlohmann::json &j, const class_element &c)
 {
     j["name"] = c.name();
@@ -113,15 +114,17 @@ generator::generator(diagram_config &config, diagram_model &model)
 
 void generator::generate(std::ostream &ostr) const
 {
+    if (m_config.using_namespace)
+        json_["using_namespace"] = m_config.using_namespace().to_string();
+    json_["name"] = m_model.name();
+    json_["diagram_type"] = "class";
+
     json_["elements"] = std::vector<nlohmann::json>{};
     json_["relationships"] = std::vector<nlohmann::json>{};
 
     generate_top_level_elements(json_);
 
     generate_relationships(json_);
-
-    json_["name"] = m_model.name();
-    json_["diagram_type"] = "class";
 
     ostr << json_;
 }
