@@ -61,7 +61,15 @@ TEST_CASE("t00009", "[test-case][class]")
 
         using namespace json;
 
-        REQUIRE(IsClass(j, "A<T>"));
+        REQUIRE(IsClassTemplate(j, "A<T>"));
+        REQUIRE(IsClass(j, "A<int>"));
+        REQUIRE(IsClass(j, "A<std::string>"));
+        REQUIRE(IsClass(j, "A<std::vector<std::string>>"));
+
+        REQUIRE(IsField(j, "A<T>", "value", "T"));
+        REQUIRE(IsField(j, "B", "aint", "A<int>"));
+        REQUIRE(IsField(j, "B", "astring", "A<std::string> *"));
+        REQUIRE(IsField(j, "B", "avector", "A<std::vector<std::string>> &"));
 
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }

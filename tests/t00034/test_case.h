@@ -55,6 +55,9 @@ TEST_CASE("t00034", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClassTemplate(j, "lift_void<T>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

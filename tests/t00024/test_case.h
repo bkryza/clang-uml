@@ -51,6 +51,13 @@ TEST_CASE("t00024", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "Target1"));
+        REQUIRE(IsClass(j, "Target2"));
+        REQUIRE(IsAbstractClass(j, "Target"));
+        REQUIRE(IsBaseClass(j, "Target", "Target1"));
+        REQUIRE(IsBaseClass(j, "Target", "Target2"));
+        REQUIRE(IsBaseClass(j, "Target", "Proxy"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

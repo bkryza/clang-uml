@@ -58,6 +58,12 @@ TEST_CASE("t00016", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClassTemplate(j, "is_numeric<>"));
+        REQUIRE(IsClass(j, "is_numeric<int>"));
+        REQUIRE(IsClass(j, "is_numeric<bool>"));
+        REQUIRE(IsClass(j, "is_numeric<char>"));
+        REQUIRE(IsClass(j, "is_numeric<float>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

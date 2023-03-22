@@ -64,6 +64,10 @@ TEST_CASE("t00049", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "R"));
+        REQUIRE(IsClassTemplate(j, "A<T>"));
+        REQUIRE(IsInstantiation(j, "A<T>", "A<string_vector>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

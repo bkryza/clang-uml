@@ -49,6 +49,12 @@ TEST_CASE("t00015", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "ns1::A"));
+        REQUIRE(IsClass(j, "ns1::ns2_v0_9_0::A"));
+        REQUIRE(IsClass(j, "ns1::Anon"));
+        REQUIRE(IsClass(j, "ns3::ns1::ns2::Anon"));
+        REQUIRE(IsClass(j, "ns3::B"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

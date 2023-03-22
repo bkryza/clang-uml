@@ -95,6 +95,10 @@ TEST_CASE("t00059", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsConcept(j, "fruit_c<T>"));
+        REQUIRE(IsConcept(j, "apple_c<T>"));
+        REQUIRE(IsConcept(j, "orange_c<T>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

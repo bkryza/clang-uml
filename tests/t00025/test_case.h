@@ -61,6 +61,12 @@ TEST_CASE("t00025", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "Target1"));
+        REQUIRE(IsClass(j, "Target2"));
+        REQUIRE(IsClassTemplate(j, "Proxy<T>"));
+        REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target1>", "Target1"));
+        REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target2>", "Target2"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

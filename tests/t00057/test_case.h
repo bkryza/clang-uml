@@ -65,6 +65,13 @@ TEST_CASE("t00057", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(get_element(j, "t00057_A").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_B").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_C").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_D").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_E").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_R").value()["type"] == "class");
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

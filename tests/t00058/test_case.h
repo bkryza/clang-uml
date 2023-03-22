@@ -75,6 +75,10 @@ TEST_CASE("t00058", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A<int,int,double,std::string>"));
+        REQUIRE(IsClass(
+            j, "B<int,std::string,int,double,clanguml::t00058::A<int,int>>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

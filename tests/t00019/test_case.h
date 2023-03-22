@@ -65,6 +65,11 @@ TEST_CASE("t00019", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "Base"));
+        REQUIRE(IsClassTemplate(j, "Layer1<LowerLayer>"));
+        REQUIRE(IsClassTemplate(j, "Layer2<LowerLayer>"));
+        REQUIRE(IsClassTemplate(j, "Layer3<LowerLayer>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

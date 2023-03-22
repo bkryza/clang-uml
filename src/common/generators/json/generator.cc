@@ -61,6 +61,7 @@ void to_json(nlohmann::json &j, const template_parameter &c)
     if (c.default_value())
         j["default"] = c.default_value().value();
     j["is_variadic"] = c.is_variadic();
+    j["template_parameters"] = c.template_params();
 }
 
 void to_json(nlohmann::json &j, const relationship &c)

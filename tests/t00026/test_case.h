@@ -52,6 +52,10 @@ TEST_CASE("t00026", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClassTemplate(j, "Memento<T>"));
+        REQUIRE(IsClassTemplate(j, "Originator<T>"));
+        REQUIRE(IsInstantiation(j, "Originator<T>", "Originator<std::string>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

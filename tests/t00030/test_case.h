@@ -57,6 +57,8 @@ TEST_CASE("t00030", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsAggregation(j, "R", "C", "ccc"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

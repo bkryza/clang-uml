@@ -123,6 +123,15 @@ TEST_CASE("t00056", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsConcept(j, "greater_than_simple<T,L>"));
+        REQUIRE(IsConcept(j, "greater_than_with_requires<T,P>"));
+        REQUIRE(IsConcept(j, "max_four_bytes<T>"));
+        REQUIRE(IsConcept(j, "iterable<T>"));
+        REQUIRE(IsConcept(j, "has_value_type<T>"));
+        REQUIRE(IsConcept(j, "convertible_to_string<T>"));
+        REQUIRE(IsConcept(j, "iterable_with_value_type<T>"));
+        REQUIRE(IsConcept(j, "iterable_or_small_value_type<T>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

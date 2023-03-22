@@ -50,6 +50,10 @@ TEST_CASE("t00018", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "widget"));
+        REQUIRE(IsClass(j, "impl::widget"));
+        REQUIRE(IsDependency(j, "impl::widget", "widget"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

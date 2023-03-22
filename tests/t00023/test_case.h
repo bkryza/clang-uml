@@ -47,6 +47,10 @@ TEST_CASE("t00023", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "StrategyA"));
+        REQUIRE(IsClass(j, "StrategyB"));
+        REQUIRE(IsAbstractClass(j, "Strategy"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

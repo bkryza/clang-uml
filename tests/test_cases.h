@@ -611,10 +611,12 @@ ContainsMatcher IsDeprecated(std::string const &str,
 }
 
 namespace json {
-namespace detail {
 std::optional<nlohmann::json> get_element(
     const nlohmann::json &j, const std::string &name)
 {
+    if (!j.contains("elements"))
+        return {};
+
     for (const nlohmann::json &e : j["elements"]) {
         if (e["display_name"] == name)
             return {e};
@@ -642,14 +644,13 @@ auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
 auto get_relationship(const nlohmann::json &j, const std::string &from,
     const std::string &to, const std::string &type)
 {
-    auto source = detail::get_element(j, from);
-    auto destination = detail::get_element(j, to);
+    auto source = get_element(j, from);
+    auto destination = get_element(j, to);
 
     if (!(source && destination))
         return j["relationships"].end();
 
-    return detail::get_relationship(
-        j, source->at("id"), destination->at("id"), type);
+    return get_relationship(j, source->at("id"), destination->at("id"), type);
 }
 
 std::string expand_name(const nlohmann::json &j, const std::string &name)
@@ -662,36 +663,47 @@ std::string expand_name(const nlohmann::json &j, const std::string &name)
 
     return fmt::format("{}::{}", j["using_namespace"].get<std::string>(), name);
 }
-} // namespace detail
 
 bool IsClass(const nlohmann::json &j, const std::string &name)
 {
-    auto e = detail::get_element(j, detail::expand_name(j, name));
+    auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "class";
+}
+
+bool IsAbstractClass(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && (e->at("type") == "class") && (e->at("is_abstract") == true);
 }
 
 bool IsClassTemplate(const nlohmann::json &j, const std::string &name)
 {
-    auto e = detail::get_element(j, detail::expand_name(j, name));
+    auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "class" && e->at("is_template") == true;
+}
+
+bool IsConcept(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "concept";
 }
 
 bool IsEnum(const nlohmann::json &j, const std::string &name)
 {
-    auto e = detail::get_element(j, detail::expand_name(j, name));
+    auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "enum";
 }
 
 bool IsPackage(const nlohmann::json &j, const std::string &name)
 {
-    auto e = detail::get_element(j, detail::expand_name(j, name));
+    auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "namespace";
 }
 
 bool IsBaseClass(const nlohmann::json &j, const std::string &base,
     const std::string &subclass)
 {
-    auto sc = detail::get_element(j, detail::expand_name(j, subclass));
+    auto sc = get_element(j, expand_name(j, subclass));
 
     if (!sc)
         return false;
@@ -699,14 +711,14 @@ bool IsBaseClass(const nlohmann::json &j, const std::string &base,
     const nlohmann::json &bases = (*sc)["bases"];
 
     return std::find_if(bases.begin(), bases.end(), [&](const auto &it) {
-        return it["name"] == detail::expand_name(j, base);
+        return it["name"] == expand_name(j, base);
     }) != bases.end();
 }
 
 bool IsMethod(
     const nlohmann::json &j, const std::string &cls, const std::string &name)
 {
-    auto sc = detail::get_element(j, detail::expand_name(j, cls));
+    auto sc = get_element(j, expand_name(j, cls));
 
     if (!sc)
         return false;
@@ -718,10 +730,10 @@ bool IsMethod(
     }) != methods.end();
 }
 
-bool IsMember(const nlohmann::json &j, const std::string &cls,
+bool IsField(const nlohmann::json &j, const std::string &cls,
     const std::string &name, const std::string &type)
 {
-    auto sc = detail::get_element(j, detail::expand_name(j, cls));
+    auto sc = get_element(j, expand_name(j, cls));
 
     if (!sc)
         return false;
@@ -736,8 +748,8 @@ bool IsMember(const nlohmann::json &j, const std::string &cls,
 bool IsAssociation(nlohmann::json j, const std::string &from,
     const std::string &to, const std::string &label = "")
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, from),
-        detail::expand_name(j, to), "association");
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "association");
 
     if (rel == j["relationships"].end())
         return false;
@@ -751,8 +763,8 @@ bool IsAssociation(nlohmann::json j, const std::string &from,
 bool IsComposition(nlohmann::json j, const std::string &from,
     const std::string &to, const std::string &label = "")
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, from),
-        detail::expand_name(j, to), "composition");
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "composition");
 
     if (rel == j["relationships"].end())
         return false;
@@ -766,8 +778,8 @@ bool IsComposition(nlohmann::json j, const std::string &from,
 bool IsAggregation(nlohmann::json j, const std::string &from,
     const std::string &to, const std::string &label = "")
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, from),
-        detail::expand_name(j, to), "aggregation");
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "aggregation");
 
     if (rel == j["relationships"].end())
         return false;
@@ -781,8 +793,8 @@ bool IsAggregation(nlohmann::json j, const std::string &from,
 bool IsDependency(
     nlohmann::json j, const std::string &from, const std::string &to)
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, from),
-        detail::expand_name(j, to), "aggregation");
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "dependency");
 
     return rel != j["relationships"].end();
 }
@@ -790,8 +802,16 @@ bool IsDependency(
 bool IsInstantiation(
     nlohmann::json j, const std::string &from, const std::string &to)
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, to),
-        detail::expand_name(j, from), "instantiation");
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "instantiation");
+
+    return rel != j["relationships"].end();
+}
+
+bool IsFriend(nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "friendship");
 
     return rel != j["relationships"].end();
 }
@@ -799,8 +819,8 @@ bool IsInstantiation(
 bool IsInnerClass(
     nlohmann::json j, const std::string &from, const std::string &to)
 {
-    auto rel = detail::get_relationship(j, detail::expand_name(j, to),
-        detail::expand_name(j, from), "containment");
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "containment");
 
     return rel != j["relationships"].end();
 }

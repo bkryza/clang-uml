@@ -91,7 +91,7 @@ TEST_CASE("t00002", "[test-case][class]")
         REQUIRE(IsBaseClass(j, "C", "D"));
         REQUIRE(IsMethod(j, "A", "foo_a"));
         REQUIRE(IsMethod(j, "C", "foo_c"));
-        REQUIRE(IsMember(j, "E", "as", "std::vector<A *>"));
+        REQUIRE(IsField(j, "E", "as", "std::vector<A *>"));
         REQUIRE(IsAssociation(j, "D", "A", "as"));
 
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);

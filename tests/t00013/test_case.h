@@ -73,6 +73,19 @@ TEST_CASE("t00013", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(IsClass(j, "C"));
+        REQUIRE(IsClass(j, "D"));
+        REQUIRE(IsInstantiation(j, "E<T>", "E<int>"));
+        REQUIRE(IsDependency(j, "R", "A"));
+        REQUIRE(IsDependency(j, "R", "B"));
+        REQUIRE(IsDependency(j, "R", "C"));
+        REQUIRE(IsDependency(j, "R", "D"));
+        REQUIRE(IsDependency(j, "D", "R"));
+        REQUIRE(IsDependency(j, "R", "E<int>"));
+        REQUIRE(IsInstantiation(j, "G<T,Args...>", "G<int,float,std::string>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

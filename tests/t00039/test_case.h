@@ -71,6 +71,19 @@ TEST_CASE("t00039", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "AA"));
+        REQUIRE(IsClass(j, "AAA"));
+        REQUIRE(IsBaseClass(j, "C", "CD"));
+        REQUIRE(IsBaseClass(j, "D", "CD"));
+        REQUIRE(IsBaseClass(j, "E", "DE"));
+        REQUIRE(IsBaseClass(j, "D", "DE"));
+        REQUIRE(IsBaseClass(j, "C", "CDE"));
+        REQUIRE(IsBaseClass(j, "D", "CDE"));
+        REQUIRE(IsBaseClass(j, "E", "CDE"));
+
+        REQUIRE(IsClassTemplate(j, "ns3::F<T>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

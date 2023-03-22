@@ -50,6 +50,11 @@ TEST_CASE("t00047", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClassTemplate(j, "conditional_t<Ts...>"));
+        REQUIRE(IsClass(j, "conditional_t<Else>"));
+        REQUIRE(IsClass(j, "conditional_t<std::true_type,Result,Tail...>"));
+        REQUIRE(IsClass(j, "conditional_t<std::false_type,Result,Tail...>"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

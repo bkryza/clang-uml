@@ -71,6 +71,20 @@ TEST_CASE("t00043", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "dependants::A"));
+        REQUIRE(IsClass(j, "dependants::B"));
+        REQUIRE(IsClass(j, "dependants::C"));
+        REQUIRE(IsClass(j, "dependants::D"));
+        REQUIRE(IsClass(j, "dependants::BB"));
+        REQUIRE(IsClass(j, "dependants::E"));
+        REQUIRE(IsDependency(j, "dependants::B", "dependants::A"));
+
+        REQUIRE(IsClass(j, "dependencies::G"));
+        REQUIRE(IsClass(j, "dependencies::GG"));
+        REQUIRE(IsClass(j, "dependencies::H"));
+        REQUIRE(IsDependency(j, "dependencies::J", "dependencies::I"));
+        REQUIRE(IsDependency(j, "dependencies::H", "dependencies::G"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

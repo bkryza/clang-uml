@@ -84,6 +84,10 @@ TEST_CASE("t00051", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsInnerClass(j, "A", "A::custom_thread1"));
+        REQUIRE(IsInnerClass(j, "A", "A::custom_thread2"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

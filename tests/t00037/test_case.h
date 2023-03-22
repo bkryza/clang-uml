@@ -53,6 +53,12 @@ TEST_CASE("t00037", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "ST"));
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "ST::(units)"));
+        REQUIRE(IsClass(j, "ST::(dimensions)"));
+        REQUIRE(IsAggregation(j, "ST", "ST::(dimensions)", "dimensions"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }
