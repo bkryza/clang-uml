@@ -631,6 +631,20 @@ std::optional<nlohmann::json> get_element(
     return {};
 }
 
+std::optional<nlohmann::json> get_participant(
+    const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("participants"))
+        return {};
+
+    for (const nlohmann::json &e : j["participants"]) {
+        if (e["name"] == name)
+            return {e};
+    }
+
+    return {};
+}
+
 auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
     const nlohmann::json &to, const std::string &type)
 {
@@ -823,6 +837,82 @@ bool IsInnerClass(
         j, expand_name(j, to), expand_name(j, from), "containment");
 
     return rel != j["relationships"].end();
+}
+
+bool IsParticipant(
+    const nlohmann::json &j, const std::string &name, const std::string &type)
+{
+    auto p = get_participant(j, expand_name(j, name));
+
+    return p && (p->at("type") == type);
+}
+
+bool IsFunctionParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "function");
+}
+
+bool IsClassParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "class");
+}
+
+bool IsFileParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "file");
+}
+
+namespace detail {
+int find_message_nested(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg, const nlohmann::json &from_p,
+    const nlohmann::json &to_p, int &count)
+{
+    const auto &messages = j["messages"];
+
+    int res{-1};
+
+    for (const auto &m : messages) {
+        if (m.contains("branches")) {
+            for (const auto &b : m["branches"]) {
+                auto nested_res =
+                    find_message_nested(b, from, to, msg, from_p, to_p, count);
+
+                if (nested_res >= 0)
+                    return nested_res;
+            }
+        }
+        else {
+            if ((m["from"]["participant_id"] == from_p["id"]) &&
+                (m["to"]["participant_id"] == to_p["id"]) && (m["name"] == msg))
+                return count;
+
+            count++;
+        }
+    }
+
+    return res;
+}
+} // namespace detail
+
+int FindMessage(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg)
+{
+    auto from_p = get_participant(j, expand_name(j, from));
+    auto to_p = get_participant(j, expand_name(j, to));
+
+    // TODO: support diagrams with multiple sequences...
+    const auto &sequence_0 = j["sequences"][0];
+
+    int count{0};
+
+    auto res = detail::find_message_nested(
+        sequence_0, from, to, msg, *from_p, *to_p, count);
+
+    if (res >= 0)
+        return res;
+
+    throw std::runtime_error(
+        fmt::format("No such message {} {} {}", from, to, msg));
 }
 
 } // namespace json

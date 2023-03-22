@@ -27,60 +27,64 @@ TEST_CASE("t20012", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20012_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+                "operator()()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+                _A("A"), "a()"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aa()"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aaa()"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()"),
-            _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
-            "operator()()"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
-            _A("A"), "a()"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aa()"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aaa()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+                _A("B"), "b()"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bb()"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bbb()"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
-            _A("B"), "b()"));
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bb()"));
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bbb()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
+                _A("C"), "c()"));
+        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "cc()"));
+        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+                "operator()()"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
-            _A("C"), "c()"));
-    REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "cc()"));
-    REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
-            _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
-            "operator()()"));
+        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
 
-    REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()"),
+                _A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"), "r()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
+                "operator()()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
+                _A("C"), "c()"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()"),
-            _A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"), "r()"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"),
-            _A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
-            "operator()()"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
-            _A("C"), "c()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
 
-    auto j = generate_sequence_json(diagram, *model);
+        using namespace json;
 
-    // REQUIRE(j == nlohmann::json::parse(expected_json));
-
-    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

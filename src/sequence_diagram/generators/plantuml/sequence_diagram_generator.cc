@@ -69,8 +69,10 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         render_mode = model::function::message_render_mode::no_arguments;
 
     if (to.value().type_name() == "method") {
-        message = dynamic_cast<const model::function &>(to.value())
-                      .message_name(render_mode);
+        const auto &f = dynamic_cast<const model::method &>(to.value());
+        const std::string_view style = f.is_static() ? "__" : "";
+        message =
+            fmt::format("{}{}{}", style, f.message_name(render_mode), style);
     }
     else if (m_config.combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {

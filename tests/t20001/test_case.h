@@ -31,36 +31,43 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE(model->should_include("clanguml::t20001::A"));
     REQUIRE(!model->should_include("clanguml::t20001::detail::C"));
     REQUIRE(!model->should_include("std::vector"));
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
 
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
+        REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
 
-    REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_sequence_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
 
-    auto j = generate_sequence_json(diagram, *model);
+        REQUIRE(IsFunctionParticipant(j, "tmain()"));
+        REQUIRE(IsClassParticipant(j, "A"));
+        REQUIRE(IsClassParticipant(j, "B"));
 
-    REQUIRE(j["participants"][0]["name"] == "clanguml::t20001::tmain()");
-    REQUIRE(j["participants"][1]["name"] == "clanguml::t20001::A");
-    REQUIRE(j["participants"][2]["name"] == "clanguml::t20001::B");
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()", "A", "add(int,int)"),
+            FindMessage(j, "tmain()", "B", "wrap_add3(int,int,int)"),
+            FindMessage(j, "B", "A", "add3(int,int,int)"),
+            FindMessage(j, "A", "A", "add(int,int)"),
+            FindMessage(j, "A", "A", "log_result(int)"),
+            FindMessage(j, "B", "A", "log_result(int)")};
 
-    auto &messages = j["sequences"][0]["messages"];
-    REQUIRE(messages[0]["name"] == "add(int,int)");
-    REQUIRE(messages[1]["name"] == "wrap_add3(int,int,int)");
-    REQUIRE(messages[2]["name"] == "add3(int,int,int)");
-    REQUIRE(messages[3]["name"] == "add(int,int)");
-    REQUIRE(messages[4]["name"] == "__log_result(int)__");
-    REQUIRE(messages[5]["name"] == "__log_result(int)__");
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

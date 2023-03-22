@@ -95,14 +95,42 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     msg["name"] = message;
     msg["type"] = "message";
-    msg["from"]["name"] = from.value().full_name(false);
-    msg["from"]["id"] = std::to_string(from.value().id());
+    msg["from"]["activity_name"] = from.value().full_name(false);
+    msg["from"]["activity_id"] = std::to_string(from.value().id());
     msg["to"]["activity_id"] = std::to_string(to.value().id());
     msg["to"]["activity_name"] = to.value().full_name(false);
+
+    if (from.value().type_name() == "method") {
+        const auto &class_participant =
+            m_model.get_participant<model::method>(from.value().id()).value();
+
+        msg["from"]["participant_id"] =
+            std::to_string(class_participant.class_id());
+        msg["from"]["participant_name"] =
+            m_model.get_participant<model::class_>(class_participant.class_id())
+                .value()
+                .full_name(false);
+    }
+    else if (from.value().type_name() == "function" ||
+        from.value().type_name() == "function_template") {
+        if (m_config.combine_free_functions_into_file_participants()) {
+            const auto &file_participant =
+                m_model.get_participant<model::function>(from.value().id())
+                    .value();
+            msg["from"]["participant_id"] =
+                std::to_string(common::to_id(file_participant.file()));
+            msg["from"]["participant_name"] = file_participant.file_relative();
+        }
+        else {
+            msg["from"]["participant_id"] = std::to_string(from.value().id());
+            msg["from"]["participant_name"] = from.value().full_name(false);
+        }
+    }
 
     if (to.value().type_name() == "method") {
         const auto &class_participant =
             m_model.get_participant<model::method>(to.value().id()).value();
+
         msg["to"]["participant_id"] =
             std::to_string(class_participant.class_id());
         msg["to"]["participant_name"] =
@@ -110,13 +138,20 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                 .value()
                 .full_name(false);
     }
-    else if (to.value().type_name() == "function" &&
-        m_config.combine_free_functions_into_file_participants()) {
-        const auto &file_participant =
-            m_model.get_participant<model::function>(to.value().id()).value();
-        msg["to"]["participant_id"] =
-            std::to_string(common::to_id(file_participant.file()));
-        msg["to"]["participant_name"] = file_participant.file_relative();
+    else if (to.value().type_name() == "function" ||
+        to.value().type_name() == "function_template") {
+        if (m_config.combine_free_functions_into_file_participants()) {
+            const auto &file_participant =
+                m_model.get_participant<model::function>(to.value().id())
+                    .value();
+            msg["to"]["participant_id"] =
+                std::to_string(common::to_id(file_participant.file()));
+            msg["to"]["participant_name"] = file_participant.file_relative();
+        }
+        else {
+            msg["to"]["participant_id"] = std::to_string(to.value().id());
+            msg["to"]["participant_name"] = to.value().full_name(false);
+        }
     }
 
     msg["source_location"] =

@@ -185,7 +185,7 @@ std::string method::message_name(message_render_mode mode) const
 {
     constexpr auto kAbbreviatedMethodArgumentsLength{15};
 
-    const std::string style = is_static() ? "__" : "";
+    const std::string style = "";
 
     if (mode == message_render_mode::no_arguments) {
         return fmt::format("{}{}(){}{}", style, method_name(),

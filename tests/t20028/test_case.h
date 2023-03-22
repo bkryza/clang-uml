@@ -27,25 +27,29 @@ TEST_CASE("t20028", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20028_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "b()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "c()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "d()"));
+        REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "e()"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "b()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "c()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "d()"));
-    REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "e()"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
 
-    auto j = generate_sequence_json(diagram, *model);
+        using namespace json;
 
-    // REQUIRE(j == nlohmann::json::parse(expected_json));
-
-    save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }
