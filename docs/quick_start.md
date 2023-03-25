@@ -56,7 +56,7 @@ To add an initial class diagram to your project, follow these steps:
      - another_diagram [sequence]
      - some_class_diagram [class]
    ```
-7. Generate only the new diagram:
+7. Generate only the new diagram in JSON format:
    ```bash
-   clang-uml -n another_diagram
+   clang-uml -n another_diagram -g json
    ```
