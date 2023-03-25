@@ -24,6 +24,7 @@
 #include "common/model/diagram_filter.h"
 #include "config/config.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
+#include "package_diagram/generators/json/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
@@ -144,7 +145,7 @@ std::unique_ptr<DiagramModel> generate(
     DiagramConfig &config, const std::vector<std::string> &translation_units,
     bool /*verbose*/ = false)
 {
-    LOG_INFO("Generating diagram {}.puml", name);
+    LOG_INFO("Generating diagram {}", name);
 
     auto diagram = std::make_unique<DiagramModel>();
     diagram->set_name(name);

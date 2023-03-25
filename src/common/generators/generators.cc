@@ -118,17 +118,39 @@ void generate_diagram(const std::string &od, const std::string &name,
             dynamic_cast<diagram_config &>(*diagram), translation_units,
             verbose);
 
-        auto path = std::filesystem::path{od} / fmt::format("{}.puml", name);
-        std::ofstream ofs;
+        for (const auto generator_type : generators) {
+            if (generator_type == generator_type_t::plantuml) {
+                auto path =
+                    std::filesystem::path{od} / fmt::format("{}.puml", name);
+                std::ofstream ofs;
 
-        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-        ofs << clanguml::sequence_diagram::generators::plantuml::generator(
-            dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
-            *model);
+                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+                ofs << clanguml::sequence_diagram::generators::plantuml::
+                        generator(
+                            dynamic_cast<clanguml::config::sequence_diagram &>(
+                                *diagram),
+                            *model);
 
-        ofs.close();
+                ofs.close();
 
-        LOG_INFO("Written {} diagram to {}", name, path.string());
+                LOG_INFO("Written {} diagram to {}", name, path.string());
+            }
+            else if (generator_type == generator_type_t::json) {
+                auto path =
+                    std::filesystem::path{od} / fmt::format("{}.json", name);
+                std::ofstream ofs;
+
+                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+                ofs << clanguml::sequence_diagram::generators::json::generator(
+                    dynamic_cast<clanguml::config::sequence_diagram &>(
+                        *diagram),
+                    *model);
+
+                ofs.close();
+
+                LOG_INFO("Written {} diagram to {}", name, path.string());
+            }
+        }
     }
     else if (diagram->type() == diagram_t::kPackage) {
         using diagram_config = package_diagram;
@@ -141,16 +163,36 @@ void generate_diagram(const std::string &od, const std::string &name,
             dynamic_cast<diagram_config &>(*diagram), translation_units,
             verbose);
 
-        auto path = std::filesystem::path{od} / fmt::format("{}.puml", name);
-        std::ofstream ofs;
-        ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+        for (const auto generator_type : generators) {
+            if (generator_type == generator_type_t::plantuml) {
+                auto path =
+                    std::filesystem::path{od} / fmt::format("{}.puml", name);
+                std::ofstream ofs;
+                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
 
-        ofs << clanguml::package_diagram::generators::plantuml::generator(
-            dynamic_cast<diagram_config &>(*diagram), *model);
+                ofs << clanguml::package_diagram::generators::plantuml::
+                        generator(
+                            dynamic_cast<diagram_config &>(*diagram), *model);
 
-        ofs.close();
+                ofs.close();
 
-        LOG_INFO("Written {} diagram to {}", name, path.string());
+                LOG_INFO("Written {} diagram to {}", name, path.string());
+            }
+            else if (generator_type == generator_type_t::json) {
+                auto path =
+                    std::filesystem::path{od} / fmt::format("{}.json", name);
+                std::ofstream ofs;
+
+                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+                ofs << clanguml::package_diagram::generators::json::generator(
+                    dynamic_cast<clanguml::config::package_diagram &>(*diagram),
+                    *model);
+
+                ofs.close();
+
+                LOG_INFO("Written {} diagram to {}", name, path.string());
+            }
+        }
     }
     else if (diagram->type() == diagram_t::kInclude) {
         using diagram_config = include_diagram;
@@ -188,8 +230,8 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
     std::vector<std::future<void>> futs;
 
     for (const auto &[name, diagram] : config.diagrams) {
-        // If there are any specific diagram names provided on the command line,
-        // and this diagram is not in that list - skip it
+        // If there are any specific diagram names provided on the command
+        // line, and this diagram is not in that list - skip it
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
