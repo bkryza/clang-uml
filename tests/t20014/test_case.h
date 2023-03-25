@@ -54,6 +54,17 @@ TEST_CASE("t20014", "[test-case][sequence]")
 
         using namespace json;
 
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()", "B", "b1(int,int)"),
+            FindMessage(j, "B", "A", "a1(int,int)"),
+            FindMessage(j, "tmain()", "B", "b2(int,int)"),
+            FindMessage(j, "B", "A", "a2(int,int)"),
+            FindMessage(
+                j, "tmain()", "C<clanguml::t20014::B,int>", "c1(int,int)"),
+            FindMessage(j, "C<clanguml::t20014::B,int>", "B", "b1(int,int)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

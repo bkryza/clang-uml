@@ -50,6 +50,12 @@ TEST_CASE("t20025", "[test-case][sequence]")
 
         using namespace json;
 
+        std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a()"),
+            // FindMessage(j, "tmain()", "A", "a2()"),
+            FindMessage(j, "tmain()", "add(int,int)", "")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

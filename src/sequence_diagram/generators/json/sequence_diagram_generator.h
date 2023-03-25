@@ -32,6 +32,8 @@
 
 namespace clanguml::sequence_diagram::generators::json {
 
+std::string render_name(std::string name);
+
 using diagram_config = clanguml::config::sequence_diagram;
 using diagram_model = clanguml::sequence_diagram::model::diagram;
 

@@ -881,6 +881,13 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
                     return nested_res;
             }
         }
+        else if (m.contains("messages")) {
+            auto nested_res =
+                find_message_nested(m, from, to, msg, from_p, to_p, count);
+
+            if (nested_res >= 0)
+                return nested_res;
+        }
         else {
             if ((m["from"]["participant_id"] == from_p["id"]) &&
                 (m["to"]["participant_id"] == to_p["id"]) && (m["name"] == msg))
@@ -892,13 +899,13 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
 
     return res;
 }
-} // namespace detail
 
-int FindMessage(const nlohmann::json &j, const std::string &from,
+int find_message_impl(const nlohmann::json &j, const std::string &from,
     const std::string &to, const std::string &msg)
 {
-    auto from_p = get_participant(j, expand_name(j, from));
-    auto to_p = get_participant(j, expand_name(j, to));
+
+    auto from_p = get_participant(j, from);
+    auto to_p = get_participant(j, to);
 
     // TODO: support diagrams with multiple sequences...
     const auto &sequence_0 = j["sequences"][0];
@@ -913,6 +920,30 @@ int FindMessage(const nlohmann::json &j, const std::string &from,
 
     throw std::runtime_error(
         fmt::format("No such message {} {} {}", from, to, msg));
+}
+
+} // namespace detail
+
+struct File {
+    explicit File(const std::string &f)
+        : file{f}
+    {
+    }
+
+    const std::string file;
+};
+
+int FindMessage(const nlohmann::json &j, const File &from, const File &to,
+    const std::string &msg)
+{
+    return detail::find_message_impl(j, from.file, to.file, msg);
+}
+
+int FindMessage(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg)
+{
+    return detail::find_message_impl(
+        j, expand_name(j, from), expand_name(j, to), msg);
 }
 
 } // namespace json

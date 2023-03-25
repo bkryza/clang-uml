@@ -18,12 +18,23 @@
 
 #include "sequence_diagram_generator.h"
 
+namespace clanguml::sequence_diagram::generators::json {
+
+std::string render_name(std::string name)
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
+} // namespace clanguml::sequence_diagram::generators::json
+
 namespace clanguml::sequence_diagram::model {
-using nlohmann::json;
+// using nlohmann::json;
 
 void to_json(nlohmann::json &j, const participant &c)
 {
-    j["name"] = c.full_name(false);
+    j["name"] = generators::json::render_name(c.full_name(false));
     j["id"] = std::to_string(c.id());
     j["type"] = c.type_name();
     if (!c.file().empty())
@@ -95,7 +106,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     msg["name"] = message;
     msg["type"] = "message";
-    msg["from"]["activity_name"] = from.value().full_name(false);
+    msg["from"]["activity_name"] =
+        generators::json::render_name(from.value().full_name(false));
     msg["from"]["activity_id"] = std::to_string(from.value().id());
     msg["to"]["activity_id"] = std::to_string(to.value().id());
     msg["to"]["activity_name"] = to.value().full_name(false);
@@ -106,10 +118,10 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
         msg["from"]["participant_id"] =
             std::to_string(class_participant.class_id());
-        msg["from"]["participant_name"] =
+        msg["from"]["participant_name"] = generators::json::render_name(
             m_model.get_participant<model::class_>(class_participant.class_id())
                 .value()
-                .full_name(false);
+                .full_name(false));
     }
     else if (from.value().type_name() == "function" ||
         from.value().type_name() == "function_template") {
@@ -118,13 +130,21 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                 m_model.get_participant<model::function>(from.value().id())
                     .value();
             msg["from"]["participant_id"] =
-                std::to_string(common::to_id(file_participant.file()));
-            msg["from"]["participant_name"] = file_participant.file_relative();
+                std::to_string(common::to_id(file_participant.file_relative()));
+            msg["from"]["participant_name"] = util::path_to_url(
+                std::filesystem::relative(file_participant.file(),
+                    std::filesystem::canonical(m_config.relative_to())
+                        .string()));
         }
         else {
             msg["from"]["participant_id"] = std::to_string(from.value().id());
             msg["from"]["participant_name"] = from.value().full_name(false);
         }
+    }
+    else if (from.value().type_name() == "lambda") {
+        msg["from"]["participant_id"] = std::to_string(from.value().id());
+        msg["from"]["participant_name"] =
+            generators::json::render_name(from.value().full_name(false));
     }
 
     if (to.value().type_name() == "method") {
@@ -145,13 +165,21 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                 m_model.get_participant<model::function>(to.value().id())
                     .value();
             msg["to"]["participant_id"] =
-                std::to_string(common::to_id(file_participant.file()));
-            msg["to"]["participant_name"] = file_participant.file_relative();
+                std::to_string(common::to_id(file_participant.file_relative()));
+            msg["to"]["participant_name"] = util::path_to_url(
+                std::filesystem::relative(file_participant.file(),
+                    std::filesystem::canonical(m_config.relative_to())
+                        .string()));
         }
         else {
             msg["to"]["participant_id"] = std::to_string(to.value().id());
             msg["to"]["participant_name"] = to.value().full_name(false);
         }
+    }
+    else if (to.value().type_name() == "lambda") {
+        msg["to"]["participant_id"] = std::to_string(to.value().id());
+        msg["to"]["participant_name"] =
+            generators::json::render_name(to.value().full_name(false));
     }
 
     msg["source_location"] =
@@ -339,10 +367,10 @@ void generator::process_try_message(const message &m) const
 
     nlohmann::json branch;
     branch["type"] = "main";
-    current_block_statement()["blocks"].push_back(std::move(branch));
+    current_block_statement()["branches"].push_back(std::move(branch));
 
     block_statements_stack_.push_back(
-        std::ref(current_block_statement()["blocks"].back()));
+        std::ref(current_block_statement()["branches"].back()));
 }
 
 void generator::process_catch_message() const
@@ -352,10 +380,10 @@ void generator::process_catch_message() const
 
     nlohmann::json branch;
     branch["type"] = "catch";
-    current_block_statement()["blocks"].push_back(std::move(branch));
+    current_block_statement()["branches"].push_back(std::move(branch));
 
     block_statements_stack_.push_back(
-        std::ref(current_block_statement()["blocks"].back()));
+        std::ref(current_block_statement()["branches"].back()));
 }
 
 void generator::process_end_try_message() const
@@ -388,10 +416,10 @@ void generator::process_case_message(const message &m) const
     nlohmann::json case_block;
     case_block["type"] = "case";
     case_block["name"] = m.message_name();
-    current_block_statement()["cases"].push_back(std::move(case_block));
+    current_block_statement()["branches"].push_back(std::move(case_block));
 
     block_statements_stack_.push_back(
-        std::ref(current_block_statement()["cases"].back()));
+        std::ref(current_block_statement()["branches"].back()));
 }
 
 void generator::process_end_switch_message() const
@@ -526,20 +554,17 @@ common::id_t generator::generate_participant(
         m_model.get_participant<model::participant>(participant_id).value();
 
     if (participant.type_name() == "method") {
-        const auto class_id =
-            m_model.get_participant<model::method>(participant_id)
-                .value()
-                .class_id();
+        participant_id = m_model.get_participant<model::method>(participant_id)
+                             .value()
+                             .class_id();
 
-        if (is_participant_generated(class_id))
+        if (is_participant_generated(participant_id))
             return participant_id;
 
         const auto &class_participant =
-            m_model.get_participant<model::participant>(class_id).value();
+            m_model.get_participant<model::participant>(participant_id).value();
 
         parent["participants"].push_back(class_participant);
-
-        generated_participants_.emplace(class_id);
     }
     else if ((participant.type_name() == "function" ||
                  participant.type_name() == "function_template") &&
@@ -549,16 +574,25 @@ common::id_t generator::generate_participant(
         const auto &function_participant =
             m_model.get_participant<model::function>(participant_id).value();
 
-        parent["participants"].push_back(function_participant);
+        nlohmann::json j = function_participant;
+        j["name"] = util::path_to_url(
+            std::filesystem::relative(function_participant.file(),
+                std::filesystem::canonical(m_config.relative_to()).string()));
 
-        generated_participants_.emplace(
-            common::to_id(function_participant.file()));
+        participant_id = common::to_id(function_participant.file_relative());
+
+        if (is_participant_generated(participant_id))
+            return participant_id;
+
+        j["id"] = std::to_string(participant_id);
+
+        parent["participants"].push_back(j);
     }
     else {
         parent["participants"].push_back(participant);
-
-        generated_participants_.emplace(participant_id);
     }
+
+    generated_participants_.emplace(participant_id);
 
     return participant_id;
 }

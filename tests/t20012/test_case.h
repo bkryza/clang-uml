@@ -85,6 +85,38 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         using namespace json;
 
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)",
+                "operator()()"),
+            FindMessage(j,
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)", "A",
+                "a()"),
+            FindMessage(j, "A", "A", "aa()"), FindMessage(j, "A", "A", "aaa()"),
+            FindMessage(j,
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)", "B",
+                "b()"),
+            FindMessage(j, "B", "B", "bb()"), FindMessage(j, "B", "B", "bbb()"),
+            FindMessage(j,
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)", "C",
+                "c()"),
+            FindMessage(j, "C", "C", "cc()"), FindMessage(j, "C", "C", "ccc()"),
+            FindMessage(j,
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)",
+                "operator()()"),
+            FindMessage(j, "tmain()",
+                "R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>", "r()"),
+            FindMessage(j, "R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)",
+                "operator()()"),
+            FindMessage(j,
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)", "C",
+                "c()"),
+            FindMessage(j, "tmain()", "D", "add5(int)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

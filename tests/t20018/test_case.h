@@ -62,6 +62,19 @@ TEST_CASE("t20018", "[test-case][sequence]")
 
         using namespace json;
 
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()",
+                "Answer<clanguml::t20018::Factorial<5>,120>", "print()"),
+            FindMessage(j, "Answer<clanguml::t20018::Factorial<5>,120>",
+                "Factorial<5>", "print(int)"),
+            FindMessage(j, "Factorial<5>", "Factorial<4>", "print(int)"),
+            FindMessage(j, "Factorial<4>", "Factorial<3>", "print(int)"),
+            FindMessage(j, "Factorial<3>", "Factorial<2>", "print(int)"),
+            FindMessage(j, "Factorial<2>", "Factorial<1>", "print(int)"),
+            FindMessage(j, "Factorial<1>", "Factorial<0>", "print(int)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }
