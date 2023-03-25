@@ -30,7 +30,6 @@ std::string render_name(std::string name)
 } // namespace clanguml::sequence_diagram::generators::json
 
 namespace clanguml::sequence_diagram::model {
-// using nlohmann::json;
 
 void to_json(nlohmann::json &j, const participant &c)
 {
@@ -118,10 +117,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
         msg["from"]["participant_id"] =
             std::to_string(class_participant.class_id());
-        msg["from"]["participant_name"] = generators::json::render_name(
-            m_model.get_participant<model::class_>(class_participant.class_id())
-                .value()
-                .full_name(false));
     }
     else if (from.value().type_name() == "function" ||
         from.value().type_name() == "function_template") {
@@ -131,10 +126,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                     .value();
             msg["from"]["participant_id"] =
                 std::to_string(common::to_id(file_participant.file_relative()));
-            msg["from"]["participant_name"] = util::path_to_url(
-                std::filesystem::relative(file_participant.file(),
-                    std::filesystem::canonical(m_config.relative_to())
-                        .string()));
         }
         else {
             msg["from"]["participant_id"] = std::to_string(from.value().id());
@@ -143,8 +134,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
     }
     else if (from.value().type_name() == "lambda") {
         msg["from"]["participant_id"] = std::to_string(from.value().id());
-        msg["from"]["participant_name"] =
-            generators::json::render_name(from.value().full_name(false));
     }
 
     if (to.value().type_name() == "method") {
@@ -153,10 +142,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
         msg["to"]["participant_id"] =
             std::to_string(class_participant.class_id());
-        msg["to"]["participant_name"] =
-            m_model.get_participant<model::class_>(class_participant.class_id())
-                .value()
-                .full_name(false);
     }
     else if (to.value().type_name() == "function" ||
         to.value().type_name() == "function_template") {
@@ -166,20 +151,13 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                     .value();
             msg["to"]["participant_id"] =
                 std::to_string(common::to_id(file_participant.file_relative()));
-            msg["to"]["participant_name"] = util::path_to_url(
-                std::filesystem::relative(file_participant.file(),
-                    std::filesystem::canonical(m_config.relative_to())
-                        .string()));
         }
         else {
             msg["to"]["participant_id"] = std::to_string(to.value().id());
-            msg["to"]["participant_name"] = to.value().full_name(false);
         }
     }
     else if (to.value().type_name() == "lambda") {
         msg["to"]["participant_id"] = std::to_string(to.value().id());
-        msg["to"]["participant_name"] =
-            generators::json::render_name(to.value().full_name(false));
     }
 
     msg["source_location"] =
