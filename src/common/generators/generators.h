@@ -48,6 +48,91 @@
 
 namespace clanguml::common::generators {
 
+// template trait for selecting diagram model type based on diagram config
+// type
+template <typename DiagramConfig> struct diagram_model_t;
+template <> struct diagram_model_t<clanguml::config::class_diagram> {
+    using type = clanguml::class_diagram::model::diagram;
+};
+template <> struct diagram_model_t<clanguml::config::sequence_diagram> {
+    using type = clanguml::sequence_diagram::model::diagram;
+};
+template <> struct diagram_model_t<clanguml::config::package_diagram> {
+    using type = clanguml::package_diagram::model::diagram;
+};
+template <> struct diagram_model_t<clanguml::config::include_diagram> {
+    using type = clanguml::include_diagram::model::diagram;
+};
+
+// template trait for selecting diagram visitor type based on diagram config
+// type
+template <typename DiagramConfig> struct diagram_visitor_t;
+template <> struct diagram_visitor_t<clanguml::config::class_diagram> {
+    using type = clanguml::class_diagram::visitor::translation_unit_visitor;
+};
+template <> struct diagram_visitor_t<clanguml::config::sequence_diagram> {
+    using type = clanguml::sequence_diagram::visitor::translation_unit_visitor;
+};
+template <> struct diagram_visitor_t<clanguml::config::package_diagram> {
+    using type = clanguml::package_diagram::visitor::translation_unit_visitor;
+};
+template <> struct diagram_visitor_t<clanguml::config::include_diagram> {
+    using type = clanguml::include_diagram::visitor::translation_unit_visitor;
+};
+
+// template trait for selecting diagram generator type based on diagram config
+// type
+struct plantuml_generator_tag {
+    inline static const std::string extension = "puml";
+};
+struct json_generator_tag {
+    inline static const std::string extension = "json";
+};
+
+template <typename DiagramConfig, typename GeneratorType>
+struct diagram_generator_t;
+template <>
+struct diagram_generator_t<clanguml::config::class_diagram,
+    plantuml_generator_tag> {
+    using type = clanguml::class_diagram::generators::plantuml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::sequence_diagram,
+    plantuml_generator_tag> {
+    using type = clanguml::sequence_diagram::generators::plantuml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    plantuml_generator_tag> {
+    using type = clanguml::package_diagram::generators::plantuml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::include_diagram,
+    plantuml_generator_tag> {
+    using type = clanguml::include_diagram::generators::plantuml::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::class_diagram,
+    json_generator_tag> {
+    using type = clanguml::class_diagram::generators::json::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::sequence_diagram,
+    json_generator_tag> {
+    using type = clanguml::sequence_diagram::generators::json::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    json_generator_tag> {
+    using type = clanguml::package_diagram::generators::json::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::include_diagram,
+    json_generator_tag> {
+    using type = clanguml::include_diagram::generators::json::generator;
+};
+
+template <typename DiagramConfig> struct diagram_visitor_t;
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,

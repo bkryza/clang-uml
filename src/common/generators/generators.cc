@@ -55,6 +55,56 @@ void find_translation_units_for_diagrams(
     }
 }
 
+namespace detail {
+
+template <typename DiagramConfig, typename GeneratorTag, typename DiagramModel>
+void generate_diagram_select_generator(const std::string &od,
+    const std::string &name, std::shared_ptr<clanguml::config::diagram> diagram,
+    const DiagramModel &model)
+{
+    using diagram_generator = typename diagram_generator_t<DiagramConfig,
+        plantuml_generator_tag>::type;
+
+    auto path = std::filesystem::path{od} /
+        fmt::format("{}.{}", name, GeneratorTag::extension);
+    std::ofstream ofs;
+    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+    ofs << diagram_generator(dynamic_cast<DiagramConfig &>(*diagram), *model);
+
+    ofs.close();
+
+    LOG_INFO("Written {} diagram to {}", name, path.string());
+}
+
+template <typename DiagramConfig>
+void generate_diagram_impl(const std::string &od, const std::string &name,
+    std::shared_ptr<clanguml::config::diagram> diagram,
+    const clang::tooling::CompilationDatabase &db,
+    const std::vector<std::string> &translation_units,
+    const std::vector<clanguml::common::generator_type_t> &generators,
+    bool verbose)
+{
+    using diagram_config = DiagramConfig;
+    using diagram_model = typename diagram_model_t<DiagramConfig>::type;
+    using diagram_visitor = typename diagram_visitor_t<DiagramConfig>::type;
+
+    auto model = clanguml::common::generators::generate<diagram_model,
+        diagram_config, diagram_visitor>(db, diagram->name,
+        dynamic_cast<diagram_config &>(*diagram), translation_units, verbose);
+
+    for (const auto generator_type : generators) {
+        if (generator_type == generator_type_t::plantuml) {
+            generate_diagram_select_generator<diagram_config,
+                plantuml_generator_tag>(od, name, diagram, model);
+        }
+        else if (generator_type == generator_type_t::json) {
+            generate_diagram_select_generator<diagram_config,
+                json_generator_tag>(od, name, diagram, model);
+        }
+    }
+}
+} // namespace detail
+
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const clang::tooling::CompilationDatabase &db,
@@ -64,177 +114,27 @@ void generate_diagram(const std::string &od, const std::string &name,
 {
     using clanguml::common::generator_type_t;
     using clanguml::common::model::diagram_t;
+
     using clanguml::config::class_diagram;
     using clanguml::config::include_diagram;
     using clanguml::config::package_diagram;
     using clanguml::config::sequence_diagram;
 
     if (diagram->type() == diagram_t::kClass) {
-        using diagram_config = class_diagram;
-        using diagram_model = clanguml::class_diagram::model::diagram;
-        using diagram_visitor =
-            clanguml::class_diagram::visitor::translation_unit_visitor;
-
-        auto model = clanguml::common::generators::generate<diagram_model,
-            diagram_config, diagram_visitor>(db, diagram->name,
-            dynamic_cast<diagram_config &>(*diagram), translation_units,
-            verbose);
-
-        for (const auto generator_type : generators) {
-            if (generator_type == generator_type_t::plantuml) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.puml", name);
-                std::ofstream ofs;
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::class_diagram::generators::plantuml::generator(
-                    dynamic_cast<diagram_config &>(*diagram), *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-            else if (generator_type == generator_type_t::json) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.json", name);
-                std::ofstream ofs;
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::class_diagram::generators::json::generator(
-                    dynamic_cast<diagram_config &>(*diagram), *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-        }
+        detail::generate_diagram_impl<class_diagram>(
+            od, name, diagram, db, translation_units, generators, verbose);
     }
     else if (diagram->type() == diagram_t::kSequence) {
-        using diagram_config = sequence_diagram;
-        using diagram_model = clanguml::sequence_diagram::model::diagram;
-        using diagram_visitor =
-            clanguml::sequence_diagram::visitor::translation_unit_visitor;
-
-        auto model = clanguml::common::generators::generate<diagram_model,
-            diagram_config, diagram_visitor>(db, diagram->name,
-            dynamic_cast<diagram_config &>(*diagram), translation_units,
-            verbose);
-
-        for (const auto generator_type : generators) {
-            if (generator_type == generator_type_t::plantuml) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.puml", name);
-                std::ofstream ofs;
-
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::sequence_diagram::generators::plantuml::
-                        generator(
-                            dynamic_cast<clanguml::config::sequence_diagram &>(
-                                *diagram),
-                            *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-            else if (generator_type == generator_type_t::json) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.json", name);
-                std::ofstream ofs;
-
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::sequence_diagram::generators::json::generator(
-                    dynamic_cast<clanguml::config::sequence_diagram &>(
-                        *diagram),
-                    *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-        }
+        detail::generate_diagram_impl<sequence_diagram>(
+            od, name, diagram, db, translation_units, generators, verbose);
     }
     else if (diagram->type() == diagram_t::kPackage) {
-        using diagram_config = package_diagram;
-        using diagram_model = clanguml::package_diagram::model::diagram;
-        using diagram_visitor =
-            clanguml::package_diagram::visitor::translation_unit_visitor;
-
-        auto model = clanguml::common::generators::generate<diagram_model,
-            diagram_config, diagram_visitor>(db, diagram->name,
-            dynamic_cast<diagram_config &>(*diagram), translation_units,
-            verbose);
-
-        for (const auto generator_type : generators) {
-            if (generator_type == generator_type_t::plantuml) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.puml", name);
-                std::ofstream ofs;
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-
-                ofs << clanguml::package_diagram::generators::plantuml::
-                        generator(
-                            dynamic_cast<diagram_config &>(*diagram), *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-            else if (generator_type == generator_type_t::json) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.json", name);
-                std::ofstream ofs;
-
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::package_diagram::generators::json::generator(
-                    dynamic_cast<clanguml::config::package_diagram &>(*diagram),
-                    *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-        }
+        detail::generate_diagram_impl<package_diagram>(
+            od, name, diagram, db, translation_units, generators, verbose);
     }
     else if (diagram->type() == diagram_t::kInclude) {
-        using diagram_config = include_diagram;
-        using diagram_model = clanguml::include_diagram::model::diagram;
-        using diagram_visitor =
-            clanguml::include_diagram::visitor::translation_unit_visitor;
-
-        auto model = clanguml::common::generators::generate<diagram_model,
-            diagram_config, diagram_visitor>(db, diagram->name,
-            dynamic_cast<diagram_config &>(*diagram), translation_units,
-            verbose);
-
-        for (const auto generator_type : generators) {
-            if (generator_type == generator_type_t::plantuml) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.puml", name);
-                std::ofstream ofs;
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-
-                ofs << clanguml::include_diagram::generators::plantuml::
-                        generator(
-                            dynamic_cast<diagram_config &>(*diagram), *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-            else if (generator_type == generator_type_t::json) {
-                auto path =
-                    std::filesystem::path{od} / fmt::format("{}.json", name);
-                std::ofstream ofs;
-
-                ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-                ofs << clanguml::include_diagram::generators::json::generator(
-                    dynamic_cast<clanguml::config::include_diagram &>(*diagram),
-                    *model);
-
-                ofs.close();
-
-                LOG_INFO("Written {} diagram to {}", name, path.string());
-            }
-        }
+        detail::generate_diagram_impl<include_diagram>(
+            od, name, diagram, db, translation_units, generators, verbose);
     }
 }
 
