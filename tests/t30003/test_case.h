@@ -27,21 +27,41 @@ TEST_CASE("t30003", "[test-case][package]")
     auto model = generate_package_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t30003_package");
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsPackage("ns1"));
+        REQUIRE_THAT(puml, IsPackage("ns2"));
+        REQUIRE_THAT(puml, IsPackage("ns3"));
+        REQUIRE_THAT(puml, IsPackage("ns2_v1_0_0"));
+        REQUIRE_THAT(puml, IsPackage("ns2_v0_9_0"));
 
-    REQUIRE_THAT(puml, IsPackage("ns1"));
-    REQUIRE_THAT(puml, IsPackage("ns2"));
-    REQUIRE_THAT(puml, IsPackage("ns3"));
-    REQUIRE_THAT(puml, IsPackage("ns2_v1_0_0"));
-    REQUIRE_THAT(puml, IsPackage("ns2_v0_9_0"));
+        REQUIRE_THAT(puml, IsDeprecated(_A("ns2_v0_9_0")));
+        REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
 
-    REQUIRE_THAT(puml, IsDeprecated(_A("ns2_v0_9_0")));
-    REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "ns1"));
+        REQUIRE(IsPackage(j, "ns1::ns2_v1_0_0"));
+        REQUIRE(IsPackage(j, "ns1::ns2_v0_9_0"));
+        REQUIRE(IsPackage(j, "ns3"));
+        REQUIRE(IsPackage(j, "ns3::ns1"));
+        REQUIRE(IsPackage(j, "ns3::ns1::ns2"));
+
+        REQUIRE(IsDeprecated(j, "ns1::ns2_v0_9_0"));
+        REQUIRE(IsDeprecated(j, "ns3"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,27 +28,54 @@ TEST_CASE("t30008", "[test-case][package]")
 
     REQUIRE(model->name() == "t30008_package");
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsPackage("A"));
-    REQUIRE_THAT(puml, IsPackage("B"));
-    REQUIRE_THAT(puml, IsPackage("C"));
-    REQUIRE_THAT(puml, !IsPackage("X"));
+        REQUIRE_THAT(puml, IsPackage("A"));
+        REQUIRE_THAT(puml, IsPackage("B"));
+        REQUIRE_THAT(puml, IsPackage("C"));
+        REQUIRE_THAT(puml, !IsPackage("X"));
 
-    REQUIRE_THAT(puml, IsDependency(_A("B"), _A("A")));
-    REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
+        REQUIRE_THAT(puml, IsDependency(_A("B"), _A("A")));
+        REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
 
-    REQUIRE_THAT(puml, IsPackage("D"));
-    REQUIRE_THAT(puml, IsPackage("E"));
-    REQUIRE_THAT(puml, IsPackage("F"));
-    REQUIRE_THAT(puml, !IsPackage("Y"));
+        REQUIRE_THAT(puml, IsPackage("D"));
+        REQUIRE_THAT(puml, IsPackage("E"));
+        REQUIRE_THAT(puml, IsPackage("F"));
+        REQUIRE_THAT(puml, !IsPackage("Y"));
 
-    REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
-    REQUIRE_THAT(puml, IsDependency(_A("F"), _A("E")));
+        REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
+        REQUIRE_THAT(puml, IsDependency(_A("F"), _A("E")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "dependants::A"));
+        REQUIRE(IsPackage(j, "dependants::B"));
+        REQUIRE(IsPackage(j, "dependants::C"));
+        REQUIRE(!IsPackage(j, "dependants::X"));
+
+        REQUIRE(IsDependency(j, "dependants::B", "dependants::A"));
+        REQUIRE(IsDependency(j, "dependants::C", "dependants::B"));
+
+        REQUIRE(IsPackage(j, "dependencies::D"));
+        REQUIRE(IsPackage(j, "dependencies::E"));
+        REQUIRE(IsPackage(j, "dependencies::F"));
+        REQUIRE(!IsPackage(j, "dependencies::Y"));
+
+        REQUIRE(IsDependency(j, "dependencies::E", "dependencies::D"));
+        REQUIRE(IsDependency(j, "dependencies::F", "dependencies::E"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

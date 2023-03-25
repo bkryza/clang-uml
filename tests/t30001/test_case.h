@@ -74,6 +74,17 @@ TEST_CASE("t30001", "[test-case][package]")
 
         using namespace json;
 
+        REQUIRE(IsPackage(j, "A"));
+        REQUIRE(IsPackage(j, "A::AA"));
+        REQUIRE(IsPackage(j, "A::AA::AAA"));
+        REQUIRE(IsPackage(j, "A::AA::BBB"));
+        REQUIRE(IsPackage(j, "A::BB"));
+        REQUIRE(IsPackage(j, "B"));
+        REQUIRE(IsPackage(j, "B::AA"));
+        REQUIRE(IsPackage(j, "B::AA::AAA"));
+        REQUIRE(IsPackage(j, "B::AA::BBB"));
+        REQUIRE(IsPackage(j, "B::BB"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

@@ -28,17 +28,35 @@ TEST_CASE("t30004", "[test-case][package]")
 
     REQUIRE(model->name() == "t30004_package");
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsPackage("AAA"));
-    REQUIRE_THAT(puml, IsPackage("BBB"));
-    REQUIRE_THAT(puml, IsPackage("CCC"));
-    REQUIRE_THAT(puml, !IsPackage("DDD"));
-    REQUIRE_THAT(puml, IsPackage("EEE"));
+        REQUIRE_THAT(puml, IsPackage("AAA"));
+        REQUIRE_THAT(puml, IsPackage("BBB"));
+        REQUIRE_THAT(puml, IsPackage("CCC"));
+        REQUIRE_THAT(puml, !IsPackage("DDD"));
+        REQUIRE_THAT(puml, IsPackage("EEE"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "A"));
+        REQUIRE(IsPackage(j, "A::AAA"));
+        REQUIRE(IsPackage(j, "A::BBB"));
+        REQUIRE(IsPackage(j, "A::CCC"));
+        REQUIRE(!IsPackage(j, "A::DDD"));
+        REQUIRE(IsPackage(j, "A::EEE"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

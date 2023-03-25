@@ -714,6 +714,12 @@ bool IsPackage(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "namespace";
 }
 
+bool IsDeprecated(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("is_deprecated") == true;
+}
+
 bool IsBaseClass(const nlohmann::json &j, const std::string &base,
     const std::string &subclass)
 {

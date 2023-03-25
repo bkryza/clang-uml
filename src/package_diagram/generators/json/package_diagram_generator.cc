@@ -53,7 +53,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     LOG_DBG("Generating package {}", p.name());
 
     nlohmann::json j;
-    j["id"] = p.id();
+    j["id"] = std::to_string(p.id());
     j["name"] = p.name();
     j["type"] = "namespace";
     j["display_name"] = p.full_name(false);
