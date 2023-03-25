@@ -54,12 +54,12 @@ void to_json(nlohmann::json &j, const element &c)
 void to_json(nlohmann::json &j, const template_parameter &c)
 {
     j["kind"] = to_string(c.kind());
-    if (c.type())
-        j["type"] = c.type().value();
-    if (c.name())
-        j["name"] = c.name().value();
-    if (c.default_value())
-        j["default"] = c.default_value().value();
+    if (const auto &t = c.type(); t)
+        j["type"] = t.value();
+    if (const auto &n = c.name(); n)
+        j["name"] = n.value();
+    if (const auto &d = c.default_value(); d)
+        j["default"] = d.value();
     j["is_variadic"] = c.is_variadic();
     j["template_parameters"] = c.template_params();
 }

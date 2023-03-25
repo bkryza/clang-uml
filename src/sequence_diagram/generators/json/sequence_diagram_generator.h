@@ -53,10 +53,8 @@ public:
     void generate_participant(
         nlohmann::json &parent, const std::string &name) const;
 
-    void generate_activity(common::model::diagram_element::id_t activity_id,
-        const sequence_diagram::model::activity &a, nlohmann::json &parent,
-        std::vector<common::model::diagram_element::id_t> &visited,
-        std::optional<nlohmann::json> nested_block) const;
+    void generate_activity(const sequence_diagram::model::activity &a,
+        std::vector<common::model::diagram_element::id_t> &visited) const;
 
     void generate(std::ostream &ostr) const override;
 

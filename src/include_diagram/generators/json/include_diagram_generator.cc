@@ -32,8 +32,6 @@ void generator::generate_relationships(
 {
     LOG_DBG("Generating relationships for file {}", f.full_name(true));
 
-    namespace json_common = clanguml::common::generators::json;
-
     if (f.type() == common::model::source_file_t::kDirectory) {
         util::for_each(f, [this, &parent](const auto &file) {
             generate_relationships(
@@ -93,7 +91,7 @@ void generator::generate(std::ostream &ostr) const
     // Generate files and folders
     util::for_each_if(
         m_model, [](const auto & /*f*/) { return true; },
-        [this, &ostr](const auto &f) {
+        [this](const auto &f) {
             generate(dynamic_cast<source_file &>(*f), json_);
         });
 

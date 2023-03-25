@@ -81,7 +81,7 @@ std::string to_string(message_t m);
 
 std::string to_string(diagram_t r);
 
-std::string to_string(message_scope_t);
+std::string to_string(message_scope_t t);
 
 diagram_t from_string(const std::string &s);
 

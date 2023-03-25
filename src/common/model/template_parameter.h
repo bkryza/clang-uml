@@ -44,20 +44,21 @@ std::string to_string(template_parameter_kind_t k);
 /// nested templates
 class template_parameter {
 public:
-    static template_parameter make_template_type(std::string name,
+    static template_parameter make_template_type(const std::string &name,
         const std::optional<std::string> &default_value = {},
         bool is_variadic = false)
     {
         template_parameter p;
         p.set_kind(template_parameter_kind_t::template_type);
-        p.set_name(std::move(name));
+        p.set_name(name);
         p.is_variadic(is_variadic);
         if (default_value)
             p.set_default_value(default_value.value());
         return p;
     }
 
-    static template_parameter make_template_template_type(std::string name,
+    static template_parameter make_template_template_type(
+        const std::string &name,
         const std::optional<std::string> &default_value = {},
         bool is_variadic = false)
     {
@@ -70,14 +71,14 @@ public:
         return p;
     }
 
-    static template_parameter make_non_type_template(std::string type,
+    static template_parameter make_non_type_template(const std::string &type,
         const std::optional<std::string> &name,
         const std::optional<std::string> &default_value = {},
         bool is_variadic = false)
     {
         template_parameter p;
         p.set_kind(template_parameter_kind_t::non_type_template);
-        p.set_type(std::move(type));
+        p.set_type(type);
         if (name)
             p.set_name(name.value());
         if (default_value)
@@ -86,21 +87,21 @@ public:
         return p;
     }
 
-    static template_parameter make_argument(
-        std::string type, const std::optional<std::string> &default_value = {})
+    static template_parameter make_argument(const std::string &type,
+        const std::optional<std::string> &default_value = {})
     {
         template_parameter p;
         p.set_kind(template_parameter_kind_t::argument);
-        p.set_type(std::move(type));
+        p.set_type(type);
         if (default_value)
             p.set_default_value(default_value.value());
         return p;
     }
 
-    static template_parameter make_unexposed_argument(
-        std::string type, const std::optional<std::string> &default_value = {})
+    static template_parameter make_unexposed_argument(const std::string &type,
+        const std::optional<std::string> &default_value = {})
     {
-        template_parameter p = make_argument(std::move(type), default_value);
+        template_parameter p = make_argument(type, default_value);
         p.set_unexposed(true);
         return p;
     }
@@ -178,7 +179,7 @@ public:
 private:
     template_parameter() = default;
 
-    template_parameter_kind_t kind_;
+    template_parameter_kind_t kind_{template_parameter_kind_t::template_type};
 
     /// Represents the type of non-type template parameters
     /// e.g. 'int' or type of template arguments

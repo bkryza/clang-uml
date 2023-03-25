@@ -1981,18 +1981,21 @@ void translation_unit_visitor::
 bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
     const template_parameter &ct, found_relationships_t &relationships)
 {
-    assert(ct.type());
+    const auto &type = ct.type();
+
+    if (!type)
+        return false;
 
     bool found{false};
     LOG_DBG("Finding relationships in user defined type: {}",
         ct.to_string(config().using_namespace(), false));
 
     auto type_with_namespace =
-        std::make_optional<common::model::namespace_>(ct.type().value());
+        std::make_optional<common::model::namespace_>(type.value());
 
     if (!type_with_namespace.has_value()) {
         // Couldn't find declaration of this type
-        type_with_namespace = common::model::namespace_{ct.type().value()};
+        type_with_namespace = common::model::namespace_{type.value()};
     }
 
     auto element_opt = diagram().get(type_with_namespace.value().to_string());
@@ -2007,6 +2010,7 @@ bool translation_unit_visitor::find_relationships_in_unexposed_template_params(
                     nested_template_params, relationships) ||
             found;
     }
+
     return found;
 }
 

@@ -1606,8 +1606,13 @@ translation_unit_visitor::build_template_instantiation_process_type_argument(
 
     // If this is a nested template type - add nested templates as
     // template arguments
-    if (arg.getAsType()->getAs<clang::FunctionType>() != nullptr) {
+    if (const auto *function_template_type =
+            arg.getAsType()->getAs<clang::FunctionType>();
+        function_template_type != nullptr) {
         // TODO
+        argument = template_parameter::make_argument(
+            common::to_string(function_template_type->getReturnType(),
+                template_decl->getASTContext()));
     }
     else if (const auto *nested_template_type =
                  arg.getAsType()->getAs<clang::TemplateSpecializationType>();

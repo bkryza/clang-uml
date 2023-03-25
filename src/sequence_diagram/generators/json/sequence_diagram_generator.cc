@@ -48,7 +48,7 @@ void to_json(nlohmann::json &j, const activity &c)
     j["participant_id"] = std::to_string(c.from());
 }
 
-} // namespace clanguml::class_diagram::model
+} // namespace clanguml::sequence_diagram::model
 
 namespace clanguml::sequence_diagram::generators::json {
 
@@ -172,11 +172,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         m.from(), to, m.to());
 }
 
-void generator::generate_activity(
-    common::model::diagram_element::id_t activity_id, const activity &a,
-    nlohmann::json &unused,
-    std::vector<common::model::diagram_element::id_t> &visited,
-    std::optional<nlohmann::json> nested_block) const
+void generator::generate_activity(const activity &a,
+    std::vector<common::model::diagram_element::id_t> &visited) const
 {
     // Generate calls from this activity to other activities
     for (const auto &m : a.messages()) {
@@ -265,8 +262,7 @@ void generator::process_call_message(const model::message &m,
             LOG_DBG("Creating activity {} --> {} - missing sequence {}",
                 m.from(), m.to(), m.to());
 
-            generate_activity(m.to(), m_model.get_activity(m.to()),
-                current_block_statement(), visited, {});
+            generate_activity(m_model.get_activity(m.to()), visited);
         }
     }
     else
@@ -644,8 +640,8 @@ void generator::generate(std::ostream &ostr) const
 
             block_statements_stack_.push_back(std::ref(sequence));
 
-            generate_activity(start_from, m_model.get_activity(start_from),
-                sequence, visited_participants, {});
+            generate_activity(
+                m_model.get_activity(start_from), visited_participants);
 
             json_["sequences"].push_back(std::move(sequence));
 
@@ -666,4 +662,4 @@ void generator::generate(std::ostream &ostr) const
 
     ostr << json_;
 }
-} // namespace clanguml::sequence_diagram::generators::plantuml
+} // namespace clanguml::sequence_diagram::generators::json
