@@ -62,8 +62,8 @@ void generate_diagram_select_generator(const std::string &od,
     const std::string &name, std::shared_ptr<clanguml::config::diagram> diagram,
     const DiagramModel &model)
 {
-    using diagram_generator = typename diagram_generator_t<DiagramConfig,
-        plantuml_generator_tag>::type;
+    using diagram_generator =
+        typename diagram_generator_t<DiagramConfig, GeneratorTag>::type;
 
     auto path = std::filesystem::path{od} /
         fmt::format("{}.{}", name, GeneratorTag::extension);
