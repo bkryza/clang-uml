@@ -17,3 +17,21 @@
  */
 
 #include "source_file.h"
+
+namespace clanguml::common::model {
+
+std::string to_string(source_file_t sf)
+{
+    switch (sf) {
+    case source_file_t::kDirectory:
+        return "directory";
+    case source_file_t::kHeader:
+        return "header";
+    case source_file_t::kImplementation:
+        return "implementation";
+    default:
+        assert(false);
+    }
+}
+
+} // namespace clanguml::common::model

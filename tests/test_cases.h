@@ -611,6 +611,15 @@ ContainsMatcher IsDeprecated(std::string const &str,
 }
 
 namespace json {
+struct File {
+    explicit File(const std::string &f)
+        : file{f}
+    {
+    }
+
+    const std::string file;
+};
+
 std::optional<nlohmann::json> get_element(
     const nlohmann::json &j, const std::string &name)
 {
@@ -621,7 +630,7 @@ std::optional<nlohmann::json> get_element(
         if (e["display_name"] == name)
             return {e};
 
-        if (e["type"] == "namespace") {
+        if (e["type"] == "namespace" || e["type"] == "folder") {
             auto maybe_e = get_element(e, name);
             if (maybe_e)
                 return maybe_e;
@@ -712,6 +721,18 @@ bool IsPackage(const nlohmann::json &j, const std::string &name)
 {
     auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "namespace";
+}
+
+bool IsFolder(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "folder";
+}
+
+bool IsFile(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file";
 }
 
 bool IsDeprecated(const nlohmann::json &j, const std::string &name)
@@ -810,13 +831,27 @@ bool IsAggregation(nlohmann::json j, const std::string &from,
     return true;
 }
 
+namespace detail {
+bool is_dependency_impl(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(j, from, to, "dependency");
+
+    return rel != j["relationships"].end();
+}
+
+} // namespace detail
+
 bool IsDependency(
     nlohmann::json j, const std::string &from, const std::string &to)
 {
-    auto rel = get_relationship(
-        j, expand_name(j, from), expand_name(j, to), "dependency");
+    return detail::is_dependency_impl(
+        j, expand_name(j, from), expand_name(j, to));
+}
 
-    return rel != j["relationships"].end();
+bool IsDependency(nlohmann::json j, const File &from, const File &to)
+{
+    return detail::is_dependency_impl(j, from.file, to.file);
 }
 
 bool IsInstantiation(
@@ -929,15 +964,6 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
 }
 
 } // namespace detail
-
-struct File {
-    explicit File(const std::string &f)
-        : file{f}
-    {
-    }
-
-    const std::string file;
-};
 
 int FindMessage(const nlohmann::json &j, const File &from, const File &to,
     const std::string &msg)

@@ -36,6 +36,8 @@ namespace clanguml::common::model {
 
 enum class source_file_t { kDirectory, kHeader, kImplementation };
 
+std::string to_string(source_file_t sf);
+
 struct fs_path_sep {
 #ifdef _WIN32
     static constexpr std::string_view value = "\\";

@@ -28,23 +28,51 @@ TEST_CASE("t40003", "[test-case][include]")
 
     REQUIRE(model->name() == "t40003_include");
 
-    auto puml = generate_include_puml(diagram, *model);
+    {
+        auto puml = generate_include_puml(diagram, *model);
 
-    AliasMatcher _A(puml);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsFolder("dependants"));
-    REQUIRE_THAT(puml, IsFolder("dependencies"));
+        REQUIRE_THAT(puml, IsFolder("dependants"));
+        REQUIRE_THAT(puml, IsFolder("dependencies"));
 
-    REQUIRE_THAT(puml, IsFile("t1.h"));
-    REQUIRE_THAT(puml, IsFile("t2.h"));
-    REQUIRE_THAT(puml, IsFile("t3.h"));
+        REQUIRE_THAT(puml, IsFile("t1.h"));
+        REQUIRE_THAT(puml, IsFile("t2.h"));
+        REQUIRE_THAT(puml, IsFile("t3.h"));
 
-    REQUIRE_THAT(puml, !IsFile("t4.h"));
-    REQUIRE_THAT(puml, IsFile("t5.h"));
-    REQUIRE_THAT(puml, !IsFile("t6.h"));
+        REQUIRE_THAT(puml, !IsFile("t4.h"));
+        REQUIRE_THAT(puml, IsFile("t5.h"));
+        REQUIRE_THAT(puml, !IsFile("t6.h"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_include_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsFolder(j, "include/dependants"));
+        REQUIRE(IsFolder(j, "include/dependencies"));
+        REQUIRE(IsFolder(j, "src/dependants"));
+        REQUIRE(IsFolder(j, "src/dependencies"));
+
+        REQUIRE(IsFile(j, "include/dependants/t1.h"));
+        REQUIRE(IsFile(j, "include/dependants/t2.h"));
+        REQUIRE(IsFile(j, "include/dependants/t3.h"));
+        REQUIRE(!IsFile(j, "include/dependants/t4.h"));
+        REQUIRE(IsFile(j, "src/dependants/t1.cc"));
+
+        REQUIRE(IsFile(j, "include/dependencies/t1.h"));
+        REQUIRE(IsFile(j, "include/dependencies/t2.h"));
+        REQUIRE(IsFile(j, "include/dependencies/t3.h"));
+        REQUIRE(!IsFile(j, "include/dependencies/t4.h"));
+        REQUIRE(IsFile(j, "src/dependencies/t2.cc"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

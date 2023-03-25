@@ -232,6 +232,22 @@ std::string generate_include_puml(
     return ss.str();
 }
 
+nlohmann::json generate_include_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::include_diagram::model::diagram &model)
+{
+    using namespace clanguml::include_diagram::generators::json;
+
+    std::stringstream ss;
+
+    assert(config.get() != nullptr);
+
+    ss << generator(
+        dynamic_cast<clanguml::config::include_diagram &>(*config), model);
+
+    return nlohmann::json::parse(ss.str());
+}
+
 void save_puml(const std::string &path, const std::string &puml)
 {
     std::filesystem::path p{path};
