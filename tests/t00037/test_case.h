@@ -29,19 +29,36 @@ TEST_CASE("t00037", "[test-case][class]")
 
     REQUIRE(model->name() == "t00037_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("ST")));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("ST::(units)")));
-    REQUIRE_THAT(puml, IsClass(_A("ST::(dimensions)")));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("ST"), _A("ST::(dimensions)"), "+dimensions"));
-    REQUIRE_THAT(puml, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
+        REQUIRE_THAT(puml, IsClass(_A("ST")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("ST::(units)")));
+        REQUIRE_THAT(puml, IsClass(_A("ST::(dimensions)")));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("ST"), _A("ST::(dimensions)"), "+dimensions"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "ST"));
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "ST::(units)"));
+        REQUIRE(IsClass(j, "ST::(dimensions)"));
+        REQUIRE(IsAggregation(j, "ST", "ST::(dimensions)", "dimensions"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

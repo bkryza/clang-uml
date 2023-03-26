@@ -27,34 +27,61 @@ TEST_CASE("t20029", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20029_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(
+            puml, HasCall(_A("tmain()"), _A("ConnectionPool"), "connect()"));
+        REQUIRE_THAT(puml,
+            HasCallInControlCondition(_A("tmain()"),
+                _A("Encoder<Retrier<ConnectionPool>>"),
+                "send(std::string &&)"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(
-        puml, HasCall(_A("tmain()"), _A("ConnectionPool"), "connect()"));
-    REQUIRE_THAT(puml,
-        HasCallInControlCondition(_A("tmain()"),
-            _A("Encoder<Retrier<ConnectionPool>>"), "send(std::string &&)"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("Encoder<Retrier<ConnectionPool>>"),
+                _A("Encoder<Retrier<ConnectionPool>>"),
+                "encode(std::string &&)"));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("Encoder<Retrier<ConnectionPool>>"),
-            _A("Encoder<Retrier<ConnectionPool>>"), "encode(std::string &&)"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("Encoder<Retrier<ConnectionPool>>"),
+                _A("encode_b64(std::string &&)"), ""));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("Encoder<Retrier<ConnectionPool>>"),
-            _A("encode_b64(std::string &&)"), ""));
+        REQUIRE_THAT(puml,
+            HasCallInControlCondition(_A("Retrier<ConnectionPool>"),
+                _A("ConnectionPool"), "send(const std::string &)"));
 
-    REQUIRE_THAT(puml,
-        HasCallInControlCondition(_A("Retrier<ConnectionPool>"),
-            _A("ConnectionPool"), "send(const std::string &)"));
+        REQUIRE_THAT(puml,
+            !HasCall(
+                _A("ConnectionPool"), _A("ConnectionPool"), "connect_impl()"));
 
-    REQUIRE_THAT(puml,
-        !HasCall(_A("ConnectionPool"), _A("ConnectionPool"), "connect_impl()"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()", "ConnectionPool", "connect()"),
+            FindMessage(j, "tmain()",
+                "Encoder<clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>>",
+                "send(std::string &&)")/*,
+            FindMessage(j,
+                "Encoder<clanguml::t20029::Retrier<clanguml::t20029::"
+                "ConnectionPool>>",
+                "encode_b64(std::string &&)", "encode_b64(std::string &&)"),
+            FindMessage(j, "Retrier<clanguml::t20029::ConnectionPool>",
+                "ConnectionPool", "send(const std::string &)")*/};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

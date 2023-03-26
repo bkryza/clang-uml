@@ -27,26 +27,51 @@ TEST_CASE("t20017", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20017_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml, HasEntrypoint(_A("t20017.cc"), "tmain()"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a1(int,int)"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a3(int,int)"));
+        REQUIRE_THAT(puml,
+            HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
+        REQUIRE_THAT(puml,
+            HasCall(
+                _A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
+        REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml, HasEntrypoint(_A("t20017.cc"), "tmain()"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a1(int,int)"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a3(int,int)"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
-    REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {
+            FindMessage(j, File("t20017.cc"), File("include/t20017_a.h"),
+                "a3(int,int)"),
+            FindMessage(j, File("t20017.cc"), File("include/t20017_b.h"),
+                "b1(int,int)"),
+            FindMessage(j, File("t20017.cc"), File("include/t20017_a.h"),
+                "a2(int,int)"),
+            FindMessage(j, File("t20017.cc"), File("include/t20017_a.h"),
+                "a1(int,int)"),
+            FindMessage(j, File("t20017.cc"), File("include/t20017_b.h"),
+                "b2<int>(int,int)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

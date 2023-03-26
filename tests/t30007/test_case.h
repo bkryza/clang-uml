@@ -28,21 +28,40 @@ TEST_CASE("t30007", "[test-case][package]")
 
     REQUIRE(model->name() == "t30007_package");
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsPackage("A"));
-    REQUIRE_THAT(puml, IsPackage("B"));
-    REQUIRE_THAT(puml, IsPackage("C"));
+        REQUIRE_THAT(puml, IsPackage("A"));
+        REQUIRE_THAT(puml, IsPackage("B"));
+        REQUIRE_THAT(puml, IsPackage("C"));
 
-    REQUIRE_THAT(puml, IsDependency(_A("AA"), _A("B")));
-    REQUIRE_THAT(puml, IsDependency(_A("AA"), _A("C")));
+        REQUIRE_THAT(puml, IsDependency(_A("AA"), _A("B")));
+        REQUIRE_THAT(puml, IsDependency(_A("AA"), _A("C")));
 
-    REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "up", _A("AA")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "left", _A("B")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "up", _A("AA")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "left", _A("B")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "A"));
+        REQUIRE(IsPackage(j, "A::AA"));
+        REQUIRE(IsPackage(j, "B"));
+        REQUIRE(IsPackage(j, "C"));
+
+        REQUIRE(IsDependency(j, "A::AA", "B"));
+        REQUIRE(IsDependency(j, "A::AA", "C"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

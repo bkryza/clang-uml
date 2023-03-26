@@ -28,28 +28,55 @@ TEST_CASE("t00053", "[test-case][class]")
 
     REQUIRE(model->name() == "t00053_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check if all classes exist
-    REQUIRE_THAT(puml, IsClass(_A("a")));
-    REQUIRE_THAT(puml, IsClass(_A("b")));
-    REQUIRE_THAT(puml, IsClass(_A("c")));
-    REQUIRE_THAT(puml, IsClass(_A("d")));
-    REQUIRE_THAT(puml, IsClass(_A("e")));
-    REQUIRE_THAT(puml, IsClass(_A("f")));
-    REQUIRE_THAT(puml, IsClass(_A("g")));
+        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("a")));
+        REQUIRE_THAT(puml, IsClass(_A("b")));
+        REQUIRE_THAT(puml, IsClass(_A("c")));
+        REQUIRE_THAT(puml, IsClass(_A("d")));
+        REQUIRE_THAT(puml, IsClass(_A("e")));
+        REQUIRE_THAT(puml, IsClass(_A("f")));
+        REQUIRE_THAT(puml, IsClass(_A("g")));
 
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClass(_A("E")));
-    REQUIRE_THAT(puml, IsClass(_A("F")));
-    REQUIRE_THAT(puml, IsClass(_A("G")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("E")));
+        REQUIRE_THAT(puml, IsClass(_A("F")));
+        REQUIRE_THAT(puml, IsClass(_A("G")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "a"));
+        REQUIRE(IsClass(j, "b"));
+        REQUIRE(IsClass(j, "c"));
+        REQUIRE(IsClass(j, "d"));
+        REQUIRE(IsClass(j, "e"));
+        REQUIRE(IsClass(j, "f"));
+        REQUIRE(IsClass(j, "g"));
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(IsClass(j, "C"));
+        REQUIRE(IsClass(j, "D"));
+        REQUIRE(IsClass(j, "E"));
+        REQUIRE(IsClass(j, "F"));
+        REQUIRE(IsClass(j, "G"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

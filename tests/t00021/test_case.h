@@ -29,18 +29,32 @@ TEST_CASE("t00021", "[test-case][class]")
     REQUIRE(model->name() == "t00021_class");
     REQUIRE(model->should_include("clanguml::t00021::Visitor"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("Item")));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("Visitor")));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("Visitor1")));
-    REQUIRE_THAT(puml, IsClass(_A("Visitor2")));
-    REQUIRE_THAT(puml, IsClass(_A("Visitor3")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("Item")));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("Visitor")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("Visitor1")));
+        REQUIRE_THAT(puml, IsClass(_A("Visitor2")));
+        REQUIRE_THAT(puml, IsClass(_A("Visitor3")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "Visitor1"));
+        REQUIRE(IsClass(j, "Visitor2"));
+        REQUIRE(IsAbstractClass(j, "Item"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

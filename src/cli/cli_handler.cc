@@ -1,5 +1,5 @@
 /**
- * src/options/cli_options.cc
+ * src/options/cli_handler.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -58,12 +58,20 @@ void cli_handler::setup_logging()
 
 cli_flow_t cli_handler::parse(int argc, const char **argv)
 {
+    static const std::map<std::string, clanguml::common::generator_type_t>
+        generator_type_names{
+            {"plantuml", clanguml::common::generator_type_t::plantuml},
+            {"json", clanguml::common::generator_type_t::json}};
+
     app.add_option("-c,--config", config_path,
         "Location of configuration file, when '-' read from stdin");
     app.add_option("-d,--compile-database", compilation_database_dir,
         "Location of compilation database directory");
     app.add_option("-n,--diagram-name", diagram_names,
         "List of diagram names to generate");
+    app.add_option("-g,--generator", generators,
+           "Name of the generator (default: plantuml)")
+        ->transform(CLI::CheckedTransformer(generator_type_names));
     app.add_option("-o,--output-directory", output_directory,
         "Override output directory specified in config file");
     app.add_option("-t,--thread-count", thread_count,

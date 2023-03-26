@@ -29,18 +29,33 @@ TEST_CASE("t00026", "[test-case][class]")
     REQUIRE(model->name() == "t00026_class");
     REQUIRE(model->should_include("clanguml::t00026::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("Memento", "T"));
-    REQUIRE_THAT(puml, IsClassTemplate("Originator", "T"));
-    REQUIRE_THAT(puml, IsClassTemplate("Caretaker", "T"));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("Originator<T>"), _A("Originator<std::string>")));
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("Memento", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("Originator", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("Caretaker", "T"));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("Originator<T>"), _A("Originator<std::string>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClassTemplate(j, "Memento<T>"));
+        REQUIRE(IsClassTemplate(j, "Originator<T>"));
+        REQUIRE(IsInstantiation(j, "Originator<T>", "Originator<std::string>"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -27,23 +27,45 @@ TEST_CASE("t20009", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20009_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
+        REQUIRE_THAT(puml,
+            HasCall(
+                _A("B<std::string>"), _A("A<std::string>"), "a(std::string)"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(
-        puml, HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
-    REQUIRE_THAT(puml,
-        HasCall(_A("B<std::string>"), _A("A<std::string>"), "a(std::string)"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
+        REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a(int)"));
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
-    REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a(int)"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<float>"), "b(float)"));
+        REQUIRE_THAT(puml, HasCall(_A("B<float>"), _A("A<float>"), "a(float)"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<float>"), "b(float)"));
-    REQUIRE_THAT(puml, HasCall(_A("B<float>"), _A("A<float>"), "a(float)"));
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()", "B<std::string>", "b(std::string)"),
+            FindMessage(
+                j, "B<std::string>", "A<std::string>", "a(std::string)"),
+            FindMessage(j, "tmain()", "B<int>", "b(int)"),
+            FindMessage(j, "B<int>", "A<int>", "a(int)"),
+            FindMessage(j, "tmain()", "B<float>", "b(float)"),
+            FindMessage(j, "B<float>", "A<float>", "a(float)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

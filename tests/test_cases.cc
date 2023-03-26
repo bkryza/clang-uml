@@ -19,7 +19,7 @@
 #include "test_cases.h"
 
 #include "cli/cli_handler.h"
-#include "common/generators/plantuml/generator.h"
+#include "common/generators/generators.h"
 
 #include <spdlog/spdlog.h>
 
@@ -56,136 +56,160 @@ load_config(const std::string &test_name)
     return std::make_pair(std::move(config), std::move(compilation_database));
 }
 
-std::unique_ptr<clanguml::sequence_diagram::model::diagram>
-generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
+namespace detail {
+template <typename DiagramConfig>
+auto generate_diagram_impl(clang::tooling::CompilationDatabase &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    using diagram_config = clanguml::config::sequence_diagram;
-    using diagram_model = clanguml::sequence_diagram::model::diagram;
+    using diagram_config = DiagramConfig;
+    using diagram_model =
+        typename clanguml::common::generators::diagram_model_t<
+            diagram_config>::type;
     using diagram_visitor =
-        clanguml::sequence_diagram::visitor::translation_unit_visitor;
+        typename clanguml::common::generators::diagram_visitor_t<
+            diagram_config>::type;
 
     inject_diagram_options(diagram);
 
-    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
+    auto model = clanguml::common::generators::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<clanguml::config::sequence_diagram &>(*diagram),
+        dynamic_cast<diagram_config &>(*diagram),
         diagram->get_translation_units());
 
     return model;
+}
+
+template <typename DiagramConfig, typename DiagramModel>
+auto generate_diagram_puml(
+    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
+{
+    using diagram_config = DiagramConfig;
+    using diagram_model = DiagramModel;
+    using diagram_generator =
+        typename clanguml::common::generators::diagram_generator_t<
+            DiagramConfig,
+            clanguml::common::generators::plantuml_generator_tag>::type;
+
+    std::stringstream ss;
+
+    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
+
+    return ss.str();
+}
+
+template <typename DiagramConfig, typename DiagramModel>
+auto generate_diagram_json(
+    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
+{
+    using diagram_config = DiagramConfig;
+    using diagram_model = DiagramModel;
+    using diagram_generator =
+        typename clanguml::common::generators::diagram_generator_t<
+            DiagramConfig,
+            clanguml::common::generators::json_generator_tag>::type;
+
+    std::stringstream ss;
+
+    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
+
+    return nlohmann::json::parse(ss.str());
+}
 }
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
     clang::tooling::CompilationDatabase &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    using diagram_config = clanguml::config::class_diagram;
-    using diagram_model = clanguml::class_diagram::model::diagram;
-    using diagram_visitor =
-        clanguml::class_diagram::visitor::translation_unit_visitor;
+    return detail::generate_diagram_impl<clanguml::config::class_diagram>(
+        db, diagram);
+}
 
-    inject_diagram_options(diagram);
-
-    auto model = clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units());
-
-    return model;
+std::unique_ptr<clanguml::sequence_diagram::model::diagram>
+generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
+    std::shared_ptr<clanguml::config::diagram> diagram)
+{
+    return detail::generate_diagram_impl<clanguml::config::sequence_diagram>(
+        db, diagram);
 }
 
 std::unique_ptr<clanguml::package_diagram::model::diagram>
 generate_package_diagram(clang::tooling::CompilationDatabase &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    using diagram_config = clanguml::config::package_diagram;
-    using diagram_model = clanguml::package_diagram::model::diagram;
-    using diagram_visitor =
-        clanguml::package_diagram::visitor::translation_unit_visitor;
-
-    inject_diagram_options(diagram);
-
-    return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units());
+    return detail::generate_diagram_impl<clanguml::config::package_diagram>(
+        db, diagram);
 }
 
 std::unique_ptr<clanguml::include_diagram::model::diagram>
 generate_include_diagram(clang::tooling::CompilationDatabase &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
-    using diagram_config = clanguml::config::include_diagram;
-    using diagram_model = clanguml::include_diagram::model::diagram;
-    using diagram_visitor =
-        clanguml::include_diagram::visitor::translation_unit_visitor;
-
-    inject_diagram_options(diagram);
-
-    return clanguml::common::generators::plantuml::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units());
-}
-
-std::string generate_sequence_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::sequence_diagram::model::diagram &model)
-{
-    using namespace clanguml::sequence_diagram::generators::plantuml;
-
-    std::stringstream ss;
-
-    ss << generator(
-        dynamic_cast<clanguml::config::sequence_diagram &>(*config), model);
-
-    return ss.str();
+    return detail::generate_diagram_impl<clanguml::config::include_diagram>(
+        db, diagram);
 }
 
 std::string generate_class_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::class_diagram::model::diagram &model)
 {
-    using namespace clanguml::class_diagram::generators::plantuml;
+    return detail::generate_diagram_puml<clanguml::config::class_diagram>(
+        config, model);
+}
 
-    std::stringstream ss;
-
-    ss << generator(
-        dynamic_cast<clanguml::config::class_diagram &>(*config), model);
-
-    return ss.str();
+std::string generate_sequence_puml(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_puml<clanguml::config::sequence_diagram>(
+        config, model);
 }
 
 std::string generate_package_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::package_diagram::model::diagram &model)
 {
-    using namespace clanguml::package_diagram::generators::plantuml;
-
-    std::stringstream ss;
-
-    assert(config.get() != nullptr);
-
-    ss << generator(
-        dynamic_cast<clanguml::config::package_diagram &>(*config), model);
-
-    return ss.str();
+    return detail::generate_diagram_puml<clanguml::config::package_diagram>(
+        config, model);
 }
 
 std::string generate_include_puml(
     std::shared_ptr<clanguml::config::diagram> config,
     clanguml::include_diagram::model::diagram &model)
 {
-    using namespace clanguml::include_diagram::generators::plantuml;
+    return detail::generate_diagram_puml<clanguml::config::include_diagram>(
+        config, model);
+}
 
-    std::stringstream ss;
+nlohmann::json generate_class_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::class_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_json<clanguml::config::class_diagram>(
+        config, model);
+}
 
-    assert(config.get() != nullptr);
+nlohmann::json generate_sequence_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_json<clanguml::config::sequence_diagram>(
+        config, model);
+}
 
-    ss << generator(
-        dynamic_cast<clanguml::config::include_diagram &>(*config), model);
+nlohmann::json generate_package_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::package_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_json<clanguml::config::package_diagram>(
+        config, model);
+}
 
-    return ss.str();
+nlohmann::json generate_include_json(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::include_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_json<clanguml::config::include_diagram>(
+        config, model);
 }
 
 void save_puml(const std::string &path, const std::string &puml)
@@ -195,6 +219,16 @@ void save_puml(const std::string &path, const std::string &puml)
     std::ofstream ofs;
     ofs.open(p, std::ofstream::out | std::ofstream::trunc);
     ofs << puml;
+    ofs.close();
+}
+
+void save_json(const std::string &path, const nlohmann::json &j)
+{
+    std::filesystem::path p{path};
+    std::filesystem::create_directory(p.parent_path());
+    std::ofstream ofs;
+    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
+    ofs << std::setw(2) << j;
     ofs.close();
 }
 

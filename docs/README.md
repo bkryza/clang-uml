@@ -3,7 +3,8 @@
 * [Quick start](./quick_start.md)
 * [Installation](./installation.md)
 * Generating diagrams
-  * [Common options](./common_options.md) 
+  * [Common options](./common_options.md)
+  * [Generator types](./generator_types.md)
   * [Class diagrams](./class_diagrams.md)
   * [Sequence diagrams](./sequence_diagrams.md)
   * [Package diagrams](./package_diagrams.md)

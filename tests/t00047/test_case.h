@@ -27,20 +27,34 @@ TEST_CASE("t00047", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00047_class");
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if class templates exist
+        REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Ts..."));
+        REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Else"));
+        REQUIRE_THAT(puml,
+            IsClassTemplate("conditional_t", "std::true_type,Result,Tail..."));
+        REQUIRE_THAT(puml,
+            IsClassTemplate("conditional_t", "std::false_type,Result,Tail..."));
 
-    // Check if class templates exist
-    REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Ts..."));
-    REQUIRE_THAT(puml, IsClassTemplate("conditional_t", "Else"));
-    REQUIRE_THAT(puml,
-        IsClassTemplate("conditional_t", "std::true_type,Result,Tail..."));
-    REQUIRE_THAT(puml,
-        IsClassTemplate("conditional_t", "std::false_type,Result,Tail..."));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        REQUIRE(IsClassTemplate(j, "conditional_t<Ts...>"));
+        REQUIRE(IsClass(j, "conditional_t<Else>"));
+        REQUIRE(IsClass(j, "conditional_t<std::true_type,Result,Tail...>"));
+        REQUIRE(IsClass(j, "conditional_t<std::false_type,Result,Tail...>"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

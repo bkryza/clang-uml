@@ -28,20 +28,34 @@ TEST_CASE("t00046", "[test-case][class]")
 
     REQUIRE(model->name() == "t00046_class");
     REQUIRE(model->should_include("ns1::ns2::A"));
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("E")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
-    REQUIRE_THAT(puml, IsClass(_A("E")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, IsField<Public>("i", "std::vector<std::uint8_t>"));
 
-    REQUIRE_THAT(puml, IsField<Public>("i", "std::vector<std::uint8_t>"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        REQUIRE(get_element(j, "A").value()["type"] == "class");
+        REQUIRE(get_element(j, "AA").value()["type"] == "class");
+        REQUIRE(get_element(j, "ns1::A").value()["type"] == "class");
+        REQUIRE(get_element(j, "ns1::ns2::D").value()["type"] == "class");
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

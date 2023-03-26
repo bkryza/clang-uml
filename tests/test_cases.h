@@ -77,6 +77,15 @@ using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
 using Catch::Matchers::StdString::RegexMatcher;
 
+struct JsonMatcherBase : Catch::MatcherBase<nlohmann::json> {
+    JsonMatcherBase(
+        std::string const &operation, CasedString const &comparator);
+    std::string describe() const override;
+
+    CasedString m_comparator;
+    std::string m_operation;
+};
+
 template <typename T, typename... Ts> constexpr bool has_type() noexcept
 {
     return (std::is_same_v<T, Ts> || ... || false);
@@ -199,6 +208,17 @@ ContainsMatcher HasExitpoint(std::string const &to,
     return ContainsMatcher(
         CasedString(fmt::format("[<-- {}", to), caseSensitivity));
 }
+
+std::string _NS(std::string_view s)
+{
+    return fmt::format(
+        "clanguml::{}::{}", Catch::getResultCapture().getCurrentTestName(), s);
+}
+
+class NamespaceWrapper {
+
+private:
+};
 
 struct AliasMatcher {
     AliasMatcher(const std::string &puml_)
@@ -589,6 +609,376 @@ ContainsMatcher IsDeprecated(std::string const &str,
     return ContainsMatcher(
         CasedString(str + " <<deprecated>> ", caseSensitivity));
 }
+
+namespace json {
+struct File {
+    explicit File(const std::string &f)
+        : file{f}
+    {
+    }
+
+    const std::string file;
+};
+
+std::optional<nlohmann::json> get_element(
+    const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("elements"))
+        return {};
+
+    for (const nlohmann::json &e : j["elements"]) {
+        if (e["display_name"] == name)
+            return {e};
+
+        if (e["type"] == "namespace" || e["type"] == "folder") {
+            auto maybe_e = get_element(e, name);
+            if (maybe_e)
+                return maybe_e;
+        }
+    }
+
+    return {};
+}
+
+std::optional<nlohmann::json> get_participant(
+    const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("participants"))
+        return {};
+
+    for (const nlohmann::json &e : j["participants"]) {
+        if (e["name"] == name)
+            return {e};
+    }
+
+    return {};
+}
+
+auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
+    const nlohmann::json &to, const std::string &type)
+{
+    return std::find_if(j["relationships"].begin(), j["relationships"].end(),
+        [&](const auto &it) {
+            return (it["source"] == from) && (it["destination"] == to) &&
+                (it["type"] == type);
+        });
+}
+
+auto get_relationship(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &type)
+{
+    auto source = get_element(j, from);
+    auto destination = get_element(j, to);
+
+    if (!(source && destination))
+        return j["relationships"].end();
+
+    return get_relationship(j, source->at("id"), destination->at("id"), type);
+}
+
+std::string expand_name(const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("using_namespace"))
+        return name;
+
+    if (name.find("::") == 0)
+        return name;
+
+    return fmt::format("{}::{}", j["using_namespace"].get<std::string>(), name);
+}
+
+bool IsClass(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "class";
+}
+
+bool IsAbstractClass(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && (e->at("type") == "class") && (e->at("is_abstract") == true);
+}
+
+bool IsClassTemplate(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "class" && e->at("is_template") == true;
+}
+
+bool IsConcept(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "concept";
+}
+
+bool IsEnum(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "enum";
+}
+
+bool IsPackage(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "namespace";
+}
+
+bool IsFolder(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "folder";
+}
+
+bool IsFile(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file";
+}
+
+bool IsDeprecated(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("is_deprecated") == true;
+}
+
+bool IsBaseClass(const nlohmann::json &j, const std::string &base,
+    const std::string &subclass)
+{
+    auto sc = get_element(j, expand_name(j, subclass));
+
+    if (!sc)
+        return false;
+
+    const nlohmann::json &bases = (*sc)["bases"];
+
+    return std::find_if(bases.begin(), bases.end(), [&](const auto &it) {
+        return it["name"] == expand_name(j, base);
+    }) != bases.end();
+}
+
+bool IsMethod(
+    const nlohmann::json &j, const std::string &cls, const std::string &name)
+{
+    auto sc = get_element(j, expand_name(j, cls));
+
+    if (!sc)
+        return false;
+
+    const nlohmann::json &methods = (*sc)["methods"];
+
+    return std::find_if(methods.begin(), methods.end(), [&](const auto &it) {
+        return it["name"] == name;
+    }) != methods.end();
+}
+
+bool IsField(const nlohmann::json &j, const std::string &cls,
+    const std::string &name, const std::string &type)
+{
+    auto sc = get_element(j, expand_name(j, cls));
+
+    if (!sc)
+        return false;
+
+    const nlohmann::json &members = (*sc)["members"];
+
+    return std::find_if(members.begin(), members.end(), [&](const auto &it) {
+        return it["name"] == name && it["type"] == type;
+    }) != members.end();
+}
+
+bool IsAssociation(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "association");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+bool IsComposition(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "composition");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+bool IsAggregation(nlohmann::json j, const std::string &from,
+    const std::string &to, const std::string &label = "")
+{
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "aggregation");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && rel->at("label") != label)
+        return false;
+
+    return true;
+}
+
+namespace detail {
+bool is_dependency_impl(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(j, from, to, "dependency");
+
+    return rel != j["relationships"].end();
+}
+
+} // namespace detail
+
+bool IsDependency(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    return detail::is_dependency_impl(
+        j, expand_name(j, from), expand_name(j, to));
+}
+
+bool IsDependency(nlohmann::json j, const File &from, const File &to)
+{
+    return detail::is_dependency_impl(j, from.file, to.file);
+}
+
+bool IsInstantiation(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "instantiation");
+
+    return rel != j["relationships"].end();
+}
+
+bool IsFriend(nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "friendship");
+
+    return rel != j["relationships"].end();
+}
+
+bool IsInnerClass(
+    nlohmann::json j, const std::string &from, const std::string &to)
+{
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "containment");
+
+    return rel != j["relationships"].end();
+}
+
+bool IsParticipant(
+    const nlohmann::json &j, const std::string &name, const std::string &type)
+{
+    auto p = get_participant(j, expand_name(j, name));
+
+    return p && (p->at("type") == type);
+}
+
+bool IsFunctionParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "function");
+}
+
+bool IsClassParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "class");
+}
+
+bool IsFileParticipant(const nlohmann::json &j, const std::string &name)
+{
+    return IsParticipant(j, name, "file");
+}
+
+namespace detail {
+int find_message_nested(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg, const nlohmann::json &from_p,
+    const nlohmann::json &to_p, int &count)
+{
+    const auto &messages = j["messages"];
+
+    int res{-1};
+
+    for (const auto &m : messages) {
+        if (m.contains("branches")) {
+            for (const auto &b : m["branches"]) {
+                auto nested_res =
+                    find_message_nested(b, from, to, msg, from_p, to_p, count);
+
+                if (nested_res >= 0)
+                    return nested_res;
+            }
+        }
+        else if (m.contains("messages")) {
+            auto nested_res =
+                find_message_nested(m, from, to, msg, from_p, to_p, count);
+
+            if (nested_res >= 0)
+                return nested_res;
+        }
+        else {
+            if ((m["from"]["participant_id"] == from_p["id"]) &&
+                (m["to"]["participant_id"] == to_p["id"]) && (m["name"] == msg))
+                return count;
+
+            count++;
+        }
+    }
+
+    return res;
+}
+
+int find_message_impl(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg)
+{
+
+    auto from_p = get_participant(j, from);
+    auto to_p = get_participant(j, to);
+
+    // TODO: support diagrams with multiple sequences...
+    const auto &sequence_0 = j["sequences"][0];
+
+    int count{0};
+
+    auto res = detail::find_message_nested(
+        sequence_0, from, to, msg, *from_p, *to_p, count);
+
+    if (res >= 0)
+        return res;
+
+    throw std::runtime_error(
+        fmt::format("No such message {} {} {}", from, to, msg));
+}
+
+} // namespace detail
+
+int FindMessage(const nlohmann::json &j, const File &from, const File &to,
+    const std::string &msg)
+{
+    return detail::find_message_impl(j, from.file, to.file, msg);
+}
+
+int FindMessage(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg)
+{
+    return detail::find_message_impl(
+        j, expand_name(j, from), expand_name(j, to), msg);
+}
+
+} // namespace json
 }
 }
 }

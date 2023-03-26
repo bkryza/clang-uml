@@ -147,8 +147,8 @@ translation_unit_visitor::include_visitor::process_internal_header(
         diagram()
             .get(current_file_id)
             .value()
-            .add_relationship(common::model::relationship{
-                relationship_type, include_file.id()});
+            .add_relationship(common::model::relationship{relationship_type,
+                include_file.id(), common::model::access_t::kNone});
     }
 
     return include_file.id();
@@ -176,7 +176,8 @@ translation_unit_visitor::include_visitor::process_external_system_header(
             .get(current_file_id)
             .value()
             .add_relationship(common::model::relationship{
-                common::model::relationship_t::kDependency, f_id});
+                common::model::relationship_t::kDependency, f_id,
+                common::model::access_t::kNone});
     }
 
     return f_id;

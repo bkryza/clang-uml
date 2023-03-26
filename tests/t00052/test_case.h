@@ -28,23 +28,37 @@ TEST_CASE("t00052", "[test-case][class]")
 
     REQUIRE(model->name() == "t00052_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check if all classes exist
-    REQUIRE_THAT(puml, IsClass(_A("A")));
+        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("A")));
 
-    // Check if class templates exist
-    REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
+        // Check if class templates exist
+        REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
 
-    // Check if all methods exist
-    REQUIRE_THAT(puml, (IsMethod<Public>("a<T>", "T", "T p")));
-    REQUIRE_THAT(puml, (IsMethod<Public>("aa<F,Q>", "void", "F && f, Q q")));
-    REQUIRE_THAT(puml, (IsMethod<Public>("b", "T", "T t")));
-    REQUIRE_THAT(puml, (IsMethod<Public>("bb<F>", "T", "F && f, T t")));
+        // Check if all methods exist
+        REQUIRE_THAT(puml, (IsMethod<Public>("a<T>", "T", "T p")));
+        REQUIRE_THAT(
+            puml, (IsMethod<Public>("aa<F,Q>", "void", "F && f, Q q")));
+        REQUIRE_THAT(puml, (IsMethod<Public>("b", "T", "T t")));
+        REQUIRE_THAT(puml, (IsMethod<Public>("bb<F>", "T", "F && f, T t")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClassTemplate(j, "B<T>"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

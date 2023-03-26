@@ -36,6 +36,10 @@ public:
 
     void set_file(const std::string &file) { file_ = file; }
 
+    const std::string &file_relative() const { return file_relative_; }
+
+    void set_file_relative(const std::string &file) { file_relative_ = file; }
+
     unsigned int line() const { return line_; }
 
     void set_line(const unsigned line) { line_ = line; }
@@ -46,6 +50,7 @@ public:
 
 private:
     std::string file_;
+    std::string file_relative_;
     unsigned int line_{0};
     unsigned int hash_{0};
 };

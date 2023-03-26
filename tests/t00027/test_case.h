@@ -29,30 +29,53 @@ TEST_CASE("t00027", "[test-case][class]")
     REQUIRE(model->name() == "t00027_class");
     REQUIRE(model->should_include("clanguml::t00027::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("Shape")));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("ShapeDecorator")));
-    REQUIRE_THAT(puml, IsClassTemplate("Line", "T<>..."));
-    REQUIRE_THAT(puml, IsClassTemplate("Text", "T<>..."));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color,Weight>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color>")));
-    REQUIRE_THAT(
-        puml, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color,Weight>")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("Shape")));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("ShapeDecorator")));
+        REQUIRE_THAT(puml, IsClassTemplate("Line", "T<>..."));
+        REQUIRE_THAT(puml, IsClassTemplate("Text", "T<>..."));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("Line<T<>...>"), _A("Line<Color,Weight>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("Text<T<>...>"), _A("Text<Color,Weight>")));
 
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("Window"), _A("Line<Color,Weight>"), "+border"));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("Window"), _A("Line<Color>"), "+divider"));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("Window"), _A("Text<Color,Weight>"), "+title"));
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("Window"), _A("Line<Color,Weight>"), "+border"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("Window"), _A("Line<Color>"), "+divider"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("Window"), _A("Text<Color,Weight>"), "+title"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsAbstractClass(j, "Shape"));
+        REQUIRE(IsAbstractClass(j, "ShapeDecorator"));
+
+        REQUIRE(IsClassTemplate(j, "Line<T<>...>"));
+        REQUIRE(IsInstantiation(
+            j, "Line<T<>...>", "Line<clanguml::t00027::Color>"));
+        REQUIRE(IsInstantiation(j, "Line<T<>...>",
+            "Line<clanguml::t00027::Color,clanguml::t00027::Weight>"));
+        REQUIRE(IsAggregation(
+            j, "Window", "Text<clanguml::t00027::Color>", "description"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

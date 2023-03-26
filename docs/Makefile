@@ -22,6 +22,7 @@ toc:
 		$(UPDATE_TOC) class_diagrams.md
 		$(UPDATE_TOC) comment_decorators.md
 		$(UPDATE_TOC) common_options.md
+		$(UPDATE_TOC) generator_types.md
 		$(UPDATE_TOC) configuration_file.md
 		$(UPDATE_TOC) diagram_filters.md
 		$(UPDATE_TOC) doxygen_integration.md

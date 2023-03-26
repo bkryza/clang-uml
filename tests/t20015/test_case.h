@@ -27,24 +27,39 @@ TEST_CASE("t20015", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20015_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml,
+            HasCall(_A("tmain()"), _A("B"),
+                "setup_a(std::shared_ptr<detail::A> &)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_x(int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_y(int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_z(int)"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml,
-        HasCall(
-            _A("tmain()"), _A("B"), "setup_a(std::shared_ptr<detail::A> &)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_x(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_y(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_z(int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_x(int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_y(int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_z(int)"));
 
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_x(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_y(int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_z(int)"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {FindMessage(
+            j, "tmain()", "B", "setup_a(std::shared_ptr<detail::A> &)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

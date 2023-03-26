@@ -69,8 +69,10 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         render_mode = model::function::message_render_mode::no_arguments;
 
     if (to.value().type_name() == "method") {
-        message = dynamic_cast<const model::function &>(to.value())
-                      .message_name(render_mode);
+        const auto &f = dynamic_cast<const model::method &>(to.value());
+        const std::string_view style = f.is_static() ? "__" : "";
+        message =
+            fmt::format("{}{}{}", style, f.message_name(render_mode), style);
     }
     else if (m_config.combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
@@ -233,7 +235,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             print_debug(m, ostr);
             ostr << "alt\n";
         }
-        else if (m.type() == message_t::kElse) {
+        else if (m.type() == message_t::kConditionalElse) {
             print_debug(m, ostr);
             ostr << "else\n";
         }
@@ -433,6 +435,10 @@ void generator::generate(std::ostream &ostr) const
                 render_mode =
                     model::function::message_render_mode::no_arguments;
 
+            // For methods or functions in diagrams where they are combined into
+            // file participants, we need to add an 'entry' point call to know
+            // which method relates to the first activity for this 'start_from'
+            // condition
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {
                 ostr << "[->"

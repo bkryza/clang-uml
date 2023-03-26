@@ -29,16 +29,32 @@ TEST_CASE("t00015", "[test-case][class]")
     REQUIRE(model->name() == "t00015_class");
     REQUIRE(model->should_include("clanguml::t00015::ns1::ns2::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2_v0_9_0::A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::Anon")));
-    REQUIRE_THAT(puml, IsClass(_A("ns3::ns1::ns2::Anon")));
-    REQUIRE_THAT(puml, IsClass(_A("ns3::B")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2_v0_9_0::A")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::Anon")));
+        REQUIRE_THAT(puml, IsClass(_A("ns3::ns1::ns2::Anon")));
+        REQUIRE_THAT(puml, IsClass(_A("ns3::B")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "ns1::A"));
+        REQUIRE(IsClass(j, "ns1::ns2_v0_9_0::A"));
+        REQUIRE(IsClass(j, "ns1::Anon"));
+        REQUIRE(IsClass(j, "ns3::ns1::ns2::Anon"));
+        REQUIRE(IsClass(j, "ns3::B"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

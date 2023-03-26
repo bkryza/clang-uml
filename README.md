@@ -12,7 +12,7 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 type and contents of each generated diagram.
-Currently, the diagrams are generated in [PlantUML](https://plantuml.com) format.
+The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON formats.
 
 `clang-uml` currently supports C++ up to version 17 and partial support for C++ 20.
 
@@ -44,14 +44,16 @@ Main features supported so far include:
 * **Include graph diagram generation**
     * Show include graph for selected files
 
-To see what `clang-uml` can do so far, checkout the diagrams generated for unit test cases [here](./docs/test_cases.md)
-and examples in [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
+To see what `clang-uml` can do so far, checkout the diagrams generated for unit 
+test cases [here](./docs/test_cases.md) and examples in
+[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
 More comprehensive documentation can be found [here](./docs/README.md).
 
 ## Installation
 
-Installation instructions for `Linux`, `macos` and `Windows` can be found [here](./docs/installation.md).
+Installation instructions for `Linux`, `macos` and `Windows` can be found
+[here](./docs/installation.md).
 
 ## Usage
 
@@ -425,6 +427,7 @@ This project relies on the following great tools:
 * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
 * [inja](https://github.com/pantor/inja) - a template engine for modern C++
 * [backward-cpp](https://github.com/bombela/backward-cpp) - stack trace pretty printer for C++
+* [yaml-cpp](https://github.com/jbeder/yaml-cpp) - YAML parser library for C++
 
 ## Contributing
 

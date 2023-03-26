@@ -28,19 +28,41 @@ TEST_CASE("t30009", "[test-case][package]")
 
     REQUIRE(model->name() == "t30009_package");
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check if all packages exist
-    REQUIRE_THAT(puml, IsPackage("One"));
-    REQUIRE_THAT(puml, IsPackage("Two"));
-    REQUIRE_THAT(puml, IsPackage("A"));
-    REQUIRE_THAT(puml, IsPackage("B"));
-    REQUIRE_THAT(puml, IsPackage("C"));
-    REQUIRE_THAT(puml, IsPackage("D"));
+        // Check if all packages exist
+        REQUIRE_THAT(puml, IsPackage("One"));
+        REQUIRE_THAT(puml, IsPackage("Two"));
+        REQUIRE_THAT(puml, IsPackage("A"));
+        REQUIRE_THAT(puml, IsPackage("B"));
+        REQUIRE_THAT(puml, IsPackage("C"));
+        REQUIRE_THAT(puml, IsPackage("D"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "One"));
+        REQUIRE(IsPackage(j, "Two"));
+        REQUIRE(IsPackage(j, "One::A"));
+        REQUIRE(IsPackage(j, "One::B"));
+        REQUIRE(IsPackage(j, "One::C"));
+        REQUIRE(IsPackage(j, "One::D"));
+        REQUIRE(IsPackage(j, "Two::A"));
+        REQUIRE(IsPackage(j, "Two::B"));
+        REQUIRE(IsPackage(j, "Two::C"));
+        REQUIRE(IsPackage(j, "Two::D"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,23 +28,42 @@ TEST_CASE("t00010", "[test-case][class]")
 
     REQUIRE(model->name() == "t00010_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
-    REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
+        REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
 
-    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<T,std::string>")));
-    REQUIRE_THAT(puml, (IsField<Public>("aintstring", "B<int>")));
+        REQUIRE_THAT(puml, (IsField<Public>("astring", "A<T,std::string>")));
+        REQUIRE_THAT(puml, (IsField<Public>("aintstring", "B<int>")));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("B<T>"), _A("B<int>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("A<T,P>"), _A("A<T,std::string>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("B<T>"), _A("B<int>")));
 
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("B<T>"), _A("A<T,std::string>"), "+astring"));
-    REQUIRE_THAT(puml, IsAggregation(_A("C"), _A("B<int>"), "+aintstring"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("B<T>"), _A("A<T,std::string>"), "+astring"));
+        REQUIRE_THAT(puml, IsAggregation(_A("C"), _A("B<int>"), "+aintstring"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClassTemplate(j, "A<T,P>"));
+        REQUIRE(IsClassTemplate(j, "B<T>"));
+        REQUIRE(IsClass(j, "B<int>"));
+        REQUIRE(IsClass(j, "A<T,std::string>"));
+        REQUIRE(IsClass(j, "B<int>"));
+
+        REQUIRE(IsField(j, "C", "aintstring", "B<int>"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

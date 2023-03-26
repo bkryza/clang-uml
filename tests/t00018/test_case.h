@@ -28,19 +28,32 @@ TEST_CASE("t00018", "[test-case][class]")
 
     REQUIRE(model->name() == "t00018_class");
     REQUIRE(model->should_include("clanguml::t00018::widget"));
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("widget")));
+        REQUIRE_THAT(puml, IsClass(_A("impl::widget")));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("widget")));
-    REQUIRE_THAT(puml, IsClass(_A("impl::widget")));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("widget"), _A("impl::widget"), "-pImpl"));
+        REQUIRE_THAT(puml, IsDependency(_A("impl::widget"), _A("widget")));
+        REQUIRE_THAT(puml, !IsDependency(_A("widget"), _A("widget")));
 
-    REQUIRE_THAT(
-        puml, IsAggregation(_A("widget"), _A("impl::widget"), "-pImpl"));
-    REQUIRE_THAT(puml, IsDependency(_A("impl::widget"), _A("widget")));
-    REQUIRE_THAT(puml, !IsDependency(_A("widget"), _A("widget")));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        REQUIRE(IsClass(j, "widget"));
+        REQUIRE(IsClass(j, "impl::widget"));
+        REQUIRE(IsDependency(j, "impl::widget", "widget"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

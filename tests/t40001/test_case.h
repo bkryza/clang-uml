@@ -28,27 +28,56 @@ TEST_CASE("t40001", "[test-case][include]")
 
     REQUIRE(model->name() == "t40001_include");
 
-    auto puml = generate_include_puml(diagram, *model);
+    {
+        auto puml = generate_include_puml(diagram, *model);
 
-    AliasMatcher _A(puml);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsFolder("lib1"));
-    REQUIRE_THAT(puml, IsFile("lib1.h"));
-    REQUIRE_THAT(puml, IsFile("t40001.cc"));
-    REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
+        REQUIRE_THAT(puml, IsFolder("lib1"));
+        REQUIRE_THAT(puml, IsFile("lib1.h"));
+        REQUIRE_THAT(puml, IsFile("t40001.cc"));
+        REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
 
-    REQUIRE_THAT(puml, IsFile("string"));
-    REQUIRE_THAT(puml, IsFile("yaml-cpp/yaml.h"));
+        REQUIRE_THAT(puml, IsFile("string"));
+        REQUIRE_THAT(puml, IsFile("yaml-cpp/yaml.h"));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
-    REQUIRE_THAT(puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
 
-    REQUIRE_THAT(puml, IsDependency(_A("t40001_include1.h"), _A("string")));
+        REQUIRE_THAT(puml, IsDependency(_A("t40001_include1.h"), _A("string")));
 
-    REQUIRE_THAT(puml, HasComment("t40001 test diagram of type include"));
+        REQUIRE_THAT(puml, HasComment("t40001 test diagram of type include"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_include_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsFolder(j, "include"));
+        REQUIRE(IsFolder(j, "include/lib1"));
+        REQUIRE(IsFolder(j, "src"));
+
+        REQUIRE(IsFile(j, "include/lib1/lib1.h"));
+        REQUIRE(IsFile(j, "include/t40001_include1.h"));
+        REQUIRE(IsFile(j, "src/t40001.cc"));
+        REQUIRE(IsFile(j, "yaml-cpp/yaml.h"));
+
+        REQUIRE(IsFile(j, "string"));
+
+        REQUIRE(IsAssociation(j, "src/t40001.cc", "include/t40001_include1.h"));
+        REQUIRE(IsAssociation(
+            j, "include/t40001_include1.h", "include/lib1/lib1.h"));
+        REQUIRE(IsDependency(j, "include/t40001_include1.h", "string"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

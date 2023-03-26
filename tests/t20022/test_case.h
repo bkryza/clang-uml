@@ -27,16 +27,31 @@ TEST_CASE("t20022", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20022_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), _A("B"), "b()"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), _A("B"), "b()"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a()"),
+            FindMessage(j, "A", "B", "b()")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

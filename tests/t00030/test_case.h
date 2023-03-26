@@ -29,22 +29,36 @@ TEST_CASE("t00030", "[test-case][class]")
     REQUIRE(model->name() == "t00030_class");
     REQUIRE(model->should_include("clanguml::t00030::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("D")));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("A"), "+aaa"));
-    REQUIRE_THAT(puml, IsComposition(_A("R"), _A("B"), "+bbb", "0..1", "1..*"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("C"), "+ccc", "0..1", "1..5"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
+        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("A"), "+aaa"));
+        REQUIRE_THAT(
+            puml, IsComposition(_A("R"), _A("B"), "+bbb", "0..1", "1..*"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("R"), _A("C"), "+ccc", "0..1", "1..5"));
+        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
+        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsAggregation(j, "R", "C", "ccc"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

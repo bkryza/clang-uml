@@ -111,6 +111,8 @@ std::string to_string(message_t r)
         return "end switch";
     case message_t::kConditional:
         return "conditional";
+    case message_t::kConditionalElse:
+        return "conditional else";
     case message_t::kConditionalEnd:
         return "end conditional";
     default:
@@ -130,6 +132,19 @@ std::string to_string(const diagram_t t)
         return "package";
     case diagram_t::kInclude:
         return "include";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+std::string to_string(const message_scope_t t)
+{
+    switch (t) {
+    case message_scope_t::kNormal:
+        return "normal";
+    case message_scope_t::kCondition:
+        return "condition";
     default:
         assert(false);
         return "";

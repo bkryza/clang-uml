@@ -168,13 +168,6 @@ protected:
 };
 
 template <typename C, typename D>
-std::ostream &operator<<(std::ostream &os, const generator<C, D> &g)
-{
-    g.generate(os);
-    return os;
-}
-
-template <typename C, typename D>
 const inja::json &generator<C, D>::context() const
 {
     return m_context;
@@ -436,122 +429,12 @@ void generator<C, D>::print_debug(
         ostr << "' " << e.file() << ":" << e.line() << '\n';
 }
 
-template <typename DiagramModel, typename DiagramConfig,
-    typename TranslationUnitVisitor>
-class diagram_ast_consumer : public clang::ASTConsumer {
-    TranslationUnitVisitor visitor_;
-
-public:
-    explicit diagram_ast_consumer(clang::CompilerInstance &ci,
-        DiagramModel &diagram, const DiagramConfig &config)
-        : visitor_{ci.getSourceManager(), diagram, config}
-    {
-    }
-
-    void HandleTranslationUnit(clang::ASTContext &ast_context) override
-    {
-        visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
-        visitor_.finalize();
-    }
-};
-
-template <typename DiagramModel, typename DiagramConfig,
-    typename DiagramVisitor>
-class diagram_fronted_action : public clang::ASTFrontendAction {
-public:
-    explicit diagram_fronted_action(
-        DiagramModel &diagram, const DiagramConfig &config)
-        : diagram_{diagram}
-        , config_{config}
-    {
-    }
-
-    std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
-        clang::CompilerInstance &CI, clang::StringRef /*file*/) override
-    {
-        return std::make_unique<
-            diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
-            CI, diagram_, config_);
-    }
-
-protected:
-    bool BeginSourceFileAction(clang::CompilerInstance &ci) override
-    {
-        LOG_DBG("Visiting source file: {}", getCurrentFile().str());
-
-        if constexpr (std::is_same_v<DiagramModel,
-                          clanguml::include_diagram::model::diagram>) {
-            auto find_includes_callback =
-                std::make_unique<typename DiagramVisitor::include_visitor>(
-                    ci.getSourceManager(), diagram_, config_);
-
-            clang::Preprocessor &pp = ci.getPreprocessor();
-
-            pp.addPPCallbacks(std::move(find_includes_callback));
-        }
-
-        return true;
-    }
-
-private:
-    DiagramModel &diagram_;
-    const DiagramConfig &config_;
-};
-
-template <typename DiagramModel, typename DiagramConfig,
-    typename DiagramVisitor>
-class diagram_action_visitor_factory
-    : public clang::tooling::FrontendActionFactory {
-public:
-    explicit diagram_action_visitor_factory(
-        DiagramModel &diagram, const DiagramConfig &config)
-        : diagram_{diagram}
-        , config_{config}
-    {
-    }
-
-    std::unique_ptr<clang::FrontendAction> create() override
-    {
-        return std::make_unique<diagram_fronted_action<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(diagram_, config_);
-    }
-
-private:
-    DiagramModel &diagram_;
-    const DiagramConfig &config_;
-};
-
-template <typename DiagramModel, typename DiagramConfig,
-    typename DiagramVisitor>
-std::unique_ptr<DiagramModel> generate(
-    const clang::tooling::CompilationDatabase &db, const std::string &name,
-    DiagramConfig &config, const std::vector<std::string> &translation_units,
-    bool /*verbose*/ = false)
+template <typename DiagramModel, typename DiagramConfig>
+std::ostream &operator<<(
+    std::ostream &os, const generator<DiagramModel, DiagramConfig> &g)
 {
-    LOG_INFO("Generating diagram {}.puml", name);
-
-    auto diagram = std::make_unique<DiagramModel>();
-    diagram->set_name(name);
-    diagram->set_filter(
-        std::make_unique<model::diagram_filter>(*diagram, config));
-
-    LOG_DBG("Found translation units for diagram {}: {}", name,
-        fmt::join(translation_units, ", "));
-
-    clang::tooling::ClangTool clang_tool(db, translation_units);
-    auto action_factory =
-        std::make_unique<diagram_action_visitor_factory<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(*diagram, config);
-
-    auto res = clang_tool.run(action_factory.get());
-
-    if (res != 0) {
-        throw std::runtime_error("Diagram " + name + " generation failed");
-    }
-
-    diagram->set_complete(true);
-
-    return diagram;
+    g.generate(os);
+    return os;
 }
 
 template <typename C, typename D> void generator<C, D>::init_context()

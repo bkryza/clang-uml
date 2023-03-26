@@ -106,5 +106,7 @@ private:
     clang::SourceManager &source_manager_;
 
     std::unique_ptr<comment::comment_visitor> comment_visitor_;
+
+    std::filesystem::path relative_to_path_;
 };
 } // namespace clanguml::common::visitor

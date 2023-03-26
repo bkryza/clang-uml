@@ -27,34 +27,59 @@ TEST_CASE("t20004", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20004_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>(float)"), ""));
+        REQUIRE_THAT(
+            puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
+        REQUIRE_THAT(
+            puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<float>(float)"), ""));
-    REQUIRE_THAT(
-        puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
-    REQUIRE_THAT(
-        puml, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
+        REQUIRE_THAT(puml,
+            HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"), ""));
+        REQUIRE_THAT(puml,
+            HasCall(_A("m1<unsigned long>(unsigned long)"),
+                _A("m4<unsigned long>(unsigned long)"), ""));
 
-    REQUIRE_THAT(puml,
-        HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"), ""));
-    REQUIRE_THAT(puml,
-        HasCall(_A("m1<unsigned long>(unsigned long)"),
-            _A("m4<unsigned long>(unsigned long)"), ""));
+        REQUIRE_THAT(puml,
+            HasCall(_A("main()"), _A("m1<std::string>(std::string)"), ""));
+        REQUIRE_THAT(puml,
+            HasCall(_A("m1<std::string>(std::string)"),
+                _A("m2<std::string>(std::string)"), ""));
 
-    REQUIRE_THAT(
-        puml, HasCall(_A("main()"), _A("m1<std::string>(std::string)"), ""));
-    REQUIRE_THAT(puml,
-        HasCall(_A("m1<std::string>(std::string)"),
-            _A("m2<std::string>(std::string)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
-    REQUIRE_THAT(puml, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"), ""));
-    REQUIRE_THAT(puml, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"), ""));
-    REQUIRE_THAT(puml, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {
+            FindMessage(j, "main()", "m1<float>(float)", ""),
+            FindMessage(j, "main()", "m1<unsigned long>(unsigned long)", ""),
+            FindMessage(j, "m1<unsigned long>(unsigned long)",
+                "m4<unsigned long>(unsigned long)", ""),
+            FindMessage(j, "main()", "m1<std::string>(std::string)", ""),
+            FindMessage(j, "m1<std::string>(std::string)",
+                "m2<std::string>(std::string)", ""),
+            FindMessage(j, "main()", "m1<int>(int)", ""),
+            FindMessage(j, "m1<int>(int)", "m2<int>(int)", ""),
+            FindMessage(j, "m2<int>(int)", "m3<int>(int)", ""),
+            FindMessage(j, "m3<int>(int)", "m4<int>(int)", "")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

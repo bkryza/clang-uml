@@ -32,37 +32,59 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE(!model->should_include("clanguml::t30001::detail::C"));
     REQUIRE(!model->should_include("std::vector"));
 
-    auto puml = generate_package_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_package_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsPackage("A"));
-    REQUIRE_THAT(puml, IsPackage("AAA"));
-    REQUIRE_THAT(puml, IsPackage("AAA"));
+        REQUIRE_THAT(puml, IsPackage("A"));
+        REQUIRE_THAT(puml, IsPackage("AAA"));
+        REQUIRE_THAT(puml, IsPackage("AAA"));
 
-    // TODO: Fix _A() to handle fully qualified names, right
-    //       now it only finds the first element with unqualified
-    //       name match
-    REQUIRE_THAT(
-        puml, HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
+        // TODO: Fix _A() to handle fully qualified names, right
+        //       now it only finds the first element with unqualified
+        //       name match
+        REQUIRE_THAT(puml,
+            HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("AAA"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t30001/t30001.cc#L6",
-                clanguml::util::get_git_commit()),
-            "AAA"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("AAA"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t30001/t30001.cc#L6",
+                    clanguml::util::get_git_commit()),
+                "AAA"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("BBB"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t30001/t30001.cc#L8",
-                clanguml::util::get_git_commit()),
-            "BBB"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("BBB"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t30001/t30001.cc#L8",
+                    clanguml::util::get_git_commit()),
+                "BBB"));
 
-    REQUIRE_THAT(puml, HasComment("t30001 test diagram of type package"));
+        REQUIRE_THAT(puml, HasComment("t30001 test diagram of type package"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_package_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsPackage(j, "A"));
+        REQUIRE(IsPackage(j, "A::AA"));
+        REQUIRE(IsPackage(j, "A::AA::AAA"));
+        REQUIRE(IsPackage(j, "A::AA::BBB"));
+        REQUIRE(IsPackage(j, "A::BB"));
+        REQUIRE(IsPackage(j, "B"));
+        REQUIRE(IsPackage(j, "B::AA"));
+        REQUIRE(IsPackage(j, "B::AA::AAA"));
+        REQUIRE(IsPackage(j, "B::AA::BBB"));
+        REQUIRE(IsPackage(j, "B::BB"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -368,8 +368,14 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
             nested_params = parse_unexposed_template_params(
                 nested_params_str, ns_resolve, depth + 1);
 
-            if (nested_params.empty())
-                nested_params.emplace_back(nested_params_str);
+            if (nested_params.empty()) {
+                // We couldn't extract any nested template parameters from
+                // `nested_params_str` so just add it as type of template
+                // argument as is
+                nested_params.emplace_back(
+                    template_parameter::make_unexposed_argument(
+                        nested_params_str));
+            }
 
             it = bracket_match_end - 1;
         }
@@ -386,8 +392,8 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
             type += *it;
         }
         if (complete_class_template_argument) {
-            template_parameter t;
-            t.set_type(ns_resolve(clanguml::util::trim(type)));
+            auto t = template_parameter::make_unexposed_argument(
+                ns_resolve(clanguml::util::trim(type)));
             type = "";
             for (auto &&param : nested_params)
                 t.add_template_param(std::move(param));
@@ -399,8 +405,8 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
     }
 
     if (!type.empty()) {
-        template_parameter t;
-        t.set_type(ns_resolve(clanguml::util::trim(type)));
+        auto t = template_parameter::make_unexposed_argument(
+            ns_resolve(clanguml::util::trim(type)));
         type = "";
         for (auto &&param : nested_params)
             t.add_template_param(std::move(param));

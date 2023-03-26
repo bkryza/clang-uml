@@ -29,20 +29,36 @@ TEST_CASE("t00020", "[test-case][class]")
     REQUIRE(model->name() == "t00020_class");
     REQUIRE(model->should_include("clanguml::t00020::ProductA"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("ProductA")));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("ProductB")));
-    REQUIRE_THAT(puml, IsClass(_A("ProductA1")));
-    REQUIRE_THAT(puml, IsClass(_A("ProductA2")));
-    REQUIRE_THAT(puml, IsClass(_A("ProductB1")));
-    REQUIRE_THAT(puml, IsClass(_A("ProductB2")));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("AbstractFactory")));
-    REQUIRE_THAT(puml, IsClass(_A("Factory1")));
-    REQUIRE_THAT(puml, IsClass(_A("Factory2")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("ProductA")));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("ProductB")));
+        REQUIRE_THAT(puml, IsClass(_A("ProductA1")));
+        REQUIRE_THAT(puml, IsClass(_A("ProductA2")));
+        REQUIRE_THAT(puml, IsClass(_A("ProductB1")));
+        REQUIRE_THAT(puml, IsClass(_A("ProductB2")));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("AbstractFactory")));
+        REQUIRE_THAT(puml, IsClass(_A("Factory1")));
+        REQUIRE_THAT(puml, IsClass(_A("Factory2")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "ProductA1"));
+        REQUIRE(IsClass(j, "ProductA2"));
+        REQUIRE(IsClass(j, "ProductB1"));
+        REQUIRE(IsClass(j, "ProductB2"));
+        REQUIRE(IsAbstractClass(j, "AbstractFactory"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

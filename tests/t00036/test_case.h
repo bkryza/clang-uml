@@ -28,22 +28,41 @@ TEST_CASE("t00036", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00036_class");
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "int"));
+        REQUIRE_THAT(puml, IsEnum(_A("E")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsPackage("ns111"));
+        REQUIRE_THAT(puml, IsPackage("ns22"));
 
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "int"));
-    REQUIRE_THAT(puml, IsEnum(_A("E")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsPackage("ns111"));
-    REQUIRE_THAT(puml, IsPackage("ns22"));
+        REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
 
-    REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        REQUIRE(IsClass(j, "ns1::ns11::A<T>"));
+        REQUIRE(IsClass(j, "ns1::ns11::A<int>"));
+        REQUIRE(IsClass(j, "ns1::ns11::ns111::B"));
+        REQUIRE(IsClass(j, "ns2::ns22::C"));
+        REQUIRE(IsEnum(j, "ns1::E"));
+        REQUIRE(IsPackage(j, "ns1"));
+        REQUIRE(IsPackage(j, "ns1::ns11"));
+        REQUIRE(IsPackage(j, "ns1::ns11::ns111"));
+        REQUIRE(IsPackage(j, "ns2"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

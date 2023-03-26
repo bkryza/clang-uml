@@ -27,19 +27,36 @@ TEST_CASE("t20028", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20028_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // Check if all calls exist
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "b()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "c()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "d()"));
+        REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "e()"));
 
-    // Check if all calls exist
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "b()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "c()"));
-    REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "d()"));
-    REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("B"), "e()"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a()"),
+            FindMessage(j, "tmain()", "A", "b()"),
+            FindMessage(j, "tmain()", "A", "c()"),
+            FindMessage(j, "tmain()", "A", "d()")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,49 +28,66 @@ TEST_CASE("t00051", "[test-case][class]")
 
     REQUIRE(model->name() == "t00051_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    // Check if all classes exist
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread1")));
-    REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread2")));
+        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread1")));
+        REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread2")));
 
-    REQUIRE_THAT(puml,
-        (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
-            "Function && f, Args &&... args")));
-    REQUIRE_THAT(puml,
-        (IsMethod<Public>("thread", "void",
-            "(lambda at ../../tests/t00051/t00051.cc:59:27) && ")));
-    REQUIRE_THAT(puml,
-        (IsMethod<Private>("start_thread3",
-            "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-            "../../tests/t00051/t00051.cc:43:27)>")));
-    REQUIRE_THAT(puml,
-        (IsMethod<Private>(
-            "get_function", "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
+                "Function && f, Args &&... args")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Public>("thread", "void",
+                "(lambda at ../../tests/t00051/t00051.cc:59:27) && ")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Private>("start_thread3",
+                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+                "../../tests/t00051/t00051.cc:43:27)>")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Private>("get_function",
+                "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
 
-    REQUIRE_THAT(puml, IsClassTemplate("B", "F,FF"));
-    REQUIRE_THAT(puml, (IsMethod<Public>("f", "void")));
-    REQUIRE_THAT(puml, (IsMethod<Public>("ff", "void")));
+        REQUIRE_THAT(puml, IsClassTemplate("B", "F,FF=F"));
+        REQUIRE_THAT(puml, (IsMethod<Public>("f", "void")));
+        REQUIRE_THAT(puml, (IsMethod<Public>("ff", "void")));
 
-    REQUIRE_THAT(puml,
-        IsClassTemplate("B",
-            "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-            "../../tests/t00051/t00051.cc:43:27)"));
+        REQUIRE_THAT(puml,
+            IsClassTemplate("B",
+                "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+                "../../tests/t00051/t00051.cc:43:27)"));
 
-    REQUIRE_THAT(puml,
-        IsInstantiation(_A("B<F,FF>"),
-            _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-               "../../tests/t00051/t00051.cc:43:27)>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("B<F,FF=F>"),
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
+                   "at "
+                   "../../tests/t00051/t00051.cc:43:27)>")));
 
-    REQUIRE_THAT(puml,
-        IsDependency(_A("A"),
-            _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-               "../../tests/t00051/t00051.cc:43:27)>")));
+        REQUIRE_THAT(puml,
+            IsDependency(_A("A"),
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
+                   "at "
+                   "../../tests/t00051/t00051.cc:43:27)>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsInnerClass(j, "A", "A::custom_thread1"));
+        REQUIRE(IsInnerClass(j, "A", "A::custom_thread2"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

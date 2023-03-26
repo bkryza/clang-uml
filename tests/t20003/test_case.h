@@ -27,16 +27,32 @@ TEST_CASE("t20003", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20003_sequence");
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
+        REQUIRE_THAT(puml, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
 
-    REQUIRE_THAT(puml, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
-    REQUIRE_THAT(puml, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
-    REQUIRE_THAT(puml, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        std::vector<int> messages = {FindMessage(j, "m1<T>(T)", "m2<T>(T)", ""),
+            FindMessage(j, "m2<T>(T)", "m3<T>(T)", ""),
+            FindMessage(j, "m3<T>(T)", "m4<T>(T)", "")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

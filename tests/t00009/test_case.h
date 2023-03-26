@@ -28,28 +28,49 @@ TEST_CASE("t00009", "[test-case][class]")
 
     REQUIRE(model->name() == "t00009_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
 
-    REQUIRE_THAT(puml, (IsField<Public>("value", "T")));
-    REQUIRE_THAT(puml, (IsField<Public>("aint", "A<int>")));
-    REQUIRE_THAT(puml, (IsField<Public>("astring", "A<std::string> *")));
-    REQUIRE_THAT(
-        puml, (IsField<Public>("avector", "A<std::vector<std::string>> &")));
+        REQUIRE_THAT(puml, (IsField<Public>("value", "T")));
+        REQUIRE_THAT(puml, (IsField<Public>("aint", "A<int>")));
+        REQUIRE_THAT(puml, (IsField<Public>("astring", "A<std::string> *")));
+        REQUIRE_THAT(puml,
+            (IsField<Public>("avector", "A<std::vector<std::string>> &")));
 
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<int>")));
-    REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<int>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
 
-    REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+aint"));
-    REQUIRE_THAT(
-        puml, IsAssociation(_A("B"), _A("A<std::string>"), "+astring"));
-    REQUIRE_THAT(puml,
-        IsAssociation(_A("B"), _A("A<std::vector<std::string>>"), "+avector"));
+        REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+aint"));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("B"), _A("A<std::string>"), "+astring"));
+        REQUIRE_THAT(puml,
+            IsAssociation(
+                _A("B"), _A("A<std::vector<std::string>>"), "+avector"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClassTemplate(j, "A<T>"));
+        REQUIRE(IsClass(j, "A<int>"));
+        REQUIRE(IsClass(j, "A<std::string>"));
+        REQUIRE(IsClass(j, "A<std::vector<std::string>>"));
+
+        REQUIRE(IsField(j, "A<T>", "value", "T"));
+        REQUIRE(IsField(j, "B", "aint", "A<int>"));
+        REQUIRE(IsField(j, "B", "astring", "A<std::string> *"));
+        REQUIRE(IsField(j, "B", "avector", "A<std::vector<std::string>> &"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -26,6 +26,7 @@ namespace clanguml::common::visitor {
 translation_unit_visitor::translation_unit_visitor(
     clang::SourceManager &sm, const clanguml::config::diagram &config)
     : source_manager_{sm}
+    , relative_to_path_{config.relative_to()}
 {
     if (config.comment_parser() == config::comment_parser_t::plain) {
         comment_visitor_ =
@@ -86,6 +87,9 @@ void translation_unit_visitor::set_source_location(
 {
     if (location.isValid()) {
         element.set_file(source_manager_.getFilename(location).str());
+        element.set_file_relative(util::path_to_url(
+            std::filesystem::relative(element.file(), relative_to_path_)
+                .string()));
         element.set_line(source_manager_.getSpellingLineNumber(location));
         element.set_location_id(location.getHashValue());
     }

@@ -29,18 +29,35 @@ TEST_CASE("t00024", "[test-case][class]")
     REQUIRE(model->name() == "t00024_class");
     REQUIRE(model->should_include("clanguml::t00024::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("Target")));
-    REQUIRE_THAT(puml, IsClass(_A("Target1")));
-    REQUIRE_THAT(puml, IsClass(_A("Target2")));
-    REQUIRE_THAT(puml, IsClass(_A("Proxy")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Target1")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Target2")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Proxy")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("Target")));
+        REQUIRE_THAT(puml, IsClass(_A("Target1")));
+        REQUIRE_THAT(puml, IsClass(_A("Target2")));
+        REQUIRE_THAT(puml, IsClass(_A("Proxy")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Target1")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Target2")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("Target"), _A("Proxy")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "Target1"));
+        REQUIRE(IsClass(j, "Target2"));
+        REQUIRE(IsAbstractClass(j, "Target"));
+        REQUIRE(IsBaseClass(j, "Target", "Target1"));
+        REQUIRE(IsBaseClass(j, "Target", "Target2"));
+        REQUIRE(IsBaseClass(j, "Target", "Proxy"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

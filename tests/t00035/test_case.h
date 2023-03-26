@@ -29,22 +29,38 @@ TEST_CASE("t00035", "[test-case][class]")
     REQUIRE(model->name() == "t00035_class");
     REQUIRE(model->should_include("clanguml::t00035::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("Top")));
-    REQUIRE_THAT(puml, IsClass(_A("Bottom")));
-    REQUIRE_THAT(puml, IsClass(_A("Center")));
-    REQUIRE_THAT(puml, IsClass(_A("Left")));
-    REQUIRE_THAT(puml, IsClass(_A("Right")));
+        REQUIRE_THAT(puml, IsClass(_A("Top")));
+        REQUIRE_THAT(puml, IsClass(_A("Bottom")));
+        REQUIRE_THAT(puml, IsClass(_A("Center")));
+        REQUIRE_THAT(puml, IsClass(_A("Left")));
+        REQUIRE_THAT(puml, IsClass(_A("Right")));
 
-    REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "up", _A("Top")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "left", _A("Left")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "right", _A("Right")));
-    REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "up", _A("Top")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "left", _A("Left")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "right", _A("Right")));
+        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "Top"));
+        REQUIRE(IsClass(j, "Bottom"));
+        REQUIRE(IsClass(j, "Center"));
+        REQUIRE(IsClass(j, "Left"));
+        REQUIRE(IsClass(j, "Right"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,16 +28,26 @@ TEST_CASE("t00044", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00044_class");
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        // TODO:
+        // Check dependants filter<void(int), bool>
+        // REQUIRE_THAT(puml, IsClassTemplate("signal_handler",
+        // "Ret,Args...,A"));
 
-    // TODO:
-    // Check dependants filter<void(int), bool>
-    // REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "Ret,Args...,A"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

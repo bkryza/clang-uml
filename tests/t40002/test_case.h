@@ -28,56 +28,87 @@ TEST_CASE("t40002", "[test-case][include]")
 
     REQUIRE(model->name() == "t40002_include");
 
-    auto puml = generate_include_puml(diagram, *model);
+    {
+        auto puml = generate_include_puml(diagram, *model);
 
-    AliasMatcher _A(puml);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsFolder("lib1"));
-    REQUIRE_THAT(puml, IsFolder("lib2"));
-    REQUIRE_THAT(puml, IsFile("lib1.h"));
-    REQUIRE_THAT(puml, IsFile("lib2.h"));
-    REQUIRE_THAT(puml, !IsFile("lib2_detail.h"));
-    REQUIRE_THAT(puml, IsFile("t40002.cc"));
-    REQUIRE_THAT(puml, IsFile("lib1.cc"));
-    REQUIRE_THAT(puml, IsFile("lib2.cc"));
+        REQUIRE_THAT(puml, IsFolder("lib1"));
+        REQUIRE_THAT(puml, IsFolder("lib2"));
+        REQUIRE_THAT(puml, IsFile("lib1.h"));
+        REQUIRE_THAT(puml, IsFile("lib2.h"));
+        REQUIRE_THAT(puml, !IsFile("lib2_detail.h"));
+        REQUIRE_THAT(puml, IsFile("t40002.cc"));
+        REQUIRE_THAT(puml, IsFile("lib1.cc"));
+        REQUIRE_THAT(puml, IsFile("lib2.cc"));
 
-    REQUIRE_THAT(puml, !IsFile("string"));
+        REQUIRE_THAT(puml, !IsFile("string"));
 
-    REQUIRE_THAT(puml, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
-    REQUIRE_THAT(puml, IsAssociation(_A("lib1.h"), _A("lib2.h")));
-    REQUIRE_THAT(puml, IsAssociation(_A("lib1.cc"), _A("lib1.h")));
-    REQUIRE_THAT(puml, IsAssociation(_A("lib2.cc"), _A("lib2.h")));
+        REQUIRE_THAT(puml, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
+        REQUIRE_THAT(puml, IsAssociation(_A("lib1.h"), _A("lib2.h")));
+        REQUIRE_THAT(puml, IsAssociation(_A("lib1.cc"), _A("lib1.h")));
+        REQUIRE_THAT(puml, IsAssociation(_A("lib2.cc"), _A("lib2.h")));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("t40002.cc"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t40002/src/t40002.cc#L0",
-                clanguml::util::get_git_commit()),
-            "t40002.cc"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("t40002.cc"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t40002/src/t40002.cc#L0",
+                    clanguml::util::get_git_commit()),
+                "t40002.cc"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("lib1.cc"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t40002/src/lib1/lib1.cc#L0",
-                clanguml::util::get_git_commit()),
-            "lib1.cc"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("lib1.cc"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t40002/src/lib1/lib1.cc#L0",
+                    clanguml::util::get_git_commit()),
+                "lib1.cc"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("lib1.h"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t40002/include/lib1/lib1.h#L0",
-                clanguml::util::get_git_commit()),
-            "lib1.h"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("lib1.h"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t40002/include/lib1/lib1.h#L0",
+                    clanguml::util::get_git_commit()),
+                "lib1.h"));
 
-    REQUIRE_THAT(puml,
-        HasLink(_A("lib2.h"),
-            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                        "t40002/include/lib2/lib2.h#L0",
-                clanguml::util::get_git_commit()),
-            "lib2.h"));
+        REQUIRE_THAT(puml,
+            HasLink(_A("lib2.h"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t40002/include/lib2/lib2.h#L0",
+                    clanguml::util::get_git_commit()),
+                "lib2.h"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_include_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsFolder(j, "include"));
+        REQUIRE(IsFolder(j, "include/lib1"));
+        REQUIRE(IsFolder(j, "include/lib2"));
+        REQUIRE(IsFolder(j, "src"));
+        REQUIRE(IsFolder(j, "src/lib1"));
+        REQUIRE(IsFolder(j, "src/lib2"));
+        REQUIRE(IsFile(j, "include/lib1/lib1.h"));
+        REQUIRE(IsFile(j, "include/lib2/lib2.h"));
+        REQUIRE(!IsFile(j, "include/lib2/lib2_detail.h"));
+        REQUIRE(IsFile(j, "src/lib1/lib1.cc"));
+        REQUIRE(IsFile(j, "src/lib2/lib2.cc"));
+        REQUIRE(IsFile(j, "src/t40002.cc"));
+
+        REQUIRE(!IsFile(j, "string"));
+
+        REQUIRE(IsAssociation(j, "src/t40002.cc", "include/lib1/lib1.h"));
+        REQUIRE(IsAssociation(j, "include/lib1/lib1.h", "include/lib2/lib2.h"));
+        REQUIRE(IsAssociation(j, "src/lib1/lib1.cc", "include/lib1/lib1.h"));
+        REQUIRE(IsAssociation(j, "src/lib2/lib2.cc", "include/lib2/lib2.h"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

@@ -28,19 +28,37 @@ TEST_CASE("t00007", "[test-case][class]")
 
     REQUIRE(model->name() == "t00007_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("B")));
-    REQUIRE_THAT(puml, IsClass(_A("C")));
-    REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
 
-    REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
-    REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "+c"));
+        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
+        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
+        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "+c"));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(IsClass(j, "C"));
+        REQUIRE(IsClass(j, "R"));
+        REQUIRE(IsAggregation(j, "R", "A", "a"));
+        REQUIRE(IsAssociation(j, "R", "B", "b"));
+        REQUIRE(IsAssociation(j, "R", "C", "c"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

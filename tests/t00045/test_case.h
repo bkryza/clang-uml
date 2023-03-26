@@ -29,40 +29,63 @@ TEST_CASE("t00045", "[test-case][class]")
     REQUIRE(model->name() == "t00045_class");
     REQUIRE(model->should_include("clanguml::t00045::ns1::ns2::A"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsClass(_A("A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::A")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::B")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::C")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::D")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::E")));
-    REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::R")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::A")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::B")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::C")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::D")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::E")));
+        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::R")));
 
-    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::B")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::A"), _A("ns1::ns2::C")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::D")));
-    REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("ns1::ns2::E")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::B")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::A"), _A("ns1::ns2::C")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::D")));
+        REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("ns1::ns2::E")));
 
-    REQUIRE_THAT(
-        puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+a"));
-    REQUIRE_THAT(
-        puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::A"), "+ns1_a"));
-    REQUIRE_THAT(puml,
-        IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+ns1_ns2_a"));
-    REQUIRE_THAT(puml, IsAssociation(_A("ns1::ns2::R"), _A("A"), "+root_a"));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+a"));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::A"), "+ns1_a"));
+        REQUIRE_THAT(puml,
+            IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+ns1_ns2_a"));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("ns1::ns2::R"), _A("A"), "+root_a"));
 
-    REQUIRE_THAT(puml, IsDependency(_A("ns1::ns2::R"), _A("AA")));
+        REQUIRE_THAT(puml, IsDependency(_A("ns1::ns2::R"), _A("AA")));
 
-    REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
-    REQUIRE_THAT(
-        puml, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
-    // TODO:
-    // REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAAA<T>")));
+        REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
+        REQUIRE_THAT(
+            puml, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
+        // TODO:
+        // REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"),
+        // _A("AAAA<T>")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "ns1::A"));
+        REQUIRE(IsClass(j, "ns1::ns2::A"));
+        REQUIRE(IsClass(j, "ns1::ns2::B"));
+        REQUIRE(IsClass(j, "ns1::ns2::C"));
+        REQUIRE(IsClass(j, "ns1::ns2::D"));
+        REQUIRE(IsClass(j, "ns1::ns2::E"));
+        REQUIRE(IsClass(j, "ns1::ns2::R"));
+
+        REQUIRE(IsBaseClass(j, "ns1::ns2::A", "ns1::ns2::B"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

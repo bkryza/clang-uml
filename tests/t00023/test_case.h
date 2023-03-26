@@ -29,14 +29,28 @@ TEST_CASE("t00023", "[test-case][class]")
     REQUIRE(model->name() == "t00023_class");
     REQUIRE(model->should_include("clanguml::t00023::Visitor"));
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-    REQUIRE_THAT(puml, IsAbstractClass(_A("Strategy")));
-    REQUIRE_THAT(puml, IsClass(_A("StrategyA")));
-    REQUIRE_THAT(puml, IsClass(_A("StrategyB")));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, IsAbstractClass(_A("Strategy")));
+        REQUIRE_THAT(puml, IsClass(_A("StrategyA")));
+        REQUIRE_THAT(puml, IsClass(_A("StrategyB")));
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        REQUIRE(IsClass(j, "StrategyA"));
+        REQUIRE(IsClass(j, "StrategyB"));
+        REQUIRE(IsAbstractClass(j, "Strategy"));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

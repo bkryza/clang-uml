@@ -31,20 +31,43 @@ TEST_CASE("t20001", "[test-case][sequence]")
     REQUIRE(model->should_include("clanguml::t20001::A"));
     REQUIRE(!model->should_include("clanguml::t20001::detail::C"));
     REQUIRE(!model->should_include("std::vector"));
+    {
+        auto puml = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    auto puml = generate_sequence_puml(diagram, *model);
-    AliasMatcher _A(puml);
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
+        REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
+        REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
+        REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
 
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), "add(int,int)"));
-    REQUIRE_THAT(puml, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
-    REQUIRE_THAT(puml, HasCall(_A("A"), "__log_result(int)__"));
-    REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
+        REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
 
-    REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".puml", puml);
+    }
+    {
+        auto j = generate_sequence_json(diagram, *model);
 
-    save_puml(config.output_directory() + "/" + diagram->name + ".puml", puml);
+        using namespace json;
+
+        REQUIRE(IsFunctionParticipant(j, "tmain()"));
+        REQUIRE(IsClassParticipant(j, "A"));
+        REQUIRE(IsClassParticipant(j, "B"));
+
+        std::vector<int> messages = {
+            FindMessage(j, "tmain()", "A", "add(int,int)"),
+            FindMessage(j, "tmain()", "B", "wrap_add3(int,int,int)"),
+            FindMessage(j, "B", "A", "add3(int,int,int)"),
+            FindMessage(j, "A", "A", "add(int,int)"),
+            FindMessage(j, "A", "A", "log_result(int)"),
+            FindMessage(j, "B", "A", "log_result(int)")};
+
+        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }
