@@ -222,6 +222,7 @@ struct config : public inheritable_diagram_options {
     // directory
     option<std::string> compilation_database_dir{
         "compilation_database_dir", "."};
+    option<std::vector<std::string>> add_compile_flags{"add_compile_flags"};
     option<std::string> output_directory{"output_directory"};
 
     option<std::map<std::string, diagram_template>> diagram_templates{

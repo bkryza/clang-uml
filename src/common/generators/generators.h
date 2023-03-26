@@ -139,6 +139,9 @@ void find_translation_units_for_diagrams(
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
+void adjust_compilation_database(const clanguml::config::config &config,
+    clang::tooling::CompilationDatabase &db);
+
 template <typename DiagramModel, typename DiagramConfig,
     typename TranslationUnitVisitor>
 class diagram_ast_consumer : public clang::ASTConsumer {

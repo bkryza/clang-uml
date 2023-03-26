@@ -53,6 +53,9 @@
 ```yaml
 # Directory containing the compile_commands.json file
 compilation_database_dir: debug
+# Inject additional compile commands to the compilation database entries
+add_compile_flags:
+  - '-Wno-vla-extension'
 # The directory where *.puml files will be generated
 output_directory: docs/diagrams
 # Set this as default for all diagrams

@@ -585,6 +585,7 @@ template <> struct convert<config> {
         get_option(node, rhs.using_namespace);
         get_option(node, rhs.output_directory);
         get_option(node, rhs.compilation_database_dir);
+        get_option(node, rhs.add_compile_flags);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
