@@ -1,5 +1,7 @@
 # CHANGELOG
 
+### 0.3.3
+  * Added 'add_compile_flags' config options (#112)
   * Added JSON generator (#114)
   * Added diagram templates support (#105)
   * Added parents (base classes) diagram filter
