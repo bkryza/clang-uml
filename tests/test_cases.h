@@ -620,6 +620,26 @@ struct File {
     const std::string file;
 };
 
+std::optional<nlohmann::json> get_element_by_id(
+    const nlohmann::json &j, const std::string &id)
+{
+    if (!j.contains("elements"))
+        return {};
+
+    for (const nlohmann::json &e : j["elements"]) {
+        if (e["id"] == id)
+            return {e};
+
+        if (e["type"] == "namespace" || e["type"] == "folder") {
+            auto maybe_e = get_element_by_id(e, id);
+            if (maybe_e)
+                return maybe_e;
+        }
+    }
+
+    return {};
+}
+
 std::optional<nlohmann::json> get_element(
     const nlohmann::json &j, const std::string &name)
 {
@@ -744,15 +764,16 @@ bool IsDeprecated(const nlohmann::json &j, const std::string &name)
 bool IsBaseClass(const nlohmann::json &j, const std::string &base,
     const std::string &subclass)
 {
-    auto sc = get_element(j, expand_name(j, subclass));
+    auto base_el = get_element(j, expand_name(j, base));
+    auto subclass_el = get_element(j, expand_name(j, subclass));
 
-    if (!sc)
+    if (!base_el || !subclass_el)
         return false;
 
-    const nlohmann::json &bases = (*sc)["bases"];
+    const nlohmann::json &bases = (*subclass_el)["bases"];
 
     return std::find_if(bases.begin(), bases.end(), [&](const auto &it) {
-        return it["name"] == expand_name(j, base);
+        return it["id"] == base_el.value()["id"];
     }) != bases.end();
 }
 

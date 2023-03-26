@@ -49,7 +49,14 @@ public:
 
         ~include_visitor() override = default;
 
-#if LLVM_VERSION_MAJOR > 14
+#if LLVM_VERSION_MAJOR >= 16
+        void InclusionDirective(clang::SourceLocation HashLoc,
+            const clang::Token &IncludeTok, clang::StringRef FileName,
+            bool IsAngled, clang::CharSourceRange FilenameRange,
+            clang::OptionalFileEntryRef File, clang::StringRef SearchPath,
+            clang::StringRef RelativePath, const clang::Module *Imported,
+            clang::SrcMgr::CharacteristicKind FileType) override;
+#elif LLVM_VERSION_MAJOR > 14
         void InclusionDirective(clang::SourceLocation hash_loc,
             const clang::Token &include_tok, clang::StringRef file_name,
             bool is_angled, clang::CharSourceRange filename_range,

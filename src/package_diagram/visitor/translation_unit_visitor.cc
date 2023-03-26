@@ -344,7 +344,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                  type->getAs<clang::TemplateSpecializationType>()) {
         if (template_specialization_type != nullptr) {
             for (const auto &template_argument :
-                *template_specialization_type) {
+                template_specialization_type->template_arguments()) {
                 const auto template_argument_kind = template_argument.getKind();
                 if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Integral) {

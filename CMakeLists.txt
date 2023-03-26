@@ -25,11 +25,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(APPLE)
-    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
-            ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-endif(APPLE)
-
 #
 # clang-uml custom defines
 #
@@ -122,6 +117,11 @@ if("${LIBTOOLING_LIBS}" STREQUAL "")
     message(FATAL_ERROR "Failed to find LibTooling libraries!")
 else()
     message(STATUS "Found LibTooling libraries: ${LIBTOOLING_LIBS}")
+endif()
+
+if(APPLE OR (LLVM_VERSION_MAJOR GREATER_EQUAL 16))
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
+            ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif()
 
 #

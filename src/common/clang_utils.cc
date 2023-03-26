@@ -115,9 +115,32 @@ std::string get_tag_name(const clang::TagDecl &declaration)
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
-    const clang::PrintingPolicy print_policy(ctx.getLangOpts());
+    clang::PrintingPolicy print_policy(ctx.getLangOpts());
+    print_policy.SuppressScope = false;
+    print_policy.PrintCanonicalTypes = false;
+//    print_policy.FullyQualifiedName = true;
 
-    auto result{type.getAsString(print_policy)};
+#if LLVM_VERSION_MAJOR >= 16
+    print_policy.AlwaysIncludeTypeForTemplateArgument = true;
+    print_policy.SplitTemplateClosers = false;
+    print_policy.SuppressDefaultTemplateArgs = false;
+    print_policy.SuppressInlineNamespace = false;
+#endif
+
+    std::string result;
+
+    result = type.getAsString(print_policy);
+
+#if LLVM_VERSION_MAJOR >= 16
+    // Why do I have to this LLVM16?
+    if (const auto *decl = type->getAsCXXRecordDecl();
+        decl && !decl->isTemplated() && result.find('<') == std::string::npos) {
+        // This is a workaround for LLVM >= 16
+        const auto tag_namespace = get_tag_namespace(*decl).to_string();
+        if (result.find(tag_namespace) != 0)
+            result = fmt::format("{}::{}", tag_namespace, result);
+    }
+#endif
 
     if (try_canonical && result.find('<') != std::string::npos) {
         auto canonical_type_name =

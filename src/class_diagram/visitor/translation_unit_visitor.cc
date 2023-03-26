@@ -1488,7 +1488,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                         ->getID(),
                     relationship_hint);
             }
-            for (const auto &template_argument : *type_instantiation_decl) {
+            for (const auto &template_argument :
+                type_instantiation_decl->template_arguments()) {
                 const auto template_argument_kind = template_argument.getKind();
                 if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Integral) {
@@ -2520,12 +2521,29 @@ void translation_unit_visitor::
     argument.set_type(
         common::to_string(arg.getAsType(), template_decl->getASTContext()));
 
-    if (const auto *record_type = arg.getAsType()->getAs<clang::RecordType>();
-        record_type != nullptr) {
+    if (const auto *tsp =
+            arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+        tsp != nullptr) {
+        if (const auto *record_type_decl = tsp->getAsRecordDecl();
+            record_type_decl != nullptr) {
+
+            argument.set_id(common::to_id(arg));
+            if (diagram().should_include(full_template_specialization_name)) {
+                // Add dependency relationship to the parent
+                // template
+                template_instantiation.add_relationship(
+                    {relationship_t::kDependency, common::to_id(arg)});
+            }
+        }
+    }
+    else if (const auto *record_type =
+                 arg.getAsType()->getAs<clang::RecordType>();
+             record_type != nullptr) {
         if (const auto *record_type_decl = record_type->getAsRecordDecl();
             record_type_decl != nullptr) {
-            argument.set_id(common::to_id(arg));
 
+            argument.set_id(common::to_id(arg));
+            argument.set_type(record_type_decl->getQualifiedNameAsString());
             if (diagram().should_include(full_template_specialization_name)) {
                 // Add dependency relationship to the parent
                 // template
@@ -2635,11 +2653,10 @@ void translation_unit_visitor::process_field(
     if (type_name.find("std::weak_ptr") == 0)
         relationship_hint = relationship_t::kAssociation;
 
-    const auto *template_field_type =
-        field_type->getAs<clang::TemplateSpecializationType>();
-
     found_relationships_t relationships;
 
+    const auto *template_field_type =
+        field_type->getAs<clang::TemplateSpecializationType>();
     // TODO: Refactor to an unalias_type() method
     if (template_field_type != nullptr)
         if (template_field_type->isTypeAlias())
