@@ -37,7 +37,8 @@ std::string to_string(template_parameter_kind_t k)
     case template_parameter_kind_t::concept_constraint:
         return "concept_constraint";
     default:
-        assert(0);
+        assert(false);
+        return "";
     }
 }
 
