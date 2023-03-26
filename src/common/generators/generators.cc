@@ -183,4 +183,17 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
     }
 }
 
+void adjust_compilation_database(const clanguml::config::config &config,
+    clang::tooling::CompilationDatabase &db)
+{
+    if (config.add_compile_flags && !config.add_compile_flags().empty()) {
+        for (auto &compile_command : db.getAllCompileCommands()) {
+            compile_command.CommandLine.insert(
+                compile_command.CommandLine.begin() + 1,
+                config.add_compile_flags().begin(),
+                config.add_compile_flags().end());
+        }
+    }
+}
+
 } // namespace clanguml::common::generators

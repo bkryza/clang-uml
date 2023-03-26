@@ -76,6 +76,12 @@ int main(int argc, const char *argv[])
         cli.diagram_names, cli.config, compilation_database_files,
         translation_units_map);
 
+    //
+    // Inject any additional compilation flags from the config to the
+    // compilation database
+    //
+    clanguml::common::generators::adjust_compilation_database(cli.config, *db);
+
     clanguml::common::generators::generate_diagrams(cli.diagram_names,
         cli.config, cli.effective_output_directory, db, cli.verbose,
         cli.thread_count, cli.generators, translation_units_map);

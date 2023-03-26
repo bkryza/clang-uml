@@ -31,6 +31,7 @@ std::string to_string(source_file_t sf)
         return "implementation";
     default:
         assert(false);
+        return "";
     }
 }
 
