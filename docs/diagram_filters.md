@@ -4,6 +4,7 @@
 
 * [`namespaces`](#namespaces)
 * [`elements`](#elements)
+* [`paths`](#paths)
 * [`context`](#context)
 * [`relationships`](#relationships)
 * [`subclasses`](#subclasses)
@@ -51,6 +52,26 @@ from an included namespace:
     elements:
       - ns1::ns2::MyClass
 ```
+
+## `paths`
+
+This filter allows to include or exclude from the diagram elements declared
+in specific files.
+
+```yaml
+diagrams:
+  t00061_class:
+    type: class
+    relative_to: ../../tests/t00061
+    glob: [t00061.cc]
+    include:
+      paths: [include/t00061_a.h]
+    using_namespace:
+      - clanguml::t00061
+```
+
+Currently, this filter does not allow any globbing or wildcards, however
+paths to directories can be specified.
 
 ## `context`
 
