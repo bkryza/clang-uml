@@ -75,6 +75,9 @@ public:
     virtual tvl::value_t match(
         const diagram &d, const common::model::source_file &f) const;
 
+    virtual tvl::value_t match(
+        const diagram &d, const common::model::source_location &f) const;
+
     bool is_inclusive() const;
     bool is_exclusive() const;
 
@@ -331,6 +334,9 @@ struct paths_filter : public filter_visitor {
 
     tvl::value_t match(
         const diagram &d, const common::model::source_file &r) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::source_location &sl) const override;
 
 private:
     std::vector<std::filesystem::path> paths_;

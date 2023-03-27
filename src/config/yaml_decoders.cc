@@ -400,6 +400,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
+        get_option(node, rhs.relative_to);
         get_option(node, rhs.comment_parser);
 
         rhs.initialize_relationship_hints();

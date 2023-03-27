@@ -1,5 +1,5 @@
 /**
- * tests/{{ name }}/test_case.h
+ * tests/t00061/test_case.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,26 +16,29 @@
  * limitations under the License.
  */
 
-TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
+TEST_CASE("t00061", "[test-case][class]")
 {
-    auto [config, db] = load_config("{{ name }}");
+    auto [config, db] = load_config("t00061");
 
-    auto diagram = config.diagrams["{{ name }}_{{ type }}"];
+    auto diagram = config.diagrams["t00061_class"];
 
-    REQUIRE(diagram->name == "{{ name }}_{{ type }}");
+    REQUIRE(diagram->name == "t00061_class");
 
-    auto model = generate_{{ type }}_diagram(*db, diagram);
+    auto model = generate_class_diagram(*db, diagram);
 
-    REQUIRE(model->name() == "{{ name }}_{{ type }}");
+    REQUIRE(model->name() == "t00061_class");
 
     {
-        auto puml = generate_{{ type }}_puml(diagram, *model);
+        auto puml = generate_class_puml(diagram, *model);
         AliasMatcher _A(puml);
 
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-        {{ examples }}
+        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, !IsClass(_A("B")));
+        REQUIRE_THAT(puml, !IsClass(_A("C")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);
@@ -46,7 +49,10 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
 
         using namespace json;
 
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(!IsClass(j, "B"));
+        REQUIRE(!IsClass(j, "C"));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
-
 }

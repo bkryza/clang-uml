@@ -121,6 +121,12 @@ tvl::value_t filter_visitor::match(
     return {};
 }
 
+tvl::value_t filter_visitor::match(
+    const diagram & /*d*/, const common::model::source_location & /*f*/) const
+{
+    return {};
+}
+
 bool filter_visitor::is_inclusive() const
 {
     return type_ == filter_t::kInclusive;
@@ -413,7 +419,7 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
         }
         catch (std::filesystem::filesystem_error &e) {
             LOG_WARN("Cannot add non-existent path {} to paths filter",
-                path.string());
+                absolute_path.string());
             continue;
         }
 
@@ -439,6 +445,31 @@ tvl::value_t paths_filter::match(
     for (const auto &path : paths_) {
         if (pp.root_name().string() == path.root_name().string() &&
             util::starts_with(pp.relative_path(), path.relative_path())) {
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+tvl::value_t paths_filter::match(
+    const diagram & /*d*/, const common::model::source_location &p) const
+{
+    if (paths_.empty()) {
+        return {};
+    }
+
+    auto sl_path = std::filesystem::path{p.file()};
+
+    // Matching source paths doesn't make sens if they are not absolute or empty
+    if (p.file().empty() || sl_path.is_relative()) {
+        return {};
+    }
+
+    for (const auto &path : paths_) {
+        if (sl_path.root_name().string() == path.root_name().string() &&
+            util::starts_with(sl_path.relative_path(), path.relative_path())) {
 
             return true;
         }
