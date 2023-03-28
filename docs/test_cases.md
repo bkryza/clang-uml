@@ -59,6 +59,7 @@
  * [t00058](./test_cases/t00058.md) - Test case for concepts with variadic parameters and type aliases
  * [t00059](./test_cases/t00059.md) - Non-virtual abstract factory pattern using concepts test case
  * [t00060](./test_cases/t00060.md) - Parents (base classes) diagram filter test case
+ * [t00061](./test_cases/t00061.md) - Paths diagram filter test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

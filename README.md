@@ -16,6 +16,8 @@ The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON forma
 
 `clang-uml` currently supports C++ up to version 17 and partial support for C++ 20.
 
+Full documentation can be found [here](./docs/README.md).
+
 ## Features
 
 Main features supported so far include:
