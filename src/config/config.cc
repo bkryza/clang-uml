@@ -121,7 +121,8 @@ void inheritable_diagram_options::inherit(
 std::string inheritable_diagram_options::simplify_template_type(
     std::string full_name) const
 {
-    const auto &aliases = type_aliases();
+    type_aliases_longer_first_t aliases;
+    aliases.insert(type_aliases().begin(), type_aliases().end());
 
     for (const auto &[pattern, replacement] : aliases) {
         util::replace_all(full_name, pattern, replacement);
@@ -176,12 +177,6 @@ std::optional<std::string> diagram::get_together_group(
 
 void diagram::initialize_type_aliases()
 {
-    if (type_aliases().count("std::__cxx11::basic_string<char,std::char_traits<"
-                             "char>,std::allocator<char>>") == 0U) {
-        type_aliases().insert({"std::__cxx11::basic_string<char,std::char_"
-                               "traits<char>,std::allocator<char>>",
-            "std::string"});
-    }
     if (type_aliases().count("std::basic_string<char>") == 0U) {
         type_aliases().insert({"std::basic_string<char>", "std::string"});
     }
@@ -210,11 +205,11 @@ void diagram::initialize_type_aliases()
         type_aliases().insert(
             {"std::integral_constant<bool,false>", "std::false_type"});
     }
-    // #if LLVM_VERSION_MAJOR >= 16
-    //     if (type_aliases().count("std::basic_string") == 0U) {
-    //         type_aliases().insert({"std::basic_string", "std::string"});
-    //     }
-    // #endif
+#if LLVM_VERSION_MAJOR >= 16
+    if (type_aliases().count("std::basic_string") == 0U) {
+        type_aliases().insert({"std::basic_string", "std::string"});
+    }
+#endif
 }
 
 common::model::diagram_t class_diagram::type() const

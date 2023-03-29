@@ -986,14 +986,17 @@ bool translation_unit_visitor::process_template_parameters(
             const auto *template_nontype_parameter =
                 clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                     parameter);
+
             std::optional<std::string> default_arg;
+
             if (template_nontype_parameter->hasDefaultArgument())
                 default_arg = common::to_string(
                     template_nontype_parameter->getDefaultArgument());
+
             auto ct = template_parameter::make_non_type_template(
                 template_nontype_parameter->getType().getAsString(),
-                template_nontype_parameter->getNameAsString(), default_arg,
-                template_nontype_parameter->isParameterPack());
+                template_nontype_parameter->getNameAsString(),
+                default_arg, template_nontype_parameter->isParameterPack());
 
             c.add_template(std::move(ct));
         }
@@ -1082,6 +1085,7 @@ void translation_unit_visitor::process_class_bases(
         if (const auto *record_type =
                 base.getType()->getAs<clang::RecordType>();
             record_type != nullptr) {
+            cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
             cp.set_id(common::to_id(*record_type->getDecl()));
         }
         else if (const auto *tsp =
@@ -2543,7 +2547,9 @@ void translation_unit_visitor::
             record_type_decl != nullptr) {
 
             argument.set_id(common::to_id(arg));
+#if LLVM_VERSION_MAJOR >= 16
             argument.set_type(record_type_decl->getQualifiedNameAsString());
+#endif
             if (diagram().should_include(full_template_specialization_name)) {
                 // Add dependency relationship to the parent
                 // template

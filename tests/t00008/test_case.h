@@ -64,8 +64,13 @@ TEST_CASE("t00008", "[test-case][class]")
 
         using namespace json;
 
+#if LLVM_VERSION_MAJOR >= 16
+        REQUIRE(IsClassTemplate(
+            j, "A<T,P=T,CMP=nullptr,int N=3>"));
+#else
         REQUIRE(IsClassTemplate(
             j, "A<T,P=T,clanguml::t00008::CMP=nullptr,int N=3>"));
+#endif
         REQUIRE(IsClassTemplate(j, "E::nested_template<ET>"));
         REQUIRE(IsClass(j, "E::nested_template<char>"));
 

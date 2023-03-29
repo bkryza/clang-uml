@@ -34,7 +34,11 @@ common::model::access_t class_element::access() const { return access_; }
 
 std::string class_element::name() const { return name_; }
 
+void class_element::set_name(const std::string &name) { name_ = name; }
+
 std::string class_element::type() const { return type_; }
+
+void class_element::set_type(const std::string &type) { type_ = type; }
 
 inja::json class_element::context() const
 {
