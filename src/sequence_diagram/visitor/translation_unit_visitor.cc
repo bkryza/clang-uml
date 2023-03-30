@@ -2064,12 +2064,7 @@ bool translation_unit_visitor::simplify_system_template(
 std::string translation_unit_visitor::simplify_system_template(
     const std::string &full_name) const
 {
-    std::string result{full_name};
-    for (const auto &[k, v] : config().type_aliases()) {
-        util::replace_all(result, k, v);
-    }
-
-    return result;
+    return config().simplify_template_type(full_name);
 }
 
 std::string translation_unit_visitor::make_lambda_name(
