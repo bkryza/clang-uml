@@ -134,7 +134,7 @@ using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
 using type_aliases_longer_first_t =
-    std::map<std::string, std::string, std::greater<std::string>>;
+    std::map<std::string, std::string, std::greater<>>;
 
 enum class location_t { marker, fileline, function };
 
