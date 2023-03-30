@@ -70,8 +70,13 @@ TEST_CASE("t00014", "[test-case][class]")
 
         REQUIRE_THAT(
             puml, IsField<Public>("cb", "SimpleCallback<ACharString>"));
+#if LLVM_VERSION_MAJOR >= 16
+        REQUIRE_THAT(
+            puml, IsField<Public>("gcb", "GenericCallback<AWCharString>"));
+#else
         REQUIRE_THAT(
             puml, IsField<Public>("gcb", "GenericCallback<R::AWCharString>"));
+#endif
         REQUIRE_THAT(puml, IsField<Public>("vcb", "VoidCallback"));
 
         REQUIRE_THAT(puml,

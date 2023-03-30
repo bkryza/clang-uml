@@ -115,9 +115,13 @@ std::string get_tag_name(const clang::TagDecl &declaration)
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
-    const clang::PrintingPolicy print_policy(ctx.getLangOpts());
+    clang::PrintingPolicy print_policy(ctx.getLangOpts());
+    print_policy.SuppressScope = false;
+    print_policy.PrintCanonicalTypes = false;
 
-    auto result{type.getAsString(print_policy)};
+    std::string result;
+
+    result = type.getAsString(print_policy);
 
     if (try_canonical && result.find('<') != std::string::npos) {
         auto canonical_type_name =

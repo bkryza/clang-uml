@@ -986,10 +986,13 @@ bool translation_unit_visitor::process_template_parameters(
             const auto *template_nontype_parameter =
                 clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
                     parameter);
+
             std::optional<std::string> default_arg;
+
             if (template_nontype_parameter->hasDefaultArgument())
                 default_arg = common::to_string(
                     template_nontype_parameter->getDefaultArgument());
+
             auto ct = template_parameter::make_non_type_template(
                 template_nontype_parameter->getType().getAsString(),
                 template_nontype_parameter->getNameAsString(), default_arg,
@@ -1082,6 +1085,7 @@ void translation_unit_visitor::process_class_bases(
         if (const auto *record_type =
                 base.getType()->getAs<clang::RecordType>();
             record_type != nullptr) {
+            cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
             cp.set_id(common::to_id(*record_type->getDecl()));
         }
         else if (const auto *tsp =
@@ -1488,7 +1492,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                         ->getID(),
                     relationship_hint);
             }
-            for (const auto &template_argument : *type_instantiation_decl) {
+            for (const auto &template_argument :
+                type_instantiation_decl->template_arguments()) {
                 const auto template_argument_kind = template_argument.getKind();
                 if (template_argument_kind ==
                     clang::TemplateArgument::ArgKind::Integral) {
@@ -2520,12 +2525,31 @@ void translation_unit_visitor::
     argument.set_type(
         common::to_string(arg.getAsType(), template_decl->getASTContext()));
 
-    if (const auto *record_type = arg.getAsType()->getAs<clang::RecordType>();
-        record_type != nullptr) {
+    if (const auto *tsp =
+            arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+        tsp != nullptr) {
+        if (const auto *record_type_decl = tsp->getAsRecordDecl();
+            record_type_decl != nullptr) {
+
+            argument.set_id(common::to_id(arg));
+            if (diagram().should_include(full_template_specialization_name)) {
+                // Add dependency relationship to the parent
+                // template
+                template_instantiation.add_relationship(
+                    {relationship_t::kDependency, common::to_id(arg)});
+            }
+        }
+    }
+    else if (const auto *record_type =
+                 arg.getAsType()->getAs<clang::RecordType>();
+             record_type != nullptr) {
         if (const auto *record_type_decl = record_type->getAsRecordDecl();
             record_type_decl != nullptr) {
-            argument.set_id(common::to_id(arg));
 
+            argument.set_id(common::to_id(arg));
+#if LLVM_VERSION_MAJOR >= 16
+            argument.set_type(record_type_decl->getQualifiedNameAsString());
+#endif
             if (diagram().should_include(full_template_specialization_name)) {
                 // Add dependency relationship to the parent
                 // template
@@ -2635,11 +2659,10 @@ void translation_unit_visitor::process_field(
     if (type_name.find("std::weak_ptr") == 0)
         relationship_hint = relationship_t::kAssociation;
 
-    const auto *template_field_type =
-        field_type->getAs<clang::TemplateSpecializationType>();
-
     found_relationships_t relationships;
 
+    const auto *template_field_type =
+        field_type->getAs<clang::TemplateSpecializationType>();
     // TODO: Refactor to an unalias_type() method
     if (template_field_type != nullptr)
         if (template_field_type->isTypeAlias())
@@ -2803,11 +2826,14 @@ void translation_unit_visitor::finalize()
 bool translation_unit_visitor::simplify_system_template(
     template_parameter &ct, const std::string &full_name) const
 {
-    if (config().type_aliases().count(full_name) > 0) {
-        ct.set_type(config().type_aliases().at(full_name));
+    auto simplified = config().simplify_template_type(full_name);
+
+    if (simplified != full_name) {
+        ct.set_type(simplified);
         ct.clear_params();
         return true;
     }
+
     return false;
 }
 

@@ -36,7 +36,10 @@ public:
 
     common::model::access_t access() const;
     std::string name() const;
+    void set_name(const std::string &name);
+
     std::string type() const;
+    void set_type(const std::string &type);
 
     virtual inja::json context() const;
 
