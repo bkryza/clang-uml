@@ -995,8 +995,8 @@ bool translation_unit_visitor::process_template_parameters(
 
             auto ct = template_parameter::make_non_type_template(
                 template_nontype_parameter->getType().getAsString(),
-                template_nontype_parameter->getNameAsString(),
-                default_arg, template_nontype_parameter->isParameterPack());
+                template_nontype_parameter->getNameAsString(), default_arg,
+                template_nontype_parameter->isParameterPack());
 
             c.add_template(std::move(ct));
         }
