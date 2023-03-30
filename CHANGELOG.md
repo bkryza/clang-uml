@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Fixed compilation and tests on LLVM 16 (#108)
+
 ### 0.3.3
   * Added 'add_compile_flags' config options (#112)
   * Added JSON generator (#114)
