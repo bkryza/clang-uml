@@ -29,6 +29,8 @@ sink(signal_handler<Ret(Args...), A> &)
 
 signal_handler<void(int), bool> int_handler;
 
-sink sink1{int_handler};
+struct R {
+    sink<signal_handler<void(int), bool>> sink1{int_handler};
+};
 
 } // namespace clanguml::t00044

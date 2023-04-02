@@ -187,7 +187,7 @@ private:
         bool break_on_first_aggregation = false);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_template_instantiation(
+    build_template_instantiation(const clang::Decl *cls,
         const clang::TemplateSpecializationType &template_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
@@ -205,6 +205,7 @@ private:
 
     void build_template_instantiation_process_template_arguments(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::Decl *cls,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::class_ &template_instantiation,
@@ -226,6 +227,7 @@ private:
 
     template_parameter build_template_instantiation_process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::Decl *cls,
         const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
@@ -240,7 +242,7 @@ private:
     void process_record_parent(
         clang::RecordDecl *cls, class_ &c, const namespace_ &ns);
 
-    void process_function_parameter_find_relatinoships_in_autotype(
+    void process_function_parameter_find_relationships_in_autotype(
         model::class_ &c, const clang::AutoType *atsp);
 
     void process_function_parameter_find_relationships_in_template(
@@ -278,6 +280,10 @@ private:
         const clang::ConceptDecl *cpt,
         std::vector<std::string> &constrained_template_params,
         size_t argument_index, std::string &type_name) const;
+
+    std::optional<template_parameter>
+    get_template_argument_from_type_parameter_string(
+        const clang::Decl *decl, const std::string &return_type_name) const;
 
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id

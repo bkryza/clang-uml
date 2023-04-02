@@ -35,10 +35,28 @@ TEST_CASE("t00044", "[test-case][class]")
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-        // TODO:
-        // Check dependants filter<void(int), bool>
-        // REQUIRE_THAT(puml, IsClassTemplate("signal_handler",
-        // "Ret,Args...,A"));
+        REQUIRE_THAT(puml, IsClassTemplate("sink", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
+
+        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "Ret(Args...),A"));
+        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "void(int),bool"));
+
+        REQUIRE_THAT(puml,
+            IsClassTemplate(
+                "sink", "clanguml::t00044::signal_handler<Ret(Args...),A>"));
+
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("sink<T>"),
+                _A("sink<clanguml::t00044::signal_handler<Ret(Args...),A>>")));
+
+        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("signal_handler<T,A>"),
+                _A("signal_handler<Ret(Args...),A>")));
+
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
+                _A("signal_handler<void(int),bool>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

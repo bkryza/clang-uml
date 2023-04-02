@@ -111,6 +111,11 @@ bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 bool template_parameter::is_specialization_of(
     const template_parameter &ct) const
 {
+    if(is_function_template() && ct.is_function_template()) {
+        bool res{true};
+        
+    }
+
     return (ct.is_template_parameter() ||
                ct.is_template_template_parameter()) &&
         !is_template_parameter();
@@ -139,6 +144,9 @@ bool operator==(const template_parameter &l, const template_parameter &r)
     if (l.is_template_parameter() != r.is_template_parameter())
         return res;
 
+    if (l.is_function_template() != r.is_function_template())
+        return res;
+
     if (l.is_template_parameter()) {
         // If this is a template parameter (e.g. 'typename T' or 'typename U'
         // we don't actually care what it is called
@@ -164,6 +172,19 @@ std::string template_parameter::to_string(
     using clanguml::common::model::namespace_;
 
     assert(!(type().has_value() && concept_constraint().has_value()));
+
+    if (is_function_template()) {
+        auto it = template_params_.begin();
+        auto return_type = it->to_string(using_namespace, relative);
+        std::advance(it, 1);
+
+        std::vector<std::string> function_args;
+        for (; it != template_params_.end(); it++)
+            function_args.push_back(it->to_string(using_namespace, relative));
+
+        return fmt::format(
+            "{}({})", return_type, fmt::join(function_args, ","));
+    }
 
     std::string res;
     const auto maybe_type = type();

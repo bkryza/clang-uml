@@ -176,6 +176,10 @@ public:
 
     void set_unexposed(bool unexposed) { is_unexposed_ = unexposed; }
 
+    void set_function_template(bool ft) { is_function_template_ = ft; }
+
+    bool is_function_template() const { return is_function_template_; }
+
 private:
     template_parameter() = default;
 
@@ -202,11 +206,14 @@ private:
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
 
+    bool is_function_template_{false};
+
     /// Stores optional fully qualified name of constraint for this template
     /// parameter
     std::optional<std::string> concept_constraint_;
 
     // Nested template parameters
+    // If this is a function template, the first element is the return type
     std::vector<template_parameter> template_params_;
 
     std::optional<int64_t> id_;

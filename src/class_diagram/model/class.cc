@@ -126,9 +126,19 @@ int class_::calculate_template_specialization_match(
 {
     int res{};
 
+    LOG_DBG("### Comparing {} with {}", this->full_name(false),
+        other.full_name(false));
+
+    if (this->full_name(false) ==
+            "clanguml::t00044::signal_handler<Ret(Args...),A>" &&
+        other.full_name(false) ==
+            "clanguml::t00044::signal_handler<void(int),bool>") {
+        LOG_DBG("AAAAAAAAA");
+    }
+
     const std::string left = name_and_ns();
     // TODO: handle variadic templates
-    if ((name_and_ns() != full_name) ||
+    if ((left != full_name) ||
         (templates().size() != other.templates().size())) {
         return res;
     }
@@ -142,6 +152,10 @@ int class_::calculate_template_specialization_match(
             res++;
         }
         else if (other_template_arg.is_specialization_of(template_arg)) {
+            if (template_arg.is_function_template() &&
+                other_template_arg.is_function_template()) {
+                res++;
+            }
             continue;
         }
         else {
