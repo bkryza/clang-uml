@@ -108,17 +108,59 @@ void template_parameter::is_variadic(bool is_variadic) noexcept
 
 bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 
-bool template_parameter::is_specialization_of(
+int template_parameter::calculate_specialization_match(
     const template_parameter &ct) const
 {
-    if(is_function_template() && ct.is_function_template()) {
-        bool res{true};
-        
+    int res{0};
+
+    if (ct.type().has_value() && type().has_value() &&
+        !ct.is_template_parameter() && !is_template_parameter() &&
+        ct.type().value() != type().value())
+        return 0;
+
+    if (ct.is_function_template() && !is_function_template())
+        return 0;
+
+    if (template_params().size() > 0 && ct.template_params().size() > 0) {
+        // More generic template params
+        const auto &template_params = ct.template_params();
+        const auto &specialization_params = this->template_params();
+        auto template_index{0U};
+        auto arg_index{0U};
+
+        while (arg_index < specialization_params.size() &&
+            template_index < template_params.size()) {
+            auto match = specialization_params.at(arg_index)
+                             .calculate_specialization_match(
+                                 template_params.at(template_index));
+
+            if (match == 0) {
+                return 0;
+            }
+
+            if (!template_params.at(template_index).is_variadic())
+                template_index++;
+
+            res += match;
+
+            // Add 1 point for argument match
+            if (!specialization_params.at(arg_index).is_template_parameter())
+                res++;
+
+            arg_index++;
+        }
+
+        if (arg_index == specialization_params.size())
+            return res;
+        else
+            return 0;
     }
 
-    return (ct.is_template_parameter() ||
-               ct.is_template_template_parameter()) &&
-        !is_template_parameter();
+    if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
+        !is_template_parameter())
+        return 1;
+
+    return 0;
 }
 
 void template_parameter::add_template_param(template_parameter &&ct)

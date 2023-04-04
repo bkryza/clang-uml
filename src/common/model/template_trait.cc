@@ -66,12 +66,7 @@ const std::vector<template_parameter> &template_trait::templates() const
 int template_trait::calculate_template_specialization_match(
     const template_trait &other, const std::string & /*full_name*/) const
 {
-    int res{};
-
-    // TODO: handle variadic templates
-    if (templates().size() != other.templates().size()) {
-        return res;
-    }
+    int res{0};
 
     // Iterate over all template arguments
     for (auto i = 0U; i < other.templates().size(); i++) {
@@ -80,9 +75,17 @@ int template_trait::calculate_template_specialization_match(
 
         if (template_arg == other_template_arg) {
             res++;
+
+            if (!template_arg.is_template_parameter())
+                res++;
+
+            if (!other_template_arg.is_template_parameter())
+                res++;
         }
-        else if (other_template_arg.is_specialization_of(template_arg)) {
-            continue;
+        else if (auto match = other_template_arg.calculate_specialization_match(
+                     template_arg);
+                 match > 0) {
+            res += match;
         }
         else {
             res = 0;

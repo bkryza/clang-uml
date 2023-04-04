@@ -52,6 +52,7 @@ public:
         p.set_kind(template_parameter_kind_t::template_type);
         p.set_name(name);
         p.is_variadic(is_variadic);
+        p.is_template_parameter(true);
         if (default_value)
             p.set_default_value(default_value.value());
         return p;
@@ -121,7 +122,7 @@ public:
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
 
-    bool is_specialization_of(const template_parameter &ct) const;
+    int calculate_specialization_match(const template_parameter &ct) const;
 
     friend bool operator==(
         const template_parameter &l, const template_parameter &r);

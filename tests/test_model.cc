@@ -20,6 +20,7 @@
 #include "catch.h"
 
 #include "common/model/namespace.h"
+#include "common/model/template_parameter.h"
 
 TEST_CASE("Test namespace_", "[unit-test]")
 {
@@ -69,4 +70,163 @@ TEST_CASE("Test namespace_", "[unit-test]")
     namespace_ ns8{"aaa::bbb"};
     const std::string name{"aaa::bbb::ccc<std::unique_ptr<aaa::bbb::ddd>>"};
     CHECK(ns8.relative(name) == "ccc<std::unique_ptr<ddd>>");
+}
+
+TEST_CASE(
+    "Test template_parameter::calculate_specialization_match", "[unit-test]")
+{
+    using clanguml::common::model::template_parameter;
+
+    {
+        auto tp1 = template_parameter::make_template_type("T");
+        auto tp2 = template_parameter::make_argument("int");
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_template_type("T");
+        auto tp2 = template_parameter::make_argument("vector");
+        tp2.add_template_param(template_parameter::make_argument("int"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("vector");
+        tp1.add_template_param(template_parameter::make_template_type("T"));
+
+        auto tp2 = template_parameter::make_argument("vector");
+        tp2.add_template_param(template_parameter::make_argument("int"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("vector");
+        tp1.add_template_param(template_parameter::make_template_type("T"));
+
+        auto tp2 = template_parameter::make_argument("string");
+        tp2.add_template_param(template_parameter::make_argument("char"));
+
+        CHECK(!tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("tuple");
+        tp1.add_template_param(
+            template_parameter::make_template_type("Args", {}, true));
+
+        auto tp2 = template_parameter::make_argument("tuple");
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("tuple");
+        tp1.add_template_param(
+            template_parameter::make_template_type("Args", {}, true));
+        tp1.add_template_param(template_parameter::make_argument("int"));
+
+        auto tp2 = template_parameter::make_argument("tuple");
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(!tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("tuple");
+        tp1.add_template_param(template_parameter::make_template_type("T1"));
+        tp1.add_template_param(template_parameter::make_template_type("T2"));
+
+        auto tp2 = template_parameter::make_argument("tuple");
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(!tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.set_function_template(true);
+        tp1.add_template_param(template_parameter::make_template_type("Ret"));
+        tp1.add_template_param(template_parameter::make_template_type("Arg1"));
+        tp1.add_template_param(template_parameter::make_template_type("Arg2"));
+
+        auto tp2 = template_parameter::make_argument({});
+        tp2.set_function_template(true);
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.set_function_template(true);
+        tp1.add_template_param(template_parameter::make_template_type("Ret"));
+        tp1.add_template_param(template_parameter::make_template_type("Arg1"));
+        tp1.add_template_param(template_parameter::make_template_type("Arg2"));
+
+        auto tp2 = template_parameter::make_argument({});
+        tp2.set_function_template(false);
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(!tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.set_function_template(true);
+        tp1.add_template_param(template_parameter::make_template_type("Ret"));
+        tp1.add_template_param(
+            template_parameter::make_template_type("Args", {}, true));
+
+        auto tp2 = template_parameter::make_argument({});
+        tp2.set_function_template(true);
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto sink_t = template_parameter::make_argument("sink");
+        auto sh1 =
+            template_parameter::make_argument("ns1::ns2::signal_handler");
+        auto sh1_t1 = template_parameter::make_template_type({});
+        sh1_t1.set_function_template(true);
+        sh1_t1.add_template_param(
+            template_parameter::make_template_type("Ret"));
+        sh1_t1.add_template_param(
+            template_parameter::make_template_type("Args", {}, true));
+        auto sh1_t2 = template_parameter::make_template_type("A");
+        sh1.add_template_param(sh1_t1);
+        sh1.add_template_param(sh1_t2);
+        sink_t.add_template_param(sh1);
+
+        auto sink_s = template_parameter::make_argument("sink");
+        auto sh2 =
+            template_parameter::make_argument("ns1::ns2::signal_handler");
+        auto sh2_a1 = template_parameter::make_argument({});
+        sh2_a1.set_function_template(true);
+        sh2_a1.add_template_param(template_parameter::make_argument("void"));
+        sh2_a1.add_template_param(template_parameter::make_argument("int"));
+        auto sh2_a2 = template_parameter::make_argument("bool");
+        sh2.add_template_param(sh2_a1);
+        sh2.add_template_param(sh2_a2);
+        sink_s.add_template_param(sh2);
+
+        CHECK(sink_s.calculate_specialization_match(sink_t));
+    }
 }

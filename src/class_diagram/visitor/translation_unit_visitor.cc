@@ -1836,7 +1836,7 @@ void translation_unit_visitor::process_template_specialization_argument(
                     cls, return_type_name);
 
             if (maybe_return_arg)
-                a .add_template_param(*maybe_return_arg);
+                a.add_template_param(*maybe_return_arg);
             else {
                 a.add_template_param(
                     template_parameter::make_argument(return_type_name));
@@ -1844,8 +1844,9 @@ void translation_unit_visitor::process_template_specialization_argument(
 
             // Set function template argument types
             for (const auto &param_type : function_type->param_types()) {
-                auto maybe_arg = get_template_argument_from_type_parameter_string(
-                    cls, param_type.getAsString());
+                auto maybe_arg =
+                    get_template_argument_from_type_parameter_string(
+                        cls, param_type.getAsString());
 
                 if (maybe_arg) {
                     a.add_template_param(*maybe_arg);
@@ -1862,43 +1863,8 @@ void translation_unit_visitor::process_template_specialization_argument(
                     param_type->getAs<clang::RecordType>();
                 if (param_record_type == nullptr)
                     continue;
-
-//                auto *classTemplateSpecialization =
-//                    llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
-//                        param_type->getAsRecordDecl());
-/*
-                if (classTemplateSpecialization != nullptr) {
-                    // Read arg info as needed.
-                    auto nested_template_instantiation =
-                        build_template_instantiation_from_class_template_specialization(
-                            *classTemplateSpecialization, *param_record_type,
-                            diagram().should_include(
-                                full_template_specialization_name)
-                                ? std::make_optional(&template_instantiation)
-                                : parent);
-
-                    const auto nested_template_name =
-                        classTemplateSpecialization->getQualifiedNameAsString();
-
-                    if (nested_template_instantiation) {
-                        if (parent.has_value())
-                            parent.value()->add_relationship(
-                                {relationship_t::kDependency,
-                                    nested_template_instantiation->id()});
-                    }
-
-                    auto nested_template_instantiation_full_name =
-                        nested_template_instantiation->full_name(false);
-                    if (diagram().should_include(
-                            nested_template_instantiation_full_name)) {
-                        diagram().add_class(
-                            std::move(nested_template_instantiation));
-                    }
-                }*/
-
             }
             argument = a;
-
         }
         else if (const auto *nested_template_type =
                      arg.getAsType()
