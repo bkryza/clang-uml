@@ -114,9 +114,13 @@ int template_parameter::calculate_specialization_match(
     int res{0};
 
     if (ct.type().has_value() && type().has_value() &&
-        !ct.is_template_parameter() && !is_template_parameter() &&
-        ct.type().value() != type().value())
-        return 0;
+        !ct.is_template_parameter() && !is_template_parameter()) {
+
+        if (ct.type().value() != type().value())
+            return 0;
+        else
+            res++;
+    }
 
     if (ct.is_function_template() && !is_function_template())
         return 0;
@@ -143,15 +147,41 @@ int template_parameter::calculate_specialization_match(
 
             res += match;
 
-            // Add 1 point for argument match
+            // Add 1 point if the current specialization param is an argument
+            // as it's a more specific match than 2 template params
             if (!specialization_params.at(arg_index).is_template_parameter())
                 res++;
 
             arg_index++;
         }
 
-        if (arg_index == specialization_params.size())
+        if (arg_index == specialization_params.size()) {
+            // Check also backwards to make sure that trailing non-variadic
+            // params match after a variadic parameter
+            template_index = template_params.size() - 1;
+            arg_index = specialization_params.size() - 1;
+
+            while (true) {
+                auto match = specialization_params.at(arg_index)
+                                 .calculate_specialization_match(
+                                     template_params.at(template_index));
+                if (match == 0) {
+                    return 0;
+                }
+
+                if (arg_index == 0 || template_index == 0)
+                    break;
+
+                arg_index--;
+
+                if (!template_params.at(template_index).is_variadic())
+                    template_index--;
+                else
+                    break;
+            }
+
             return res;
+        }
         else
             return 0;
     }
@@ -160,7 +190,7 @@ int template_parameter::calculate_specialization_match(
         !is_template_parameter())
         return 1;
 
-    return 0;
+    return res;
 }
 
 void template_parameter::add_template_param(template_parameter &&ct)

@@ -133,6 +133,20 @@ TEST_CASE(
 
         auto tp2 = template_parameter::make_argument("tuple");
         tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+        tp2.add_template_param(template_parameter::make_argument("int"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_argument("tuple");
+        tp1.add_template_param(
+            template_parameter::make_template_type("Args", {}, true));
+        tp1.add_template_param(template_parameter::make_argument("int"));
+
+        auto tp2 = template_parameter::make_argument("tuple");
+        tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
 
