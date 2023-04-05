@@ -26,13 +26,6 @@ class_member::class_member(common::model::access_t access,
 {
 }
 
-bool class_member::is_relationship() const { return is_relationship_; }
-
-void class_member::is_relationship(bool is_relationship)
-{
-    is_relationship_ = is_relationship;
-}
-
 bool class_member::is_static() const { return is_static_; }
 
 void class_member::is_static(bool is_static) { is_static_ = is_static; }

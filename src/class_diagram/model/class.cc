@@ -37,16 +37,6 @@ bool class_::is_template() const { return is_template_; }
 
 void class_::is_template(bool is_template) { is_template_ = is_template; }
 
-bool class_::is_template_instantiation() const
-{
-    return is_template_instantiation_;
-}
-
-void class_::is_template_instantiation(bool is_template_instantiation)
-{
-    is_template_instantiation_ = is_template_instantiation;
-}
-
 void class_::add_member(class_member &&member)
 {
     members_.emplace_back(std::move(member));
@@ -84,7 +74,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr, using_namespace(), false);
+    render_template_params(ostr, using_namespace(), true);
 
     return ostr.str();
 }
@@ -121,35 +111,14 @@ bool class_::is_abstract() const
         [](const auto &method) { return method.is_pure_virtual(); });
 }
 
-int class_::calculate_template_specialization_match(
-    const class_ &other, const std::string &full_name) const
+int class_::calculate_template_specialization_match(const class_ &other) const
 {
-    int res{};
+    int res{0};
 
-    const std::string left = name_and_ns();
-    // TODO: handle variadic templates
-    if ((name_and_ns() != full_name) ||
-        (templates().size() != other.templates().size())) {
+    if (name_and_ns() != other.name_and_ns()) {
         return res;
     }
 
-    // Iterate over all template arguments
-    for (auto i = 0U; i < other.templates().size(); i++) {
-        const auto &template_arg = templates().at(i);
-        const auto &other_template_arg = other.templates().at(i);
-
-        if (template_arg == other_template_arg) {
-            res++;
-        }
-        else if (other_template_arg.is_specialization_of(template_arg)) {
-            continue;
-        }
-        else {
-            res = 0;
-            break;
-        }
-    }
-
-    return res;
+    return template_trait::calculate_template_specialization_match(other);
 }
 } // namespace clanguml::class_diagram::model

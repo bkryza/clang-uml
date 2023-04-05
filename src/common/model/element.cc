@@ -30,11 +30,6 @@ element::element(namespace_ using_namespace)
 {
 }
 
-void element::set_using_namespaces(const namespace_ &un)
-{
-    using_namespace_ = un;
-}
-
 const namespace_ &element::using_namespace() const { return using_namespace_; }
 
 inja::json element::context() const

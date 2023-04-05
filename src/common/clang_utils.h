@@ -95,6 +95,9 @@ std::string get_source_text_raw(
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm);
 
+std::pair<unsigned int, unsigned int> extract_template_parameter_index(
+    const std::string &type_parameter);
+
 /**
  * @brief Check if an expression is contained in another expression
  *

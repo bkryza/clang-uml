@@ -51,12 +51,6 @@ public:
     bool is_template() const;
     void is_template(bool is_template);
 
-    bool is_template_instantiation() const;
-    void is_template_instantiation(bool is_template_instantiation);
-
-    bool is_alias() const { return is_alias_; }
-    void is_alias(bool alias) { is_alias_ = alias; }
-
     bool is_union() const { return is_union_; }
     void is_union(bool u) { is_union_ = u; }
 
@@ -68,9 +62,6 @@ public:
     const std::vector<class_method> &methods() const;
     const std::vector<class_parent> &parents() const;
 
-    void set_base_template(const std::string &full_name);
-    std::string base_template() const;
-
     friend bool operator==(const class_ &l, const class_ &r);
 
     std::string full_name(bool relative = true) const override;
@@ -79,18 +70,11 @@ public:
 
     bool is_abstract() const;
 
-    void find_relationships(
-        std::vector<std::pair<std::string, common::model::relationship_t>>
-            &nested_relationships);
-
-    int calculate_template_specialization_match(
-        const class_ &other, const std::string &full_name) const;
+    int calculate_template_specialization_match(const class_ &other) const;
 
 private:
     bool is_struct_{false};
     bool is_template_{false};
-    bool is_template_instantiation_{false};
-    bool is_alias_{false};
     bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;

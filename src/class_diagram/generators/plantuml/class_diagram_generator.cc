@@ -166,7 +166,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
-        if (!m.templates().empty()) {
+        if (!m.template_params().empty()) {
             m.render_template_params(ostr, m_config.using_namespace(), false);
         }
 

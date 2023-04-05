@@ -86,7 +86,7 @@ void to_json(nlohmann::json &j, const class_ &c)
     j["methods"] = c.methods();
     j["bases"] = c.parents();
 
-    j["template_parameters"] = c.templates();
+    j["template_parameters"] = c.template_params();
 }
 
 void to_json(nlohmann::json &j, const enum_ &c)

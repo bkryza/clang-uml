@@ -1715,7 +1715,8 @@ void translation_unit_visitor::process_template_specialization_argument(
 
             argument.set_id(nested_template_instantiation->id());
 
-            for (const auto &t : nested_template_instantiation->templates())
+            for (const auto &t :
+                nested_template_instantiation->template_params())
                 argument.add_template_param(t);
 
             // Check if this template should be simplified (e.g. system
@@ -2009,8 +2010,8 @@ translation_unit_visitor::build_template_instantiation(
 
         auto c_full_name = participant_as_class->full_name(false);
         auto match =
-            participant_as_class->calculate_template_specialization_match(
-                template_instantiation, template_instantiation.name_and_ns());
+            template_instantiation.calculate_template_specialization_match(
+                *participant_as_class);
 
         if (match > best_match) {
             best_match = match;

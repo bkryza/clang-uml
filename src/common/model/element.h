@@ -62,8 +62,6 @@ public:
 
     virtual std::string full_name_no_ns() const { return name(); }
 
-    void set_using_namespaces(const namespace_ &un);
-
     const namespace_ &using_namespace() const;
 
     friend bool operator==(const element &l, const element &r);

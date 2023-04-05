@@ -250,6 +250,19 @@ std::string get_source_text(
     return get_source_text_raw(printable_range, sm);
 }
 
+std::pair<unsigned int, unsigned int> extract_template_parameter_index(
+    const std::string &type_parameter)
+{
+    assert(type_parameter.find("type-parameter-") == 0);
+
+    auto toks =
+        util::split(type_parameter.substr(strlen("type-parameter-")), "-");
+
+    assert(toks.size() == 2);
+
+    return {std::stoi(toks.at(0)), std::stoi(toks.at(1))};
+}
+
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
 {
     if (parent_stmt == nullptr || sub_stmt == nullptr)

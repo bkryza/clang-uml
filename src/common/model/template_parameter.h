@@ -52,6 +52,7 @@ public:
         p.set_kind(template_parameter_kind_t::template_type);
         p.set_name(name);
         p.is_variadic(is_variadic);
+        p.is_template_parameter(true);
         if (default_value)
             p.set_default_value(default_value.value());
         return p;
@@ -121,7 +122,8 @@ public:
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
 
-    bool is_specialization_of(const template_parameter &ct) const;
+    int calculate_specialization_match(
+        const template_parameter &base_template_parameter) const;
 
     friend bool operator==(
         const template_parameter &l, const template_parameter &r);
@@ -176,6 +178,10 @@ public:
 
     void set_unexposed(bool unexposed) { is_unexposed_ = unexposed; }
 
+    void set_function_template(bool ft) { is_function_template_ = ft; }
+
+    bool is_function_template() const { return is_function_template_; }
+
 private:
     template_parameter() = default;
 
@@ -202,15 +208,23 @@ private:
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
 
+    bool is_function_template_{false};
+
     /// Stores optional fully qualified name of constraint for this template
     /// parameter
     std::optional<std::string> concept_constraint_;
 
     // Nested template parameters
+    // If this is a function template, the first element is the return type
     std::vector<template_parameter> template_params_;
 
     std::optional<int64_t> id_;
 
     bool is_unexposed_{false};
 };
+
+int calculate_template_params_specialization_match(
+    const std::vector<template_parameter> &specialization,
+    const std::vector<template_parameter> &base_template);
+
 } // namespace clanguml::common::model
