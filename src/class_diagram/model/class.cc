@@ -111,15 +111,13 @@ bool class_::is_abstract() const
         [](const auto &method) { return method.is_pure_virtual(); });
 }
 
-int class_::calculate_template_specialization_match(
-    const class_ &other, const std::string &full_name) const
+int class_::calculate_template_specialization_match(const class_ &other) const
 {
     int res{0};
 
     const std::string left = name_and_ns();
     // TODO: handle variadic templates
-    if ((left != full_name) ||
-        (templates().size() != other.templates().size())) {
+    if (left != other.name_and_ns()) {
         return res;
     }
 

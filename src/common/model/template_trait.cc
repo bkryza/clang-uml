@@ -58,42 +58,16 @@ bool template_trait::is_implicit() const { return is_implicit_; }
 
 void template_trait::set_implicit(bool implicit) { is_implicit_ = implicit; }
 
-const std::vector<template_parameter> &template_trait::templates() const
+const std::vector<template_parameter> &template_trait::template_params() const
 {
     return templates_;
 }
 
 int template_trait::calculate_template_specialization_match(
-    const template_trait &other) const
+    const template_trait &base_template) const
 {
-    int res{0};
-
-    // Iterate over all template arguments
-    for (auto i = 0U; i < other.templates().size(); i++) {
-        const auto &template_arg = templates().at(i);
-        const auto &other_template_arg = other.templates().at(i);
-
-        if (template_arg == other_template_arg) {
-            res++;
-
-            if (!template_arg.is_template_parameter())
-                res++;
-
-            if (!other_template_arg.is_template_parameter())
-                res++;
-        }
-        else if (auto match = other_template_arg.calculate_specialization_match(
-                     template_arg);
-                 match > 0) {
-            res += match;
-        }
-        else {
-            res = 0;
-            break;
-        }
-    }
-
-    return res;
+    return calculate_template_params_specialization_match(
+        template_params(), base_template.template_params());
 }
 
 } // namespace clanguml::common::model

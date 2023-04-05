@@ -122,7 +122,8 @@ public:
     void is_variadic(bool is_variadic) noexcept;
     bool is_variadic() const noexcept;
 
-    int calculate_specialization_match(const template_parameter &ct) const;
+    int calculate_specialization_match(
+        const template_parameter &base_template_parameter) const;
 
     friend bool operator==(
         const template_parameter &l, const template_parameter &r);
@@ -221,4 +222,9 @@ private:
 
     bool is_unexposed_{false};
 };
+
+int calculate_template_params_specialization_match(
+    const std::vector<template_parameter> &specialization,
+    const std::vector<template_parameter> &base_template);
+
 } // namespace clanguml::common::model

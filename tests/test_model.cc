@@ -19,6 +19,7 @@
 
 #include "catch.h"
 
+#include "class_diagram/model/class.h"
 #include "common/model/namespace.h"
 #include "common/model/template_parameter.h"
 
@@ -72,6 +73,48 @@ TEST_CASE("Test namespace_", "[unit-test]")
     CHECK(ns8.relative(name) == "ccc<std::unique_ptr<ddd>>");
 }
 
+TEST_CASE("Test class_::calculate_specialization_match", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::template_parameter;
+
+    {
+        auto c = class_({});
+        c.set_name("A");
+        c.add_template(template_parameter::make_argument("int"));
+        c.add_template(template_parameter::make_argument("double"));
+        c.add_template(template_parameter::make_argument("int"));
+
+        auto t = class_({});
+        t.set_name("A");
+        t.add_template(
+            template_parameter::make_template_type("Args", {}, true));
+        t.add_template(template_parameter::make_argument("int"));
+
+        CHECK(c.calculate_template_specialization_match(t));
+    }
+
+    {
+        auto c = class_({});
+        c.set_name("A");
+        c.add_template(template_parameter::make_argument("double"));
+        c.add_template(template_parameter::make_argument("int"));
+
+        auto s = class_({});
+        s.set_name("A");
+        s.add_template(template_parameter::make_argument("double"));
+        s.add_template(template_parameter::make_template_type("V"));
+
+        auto t = class_({});
+        t.set_name("A");
+        t.add_template(template_parameter::make_template_type("T"));
+        t.add_template(template_parameter::make_template_type("V"));
+
+        CHECK(c.calculate_template_specialization_match(s) >
+            c.calculate_template_specialization_match(t));
+    }
+}
+
 TEST_CASE(
     "Test template_parameter::calculate_specialization_match", "[unit-test]")
 {
@@ -81,7 +124,7 @@ TEST_CASE(
         auto tp1 = template_parameter::make_template_type("T");
         auto tp2 = template_parameter::make_argument("int");
 
-        CHECK(tp2.calculate_specialization_match(tp1));
+        CHECK(tp2.calculate_specialization_match(tp1) > 0);
     }
 
     {
@@ -150,7 +193,7 @@ TEST_CASE(
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
 
-        CHECK(!tp2.calculate_specialization_match(tp1));
+        CHECK(tp2.calculate_specialization_match(tp1) == 0);
     }
 
     {
@@ -163,7 +206,7 @@ TEST_CASE(
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
 
-        CHECK(!tp2.calculate_specialization_match(tp1));
+        CHECK(tp2.calculate_specialization_match(tp1) == 0);
     }
 
     {

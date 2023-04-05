@@ -1884,7 +1884,8 @@ void translation_unit_visitor::process_template_specialization_argument(
 
             argument->set_id(nested_template_instantiation->id());
 
-            for (const auto &t : nested_template_instantiation->templates())
+            for (const auto &t :
+                nested_template_instantiation->template_params())
                 argument->add_template_param(t);
         }
         else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() !=
@@ -2118,18 +2119,19 @@ std::unique_ptr<class_> translation_unit_visitor::
     int best_match{};
     common::model::diagram_element::id_t best_match_id{0};
 
-    for (const auto c : diagram().classes()) {
-        if (c.get() == template_instantiation)
+    for (const auto templ : diagram().classes()) {
+        if (templ.get() == template_instantiation)
             continue;
 
-        auto c_full_name = c.get().full_name(false);
-        auto match = c.get().calculate_template_specialization_match(
-            template_instantiation, template_instantiation.name_and_ns());
+        auto c_full_name = templ.get().full_name(false);
+        auto match =
+            template_instantiation.calculate_template_specialization_match(
+                templ.get());
 
         if (match > best_match) {
             best_match = match;
             best_match_full_name = c_full_name;
-            best_match_id = c.get().id();
+            best_match_id = templ.get().id();
         }
     }
 
@@ -2307,18 +2309,19 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
     int best_match{};
     common::model::diagram_element::id_t best_match_id{0};
 
-    for (const auto c : diagram().classes()) {
-        if (c.get() == template_instantiation)
+    for (const auto templ : diagram().classes()) {
+        if (templ.get() == template_instantiation)
             continue;
 
-        auto c_full_name = c.get().full_name(false);
-        auto match = c.get().calculate_template_specialization_match(
-            template_instantiation, template_instantiation.name_and_ns());
+        auto c_full_name = templ.get().full_name(false);
+        auto match =
+            template_instantiation.calculate_template_specialization_match(
+                templ.get());
 
         if (match > best_match) {
             best_match = match;
             best_match_full_name = c_full_name;
-            best_match_id = c.get().id();
+            best_match_id = templ.get().id();
         }
     }
 
@@ -2542,7 +2545,7 @@ translation_unit_visitor::build_template_instantiation_process_type_argument(
 
         argument.set_id(nested_template_instantiation->id());
 
-        for (const auto &t : nested_template_instantiation->templates())
+        for (const auto &t : nested_template_instantiation->template_params())
             argument.add_template_param(t);
 
         // Check if this template should be simplified (e.g. system
@@ -2804,7 +2807,7 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr) {
         // Skip types which are template template parameters of the parent
         // template
-        for (const auto &class_template_param : c.templates()) {
+        for (const auto &class_template_param : c.template_params()) {
             if (class_template_param.name() ==
                 template_field_type->getTemplateName()
                         .getAsTemplateDecl()
@@ -2851,7 +2854,7 @@ void translation_unit_visitor::process_field(
             found_relationships_t nested_relationships;
             if (!template_instantiation_added_as_aggregation) {
                 for (const auto &template_argument :
-                    template_specialization.templates()) {
+                    template_specialization.template_params()) {
 
                     LOG_DBG("Looking for nested relationships from {}::{} in "
                             "template {}",

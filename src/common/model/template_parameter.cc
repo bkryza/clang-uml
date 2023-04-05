@@ -109,84 +109,36 @@ void template_parameter::is_variadic(bool is_variadic) noexcept
 bool template_parameter::is_variadic() const noexcept { return is_variadic_; }
 
 int template_parameter::calculate_specialization_match(
-    const template_parameter &ct) const
+    const template_parameter &base_template_parameter) const
 {
     int res{0};
 
-    if (ct.type().has_value() && type().has_value() &&
-        !ct.is_template_parameter() && !is_template_parameter()) {
+    if (base_template_parameter.type().has_value() && type().has_value() &&
+        !base_template_parameter.is_template_parameter() &&
+        !is_template_parameter()) {
 
-        if (ct.type().value() != type().value())
+        if (base_template_parameter.type().value() != type().value())
             return 0;
         else
             res++;
     }
 
-    if (ct.is_function_template() && !is_function_template())
+    if (base_template_parameter.is_function_template() &&
+        !is_function_template())
         return 0;
 
-    if (template_params().size() > 0 && ct.template_params().size() > 0) {
-        // More generic template params
-        const auto &template_params = ct.template_params();
-        const auto &specialization_params = this->template_params();
-        auto template_index{0U};
-        auto arg_index{0U};
+    if (!base_template_parameter.template_params().empty() &&
+        !template_params().empty()) {
+        auto params_match = calculate_template_params_specialization_match(
+            template_params(), base_template_parameter.template_params());
 
-        while (arg_index < specialization_params.size() &&
-            template_index < template_params.size()) {
-            auto match = specialization_params.at(arg_index)
-                             .calculate_specialization_match(
-                                 template_params.at(template_index));
-
-            if (match == 0) {
-                return 0;
-            }
-
-            if (!template_params.at(template_index).is_variadic())
-                template_index++;
-
-            res += match;
-
-            // Add 1 point if the current specialization param is an argument
-            // as it's a more specific match than 2 template params
-            if (!specialization_params.at(arg_index).is_template_parameter())
-                res++;
-
-            arg_index++;
-        }
-
-        if (arg_index == specialization_params.size()) {
-            // Check also backwards to make sure that trailing non-variadic
-            // params match after a variadic parameter
-            template_index = template_params.size() - 1;
-            arg_index = specialization_params.size() - 1;
-
-            while (true) {
-                auto match = specialization_params.at(arg_index)
-                                 .calculate_specialization_match(
-                                     template_params.at(template_index));
-                if (match == 0) {
-                    return 0;
-                }
-
-                if (arg_index == 0 || template_index == 0)
-                    break;
-
-                arg_index--;
-
-                if (!template_params.at(template_index).is_variadic())
-                    template_index--;
-                else
-                    break;
-            }
-
-            return res;
-        }
-        else
+        if (params_match == 0)
             return 0;
-    }
 
-    if ((ct.is_template_parameter() || ct.is_template_template_parameter()) &&
+        res += params_match;
+    }
+    else if ((base_template_parameter.is_template_parameter() ||
+                 base_template_parameter.is_template_template_parameter()) &&
         !is_template_parameter())
         return 1;
 
@@ -370,6 +322,78 @@ void template_parameter::set_concept_constraint(std::string constraint)
 const std::optional<std::string> &template_parameter::concept_constraint() const
 {
     return concept_constraint_;
+}
+
+int calculate_template_params_specialization_match(
+    const std::vector<template_parameter> &specialization_params,
+    const std::vector<template_parameter> &template_params)
+{
+    int res{0};
+
+    if (!specialization_params.empty() && !template_params.empty()) {
+        auto template_index{0U};
+        auto arg_index{0U};
+
+        while (arg_index < specialization_params.size() &&
+            template_index < template_params.size()) {
+            auto match = specialization_params.at(arg_index)
+                             .calculate_specialization_match(
+                                 template_params.at(template_index));
+
+            if (match == 0) {
+                return 0;
+            }
+
+            // Add 1 point if the current specialization param is an argument
+            // as it's a more specific match than 2 template params
+            if (!specialization_params.at(arg_index).is_template_parameter())
+                res++;
+
+            // Add 1 point if the current template param is an argument
+            // as it's a more specific match than 2 template params
+            if (!template_params.at(template_index).is_template_parameter())
+                res++;
+
+            if (!template_params.at(template_index).is_variadic())
+                template_index++;
+
+            res += match;
+
+            arg_index++;
+        }
+
+        if (arg_index == specialization_params.size()) {
+            // Check also backwards to make sure that trailing non-variadic
+            // params match after a variadic parameter
+            template_index = template_params.size() - 1;
+            arg_index = specialization_params.size() - 1;
+
+            while (true) {
+                auto match = specialization_params.at(arg_index)
+                                 .calculate_specialization_match(
+                                     template_params.at(template_index));
+                if (match == 0) {
+                    return 0;
+                }
+
+                if (arg_index == 0 || template_index == 0)
+                    break;
+
+                arg_index--;
+
+                if (!template_params.at(template_index).is_variadic())
+                    template_index--;
+                else
+                    break;
+            }
+
+            return res;
+        }
+        else
+            return 0;
+    }
+
+    return 0;
 }
 
 } // namespace clanguml::common::model

@@ -36,7 +36,7 @@ public:
 
     void add_template(template_parameter &&tmplt);
 
-    const std::vector<template_parameter> &templates() const;
+    const std::vector<template_parameter> &template_params() const;
 
     int calculate_template_specialization_match(
         const template_trait &other) const;

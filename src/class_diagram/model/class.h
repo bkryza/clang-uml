@@ -70,8 +70,7 @@ public:
 
     bool is_abstract() const;
 
-    int calculate_template_specialization_match(
-        const class_ &other, const std::string &full_name) const;
+    int calculate_template_specialization_match(const class_ &other) const;
 
 private:
     bool is_struct_{false};
