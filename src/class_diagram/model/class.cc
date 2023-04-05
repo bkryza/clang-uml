@@ -74,7 +74,7 @@ std::string class_::full_name_no_ns() const
 
     ostr << name();
 
-    render_template_params(ostr, using_namespace(), false);
+    render_template_params(ostr, using_namespace(), true);
 
     return ostr.str();
 }
@@ -115,9 +115,7 @@ int class_::calculate_template_specialization_match(const class_ &other) const
 {
     int res{0};
 
-    const std::string left = name_and_ns();
-    // TODO: handle variadic templates
-    if (left != other.name_and_ns()) {
+    if (name_and_ns() != other.name_and_ns()) {
         return res;
     }
 

@@ -1763,6 +1763,7 @@ translation_unit_visitor::process_template_specialization(
 {
     auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
     auto &template_instantiation = *c_ptr;
+    template_instantiation.is_template(true);
 
     // TODO: refactor to method get_qualified_name()
     auto qualified_name = cls->getQualifiedNameAsString();
@@ -2192,6 +2193,7 @@ std::unique_ptr<class_> translation_unit_visitor::build_template_instantiation(
         std::make_unique<class_>(config_.using_namespace());
 
     auto &template_instantiation = *template_instantiation_ptr;
+    template_instantiation.is_template(true);
 
     std::string full_template_specialization_name = common::to_string(
         template_type.desugar(),

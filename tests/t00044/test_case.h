@@ -41,18 +41,16 @@ TEST_CASE("t00044", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "Ret(Args...),A"));
         REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "void(int),bool"));
 
-        REQUIRE_THAT(puml,
-            IsClassTemplate(
-                "sink", "clanguml::t00044::signal_handler<Ret(Args...),A>"));
-
-        REQUIRE_THAT(puml,
-            IsInstantiation(_A("sink<T>"),
-                _A("sink<clanguml::t00044::signal_handler<Ret(Args...),A>>")));
+        REQUIRE_THAT(
+            puml, IsClassTemplate("sink", "signal_handler<Ret(Args...),A>"));
 
         REQUIRE_THAT(puml,
             IsInstantiation(
-                _A("sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"),
-                _A("sink<clanguml::t00044::signal_handler<void(int),bool>>")));
+                _A("sink<T>"), _A("sink<signal_handler<Ret(Args...),A>>")));
+
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("sink<signal_handler<Ret(Args...),A>>"),
+                _A("sink<signal_handler<void(int),bool>>")));
 
         REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
         REQUIRE_THAT(puml,
@@ -70,6 +68,14 @@ TEST_CASE("t00044", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+
+        REQUIRE(IsClassTemplate(j, "sink<T>"));
+        REQUIRE(IsClassTemplate(j, "signal_handler<T,A>"));
+        REQUIRE(IsClassTemplate(j, "signal_handler<Ret(Args...),A>"));
+        REQUIRE(IsClassTemplate(j, "signal_handler<void(int),bool>"));
+        REQUIRE(IsClassTemplate(
+            j, "sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"));
+        REQUIRE(IsClass(j, "R"));
 
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
