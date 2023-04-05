@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Improved template specialization matching for variadic and function 
+    template parameters (#118)
   * Fixed compilation and tests on LLVM 16 (#108)
 
 ### 0.3.3
