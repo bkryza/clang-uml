@@ -39,7 +39,7 @@ public:
     const std::vector<template_parameter> &templates() const;
 
     int calculate_template_specialization_match(
-        const template_trait &other, const std::string &full_name) const;
+        const template_trait &other) const;
 
     bool is_implicit() const;
 

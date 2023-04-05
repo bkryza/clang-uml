@@ -30,9 +30,6 @@ public:
 
     ~class_member() override = default;
 
-    bool is_relationship() const;
-    void is_relationship(bool is_relationship);
-
     bool is_static() const;
     void is_static(bool is_static);
 

@@ -96,14 +96,6 @@ public:
 
     auto full_path() const { return path() | name(); }
 
-    void add_file(std::unique_ptr<source_file> &&f)
-    {
-        LOG_DBG("Adding source file: {}, {}", f->name(), f->full_name(true));
-
-        const auto path = f->path();
-        add_element(path, std::move(f));
-    }
-
     std::filesystem::path fs_path(const std::filesystem::path &base = {}) const
     {
         std::filesystem::path res;

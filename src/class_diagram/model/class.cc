@@ -37,16 +37,6 @@ bool class_::is_template() const { return is_template_; }
 
 void class_::is_template(bool is_template) { is_template_ = is_template; }
 
-bool class_::is_template_instantiation() const
-{
-    return is_template_instantiation_;
-}
-
-void class_::is_template_instantiation(bool is_template_instantiation)
-{
-    is_template_instantiation_ = is_template_instantiation;
-}
-
 void class_::add_member(class_member &&member)
 {
     members_.emplace_back(std::move(member));
@@ -133,7 +123,6 @@ int class_::calculate_template_specialization_match(
         return res;
     }
 
-    return template_trait::calculate_template_specialization_match(
-        other, full_name);
+    return template_trait::calculate_template_specialization_match(other);
 }
 } // namespace clanguml::class_diagram::model

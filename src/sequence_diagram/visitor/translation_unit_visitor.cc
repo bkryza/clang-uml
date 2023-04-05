@@ -2010,7 +2010,7 @@ translation_unit_visitor::build_template_instantiation(
         auto c_full_name = participant_as_class->full_name(false);
         auto match =
             participant_as_class->calculate_template_specialization_match(
-                template_instantiation, template_instantiation.name_and_ns());
+                template_instantiation);
 
         if (match > best_match) {
             best_match = match;
