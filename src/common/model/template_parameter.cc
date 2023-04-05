@@ -113,14 +113,19 @@ int template_parameter::calculate_specialization_match(
 {
     int res{0};
 
-    if (base_template_parameter.type().has_value() && type().has_value() &&
+    auto maybe_base_template_parameter_type = base_template_parameter.type();
+    auto maybe_template_parameter_type = type();
+
+    if (maybe_base_template_parameter_type.has_value() &&
+        maybe_template_parameter_type.has_value() &&
         !base_template_parameter.is_template_parameter() &&
         !is_template_parameter()) {
 
-        if (base_template_parameter.type().value() != type().value())
+        if (maybe_base_template_parameter_type.value() !=
+            maybe_template_parameter_type.value())
             return 0;
-        else
-            res++;
+
+        res++;
     }
 
     if (base_template_parameter.is_function_template() &&
@@ -389,8 +394,8 @@ int calculate_template_params_specialization_match(
 
             return res;
         }
-        else
-            return 0;
+
+        return 0;
     }
 
     return 0;

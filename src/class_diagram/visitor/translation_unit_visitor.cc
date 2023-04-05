@@ -2597,7 +2597,8 @@ translation_unit_visitor::get_template_argument_from_type_parameter_string(
 {
     if (const auto *template_decl =
             llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
-        template_decl && return_type_name.find("type-parameter-") == 0) {
+        template_decl != nullptr &&
+        return_type_name.find("type-parameter-") == 0) {
 
         [[maybe_unused]] const auto [depth, index] =
             common::extract_template_parameter_index(return_type_name);
