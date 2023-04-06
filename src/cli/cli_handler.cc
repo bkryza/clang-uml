@@ -110,6 +110,9 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     try {
         app.parse(argc, argv);
     }
+    catch (const CLI::CallForHelp &e) {
+        exit(app.exit(e)); // NOLINT(concurrency-mt-unsafe)
+    }
     catch (const CLI::Success &e) {
         return cli_flow_t::kExit;
     }
