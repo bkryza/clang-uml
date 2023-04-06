@@ -470,6 +470,8 @@ void generator::generate(std::ostream &ostr) const
 
     generate_plantuml_directives(ostr, m_config.puml().after);
 
+    generate_metadata(ostr);
+
     ostr << "@enduml" << std::endl;
 }
 

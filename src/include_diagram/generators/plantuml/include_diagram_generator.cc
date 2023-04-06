@@ -120,6 +120,8 @@ void generator::generate(std::ostream &ostr) const
     if (m_config.puml)
         generate_plantuml_directives(ostr, m_config.puml().after);
 
+    generate_metadata(ostr);
+
     ostr << "@enduml" << '\n';
 }
 } // namespace clanguml::include_diagram::generators::plantuml

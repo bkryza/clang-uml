@@ -21,7 +21,9 @@
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
+#include "version.h"
 
+#include <clang/Basic/Version.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
@@ -109,6 +111,13 @@ public:
      */
     void generate_notes(
         std::ostream &ostr, const model::element &element) const;
+
+    /**
+     * @brief Generate comment with diagram metadata
+     *
+     * @param ostr Output stream
+     */
+    void generate_metadata(std::ostream &ostr) const;
 
     /**
      * @brief Generate hyper link to element
@@ -372,6 +381,17 @@ void generator<C, D>::generate_notes(
                  << note->text << '\n'
                  << "end note\n";
         }
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_metadata(std::ostream &ostr) const
+{
+    if (m_config.generate_metadata()) {
+        ostr << '\n'
+             << "'Generated with clang-uml, version "
+             << clanguml::version::CLANG_UML_VERSION << '\n'
+             << "'LLVM version " << clang::getClangFullVersion() << '\n';
     }
 }
 

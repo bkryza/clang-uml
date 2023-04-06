@@ -170,6 +170,7 @@ struct inheritable_diagram_options {
         "combine_free_functions_into_file_participants", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
     option<bool> debug_mode{"debug_mode", false};
+    option<bool> generate_metadata{"generate_metadata", true};
 
     void inherit(const inheritable_diagram_options &parent);
 
@@ -292,7 +293,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const option<T> &o)
 }
 
 config load(const std::string &config_file,
-    std::optional<bool> paths_relative_to_pwd = {});
+    std::optional<bool> paths_relative_to_pwd = {},
+    std::optional<bool> no_metadata = {});
 
 config load_plain(const std::string &config_file);
 } // namespace config

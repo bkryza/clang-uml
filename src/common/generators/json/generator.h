@@ -21,7 +21,9 @@
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
+#include "version.h"
 
+#include <clang/Basic/Version.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
@@ -81,6 +83,13 @@ public:
      */
     virtual void generate(std::ostream &ostr) const = 0;
 
+    /**
+     * @brief Generate metadata element with diagram metadata
+     *
+     * @param parent Root JSON object
+     */
+    void generate_metadata(nlohmann::json &parent) const;
+
 private:
 protected:
     ConfigType &m_config;
@@ -93,6 +102,18 @@ std::ostream &operator<<(
 {
     g.generate(os);
     return os;
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_metadata(nlohmann::json &parent) const
+{
+    if (m_config.generate_metadata()) {
+        parent["metadata"]["clang_uml_version"] =
+            clanguml::version::CLANG_UML_VERSION;
+        parent["metadata"]["schema_version"] =
+            clanguml::version::CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION;
+        parent["metadata"]["llvm_version"] = clang::getClangFullVersion();
+    }
 }
 
 } // namespace clanguml::common::generators::json

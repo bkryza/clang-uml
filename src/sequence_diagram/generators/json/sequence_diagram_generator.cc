@@ -660,6 +660,8 @@ void generator::generate(std::ostream &ostr) const
         }
     }
 
+    generate_metadata(json_);
+
     ostr << json_;
 }
 } // namespace clanguml::sequence_diagram::generators::json

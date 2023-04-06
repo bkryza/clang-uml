@@ -381,6 +381,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.type_aliases);
     get_option(node, rhs.comment_parser);
     get_option(node, rhs.debug_mode);
+    get_option(node, rhs.generate_metadata);
 
     return true;
 }
@@ -595,6 +596,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
         get_option(node, rhs.debug_mode);
+        get_option(node, rhs.generate_metadata);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);
 
@@ -676,8 +678,8 @@ void resolve_option_path(YAML::Node &doc, const std::string &option)
 }
 } // namespace
 
-config load(
-    const std::string &config_file, std::optional<bool> paths_relative_to_pwd)
+config load(const std::string &config_file,
+    std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata)
 {
     try {
         YAML::Node doc;
@@ -725,6 +727,10 @@ config load(
                 doc["relative_to"] = config_file_path.parent_path().string();
             else
                 doc["relative_to"] = std::filesystem::current_path().string();
+        }
+
+        if (no_metadata.has_value()) {
+            doc["generate_metadata"] = !no_metadata.value();
         }
 
         //

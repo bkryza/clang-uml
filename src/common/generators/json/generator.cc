@@ -79,5 +79,4 @@ void to_json(nlohmann::json &j, const relationship &c)
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();
 }
-
 } // namespace clanguml::common::model

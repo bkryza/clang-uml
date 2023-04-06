@@ -130,6 +130,7 @@ public:
     std::optional<bool> paths_relative_to_pwd{};
     std::vector<std::string> template_variables{};
     bool list_templates{false};
+    std::optional<bool> no_metadata{};
     std::optional<std::string> show_template;
     std::vector<clanguml::common::generator_type_t> generators{
         clanguml::common::generator_type_t::plantuml};

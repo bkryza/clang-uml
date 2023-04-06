@@ -116,6 +116,7 @@ void inheritable_diagram_options::inherit(
     combine_free_functions_into_file_participants.override(
         combine_free_functions_into_file_participants);
     debug_mode.override(parent.debug_mode);
+    generate_metadata.override(parent.generate_metadata);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(

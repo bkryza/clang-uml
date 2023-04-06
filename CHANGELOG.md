@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Added diagram metadata to PlantUML and JSON generators (#27)
   * Improved template specialization matching for variadic and function 
     template parameters (#118)
   * Fixed compilation and tests on LLVM 16 (#108)

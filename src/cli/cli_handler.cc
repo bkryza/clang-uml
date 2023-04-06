@@ -104,6 +104,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_flag("--paths-relative-to-pwd", paths_relative_to_pwd,
         "If true, all paths in configuration files are relative to the $PWD "
         "instead of actual location of `.clang-uml` file.");
+    app.add_flag("--no-metadata", no_metadata,
+        "Skip metadata (e.g. clang-uml version) from diagrams");
 
     try {
         app.parse(argc, argv);
@@ -201,7 +203,8 @@ cli_flow_t cli_handler::handle_pre_config_options()
 cli_flow_t cli_handler::load_config()
 {
     try {
-        config = clanguml::config::load(config_path, paths_relative_to_pwd);
+        config = clanguml::config::load(
+            config_path, paths_relative_to_pwd, no_metadata);
         return cli_flow_t::kContinue;
     }
     catch (std::runtime_error &e) {

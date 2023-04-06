@@ -126,6 +126,8 @@ void generator::generate(std::ostream &ostr) const
 
     generate_relationships(json_);
 
+    generate_metadata(json_);
+
     ostr << json_;
 }
 

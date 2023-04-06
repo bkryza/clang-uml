@@ -98,6 +98,8 @@ void generator::generate(std::ostream &ostr) const
             generate_relationships(dynamic_cast<package &>(*p), json_);
     }
 
+    generate_metadata(json_);
+
     ostr << json_;
 }
 
