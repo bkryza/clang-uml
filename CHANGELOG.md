@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.4
   * Added diagram metadata to PlantUML and JSON generators (#27)
   * Improved template specialization matching for variadic and function 
     template parameters (#118)
