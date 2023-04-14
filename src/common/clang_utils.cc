@@ -169,6 +169,24 @@ std::string to_string(const clang::RecordType &type,
     return to_string(type.desugar(), ctx, try_canonical);
 }
 
+std::string to_string(const clang::TemplateArgument &arg)
+{
+    switch (arg.getKind()) {
+    case clang::TemplateArgument::Expression:
+        return to_string(arg.getAsExpr());
+    case clang::TemplateArgument::Type:
+        return to_string(arg.getAsType());
+    case clang::TemplateArgument::Null:
+        return "";
+    case clang::TemplateArgument::NullPtr:
+        return "nullptr";
+    case clang::TemplateArgument::Integral:
+        return std::to_string(arg.getAsIntegral().getExtValue());
+    default:
+        return "";
+    }
+}
+
 std::string to_string(const clang::Expr *expr)
 {
     const clang::LangOptions lang_options;

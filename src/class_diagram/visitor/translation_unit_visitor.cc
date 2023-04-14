@@ -1006,11 +1006,11 @@ bool translation_unit_visitor::process_template_parameters(
                 clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
                     parameter);
             std::optional<std::string> default_arg;
-            if (template_template_parameter->hasDefaultArgument())
+            if (template_template_parameter->hasDefaultArgument()) {
                 default_arg = common::to_string(
                     template_template_parameter->getDefaultArgument()
-                        .getArgument()
-                        .getAsExpr());
+                        .getArgument());
+            }
             auto ct = template_parameter::make_template_template_type(
                 template_template_parameter->getNameAsString(), default_arg,
                 template_template_parameter->isParameterPack());
