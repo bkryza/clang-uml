@@ -22,8 +22,10 @@
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
+#include "common/visitor/ast_id_mapper.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
+#include "template_builder.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
@@ -93,6 +95,11 @@ public:
      */
     clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
 
+    const clanguml::class_diagram::model::diagram &diagram() const
+    {
+        return diagram_;
+    }
+
     /**
      * @brief Get diagram config instance
      *
@@ -151,12 +158,6 @@ private:
         const clang::TemplateArgument &arg, size_t argument_index,
         bool in_parameter_pack = false);
 
-    void process_template_record_containment(const clang::TagDecl &record,
-        clanguml::common::model::element &c) const;
-
-    void process_record_containment(const clang::TagDecl &record,
-        clanguml::common::model::element &c) const;
-
     void process_method(const clang::CXXMethodDecl &mf,
         clanguml::class_diagram::model::class_ &c);
 
@@ -185,66 +186,6 @@ private:
         const clanguml::class_diagram::model::class_member &field,
         const found_relationships_t &relationships,
         bool break_on_first_aggregation = false);
-
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_template_instantiation(const clang::Decl *cls,
-        const clang::TemplateSpecializationType &template_type,
-        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
-
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_template_instantiation_from_class_template_specialization(
-        const clang::ClassTemplateSpecializationDecl &template_specialization,
-        const clang::RecordType &record_type,
-        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
-
-    bool build_template_instantiation_add_base_classes(
-        clanguml::class_diagram::model::class_ &tinst,
-        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        int arg_index, bool variadic_params,
-        const clanguml::common::model::template_parameter &ct) const;
-
-    void build_template_instantiation_process_template_arguments(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls,
-        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        const clang::ArrayRef<clang::TemplateArgument> &template_args,
-        model::class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl);
-
-    void build_template_instantiation_process_tag_argument(
-        model::class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument);
-
-    template_parameter build_template_instantiation_process_expression_argument(
-        const clang::TemplateArgument &arg) const;
-
-    template_parameter build_template_instantiation_process_integral_argument(
-        const clang::TemplateArgument &arg) const;
-
-    template_parameter build_template_instantiation_process_nullptr_argument(
-        const clang::TemplateArgument &arg) const;
-
-    template_parameter build_template_instantiation_process_null_argument(
-        const clang::TemplateArgument &arg) const;
-
-    template_parameter build_template_instantiation_process_pack_argument(
-        const clang::TemplateArgument &arg) const;
-
-    template_parameter build_template_instantiation_process_type_argument(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
-        model::class_ &template_instantiation);
-
-    common::model::template_parameter
-    build_template_instantiation_process_template_argument(
-        const clang::TemplateArgument &arg) const;
 
     void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 
@@ -290,10 +231,6 @@ private:
         std::vector<std::string> &constrained_template_params,
         size_t argument_index, std::string &type_name) const;
 
-    std::optional<template_parameter>
-    get_template_argument_from_type_parameter_string(
-        const clang::Decl *decl, const std::string &return_type_name) const;
-
     /// Store the mapping from local clang entity id (obtained using
     /// getID()) method to clang-uml global id
     void set_ast_local_id(
@@ -303,9 +240,9 @@ private:
 
     bool has_processed_template_class(const std::string &qualified_name) const;
 
-    /// Retrieve the global clang-uml entity id based on the clang local id
-    std::optional<common::model::diagram_element::id_t> get_ast_local_id(
-        int64_t local_id) const;
+    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
+
+    template_builder &tbuilder() { return template_builder_; }
 
     // Reference to the output diagram model
     clanguml::class_diagram::model::diagram &diagram_;
@@ -313,11 +250,13 @@ private:
     // Reference to class diagram config
     const clanguml::config::class_diagram &config_;
 
+    mutable common::visitor::ast_id_mapper id_mapper_;
+
+    template_builder template_builder_;
+
     std::map<common::model::diagram_element::id_t,
         std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
-
-    std::map<int64_t, common::model::diagram_element::id_t> local_ast_id_map_;
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
