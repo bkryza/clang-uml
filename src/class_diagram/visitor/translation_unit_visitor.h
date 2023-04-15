@@ -225,6 +225,15 @@ private:
     template_parameter build_template_instantiation_process_integral_argument(
         const clang::TemplateArgument &arg) const;
 
+    template_parameter build_template_instantiation_process_nullptr_argument(
+        const clang::TemplateArgument &arg) const;
+
+    template_parameter build_template_instantiation_process_null_argument(
+        const clang::TemplateArgument &arg) const;
+
+    template_parameter build_template_instantiation_process_pack_argument(
+        const clang::TemplateArgument &arg) const;
+
     template_parameter build_template_instantiation_process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         const clang::Decl *cls,
