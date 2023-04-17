@@ -20,6 +20,7 @@
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
+#include "class_diagram/visitor/template_builder.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
 #include "common/visitor/ast_id_mapper.h"
@@ -51,10 +52,6 @@ using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::template_parameter;
 using clanguml::common::model::template_trait;
-
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
 
 /**
  * @brief Class diagram translation unit visitor
@@ -152,12 +149,6 @@ private:
         clanguml::common::model::template_trait &t,
         common::optional_ref<common::model::element> templated_element = {});
 
-    void process_template_specialization_argument(
-        const clang::ClassTemplateSpecializationDecl *cls,
-        model::class_ &template_instantiation,
-        const clang::TemplateArgument &arg, size_t argument_index,
-        bool in_parameter_pack = false);
-
     void process_method(const clang::CXXMethodDecl &mf,
         clanguml::class_diagram::model::class_ &c);
 
@@ -203,21 +194,9 @@ private:
     void find_relationships_in_constraint_expression(
         clanguml::common::model::element &c, const clang::Expr *expr);
 
-    void process_unexposed_template_specialization_parameters(
-        const std::string &tspec,
-        clanguml::common::model::template_parameter &tp,
-        clanguml::class_diagram::model::class_ &c);
-
-    bool find_relationships_in_unexposed_template_params(
-        const clanguml::common::model::template_parameter &ct,
-        found_relationships_t &relationships);
-
     void add_incomplete_forward_declarations();
 
     void resolve_local_to_global_ids();
-
-    bool simplify_system_template(common::model::template_parameter &ct,
-        const std::string &full_name) const;
 
     void process_constraint_requirements(const clang::ConceptDecl *cpt,
         const clang::Expr *expr, model::concept_ &concept_model) const;

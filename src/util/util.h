@@ -57,6 +57,7 @@ namespace clanguml::util {
 std::string ltrim(const std::string &s);
 std::string rtrim(const std::string &s);
 std::string trim(const std::string &s);
+std::string trim_typename(const std::string &s);
 
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)

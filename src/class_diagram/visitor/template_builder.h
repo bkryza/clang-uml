@@ -30,6 +30,10 @@ using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
 
+using found_relationships_t =
+    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
+        common::model::relationship_t>>;
+
 class template_builder {
 public:
     template_builder(class_diagram::model::diagram &d,
@@ -47,14 +51,13 @@ public:
         template_parameter &ct, const std::string &full_name) const;
 
     std::unique_ptr<clanguml::class_diagram::model::class_> build(
-        const clang::Decl *cls,
+        const clang::NamedDecl *cls,
         const clang::TemplateSpecializationType &template_type_decl,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
     build_from_class_template_specialization(
         const clang::ClassTemplateSpecializationDecl &template_specialization,
-        const clang::RecordType &record_type,
         std::optional<clanguml::class_diagram::model::class_ *> parent = {});
 
     bool add_base_classes(clanguml::class_diagram::model::class_ &tinst,
@@ -64,23 +67,20 @@ public:
 
     void process_template_arguments(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls,
+        const clang::NamedDecl *cls,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
         model::class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl);
 
     void argument_process_dispatch(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls, class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
+        const clang::NamedDecl *cls, class_ &template_instantiation,
         const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
+        const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
 
     void process_tag_argument(model::class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
         common::model::template_parameter &argument);
@@ -99,22 +99,26 @@ public:
 
     std::vector<template_parameter> process_pack_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls, class_ &template_instantiation,
-        const std::string &full_template_specialization_name,
+        const clang::NamedDecl *cls, class_ &template_instantiation,
         const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
+        const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
 
     template_parameter process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::Decl *cls,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg,
-        model::class_ &template_instantiation);
+        model::class_ &template_instantiation, size_t argument_index);
 
     common::model::template_parameter process_template_argument(
         const clang::TemplateArgument &arg);
+
+    void process_unexposed_template_specialization_parameters(
+        const std::string &type_name, template_parameter &tp, class_ &c);
+
+    bool find_relationships_in_unexposed_template_params(
+        const template_parameter &ct,
+        class_diagram::visitor::found_relationships_t &relationships);
 
     std::optional<template_parameter>
     get_template_argument_from_type_parameter_string(
@@ -125,6 +129,8 @@ public:
     clang::SourceManager &source_manager() const;
 
 private:
+    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
+
     // Reference to the output diagram model
     clanguml::class_diagram::model::diagram &diagram_;
 

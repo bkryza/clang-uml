@@ -81,7 +81,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 std::string to_string(const clang::RecordType &type,
     const clang::ASTContext &ctx, bool try_canonical = true);
 
-std::string to_string(const clang::TemplateArgument &arg);
+std::string to_string(
+    const clang::TemplateArgument &arg, const clang::ASTContext *ctx = nullptr);
 
 std::string to_string(const clang::Expr *expr);
 

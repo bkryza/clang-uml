@@ -169,13 +169,14 @@ std::string to_string(const clang::RecordType &type,
     return to_string(type.desugar(), ctx, try_canonical);
 }
 
-std::string to_string(const clang::TemplateArgument &arg)
+std::string to_string(
+    const clang::TemplateArgument &arg, const clang::ASTContext *ctx)
 {
     switch (arg.getKind()) {
     case clang::TemplateArgument::Expression:
         return to_string(arg.getAsExpr());
     case clang::TemplateArgument::Type:
-        return to_string(arg.getAsType());
+        return to_string(arg.getAsType(), *ctx, false);
     case clang::TemplateArgument::Null:
         return "";
     case clang::TemplateArgument::NullPtr:
@@ -428,7 +429,7 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
         }
         if (complete_class_template_argument) {
             auto t = template_parameter::make_unexposed_argument(
-                ns_resolve(clanguml::util::trim(type)));
+                ns_resolve(clanguml::util::trim_typename(type)));
             type = "";
             for (auto &&param : nested_params)
                 t.add_template_param(std::move(param));
@@ -441,7 +442,7 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
 
     if (!type.empty()) {
         auto t = template_parameter::make_unexposed_argument(
-            ns_resolve(clanguml::util::trim(type)));
+            ns_resolve(clanguml::util::trim_typename(type)));
         type = "";
         for (auto &&param : nested_params)
             t.add_template_param(std::move(param));
