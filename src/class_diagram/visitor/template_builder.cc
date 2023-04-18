@@ -72,8 +72,6 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     const clang::TemplateSpecializationType &template_type_decl,
     std::optional<clanguml::class_diagram::model::class_ *> parent)
 {
-    // TODO: Make sure we only build instantiation once
-
     //
     // Here we'll hold the template base class params to replace with the
     // instantiated values
@@ -641,7 +639,6 @@ template_parameter template_builder::process_type_argument(
             argument.set_type(unexposed_type_name);
         }
         else if (type_name.find("type-parameter-") == 0) {
-            //            argument = template_parameter::make_template_type({});
             auto maybe_arg = get_template_argument_from_type_parameter_string(
                 cls, type_name);
 
@@ -651,7 +648,7 @@ template_parameter template_builder::process_type_argument(
 
             // Otherwise just set the name for the template argument to
             // whatever clang says
-            argument.set_name(type_name);
+            return template_parameter::make_template_type(type_name);
         }
     }
 
@@ -732,22 +729,146 @@ bool template_builder::find_relationships_in_unexposed_template_params(
 
 std::optional<template_parameter>
 template_builder::get_template_argument_from_type_parameter_string(
-    const clang::Decl *decl, const std::string &return_type_name) const
+    const clang::Decl *decl, const std::string &type_name) const
 {
     if (const auto *template_decl =
             llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
-        template_decl != nullptr &&
-        return_type_name.find("type-parameter-") == 0) {
+        template_decl != nullptr && type_name.find("type-parameter-") == 0) {
 
-        [[maybe_unused]] const auto [depth, index] =
-            common::extract_template_parameter_index(return_type_name);
+        if (type_name.rfind("type-parameter-") > 0 &&
+            type_name.find("::*") != std::string::npos) {
+            if (type_name.find("::*)") == std::string::npos) {
+                // This is a method invocation template, e.g.
+                // template <typename M, typename C>
+                // struct invocable<type-parameter-0-0 type-parameter-0-1::*>
+                // {};
+                const auto [depth0, index0, qualifier0] =
+                    common::extract_template_parameter_index(
+                        type_name.substr(0, type_name.find(' ')));
 
-        std::string param_name = return_type_name;
+                const auto [depth1, index1, qualifier1] =
+                    common::extract_template_parameter_index(type_name.substr(
+                        type_name.find(' ') + 1, type_name.find(':')));
+
+                auto template_param =
+                    template_parameter::make_template_type({});
+                template_param.set_method_template(true);
+
+                std::string param_name = type_name;
+
+                for (auto i = 0U;
+                     i < template_decl->getDescribedTemplateParams()->size();
+                     i++) {
+                    const auto *param =
+                        template_decl->getDescribedTemplateParams()->getParam(
+                            i);
+
+                    if (i == index0) {
+                        param_name = param->getNameAsString();
+
+                        template_param.add_template_param(
+                            template_parameter::make_template_type(param_name));
+                    }
+
+                    if (i == index1) {
+                        param_name = param->getNameAsString();
+
+                        template_param.add_template_param(
+                            template_parameter::make_template_type(param_name));
+                    }
+                }
+
+                template_param.set_method_qualifier(
+                    type_name.substr(type_name.find("::*") + 3));
+
+                return template_param;
+            }
+            else {
+                // Here we're dealing with method type with args, e.g.:
+                // type-parameter-0-0
+                // (type-parameter-0-1::*)(type-parameter-0-2)
+                const auto [depth0, index0, qualifier0] =
+                    common::extract_template_parameter_index(
+                        type_name.substr(0, type_name.find(' ')));
+
+                const auto [depth1, index1, qualifier1] =
+                    common::extract_template_parameter_index(type_name.substr(
+                        type_name.find(" (") + 2, type_name.find(':')));
+
+                auto template_param =
+                    template_parameter::make_template_type({});
+                template_param.set_method_template(true);
+
+                // TODO: Handle args
+                for (auto i = 0U;
+                     i < template_decl->getDescribedTemplateParams()->size();
+                     i++) {
+                    const auto *param =
+                        template_decl->getDescribedTemplateParams()->getParam(
+                            i);
+
+                    if (i == index0) {
+                        template_param.add_template_param(
+                            template_parameter::make_template_type(
+                                param->getNameAsString()));
+                    }
+
+                    if (i == index1) {
+                        template_param.add_template_param(
+                            template_parameter::make_template_type(
+                                param->getNameAsString()));
+                    }
+                }
+
+                return template_param;
+            }
+        }
+        else {
+            const auto [depth, index, qualifier] =
+                common::extract_template_parameter_index(type_name);
+
+            std::string param_name = type_name;
+
+            clang::ClassTemplateSpecializationDecl *template_decl_at_depth =
+                const_cast<clang::ClassTemplateSpecializationDecl *>(
+                    template_decl);
+
+            for (auto i = 0U; i <
+                 template_decl_at_depth->getDescribedTemplateParams()->size();
+                 i++) {
+                const auto *param =
+                    template_decl_at_depth->getDescribedTemplateParams()
+                        ->getParam(i);
+
+                if (i == index) {
+                    param_name = param->getNameAsString();
+
+                    auto template_param =
+                        template_parameter::make_template_type(param_name);
+
+                    template_param.is_variadic(param->isParameterPack());
+
+                    return template_param;
+                }
+            }
+        }
+    }
+    else if (const auto *alias_decl =
+                 llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl);
+             alias_decl != nullptr && type_name.find("type-parameter-") == 0) {
+        const auto [depth, index, qualifier] =
+            common::extract_template_parameter_index(type_name);
+
+        std::string param_name = type_name;
+
+        const auto *template_decl_at_depth = alias_decl;
+
+        template_decl_at_depth->dump();
 
         for (auto i = 0U;
-             i < template_decl->getDescribedTemplateParams()->size(); i++) {
+             i < template_decl_at_depth->getTemplateParameters()->size(); i++) {
             const auto *param =
-                template_decl->getDescribedTemplateParams()->getParam(i);
+                template_decl_at_depth->getTemplateParameters()->getParam(i);
 
             if (i == index) {
                 param_name = param->getNameAsString();

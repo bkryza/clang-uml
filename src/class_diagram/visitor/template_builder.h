@@ -122,7 +122,7 @@ public:
 
     std::optional<template_parameter>
     get_template_argument_from_type_parameter_string(
-        const clang::Decl *decl, const std::string &return_type_name) const;
+        const clang::Decl *decl, const std::string &type_name) const;
 
     common::visitor::ast_id_mapper &id_mapper();
 

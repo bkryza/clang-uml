@@ -94,6 +94,35 @@ TEST_CASE("Test replace_all", "[unit-test]")
     CHECK(text == orig);
 }
 
+TEST_CASE("Test extract_template_parameter_index", "[unit-test]")
+{
+    using namespace clanguml::common;
+
+    {
+        const auto [depth, index, qualifier] =
+            extract_template_parameter_index("type-parameter-0-0");
+        CHECK(depth == 0);
+        CHECK(index == 0);
+        CHECK(qualifier.empty());
+    }
+
+    {
+        const auto [depth, index, qualifier] =
+            extract_template_parameter_index("type-parameter-0-0 &&");
+        CHECK(depth == 0);
+        CHECK(index == 0);
+        CHECK(qualifier == "&&");
+    }
+
+    {
+        const auto [depth, index, qualifier] =
+            extract_template_parameter_index("type-parameter-12-678 const&");
+        CHECK(depth == 12);
+        CHECK(index == 678);
+        CHECK(qualifier == "const&");
+    }
+}
+
 TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
 {
     using namespace clanguml::common;

@@ -182,6 +182,14 @@ public:
 
     bool is_function_template() const { return is_function_template_; }
 
+    void set_method_template(bool mt) { is_method_template_ = mt; }
+
+    bool is_method_template() const { return is_method_template_; }
+
+    void set_method_qualifier(const std::string &q) { method_qualifier_ = q; }
+
+    const std::string &method_qualifier() const { return method_qualifier_; }
+
 private:
     template_parameter() = default;
 
@@ -209,6 +217,10 @@ private:
     bool is_variadic_{false};
 
     bool is_function_template_{false};
+
+    bool is_method_template_{false};
+
+    std::string method_qualifier_;
 
     /// Stores optional fully qualified name of constraint for this template
     /// parameter

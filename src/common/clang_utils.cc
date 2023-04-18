@@ -269,17 +269,24 @@ std::string get_source_text(
     return get_source_text_raw(printable_range, sm);
 }
 
-std::pair<unsigned int, unsigned int> extract_template_parameter_index(
-    const std::string &type_parameter)
+std::tuple<unsigned int, unsigned int, std::string>
+extract_template_parameter_index(const std::string &type_parameter)
 {
     assert(type_parameter.find("type-parameter-") == 0);
 
-    auto toks =
-        util::split(type_parameter.substr(strlen("type-parameter-")), "-");
+    auto type_parameter_and_suffix = util::split(type_parameter, " ");
 
-    assert(toks.size() == 2);
+    auto toks = util::split(
+        type_parameter_and_suffix.front().substr(strlen("type-parameter-")),
+        "-");
 
-    return {std::stoi(toks.at(0)), std::stoi(toks.at(1))};
+    std::string qualifier;
+
+    if (type_parameter_and_suffix.size() > 1) {
+        qualifier = type_parameter_and_suffix.at(1);
+    }
+
+    return {std::stoi(toks.at(0)), std::stoi(toks.at(1)), std::move(qualifier)};
 }
 
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)

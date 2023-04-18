@@ -215,6 +215,13 @@ std::string template_parameter::to_string(
             "{}({})", return_type, fmt::join(function_args, ","));
     }
 
+    if (is_method_template()) {
+        assert(template_params().size() == 2);
+
+        return fmt::format("{} {}::*{}", template_params().at(0).name().value(),
+            template_params().at(1).name().value(), method_qualifier());
+    }
+
     std::string res;
     const auto maybe_type = type();
     if (maybe_type) {
