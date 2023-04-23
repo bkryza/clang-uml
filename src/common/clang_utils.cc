@@ -563,6 +563,21 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
                 result.push_back("*");
                 tok.clear();
             }
+            else if (c == '.') {
+                // This can only be the case if we have a variadic template,
+                // right?
+                if (tok == "..") {
+                    result.push_back("...");
+                    tok.clear();
+                }
+                else if (tok == ".") {
+                    tok = "..";
+                }
+                else if (!tok.empty()) {
+                    result.push_back(tok);
+                    tok = ".";
+                }
+            }
             else {
                 tok += c;
             }

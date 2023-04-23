@@ -384,4 +384,15 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
         CHECK(r[i++] == "unsigned");
         CHECK(r[i++] == "int");
     }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter("Ret(Args...)");
+        CHECK(r[i++] == "Ret");
+        CHECK(r[i++] == "(");
+        CHECK(r[i++] == "Args");
+        CHECK(r[i++] == "...");
+        CHECK(r[i++] == ")");
+    }
 }

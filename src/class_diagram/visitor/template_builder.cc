@@ -852,6 +852,12 @@ std::optional<template_parameter> build_template_parameter(
 
         return res;
     }
+    else if (common::is_type_token(*it) && *it_next == "...") {
+        // Variadic template parameter
+        auto parm = map_type_parameter_to_template_parameter(decl, *it);
+        parm.is_variadic(true);
+        return parm;
+    }
     else if (common::is_type_token(*it) && *it_next == "(") {
         res.add_template_param(
             map_type_parameter_to_template_parameter(decl, *it));
