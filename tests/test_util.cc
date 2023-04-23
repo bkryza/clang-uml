@@ -352,8 +352,7 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
     {
         int i = 0;
 
-        auto r = tokenize_unexposed_template_parameter(
-            "const ns1::ns2::A &");
+        auto r = tokenize_unexposed_template_parameter("const ns1::ns2::A &");
         CHECK(r[i++] == "const");
         CHECK(r[i++] == "ns1::ns2::A");
         CHECK(r[i++] == "&");
@@ -362,8 +361,7 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
     {
         int i = 0;
 
-        auto r = tokenize_unexposed_template_parameter(
-            "class ns1::ns2::A &");
+        auto r = tokenize_unexposed_template_parameter("class ns1::ns2::A &");
         CHECK(r[i++] == "ns1::ns2::A");
         CHECK(r[i++] == "&");
     }
@@ -371,8 +369,7 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
     {
         int i = 0;
 
-        auto r = tokenize_unexposed_template_parameter(
-            "ns1::ns2::A C::* &&");
+        auto r = tokenize_unexposed_template_parameter("ns1::ns2::A C::* &&");
         CHECK(r[i++] == "ns1::ns2::A");
         CHECK(r[i++] == "C");
         CHECK(r[i++] == "::");
@@ -383,8 +380,7 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
     {
         int i = 0;
 
-        auto r = tokenize_unexposed_template_parameter(
-            "unsigned int");
+        auto r = tokenize_unexposed_template_parameter("unsigned int");
         CHECK(r[i++] == "unsigned");
         CHECK(r[i++] == "int");
     }

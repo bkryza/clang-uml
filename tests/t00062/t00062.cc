@@ -21,7 +21,7 @@ template <typename M, typename C> struct A<M C::*> {
     M C::*m;
 };
 
-template <typename M, typename C> struct A<M C::* &&> {
+template <typename M, typename C> struct A<M C::*&&> {
     C &&c;
     M C::*m;
 };

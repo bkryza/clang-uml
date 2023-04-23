@@ -486,7 +486,7 @@ bool is_identifier(const std::string &t)
 
 bool is_keyword(const std::string &t)
 {
-    static std::vector<std::string> keywords {"alignas", "alignof", "asm",
+    static std::vector<std::string> keywords{"alignas", "alignof", "asm",
         "auto", "bool", "break", "case", "catch", "char", "char16_t",
         "char32_t", "class", "concept", "const", "constexpr", "const_cast",
         "continue", "decltype", "default", "delete", "do", "double",
