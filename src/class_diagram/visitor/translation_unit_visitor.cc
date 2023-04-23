@@ -210,11 +210,15 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         // Process template specialization bases
         process_class_bases(cls, template_specialization);
 
-    const auto maybe_id =
-        id_mapper().get_global_id(cls->getSpecializedTemplate()->getID());
-    if (maybe_id.has_value())
-        template_specialization.add_relationship(
-            {relationship_t::kInstantiation, maybe_id.value()});
+    if (!template_specialization.template_specialization_found()) {
+        // Only do this if we haven't found a bettern specialization during
+        // construction of the template specialization
+        const auto maybe_id =
+            id_mapper().get_global_id(cls->getSpecializedTemplate()->getID());
+        if (maybe_id.has_value())
+            template_specialization.add_relationship(
+                {relationship_t::kInstantiation, maybe_id.value()});
+    }
 
     if (diagram_.should_include(template_specialization)) {
         const auto full_name = template_specialization.full_name(false);

@@ -285,3 +285,107 @@ TEST_CASE("Test hash_seed", "[unit-test]")
     CHECK(hash_seed(1) == hash_seed(1));
     CHECK(hash_seed(1) != hash_seed(2));
 }
+
+TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
+{
+    using namespace clanguml::common;
+
+    {
+        auto r = tokenize_unexposed_template_parameter("type-parameter-0-1");
+        CHECK(r[0] == "type-parameter-0-1");
+    }
+
+    {
+        int i = 0;
+
+        auto r =
+            tokenize_unexposed_template_parameter("const type-parameter-0-1 &");
+        CHECK(r[i++] == "const");
+        CHECK(r[i++] == "type-parameter-0-1");
+        CHECK(r[i++] == "&");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "const type-parameter-0-0 type-parameter-0-1::* &&");
+        CHECK(r[i++] == "const");
+        CHECK(r[i++] == "type-parameter-0-0");
+        CHECK(r[i++] == "type-parameter-0-1");
+        CHECK(r[i++] == "::");
+        CHECK(r[i++] == "*");
+        CHECK(r[i++] == "&&");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "type-parameter-0-0 [type-parameter-0-1]");
+        CHECK(r[i++] == "type-parameter-0-0");
+        CHECK(r[i++] == "[");
+        CHECK(r[i++] == "type-parameter-0-1");
+        CHECK(r[i++] == "]");
+    }
+
+    {
+        int i = 0;
+        auto r = tokenize_unexposed_template_parameter(
+            "type-parameter-0-0 (type-parameter-0-1::*)(type-parameter-0-2, "
+            "type-parameter-0-3, type-parameter-0-4)");
+        CHECK(r[i++] == "type-parameter-0-0");
+        CHECK(r[i++] == "(");
+        CHECK(r[i++] == "type-parameter-0-1");
+        CHECK(r[i++] == "::");
+        CHECK(r[i++] == "*");
+        CHECK(r[i++] == ")");
+        CHECK(r[i++] == "(");
+        CHECK(r[i++] == "type-parameter-0-2");
+        CHECK(r[i++] == ",");
+        CHECK(r[i++] == "type-parameter-0-3");
+        CHECK(r[i++] == ",");
+        CHECK(r[i++] == "type-parameter-0-4");
+        CHECK(r[i++] == ")");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "const ns1::ns2::A &");
+        CHECK(r[i++] == "const");
+        CHECK(r[i++] == "ns1::ns2::A");
+        CHECK(r[i++] == "&");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "class ns1::ns2::A &");
+        CHECK(r[i++] == "ns1::ns2::A");
+        CHECK(r[i++] == "&");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "ns1::ns2::A C::* &&");
+        CHECK(r[i++] == "ns1::ns2::A");
+        CHECK(r[i++] == "C");
+        CHECK(r[i++] == "::");
+        CHECK(r[i++] == "*");
+        CHECK(r[i++] == "&&");
+    }
+
+    {
+        int i = 0;
+
+        auto r = tokenize_unexposed_template_parameter(
+            "unsigned int");
+        CHECK(r[i++] == "unsigned");
+        CHECK(r[i++] == "int");
+    }
+}

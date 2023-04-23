@@ -186,9 +186,9 @@ public:
 
     bool is_method_template() const { return is_method_template_; }
 
-    void set_method_qualifier(const std::string &q) { method_qualifier_ = q; }
+    void set_qualifier(const std::string &q) { qualifier_ = q; }
 
-    const std::string &method_qualifier() const { return method_qualifier_; }
+    const std::string &qualifier() const { return qualifier_; }
 
 private:
     template_parameter() = default;
@@ -220,7 +220,7 @@ private:
 
     bool is_method_template_{false};
 
-    std::string method_qualifier_;
+    std::string qualifier_;
 
     /// Stores optional fully qualified name of constraint for this template
     /// parameter

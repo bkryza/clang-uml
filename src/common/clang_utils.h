@@ -153,6 +153,9 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
     const std::function<std::string(const std::string &)> &ns_resolve,
     int depth = 0);
 
+std::vector<std::string> tokenize_unexposed_template_parameter(
+    const std::string &t);
+
 template <typename T, typename P, typename F>
 void if_dyn_cast(P pointer, F &&func)
 {
@@ -164,4 +167,19 @@ void if_dyn_cast(P pointer, F &&func)
         std::forward<F>(func)(dyn_cast_value);
     }
 }
+
+bool is_type_parameter(const std::string &t);
+
+bool is_qualifier(const std::string &q);
+
+bool is_bracket(const std::string &b);
+
+bool is_identifier_character(char c);
+
+bool is_identifier(const std::string &t);
+
+bool is_qualified_identifier(const std::string &t);
+
+bool is_type_token(const std::string &t);
+
 } // namespace clanguml::common

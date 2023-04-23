@@ -459,4 +459,125 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
 
     return res;
 }
+
+bool is_type_parameter(const std::string &t)
+{
+    return t.find("type-parameter-") == 0;
+}
+
+bool is_qualifier(const std::string &q)
+{
+    return q == "&" || q == "&&" || q == "const&";
+}
+
+bool is_bracket(const std::string &b)
+{
+    return b == "(" || b == ")" || b == "[" || b == "]";
+}
+
+bool is_identifier_character(char c) { return std::isalnum(c) || c == '_'; }
+
+bool is_identifier(const std::string &t)
+{
+    return std::isalpha(t.at(0)) &&
+        std::all_of(t.begin(), t.end(),
+            [](const char c) { return is_identifier_character(c); });
+}
+
+bool is_keyword(const std::string &t)
+{
+    static std::vector<std::string> keywords {"alignas", "alignof", "asm",
+        "auto", "bool", "break", "case", "catch", "char", "char16_t",
+        "char32_t", "class", "concept", "const", "constexpr", "const_cast",
+        "continue", "decltype", "default", "delete", "do", "double",
+        "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false",
+        "float", "for", "friend", "goto", "if", "inline", "int", "long",
+        "mutable", "namespace", "new", "noexcept", "nullptr", "operator",
+        "private", "protected", "public", "register", "reinterpret_cast",
+        "return", "requires", "short", "signed", "sizeof", "static",
+        "static_assert", "static_cast", "struct", "switch", "template", "this",
+        "thread_local", "throw", "true", "try", "typedef", "typeid", "typename",
+        "union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t",
+        "while"};
+
+    return util::contains(keywords, t);
+}
+
+bool is_qualified_identifier(const std::string &t)
+{
+    return std::isalpha(t.at(0)) &&
+        std::all_of(t.begin(), t.end(), [](const char c) {
+            return is_identifier_character(c) || c == ':';
+        });
+}
+
+bool is_type_token(const std::string &t)
+{
+    return is_type_parameter(t) ||
+        (is_identifier(t) && !is_qualifier(t) && !is_bracket(t));
+}
+
+std::vector<std::string> tokenize_unexposed_template_parameter(
+    const std::string &t)
+{
+    std::vector<std::string> result;
+
+    auto spaced_out = util::split(t, " ");
+
+    for (const auto &word : spaced_out) {
+        if (is_qualified_identifier(word)) {
+            if (word != "class" && word != "templated" && word != "struct")
+                result.push_back(word);
+            continue;
+        }
+
+        std::string tok;
+
+        for (const char c : word) {
+            if (c == '(' || c == ')' || c == '[' || c == ']') {
+                if (!tok.empty())
+                    result.push_back(tok);
+                result.push_back(std::string{c});
+                tok.clear();
+            }
+            else if (c == ':') {
+                if (!tok.empty() && tok != ":") {
+                    result.push_back(tok);
+                    tok = ":";
+                }
+                else {
+                    tok += ':';
+                }
+            }
+            else if (c == ',') {
+                if (!tok.empty()) {
+                    result.push_back(tok);
+                }
+                result.push_back(",");
+                tok.clear();
+            }
+            else if (c == '*') {
+                if (!tok.empty()) {
+                    result.push_back(tok);
+                }
+                result.push_back("*");
+                tok.clear();
+            }
+            else {
+                tok += c;
+            }
+        }
+
+        tok = util::trim(tok);
+
+        if (!tok.empty()) {
+            if (tok != "class" && tok != "typename" && word != "struct")
+                result.push_back(tok);
+            tok.clear();
+        }
+    }
+
+    return result;
+}
+
 } // namespace clanguml::common

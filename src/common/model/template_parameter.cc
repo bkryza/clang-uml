@@ -113,6 +113,20 @@ int template_parameter::calculate_specialization_match(
 {
     int res{0};
 
+    if (qualifier() != base_template_parameter.qualifier())
+        return 0;
+
+    if (is_template_parameter() &&
+        base_template_parameter.is_template_parameter() &&
+        template_params().empty() &&
+        base_template_parameter.template_params().empty() &&
+        is_variadic() == is_variadic() &&
+        is_function_template() ==
+            base_template_parameter.is_function_template() &&
+        is_method_template() == base_template_parameter.is_method_template()) {
+        return 1;
+    }
+
     auto maybe_base_template_parameter_type = base_template_parameter.type();
     auto maybe_template_parameter_type = type();
 
@@ -130,6 +144,9 @@ int template_parameter::calculate_specialization_match(
 
     if (base_template_parameter.is_function_template() &&
         !is_function_template())
+        return 0;
+
+    if (base_template_parameter.is_method_template() && !is_method_template())
         return 0;
 
     if (!base_template_parameter.template_params().empty() &&
@@ -216,10 +233,29 @@ std::string template_parameter::to_string(
     }
 
     if (is_method_template()) {
-        assert(template_params().size() == 2);
+        assert(template_params().size() > 1);
 
-        return fmt::format("{} {}::*{}", template_params().at(0).name().value(),
-            template_params().at(1).name().value(), method_qualifier());
+        if (template_params().size() == 2) {
+            return fmt::format("{} {}::*{}",
+                template_params().at(0).to_string(using_namespace, relative),
+                template_params().at(1).to_string(using_namespace, relative),
+                qualifier());
+        }
+        else {
+            auto it = template_params().begin();
+            auto return_type = it->to_string(using_namespace, relative);
+            it++;
+            auto class_type = it->to_string(using_namespace, relative);
+            it++;
+            std::vector<std::string> args;
+
+            for (; it != template_params().end(); it++) {
+                args.push_back(it->to_string(using_namespace, relative));
+            }
+
+            return fmt::format("{} ({}::*)({}){}", return_type, class_type,
+                fmt::join(args, ","), qualifier());
+        }
     }
 
     std::string res;
@@ -270,6 +306,9 @@ std::string template_parameter::to_string(
 
         res += fmt::format("<{}>", fmt::join(params, ","));
     }
+
+    if (!qualifier().empty())
+        res += " " + qualifier();
 
     const auto &maybe_default_value = default_value();
     if (maybe_default_value) {
@@ -341,6 +380,12 @@ int calculate_template_params_specialization_match(
     const std::vector<template_parameter> &template_params)
 {
     int res{0};
+
+    if (specialization_params.size() != template_params.size() &&
+        !std::any_of(template_params.begin(), template_params.end(),
+            [](const auto &t) { return t.is_variadic(); })) {
+        return 0;
+    }
 
     if (!specialization_params.empty() && !template_params.empty()) {
         auto template_index{0U};

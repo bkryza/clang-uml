@@ -286,4 +286,38 @@ TEST_CASE(
 
         CHECK(sink_s.calculate_specialization_match(sink_t));
     }
+
+    {
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.set_method_template(true);
+        tp1.add_template_param(template_parameter::make_template_type("Ret"));
+        tp1.add_template_param(template_parameter::make_template_type("C"));
+        tp1.add_template_param(
+            template_parameter::make_template_type("Arg0"));
+
+        auto tp2 = template_parameter::make_template_type({});
+        tp2.set_method_template(true);
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_template_type("C"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
+
+    {
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.set_method_template(true);
+        tp1.add_template_param(template_parameter::make_template_type("Ret"));
+        tp1.add_template_param(template_parameter::make_template_type("C"));
+        tp1.add_template_param(
+            template_parameter::make_template_type("Arg0"));
+
+        auto tp2 = template_parameter::make_template_type({});
+        tp2.set_method_template(true);
+        tp2.add_template_param(template_parameter::make_argument("char"));
+        tp2.add_template_param(template_parameter::make_template_type("C"));
+        tp2.add_template_param(template_parameter::make_argument("double"));
+
+        CHECK(tp2.calculate_specialization_match(tp1));
+    }
 }
