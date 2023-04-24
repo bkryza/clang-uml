@@ -479,9 +479,8 @@ bool is_identifier_character(char c) { return std::isalnum(c) || c == '_'; }
 
 bool is_identifier(const std::string &t)
 {
-    return std::isalpha(t.at(0)) &&
-        std::all_of(t.begin(), t.end(),
-            [](const char c) { return is_identifier_character(c); });
+    return std::all_of(t.begin(), t.end(),
+        [](const char c) { return is_identifier_character(c); });
 }
 
 bool is_keyword(const std::string &t)

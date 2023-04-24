@@ -795,7 +795,10 @@ template_parameter map_type_parameter_to_template_parameter(
             detail::map_type_parameter_to_template_parameter(alias_decl, tp));
     }
 
-    return template_parameter::make_argument(tp);
+    std::string arg = tp;
+    if (arg == "_Bool")
+        arg = "bool";
+    return template_parameter::make_argument(arg);
 }
 
 std::optional<template_parameter> build_template_parameter(
@@ -822,14 +825,15 @@ std::optional<template_parameter> build_template_parameter(
         return {};
 
     // simple template param without qualifiers
-    if (common::is_type_token(*it) && it_next == end) {
+    if (common::is_type_token(*it) && (it_next == end || *it_next == ")")) {
         res = map_type_parameter_to_template_parameter(decl, *it);
         return res;
     }
     // template parameter with qualifier at the end
     else if (common::is_type_token(*it) && common::is_qualifier(*it_next)) {
         res = map_type_parameter_to_template_parameter(decl, *it);
-        res.set_qualifier(*it_next);
+        param_qualifier += *it_next;
+        res.set_qualifier(param_qualifier);
         return res;
     }
     // method template parameter
@@ -847,7 +851,8 @@ std::optional<template_parameter> build_template_parameter(
         }
 
         if (it != end && common::is_qualifier(*it)) {
-            res.set_qualifier(*it);
+            param_qualifier += *it;
+            res.set_qualifier(param_qualifier);
         }
 
         return res;
@@ -861,17 +866,18 @@ std::optional<template_parameter> build_template_parameter(
     else if (common::is_type_token(*it) && *it_next == "(") {
         res.add_template_param(
             map_type_parameter_to_template_parameter(decl, *it));
-        it_next++;
+        it_next++; // skip '('
         res.add_template_param(
             map_type_parameter_to_template_parameter(decl, *it_next));
 
         it = it_next;
         it++;
-        if (*it == "::") {
+        it_next = it;
+        it_next++;
+
+        if (*it == "::" && *it_next == "*") {
             res.set_method_template(true);
-            it++;
-            it++;
-            it++;
+            std::advance(it, 3);
         }
 
         if (it != end) {
@@ -879,6 +885,7 @@ std::optional<template_parameter> build_template_parameter(
             if (*it == "(") {
                 it++;
                 while (true) {
+                    // This will break on more complex args
                     auto arg_separator = std::find(it, end, ",");
                     if (arg_separator == end) {
                         // just one arg
@@ -904,7 +911,8 @@ std::optional<template_parameter> build_template_parameter(
                 it++;
 
                 if (it != end && common::is_qualifier(*it)) {
-                    res.set_qualifier(*it);
+                    param_qualifier += *it;
+                    res.set_qualifier(param_qualifier);
                 }
             }
 
