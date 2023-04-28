@@ -82,7 +82,7 @@ public:
 
     void process_tag_argument(model::class_ &template_instantiation,
         const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
+        const clang::QualType type,
         common::model::template_parameter &argument);
 
     template_parameter process_expression_argument(

@@ -36,7 +36,7 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "TTTT"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U &"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U &&"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U const&"));

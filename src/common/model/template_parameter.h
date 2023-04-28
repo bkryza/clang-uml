@@ -21,6 +21,7 @@
 #include "common/model/namespace.h"
 
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -44,6 +45,13 @@ std::string to_string(template_parameter_kind_t k);
 /// nested templates
 class template_parameter {
 public:
+    enum class cvqualifier {
+        kConst,
+        kVolatile,
+        kLValueReference,
+        kRValueReference
+    };
+
     static template_parameter make_template_type(const std::string &name,
         const std::optional<std::string> &default_value = {},
         bool is_variadic = false)
@@ -149,7 +157,7 @@ public:
 
     std::string to_string(
         const clanguml::common::model::namespace_ &using_namespace,
-        bool relative) const;
+        bool relative, bool skip_qualifiers = false) const;
 
     void add_template_param(template_parameter &&ct);
 
@@ -186,12 +194,25 @@ public:
 
     bool is_method_template() const { return is_method_template_; }
 
-    void set_qualifier(const std::string &q) { qualifier_ = q; }
+    void set_qualifier(const cvqualifier q) { qualifiers_.emplace(q); }
 
-    const std::string &qualifier() const { return qualifier_; }
+    const std::set<cvqualifier> &qualifiers() const { return qualifiers_; }
 
+    void is_pointer(bool p) { is_pointer_ = p; }
+    bool is_pointer() const { return is_pointer_; }
+
+    void is_lvalue_reference(bool p) { is_lvalue_reference_ = p; }
+    bool is_lvalue_reference() const { return is_lvalue_reference_; }
+
+    void is_rvalue_reference(bool p) { is_rvalue_reference_ = p; }
+    bool is_rvalue_reference() const { return is_rvalue_reference_; }
+
+    void is_elipssis(bool e) { is_elipssis_ = e; }
+    bool is_elipssis() const { return is_elipssis_; }
 private:
     template_parameter() = default;
+
+    std::string qualifiers_str() const;
 
     template_parameter_kind_t kind_{template_parameter_kind_t::template_type};
 
@@ -213,14 +234,20 @@ private:
     /// Can only be true when is_template_parameter_ is true
     bool is_template_template_parameter_{false};
 
+    bool is_elipssis_{false};
+
     /// Whether the template parameter is variadic
     bool is_variadic_{false};
+
+    bool is_pointer_{false};
+    bool is_lvalue_reference_{false};
+    bool is_rvalue_reference_{false};
 
     bool is_function_template_{false};
 
     bool is_method_template_{false};
 
-    std::string qualifier_;
+    std::set<cvqualifier> qualifiers_;
 
     /// Stores optional fully qualified name of constraint for this template
     /// parameter

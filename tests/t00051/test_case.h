@@ -60,20 +60,16 @@ TEST_CASE("t00051", "[test-case][class]")
 
         REQUIRE_THAT(puml,
             IsClassTemplate("B",
-                "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-                "../../tests/t00051/t00051.cc:43:27)"));
+                "(lambda at ../../tests/t00051/t00051.cc:43:18)"));
+                //,(lambda at ../../tests/t00051/t00051.cc:43:27)"));
 
         REQUIRE_THAT(puml,
             IsInstantiation(_A("B<F,FF=F>"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at "
-                   "../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18)>")));
 
         REQUIRE_THAT(puml,
             IsDependency(_A("A"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at "
-                   "../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18)>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

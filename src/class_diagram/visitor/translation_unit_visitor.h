@@ -67,6 +67,10 @@ public:
         clanguml::class_diagram::model::diagram &diagram,
         const clanguml::config::class_diagram &config);
 
+    bool shouldVisitTemplateInstantiations() const { return false; }
+
+    bool shouldVisitImplicitCode() const { return false; }
+
     virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
     virtual bool VisitRecordDecl(clang::RecordDecl *D);

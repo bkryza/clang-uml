@@ -306,6 +306,10 @@ template <> id_t to_id(const std::string &full_name)
     return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3U);
 }
 
+id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx) {
+    return to_id(common::to_string(type, ctx));
+}
+
 template <> id_t to_id(const clang::NamespaceDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
@@ -533,7 +537,7 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
         std::string tok;
 
         for (const char c : word) {
-            if (c == '(' || c == ')' || c == '[' || c == ']') {
+            if (c == '(' || c == ')' || c == '[' || c == ']' || c == '<' || c == '>') {
                 if (!tok.empty())
                     result.push_back(tok);
                 result.push_back(std::string{c});
@@ -543,6 +547,10 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
                 if (!tok.empty() && tok != ":") {
                     result.push_back(tok);
                     tok = ":";
+                }
+                else if (tok == ":") {
+                    result.push_back("::");
+                    tok = "";
                 }
                 else {
                     tok += ':';

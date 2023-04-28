@@ -370,6 +370,21 @@ void template_builder::process_template_arguments(
         // arguments
         std::vector<template_parameter> arguments;
 
+        // For now ignore the default template arguments to make the system
+        // templates 'nicer' - i.e. skipping the allocators and comparators
+        // TODO: Change this to ignore only when the arguments are set to
+        //       default values, and add them when they are specifically
+        //       overriden
+        const auto *maybe_type_parm_decl =
+            clang::dyn_cast<clang::TemplateTypeParmDecl>(
+                template_decl->getTemplateParameters()->getParam(
+                    std::min<int>(arg_index,
+                        template_decl->getTemplateParameters()->size() - 1)));
+        if (maybe_type_parm_decl &&
+            maybe_type_parm_decl->hasDefaultArgument()) {
+            continue;
+        }
+
         argument_process_dispatch(parent, cls, template_instantiation,
             template_decl, arg, arg_index, arguments);
 
@@ -394,7 +409,7 @@ void template_builder::process_template_arguments(
 
         for (auto &argument : arguments) {
             simplify_system_template(
-                argument, argument.to_string(using_namespace(), false));
+                argument, argument.to_string(using_namespace(), false, true));
 
             LOG_DBG("Adding template argument {} to template "
                     "specialization/instantiation {}",
@@ -469,13 +484,19 @@ template_parameter template_builder::process_type_argument(
 
     auto type_name = common::to_string(arg, &cls->getASTContext());
 
-    LOG_DBG("Processing template {} type argument: {}",
-        template_decl->getQualifiedNameAsString(), type_name);
-
     auto argument = template_parameter::make_argument({});
 
-    if (const auto *function_type =
-            arg.getAsType()->getAs<clang::FunctionProtoType>();
+    auto type = arg.getAsType().getNonReferenceType().getUnqualifiedType();
+    if (type->isPointerType())
+        type = type->getPointeeType();
+//    if (type->isMemberPointerType())
+//        type = type->getPointeeType();
+
+    LOG_DBG("Processing template {} type argument: {}, {}, {}",
+        template_decl->getQualifiedNameAsString(), type_name,
+        type->getTypeClassName(), common::to_string(type, cls->getASTContext()));
+
+    if (const auto *function_type = type->getAs<clang::FunctionProtoType>();
         function_type != nullptr) {
 
         argument.set_function_template(true);
@@ -553,7 +574,7 @@ template_parameter template_builder::process_type_argument(
         }
     }
     else if (const auto *nested_template_type =
-                 arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+                 type->getAs<clang::TemplateSpecializationType>();
              nested_template_type != nullptr) {
 
         const auto nested_type_name = nested_template_type->getTemplateName()
@@ -601,11 +622,10 @@ template_parameter template_builder::process_type_argument(
             diagram().add_class(std::move(nested_template_instantiation));
         }
     }
-    else if (arg.getAsType()->getAs<clang::TemplateTypeParmType>() != nullptr) {
+    else if (type->getAs<clang::TemplateTypeParmType>() != nullptr) {
         argument = template_parameter::make_template_type({});
 
-        auto parameter_name =
-            common::to_string(arg.getAsType(), cls->getASTContext());
+        auto parameter_name = common::to_string(type, cls->getASTContext());
 
         ensure_lambda_type_is_relative(parameter_name);
 
@@ -617,14 +637,16 @@ template_parameter template_builder::process_type_argument(
                 cls, parameter_name);
 
             if (maybe_arg) {
-                return *maybe_arg;
+                argument = *maybe_arg;
             }
         }
-
-        argument.set_name(parameter_name);
+        else {
+            argument.set_name(parameter_name);
+        }
     }
+    /*
     // Case for unexposed template
-    else if ((type_name.find('<') != std::string::npos) ||
+    else if ((type_name.find('<') != std::string::npos) &&
         (type_name.find("type-parameter-") == 0)) {
 
         ensure_lambda_type_is_relative(type_name);
@@ -660,14 +682,24 @@ template_parameter template_builder::process_type_argument(
             return template_parameter::make_template_type(type_name);
         }
     }
-
-    else if (const auto maybe_arg =
-                 get_template_argument_from_type_parameter_string(
-                     cls, arg.getAsType().getAsString());
-             maybe_arg) {
-        // The type is only in the form 'type-parameter-X-Y' so we have
-        // to match it to a template parameter name in the 'cls' template
-        argument = *maybe_arg;
+    */
+    else if (type_name.find("type-parameter-") != std::string::npos) {
+        // This is some sort of template parameter with unexposed type
+        // parameters in the form 'type-parameter-X-Y'
+        if (const auto maybe_arg =
+                get_template_argument_from_type_parameter_string(
+                    cls, arg.getAsType().getAsString());
+            maybe_arg) {
+            // The type is only in the form 'type-parameter-X-Y' so we have
+            // to match it to a template parameter name in the 'cls' template
+            argument = *maybe_arg;
+        }
+        else {
+            // fallback - just put whatever clang returns
+            argument.is_template_parameter(false);
+            argument.set_type(
+                common::to_string(type, template_decl->getASTContext()));
+        }
     }
     else if (type_name.find("(lambda at ") == 0) {
         // This is just a lambda reference
@@ -677,7 +709,26 @@ template_parameter template_builder::process_type_argument(
     else {
         // This is just a regular record type
         process_tag_argument(
-            template_instantiation, template_decl, arg, argument);
+            template_instantiation, template_decl, type, argument);
+    }
+
+    if (arg.getAsType()->isLValueReferenceType()) {
+        argument.is_lvalue_reference(true);
+    }
+    if (arg.getAsType()->isRValueReferenceType()) {
+        argument.is_rvalue_reference(true);
+    }
+    if (arg.getAsType()->isPointerType()) {
+        argument.is_pointer(true);
+    }
+    if (arg.getAsType()->isMemberPointerType()) {
+        argument.set_method_template(true);
+    }
+    if (arg.getAsType().isConstQualified()) {
+        argument.set_qualifier(template_parameter::cvqualifier::kConst);
+    }
+    if (arg.getAsType().isVolatileQualified()) {
+        argument.set_qualifier(template_parameter::cvqualifier::kVolatile);
     }
 
     return argument;
@@ -798,6 +849,7 @@ template_parameter map_type_parameter_to_template_parameter(
     std::string arg = tp;
     if (arg == "_Bool")
         arg = "bool";
+
     return template_parameter::make_argument(arg);
 }
 
@@ -809,14 +861,12 @@ std::optional<template_parameter> build_template_parameter(
 
     auto res = template_parameter::make_template_type({});
 
-    std::string param_qualifier{}; // e.g. const& or &&
-
     auto it = begin;
     auto it_next = it;
     it_next++;
 
     if (*it == "const") {
-        param_qualifier = "const";
+        res.set_qualifier(template_parameter::cvqualifier::kConst);
         it++;
         it_next++;
     }
@@ -832,8 +882,8 @@ std::optional<template_parameter> build_template_parameter(
     // template parameter with qualifier at the end
     else if (common::is_type_token(*it) && common::is_qualifier(*it_next)) {
         res = map_type_parameter_to_template_parameter(decl, *it);
-        param_qualifier += *it_next;
-        res.set_qualifier(param_qualifier);
+        // param_qualifier += *it_next;
+        //        res.set_qualifier(param_qualifier);
         return res;
     }
     // method template parameter
@@ -851,8 +901,8 @@ std::optional<template_parameter> build_template_parameter(
         }
 
         if (it != end && common::is_qualifier(*it)) {
-            param_qualifier += *it;
-            res.set_qualifier(param_qualifier);
+            // param_qualifier += *it;
+            //            res.set_qualifier(param_qualifier);
         }
 
         return res;
@@ -884,6 +934,13 @@ std::optional<template_parameter> build_template_parameter(
             // handle args
             if (*it == "(") {
                 it++;
+
+                if(it != end && *it == "...") {
+                    // handle elipssis arg
+                    res.is_elipssis(true);
+                    return res;
+                }
+
                 while (true) {
                     // This will break on more complex args
                     auto arg_separator = std::find(it, end, ",");
@@ -906,14 +963,15 @@ std::optional<template_parameter> build_template_parameter(
                     }
                 }
 
-                assert(*it == ")");
+                //if(it!=end)
+                //assert(*it == ")");
 
                 it++;
 
-                if (it != end && common::is_qualifier(*it)) {
-                    param_qualifier += *it;
-                    res.set_qualifier(param_qualifier);
-                }
+                //if (it != end && common::is_qualifier(*it)) {
+                    // param_qualifier += *it;
+                    //                    res.set_qualifier(param_qualifier);
+                //}
             }
 
             return res;
@@ -941,8 +999,11 @@ template_parameter template_builder::process_integral_argument(
 {
     assert(arg.getKind() == clang::TemplateArgument::Integral);
 
-    return template_parameter::make_argument(
-        std::to_string(arg.getAsIntegral().getExtValue()));
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    arg.dump(ostream);
+
+    return template_parameter::make_argument(result);
 }
 
 template_parameter template_builder::process_null_argument(
@@ -993,56 +1054,70 @@ std::vector<template_parameter> template_builder::process_pack_argument(
 }
 
 void template_builder::process_tag_argument(class_ &template_instantiation,
-    const clang::TemplateDecl *template_decl,
-    const clang::TemplateArgument &arg, template_parameter &argument)
+    const clang::TemplateDecl *template_decl, const clang::QualType type,
+    template_parameter &argument)
 {
-    assert(arg.getKind() == clang::TemplateArgument::Type);
+    [[maybe_unused]] auto current_instantiation_name =
+        template_instantiation.full_name(false);
 
     argument.is_template_parameter(false);
+    auto type_name = common::to_string(type, template_decl->getASTContext());
+    argument.set_type(type_name);
+    const auto type_id = common::to_id(type_name);
+    argument.set_id(type_id);
 
-    argument.set_type(
-        common::to_string(arg.getAsType(), template_decl->getASTContext()));
-
-    if (const auto *tsp =
-            arg.getAsType()->getAs<clang::TemplateSpecializationType>();
+    if (const auto *tsp = type->getAs<clang::TemplateSpecializationType>();
         tsp != nullptr) {
         if (const auto *record_type_decl = tsp->getAsRecordDecl();
             record_type_decl != nullptr) {
 
-            argument.set_id(common::to_id(arg));
             if (diagram().should_include(
                     template_decl->getQualifiedNameAsString())) {
                 // Add dependency relationship to the parent
                 // template
                 template_instantiation.add_relationship(
-                    {relationship_t::kDependency, common::to_id(arg)});
+                    {relationship_t::kDependency, type_id});
             }
         }
     }
-    else if (const auto *record_type =
-                 arg.getAsType()->getAs<clang::RecordType>();
+    else if (const auto *record_type = type->getAs<clang::RecordType>();
              record_type != nullptr) {
-        if (const auto *record_type_decl = record_type->getAsRecordDecl();
-            record_type_decl != nullptr) {
 
-            argument.set_id(common::to_id(arg));
+        const auto *class_template_specialization =
+            clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                record_type->getAsRecordDecl());
+
+        if (class_template_specialization != nullptr) {
+            auto tag_argument = build_from_class_template_specialization(
+                *class_template_specialization);
+
+            if (tag_argument) {
+                argument.set_type(tag_argument->name_and_ns());
+                for (const auto &p : tag_argument->template_params())
+                    argument.add_template_param(p);
+                for (auto &r : tag_argument->relationships()) {
+                    template_instantiation.add_relationship(std::move(r));
+                }
+            }
+        }
+        else if (const auto *record_type_decl = record_type->getAsRecordDecl();
+                 record_type_decl != nullptr) {
 #if LLVM_VERSION_MAJOR >= 16
             argument.set_type(record_type_decl->getQualifiedNameAsString());
 #endif
-            if (diagram().should_include(
-                    template_decl->getQualifiedNameAsString())) {
+            if (diagram().should_include(type_name)) {
                 // Add dependency relationship to the parent
                 // template
                 template_instantiation.add_relationship(
-                    {relationship_t::kDependency, common::to_id(arg)});
+                    {relationship_t::kDependency, type_id});
             }
         }
     }
-    else if (const auto *enum_type = arg.getAsType()->getAs<clang::EnumType>();
+    else if (const auto *enum_type = type->getAs<clang::EnumType>();
              enum_type != nullptr) {
         if (enum_type->getAsTagDecl() != nullptr) {
             template_instantiation.add_relationship(
-                {relationship_t::kDependency, common::to_id(arg)});
+                {relationship_t::kDependency, type_id});
         }
     }
 }

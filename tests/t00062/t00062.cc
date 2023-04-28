@@ -1,3 +1,5 @@
+#include <map>
+#include <string>
 #include <vector>
 
 namespace clanguml {
@@ -6,6 +8,17 @@ template <typename T> struct A;
 
 template <typename U> struct A<U &> {
     U &u;
+};
+
+template <typename U> struct A<std::map<std::string, U> &> {
+    U &u;
+};
+
+template <>
+struct A<std::map<std::string, std::map<std::string, std::string>> &> { };
+
+template <typename U> struct A<U ***> {
+    U ***u;
 };
 
 template <typename U> struct A<U &&> {
@@ -58,5 +71,6 @@ template <int N> struct A<char[N]> {
 template <> struct A<char[1000]> {
     std::vector<char> n;
 };
+
 }
 }

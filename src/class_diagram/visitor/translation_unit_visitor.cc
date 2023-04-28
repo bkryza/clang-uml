@@ -1875,7 +1875,7 @@ void translation_unit_visitor::process_field(
                     template_specialization.template_params()) {
 
                     LOG_DBG("Looking for nested relationships from {}::{} in "
-                            "template {}",
+                            "template argument {}",
                         c.full_name(false), field_name,
                         template_argument.to_string(
                             config().using_namespace(), false));

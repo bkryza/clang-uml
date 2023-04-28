@@ -40,6 +40,7 @@ set(TEST_CASES
         test_config
         test_cli_handler
         test_filters
+        test_template_parser
         test_thread_pool_executor)
 
 foreach(TEST_NAME ${TEST_CASES})

@@ -113,7 +113,10 @@ int template_parameter::calculate_specialization_match(
 {
     int res{0};
 
-    if (qualifier() != base_template_parameter.qualifier())
+    // If the potential base template has a qualifier, the current template
+    // must match it
+    if (!base_template_parameter.qualifiers().empty() &&
+        (qualifiers() != base_template_parameter.qualifiers()))
         return 0;
 
     if (is_template_parameter() &&
@@ -211,10 +214,33 @@ bool operator!=(const template_parameter &l, const template_parameter &r)
     return !(l == r);
 }
 
-std::string template_parameter::to_string(
-    const clanguml::common::model::namespace_ &using_namespace,
-    bool relative) const
+std::string template_parameter::qualifiers_str() const
 {
+    std::string res;
+    if (qualifiers_.count(cvqualifier::kConst) == 1)
+        res += "const";
+
+    if (is_rvalue_reference())
+        res += "&&";
+    else if (is_lvalue_reference())
+        res += "&";
+
+    if (is_pointer())
+        res += "*";
+
+    if(res.empty())
+        return res;
+
+    return " " + res;
+}
+
+std::string template_parameter::to_string(
+    const clanguml::common::model::namespace_ &using_namespace, bool relative,
+    bool skip_qualifiers) const
+{
+    if(is_elipssis())
+        return "...";
+
     using clanguml::common::model::namespace_;
 
     assert(!(type().has_value() && concept_constraint().has_value()));
@@ -235,11 +261,11 @@ std::string template_parameter::to_string(
     if (is_method_template()) {
         assert(template_params().size() > 1);
 
+        std::string unqualified;
         if (template_params().size() == 2) {
-            return fmt::format("{} {}::*{}",
+            unqualified = fmt::format("{} {}::*",
                 template_params().at(0).to_string(using_namespace, relative),
-                template_params().at(1).to_string(using_namespace, relative),
-                qualifier());
+                template_params().at(1).to_string(using_namespace, relative));
         }
         else {
             auto it = template_params().begin();
@@ -253,9 +279,14 @@ std::string template_parameter::to_string(
                 args.push_back(it->to_string(using_namespace, relative));
             }
 
-            return fmt::format("{} ({}::*)({}){}", return_type, class_type,
-                fmt::join(args, ","), qualifier());
+            unqualified = fmt::format("{} ({}::*)({})", return_type, class_type,
+                fmt::join(args, ","));
         }
+
+        if (skip_qualifiers)
+            return unqualified;
+        else
+            return unqualified + qualifiers_str();
     }
 
     std::string res;
@@ -307,8 +338,8 @@ std::string template_parameter::to_string(
         res += fmt::format("<{}>", fmt::join(params, ","));
     }
 
-    if (!qualifier().empty())
-        res += " " + qualifier();
+    if (!skip_qualifiers)
+        res += qualifiers_str();
 
     const auto &maybe_default_value = default_value();
     if (maybe_default_value) {
@@ -332,6 +363,9 @@ bool template_parameter::find_nested_relationships(
     // just add it and skip recursion (e.g. this is a user defined type)
     const auto maybe_type = type();
     if (maybe_type && should_include(maybe_type.value())) {
+        if (is_pointer() || is_lvalue_reference() || is_rvalue_reference())
+            hint = common::model::relationship_t::kAssociation;
+
         const auto maybe_id = id();
         if (maybe_id) {
             nested_relationships.emplace_back(maybe_id.value(), hint);
@@ -348,6 +382,11 @@ bool template_parameter::find_nested_relationships(
             const auto maybe_arg_type = template_argument.type();
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
+
+                if (template_argument.is_pointer() ||
+                    template_argument.is_lvalue_reference() ||
+                    template_argument.is_rvalue_reference())
+                    hint = common::model::relationship_t::kAssociation;
 
                 nested_relationships.emplace_back(maybe_id.value(), hint);
 

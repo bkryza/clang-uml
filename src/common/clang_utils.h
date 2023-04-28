@@ -129,6 +129,8 @@ template <typename T> id_t to_id(const T &declaration);
 
 template <> id_t to_id(const std::string &full_name);
 
+id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
+
 template <> id_t to_id(const clang::NamespaceDecl &declaration);
 
 template <> id_t to_id(const clang::CXXRecordDecl &declaration);
