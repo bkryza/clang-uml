@@ -36,17 +36,17 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClassTemplate("A", "TTTT"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U &"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U &&"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U const&"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "M C::*"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M C::*&&"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "M C::* &&"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg)"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "int (C::*)(bool)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg)&&"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg) &&"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg1,Arg2,Arg3)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "float (C::*)(int)&&"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "float (C::*)(int) &&"));
 
         REQUIRE_THAT(puml, IsClassTemplate("A", "char[N]"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "char[1000]"));

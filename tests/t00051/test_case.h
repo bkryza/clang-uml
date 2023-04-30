@@ -59,9 +59,9 @@ TEST_CASE("t00051", "[test-case][class]")
         REQUIRE_THAT(puml, (IsMethod<Public>("ff", "void")));
 
         REQUIRE_THAT(puml,
-            IsClassTemplate("B",
-                "(lambda at ../../tests/t00051/t00051.cc:43:18)"));
-                //,(lambda at ../../tests/t00051/t00051.cc:43:27)"));
+            IsClassTemplate(
+                "B", "(lambda at ../../tests/t00051/t00051.cc:43:18)"));
+        //,(lambda at ../../tests/t00051/t00051.cc:43:27)"));
 
         REQUIRE_THAT(puml,
             IsInstantiation(_A("B<F,FF=F>"),

@@ -306,7 +306,8 @@ template <> id_t to_id(const std::string &full_name)
     return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3U);
 }
 
-id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx) {
+id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
+{
     return to_id(common::to_string(type, ctx));
 }
 
@@ -520,6 +521,22 @@ bool is_type_token(const std::string &t)
         (is_identifier(t) && !is_qualifier(t) && !is_bracket(t));
 }
 
+clang::QualType dereference(clang::QualType type)
+{
+    auto res = type;
+
+    while (true) {
+        if (res->isReferenceType())
+            res = res.getNonReferenceType();
+        else if (res->isPointerType())
+            res = res->getPointeeType();
+        else
+            break;
+    }
+
+    return res;
+}
+
 std::vector<std::string> tokenize_unexposed_template_parameter(
     const std::string &t)
 {
@@ -537,7 +554,8 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
         std::string tok;
 
         for (const char c : word) {
-            if (c == '(' || c == ')' || c == '[' || c == ']' || c == '<' || c == '>') {
+            if (c == '(' || c == ')' || c == '[' || c == ']' || c == '<' ||
+                c == '>') {
                 if (!tok.empty())
                     result.push_back(tok);
                 result.push_back(std::string{c});

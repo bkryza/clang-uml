@@ -69,8 +69,9 @@ void template_parameter::set_name(const std::string &name)
 {
     assert(kind_ != template_parameter_kind_t::argument);
 
-    if (name.empty())
+    if (name.empty()) {
         return;
+    }
 
     if (util::ends_with(name, std::string{"..."})) {
         name_ = name.substr(0, name.size() - 3);
@@ -113,10 +114,11 @@ int template_parameter::calculate_specialization_match(
 {
     int res{0};
 
-    // If the potential base template has a qualifier, the current template
-    // must match it
-    if (!base_template_parameter.qualifiers().empty() &&
-        (qualifiers() != base_template_parameter.qualifiers()))
+    // If the potential base template has a deduction context (e.g. const&),
+    // the specialization must have the same and possibly more
+    if (!base_template_parameter.deduced_context().empty() &&
+        !util::starts_with(
+            deduced_context(), base_template_parameter.deduced_context()))
         return 0;
 
     if (is_template_parameter() &&
@@ -126,7 +128,7 @@ int template_parameter::calculate_specialization_match(
         is_variadic() == is_variadic() &&
         is_function_template() ==
             base_template_parameter.is_function_template() &&
-        is_method_template() == base_template_parameter.is_method_template()) {
+        is_member_pointer() == base_template_parameter.is_member_pointer()) {
         return 1;
     }
 
@@ -137,7 +139,6 @@ int template_parameter::calculate_specialization_match(
         maybe_template_parameter_type.has_value() &&
         !base_template_parameter.is_template_parameter() &&
         !is_template_parameter()) {
-
         if (maybe_base_template_parameter_type.value() !=
             maybe_template_parameter_type.value())
             return 0;
@@ -145,11 +146,20 @@ int template_parameter::calculate_specialization_match(
         res++;
     }
 
+    if (base_template_parameter.is_array() && !is_array())
+        return 0;
+
+    if (base_template_parameter.is_array() && is_array())
+        res++;
+
     if (base_template_parameter.is_function_template() &&
         !is_function_template())
         return 0;
 
-    if (base_template_parameter.is_method_template() && !is_method_template())
+    if (base_template_parameter.is_member_pointer() && !is_member_pointer())
+        return 0;
+
+    if (base_template_parameter.is_data_pointer() && !is_data_pointer())
         return 0;
 
     if (!base_template_parameter.template_params().empty() &&
@@ -214,31 +224,22 @@ bool operator!=(const template_parameter &l, const template_parameter &r)
     return !(l == r);
 }
 
-std::string template_parameter::qualifiers_str() const
+std::string template_parameter::deduced_context_str() const
 {
-    std::string res;
-    if (qualifiers_.count(cvqualifier::kConst) == 1)
-        res += "const";
+    std::vector<std::string> deduced_contexts;
 
-    if (is_rvalue_reference())
-        res += "&&";
-    else if (is_lvalue_reference())
-        res += "&";
+    for (const auto &c : deduced_context()) {
+        deduced_contexts.push_back(c.to_string());
+    }
 
-    if (is_pointer())
-        res += "*";
-
-    if(res.empty())
-        return res;
-
-    return " " + res;
+    return fmt::format("{}", fmt::join(deduced_contexts, " "));
 }
 
 std::string template_parameter::to_string(
     const clanguml::common::model::namespace_ &using_namespace, bool relative,
     bool skip_qualifiers) const
 {
-    if(is_elipssis())
+    if (is_elipssis())
         return "...";
 
     using clanguml::common::model::namespace_;
@@ -258,35 +259,41 @@ std::string template_parameter::to_string(
             "{}({})", return_type, fmt::join(function_args, ","));
     }
 
-    if (is_method_template()) {
-        assert(template_params().size() > 1);
+    if (is_data_pointer()) {
+        assert(template_params().size() == 2);
 
-        std::string unqualified;
-        if (template_params().size() == 2) {
-            unqualified = fmt::format("{} {}::*",
-                template_params().at(0).to_string(using_namespace, relative),
-                template_params().at(1).to_string(using_namespace, relative));
-        }
-        else {
-            auto it = template_params().begin();
-            auto return_type = it->to_string(using_namespace, relative);
-            it++;
-            auto class_type = it->to_string(using_namespace, relative);
-            it++;
-            std::vector<std::string> args;
-
-            for (; it != template_params().end(); it++) {
-                args.push_back(it->to_string(using_namespace, relative));
-            }
-
-            unqualified = fmt::format("{} ({}::*)({})", return_type, class_type,
-                fmt::join(args, ","));
-        }
+        std::string unqualified = fmt::format("{} {}::*",
+            template_params().at(0).to_string(using_namespace, relative),
+            template_params().at(1).to_string(using_namespace, relative));
 
         if (skip_qualifiers)
             return unqualified;
-        else
-            return unqualified + qualifiers_str();
+        else {
+            return util::join(" ", unqualified, deduced_context_str());
+        }
+    }
+
+    if (is_member_pointer()) {
+        assert(template_params().size() > 1);
+
+        auto it = template_params().begin();
+        auto return_type = it->to_string(using_namespace, relative);
+        it++;
+        auto class_type = it->to_string(using_namespace, relative);
+        it++;
+        std::vector<std::string> args;
+
+        for (; it != template_params().end(); it++) {
+            args.push_back(it->to_string(using_namespace, relative));
+        }
+
+        std::string unqualified = fmt::format(
+            "{} ({}::*)({})", return_type, class_type, fmt::join(args, ","));
+        if (skip_qualifiers)
+            return unqualified;
+        else {
+            return util::join(" ", unqualified, deduced_context_str());
+        }
     }
 
     std::string res;
@@ -339,7 +346,7 @@ std::string template_parameter::to_string(
     }
 
     if (!skip_qualifiers)
-        res += qualifiers_str();
+        res = util::join(" ", res, deduced_context_str());
 
     const auto &maybe_default_value = default_value();
     if (maybe_default_value) {
@@ -362,8 +369,9 @@ bool template_parameter::find_nested_relationships(
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
     const auto maybe_type = type();
+
     if (maybe_type && should_include(maybe_type.value())) {
-        if (is_pointer() || is_lvalue_reference() || is_rvalue_reference())
+        if (is_association())
             hint = common::model::relationship_t::kAssociation;
 
         const auto maybe_id = id();
@@ -383,9 +391,7 @@ bool template_parameter::find_nested_relationships(
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
 
-                if (template_argument.is_pointer() ||
-                    template_argument.is_lvalue_reference() ||
-                    template_argument.is_rvalue_reference())
+                if (template_argument.is_association())
                     hint = common::model::relationship_t::kAssociation;
 
                 nested_relationships.emplace_back(maybe_id.value(), hint);

@@ -211,13 +211,13 @@ TEST_CASE(
 
     {
         auto tp1 = template_parameter::make_template_type({});
-        tp1.set_function_template(true);
+        tp1.is_function_template(true);
         tp1.add_template_param(template_parameter::make_template_type("Ret"));
         tp1.add_template_param(template_parameter::make_template_type("Arg1"));
         tp1.add_template_param(template_parameter::make_template_type("Arg2"));
 
         auto tp2 = template_parameter::make_argument({});
-        tp2.set_function_template(true);
+        tp2.is_function_template(true);
         tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
@@ -227,13 +227,13 @@ TEST_CASE(
 
     {
         auto tp1 = template_parameter::make_template_type({});
-        tp1.set_function_template(true);
+        tp1.is_function_template(true);
         tp1.add_template_param(template_parameter::make_template_type("Ret"));
         tp1.add_template_param(template_parameter::make_template_type("Arg1"));
         tp1.add_template_param(template_parameter::make_template_type("Arg2"));
 
         auto tp2 = template_parameter::make_argument({});
-        tp2.set_function_template(false);
+        tp2.is_function_template(false);
         tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
@@ -243,13 +243,13 @@ TEST_CASE(
 
     {
         auto tp1 = template_parameter::make_template_type({});
-        tp1.set_function_template(true);
+        tp1.is_function_template(true);
         tp1.add_template_param(template_parameter::make_template_type("Ret"));
         tp1.add_template_param(
             template_parameter::make_template_type("Args", {}, true));
 
         auto tp2 = template_parameter::make_argument({});
-        tp2.set_function_template(true);
+        tp2.is_function_template(true);
         tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_argument("int"));
         tp2.add_template_param(template_parameter::make_argument("double"));
@@ -262,7 +262,7 @@ TEST_CASE(
         auto sh1 =
             template_parameter::make_argument("ns1::ns2::signal_handler");
         auto sh1_t1 = template_parameter::make_template_type({});
-        sh1_t1.set_function_template(true);
+        sh1_t1.is_function_template(true);
         sh1_t1.add_template_param(
             template_parameter::make_template_type("Ret"));
         sh1_t1.add_template_param(
@@ -276,7 +276,7 @@ TEST_CASE(
         auto sh2 =
             template_parameter::make_argument("ns1::ns2::signal_handler");
         auto sh2_a1 = template_parameter::make_argument({});
-        sh2_a1.set_function_template(true);
+        sh2_a1.is_function_template(true);
         sh2_a1.add_template_param(template_parameter::make_argument("void"));
         sh2_a1.add_template_param(template_parameter::make_argument("int"));
         auto sh2_a2 = template_parameter::make_argument("bool");
@@ -289,13 +289,13 @@ TEST_CASE(
 
     {
         auto tp1 = template_parameter::make_template_type({});
-        tp1.set_method_template(true);
+        tp1.is_function_template(true);
         tp1.add_template_param(template_parameter::make_template_type("Ret"));
         tp1.add_template_param(template_parameter::make_template_type("C"));
         tp1.add_template_param(template_parameter::make_template_type("Arg0"));
 
         auto tp2 = template_parameter::make_template_type({});
-        tp2.set_method_template(true);
+        tp2.is_function_template(true);
         tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_template_type("C"));
         tp2.add_template_param(template_parameter::make_argument("double"));
@@ -305,13 +305,13 @@ TEST_CASE(
 
     {
         auto tp1 = template_parameter::make_template_type({});
-        tp1.set_method_template(true);
+        tp1.is_function_template(true);
         tp1.add_template_param(template_parameter::make_template_type("Ret"));
         tp1.add_template_param(template_parameter::make_template_type("C"));
         tp1.add_template_param(template_parameter::make_template_type("Arg0"));
 
         auto tp2 = template_parameter::make_template_type({});
-        tp2.set_method_template(true);
+        tp2.is_function_template(true);
         tp2.add_template_param(template_parameter::make_argument("char"));
         tp2.add_template_param(template_parameter::make_template_type("C"));
         tp2.add_template_param(template_parameter::make_argument("double"));

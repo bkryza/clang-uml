@@ -184,4 +184,6 @@ bool is_qualified_identifier(const std::string &t);
 
 bool is_type_token(const std::string &t);
 
+clang::QualType dereference(clang::QualType type);
+
 } // namespace clanguml::common

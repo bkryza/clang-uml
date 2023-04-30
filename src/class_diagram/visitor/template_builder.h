@@ -80,11 +80,6 @@ public:
         const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
 
-    void process_tag_argument(model::class_ &template_instantiation,
-        const clang::TemplateDecl *template_decl,
-        const clang::QualType type,
-        common::model::template_parameter &argument);
-
     template_parameter process_expression_argument(
         const clang::TemplateArgument &arg);
 
@@ -100,29 +95,72 @@ public:
     std::vector<template_parameter> process_pack_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         const clang::NamedDecl *cls, class_ &template_instantiation,
-        const clang::TemplateDecl *template_decl,
+        const clang::TemplateDecl *base_template_decl,
         const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
 
     template_parameter process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
-        model::class_ &template_instantiation, size_t argument_index);
+        const clang::NamedDecl *cls,
+        const clang::TemplateDecl *base_template_decl,
+        // const clang::TemplateArgument &arg,
+        clang::QualType type, model::class_ &template_instantiation,
+        size_t argument_index);
 
     common::model::template_parameter process_template_argument(
         const clang::TemplateArgument &arg);
 
-    void process_unexposed_template_specialization_parameters(
-        const std::string &type_name, template_parameter &tp, class_ &c);
+    common::model::template_parameter process_template_expansion(
+        const clang::TemplateArgument &arg);
+
+    std::optional<template_parameter> try_as_function_prototype(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    std::optional<template_parameter> try_as_array(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    std::optional<template_parameter> try_as_template_specialization_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    std::optional<template_parameter> try_as_template_parm_type(
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type);
+
+    std::optional<template_parameter> try_as_lamda(const clang::NamedDecl *cls,
+        const clang::TemplateDecl *template_decl, clang::QualType &type);
+
+    std::optional<template_parameter> try_as_record_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    std::optional<template_parameter> try_as_enum_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation);
+
+    std::optional<template_parameter> try_as_member_pointer(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    clang::QualType consume_context(
+        clang::QualType type, template_parameter &tp) const;
 
     bool find_relationships_in_unexposed_template_params(
         const template_parameter &ct,
         class_diagram::visitor::found_relationships_t &relationships);
-
-    std::optional<template_parameter>
-    get_template_argument_from_type_parameter_string(
-        const clang::Decl *decl, std::string type_name) const;
 
     common::visitor::ast_id_mapper &id_mapper();
 
