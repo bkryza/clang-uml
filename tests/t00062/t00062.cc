@@ -21,6 +21,10 @@ template <typename U> struct A<U **const *> {
     U ***u;
 };
 
+template <typename U> struct A<U const *const volatile> {
+    U ***u;
+};
+
 template <typename U> struct A<U &&> {
     U &&u;
 };

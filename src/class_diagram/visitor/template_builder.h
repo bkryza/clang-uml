@@ -135,7 +135,7 @@ public:
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type);
 
-    std::optional<template_parameter> try_as_lamda(const clang::NamedDecl *cls,
+    std::optional<template_parameter> try_as_lambda(const clang::NamedDecl *cls,
         const clang::TemplateDecl *template_decl, clang::QualType &type);
 
     std::optional<template_parameter> try_as_record_type(

@@ -498,8 +498,14 @@ clang::QualType template_builder::consume_context(
         bool try_again{false};
         common::model::context ctx;
 
-        ctx.is_const = type.isConstQualified();
-        ctx.is_volatile = type.isVolatileQualified();
+        if (type->isPointerType() || type->isReferenceType()) {
+            if (type.isConstQualified() || type.isVolatileQualified()) {
+                ctx.is_ref_const = type.isConstQualified();
+                ctx.is_ref_volatile = type.isVolatileQualified();
+
+                try_again = true;
+            }
+        }
 
         if (type->isLValueReferenceType()) {
             ctx.pr = common::model::rpqualifier::kLValueReference;
@@ -509,24 +515,51 @@ clang::QualType template_builder::consume_context(
             ctx.pr = common::model::rpqualifier::kRValueReference;
             try_again = true;
         }
+        else if (type->isMemberFunctionPointerType()) {
+            const auto ref_qualifier = type->getPointeeType()
+                                           ->getAs<clang::FunctionProtoType>()
+                                           ->getRefQualifier();
+
+            if (ref_qualifier == clang::RefQualifierKind::RQ_RValue) {
+                ctx.pr = common::model::rpqualifier::kRValueReference;
+                try_again = true;
+            }
+            else if (ref_qualifier == clang::RefQualifierKind::RQ_LValue) {
+                ctx.pr = common::model::rpqualifier::kLValueReference;
+                try_again = true;
+            }
+        }
         else if (type->isPointerType()) {
             ctx.pr = common::model::rpqualifier::kPointer;
             try_again = true;
         }
 
-        if (type.isConstQualified() || type.isVolatileQualified()) {
-            ctx.is_const = type.isConstQualified();
-            ctx.is_volatile = type.isVolatileQualified();
-
-            try_again = true;
-        }
-
         if (try_again) {
-            type = type.getNonReferenceType().getUnqualifiedType();
-            if (type->isPointerType())
-                type = type->getPointeeType();
+            if (type->isPointerType()) {
+                if (type->getPointeeType().isConstQualified())
+                    ctx.is_const = true;
+                if (type->getPointeeType().isVolatileQualified())
+                    ctx.is_volatile = true;
+
+                type = type->getPointeeType().getUnqualifiedType();
+            }
+            else if (type->isReferenceType()) {
+                if (type.getNonReferenceType().isConstQualified())
+                    ctx.is_const = true;
+                if (type.getNonReferenceType().isVolatileQualified())
+                    ctx.is_volatile = true;
+
+                type = type.getNonReferenceType().getUnqualifiedType();
+            }
+            else if (type.isConstQualified() || type.isVolatileQualified()) {
+                ctx.is_const = type.isConstQualified();
+                ctx.is_volatile = type.isVolatileQualified();
+            }
 
             tp.push_context(std::move(ctx));
+
+            if (type->isMemberFunctionPointerType())
+                return type;
         }
         else
             return type;
@@ -571,7 +604,7 @@ template_parameter template_builder::process_type_argument(
     if (argument)
         return *argument;
 
-    argument = try_as_lamda(cls, template_decl, type);
+    argument = try_as_lambda(cls, template_decl, type);
 
     if (argument)
         return *argument;
@@ -998,7 +1031,7 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
     return argument;
 }
 
-std::optional<template_parameter> template_builder::try_as_lamda(
+std::optional<template_parameter> template_builder::try_as_lambda(
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
     clang::QualType &type)
 {

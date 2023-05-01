@@ -35,118 +35,56 @@ enum class template_parameter_kind_t {
     argument,
     concept_constraint
 };
-
-// TODO: rename to include the pointer and reference
-enum class cvqualifier { kConst, kVolatile };
+std::string to_string(template_parameter_kind_t k);
 
 enum class rpqualifier { kLValueReference, kRValueReference, kPointer, kNone };
 
+/**
+ * This struct manages a single level of template deduced context, e.g.
+ * & or const*
+ */
 struct context {
-    bool is_const;
-    bool is_volatile;
+    bool is_const{false};
+    bool is_volatile{false};
+    bool is_ref_const{false};
+    bool is_ref_volatile{false};
     rpqualifier pr{rpqualifier::kNone};
 
-    std::string to_string() const
-    {
-        std::vector<std::string> cv_qualifiers;
-        if (is_const)
-            cv_qualifiers.push_back("const");
-        if (is_volatile)
-            cv_qualifiers.push_back("volatile");
+    std::string to_string() const;
 
-        auto res = fmt::format("{}", fmt::join(cv_qualifiers, " "));
-
-        if (pr == rpqualifier::kPointer)
-            res += "*";
-        else if (pr == rpqualifier::kLValueReference)
-            res += "&";
-        else if (pr == rpqualifier::kRValueReference)
-            res += "&&";
-
-        return res;
-    }
-
-    bool operator==(const context &rhs) const
-    {
-        return is_const == rhs.is_const && is_volatile == rhs.is_volatile &&
-            pr == rhs.pr;
-    }
-
-    bool operator!=(const context &rhs) const { return !(rhs == *this); }
+    bool operator==(const context &rhs) const;
+    bool operator!=(const context &rhs) const;
 };
 
-std::string to_string(template_parameter_kind_t k);
-
-/// @brief Represents template parameter, template arguments or concept
-///        constraints
-///
-/// This class can represent both template parameter and template arguments,
-/// including variadic parameters and instantiations with
-/// nested templates
+/**
+ * @brief Represents template parameter, template arguments or concept
+ *        constraints
+ *
+ * This class can represent both template parameter and template arguments,
+ * including variadic parameters and instantiations with
+ * nested templates
+ */
 class template_parameter {
 public:
     static template_parameter make_template_type(const std::string &name,
         const std::optional<std::string> &default_value = {},
-        bool is_variadic = false)
-    {
-        template_parameter p;
-        p.set_kind(template_parameter_kind_t::template_type);
-        p.set_name(name);
-        p.is_variadic(is_variadic);
-        p.is_template_parameter(true);
-        if (default_value)
-            p.set_default_value(default_value.value());
-        return p;
-    }
+        bool is_variadic = false);
 
     static template_parameter make_template_template_type(
         const std::string &name,
         const std::optional<std::string> &default_value = {},
-        bool is_variadic = false)
-    {
-        template_parameter p;
-        p.set_kind(template_parameter_kind_t::template_template_type);
-        p.set_name(name + "<>");
-        if (default_value)
-            p.set_default_value(default_value.value());
-        p.is_variadic(is_variadic);
-        return p;
-    }
+        bool is_variadic = false);
 
     static template_parameter make_non_type_template(const std::string &type,
         const std::optional<std::string> &name,
         const std::optional<std::string> &default_value = {},
-        bool is_variadic = false)
-    {
-        template_parameter p;
-        p.set_kind(template_parameter_kind_t::non_type_template);
-        p.set_type(type);
-        if (name)
-            p.set_name(name.value());
-        if (default_value)
-            p.set_default_value(default_value.value());
-        p.is_variadic(is_variadic);
-        return p;
-    }
+        bool is_variadic = false);
 
     static template_parameter make_argument(const std::string &type,
-        const std::optional<std::string> &default_value = {})
-    {
-        template_parameter p;
-        p.set_kind(template_parameter_kind_t::argument);
-        p.set_type(type);
-        if (default_value)
-            p.set_default_value(default_value.value());
-        return p;
-    }
+        const std::optional<std::string> &default_value = {});
 
     static template_parameter make_unexposed_argument(const std::string &type,
-        const std::optional<std::string> &default_value = {})
-    {
-        template_parameter p = make_argument(type, default_value);
-        p.set_unexposed(true);
-        return p;
-    }
+        const std::optional<std::string> &default_value = {});
 
     void set_type(const std::string &type);
     std::optional<std::string> type() const;
@@ -171,22 +109,13 @@ public:
     friend bool operator!=(
         const template_parameter &l, const template_parameter &r);
 
-    bool is_template_parameter() const { return is_template_parameter_; }
+    bool is_template_parameter() const;
 
-    void is_template_parameter(bool is_template_parameter)
-    {
-        is_template_parameter_ = is_template_parameter;
-    }
+    void is_template_parameter(bool is_template_parameter);
 
-    bool is_template_template_parameter() const
-    {
-        return is_template_template_parameter_;
-    }
+    bool is_template_template_parameter() const;
 
-    void is_template_template_parameter(bool is_template_template_parameter)
-    {
-        is_template_template_parameter_ = is_template_template_parameter;
-    }
+    void is_template_template_parameter(bool is_template_template_parameter);
 
     std::string to_string(
         const clanguml::common::model::namespace_ &using_namespace,
@@ -200,14 +129,7 @@ public:
 
     void clear_params() { template_params_.clear(); }
 
-    bool is_association() const
-    {
-        return std::any_of(deduced_context().begin(), deduced_context().end(),
-            [](const auto &c) {
-                return c.pr == rpqualifier::kPointer ||
-                    c.pr == rpqualifier::kLValueReference;
-            });
-    }
+    bool is_association() const;
 
     bool find_nested_relationships(
         std::vector<std::pair<int64_t, common::model::relationship_t>>
@@ -220,32 +142,32 @@ public:
 
     const std::optional<std::string> &concept_constraint() const;
 
-    template_parameter_kind_t kind() const { return kind_; }
+    template_parameter_kind_t kind() const;
 
-    void set_kind(template_parameter_kind_t kind) { kind_ = kind; }
+    void set_kind(template_parameter_kind_t kind);
 
-    bool is_unexposed() const { return is_unexposed_; }
+    bool is_unexposed() const;
 
-    void set_unexposed(bool unexposed) { is_unexposed_ = unexposed; }
+    void set_unexposed(bool unexposed);
 
-    void is_function_template(bool ft) { is_function_template_ = ft; }
-    bool is_function_template() const { return is_function_template_; }
+    void is_function_template(bool ft);
+    bool is_function_template() const;
 
-    void is_member_pointer(bool m) { is_member_pointer_ = m; }
-    bool is_member_pointer() const { return is_member_pointer_; }
+    void is_member_pointer(bool m);
+    bool is_member_pointer() const;
 
-    void is_data_pointer(bool m) { is_data_pointer_ = m; }
-    bool is_data_pointer() const { return is_data_pointer_; }
+    void is_data_pointer(bool m);
+    bool is_data_pointer() const;
 
-    void is_array(bool a) { is_array_ = a; }
-    bool is_array() const { return is_array_; }
+    void is_array(bool a);
+    bool is_array() const;
 
-    void push_context(const context q) { context_.push_front(q); }
-    const std::deque<context> &deduced_context() const { return context_; }
-    void deduced_context(const std::deque<context> &c) { context_ = c; }
+    void push_context(const context q);
+    const std::deque<context> &deduced_context() const;
+    void deduced_context(const std::deque<context> &c);
 
-    void is_elipssis(bool e) { is_elipssis_ = e; }
-    bool is_elipssis() const { return is_elipssis_; }
+    void is_elipssis(bool e);
+    bool is_elipssis() const;
 
 private:
     template_parameter() = default;
