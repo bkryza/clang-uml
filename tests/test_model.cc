@@ -318,4 +318,92 @@ TEST_CASE(
 
         CHECK(tp2.calculate_specialization_match(tp1));
     }
+
+    {
+        using clanguml::common::model::context;
+        using clanguml::common::model::rpqualifier;
+
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.is_data_pointer(true);
+        tp1.add_template_param(template_parameter::make_template_type("T"));
+        tp1.add_template_param(template_parameter::make_template_type("C"));
+
+        CHECK(tp1.is_specialization());
+
+        auto tp2 = template_parameter::make_template_type({});
+        tp2.is_data_pointer(true);
+        tp2.add_template_param(template_parameter::make_argument("T"));
+        tp2.add_template_param(template_parameter::make_template_type("C"));
+        tp2.push_context(context{.pr = rpqualifier::kRValueReference});
+
+        CHECK(tp2.is_specialization());
+
+        CHECK(tp2.calculate_specialization_match(tp1) == 0);
+        CHECK(tp1.calculate_specialization_match(tp2) == 0);
+    }
+
+    {
+        using clanguml::common::model::context;
+        using clanguml::common::model::rpqualifier;
+
+        auto tp1 = template_parameter::make_template_type("T");
+        tp1.push_context(context{.pr = rpqualifier::kRValueReference});
+        CHECK(tp1.is_specialization());
+
+        auto tp2 = template_parameter::make_template_type({});
+        tp2.is_data_pointer(true);
+        tp2.add_template_param(template_parameter::make_template_type("T"));
+        tp2.add_template_param(template_parameter::make_template_type("C"));
+        tp2.push_context(context{.pr = rpqualifier::kRValueReference});
+
+        CHECK(tp2.is_specialization());
+
+        CHECK(tp2.calculate_specialization_match(tp1) > 1);
+        CHECK(tp1.calculate_specialization_match(tp2) == 0);
+    }
+
+    {
+        using clanguml::common::model::context;
+        using clanguml::common::model::rpqualifier;
+
+        auto tp1 = template_parameter::make_template_type({});
+        tp1.is_array(true);
+        tp1.add_template_param(template_parameter::make_template_type("int"));
+        tp1.add_template_param(template_parameter::make_template_type("N"));
+
+        CHECK(tp1.to_string({}, false) == "int[N]");
+        CHECK(tp1.is_specialization());
+
+        auto tp2 = template_parameter::make_argument({});
+        tp2.is_array(true);
+        tp2.add_template_param(template_parameter::make_argument("int"));
+        tp2.add_template_param(template_parameter::make_argument("1000"));
+
+        CHECK(tp2.to_string({}, false) == "int[1000]");
+        CHECK(tp2.is_specialization());
+
+        CHECK(tp2.calculate_specialization_match(tp1) > 1);
+        CHECK(tp1.calculate_specialization_match(tp2) == 0);
+    }
+
+    {
+        using clanguml::common::model::context;
+        using clanguml::common::model::rpqualifier;
+
+        auto tp1 = template_parameter::make_template_type("T");
+        tp1.push_context(context{.pr = rpqualifier::kLValueReference});
+        CHECK(tp1.is_specialization());
+        CHECK(tp1.to_string({}, false) == "T &");
+
+        auto tp2 = template_parameter::make_template_type({});
+        tp2.is_array(true);
+        tp2.add_template_param(template_parameter::make_template_type("int"));
+        tp2.add_template_param(template_parameter::make_template_type("N"));
+
+        CHECK(tp2.is_specialization());
+        CHECK(tp2.to_string({}, false) == "int[N]");
+
+        CHECK(tp2.calculate_specialization_match(tp1) == 0);
+        CHECK(tp1.calculate_specialization_match(tp2) == 0);
+    }
 }

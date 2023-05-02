@@ -23,7 +23,7 @@ Full documentation can be found [here](./docs/README.md).
 Main features supported so far include:
 
 * **Class diagram generation**
-    * Basic class properties and methods including visibility
+    * Basic class properties and methods including access
     * Class relationships including associations, aggregations, dependencies and friendship
     * Template instantiation relationships
     * Relationship inference from C++ containers and smart pointers

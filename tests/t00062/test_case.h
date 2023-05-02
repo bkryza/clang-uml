@@ -51,36 +51,22 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("A", "char[N]"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "char[1000]"));
 
-        // Check if class templates exist
-        // REQUIRE_THAT(puml, IsClassTemplate("A", "T,P,CMP,int N"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "U(...)"));
 
-        // Check concepts
-        // REQUIRE_THAT(puml, IsConcept(_A("AConcept<T>")));
-        // REQUIRE_THAT(puml,
-        //    IsConceptRequirement(
-        //        _A("AConcept<T,P>"), "sizeof (T) > sizeof (P)"));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<M C::*>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<U &&>"), _A("A<M C::* &&>")));
 
-        // Check if all enums exist
-        // REQUIRE_THAT(puml, IsEnum(_A("Lights")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<M (C::*)(Arg)>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("A<M (C::*)(Arg)>"), _A("A<int (C::*)(bool)>")));
 
-        // Check if all inner classes exist
-        // REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("AA")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<char[N]>")));
+        REQUIRE_THAT(
+            puml, IsInstantiation(_A("A<char[N]>"), _A("A<char[1000]>")));
 
-        // Check if all inheritance relationships exist
-        // REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Child")));
-
-        // Check if all methods exist
-        // REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
-
-        // Check if all fields exist
-        // REQUIRE_THAT(puml, (IsField<Private>("private_member", "int")));
-
-        // Check if all relationships exist
-        // REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
-        // REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-        // REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("D"), "-ag"));
-        // REQUIRE_THAT(puml, IsComposition(_A("R"), _A("D"), "-ac"));
-        // REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

@@ -138,6 +138,21 @@ template_parameter template_parameter::make_unexposed_argument(
     return p;
 }
 
+bool template_parameter::is_specialization() const
+{
+    return is_function_template() || is_array() || is_data_pointer() ||
+        is_member_pointer() || !deduced_context().empty();
+}
+
+bool template_parameter::is_same_specialization(
+    const template_parameter &other) const
+{
+    return is_array() == other.is_array() &&
+        is_function_template() == other.is_function_template() &&
+        is_data_pointer() == other.is_data_pointer() &&
+        is_member_pointer() == other.is_member_pointer();
+}
+
 void template_parameter::set_type(const std::string &type)
 {
     assert(kind_ != template_parameter_kind_t::template_type);
@@ -212,10 +227,17 @@ int template_parameter::calculate_specialization_match(
 
     // If the potential base template has a deduction context (e.g. const&),
     // the specialization must have the same and possibly more
-    if (!base_template_parameter.deduced_context().empty() &&
-        !util::starts_with(
-            deduced_context(), base_template_parameter.deduced_context()))
-        return 0;
+    if (base_template_parameter.is_specialization()) {
+        if (!deduced_context().empty() &&
+            (base_template_parameter.deduced_context().empty() ||
+                !util::starts_with(deduced_context(),
+                    base_template_parameter.deduced_context())))
+            return 0;
+
+        if (!base_template_parameter.deduced_context().empty() &&
+            deduced_context().empty())
+            return 0;
+    }
 
     if (is_template_parameter() &&
         base_template_parameter.is_template_parameter() &&
@@ -245,9 +267,6 @@ int template_parameter::calculate_specialization_match(
     if (base_template_parameter.is_array() && !is_array())
         return 0;
 
-    if (base_template_parameter.is_array() && is_array())
-        res++;
-
     if (base_template_parameter.is_function_template() &&
         !is_function_template())
         return 0;
@@ -259,7 +278,8 @@ int template_parameter::calculate_specialization_match(
         return 0;
 
     if (!base_template_parameter.template_params().empty() &&
-        !template_params().empty()) {
+        !template_params().empty() &&
+        is_same_specialization(base_template_parameter)) {
         auto params_match = calculate_template_params_specialization_match(
             template_params(), base_template_parameter.template_params());
 
@@ -270,8 +290,21 @@ int template_parameter::calculate_specialization_match(
     }
     else if ((base_template_parameter.is_template_parameter() ||
                  base_template_parameter.is_template_template_parameter()) &&
-        !is_template_parameter())
+        !is_template_parameter()) {
         return 1;
+    }
+    else if (base_template_parameter.is_template_parameter() &&
+        base_template_parameter.template_params().empty()) {
+        // If the base is a regular template param, only possible with deduced
+        // context (deduced context already matches if exists)
+        res++;
+
+        if (!deduced_context().empty() &&
+            !base_template_parameter.deduced_context().empty() &&
+            util::starts_with(
+                deduced_context(), base_template_parameter.deduced_context()))
+            res += base_template_parameter.deduced_context().size();
+    }
 
     return res;
 }
@@ -335,12 +368,25 @@ std::string template_parameter::to_string(
     const clanguml::common::model::namespace_ &using_namespace, bool relative,
     bool skip_qualifiers) const
 {
-    if (is_elipssis())
+    if (is_ellipsis())
         return "...";
 
     using clanguml::common::model::namespace_;
 
     assert(!(type().has_value() && concept_constraint().has_value()));
+
+    if (is_array()) {
+        auto it = template_params_.begin();
+        auto element_type = it->to_string(using_namespace, relative);
+        std::advance(it, 1);
+
+        std::vector<std::string> dimension_args;
+        for (; it != template_params_.end(); it++)
+            dimension_args.push_back(it->to_string(using_namespace, relative));
+
+        return fmt::format(
+            "{}[{}]", element_type, fmt::join(dimension_args, "]["));
+    }
 
     if (is_function_template()) {
         auto it = template_params_.begin();
@@ -589,13 +635,19 @@ const std::deque<context> &template_parameter::deduced_context() const
 {
     return context_;
 }
+
 void template_parameter::deduced_context(const std::deque<context> &c)
 {
     context_ = c;
 }
 
-void template_parameter::is_elipssis(bool e) { is_elipssis_ = e; }
-bool template_parameter::is_elipssis() const { return is_elipssis_; }
+void template_parameter::is_ellipsis(bool e) { is_ellipsis_ = e; }
+
+bool template_parameter::is_ellipsis() const { return is_ellipsis_; }
+
+void template_parameter::is_noexcept(bool e) { is_noexcept_ = e; }
+
+bool template_parameter::is_noexcept() const { return is_noexcept_; }
 
 int calculate_template_params_specialization_match(
     const std::vector<template_parameter> &specialization_params,
@@ -620,6 +672,7 @@ int calculate_template_params_specialization_match(
                                  template_params.at(template_index));
 
             if (match == 0) {
+                // If any of the matches is 0 - the entire match fails
                 return 0;
             }
 

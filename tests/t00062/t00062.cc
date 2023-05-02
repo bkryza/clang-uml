@@ -17,6 +17,10 @@ template <typename U> struct A<std::map<std::string, U> &> {
 template <>
 struct A<std::map<std::string, std::map<std::string, std::string>> &> { };
 
+template <typename U> struct A<U **> {
+    U **u;
+};
+
 template <typename U> struct A<U **const *> {
     U ***u;
 };
@@ -75,6 +79,13 @@ template <int N> struct A<char[N]> {
 template <> struct A<char[1000]> {
     std::vector<char> n;
 };
+
+template <int K, int L, int M> struct A<char[K][L][M]> { char klm[K][L][M]; };
+
+template <typename U> struct A<U(...)> {
+    bool u;
+};
+
 //
 // template <typename T> struct eval;
 //

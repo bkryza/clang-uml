@@ -131,6 +131,10 @@ public:
 
     bool is_association() const;
 
+    bool is_specialization() const;
+
+    bool is_same_specialization(const template_parameter &other) const;
+
     bool find_nested_relationships(
         std::vector<std::pair<int64_t, common::model::relationship_t>>
             &nested_relationships,
@@ -147,7 +151,6 @@ public:
     void set_kind(template_parameter_kind_t kind);
 
     bool is_unexposed() const;
-
     void set_unexposed(bool unexposed);
 
     void is_function_template(bool ft);
@@ -166,8 +169,11 @@ public:
     const std::deque<context> &deduced_context() const;
     void deduced_context(const std::deque<context> &c);
 
-    void is_elipssis(bool e);
-    bool is_elipssis() const;
+    void is_ellipsis(bool e);
+    bool is_ellipsis() const;
+
+    void is_noexcept(bool e);
+    bool is_noexcept() const;
 
 private:
     template_parameter() = default;
@@ -194,7 +200,9 @@ private:
     /// Can only be true when is_template_parameter_ is true
     bool is_template_template_parameter_{false};
 
-    bool is_elipssis_{false};
+    bool is_ellipsis_{false};
+
+    bool is_noexcept_{false};
 
     /// Whether the template parameter is variadic
     bool is_variadic_{false};

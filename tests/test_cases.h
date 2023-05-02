@@ -236,6 +236,8 @@ struct AliasMatcher {
         util::replace_all(name, ")", "\\)");
         util::replace_all(name, " ", "\\s");
         util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
 
         patterns.push_back(
             std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});

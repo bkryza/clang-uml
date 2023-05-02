@@ -583,41 +583,39 @@ template_parameter template_builder::process_type_argument(
 
     argument = try_as_function_prototype(parent, cls, template_decl, type,
         template_instantiation, argument_index);
-
     if (argument)
         return *argument;
 
     argument = try_as_member_pointer(parent, cls, template_decl, type,
         template_instantiation, argument_index);
+    if (argument)
+        return *argument;
 
+    argument = try_as_array(parent, cls, template_decl, type,
+        template_instantiation, argument_index);
     if (argument)
         return *argument;
 
     argument = try_as_template_specialization_type(parent, cls, template_decl,
         type, template_instantiation, argument_index);
-
     if (argument)
         return *argument;
 
     argument = try_as_template_parm_type(cls, template_decl, type);
-
     if (argument)
         return *argument;
 
     argument = try_as_lambda(cls, template_decl, type);
-
     if (argument)
         return *argument;
 
     argument = try_as_record_type(parent, cls, template_decl, type,
         template_instantiation, argument_index);
-
     if (argument)
         return *argument;
 
     argument = try_as_enum_type(
         parent, cls, template_decl, type, template_instantiation);
-
     if (argument)
         return *argument;
 
@@ -894,6 +892,7 @@ std::optional<template_parameter> template_builder::try_as_array(
                                ->getSize()
                                .getLimitedValue())));
     }
+
     // TODO: Handle variable sized arrays
 
     return argument;
@@ -922,9 +921,17 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
     argument.add_template_param(return_arg);
 
     // Set function template argument types
-    for (const auto &param_type : function_type->param_types()) {
-        argument.add_template_param(process_type_argument(parent, cls,
-            template_decl, param_type, template_instantiation, argument_index));
+    if (function_type->isVariadic() && function_type->param_types().empty()) {
+        auto fallback_arg = template_parameter::make_argument({});
+        fallback_arg.is_ellipsis(true);
+        argument.add_template_param(std::move(fallback_arg));
+    }
+    else {
+        for (const auto &param_type : function_type->param_types()) {
+            argument.add_template_param(
+                process_type_argument(parent, cls, template_decl, param_type,
+                    template_instantiation, argument_index));
+        }
     }
 
     return argument;
