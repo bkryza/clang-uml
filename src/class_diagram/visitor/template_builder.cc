@@ -19,6 +19,7 @@
 #include "template_builder.h"
 #include "common/clang_utils.h"
 #include "translation_unit_visitor.h"
+#include <clang/Lex/Lexer.h>
 
 namespace clanguml::class_diagram::visitor {
 
@@ -289,7 +290,7 @@ template_builder::build_from_class_template_specialization(
     auto &template_instantiation = *template_instantiation_ptr;
     template_instantiation.is_struct(template_specialization.isStruct());
 
-    const auto *template_decl =
+    const clang::ClassTemplateDecl *template_decl =
         template_specialization.getSpecializedTemplate();
 
     auto qualified_name = template_decl->getQualifiedNameAsString();
@@ -364,27 +365,36 @@ void template_builder::process_template_arguments(
     const clang::ArrayRef<clang::TemplateArgument> &template_args,
     class_ &template_instantiation, const clang::TemplateDecl *template_decl)
 {
-    auto arg_index = 0;
+    auto arg_index{0};
+
     for (const auto &arg : template_args) {
         // Argument can be a parameter pack in which case it gives multiple
         // arguments
         std::vector<template_parameter> arguments;
 
-        // For now ignore the default template arguments to make the system
+        // For now ignore the default template arguments of templates which
+        // do not match the inclusion filters, to make the system
         // templates 'nicer' - i.e. skipping the allocators and comparators
         // TODO: Change this to ignore only when the arguments are set to
         //       default values, and add them when they are specifically
-        //       overriden
-        const auto *maybe_type_parm_decl =
-            clang::dyn_cast<clang::TemplateTypeParmDecl>(
-                template_decl->getTemplateParameters()->getParam(
-                    std::min<int>(arg_index,
-                        template_decl->getTemplateParameters()->size() - 1)));
-        if (maybe_type_parm_decl &&
-            maybe_type_parm_decl->hasDefaultArgument()) {
-            continue;
+        //       overridden
+        if (!diagram().should_include(
+                template_decl->getQualifiedNameAsString())) {
+            const auto *maybe_type_parm_decl =
+                clang::dyn_cast<clang::TemplateTypeParmDecl>(
+                    template_decl->getTemplateParameters()->getParam(
+                        std::min<int>(arg_index,
+                            template_decl->getTemplateParameters()->size() -
+                                1)));
+            if (maybe_type_parm_decl &&
+                maybe_type_parm_decl->hasDefaultArgument()) {
+                continue;
+            }
         }
 
+        //
+        // Handle the template parameter/argument based on its kind
+        //
         argument_process_dispatch(parent, cls, template_instantiation,
             template_decl, arg, arg_index, arguments);
 
@@ -430,9 +440,15 @@ void template_builder::argument_process_dispatch(
     const clang::TemplateArgument &arg, size_t argument_index,
     std::vector<template_parameter> &argument)
 {
+    LOG_DBG("Processing argument {} in template class: {}", argument_index,
+        cls->getQualifiedNameAsString());
+
     switch (arg.getKind()) {
     case clang::TemplateArgument::Null:
         argument.push_back(process_null_argument(arg));
+        break;
+    case clang::TemplateArgument::Template:
+        argument.push_back(process_template_argument(arg));
         break;
     case clang::TemplateArgument::Type:
         argument.push_back(process_type_argument(parent, cls, template_decl,
@@ -445,9 +461,6 @@ void template_builder::argument_process_dispatch(
         break;
     case clang::TemplateArgument::Integral:
         argument.push_back(process_integral_argument(arg));
-        break;
-    case clang::TemplateArgument::Template:
-        argument.push_back(process_template_argument(arg));
         break;
     case clang::TemplateArgument::TemplateExpansion:
         argument.push_back(process_template_expansion(arg));
@@ -576,8 +589,8 @@ template_parameter template_builder::process_type_argument(
 
     std::optional<template_parameter> argument;
 
-    LOG_DBG("Processing template {} type argument: {}, {}, {}",
-        template_decl->getQualifiedNameAsString(), type_name,
+    LOG_DBG("Processing template {} type argument {}: {}, {}, {}",
+        template_decl->getQualifiedNameAsString(), argument_index, type_name,
         type->getTypeClassName(),
         common::to_string(type, cls->getASTContext()));
 
@@ -596,12 +609,12 @@ template_parameter template_builder::process_type_argument(
     if (argument)
         return *argument;
 
-    argument = try_as_template_specialization_type(parent, cls, template_decl,
-        type, template_instantiation, argument_index);
+    argument = try_as_template_parm_type(cls, template_decl, type);
     if (argument)
         return *argument;
 
-    argument = try_as_template_parm_type(cls, template_decl, type);
+    argument = try_as_template_specialization_type(parent, cls, template_decl,
+        type, template_instantiation, argument_index);
     if (argument)
         return *argument;
 
@@ -616,6 +629,10 @@ template_parameter template_builder::process_type_argument(
 
     argument = try_as_enum_type(
         parent, cls, template_decl, type, template_instantiation);
+    if (argument)
+        return *argument;
+
+    argument = try_as_builtin_type(parent, type, template_decl);
     if (argument)
         return *argument;
 
@@ -952,9 +969,28 @@ template_builder::try_as_template_specialization_type(
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
-    const auto nested_type_name = nested_template_type->getTemplateName()
-                                      .getAsTemplateDecl()
-                                      ->getQualifiedNameAsString();
+    auto nested_type_name = nested_template_type->getTemplateName()
+                                .getAsTemplateDecl()
+                                ->getQualifiedNameAsString();
+
+    if (clang::dyn_cast<clang::TemplateTemplateParmDecl>(
+            nested_template_type->getTemplateName().getAsTemplateDecl()) !=
+        nullptr) {
+        if (const auto *template_specialization_decl =
+                clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(cls);
+            template_specialization_decl != nullptr) {
+            nested_type_name =
+                template_specialization_decl->getDescribedTemplateParams()
+                    ->getParam(argument_index)
+                    ->getNameAsString();
+        }
+        else {
+            // fallback
+            nested_type_name = "template";
+        }
+
+        argument.is_template_template_parameter(true);
+    }
 
     argument.set_type(nested_type_name);
 
@@ -1008,6 +1044,8 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
     auto type_parameter =
         common::dereference(type)->getAs<clang::TemplateTypeParmType>();
 
+    auto type_name = common::to_string(type, &cls->getASTContext());
+
     if (type_parameter == nullptr) {
         if (common::dereference(type)->getAs<clang::PackExpansionType>()) {
             is_variadic = true;
@@ -1025,8 +1063,6 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
     type = consume_context(type, argument);
 
     argument.is_variadic(is_variadic);
-
-    auto type_name = common::to_string(type, &cls->getASTContext());
 
     auto type_parameter_name = common::to_string(type, cls->getASTContext());
 
@@ -1137,6 +1173,23 @@ std::optional<template_parameter> template_builder::try_as_enum_type(
         template_instantiation.add_relationship(
             {relationship_t::kDependency, type_id});
     }
+
+    return argument;
+}
+
+std::optional<template_parameter> template_builder::try_as_builtin_type(
+    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    clang::QualType &type, const clang::TemplateDecl *template_decl)
+{
+    const auto *builtin_type = type->getAs<clang::BuiltinType>();
+    if (builtin_type == nullptr)
+        return {};
+
+    auto type_name = common::to_string(type, template_decl->getASTContext());
+    auto argument = template_parameter::make_argument(type_name);
+
+    type = consume_context(type, argument);
+    argument.set_type(type_name);
 
     return argument;
 }

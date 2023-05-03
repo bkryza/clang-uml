@@ -149,6 +149,10 @@ public:
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
         clang::QualType &type, class_ &template_instantiation);
 
+    std::optional<template_parameter> try_as_builtin_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        clang::QualType &type, const clang::TemplateDecl *template_decl);
+
     std::optional<template_parameter> try_as_member_pointer(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,

@@ -52,6 +52,8 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("A", "char[1000]"));
 
         REQUIRE_THAT(puml, IsClassTemplate("A", "U(...)"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "C<T>"));
+        REQUIRE_THAT(puml, IsClassTemplate("A", "C<T,Args...>"));
 
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &>")));
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
@@ -67,6 +69,9 @@ TEST_CASE("t00062", "[test-case][class]")
             puml, IsInstantiation(_A("A<char[N]>"), _A("A<char[1000]>")));
 
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T>>")));
+        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

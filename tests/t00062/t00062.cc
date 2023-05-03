@@ -86,14 +86,16 @@ template <typename U> struct A<U(...)> {
     bool u;
 };
 
-//
-// template <typename T> struct eval;
-//
-// template <template <typename, typename...> class TT, typename T1,
-//    typename... Rest>
-// struct eval<TT<T1, Rest...>> { };
-//
-// eval<A<int>> eA;
-// eval<std::map<int, float>> eB;
+template <template <typename> class C, typename T> struct A<C<T>> {
+    C<T> c;
+};
+
+template <template <typename, typename...> class C, typename T,
+    typename... Args>
+struct A<C<T, Args...>> {
+    C<T> c;
+    std::tuple<Args...> args;
+};
+
 }
 }
