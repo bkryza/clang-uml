@@ -48,6 +48,7 @@ Checks: >-
   -readability-function-cognitive-complexity,
   -readability-const-return-type,
   -readability-simplify-boolean-expr,
+  -readability-make-member-function-const,
   -darwin*,
   -zircon*
 WarningsAsErrors: '*'

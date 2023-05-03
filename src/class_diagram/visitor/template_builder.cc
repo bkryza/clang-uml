@@ -383,10 +383,12 @@ void template_builder::process_template_arguments(
             const auto *maybe_type_parm_decl =
                 clang::dyn_cast<clang::TemplateTypeParmDecl>(
                     template_decl->getTemplateParameters()->getParam(
-                        std::min<int>(arg_index,
-                            template_decl->getTemplateParameters()->size() -
+                        std::min<unsigned>(arg_index,
+                            static_cast<unsigned>(
+                                template_decl->getTemplateParameters()
+                                    ->size()) -
                                 1)));
-            if (maybe_type_parm_decl &&
+            if (maybe_type_parm_decl != nullptr &&
                 maybe_type_parm_decl->hasDefaultArgument()) {
                 continue;
             }
@@ -528,10 +530,13 @@ clang::QualType template_builder::consume_context(
             ctx.pr = common::model::rpqualifier::kRValueReference;
             try_again = true;
         }
-        else if (type->isMemberFunctionPointerType()) {
-            const auto ref_qualifier = type->getPointeeType()
-                                           ->getAs<clang::FunctionProtoType>()
-                                           ->getRefQualifier();
+        else if (type->isMemberFunctionPointerType() &&
+            type->getPointeeType()->getAs<clang::FunctionProtoType>() !=
+                nullptr) {
+            const auto ref_qualifier =
+                type->getPointeeType()                  // NOLINT
+                    ->getAs<clang::FunctionProtoType>() // NOLINT
+                    ->getRefQualifier();
 
             if (ref_qualifier == clang::RefQualifierKind::RQ_RValue) {
                 ctx.pr = common::model::rpqualifier::kRValueReference;
@@ -569,7 +574,7 @@ clang::QualType template_builder::consume_context(
                 ctx.is_volatile = type.isVolatileQualified();
             }
 
-            tp.push_context(std::move(ctx));
+            tp.push_context(ctx);
 
             if (type->isMemberFunctionPointerType())
                 return type;
@@ -587,7 +592,7 @@ template_parameter template_builder::process_type_argument(
     std::optional<template_parameter> argument;
 
     if (type->getAs<clang::ElaboratedType>() != nullptr) {
-        type = type->getAs<clang::ElaboratedType>()->getNamedType();
+        type = type->getAs<clang::ElaboratedType>()->getNamedType(); // NOLINT
     }
 
     auto type_name = common::to_string(type, &cls->getASTContext());
@@ -715,7 +720,7 @@ std::string map_type_parameter_to_template_parameter(
     return tp;
 }
 
-}
+} // namespace detail
 
 std::string map_type_parameter_to_template_parameter_name(
     const clang::Decl *decl, const std::string &type_parameter)
@@ -784,13 +789,13 @@ std::vector<template_parameter> template_builder::process_pack_argument(
     const clang::NamedDecl *cls, class_ &template_instantiation,
     const clang::TemplateDecl *base_template_decl,
     const clang::TemplateArgument &arg, size_t argument_index,
-    std::vector<template_parameter> &argument)
+    std::vector<template_parameter> & /*argument*/)
 {
     assert(arg.getKind() == clang::TemplateArgument::Pack);
 
     std::vector<template_parameter> res;
 
-    int pack_argument_index = argument_index;
+    auto pack_argument_index = argument_index;
 
     for (const auto &a : arg.getPackAsArray()) {
         argument_process_dispatch(parent, cls, template_instantiation,
@@ -900,13 +905,14 @@ std::optional<template_parameter> template_builder::try_as_array(
     if (array_type->isDependentSizedArrayType() &&
         array_type->getDependence() ==
             clang::TypeDependence::DependentInstantiation) {
-        argument.add_template_param(template_parameter::make_template_type(
-            common::to_string(((clang::DependentSizedArrayType *)array_type)
-                                  ->getSizeExpr())));
+        argument.add_template_param(
+            template_parameter::make_template_type(common::to_string(
+                ((clang::DependentSizedArrayType *)array_type) // NOLINT
+                    ->getSizeExpr())));
     }
     else if (array_type->isConstantArrayType()) {
         argument.add_template_param(template_parameter::make_argument(
-            std::to_string(((clang::ConstantArrayType *)array_type)
+            std::to_string(((clang::ConstantArrayType *)array_type) // NOLINT
                                ->getSize()
                                .getLimitedValue())));
     }
@@ -1037,23 +1043,23 @@ template_builder::try_as_template_specialization_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_template_parm_type(
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+    const clang::NamedDecl *cls, const clang::TemplateDecl * /*template_decl*/,
     clang::QualType &type)
 {
     auto is_variadic{false};
 
-    auto type_parameter =
+    const auto *type_parameter =
         common::dereference(type)->getAs<clang::TemplateTypeParmType>();
 
     auto type_name = common::to_string(type, &cls->getASTContext());
 
     if (type_parameter == nullptr) {
-        if (common::dereference(type)->getAs<clang::PackExpansionType>()) {
+        if (const auto *pet =
+                common::dereference(type)->getAs<clang::PackExpansionType>();
+            pet != nullptr) {
             is_variadic = true;
-            type_parameter = common::dereference(type)
-                                 ->getAs<clang::PackExpansionType>()
-                                 ->getPattern()
-                                 ->getAs<clang::TemplateTypeParmType>();
+            type_parameter =
+                pet->getPattern()->getAs<clang::TemplateTypeParmType>();
         }
     }
 
@@ -1076,7 +1082,7 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_lambda(
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+    const clang::NamedDecl *cls, const clang::TemplateDecl * /*template_decl*/,
     clang::QualType &type)
 {
     auto type_name = common::to_string(type, &cls->getASTContext());
@@ -1095,9 +1101,9 @@ std::optional<template_parameter> template_builder::try_as_lambda(
 
 std::optional<template_parameter> template_builder::try_as_record_type(
     std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+    const clang::NamedDecl * /*cls*/, const clang::TemplateDecl *template_decl,
     clang::QualType &type, class_ &template_instantiation,
-    size_t argument_index)
+    size_t /*argument_index*/)
 {
     const auto *record_type =
         common::dereference(type)->getAs<clang::RecordType>();
@@ -1152,8 +1158,8 @@ std::optional<template_parameter> template_builder::try_as_record_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_enum_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    const clang::NamedDecl * /*cls*/, const clang::TemplateDecl *template_decl,
     clang::QualType &type, class_ &template_instantiation)
 {
     const auto *enum_type = type->getAs<clang::EnumType>();
@@ -1177,7 +1183,7 @@ std::optional<template_parameter> template_builder::try_as_enum_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_builtin_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
     clang::QualType &type, const clang::TemplateDecl *template_decl)
 {
     const auto *builtin_type = type->getAs<clang::BuiltinType>();

@@ -182,4 +182,4 @@ private:
     clang::SourceManager &source_manager_;
 };
 
-}
+} // namespace clanguml::class_diagram::visitor

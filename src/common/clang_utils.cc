@@ -480,7 +480,10 @@ bool is_bracket(const std::string &b)
     return b == "(" || b == ")" || b == "[" || b == "]";
 }
 
-bool is_identifier_character(char c) { return std::isalnum(c) || c == '_'; }
+bool is_identifier_character(char c)
+{
+    return std::isalnum(c) != 0 || c == '_';
+}
 
 bool is_identifier(const std::string &t)
 {
@@ -509,7 +512,7 @@ bool is_keyword(const std::string &t)
 
 bool is_qualified_identifier(const std::string &t)
 {
-    return std::isalpha(t.at(0)) &&
+    return std::isalpha(t.at(0)) != 0 &&
         std::all_of(t.begin(), t.end(), [](const char c) {
             return is_identifier_character(c) || c == ':';
         });
@@ -547,7 +550,7 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
     for (const auto &word : spaced_out) {
         if (is_qualified_identifier(word)) {
             if (word != "class" && word != "templated" && word != "struct")
-                result.push_back(word);
+                result.emplace_back(word);
             continue;
         }
 
@@ -557,17 +560,17 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
             if (c == '(' || c == ')' || c == '[' || c == ']' || c == '<' ||
                 c == '>') {
                 if (!tok.empty())
-                    result.push_back(tok);
-                result.push_back(std::string{c});
+                    result.emplace_back(tok);
+                result.emplace_back(std::string{c});
                 tok.clear();
             }
             else if (c == ':') {
                 if (!tok.empty() && tok != ":") {
-                    result.push_back(tok);
+                    result.emplace_back(tok);
                     tok = ":";
                 }
                 else if (tok == ":") {
-                    result.push_back("::");
+                    result.emplace_back("::");
                     tok = "";
                 }
                 else {
@@ -576,30 +579,30 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
             }
             else if (c == ',') {
                 if (!tok.empty()) {
-                    result.push_back(tok);
+                    result.emplace_back(tok);
                 }
-                result.push_back(",");
+                result.emplace_back(",");
                 tok.clear();
             }
             else if (c == '*') {
                 if (!tok.empty()) {
-                    result.push_back(tok);
+                    result.emplace_back(tok);
                 }
-                result.push_back("*");
+                result.emplace_back("*");
                 tok.clear();
             }
             else if (c == '.') {
                 // This can only be the case if we have a variadic template,
                 // right?
                 if (tok == "..") {
-                    result.push_back("...");
+                    result.emplace_back("...");
                     tok.clear();
                 }
                 else if (tok == ".") {
                     tok = "..";
                 }
                 else if (!tok.empty()) {
-                    result.push_back(tok);
+                    result.emplace_back(tok);
                     tok = ".";
                 }
             }
@@ -612,7 +615,7 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
 
         if (!tok.empty()) {
             if (tok != "class" && tok != "typename" && word != "struct")
-                result.push_back(tok);
+                result.emplace_back(tok);
             tok.clear();
         }
     }

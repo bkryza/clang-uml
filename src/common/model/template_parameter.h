@@ -165,7 +165,7 @@ public:
     void is_array(bool a);
     bool is_array() const;
 
-    void push_context(const context q);
+    void push_context(const context &q);
     const std::deque<context> &deduced_context() const;
     void deduced_context(const std::deque<context> &c);
 

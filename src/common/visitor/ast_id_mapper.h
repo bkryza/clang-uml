@@ -40,4 +40,4 @@ private:
         id_map_;
 };
 
-} // namespace clanguml::class_diagram::visitor
+} // namespace clanguml::common::visitor

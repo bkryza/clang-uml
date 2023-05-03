@@ -28,9 +28,9 @@ std::string context::to_string() const
 {
     std::vector<std::string> cv_qualifiers;
     if (is_const)
-        cv_qualifiers.push_back("const");
+        cv_qualifiers.emplace_back("const");
     if (is_volatile)
-        cv_qualifiers.push_back("volatile");
+        cv_qualifiers.emplace_back("volatile");
 
     auto res = fmt::format("{}", fmt::join(cv_qualifiers, " "));
 
@@ -303,7 +303,8 @@ int template_parameter::calculate_specialization_match(
             !base_template_parameter.deduced_context().empty() &&
             util::starts_with(
                 deduced_context(), base_template_parameter.deduced_context()))
-            res += base_template_parameter.deduced_context().size();
+            res += static_cast<int>(
+                base_template_parameter.deduced_context().size());
     }
 
     return res;
@@ -410,9 +411,8 @@ std::string template_parameter::to_string(
 
         if (skip_qualifiers)
             return unqualified;
-        else {
-            return util::join(" ", unqualified, deduced_context_str());
-        }
+
+        return util::join(" ", unqualified, deduced_context_str());
     }
 
     if (is_member_pointer()) {
@@ -433,9 +433,8 @@ std::string template_parameter::to_string(
             "{} ({}::*)({})", return_type, class_type, fmt::join(args, ","));
         if (skip_qualifiers)
             return unqualified;
-        else {
-            return util::join(" ", unqualified, deduced_context_str());
-        }
+
+        return util::join(" ", unqualified, deduced_context_str());
     }
 
     std::string res;
@@ -627,7 +626,7 @@ bool template_parameter::is_data_pointer() const { return is_data_pointer_; }
 void template_parameter::is_array(bool a) { is_array_ = a; }
 bool template_parameter::is_array() const { return is_array_; }
 
-void template_parameter::push_context(const context q)
+void template_parameter::push_context(const context &q)
 {
     context_.push_front(q);
 }
