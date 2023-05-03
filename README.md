@@ -27,7 +27,7 @@ Main features supported so far include:
     * Class inheritance [example](docs/test_cases/t00002.md)
     * Other class relationships including associations, aggregations, dependencies and friendship [example](docs/test_cases/t00006.md)
     * Template instantiation relationships [example](docs/test_cases/t00014.md)
-    * Template specialization and instantiation based on deduced context [[example](docs/test_cases/t00062.md)
+    * Template specialization and instantiation based on deduced context [example](docs/test_cases/t00062.md)
     * Relationship inference from C++ containers and smart pointers [example](docs/test_cases/t00007.md)
     * Diagram content filtering based on namespaces, elements and relationships [example](docs/test_cases/t00040.md)
     * Optional package generation from namespaces [example](docs/test_cases/t00036.md)
