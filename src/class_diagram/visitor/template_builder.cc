@@ -582,12 +582,15 @@ clang::QualType template_builder::consume_context(
 template_parameter template_builder::process_type_argument(
     std::optional<clanguml::class_diagram::model::class_ *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    // const clang::TemplateArgument &arg,
     clang::QualType type, class_ &template_instantiation, size_t argument_index)
 {
-    auto type_name = common::to_string(type, &cls->getASTContext());
-
     std::optional<template_parameter> argument;
+
+    if (type->getAs<clang::ElaboratedType>() != nullptr) {
+        type = type->getAs<clang::ElaboratedType>()->getNamedType();
+    }
+
+    auto type_name = common::to_string(type, &cls->getASTContext());
 
     LOG_DBG("Processing template {} type argument {}: {}, {}, {}",
         template_decl->getQualifiedNameAsString(), argument_index, type_name,
@@ -675,8 +678,6 @@ bool template_builder::find_relationships_in_unexposed_template_params(
 
     return found;
 }
-
-// using token_it = std::vector<std::string>::const_iterator;
 
 namespace detail {
 
@@ -1107,6 +1108,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
     type = consume_context(type, argument);
 
     auto type_name = common::to_string(type, template_decl->getASTContext());
+
     argument.set_type(type_name);
     const auto type_id = common::to_id(type_name);
     argument.set_id(type_id);
@@ -1138,9 +1140,6 @@ std::optional<template_parameter> template_builder::try_as_record_type(
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
              record_type_decl != nullptr) {
-#if LLVM_VERSION_MAJOR >= 16
-        argument.set_type(record_type_decl->getQualifiedNameAsString());
-#endif
         if (diagram().should_include(type_name)) {
             // Add dependency relationship to the parent
             // template

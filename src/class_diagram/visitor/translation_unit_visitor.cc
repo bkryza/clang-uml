@@ -1839,7 +1839,6 @@ void translation_unit_visitor::process_field(
     // Process the type which is template instantiation of some sort
     if (template_field_type != nullptr &&
         !field_type_is_template_template_parameter) {
-
         // Build the template instantiation for the field type
         auto template_specialization_ptr =
             tbuilder().build(&field_declaration, *template_field_type, {&c});

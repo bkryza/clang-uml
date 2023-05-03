@@ -154,7 +154,6 @@ TEST_CASE("t00014", "[test-case][class]")
         REQUIRE(json::IsClass(j, "A<std::string,std::string>"));
         REQUIRE(json::IsClass(j, "A<char,std::string>"));
         REQUIRE(json::IsClass(j, "B"));
-
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }

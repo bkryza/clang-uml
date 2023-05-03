@@ -102,10 +102,8 @@ public:
     template_parameter process_type_argument(
         std::optional<clanguml::class_diagram::model::class_ *> &parent,
         const clang::NamedDecl *cls,
-        const clang::TemplateDecl *base_template_decl,
-        // const clang::TemplateArgument &arg,
-        clang::QualType type, model::class_ &template_instantiation,
-        size_t argument_index);
+        const clang::TemplateDecl *base_template_decl, clang::QualType type,
+        model::class_ &template_instantiation, size_t argument_index);
 
     common::model::template_parameter process_template_argument(
         const clang::TemplateArgument &arg);

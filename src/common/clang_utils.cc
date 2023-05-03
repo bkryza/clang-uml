@@ -116,8 +116,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
-    print_policy.SuppressScope = false;
-    print_policy.PrintCanonicalTypes = false;
+    print_policy.SuppressScope = 0;
+    print_policy.PrintCanonicalTypes = 0;
 
     std::string result;
 
