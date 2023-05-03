@@ -46,11 +46,12 @@ void diagram_element::add_relationship(relationship &&cr)
         return;
     }
 
-    LOG_DBG("Adding relationship from: '{}' ({}) - {} - '{}'", id(),
-        full_name(true), to_string(cr.type()), cr.destination());
+    if (!util::contains(relationships_, cr)) {
+        LOG_DBG("Adding relationship from: '{}' ({}) - {} - '{}'", id(),
+            full_name(true), to_string(cr.type()), cr.destination());
 
-    if (!util::contains(relationships_, cr))
         relationships_.emplace_back(std::move(cr));
+    }
 }
 
 std::vector<relationship> &diagram_element::relationships()

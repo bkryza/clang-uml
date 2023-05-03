@@ -57,6 +57,7 @@ namespace clanguml::util {
 std::string ltrim(const std::string &s);
 std::string rtrim(const std::string &s);
 std::string trim(const std::string &s);
+std::string trim_typename(const std::string &s);
 
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
@@ -91,8 +92,25 @@ std::string get_git_toplevel_dir();
 std::vector<std::string> split(
     std::string str, std::string_view delimiter, bool skip_empty = true);
 
+template <typename T, typename F> void erase_if(std::vector<T> &v, F &&f)
+{
+    v.erase(std::remove_if(v.begin(), v.end(), std::forward<F>(f)), v.end());
+}
+
 std::string join(
     const std::vector<std::string> &toks, std::string_view delimiter);
+
+template <typename... Args>
+std::string join(std::string_view delimiter, Args... args)
+{
+    std::vector<std::string> coll{args...};
+
+    erase_if(coll, [](const auto &s) {
+        return s.find_first_not_of(" \t") == std::string::npos;
+    });
+
+    return fmt::format("{}", fmt::join(coll, delimiter));
+}
 
 /**
  * @brief Abbreviate string to max_length, and replace last 3 characters

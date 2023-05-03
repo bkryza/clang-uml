@@ -180,6 +180,9 @@ test_cases:
     - name: t00061
       title: Paths diagram filter test case
       description:
+    - name: t00062
+      title: Template specialization matching based on deduced context
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

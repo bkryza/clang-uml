@@ -23,28 +23,31 @@ Full documentation can be found [here](./docs/README.md).
 Main features supported so far include:
 
 * **Class diagram generation**
-    * Basic class properties and methods including visibility
-    * Class relationships including associations, aggregations, dependencies and friendship
-    * Template instantiation relationships
-    * Relationship inference from C++ containers and smart pointers
-    * Diagram content filtering based on namespaces, elements and relationships
-    * Optional package generation from namespaces
+    * Class properties and methods including access [example](docs/test_cases/t00003.md)
+    * Class inheritance [example](docs/test_cases/t00002.md)
+    * Other class relationships including associations, aggregations, dependencies and friendship [example](docs/test_cases/t00006.md)
+    * Template instantiation relationships [example](docs/test_cases/t00014.md)
+    * Template specialization and instantiation based on deduced context [example](docs/test_cases/t00062.md)
+    * Relationship inference from C++ containers and smart pointers [example](docs/test_cases/t00007.md)
+    * Diagram content filtering based on namespaces, elements and relationships [example](docs/test_cases/t00040.md)
+    * Optional package generation from namespaces [example](docs/test_cases/t00036.md)
     * Interactive links to online code to classes, methods and class fields in SVG diagrams
-    * Support for plain C99/C11 code (struct and units relationships)
-    * C++20 concept constraints
+    * Support for plain C99/C11 code (struct and units relationships) [example](docs/test_cases/t00057.md)
+    * C++20 concept constraints [example](docs/test_cases/t00059.md)
 * **Sequence diagram generation**
-    * Generation of sequence diagram from specific method or function
-    * Generation of loop and conditional statements
-    * Generation of switch statements
-    * Generation of try/catch blocks
-    * Handling of template code including constexpr conditionals
-    * Handling of lambda expressions
+    * Generation of sequence diagram from specific method or function [example](docs/test_cases/t00002.md)
+    * Generation of loop and conditional statements [example](docs/test_cases/t20021.md)
+    * Generation of switch statements [example](docs/test_cases/t20024.md)
+    * Generation of try/catch blocks [example](docs/test_cases/t20023.md)
+    * Handling of template code including constexpr conditionals [example](docs/test_cases/t20018.md)
+    * Handling of lambda expressions [example](docs/test_cases/t20012.md)
     * Interactive links to online code to classes and call expressions
 * **Package diagram generation**
-    * Generation of package diagram based on C++ namespaces
+    * Generation of package diagram based on C++ namespaces [example](docs/test_cases/t30001.md)
+    * Dependencies between packages based on symbols used in the code [example](docs/test_cases/t30002.md)
     * Interactive links to online code to packages
 * **Include graph diagram generation**
-    * Show include graph for selected files
+    * Show include graph for selected files [example](docs/test_cases/t40001.md)
 
 To see what `clang-uml` can do so far, checkout the diagrams generated for unit 
 test cases [here](./docs/test_cases.md) and examples in

@@ -1,5 +1,4 @@
 // Inspired by skypjack/entt signal handlers
-// This test case checks that at least clang-uml does not crash on this code
 namespace clanguml::t00044 {
 
 template <typename T> class sink;

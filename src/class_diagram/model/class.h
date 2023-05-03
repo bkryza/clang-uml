@@ -72,6 +72,16 @@ public:
 
     int calculate_template_specialization_match(const class_ &other) const;
 
+    void template_specialization_found(bool found)
+    {
+        template_specialization_found_ = found;
+    }
+
+    bool template_specialization_found() const
+    {
+        return template_specialization_found_;
+    }
+
 private:
     bool is_struct_{false};
     bool is_template_{false};
@@ -82,6 +92,8 @@ private:
     std::string base_template_full_name_;
 
     std::string full_name_;
+
+    bool template_specialization_found_{false};
 };
 
 } // namespace clanguml::class_diagram::model

@@ -116,8 +116,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
-    print_policy.SuppressScope = false;
-    print_policy.PrintCanonicalTypes = false;
+    print_policy.SuppressScope = 0;
+    print_policy.PrintCanonicalTypes = 0;
 
     std::string result;
 
@@ -167,6 +167,25 @@ std::string to_string(const clang::RecordType &type,
     const clang::ASTContext &ctx, bool try_canonical)
 {
     return to_string(type.desugar(), ctx, try_canonical);
+}
+
+std::string to_string(
+    const clang::TemplateArgument &arg, const clang::ASTContext *ctx)
+{
+    switch (arg.getKind()) {
+    case clang::TemplateArgument::Expression:
+        return to_string(arg.getAsExpr());
+    case clang::TemplateArgument::Type:
+        return to_string(arg.getAsType(), *ctx, false);
+    case clang::TemplateArgument::Null:
+        return "";
+    case clang::TemplateArgument::NullPtr:
+        return "nullptr";
+    case clang::TemplateArgument::Integral:
+        return std::to_string(arg.getAsIntegral().getExtValue());
+    default:
+        return "";
+    }
 }
 
 std::string to_string(const clang::Expr *expr)
@@ -250,17 +269,24 @@ std::string get_source_text(
     return get_source_text_raw(printable_range, sm);
 }
 
-std::pair<unsigned int, unsigned int> extract_template_parameter_index(
-    const std::string &type_parameter)
+std::tuple<unsigned int, unsigned int, std::string>
+extract_template_parameter_index(const std::string &type_parameter)
 {
     assert(type_parameter.find("type-parameter-") == 0);
 
-    auto toks =
-        util::split(type_parameter.substr(strlen("type-parameter-")), "-");
+    auto type_parameter_and_suffix = util::split(type_parameter, " ");
 
-    assert(toks.size() == 2);
+    auto toks = util::split(
+        type_parameter_and_suffix.front().substr(strlen("type-parameter-")),
+        "-");
 
-    return {std::stoi(toks.at(0)), std::stoi(toks.at(1))};
+    std::string qualifier;
+
+    if (type_parameter_and_suffix.size() > 1) {
+        qualifier = type_parameter_and_suffix.at(1);
+    }
+
+    return {std::stoi(toks.at(0)), std::stoi(toks.at(1)), std::move(qualifier)};
 }
 
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
@@ -278,6 +304,11 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
 template <> id_t to_id(const std::string &full_name)
 {
     return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3U);
+}
+
+id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
+{
+    return to_id(common::to_string(type, ctx));
 }
 
 template <> id_t to_id(const clang::NamespaceDecl &declaration)
@@ -410,7 +441,7 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
         }
         if (complete_class_template_argument) {
             auto t = template_parameter::make_unexposed_argument(
-                ns_resolve(clanguml::util::trim(type)));
+                ns_resolve(clanguml::util::trim_typename(type)));
             type = "";
             for (auto &&param : nested_params)
                 t.add_template_param(std::move(param));
@@ -423,7 +454,7 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
 
     if (!type.empty()) {
         auto t = template_parameter::make_unexposed_argument(
-            ns_resolve(clanguml::util::trim(type)));
+            ns_resolve(clanguml::util::trim_typename(type)));
         type = "";
         for (auto &&param : nested_params)
             t.add_template_param(std::move(param));
@@ -433,4 +464,163 @@ std::vector<common::model::template_parameter> parse_unexposed_template_params(
 
     return res;
 }
+
+bool is_type_parameter(const std::string &t)
+{
+    return t.find("type-parameter-") == 0;
+}
+
+bool is_qualifier(const std::string &q)
+{
+    return q == "&" || q == "&&" || q == "const&";
+}
+
+bool is_bracket(const std::string &b)
+{
+    return b == "(" || b == ")" || b == "[" || b == "]";
+}
+
+bool is_identifier_character(char c)
+{
+    return std::isalnum(c) != 0 || c == '_';
+}
+
+bool is_identifier(const std::string &t)
+{
+    return std::all_of(t.begin(), t.end(),
+        [](const char c) { return is_identifier_character(c); });
+}
+
+bool is_keyword(const std::string &t)
+{
+    static std::vector<std::string> keywords{"alignas", "alignof", "asm",
+        "auto", "bool", "break", "case", "catch", "char", "char16_t",
+        "char32_t", "class", "concept", "const", "constexpr", "const_cast",
+        "continue", "decltype", "default", "delete", "do", "double",
+        "dynamic_cast", "else", "enum", "explicit", "export", "extern", "false",
+        "float", "for", "friend", "goto", "if", "inline", "int", "long",
+        "mutable", "namespace", "new", "noexcept", "nullptr", "operator",
+        "private", "protected", "public", "register", "reinterpret_cast",
+        "return", "requires", "short", "signed", "sizeof", "static",
+        "static_assert", "static_cast", "struct", "switch", "template", "this",
+        "thread_local", "throw", "true", "try", "typedef", "typeid", "typename",
+        "union", "unsigned", "using", "virtual", "void", "volatile", "wchar_t",
+        "while"};
+
+    return util::contains(keywords, t);
+}
+
+bool is_qualified_identifier(const std::string &t)
+{
+    return std::isalpha(t.at(0)) != 0 &&
+        std::all_of(t.begin(), t.end(), [](const char c) {
+            return is_identifier_character(c) || c == ':';
+        });
+}
+
+bool is_type_token(const std::string &t)
+{
+    return is_type_parameter(t) ||
+        (is_identifier(t) && !is_qualifier(t) && !is_bracket(t));
+}
+
+clang::QualType dereference(clang::QualType type)
+{
+    auto res = type;
+
+    while (true) {
+        if (res->isReferenceType())
+            res = res.getNonReferenceType();
+        else if (res->isPointerType())
+            res = res->getPointeeType();
+        else
+            break;
+    }
+
+    return res;
+}
+
+std::vector<std::string> tokenize_unexposed_template_parameter(
+    const std::string &t)
+{
+    std::vector<std::string> result;
+
+    auto spaced_out = util::split(t, " ");
+
+    for (const auto &word : spaced_out) {
+        if (is_qualified_identifier(word)) {
+            if (word != "class" && word != "templated" && word != "struct")
+                result.emplace_back(word);
+            continue;
+        }
+
+        std::string tok;
+
+        for (const char c : word) {
+            if (c == '(' || c == ')' || c == '[' || c == ']' || c == '<' ||
+                c == '>') {
+                if (!tok.empty())
+                    result.emplace_back(tok);
+                result.emplace_back(std::string{c});
+                tok.clear();
+            }
+            else if (c == ':') {
+                if (!tok.empty() && tok != ":") {
+                    result.emplace_back(tok);
+                    tok = ":";
+                }
+                else if (tok == ":") {
+                    result.emplace_back("::");
+                    tok = "";
+                }
+                else {
+                    tok += ':';
+                }
+            }
+            else if (c == ',') {
+                if (!tok.empty()) {
+                    result.emplace_back(tok);
+                }
+                result.emplace_back(",");
+                tok.clear();
+            }
+            else if (c == '*') {
+                if (!tok.empty()) {
+                    result.emplace_back(tok);
+                }
+                result.emplace_back("*");
+                tok.clear();
+            }
+            else if (c == '.') {
+                // This can only be the case if we have a variadic template,
+                // right?
+                if (tok == "..") {
+                    result.emplace_back("...");
+                    tok.clear();
+                }
+                else if (tok == ".") {
+                    tok = "..";
+                }
+                else if (!tok.empty()) {
+                    result.emplace_back(tok);
+                    tok = ".";
+                }
+            }
+            else {
+                tok += c;
+            }
+        }
+
+        tok = util::trim(tok);
+
+        if (!tok.empty()) {
+            if (tok != "class" && tok != "typename" && word != "struct")
+                result.emplace_back(tok);
+            tok.clear();
+        }
+    }
+
+    return result;
+}
+
 } // namespace clanguml::common

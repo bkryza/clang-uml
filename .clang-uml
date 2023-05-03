@@ -22,6 +22,8 @@ diagrams:
     include!: uml/sequence_diagram_visitor_sequence_diagram.yml
   class_diagram_generator_sequence:
     include!: uml/class_diagram_generator_sequence_diagram.yml
+  template_builder_sequence:
+    include!: uml/template_builder_sequence_diagram.yml
   package_model_class:
     include!: uml/package_model_class_diagram.yml
   include_graph:

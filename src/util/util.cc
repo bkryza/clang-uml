@@ -136,6 +136,15 @@ std::string rtrim(const std::string &s)
     return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
 
+std::string trim_typename(const std::string &s)
+{
+    auto res = trim(s);
+    if (res.find("typename ") == 0)
+        return res.substr(strlen("typename "));
+
+    return res;
+}
+
 std::string trim(const std::string &s) { return rtrim(ltrim(s)); }
 
 std::vector<std::string> split(

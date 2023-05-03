@@ -23,6 +23,41 @@
 #include <utility>
 
 namespace clanguml::common::model {
+
+std::string context::to_string() const
+{
+    std::vector<std::string> cv_qualifiers;
+    if (is_const)
+        cv_qualifiers.emplace_back("const");
+    if (is_volatile)
+        cv_qualifiers.emplace_back("volatile");
+
+    auto res = fmt::format("{}", fmt::join(cv_qualifiers, " "));
+
+    if (pr == rpqualifier::kPointer)
+        res += "*";
+    else if (pr == rpqualifier::kLValueReference)
+        res += "&";
+    else if (pr == rpqualifier::kRValueReference)
+        res += "&&";
+
+    if (is_ref_const)
+        res += " const";
+    if (is_ref_volatile)
+        res += " volatile";
+
+    return res;
+}
+
+bool context::operator==(const context &rhs) const
+{
+    return is_const == rhs.is_const && is_volatile == rhs.is_volatile &&
+        is_ref_const == rhs.is_ref_const &&
+        is_ref_volatile == rhs.is_ref_volatile && pr == rhs.pr;
+}
+
+bool context::operator!=(const context &rhs) const { return !(rhs == *this); }
+
 std::string to_string(template_parameter_kind_t k)
 {
     switch (k) {
@@ -40,6 +75,82 @@ std::string to_string(template_parameter_kind_t k)
         assert(false);
         return "";
     }
+}
+
+template_parameter template_parameter::make_template_type(
+    const std::string &name, const std::optional<std::string> &default_value,
+    bool is_variadic)
+{
+    template_parameter p;
+    p.set_kind(template_parameter_kind_t::template_type);
+    p.set_name(name);
+    p.is_variadic(is_variadic);
+    p.is_template_parameter(true);
+    if (default_value)
+        p.set_default_value(default_value.value());
+    return p;
+}
+
+template_parameter template_parameter::make_template_template_type(
+    const std::string &name, const std::optional<std::string> &default_value,
+    bool is_variadic)
+{
+    template_parameter p;
+    p.set_kind(template_parameter_kind_t::template_template_type);
+    p.set_name(name + "<>");
+    if (default_value)
+        p.set_default_value(default_value.value());
+    p.is_variadic(is_variadic);
+    return p;
+}
+
+template_parameter template_parameter::make_non_type_template(
+    const std::string &type, const std::optional<std::string> &name,
+    const std::optional<std::string> &default_value, bool is_variadic)
+{
+    template_parameter p;
+    p.set_kind(template_parameter_kind_t::non_type_template);
+    p.set_type(type);
+    if (name)
+        p.set_name(name.value());
+    if (default_value)
+        p.set_default_value(default_value.value());
+    p.is_variadic(is_variadic);
+    return p;
+}
+
+template_parameter template_parameter::make_argument(
+    const std::string &type, const std::optional<std::string> &default_value)
+{
+    template_parameter p;
+    p.set_kind(template_parameter_kind_t::argument);
+    p.set_type(type);
+    if (default_value)
+        p.set_default_value(default_value.value());
+    return p;
+}
+
+template_parameter template_parameter::make_unexposed_argument(
+    const std::string &type, const std::optional<std::string> &default_value)
+{
+    template_parameter p = make_argument(type, default_value);
+    p.set_unexposed(true);
+    return p;
+}
+
+bool template_parameter::is_specialization() const
+{
+    return is_function_template() || is_array() || is_data_pointer() ||
+        is_member_pointer() || !deduced_context().empty();
+}
+
+bool template_parameter::is_same_specialization(
+    const template_parameter &other) const
+{
+    return is_array() == other.is_array() &&
+        is_function_template() == other.is_function_template() &&
+        is_data_pointer() == other.is_data_pointer() &&
+        is_member_pointer() == other.is_member_pointer();
 }
 
 void template_parameter::set_type(const std::string &type)
@@ -69,8 +180,9 @@ void template_parameter::set_name(const std::string &name)
 {
     assert(kind_ != template_parameter_kind_t::argument);
 
-    if (name.empty())
+    if (name.empty()) {
         return;
+    }
 
     if (util::ends_with(name, std::string{"..."})) {
         name_ = name.substr(0, name.size() - 3);
@@ -113,6 +225,31 @@ int template_parameter::calculate_specialization_match(
 {
     int res{0};
 
+    // If the potential base template has a deduction context (e.g. const&),
+    // the specialization must have the same and possibly more
+    if (base_template_parameter.is_specialization()) {
+        if (!deduced_context().empty() &&
+            (base_template_parameter.deduced_context().empty() ||
+                !util::starts_with(deduced_context(),
+                    base_template_parameter.deduced_context())))
+            return 0;
+
+        if (!base_template_parameter.deduced_context().empty() &&
+            deduced_context().empty())
+            return 0;
+    }
+
+    if (is_template_parameter() &&
+        base_template_parameter.is_template_parameter() &&
+        template_params().empty() &&
+        base_template_parameter.template_params().empty() &&
+        is_variadic() == is_variadic() &&
+        is_function_template() ==
+            base_template_parameter.is_function_template() &&
+        is_member_pointer() == base_template_parameter.is_member_pointer()) {
+        return 1;
+    }
+
     auto maybe_base_template_parameter_type = base_template_parameter.type();
     auto maybe_template_parameter_type = type();
 
@@ -120,7 +257,6 @@ int template_parameter::calculate_specialization_match(
         maybe_template_parameter_type.has_value() &&
         !base_template_parameter.is_template_parameter() &&
         !is_template_parameter()) {
-
         if (maybe_base_template_parameter_type.value() !=
             maybe_template_parameter_type.value())
             return 0;
@@ -128,12 +264,22 @@ int template_parameter::calculate_specialization_match(
         res++;
     }
 
+    if (base_template_parameter.is_array() && !is_array())
+        return 0;
+
     if (base_template_parameter.is_function_template() &&
         !is_function_template())
         return 0;
 
+    if (base_template_parameter.is_member_pointer() && !is_member_pointer())
+        return 0;
+
+    if (base_template_parameter.is_data_pointer() && !is_data_pointer())
+        return 0;
+
     if (!base_template_parameter.template_params().empty() &&
-        !template_params().empty()) {
+        !template_params().empty() &&
+        is_same_specialization(base_template_parameter)) {
         auto params_match = calculate_template_params_specialization_match(
             template_params(), base_template_parameter.template_params());
 
@@ -144,8 +290,22 @@ int template_parameter::calculate_specialization_match(
     }
     else if ((base_template_parameter.is_template_parameter() ||
                  base_template_parameter.is_template_template_parameter()) &&
-        !is_template_parameter())
+        !is_template_parameter()) {
         return 1;
+    }
+    else if (base_template_parameter.is_template_parameter() &&
+        base_template_parameter.template_params().empty()) {
+        // If the base is a regular template param, only possible with deduced
+        // context (deduced context already matches if exists)
+        res++;
+
+        if (!deduced_context().empty() &&
+            !base_template_parameter.deduced_context().empty() &&
+            util::starts_with(
+                deduced_context(), base_template_parameter.deduced_context()))
+            res += static_cast<int>(
+                base_template_parameter.deduced_context().size());
+    }
 
     return res;
 }
@@ -194,13 +354,40 @@ bool operator!=(const template_parameter &l, const template_parameter &r)
     return !(l == r);
 }
 
-std::string template_parameter::to_string(
-    const clanguml::common::model::namespace_ &using_namespace,
-    bool relative) const
+std::string template_parameter::deduced_context_str() const
 {
+    std::vector<std::string> deduced_contexts;
+
+    for (const auto &c : deduced_context()) {
+        deduced_contexts.push_back(c.to_string());
+    }
+
+    return fmt::format("{}", fmt::join(deduced_contexts, " "));
+}
+
+std::string template_parameter::to_string(
+    const clanguml::common::model::namespace_ &using_namespace, bool relative,
+    bool skip_qualifiers) const
+{
+    if (is_ellipsis())
+        return "...";
+
     using clanguml::common::model::namespace_;
 
     assert(!(type().has_value() && concept_constraint().has_value()));
+
+    if (is_array()) {
+        auto it = template_params_.begin();
+        auto element_type = it->to_string(using_namespace, relative);
+        std::advance(it, 1);
+
+        std::vector<std::string> dimension_args;
+        for (; it != template_params_.end(); it++)
+            dimension_args.push_back(it->to_string(using_namespace, relative));
+
+        return fmt::format(
+            "{}[{}]", element_type, fmt::join(dimension_args, "]["));
+    }
 
     if (is_function_template()) {
         auto it = template_params_.begin();
@@ -213,6 +400,41 @@ std::string template_parameter::to_string(
 
         return fmt::format(
             "{}({})", return_type, fmt::join(function_args, ","));
+    }
+
+    if (is_data_pointer()) {
+        assert(template_params().size() == 2);
+
+        std::string unqualified = fmt::format("{} {}::*",
+            template_params().at(0).to_string(using_namespace, relative),
+            template_params().at(1).to_string(using_namespace, relative));
+
+        if (skip_qualifiers)
+            return unqualified;
+
+        return util::join(" ", unqualified, deduced_context_str());
+    }
+
+    if (is_member_pointer()) {
+        assert(template_params().size() > 1);
+
+        auto it = template_params().begin();
+        auto return_type = it->to_string(using_namespace, relative);
+        it++;
+        auto class_type = it->to_string(using_namespace, relative);
+        it++;
+        std::vector<std::string> args;
+
+        for (; it != template_params().end(); it++) {
+            args.push_back(it->to_string(using_namespace, relative));
+        }
+
+        std::string unqualified = fmt::format(
+            "{} ({}::*)({})", return_type, class_type, fmt::join(args, ","));
+        if (skip_qualifiers)
+            return unqualified;
+
+        return util::join(" ", unqualified, deduced_context_str());
     }
 
     std::string res;
@@ -264,6 +486,9 @@ std::string template_parameter::to_string(
         res += fmt::format("<{}>", fmt::join(params, ","));
     }
 
+    if (!skip_qualifiers)
+        res = util::join(" ", res, deduced_context_str());
+
     const auto &maybe_default_value = default_value();
     if (maybe_default_value) {
         res += "=";
@@ -285,7 +510,11 @@ bool template_parameter::find_nested_relationships(
     // If this type argument should be included in the relationship
     // just add it and skip recursion (e.g. this is a user defined type)
     const auto maybe_type = type();
+
     if (maybe_type && should_include(maybe_type.value())) {
+        if (is_association())
+            hint = common::model::relationship_t::kAssociation;
+
         const auto maybe_id = id();
         if (maybe_id) {
             nested_relationships.emplace_back(maybe_id.value(), hint);
@@ -303,6 +532,9 @@ bool template_parameter::find_nested_relationships(
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
 
+                if (template_argument.is_association())
+                    hint = common::model::relationship_t::kAssociation;
+
                 nested_relationships.emplace_back(maybe_id.value(), hint);
 
                 added_aggregation_relationship =
@@ -319,6 +551,27 @@ bool template_parameter::find_nested_relationships(
     return added_aggregation_relationship;
 }
 
+bool template_parameter::is_template_parameter() const
+{
+    return is_template_parameter_;
+}
+
+void template_parameter::is_template_parameter(bool is_template_parameter)
+{
+    is_template_parameter_ = is_template_parameter;
+}
+
+bool template_parameter::is_template_template_parameter() const
+{
+    return is_template_template_parameter_;
+}
+
+void template_parameter::is_template_template_parameter(
+    bool is_template_template_parameter)
+{
+    is_template_template_parameter_ = is_template_template_parameter;
+}
+
 void template_parameter::set_concept_constraint(std::string constraint)
 {
     concept_constraint_ = std::move(constraint);
@@ -329,11 +582,83 @@ const std::optional<std::string> &template_parameter::concept_constraint() const
     return concept_constraint_;
 }
 
+bool template_parameter::is_association() const
+{
+    return std::any_of(
+        deduced_context().begin(), deduced_context().end(), [](const auto &c) {
+            return c.pr == rpqualifier::kPointer ||
+                c.pr == rpqualifier::kLValueReference;
+        });
+}
+
+template_parameter_kind_t template_parameter::kind() const { return kind_; }
+
+void template_parameter::set_kind(template_parameter_kind_t kind)
+{
+    kind_ = kind;
+}
+
+bool template_parameter::is_unexposed() const { return is_unexposed_; }
+
+void template_parameter::set_unexposed(bool unexposed)
+{
+    is_unexposed_ = unexposed;
+}
+
+void template_parameter::is_function_template(bool ft)
+{
+    is_function_template_ = ft;
+}
+bool template_parameter::is_function_template() const
+{
+    return is_function_template_;
+}
+
+void template_parameter::is_member_pointer(bool m) { is_member_pointer_ = m; }
+bool template_parameter::is_member_pointer() const
+{
+    return is_member_pointer_;
+}
+
+void template_parameter::is_data_pointer(bool m) { is_data_pointer_ = m; }
+bool template_parameter::is_data_pointer() const { return is_data_pointer_; }
+
+void template_parameter::is_array(bool a) { is_array_ = a; }
+bool template_parameter::is_array() const { return is_array_; }
+
+void template_parameter::push_context(const context &q)
+{
+    context_.push_front(q);
+}
+const std::deque<context> &template_parameter::deduced_context() const
+{
+    return context_;
+}
+
+void template_parameter::deduced_context(const std::deque<context> &c)
+{
+    context_ = c;
+}
+
+void template_parameter::is_ellipsis(bool e) { is_ellipsis_ = e; }
+
+bool template_parameter::is_ellipsis() const { return is_ellipsis_; }
+
+void template_parameter::is_noexcept(bool e) { is_noexcept_ = e; }
+
+bool template_parameter::is_noexcept() const { return is_noexcept_; }
+
 int calculate_template_params_specialization_match(
     const std::vector<template_parameter> &specialization_params,
     const std::vector<template_parameter> &template_params)
 {
     int res{0};
+
+    if (specialization_params.size() != template_params.size() &&
+        !std::any_of(template_params.begin(), template_params.end(),
+            [](const auto &t) { return t.is_variadic(); })) {
+        return 0;
+    }
 
     if (!specialization_params.empty() && !template_params.empty()) {
         auto template_index{0U};
@@ -346,6 +671,7 @@ int calculate_template_params_specialization_match(
                                  template_params.at(template_index));
 
             if (match == 0) {
+                // If any of the matches is 0 - the entire match fails
                 return 0;
             }
 
