@@ -55,6 +55,14 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("A", "C<T>"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "C<T,Args...>"));
 
+        REQUIRE_THAT(puml, (IsField<Public>("u", "U &")));
+        REQUIRE_THAT(puml, (IsField<Public>("u", "U **")));
+        REQUIRE_THAT(puml, (IsField<Public>("u", "U ***")));
+        REQUIRE_THAT(puml, (IsField<Public>("u", "U &&")));
+        REQUIRE_THAT(puml, (IsField<Public>("u", "const U &")));
+        REQUIRE_THAT(puml, (IsField<Public>("c", "C &")));
+        REQUIRE_THAT(puml, (IsField<Public>("m", "M C::*")));
+
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &>")));
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<M C::*>")));

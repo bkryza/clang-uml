@@ -17,6 +17,8 @@ on:
       - 'util/**'
       - 'uml/**'
       - '**.md'
+      - '**.svg'
+      - '**.png'
     branches-ignore:
       - 'noactions/*'
 
