@@ -158,8 +158,9 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
         const auto &valid_translation_units = translation_units_map.at(name);
 
         if (valid_translation_units.empty()) {
-            LOG_ERROR(
-                "Diagram {} generation failed: no translation units found",
+            LOG_ERROR("Diagram {} generation failed: no translation units "
+                      "found. Please make sure that your 'glob' patterns match "
+                      "at least 1 file in 'compile_commands.json'.",
                 name);
             continue;
         }
