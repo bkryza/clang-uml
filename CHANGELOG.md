@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Added rendering of template specialization fields and methods (#128)
   * Improved template specialization/instantiation matching based on deduced
     context
 

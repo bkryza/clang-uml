@@ -206,9 +206,13 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
         process_template_specialization_children(cls, template_specialization);
     }
 
-    if (cls->hasDefinition())
+    if (cls->hasDefinition()) {
         // Process template specialization bases
         process_class_bases(cls, template_specialization);
+
+        // Process class child entities
+        process_class_children(cls, template_specialization);
+    }
 
     if (!template_specialization.template_specialization_found()) {
         // Only do this if we haven't found a bettern specialization during
