@@ -4,6 +4,7 @@
 
 * [General issues](#general-issues)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
+  * [`clang` produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
