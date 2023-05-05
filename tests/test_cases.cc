@@ -19,6 +19,7 @@
 #include "test_cases.h"
 
 #include "cli/cli_handler.h"
+#include "common/compilation_database.h"
 #include "common/generators/generators.h"
 
 #include <spdlog/spdlog.h>
@@ -33,32 +34,28 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
     diagram->generate_links.set(links_config);
 }
 
-std::pair<clanguml::config::config,
-    std::unique_ptr<clang::tooling::CompilationDatabase>>
+std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name)
 {
-    auto config = clanguml::config::load(test_name + "/.clang-uml", true);
+    std::pair<clanguml::config::config,
+        clanguml::common::compilation_database_ptr>
+        res;
+
+    res.first = clanguml::config::load(test_name + "/.clang-uml", true);
 
     LOG_DBG("Loading compilation database from {}",
-        config.compilation_database_dir());
+        res.first.compilation_database_dir());
 
-    std::string err{};
-    auto compilation_database =
-        clang::tooling::CompilationDatabase::autoDetectFromDirectory(
-            config.compilation_database_dir(), err);
+    res.second =
+        clanguml::common::compilation_database::auto_detect_from_directory(
+            res.first);
 
-    if (!err.empty()) {
-        LOG_ERROR("Failed to load compilation database from {}",
-            config.compilation_database_dir());
-        throw std::runtime_error{err};
-    }
-
-    return std::make_pair(std::move(config), std::move(compilation_database));
+    return res;
 }
 
 namespace detail {
 template <typename DiagramConfig>
-auto generate_diagram_impl(clang::tooling::CompilationDatabase &db,
+auto generate_diagram_impl(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     using diagram_config = DiagramConfig;
@@ -117,7 +114,7 @@ auto generate_diagram_json(
 }
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
-    clang::tooling::CompilationDatabase &db,
+    clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     return detail::generate_diagram_impl<clanguml::config::class_diagram>(
@@ -125,7 +122,7 @@ std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::diagram>
-generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
+generate_sequence_diagram(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     return detail::generate_diagram_impl<clanguml::config::sequence_diagram>(
@@ -133,7 +130,7 @@ generate_sequence_diagram(clang::tooling::CompilationDatabase &db,
 }
 
 std::unique_ptr<clanguml::package_diagram::model::diagram>
-generate_package_diagram(clang::tooling::CompilationDatabase &db,
+generate_package_diagram(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     return detail::generate_diagram_impl<clanguml::config::package_diagram>(
@@ -141,7 +138,7 @@ generate_package_diagram(clang::tooling::CompilationDatabase &db,
 }
 
 std::unique_ptr<clanguml::include_diagram::model::diagram>
-generate_include_diagram(clang::tooling::CompilationDatabase &db,
+generate_include_diagram(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
     return detail::generate_diagram_impl<clanguml::config::include_diagram>(

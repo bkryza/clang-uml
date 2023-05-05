@@ -23,6 +23,7 @@
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "common/clang_utils.h"
+#include "common/compilation_database.h"
 #include "config/config.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "include_diagram/visitor/translation_unit_visitor.h"
@@ -54,8 +55,7 @@ using Catch::Matchers::VectorContains;
 
 using namespace clanguml::util;
 
-std::pair<clanguml::config::config,
-    std::unique_ptr<clang::tooling::CompilationDatabase>>
+std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name);
 
 std::string generate_sequence_puml(

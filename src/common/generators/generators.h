@@ -20,6 +20,7 @@
 #include "class_diagram/generators/json/class_diagram_generator.h"
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
+#include "common/compilation_database.h"
 #include "common/generators/generators.h"
 #include "common/model/diagram_filter.h"
 #include "config/config.h"
@@ -33,7 +34,6 @@
 #include "version.h"
 
 #include <clang/Frontend/CompilerInstance.h>
-#include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
 
 #include <cstring>
@@ -139,9 +139,6 @@ void find_translation_units_for_diagrams(
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
-void adjust_compilation_database(const clanguml::config::config &config,
-    clang::tooling::CompilationDatabase &db);
-
 template <typename DiagramModel, typename DiagramConfig,
     typename TranslationUnitVisitor>
 class diagram_ast_consumer : public clang::ASTConsumer {
@@ -229,10 +226,9 @@ private:
 
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
-std::unique_ptr<DiagramModel> generate(
-    const clang::tooling::CompilationDatabase &db, const std::string &name,
-    DiagramConfig &config, const std::vector<std::string> &translation_units,
-    bool /*verbose*/ = false)
+std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
+    const std::string &name, DiagramConfig &config,
+    const std::vector<std::string> &translation_units, bool /*verbose*/ = false)
 {
     LOG_INFO("Generating diagram {}", name);
 
@@ -262,14 +258,14 @@ std::unique_ptr<DiagramModel> generate(
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const clang::tooling::CompilationDatabase &db,
+    const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
     const std::vector<clanguml::common::generator_type_t> &generators,
     bool verbose);
 
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db, int verbose,
+    const common::compilation_database_ptr &db, int verbose,
     unsigned int thread_count,
     const std::vector<clanguml::common::generator_type_t> &generators,
     const std::map<std::string, std::vector<std::string>>

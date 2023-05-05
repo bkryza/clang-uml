@@ -79,7 +79,7 @@ void generate_diagram_select_generator(const std::string &od,
 template <typename DiagramConfig>
 void generate_diagram_impl(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const clang::tooling::CompilationDatabase &db,
+    const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
     const std::vector<clanguml::common::generator_type_t> &generators,
     bool verbose)
@@ -107,7 +107,7 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
 
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
-    const clang::tooling::CompilationDatabase &db,
+    const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
     const std::vector<clanguml::common::generator_type_t> &generators,
     bool verbose)
@@ -139,9 +139,9 @@ void generate_diagram(const std::string &od, const std::string &name,
 }
 
 void generate_diagrams(const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config, const std::string &od,
-    const std::unique_ptr<clang::tooling::CompilationDatabase> &db,
-    const int verbose, const unsigned int thread_count,
+    config::config &config, const std::string &od,
+    const common::compilation_database_ptr &db, const int verbose,
+    const unsigned int thread_count,
     const std::vector<clanguml::common::generator_type_t> &generators,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map)
@@ -181,19 +181,6 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
 
     for (auto &fut : futs) {
         fut.get();
-    }
-}
-
-void adjust_compilation_database(const clanguml::config::config &config,
-    clang::tooling::CompilationDatabase &db)
-{
-    if (config.add_compile_flags && !config.add_compile_flags().empty()) {
-        for (auto &compile_command : db.getAllCompileCommands()) {
-            compile_command.CommandLine.insert(
-                compile_command.CommandLine.begin() + 1,
-                config.add_compile_flags().begin(),
-                config.add_compile_flags().end());
-        }
     }
 }
 

@@ -83,6 +83,11 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
     app.add_flag("--init", initialize, "Initialize example config file");
+    app.add_option("--add-compile-flag", add_compile_flag,
+        "Add a compilation flag to each entry in the compilation database");
+    app.add_option("--remove-compile-flag", remove_compile_flag,
+        "Remove a compilation flag from each entry in the compilation "
+        "database");
     app.add_option(
         "--add-class-diagram", add_class_diagram, "Add class diagram config");
     app.add_option("--add-sequence-diagram", add_sequence_diagram,
@@ -268,6 +273,21 @@ cli_flow_t cli_handler::handle_post_config_options()
 
     if (!ensure_output_directory_exists(effective_output_directory))
         return cli_flow_t::kError;
+
+    //
+    // Append add_compile_flags and remove_compile_flags to the config
+    //
+    if (add_compile_flag) {
+        std::copy(add_compile_flag->begin(), add_compile_flag->end(),
+            std::back_inserter(config.add_compile_flags.value));
+        config.add_compile_flags.has_value = true;
+    }
+
+    if (remove_compile_flag) {
+        std::copy(remove_compile_flag->begin(), remove_compile_flag->end(),
+            std::back_inserter(config.remove_compile_flags.value));
+        config.remove_compile_flags.has_value = true;
+    }
 
     return cli_flow_t::kContinue;
 }

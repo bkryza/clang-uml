@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Fixed add_compile_flags and added remove_compile_flags config options (#130)
   * Added rendering of template specialization fields and methods (#128)
   * Improved template specialization/instantiation matching based on deduced
     context
