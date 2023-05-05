@@ -1,0 +1,17 @@
+[
+  {
+    "directory": ".",
+    "command": "/usr/bin/c++  -I/usr/lib/llvm-15/include -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field -Wno-deprecated-declarations -std=c++17 -o CMakeFiles/clang-umllib.dir/class_diagram/generators/json/class_diagram_generator.cc.o -c ./src/class_diagram/generators/json/class_diagram_generator.cc",
+    "file": "./src/class_diagram/generators/json/class_diagram_generator.cc"
+  },
+  {
+    "directory": ".",
+    "command": "/usr/bin/c++  -I/usr/lib/llvm-15/include -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field -Wno-deprecated-declarations -std=c++17 -o CMakeFiles/clang-umllib.dir/class_diagram/generators/plantuml/class_diagram_generator.cc.o -c ./src/class_diagram/generators/plantuml/class_diagram_generator.cc",
+    "file": "./src/class_diagram/generators/plantuml/class_diagram_generator.cc"
+  },
+  {
+    "directory": ".",
+    "command": "/usr/bin/c++  -I/usr/lib/llvm-15/include -Werror -Wall -Wextra -Wno-unused-parameter -Wno-unused-private-field -Wno-deprecated-declarations -std=c++17 -o CMakeFiles/clang-umllib.dir/class_diagram/model/class.cc.o -c ./src/class_diagram/model/class.cc",
+    "file": "./src/class_diagram/model/class.cc"
+  }
+]
