@@ -24,6 +24,43 @@ $ plantuml -tsvg mydiagram.puml
 $ convert +antialias mydiagram.svg mydiagram.png
 ```
 
+### `clang` produces several warnings during diagram generation
+During the generation of the diagram `clang` may report a lot of warnings, which
+do not occur during the compilation with other compiler (e.g. GCC). This can be
+fixed easily by using the `add_compile_flags` config option. For instance,
+assuming that the warnings are as follows:
+
+```
+... warning: implicit conversion from 'int' to 'float' changes value from 2147483647 to 2147483648 [-Wimplicit-const-int-float-conversion]
+... warning: declaration shadows a variable in namespace 'YAML' [-Wshadow]
+```
+
+simply add the following to your `.clang-uml` configuration file:
+
+```
+add_compile_flags:
+  - -Wno-implicit-const-int-float-conversion
+  - -Wno-shadow
+```
+
+Alternatively, the same can be passed through the `clang-uml` command line, e.g.
+
+```bash
+$ clang-uml --add-compile-flag -Wno-implicit-const-int-float-conversion \
+            --add-compile-flag -Wno-shadow ...
+```
+
+Please note that if your `compile_commands.json` already contains - for instance
+`-Wshadow` - then you also have to remove it, i.e.:
+
+```
+add_compile_flags:
+  - -Wno-implicit-const-int-float-conversion
+  - -Wno-shadow
+remove_compile_flags:
+  - -Wshadow
+```
+
 ### YAML anchors and aliases are not fully supported
 `clang-uml` uses [yaml-cpp](https://github.com/jbeder/yaml-cpp) library, which
 currently does not support
@@ -76,6 +113,25 @@ project), e.g.:
 apt install clang
 ```
 
+If this doesn't help the include paths can be customized using config options:
+ * `add_compile_flags` - which adds a list of compile flags such as include paths to each entry of the compilation database
+ * `remove_compile_flags` - which removes existing compile flags from each entry of the compilation database
+
+For instance:
+
+```yaml
+add_compile_flags:
+  - -I/opt/my_toolchain/include
+remove_compile_flags:
+  - -I/usr/include
+```
+
+These options can be also passed on the command line, for instance:
+
+```bash
+$ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
+            --remove-compile-flag -I/usr/include ...
+```
 ## Sequence diagrams
 ### Generated diagram is empty
 In order to generate sequence diagram the `start_from` configuration option must have a valid starting point
