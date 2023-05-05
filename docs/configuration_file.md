@@ -16,6 +16,8 @@
 * `diagrams` - the map of diagrams to be generated, each diagram name is provided as
              the key of the diagram YAML node
 * `debug_mode` - add inline debug information in the generated diagrams
+* `add_compile_flags` - add compile flags to all compilation database entries
+* `remove_compile_flags` - remove compile flags from all compilation database entries
 
 ### Diagram options
 * `type` - type of diagram, one of [`class`, `sequence`, `package`, `include`]
@@ -56,6 +58,9 @@ compilation_database_dir: debug
 # Inject additional compile commands to the compilation database entries
 add_compile_flags:
   - '-Wno-vla-extension'
+# Remove specified compile flags from all compilation database entries
+remove_compile_flags:
+  - '-Wshadow'
 # The directory where *.puml files will be generated
 output_directory: docs/diagrams
 # Set this as default for all diagrams
