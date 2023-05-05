@@ -121,6 +121,8 @@ public:
     bool list_diagrams{false};
     bool quiet{false};
     bool initialize{false};
+    std::optional<std::vector<std::string>> add_compile_flag;
+    std::optional<std::vector<std::string>> remove_compile_flag;
     std::optional<std::string> add_class_diagram;
     std::optional<std::string> add_sequence_diagram;
     std::optional<std::string> add_package_diagram;

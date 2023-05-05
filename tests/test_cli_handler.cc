@@ -157,3 +157,30 @@ TEST_CASE("Test cli handler print_diagram_template", "[unit-test]")
 
 )");
 }
+
+TEST_CASE(
+    "Test cli handler add_compile_flag and remove_compile_flag", "[unit-test]")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+    using clanguml::util::contains;
+
+    std::vector<const char *> argv{"clang-uml", "--config",
+        "./test_config_data/simple.yml", "--add-compile-flag", "-Wno-error",
+        "--add-compile-flag", "-Wno-warning", "--remove-compile-flag",
+        "-I/usr/include"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kContinue);
+
+    REQUIRE(cli.config.add_compile_flags.has_value);
+    REQUIRE(cli.config.remove_compile_flags.has_value);
+
+    REQUIRE(contains(cli.config.add_compile_flags(), "-Wno-error"));
+    REQUIRE(contains(cli.config.add_compile_flags(), "-Wno-warning"));
+    REQUIRE(contains(cli.config.remove_compile_flags(), "-I/usr/include"));
+}
