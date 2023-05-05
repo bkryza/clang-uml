@@ -1,0 +1,7 @@
+compilation_database_dir: .
+output_directory: .
+add_compile_flags: [-Wno-unknown-warning-option, -Wno-error]
+remove_compile_flags: [-Wno-deprecated-declarations]
+diagrams:
+  class_main:
+    type: class

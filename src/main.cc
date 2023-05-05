@@ -17,6 +17,7 @@
  */
 
 #include "cli/cli_handler.h"
+#include "common/compilation_database.h"
 #include "common/generators/generators.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "util/util.h"
@@ -53,38 +54,33 @@ int main(int argc, const char *argv[])
     if (res == cli::cli_flow_t::kError)
         return 1;
 
-    std::string err{};
-    auto db = clang::tooling::CompilationDatabase::autoDetectFromDirectory(
-        cli.config.compilation_database_dir(), err);
+    try {
+        const auto db =
+            clanguml::common::compilation_database::auto_detect_from_directory(
+                cli.config);
 
-    if (!err.empty()) {
-        LOG_ERROR("Failed to load compilation database from {}",
-            cli.config.compilation_database_dir());
+        const auto compilation_database_files = db->getAllFiles();
+
+        std::map<std::string /* diagram name */,
+            std::vector<std::string> /*translation units*/>
+            translation_units_map;
+
+        // We have to generate the translation units list for each diagram
+        // before scheduling tasks, because std::filesystem::current_path cannot
+        // be trusted with multiple threads
+        clanguml::common::generators::find_translation_units_for_diagrams(
+            cli.diagram_names, cli.config, compilation_database_files,
+            translation_units_map);
+
+        clanguml::common::generators::generate_diagrams(cli.diagram_names,
+            cli.config, cli.effective_output_directory, db, cli.verbose,
+            cli.thread_count, cli.generators, translation_units_map);
+    }
+    catch (clanguml::common::compilation_database_error &e) {
+        LOG_ERROR("Failed to load compilation database from {} due to: {}",
+            cli.config.compilation_database_dir(), e.what());
         return 1;
     }
-
-    const auto compilation_database_files = db->getAllFiles();
-
-    std::map<std::string /* diagram name */,
-        std::vector<std::string> /*translation units*/>
-        translation_units_map;
-
-    // We have to generate the translation units list for each diagram before
-    // scheduling tasks, because std::filesystem::current_path cannot be trusted
-    // with multiple threads
-    clanguml::common::generators::find_translation_units_for_diagrams(
-        cli.diagram_names, cli.config, compilation_database_files,
-        translation_units_map);
-
-    //
-    // Inject any additional compilation flags from the config to the
-    // compilation database
-    //
-    clanguml::common::generators::adjust_compilation_database(cli.config, *db);
-
-    clanguml::common::generators::generate_diagrams(cli.diagram_names,
-        cli.config, cli.effective_output_directory, db, cli.verbose,
-        cli.thread_count, cli.generators, translation_units_map);
 
     return 0;
 }
