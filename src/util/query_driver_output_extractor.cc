@@ -20,6 +20,9 @@
 
 #include "util.h"
 
+#include <sstream>
+#include <string>
+
 namespace clanguml::util {
 
 query_driver_output_extractor::query_driver_output_extractor(
