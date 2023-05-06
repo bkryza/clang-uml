@@ -228,6 +228,7 @@ struct config : public inheritable_diagram_options {
     option<std::vector<std::string>> add_compile_flags{"add_compile_flags"};
     option<std::vector<std::string>> remove_compile_flags{
         "remove_compile_flags"};
+    option<std::string> query_driver{"query_driver"};
     option<std::string> output_directory{"output_directory"};
 
     option<std::map<std::string, diagram_template>> diagram_templates{

@@ -123,6 +123,9 @@ public:
     bool initialize{false};
     std::optional<std::vector<std::string>> add_compile_flag;
     std::optional<std::vector<std::string>> remove_compile_flag;
+#if !defined(_WIN32)
+    std::optional<std::string> query_driver;
+#endif
     std::optional<std::string> add_class_diagram;
     std::optional<std::string> add_sequence_diagram;
     std::optional<std::string> add_package_diagram;

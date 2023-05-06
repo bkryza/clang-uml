@@ -20,6 +20,7 @@
 #include "common/compilation_database.h"
 #include "common/generators/generators.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
+#include "util/query_driver_output_extractor.h"
 #include "util/util.h"
 
 #ifdef ENABLE_BACKWARD_CPP
@@ -79,6 +80,13 @@ int main(int argc, const char *argv[])
     catch (clanguml::common::compilation_database_error &e) {
         LOG_ERROR("Failed to load compilation database from {} due to: {}",
             cli.config.compilation_database_dir(), e.what());
+        return 1;
+    }
+    catch (clanguml::util::query_driver_no_paths &e) {
+        LOG_ERROR("Quering provided compiler driver {} did not provide any "
+                  "paths, please make sure the path is correct and that your "
+                  "compiler is GCC-compatible: {}",
+            cli.config.query_driver(), e.what());
         return 1;
     }
 

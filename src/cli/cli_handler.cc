@@ -88,6 +88,11 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_option("--remove-compile-flag", remove_compile_flag,
         "Remove a compilation flag from each entry in the compilation "
         "database");
+#if !defined(_WIN32)
+    app.add_option("--query-driver", query_driver,
+        "Query the specific compiler driver to extract system paths and add to "
+        "compile commands (e.g. arm-none-eabi-g++)");
+#endif
     app.add_option(
         "--add-class-diagram", add_class_diagram, "Add class diagram config");
     app.add_option("--add-sequence-diagram", add_sequence_diagram,
@@ -287,6 +292,10 @@ cli_flow_t cli_handler::handle_post_config_options()
         std::copy(remove_compile_flag->begin(), remove_compile_flag->end(),
             std::back_inserter(config.remove_compile_flags.value));
         config.remove_compile_flags.has_value = true;
+    }
+
+    if (query_driver) {
+        config.query_driver.set(*query_driver);
     }
 
     return cli_flow_t::kContinue;
