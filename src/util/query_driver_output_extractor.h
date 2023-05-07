@@ -35,13 +35,18 @@ public:
 
     void execute();
 
+    void extract_target(const std::string &output);
+
     void extract_system_include_paths(const std::string &output);
 
     const std::vector<std::string> &system_include_paths() const;
 
+    const std::string &target() const;
+
 private:
     const std::string command_;
     const std::string language_;
+    std::string target_;
     std::vector<std::string> system_include_paths_;
 };
 } // namespace clanguml::util

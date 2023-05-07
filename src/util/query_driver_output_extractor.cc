@@ -43,6 +43,7 @@ void query_driver_output_extractor::execute()
 
     system_include_paths_.clear();
     extract_system_include_paths(driver_output);
+    extract_target(driver_output);
 
     if (system_include_paths_.empty()) {
         throw query_driver_no_paths(fmt::format(
@@ -53,6 +54,20 @@ void query_driver_output_extractor::execute()
 
     LOG_DBG("Extracted the following paths from compiler driver: {}",
         fmt::join(system_include_paths_, ","));
+}
+
+void query_driver_output_extractor::extract_target(const std::string &output)
+{
+    std::istringstream f(output);
+    std::string line;
+
+    while (std::getline(f, line)) {
+        line = trim(line);
+        if (util::starts_with(line, std::string{"Target: "})) {
+            target_ = line.substr(strlen("Target: "));
+            break;
+        }
+    }
 }
 
 void query_driver_output_extractor::extract_system_include_paths(
@@ -84,4 +99,8 @@ query_driver_output_extractor::system_include_paths() const
     return system_include_paths_;
 }
 
+const std::string &query_driver_output_extractor::target() const
+{
+    return target_;
+}
 } // namespace clanguml::util

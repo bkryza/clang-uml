@@ -94,9 +94,12 @@ void compilation_database::adjust_compilation_database(
 #if !defined(_WIN32)
     if (config().query_driver && !config().query_driver().empty()) {
         for (auto &compile_command : commands) {
+            auto argv0 = config().query_driver() == "."
+                ? compile_command.CommandLine.at(0)
+                : config().query_driver();
+
             util::query_driver_output_extractor extractor{
-                config().query_driver(),
-                guess_language_from_filename(compile_command.Filename)};
+                argv0, guess_language_from_filename(compile_command.Filename)};
 
             extractor.execute();
 
@@ -109,6 +112,12 @@ void compilation_database::adjust_compilation_database(
             compile_command.CommandLine.insert(
                 compile_command.CommandLine.begin() + 1,
                 system_header_args.begin(), system_header_args.end());
+
+            if (!extractor.target().empty()) {
+                compile_command.CommandLine.insert(
+                    compile_command.CommandLine.begin() + 1,
+                    fmt::format("--target={}", extractor.target()));
+            }
         }
     }
 #endif

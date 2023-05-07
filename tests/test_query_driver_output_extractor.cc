@@ -61,9 +61,13 @@ COLLECT_GCC_OPTIONS='-E' '-v' '-shared-libgcc' '-mtune=generic' '-march=x86-64'
 
     extractor.extract_system_include_paths(output);
 
+    extractor.extract_target(output);
+
     std::vector<std::string> expected = {
         "/usr/lib/gcc/x86_64-linux-gnu/11/include", "/usr/local/include",
         "/usr/include/x86_64-linux-gnu", "/usr/include"};
 
     REQUIRE(extractor.system_include_paths() == expected);
+
+    REQUIRE(extractor.target() == "x86_64-linux-gnu");
 }
