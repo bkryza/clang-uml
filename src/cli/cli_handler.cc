@@ -294,9 +294,11 @@ cli_flow_t cli_handler::handle_post_config_options()
         config.remove_compile_flags.has_value = true;
     }
 
+#if !defined(_WIN32)
     if (query_driver) {
         config.query_driver.set(*query_driver);
     }
+#endif
 
     return cli_flow_t::kContinue;
 }
