@@ -61,6 +61,8 @@ public:
 
     const clang::tooling::CompilationDatabase &base() const;
 
+    std::string guess_language_from_filename(const std::string &filename) const;
+
 private:
     void adjust_compilation_database(
         std::vector<clang::tooling::CompileCommand> &commands) const;

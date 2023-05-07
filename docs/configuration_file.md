@@ -18,6 +18,7 @@
 * `debug_mode` - add inline debug information in the generated diagrams
 * `add_compile_flags` - add compile flags to all compilation database entries
 * `remove_compile_flags` - remove compile flags from all compilation database entries
+* `query_driver` - name or path to compiler driver, which should be queried for system include paths (e.g. arm-none-eabi-g++)
 
 ### Diagram options
 * `type` - type of diagram, one of [`class`, `sequence`, `package`, `include`]
@@ -61,6 +62,9 @@ add_compile_flags:
 # Remove specified compile flags from all compilation database entries
 remove_compile_flags:
   - '-Wshadow'
+# Compiler driver command to query for system include paths
+query_driver:
+  - arm-none-eabi-g++
 # The directory where *.puml files will be generated
 output_directory: docs/diagrams
 # Set this as default for all diagrams

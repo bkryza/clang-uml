@@ -6,6 +6,10 @@
 * [Translation unit glob patterns](#translation-unit-glob-patterns)
 * [PlantUML custom directives](#plantuml-custom-directives)
 * [Adding debug information in the generated diagrams](#adding-debug-information-in-the-generated-diagrams)
+* [Resolving include path and compiler flags issues](#resolving-include-path-and-compiler-flags-issues)
+  * [Use `--query-driver` command line option](#use---query-driver-command-line-option)
+  * [Manually add and remove compile flags from the compilation database](#manually-add-and-remove-compile-flags-from-the-compilation-database)
+  * [Using `CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES`](#using-cmake_cxx_implicit_include_directories)
 
 <!-- tocstop -->
 
@@ -86,3 +90,98 @@ debug_mode: true
 
 the generated PlantUML diagram will contain comments before each line containing the source location of the
 specific diagram element.
+
+## Resolving include path and compiler flags issues
+Due to the fact, that your project can be compiled with different compilers
+and toolchains than the Clang version, which `clang-uml` uses on your platform,
+include paths specified in the generated `compile_commands.json` can be incorrect.
+
+> This is often an issue on macOS, when `clang-uml` uses Homebrew version of LLVM
+> and your project was built using system Apple Clang
+
+Typically, this results in ugly error messages on the screen during diagram
+generation, such as:
+
+```
+... fatal: 'stddef.h' file not found
+```
+
+or
+
+```
+... warning: implicit conversion from 'int' to 'float' changes value from 2147483647 to 2147483648 [-Wimplicit-const-int-float-conversion]
+```
+
+These errors can be overcome, by ensuring that the Clang parser has the correct
+include paths to analyse your code base on the given platform. `clang-uml`
+provides several mechanisms to resolve this issue:
+
+### Use `--query-driver` command line option
+
+> This option is not available on Windows.
+
+Providing this option on the `clang-uml` command line will result in `clang-uml`
+executing the specified compiler with the following command, e.g.:
+
+```bash
+/usr/bin/c++ -E -v -x c /dev/null 2>&1
+```
+
+and extracting from the output the target and system include paths, which are
+then injected to each entry of the compilation database. For instance, on my
+system, when generating diagrams for an embedded project and providing
+`arm-none-eabi-gcc` as driver:
+
+```bash
+$ clang-uml --query-driver arm-none-eabi-gcc
+```
+
+the following options are appended to each command line after `argv[0]` of the
+command:
+
+```bash
+--target=arm-none-eabi -isystem /usr/lib/gcc/arm-none-eabi/10.3.1/include -isystem /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed -isystem /usr/lib/gcc/arm-none-eabi/10.3.1/../../../arm-none-eabi/include
+```
+
+If you want to include the system headers reported by the compiler specified
+already as `argv[0]` in your `compile_commands.json`, you can simply invoke
+`clang-uml` as:
+
+```bash
+$ clang-uml --query-driver .
+```
+
+however please make sure that the `compile_commands.json` contain a command,
+which is safe to execute.
+
+### Manually add and remove compile flags from the compilation database
+If the system paths extracted from the compiler are not sufficient to resolve
+include paths issues, it is possible to manually adjust the compilation
+flags providing `add_compile_flags` and `remove_compile_flags` in the
+configuration file, or providing `--add-compile-flag` and `--remove-compile-flag`
+in the `clang-uml` command line.
+
+For instance:
+
+```yaml
+add_compile_flags:
+  - -I/opt/my_toolchain/include
+remove_compile_flags:
+  - -I/usr/include
+```
+
+These options can be also passed on the command line, for instance:
+
+```bash
+$ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
+            --remove-compile-flag -I/usr/include ...
+```
+
+### Using `CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES`
+Yet another option, for CMake based projects, is to use the following CMake option:
+
+```cmake
+set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+```
+
+

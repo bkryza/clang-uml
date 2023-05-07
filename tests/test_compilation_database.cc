@@ -39,6 +39,7 @@ TEST_CASE("Test compilation_database should work", "[unit-test]")
     using clanguml::common::model::access_t;
     using clanguml::common::model::relationship_t;
     using clanguml::util::contains;
+    using std::filesystem::path;
 
     auto cfg =
         clanguml::config::load("./test_compilation_database_data/config.yml");
@@ -51,12 +52,19 @@ TEST_CASE("Test compilation_database should work", "[unit-test]")
         auto all_files = db->getAllFiles();
 
         REQUIRE(all_files.size() == 3);
-        REQUIRE(all_files.at(0) ==
-            "src/class_diagram/generators/json/class_diagram_generator.cc");
-        REQUIRE(all_files.at(1) ==
-            "src/class_diagram/generators/plantuml/"
-            "class_diagram_generator.cc");
-        REQUIRE(all_files.at(2) == "src/class_diagram/model/class.cc");
+        REQUIRE(contains(all_files,
+            path("src/class_diagram/generators/json/class_diagram_generator.cc")
+                .make_preferred()
+                .string()));
+        REQUIRE(contains(all_files,
+            path("src/class_diagram/generators/plantuml/"
+                 "class_diagram_generator.cc")
+                .make_preferred()
+                .string()));
+        REQUIRE(contains(all_files,
+            path("src/class_diagram/model/class.cc")
+                .make_preferred()
+                .string()));
 
         auto ccs = db->getAllCompileCommands();
 

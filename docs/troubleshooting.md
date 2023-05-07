@@ -15,17 +15,24 @@
 <!-- tocstop -->
 
 ## General issues
+
 ### Diagram generated with PlantUML is cropped
-When generating diagrams with PlantUML without specifying an output file format, the default is PNG. 
-Unfortunately PlantUML will not check if the diagram will fit in the default PNG size, and often the diagram
-will be incomplete in the picture. A better option is to specify SVG as output format and then convert 
+
+When generating diagrams with PlantUML without specifying an output file format,
+the default is PNG.
+Unfortunately PlantUML will not check if the diagram will fit in the default PNG
+size, and often the diagram
+will be incomplete in the picture. A better option is to specify SVG as output
+format and then convert
 to PNG, e.g.:
+
 ```bash
 $ plantuml -tsvg mydiagram.puml
 $ convert +antialias mydiagram.svg mydiagram.png
 ```
 
 ### `clang` produces several warnings during diagram generation
+
 During the generation of the diagram `clang` may report a lot of warnings, which
 do not occur during the compilation with other compiler (e.g. GCC). This can be
 fixed easily by using the `add_compile_flags` config option. For instance,
@@ -63,9 +70,10 @@ remove_compile_flags:
 ```
 
 ### YAML anchors and aliases are not fully supported
+
 `clang-uml` uses [yaml-cpp](https://github.com/jbeder/yaml-cpp) library, which
 currently does not support
-[merging YAML anchor dictionaries](https://github.com/jbeder/yaml-cpp/issues/41), 
+[merging YAML anchor dictionaries](https://github.com/jbeder/yaml-cpp/issues/41),
 e.g. in the following configuration file the `main_sequence_diagram` will work,
 but the `foo_sequence_diagram` will fail with parse error:
 
@@ -98,25 +106,44 @@ yq 'explode(.)' .clang-uml | clang-uml --config -
 
 ## Class diagrams
 ### "fatal error: 'stddef.h' file not found"
-This error means that Clang cannot find some standard headers in the include paths
-specified in the `compile_commands.json`. This typically happens on macOS and sometimes on Linux, when 
-the code was compiled with different Clang version than `clang-uml` itself.
 
-One solution to this issue is to add the following line to your `CMakeLists.txt` file:
+This error means that Clang cannot find some standard headers in the include
+paths  specified in the `compile_commands.json`. This typically happens on macOS
+and sometimes on Linux, when the code was compiled with different Clang version
+than `clang-uml` itself.
+
+One solution to this issue is to add the following line to your `CMakeLists.txt`
+file:
 
 ```cmake
 set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 ```
 
-Another option is to make sure that the Clang is installed on the system (even if not used for building your
+Another option is to provide an option (on command line or in configuration
+file) called `query_driver` (inspired by the [clangd](https://clangd.llvm.org/)
+language  server - although much less flexible), which will invoke the
+provider compiler command and query it for its default system paths, which then
+will be added to each compile command in the database. This is especially useful
+on macOS as well as for embedded toolchains, example usage:
+
+```bash
+$ clang-uml --query-driver arm-none-eabi-g++
+```
+
+Another option is to make sure that the Clang is installed on the system (even
+if not used for building your
 project), e.g.:
+
 ```bash
 apt install clang
 ```
 
-If this doesn't help the include paths can be customized using config options:
- * `add_compile_flags` - which adds a list of compile flags such as include paths to each entry of the compilation database
- * `remove_compile_flags` - which removes existing compile flags from each entry of the compilation database
+If this doesn't help to include paths can be customized using config options:
+
+* `add_compile_flags` - which adds a list of compile flags such as include paths
+  to each entry of the compilation database
+* `remove_compile_flags` - which removes existing compile flags from each entry
+  of the compilation database
 
 For instance:
 
@@ -133,28 +160,43 @@ These options can be also passed on the command line, for instance:
 $ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
             --remove-compile-flag -I/usr/include ...
 ```
+
 ## Sequence diagrams
 ### Generated diagram is empty
-In order to generate sequence diagram the `start_from` configuration option must have a valid starting point
-for the diagram (e.g. `function`), which must match exactly the function signature in the `clang-uml` model.
+
+In order to generate sequence diagram the `start_from` configuration option must
+have a valid starting point
+for the diagram (e.g. `function`), which must match exactly the function
+signature in the `clang-uml` model.
 Look for error in the console output such as:
+
 ```bash
 Failed to find participant mynamespace::foo(int) for start_from condition
 ```
-which means that either you have a typo in the function signature in the configuration file, or that the function
-was not defined in the translation units you specified in the `glob` patterns for this diagram. Run again the
-`clang-uml` tool with `-vvv` option and look in the console output for any mentions of the function from
-which the diagram should start and copy the exact signature into the configuration file.
+
+which means that either you have a typo in the function signature in the
+configuration file, or that the function
+was not defined in the translation units you specified in the `glob` patterns
+for this diagram. Run again the
+`clang-uml` tool with `-vvv` option and look in the console output for any
+mentions of the function from
+which the diagram should start and copy the exact signature into the
+configuration file.
 
 ### Generated diagram contains several empty control blocks or calls which should not be there
-Currently the filtering of call expressions and purging empty control blocks (e.g. loops or conditional statements),
-within which no interesting calls were included in the diagram is not perfect. In case the regular `namespaces` filter
-is not enough, it is useful to add also a `paths` filter, which will only include participants and call expressions
+
+Currently the filtering of call expressions and purging empty control blocks (
+e.g. loops or conditional statements),
+within which no interesting calls were included in the diagram is not perfect.
+In case the regular `namespaces` filter
+is not enough, it is useful to add also a `paths` filter, which will only
+include participants and call expressions
 from files in a subdirectory of your project, e.g.:
+
 ```yaml
    include:
-      namespaces:
-         - myproject
-      paths:
-         - src
+     namespaces:
+       - myproject
+     paths:
+       - src
 ```

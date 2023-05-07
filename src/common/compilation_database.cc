@@ -18,6 +18,8 @@
 
 #include "compilation_database.h"
 
+#include "util/query_driver_output_extractor.h"
+
 namespace clanguml::common {
 
 std::unique_ptr<compilation_database>
@@ -77,9 +79,49 @@ compilation_database::getAllCompileCommands() const
     return commands;
 }
 
+std::string compilation_database::guess_language_from_filename(
+    const std::string &filename) const
+{
+    if (util::ends_with(filename, std::string{".c"}))
+        return "c";
+
+    return "c++";
+}
+
 void compilation_database::adjust_compilation_database(
     std::vector<clang::tooling::CompileCommand> &commands) const
 {
+#if !defined(_WIN32)
+    if (config().query_driver && !config().query_driver().empty()) {
+        for (auto &compile_command : commands) {
+            auto argv0 = config().query_driver() == "."
+                ? compile_command.CommandLine.at(0)
+                : config().query_driver();
+
+            util::query_driver_output_extractor extractor{
+                argv0, guess_language_from_filename(compile_command.Filename)};
+
+            extractor.execute();
+
+            std::vector<std::string> system_header_args;
+            for (const auto &path : extractor.system_include_paths()) {
+                system_header_args.emplace_back("-isystem");
+                system_header_args.emplace_back(path);
+            }
+
+            compile_command.CommandLine.insert(
+                compile_command.CommandLine.begin() + 1,
+                system_header_args.begin(), system_header_args.end());
+
+            if (!extractor.target().empty()) {
+                compile_command.CommandLine.insert(
+                    compile_command.CommandLine.begin() + 1,
+                    fmt::format("--target={}", extractor.target()));
+            }
+        }
+    }
+#endif
+
     if (config().add_compile_flags && !config().add_compile_flags().empty()) {
         for (auto &compile_command : commands) {
             compile_command.CommandLine.insert(

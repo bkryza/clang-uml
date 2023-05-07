@@ -43,7 +43,8 @@ set(TEST_CASES
         test_config
         test_cli_handler
         test_filters
-        test_thread_pool_executor)
+        test_thread_pool_executor
+        test_query_driver_output_extractor)
 
 foreach(TEST_NAME ${TEST_CASES})
     add_executable(${TEST_NAME}
