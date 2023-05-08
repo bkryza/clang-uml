@@ -62,6 +62,12 @@ struct filter {
     std::vector<std::string> elements;
 
     // E.g.:
+    //   - class
+    //   - enum
+    //   - concept
+    std::vector<std::string> element_types;
+
+    // E.g.:
     //   - inheritance/extension
     //   - dependency
     //   - instantiation

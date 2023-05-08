@@ -127,6 +127,17 @@ private:
     std::vector<std::string> elements_;
 };
 
+struct element_type_filter : public filter_visitor {
+    element_type_filter(filter_t type, std::vector<std::string> element_types);
+
+    ~element_type_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &e) const override;
+
+private:
+    std::vector<std::string> element_types_;
+};
+
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<std::string> roots);
 

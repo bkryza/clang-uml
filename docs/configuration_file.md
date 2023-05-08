@@ -30,6 +30,7 @@
     * `namespaces` - list of namespaces to include
     * `relationships` - list of relationships to include
     * `elements` - list of elements, i.e. specific classes, enums, templates to include
+    * `element_types` - list of element types e.g. `enum`, `class`, `concept`
     * `access` - list of visibility scopes to include (e.g. `private`)
     * `subclasses` - include only subclasses of specified classes (and themselves)
     * `specializations` - include all specializations or instantiations of a given template
@@ -40,6 +41,7 @@
     * `namespaces` - list of namespaces to exclude
     * `relationships` - list of relationships to exclude
     * `elements` - list of elements, i.e. specific classes, enums, templates to exclude
+    * `element_types` - list of element types e.g. `enum`, `class`, `concept`
     * `access` - list of visibility scopes to exclude (e.g. `private`)
     * `subclasses` - exclude subclasses of specified classes (and themselves)
     * `specializations` - exclude all specializations or instantiations of a given template

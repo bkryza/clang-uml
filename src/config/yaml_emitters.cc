@@ -60,6 +60,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
         out << YAML::Key << "dependencies" << YAML::Value << f.dependencies;
     if (!f.elements.empty())
         out << YAML::Key << "elements" << YAML::Value << f.elements;
+    if (!f.element_types.empty())
+        out << YAML::Key << "element_types" << YAML::Value << f.element_types;
     if (!f.paths.empty())
         out << YAML::Key << "paths" << YAML::Value << f.paths;
     if (!f.relationships.empty())

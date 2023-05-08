@@ -183,6 +183,9 @@ test_cases:
     - name: t00062
       title: Template specialization matching based on deduced context
       description:
+    - name: t00063
+      title: Element types diagram filter test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
