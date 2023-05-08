@@ -4,6 +4,7 @@
 
 * [`namespaces`](#namespaces)
 * [`elements`](#elements)
+* [`element_types`](#element_types)
 * [`paths`](#paths)
 * [`context`](#context)
 * [`relationships`](#relationships)
@@ -51,6 +52,17 @@ from an included namespace:
   exclude:
     elements:
       - ns1::ns2::MyClass
+```
+
+## `element_types`
+
+Allows to include or exclude elements of specific type from the diagram, for instance
+to remove all enums from a diagram add the following:
+
+```yaml
+  exclude:
+    element_types:
+      - enum
 ```
 
 ## `paths`

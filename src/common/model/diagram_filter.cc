@@ -220,6 +220,22 @@ tvl::value_t element_filter::match(
         });
 }
 
+element_type_filter::element_type_filter(
+    filter_t type, std::vector<std::string> element_types)
+    : filter_visitor{type}
+    , element_types_{std::move(element_types)}
+{
+}
+
+tvl::value_t element_type_filter::match(
+    const diagram &d, const element &e) const
+{
+    return tvl::any_of(element_types_.begin(), element_types_.end(),
+        [&e](const auto &element_type) {
+            return e.type_name() == element_type;
+        });
+}
+
 subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
     : filter_visitor{type}
     , roots_{std::move(roots)}
@@ -531,6 +547,9 @@ void diagram_filter::init_filters(const config::diagram &c)
         element_filters.emplace_back(std::make_unique<element_filter>(
             filter_t::kInclusive, c.include().elements));
 
+        element_filters.emplace_back(std::make_unique<element_type_filter>(
+            filter_t::kInclusive, c.include().element_types));
+
         if (c.type() == diagram_t::kClass) {
             element_filters.emplace_back(std::make_unique<subclass_filter>(
                 filter_t::kInclusive, c.include().subclasses));
@@ -608,6 +627,9 @@ void diagram_filter::init_filters(const config::diagram &c)
 
         add_exclusive_filter(std::make_unique<element_filter>(
             filter_t::kExclusive, c.exclude().elements));
+
+        add_exclusive_filter(std::make_unique<element_type_filter>(
+            filter_t::kExclusive, c.exclude().element_types));
 
         add_exclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kExclusive, c.exclude().relationships));

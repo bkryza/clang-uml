@@ -301,6 +301,10 @@ template <> struct convert<filter> {
         if (node["elements"])
             rhs.elements = node["elements"].as<decltype(rhs.elements)>();
 
+        if (node["element_types"])
+            rhs.element_types =
+                node["element_types"].as<decltype(rhs.element_types)>();
+
         if (node["access"])
             rhs.access = node["access"].as<decltype(rhs.access)>();
 
