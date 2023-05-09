@@ -32,12 +32,20 @@ set(CLANG_UML_INSTALL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+if(APPLE)
+    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm"
+            OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+        set(HOMEBREW_PREFIX "/opt/homebrew")
+    else()
+        set(HOMEBREW_PREFIX "/usr/local")
+    endif()
+endif(APPLE)
 
 #
 # CMake build options
 #
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries" ON)
-set(LLVM_VERSION CACHE STRING "Path to custom llvm-config executable")
+set(LLVM_VERSION CACHE STRING "Major LLVM version to use (e.g. 15)")
 
 #
 # Setup version string
@@ -134,16 +142,18 @@ find_package(Threads REQUIRED)
 #
 message(STATUS "Checking for yaml-cpp...")
 if(APPLE)
+
+
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(YAML_CPP yaml-cpp)
         find_path(YAML_CPP_INCLUDE_DIR
-                NAMES yaml.h
-	        PATHS ${YAML_CPP_INCLUDE_DIR} /usr/local/include/yaml-cpp)
+            NAMES yaml.h
+	        PATHS ${YAML_CPP_INCLUDE_DIR} ${HOMEBREW_PREFIX}/include/yaml-cpp)
         find_library(YAML_CPP_LIBRARY
-                NAMES yaml-cpp
-	        PATHS ${YAML_CPP_LIBRARIES} /usr/local/lib)
-        set(YAML_CPP_LIBRARY_DIR /usr/local/lib)
+            NAMES yaml-cpp
+            PATHS ${YAML_CPP_LIBRARIES} ${HOMEBREW_PREFIX}/lib)
+        set(YAML_CPP_LIBRARY_DIR ${HOMEBREW_PREFIX}/lib)
     endif(PKG_CONFIG_FOUND)
 elseif(MSVC)
     set(YAML_CPP_LIBRARIES "yaml-cpp")

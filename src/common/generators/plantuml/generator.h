@@ -367,6 +367,15 @@ void generator<C, D>::generate_plantuml_directives(
             LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
                 d, e.what());
         }
+        catch (const std::regex_error &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to "
+                      "std::regex_error: {}",
+                d, e.what());
+        }
+        catch (const std::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                d, e.what());
+        }
     }
 }
 

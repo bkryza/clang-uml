@@ -228,7 +228,7 @@ element_type_filter::element_type_filter(
 }
 
 tvl::value_t element_type_filter::match(
-    const diagram &d, const element &e) const
+    const diagram & /*d*/, const element &e) const
 {
     return tvl::any_of(element_types_.begin(), element_types_.end(),
         [&e](const auto &element_type) {
