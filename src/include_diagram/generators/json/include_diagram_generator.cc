@@ -56,9 +56,9 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
     j["id"] = std::to_string(f.id());
     j["name"] = f.name();
     auto display_name = f.full_name(false);
- #if defined(_MSC_VER)
+#if defined(_MSC_VER)
     util::replace_all(display_name, "\\", "/");
- #endif
+#endif
     j["display_name"] = std::move(display_name);
 
     if (f.type() == common::model::source_file_t::kDirectory) {
