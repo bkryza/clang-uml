@@ -137,10 +137,8 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         }
     }
 
-    if (id_opt) {
+    if (id_opt && diagram_.get_class(*id_opt)) {
         auto parent_class = diagram_.get_class(*id_opt);
-
-        assert(parent_class);
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
@@ -696,6 +694,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
     LOG_DBG("== getParent()->isRecord()() = {}", cls->getParent()->isRecord());
+
     if (const auto *parent_record =
             clang::dyn_cast<clang::RecordDecl>(cls->getParent());
         parent_record != nullptr) {
@@ -799,7 +798,18 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
     process_record_parent(rec, record, namespace_{});
 
     if (!record.is_nested()) {
-        record.set_name(common::get_tag_name(*rec));
+        auto record_name = rec->getQualifiedNameAsString();
+
+#if LLVM_VERSION_MAJOR < 16
+        if (record_name == "(anonymous)") {
+            util::apply_if_not_null(rec->getTypedefNameForAnonDecl(),
+                [&record_name](const clang::TypedefNameDecl *name) {
+                    record_name = name->getNameAsString();
+                });
+        }
+#endif
+
+        record.set_name(record_name);
         record.set_id(common::to_id(record.full_name(false)));
     }
 
@@ -886,13 +896,11 @@ void translation_unit_visitor::process_record_parent(
         }
     }
 
-    if (id_opt) {
+    if (id_opt && diagram_.get_class(*id_opt)) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
         auto parent_class = diagram_.get_class(*id_opt);
-
-        assert(parent_class);
 
         c.set_namespace(parent_ns);
         const auto cls_name = cls->getNameAsString();
