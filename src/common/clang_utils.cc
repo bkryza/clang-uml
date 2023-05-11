@@ -84,6 +84,7 @@ model::namespace_ get_template_namespace(const clang::TemplateDecl &declaration)
 std::string get_tag_name(const clang::TagDecl &declaration)
 {
     auto base_name = declaration.getNameAsString();
+
     if (base_name.empty()) {
         base_name =
             fmt::format("(anonymous_{})", std::to_string(declaration.getID()));

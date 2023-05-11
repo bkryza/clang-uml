@@ -41,6 +41,8 @@ TEST_CASE("t00057", "[test-case][class]")
         REQUIRE_THAT(puml, IsUnion(_A("t00057_D")));
         REQUIRE_THAT(puml, IsClass(_A("t00057_E")));
         REQUIRE_THAT(puml, IsClass(_A("t00057_F")));
+        REQUIRE_THAT(puml, IsClass(_A("t00057_G")));
+        REQUIRE_THAT(puml, !IsClass(_A("(anonymous)")));
         REQUIRE_THAT(puml, IsClass(_A("t00057_R")));
 
         // Check if all relationships exist
@@ -70,6 +72,8 @@ TEST_CASE("t00057", "[test-case][class]")
         REQUIRE(get_element(j, "t00057_C").value()["type"] == "class");
         REQUIRE(get_element(j, "t00057_D").value()["type"] == "class");
         REQUIRE(get_element(j, "t00057_E").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_F").value()["type"] == "class");
+        REQUIRE(get_element(j, "t00057_G").value()["type"] == "class");
         REQUIRE(get_element(j, "t00057_R").value()["type"] == "class");
 
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);

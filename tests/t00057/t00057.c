@@ -29,6 +29,10 @@ struct t00057_E {
     } height;
 };
 
+typedef struct {
+    int g1;
+} t00057_G;
+
 struct t00057_R {
     struct t00057_A a;
     t00057_B b;
@@ -36,4 +40,5 @@ struct t00057_R {
     union t00057_D d;
     struct t00057_E *e;
     struct t00057_F *f;
+    struct t00057_G *g;
 };
