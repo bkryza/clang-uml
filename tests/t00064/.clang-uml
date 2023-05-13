@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00064_class:
+    type: class
+    glob:
+      - ../../tests/t00064/t00064.cc
+    include:
+      namespaces:
+        - clanguml::t00064
+    using_namespace:
+      - clanguml::t00064
+    plantuml:
+      before:
+        - left to right direction
