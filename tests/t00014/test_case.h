@@ -53,6 +53,7 @@ TEST_CASE("t00014", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("A", "std::string,std::string"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "char,std::string"));
         REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClassTemplate("R", "T"));
 
         REQUIRE_THAT(puml, IsField<Private>("bapair", "PairPairBA<bool>"));
         REQUIRE_THAT(puml, IsField<Private>("abool", "APtr<bool>"));
@@ -62,6 +63,8 @@ TEST_CASE("t00014", "[test-case][class]")
             puml, IsField<Private>("boolstring", "A<bool,std::string>"));
         REQUIRE_THAT(
             puml, IsField<Private>("floatstring", "AStringPtr<float>"));
+        REQUIRE_THAT(puml, IsField<Private>("atfloat", "AAPtr<T,float>"));
+
         REQUIRE_THAT(puml, IsField<Private>("intstring", "AIntString"));
         REQUIRE_THAT(puml, IsField<Private>("stringstring", "AStringString"));
         REQUIRE_THAT(puml, IsField<Private>("bstringstring", "BStringString"));
@@ -114,23 +117,29 @@ TEST_CASE("t00014", "[test-case][class]")
             IsInstantiation(
                 _A("A<T,P>"), _A("A<T,std::unique_ptr<std::string>>")));
 
-        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "+vps"));
-        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("B"), "-bapair"));
-        REQUIRE_THAT(
-            puml, IsAggregation(_A("R"), _A("A<long,float>"), "-aboolfloat"));
-        REQUIRE_THAT(
-            puml, IsAggregation(_A("R"), _A("A<long,bool>"), "-bapair"));
-        REQUIRE_THAT(
-            puml, IsAggregation(_A("R"), _A("A<double,bool>"), "-aboolfloat"));
-        REQUIRE_THAT(
-            puml, IsAssociation(_A("R"), _A("A<double,float>"), "-afloat"));
+        REQUIRE_THAT(puml, IsAggregation(_A("R<T>"), _A("B"), "+vps"));
+        REQUIRE_THAT(puml, IsAggregation(_A("R<T>"), _A("B"), "-bapair"));
         REQUIRE_THAT(puml,
-            IsAggregation(_A("R"), _A("A<bool,std::string>"), "-boolstring"));
+            IsAggregation(_A("R<T>"), _A("A<long,float>"), "-aboolfloat"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("R<T>"), _A("A<long,bool>"), "-bapair"));
         REQUIRE_THAT(puml,
-            IsAggregation(_A("R"), _A("A<float,std::unique_ptr<std::string>>"),
-                "-floatstring"));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<char,std::string>")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A<wchar_t,std::string>")));
+            IsAggregation(_A("R<T>"), _A("A<double,bool>"), "-aboolfloat"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("R<T>"), _A("A<double,T>"), "-atfloat"));
+        REQUIRE_THAT(
+            puml, IsAggregation(_A("R<T>"), _A("A<long,float>"), "-atfloat"));
+        REQUIRE_THAT(
+            puml, IsAssociation(_A("R<T>"), _A("A<double,float>"), "-afloat"));
+        REQUIRE_THAT(puml,
+            IsAggregation(
+                _A("R<T>"), _A("A<bool,std::string>"), "-boolstring"));
+        REQUIRE_THAT(puml,
+            IsAggregation(_A("R<T>"),
+                _A("A<float,std::unique_ptr<std::string>>"), "-floatstring"));
+        REQUIRE_THAT(puml, IsDependency(_A("R<T>"), _A("A<char,std::string>")));
+        REQUIRE_THAT(
+            puml, IsDependency(_A("R<T>"), _A("A<wchar_t,std::string>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

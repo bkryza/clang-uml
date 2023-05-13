@@ -1852,8 +1852,11 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr &&
         !field_type_is_template_template_parameter) {
         // Build the template instantiation for the field type
-        auto template_specialization_ptr =
-            tbuilder().build(&field_declaration, *template_field_type, {&c});
+        auto template_specialization_ptr = tbuilder().build(
+            field_type->getAs<clang::TemplateSpecializationType>()
+                ->getTemplateName()
+                .getAsTemplateDecl(),
+            *template_field_type, {&c});
 
         if (!field.skip_relationship() && template_specialization_ptr) {
             const auto &template_specialization = *template_specialization_ptr;
@@ -1862,14 +1865,14 @@ void translation_unit_visitor::process_field(
             // current diagram. Even if the top level template type for
             // this instantiation should not be part of the diagram, e.g.
             // it's a std::vector<>, it's nested types might be added
-            bool add_template_instantiation_to_diargam{false};
+            bool add_template_instantiation_to_diagram{false};
             if (diagram().should_include(
                     template_specialization.full_name(false))) {
 
                 found_relationships_t::value_type r{
                     template_specialization.id(), relationship_hint};
 
-                add_template_instantiation_to_diargam = true;
+                add_template_instantiation_to_diagram = true;
 
                 // If the template instantiation for the build type has been
                 // added as aggregation, skip its nested templates
@@ -1910,7 +1913,7 @@ void translation_unit_visitor::process_field(
 
             // Add the template instantiation object to the diagram if it
             // matches the include pattern
-            if (add_template_instantiation_to_diargam)
+            if (add_template_instantiation_to_diagram)
                 diagram().add_class(std::move(template_specialization_ptr));
         }
     }
