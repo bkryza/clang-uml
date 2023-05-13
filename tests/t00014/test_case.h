@@ -35,6 +35,9 @@ TEST_CASE("t00014", "[test-case][class]")
 
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+
+        REQUIRE_THAT(puml, !Contains("type-parameter-"));
+
         REQUIRE_THAT(puml, IsClassTemplate("A", "T,P"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "T,std::string"));
         REQUIRE_THAT(

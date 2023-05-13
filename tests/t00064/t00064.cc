@@ -1,7 +1,12 @@
+#include <cstddef>
+
 namespace clanguml {
 namespace t00064 {
 
 template <typename... Ts> struct type_list { };
+
+template <typename Ret, typename Arg, typename... Ts>
+struct type_list<Ret (*)(Arg &&arg), Ts...> { };
 
 template <typename T> struct head;
 template <typename Head, typename... Tail>
@@ -13,7 +18,10 @@ template <typename T> using head_t = typename head<T>::type;
 
 template <typename, typename> class type_group_pair;
 template <typename... First, typename... Second>
-class type_group_pair<type_list<First...>, type_list<Second...>> { };
+class type_group_pair<type_list<First...>, type_list<Second...>> {
+    template <typename Type>
+    static constexpr size_t size = sizeof...(First) + sizeof...(Second);
+};
 
 struct A { };
 struct B { };

@@ -928,7 +928,15 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
     clang::QualType &type, class_ &template_instantiation,
     size_t argument_index)
 {
-    const auto *function_type = type->getAs<clang::FunctionProtoType>();
+    auto *function_type = type->getAs<clang::FunctionProtoType>();
+
+    if (function_type == nullptr && type->isFunctionPointerType()) {
+        function_type =
+            type->getPointeeType()->getAs<clang::FunctionProtoType>();
+        if (function_type == nullptr)
+            return {};
+    }
+
     if (function_type == nullptr)
         return {};
 
