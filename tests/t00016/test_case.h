@@ -35,20 +35,23 @@ TEST_CASE("t00016", "[test-case][class]")
 
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", ""));
+        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "typename"));
         REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "int"));
         REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "bool"));
         REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "char"));
         REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "float"));
 
-        REQUIRE_THAT(
-            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<int>")));
-        REQUIRE_THAT(
-            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<bool>")));
-        REQUIRE_THAT(
-            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<char>")));
-        REQUIRE_THAT(
-            puml, IsInstantiation(_A("is_numeric<>"), _A("is_numeric<float>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(_A("is_numeric<typename>"), _A("is_numeric<int>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<bool>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<char>")));
+        REQUIRE_THAT(puml,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<float>")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);
@@ -58,7 +61,7 @@ TEST_CASE("t00016", "[test-case][class]")
 
         using namespace json;
 
-        REQUIRE(IsClassTemplate(j, "is_numeric<>"));
+        REQUIRE(IsClassTemplate(j, "is_numeric<typename>"));
         REQUIRE(IsClass(j, "is_numeric<int>"));
         REQUIRE(IsClass(j, "is_numeric<bool>"));
         REQUIRE(IsClass(j, "is_numeric<char>"));

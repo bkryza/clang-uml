@@ -197,6 +197,10 @@ std::optional<std::string> template_parameter::name() const
     if (!name_)
         return {};
 
+    if (kind_ == template_parameter_kind_t::template_type &&
+        name_.has_value() && name_.value().empty())
+        return "typename";
+
     if (is_variadic_ && (kind_ != template_parameter_kind_t::non_type_template))
         return name_.value() + "...";
 

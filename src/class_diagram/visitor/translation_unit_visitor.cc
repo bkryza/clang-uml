@@ -973,9 +973,13 @@ bool translation_unit_visitor::process_template_parameters(
                 default_arg =
                     template_type_parameter->getDefaultArgument().getAsString();
             }
-            auto ct = template_parameter::make_template_type(
-                template_type_parameter->getNameAsString(), default_arg,
-                template_type_parameter->isParameterPack());
+
+            auto parameter_name = template_type_parameter->getNameAsString();
+            if (parameter_name.empty())
+                parameter_name = "typename";
+
+            auto ct = template_parameter::make_template_type(parameter_name,
+                default_arg, template_type_parameter->isParameterPack());
 
             if (template_type_parameter->getTypeConstraint() != nullptr) {
                 util::apply_if_not_null(

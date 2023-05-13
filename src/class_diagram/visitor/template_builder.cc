@@ -1069,14 +1069,16 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
     auto argument = template_parameter::make_template_type("");
     type = consume_context(type, argument);
 
-    argument.is_variadic(is_variadic);
-
     auto type_parameter_name = common::to_string(type, cls->getASTContext());
-
-    ensure_lambda_type_is_relative(type_parameter_name);
+    if (type_parameter_name.empty())
+        type_parameter_name = "typename";
 
     argument.set_name(map_type_parameter_to_template_parameter_name(
         cls, type_parameter_name));
+
+    argument.is_variadic(is_variadic);
+
+    ensure_lambda_type_is_relative(type_parameter_name);
 
     return argument;
 }
