@@ -15,6 +15,8 @@ public:
     {
     }
 
+    template <typename CastTo> CastTo *get_signal() { return (CastTo *)signal; }
+
 private:
     signal_t *signal;
 };

@@ -161,7 +161,7 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     clanguml::util::replace_all(result, ", ", ",");
     clanguml::util::replace_all(result, "> >", ">>");
 
-    // Get rid of 'type-parameter-X-Y' ugliness
+    // Try to get rid of 'type-parameter-X-Y' ugliness
     if (result.find("type-parameter-") != std::string::npos) {
         util::apply_if_not_null(
             common::dereference(type)->getAs<clang::TypedefType>(),

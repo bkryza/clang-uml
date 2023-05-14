@@ -1269,8 +1269,16 @@ void translation_unit_visitor::process_method(
 
     ensure_lambda_type_is_relative(method_return_type);
 
+    auto method_name = mf.getNameAsString();
+    if (mf.isTemplated()) {
+        // Sometimes in template specializations method names contain the
+        // template parameters for some reason - drop them
+        // Is there a better way to do this?
+        method_name = method_name.substr(0, method_name.find('<'));
+    }
+
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()), method_return_type};
+        util::trim(method_name), method_return_type};
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -1302,16 +1310,18 @@ void translation_unit_visitor::process_method(
             unaliased_type = unaliased_type->getAliasedType()
                                  ->getAs<clang::TemplateSpecializationType>();
 
-        auto template_specialization_ptr = tbuilder().build(
-            unaliased_type->getTemplateName().getAsTemplateDecl(),
-            *unaliased_type, &c);
+        if (unaliased_type != nullptr) {
+            auto template_specialization_ptr = tbuilder().build(
+                unaliased_type->getTemplateName().getAsTemplateDecl(),
+                *unaliased_type, &c);
 
-        if (diagram().should_include(
-                template_specialization_ptr->full_name(false))) {
-            relationships.emplace_back(
-                template_specialization_ptr->id(), relationship_t::kDependency);
+            if (diagram().should_include(
+                    template_specialization_ptr->full_name(false))) {
+                relationships.emplace_back(template_specialization_ptr->id(),
+                    relationship_t::kDependency);
 
-            diagram().add_class(std::move(template_specialization_ptr));
+                diagram().add_class(std::move(template_specialization_ptr));
+            }
         }
     }
 
