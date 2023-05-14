@@ -1610,7 +1610,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
 
 void translation_unit_visitor::process_function_parameter(
     const clang::ParmVarDecl &p, class_method &method, class_ &c,
-    const std::set<std::string> &template_parameter_names)
+    const std::set<std::string> & /*template_parameter_names*/)
 {
     method_parameter parameter;
     parameter.set_name(p.getNameAsString());

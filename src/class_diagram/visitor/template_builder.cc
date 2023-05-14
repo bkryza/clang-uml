@@ -871,7 +871,7 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
     clang::QualType &type, class_ &template_instantiation,
     size_t argument_index)
 {
-    auto *function_type = type->getAs<clang::FunctionProtoType>();
+    const auto *function_type = type->getAs<clang::FunctionProtoType>();
 
     if (function_type == nullptr && type->isFunctionPointerType()) {
         function_type =
@@ -915,10 +915,10 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
 }
 
 std::optional<template_parameter> template_builder::try_as_decl_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
-    size_t argument_index)
+    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    const clang::NamedDecl * /*cls*/,
+    const clang::TemplateDecl * /*template_decl*/, clang::QualType &type,
+    class_ & /*template_instantiation*/, size_t /*argument_index*/)
 {
     const auto *decl_type =
         common::dereference(type)->getAs<clang::DecltypeType>();
