@@ -157,6 +157,18 @@ public:
         clang::QualType &type, class_ &template_instantiation,
         size_t argument_index);
 
+    std::optional<template_parameter> try_as_decl_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
+    std::optional<template_parameter> try_as_typedef_type(
+        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+        clang::QualType &type, class_ &template_instantiation,
+        size_t argument_index);
+
     clang::QualType consume_context(
         clang::QualType type, template_parameter &tp) const;
 

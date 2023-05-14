@@ -161,6 +161,27 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     clanguml::util::replace_all(result, ", ", ",");
     clanguml::util::replace_all(result, "> >", ">>");
 
+    // Get rid of 'type-parameter-X-Y' ugliness
+    if (result.find("type-parameter-") != std::string::npos) {
+        util::apply_if_not_null(
+            common::dereference(type)->getAs<clang::TypedefType>(),
+            [&result, &type](auto *p) {
+                auto [unqualified_type, context] =
+                    common::consume_type_context(type);
+                result = p->getDecl()->getNameAsString();
+                if (!context.empty()) {
+                    std::vector<std::string> deduced_contexts;
+
+                    for (const auto &c : context) {
+                        deduced_contexts.push_back(c.to_string());
+                    }
+
+                    result = fmt::format(
+                        "{} {}", result, fmt::join(deduced_contexts, " "));
+                }
+            });
+    }
+
     return result;
 }
 
@@ -539,6 +560,97 @@ clang::QualType dereference(clang::QualType type)
     }
 
     return res;
+}
+
+std::pair<clang::QualType, std::deque<common::model::context>>
+consume_type_context(clang::QualType type)
+{
+    std::deque<common::model::context> res;
+
+    while (true) {
+        bool try_again{false};
+        common::model::context ctx;
+
+        if (type.isConstQualified()) {
+            ctx.is_const = true;
+            try_again = true;
+        }
+
+        if (type.isVolatileQualified()) {
+            ctx.is_volatile = true;
+            try_again = true;
+        }
+
+        if (type->isPointerType() || type->isReferenceType()) {
+            if (type.isConstQualified() || type.isVolatileQualified()) {
+                ctx.is_ref_const = type.isConstQualified();
+                ctx.is_ref_volatile = type.isVolatileQualified();
+
+                try_again = true;
+            }
+        }
+
+        if (type->isLValueReferenceType()) {
+            ctx.pr = common::model::rpqualifier::kLValueReference;
+            try_again = true;
+        }
+        else if (type->isRValueReferenceType()) {
+            ctx.pr = common::model::rpqualifier::kRValueReference;
+            try_again = true;
+        }
+        else if (type->isMemberFunctionPointerType() &&
+            type->getPointeeType()->getAs<clang::FunctionProtoType>() !=
+                nullptr) {
+            const auto ref_qualifier =
+                type->getPointeeType()                  // NOLINT
+                    ->getAs<clang::FunctionProtoType>() // NOLINT
+                    ->getRefQualifier();
+
+            if (ref_qualifier == clang::RefQualifierKind::RQ_RValue) {
+                ctx.pr = common::model::rpqualifier::kRValueReference;
+                try_again = true;
+            }
+            else if (ref_qualifier == clang::RefQualifierKind::RQ_LValue) {
+                ctx.pr = common::model::rpqualifier::kLValueReference;
+                try_again = true;
+            }
+        }
+        else if (type->isPointerType()) {
+            ctx.pr = common::model::rpqualifier::kPointer;
+            try_again = true;
+        }
+
+        if (try_again) {
+            if (type->isPointerType()) {
+                if (type->getPointeeType().isConstQualified())
+                    ctx.is_const = true;
+                if (type->getPointeeType().isVolatileQualified())
+                    ctx.is_volatile = true;
+
+                type = type->getPointeeType().getUnqualifiedType();
+            }
+            else if (type->isReferenceType()) {
+                if (type.getNonReferenceType().isConstQualified())
+                    ctx.is_const = true;
+                if (type.getNonReferenceType().isVolatileQualified())
+                    ctx.is_volatile = true;
+
+                type = type.getNonReferenceType().getUnqualifiedType();
+            }
+            else if (type.isConstQualified() || type.isVolatileQualified()) {
+                ctx.is_const = type.isConstQualified();
+                ctx.is_volatile = type.isVolatileQualified();
+                type = type.getUnqualifiedType();
+            }
+
+            res.push_front(ctx);
+
+            if (type->isMemberFunctionPointerType())
+                return std::make_pair(type, res);
+        }
+        else
+            return std::make_pair(type, res);
+    }
 }
 
 std::vector<std::string> tokenize_unexposed_template_parameter(

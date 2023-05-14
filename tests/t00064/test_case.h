@@ -37,9 +37,37 @@ TEST_CASE("t00064", "[test-case][class]")
 
         REQUIRE_THAT(puml, !Contains("type-parameter-"));
 
-        // Check if all classes exist
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("B")));
+        REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
+
+        REQUIRE_THAT(puml, IsClassTemplate("type_list", "Ts..."));
+        REQUIRE_THAT(puml, IsClassTemplate("type_list", "Ret(Arg &&),Ts..."));
+        REQUIRE_THAT(puml, IsClassTemplate("type_list", "T const,Ts..."));
+
+        REQUIRE_THAT(puml, IsClassTemplate("head", "typename"));
+        REQUIRE_THAT(puml, IsClassTemplate("head", "type_list<Head,Tail...>"));
         REQUIRE_THAT(
             puml, IsClassTemplate("type_group_pair", "typename,typename"));
+        REQUIRE_THAT(puml,
+            IsClassTemplate(
+                "type_group_pair", "type_list<First...>,type_list<Second...>"));
+        REQUIRE_THAT(puml,
+            IsClassTemplate(
+                "type_group_pair", "type_list<float,double>,type_list<A,B,C>"));
+
+        REQUIRE_THAT(puml, IsClassTemplate("optional_ref", "T"));
+
+        REQUIRE_THAT(puml,
+            IsClassTemplate("type_group_pair_it",
+                "It,type_list<First...>,type_list<Second...>"));
+        REQUIRE_THAT(
+            puml, (IsMethod<Public>("get", "ref_t", "unsigned int i")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Public>("getp", "value_type const*", "unsigned int i")));
+        REQUIRE_THAT(puml,
+            (IsMethod<Public>("find", "unsigned int", "value_type const& v")));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

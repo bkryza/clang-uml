@@ -634,14 +634,15 @@ void template_parameter::push_context(const context &q)
 {
     context_.push_front(q);
 }
+
 const std::deque<context> &template_parameter::deduced_context() const
 {
     return context_;
 }
 
-void template_parameter::deduced_context(const std::deque<context> &c)
+void template_parameter::deduced_context(std::deque<context> c)
 {
-    context_ = c;
+    context_ = std::move(c);
 }
 
 void template_parameter::is_ellipsis(bool e) { is_ellipsis_ = e; }

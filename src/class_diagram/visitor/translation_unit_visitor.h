@@ -190,11 +190,6 @@ private:
     void process_function_parameter_find_relationships_in_autotype(
         model::class_ &c, const clang::AutoType *atsp);
 
-    void process_function_parameter_find_relationships_in_template(
-        clanguml::class_diagram::model::class_ &c,
-        const std::set<std::string> &template_parameter_names,
-        const clang::TemplateSpecializationType &template_instantiation_type);
-
     void find_relationships_in_constraint_expression(
         clanguml::common::model::element &c, const clang::Expr *expr);
 
