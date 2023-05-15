@@ -452,10 +452,11 @@ void template_builder::argument_process_dispatch(
     case clang::TemplateArgument::Template:
         argument.push_back(process_template_argument(arg));
         break;
-    case clang::TemplateArgument::Type:
+    case clang::TemplateArgument::Type: {
         argument.push_back(process_type_argument(parent, cls, template_decl,
             arg.getAsType(), template_instantiation, argument_index));
         break;
+    }
     case clang::TemplateArgument::Declaration:
         break;
     case clang::TemplateArgument::NullPtr:
@@ -509,79 +510,11 @@ template_parameter template_builder::process_template_expansion(
 clang::QualType template_builder::consume_context(
     clang::QualType type, template_parameter &tp) const
 {
-    while (true) {
-        bool try_again{false};
-        common::model::context ctx;
+    auto [unqualified_type, context] = common::consume_type_context(type);
 
-        if (type->isPointerType() || type->isReferenceType()) {
-            if (type.isConstQualified() || type.isVolatileQualified()) {
-                ctx.is_ref_const = type.isConstQualified();
-                ctx.is_ref_volatile = type.isVolatileQualified();
+    tp.deduced_context(std::move(context));
 
-                try_again = true;
-            }
-        }
-
-        if (type->isLValueReferenceType()) {
-            ctx.pr = common::model::rpqualifier::kLValueReference;
-            try_again = true;
-        }
-        else if (type->isRValueReferenceType()) {
-            ctx.pr = common::model::rpqualifier::kRValueReference;
-            try_again = true;
-        }
-        else if (type->isMemberFunctionPointerType() &&
-            type->getPointeeType()->getAs<clang::FunctionProtoType>() !=
-                nullptr) {
-            const auto ref_qualifier =
-                type->getPointeeType()                  // NOLINT
-                    ->getAs<clang::FunctionProtoType>() // NOLINT
-                    ->getRefQualifier();
-
-            if (ref_qualifier == clang::RefQualifierKind::RQ_RValue) {
-                ctx.pr = common::model::rpqualifier::kRValueReference;
-                try_again = true;
-            }
-            else if (ref_qualifier == clang::RefQualifierKind::RQ_LValue) {
-                ctx.pr = common::model::rpqualifier::kLValueReference;
-                try_again = true;
-            }
-        }
-        else if (type->isPointerType()) {
-            ctx.pr = common::model::rpqualifier::kPointer;
-            try_again = true;
-        }
-
-        if (try_again) {
-            if (type->isPointerType()) {
-                if (type->getPointeeType().isConstQualified())
-                    ctx.is_const = true;
-                if (type->getPointeeType().isVolatileQualified())
-                    ctx.is_volatile = true;
-
-                type = type->getPointeeType().getUnqualifiedType();
-            }
-            else if (type->isReferenceType()) {
-                if (type.getNonReferenceType().isConstQualified())
-                    ctx.is_const = true;
-                if (type.getNonReferenceType().isVolatileQualified())
-                    ctx.is_volatile = true;
-
-                type = type.getNonReferenceType().getUnqualifiedType();
-            }
-            else if (type.isConstQualified() || type.isVolatileQualified()) {
-                ctx.is_const = type.isConstQualified();
-                ctx.is_volatile = type.isVolatileQualified();
-            }
-
-            tp.push_context(ctx);
-
-            if (type->isMemberFunctionPointerType())
-                return type;
-        }
-        else
-            return type;
-    }
+    return unqualified_type;
 }
 
 template_parameter template_builder::process_type_argument(
@@ -623,6 +556,16 @@ template_parameter template_builder::process_type_argument(
 
     argument = try_as_template_specialization_type(parent, cls, template_decl,
         type, template_instantiation, argument_index);
+    if (argument)
+        return *argument;
+
+    argument = try_as_decl_type(parent, cls, template_decl, type,
+        template_instantiation, argument_index);
+    if (argument)
+        return *argument;
+
+    argument = try_as_typedef_type(parent, cls, template_decl, type,
+        template_instantiation, argument_index);
     if (argument)
         return *argument;
 
@@ -929,8 +872,18 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
     size_t argument_index)
 {
     const auto *function_type = type->getAs<clang::FunctionProtoType>();
+
+    if (function_type == nullptr && type->isFunctionPointerType()) {
+        function_type =
+            type->getPointeeType()->getAs<clang::FunctionProtoType>();
+        if (function_type == nullptr)
+            return {};
+    }
+
     if (function_type == nullptr)
         return {};
+
+    LOG_DBG("Template argument is a function prototype");
 
     auto argument = template_parameter::make_template_type("");
 
@@ -961,6 +914,57 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
     return argument;
 }
 
+std::optional<template_parameter> template_builder::try_as_decl_type(
+    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    const clang::NamedDecl * /*cls*/,
+    const clang::TemplateDecl * /*template_decl*/, clang::QualType &type,
+    class_ & /*template_instantiation*/, size_t /*argument_index*/)
+{
+    const auto *decl_type =
+        common::dereference(type)->getAs<clang::DecltypeType>();
+    if (decl_type == nullptr) {
+        return {};
+    }
+
+    LOG_DBG("Template argument is a decltype()");
+
+    // TODO
+    return {};
+}
+
+std::optional<template_parameter> template_builder::try_as_typedef_type(
+    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
+    clang::QualType &type, class_ &template_instantiation,
+    size_t argument_index)
+{
+    const auto *typedef_type =
+        common::dereference(type)->getAs<clang::TypedefType>();
+    if (typedef_type == nullptr) {
+        return {};
+    }
+
+    LOG_DBG("Template argument is a typedef/using");
+
+    // If this is a typedef/using alias to a decltype - we're not able
+    // to figure out anything out of it probably
+    if (typedef_type->getAs<clang::DecltypeType>() != nullptr) {
+        // Here we need to figure out the parent context of this alias,
+        // it can be a:
+        //   - class/struct
+        if (typedef_type->getDecl()->isCXXClassMember() && parent) {
+            return template_parameter::make_argument(
+                fmt::format("{}::{}", parent.value()->full_name(false),
+                    typedef_type->getDecl()->getNameAsString()));
+        }
+        //   - namespace
+        return template_parameter::make_argument(
+            typedef_type->getDecl()->getQualifiedNameAsString());
+    }
+
+    return {};
+}
+
 std::optional<template_parameter>
 template_builder::try_as_template_specialization_type(
     std::optional<clanguml::class_diagram::model::class_ *> &parent,
@@ -970,8 +974,11 @@ template_builder::try_as_template_specialization_type(
 {
     const auto *nested_template_type =
         common::dereference(type)->getAs<clang::TemplateSpecializationType>();
-    if (nested_template_type == nullptr)
+    if (nested_template_type == nullptr) {
         return {};
+    }
+
+    LOG_DBG("Template argument is a template specialization type");
 
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
@@ -1066,17 +1073,21 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
     if (type_parameter == nullptr)
         return {};
 
+    LOG_DBG("Template argument is a template parameter type");
+
     auto argument = template_parameter::make_template_type("");
     type = consume_context(type, argument);
 
-    argument.is_variadic(is_variadic);
-
     auto type_parameter_name = common::to_string(type, cls->getASTContext());
-
-    ensure_lambda_type_is_relative(type_parameter_name);
+    if (type_parameter_name.empty())
+        type_parameter_name = "typename";
 
     argument.set_name(map_type_parameter_to_template_parameter_name(
         cls, type_parameter_name));
+
+    argument.is_variadic(is_variadic);
+
+    ensure_lambda_type_is_relative(type_parameter_name);
 
     return argument;
 }
@@ -1089,6 +1100,8 @@ std::optional<template_parameter> template_builder::try_as_lambda(
 
     if (type_name.find("(lambda at ") != 0)
         return {};
+
+    LOG_DBG("Template argument is a lambda");
 
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
@@ -1109,6 +1122,8 @@ std::optional<template_parameter> template_builder::try_as_record_type(
         common::dereference(type)->getAs<clang::RecordType>();
     if (record_type == nullptr)
         return {};
+
+    LOG_DBG("Template argument is a c++ record");
 
     auto argument = template_parameter::make_argument({});
     type = consume_context(type, argument);
@@ -1166,6 +1181,8 @@ std::optional<template_parameter> template_builder::try_as_enum_type(
     if (enum_type == nullptr)
         return {};
 
+    LOG_DBG("Template argument is a an enum");
+
     auto argument = template_parameter::make_argument({});
     type = consume_context(type, argument);
 
@@ -1189,6 +1206,8 @@ std::optional<template_parameter> template_builder::try_as_builtin_type(
     const auto *builtin_type = type->getAs<clang::BuiltinType>();
     if (builtin_type == nullptr)
         return {};
+
+    LOG_DBG("Template argument is a builtin type");
 
     auto type_name = common::to_string(type, template_decl->getASTContext());
     auto argument = template_parameter::make_argument(type_name);

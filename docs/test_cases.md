@@ -62,6 +62,7 @@
  * [t00061](./test_cases/t00061.md) - Paths diagram filter test case
  * [t00062](./test_cases/t00062.md) - Template specialization matching based on deduced context
  * [t00063](./test_cases/t00063.md) - Element types diagram filter test case
+ * [t00064](./test_cases/t00064.md) - Template type list test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

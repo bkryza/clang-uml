@@ -166,8 +166,9 @@ public:
     bool is_array() const;
 
     void push_context(const context &q);
+
     const std::deque<context> &deduced_context() const;
-    void deduced_context(const std::deque<context> &c);
+    void deduced_context(std::deque<context> c);
 
     void is_ellipsis(bool e);
     bool is_ellipsis() const;

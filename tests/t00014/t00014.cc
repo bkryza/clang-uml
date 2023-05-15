@@ -36,6 +36,7 @@ using PairPairBA = std::pair<std::pair<B, A<long, T>>, long>;
 template <class T> using VectorPtr = std::unique_ptr<std::vector<T>>;
 template <class T> using APtr = std::unique_ptr<A<double, T>>;
 template <class T> using ASharedPtr = std::shared_ptr<A<double, T>>;
+
 template <class T, class U>
 using AAPtr = std::unique_ptr<std::pair<A<double, T>, A<long, U>>>;
 
@@ -52,7 +53,7 @@ using ACharString = AString<char>;
 using AStringString = AString<std::string>;
 using BStringString = AStringString;
 
-class R {
+template <typename T> class R {
     using AWCharString = AString<wchar_t>;
 
     PairPairBA<bool> bapair;
@@ -65,6 +66,7 @@ class R {
     AIntString intstring;
     AStringString stringstring;
     BStringString bstringstring;
+    AAPtr<T, float> atfloat;
 
 protected:
     BVector bs;

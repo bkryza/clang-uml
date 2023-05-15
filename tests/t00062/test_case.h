@@ -35,6 +35,8 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
+        REQUIRE_THAT(puml, !Contains("type-parameter-"));
+
         // Check if all classes exist
         REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
         REQUIRE_THAT(puml, IsClassTemplate("A", "U &"));

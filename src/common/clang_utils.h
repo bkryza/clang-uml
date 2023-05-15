@@ -186,4 +186,7 @@ bool is_type_token(const std::string &t);
 
 clang::QualType dereference(clang::QualType type);
 
+std::pair<clang::QualType, std::deque<common::model::context>>
+consume_type_context(clang::QualType type);
+
 } // namespace clanguml::common

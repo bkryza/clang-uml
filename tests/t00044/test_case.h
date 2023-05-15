@@ -35,6 +35,8 @@ TEST_CASE("t00044", "[test-case][class]")
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
+        REQUIRE_THAT(puml, !Contains("type-parameter-"));
+
         REQUIRE_THAT(puml, IsClassTemplate("sink", "T"));
         REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
 

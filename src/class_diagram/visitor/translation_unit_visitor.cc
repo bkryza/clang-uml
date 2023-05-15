@@ -973,9 +973,13 @@ bool translation_unit_visitor::process_template_parameters(
                 default_arg =
                     template_type_parameter->getDefaultArgument().getAsString();
             }
-            auto ct = template_parameter::make_template_type(
-                template_type_parameter->getNameAsString(), default_arg,
-                template_type_parameter->isParameterPack());
+
+            auto parameter_name = template_type_parameter->getNameAsString();
+            if (parameter_name.empty())
+                parameter_name = "typename";
+
+            auto ct = template_parameter::make_template_type(parameter_name,
+                default_arg, template_type_parameter->isParameterPack());
 
             if (template_type_parameter->getTypeConstraint() != nullptr) {
                 util::apply_if_not_null(
@@ -1265,8 +1269,16 @@ void translation_unit_visitor::process_method(
 
     ensure_lambda_type_is_relative(method_return_type);
 
+    auto method_name = mf.getNameAsString();
+    if (mf.isTemplated()) {
+        // Sometimes in template specializations method names contain the
+        // template parameters for some reason - drop them
+        // Is there a better way to do this?
+        method_name = method_name.substr(0, method_name.find('<'));
+    }
+
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(mf.getNameAsString()), method_return_type};
+        util::trim(method_name), method_return_type};
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -1286,6 +1298,32 @@ void translation_unit_visitor::process_method(
 
     //  find relationship for return type
     found_relationships_t relationships;
+
+    // Move dereferencing to build() method of template_builder
+    if (const auto *templ = mf.getReturnType()
+                                .getNonReferenceType()
+                                .getUnqualifiedType()
+                                ->getAs<clang::TemplateSpecializationType>();
+        templ != nullptr) {
+        auto *unaliased_type = templ;
+        if (unaliased_type->isTypeAlias())
+            unaliased_type = unaliased_type->getAliasedType()
+                                 ->getAs<clang::TemplateSpecializationType>();
+
+        if (unaliased_type != nullptr) {
+            auto template_specialization_ptr = tbuilder().build(
+                unaliased_type->getTemplateName().getAsTemplateDecl(),
+                *unaliased_type, &c);
+
+            if (diagram().should_include(
+                    template_specialization_ptr->full_name(false))) {
+                relationships.emplace_back(template_specialization_ptr->id(),
+                    relationship_t::kDependency);
+
+                diagram().add_class(std::move(template_specialization_ptr));
+            }
+        }
+    }
 
     find_relationships(
         mf.getReturnType(), relationships, relationship_t::kDependency);
@@ -1313,13 +1351,8 @@ void translation_unit_visitor::process_method(
     if (underlying_type->isPointerType())
         underlying_type = underlying_type->getPointeeType();
 
-    if (const auto *tsp =
-            underlying_type->getAs<clang::TemplateSpecializationType>();
-        tsp != nullptr) {
-        process_function_parameter_find_relationships_in_template(c, {}, *tsp);
-    }
-    else if (const auto *atsp = underlying_type->getAs<clang::AutoType>();
-             atsp != nullptr) {
+    if (const auto *atsp = underlying_type->getAs<clang::AutoType>();
+        atsp != nullptr) {
         process_function_parameter_find_relationships_in_autotype(c, atsp);
     }
 
@@ -1517,13 +1550,67 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             result = true;
         }
     }
+    else if (const auto *template_specialization_type =
+                 type->getAs<clang::TemplateSpecializationType>();
+             template_specialization_type != nullptr) {
+        if (should_include(template_specialization_type->getTemplateName()
+                               .getAsTemplateDecl())) {
+            relationships.emplace_back(
+                template_specialization_type->getTemplateName()
+                    .getAsTemplateDecl()
+                    ->getID(),
+                relationship_hint);
+        }
+        for (const auto &template_argument :
+            template_specialization_type->template_arguments()) {
+            const auto template_argument_kind = template_argument.getKind();
+            if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::Integral) {
+                // pass
+            }
+            else if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::Null) {
+                // pass
+            }
+            else if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::Expression) {
+                // pass
+            }
+            else if (template_argument.getKind() ==
+                clang::TemplateArgument::ArgKind::NullPtr) {
+                // pass
+            }
+            else if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::Template) {
+                // pass
+            }
+            else if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::TemplateExpansion) {
+                // pass
+            }
+            else if (const auto *function_type =
+                         template_argument.getAsType()
+                             ->getAs<clang::FunctionProtoType>();
+                     function_type != nullptr) {
+                for (const auto &param_type : function_type->param_types()) {
+                    result = find_relationships(
+                        param_type, relationships, relationship_t::kDependency);
+                }
+            }
+            else if (template_argument_kind ==
+                clang::TemplateArgument::ArgKind::Type) {
+                result = find_relationships(template_argument.getAsType(),
+                    relationships, relationship_hint);
+            }
+        }
+    }
 
     return result;
 }
 
 void translation_unit_visitor::process_function_parameter(
     const clang::ParmVarDecl &p, class_method &method, class_ &c,
-    const std::set<std::string> &template_parameter_names)
+    const std::set<std::string> & /*template_parameter_names*/)
 {
     method_parameter parameter;
     parameter.set_name(p.getNameAsString());
@@ -1553,6 +1640,27 @@ void translation_unit_visitor::process_function_parameter(
         // find relationship for the type
         found_relationships_t relationships;
 
+        LOG_DBG("Looking for relationships in type: {}",
+            common::to_string(p.getType(), p.getASTContext()));
+
+        if (const auto *templ =
+                p.getType()
+                    .getNonReferenceType()
+                    .getUnqualifiedType()
+                    ->getAs<clang::TemplateSpecializationType>();
+            templ != nullptr) {
+            auto template_specialization_ptr = tbuilder().build(
+                templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
+
+            if (diagram().should_include(
+                    template_specialization_ptr->full_name(false))) {
+                relationships.emplace_back(template_specialization_ptr->id(),
+                    relationship_t::kDependency);
+
+                diagram().add_class(std::move(template_specialization_ptr));
+            }
+        }
+
         find_relationships(
             p.getType(), relationships, relationship_t::kDependency);
 
@@ -1568,22 +1676,6 @@ void translation_unit_visitor::process_function_parameter(
 
                 c.add_relationship(std::move(r));
             }
-        }
-
-        // Also consider the container itself if it is a template
-        // instantiation it's arguments could count as reference to relevant
-        // types
-        auto underlying_type = p.getType();
-        if (underlying_type->isReferenceType())
-            underlying_type = underlying_type.getNonReferenceType();
-        if (underlying_type->isPointerType())
-            underlying_type = underlying_type->getPointeeType();
-
-        if (const auto *tsp =
-                underlying_type->getAs<clang::TemplateSpecializationType>();
-            tsp != nullptr) {
-            process_function_parameter_find_relationships_in_template(
-                c, template_parameter_names, *tsp);
         }
     }
 
@@ -1623,40 +1715,6 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
         parameter_type = fmt::format("{}(lambda at {}{}",
             parameter_type.substr(0, lambda_begin), relative_lambda_path,
             parameter_type.substr(absolute_lambda_path_end));
-    }
-}
-
-void translation_unit_visitor::
-    process_function_parameter_find_relationships_in_template(class_ &c,
-        const std::set<std::string> & /*template_parameter_names*/,
-        const clang::TemplateSpecializationType &template_instantiation_type)
-{
-    if (!should_include(
-            template_instantiation_type.getTemplateName().getAsTemplateDecl()))
-        return;
-
-    auto template_specialization_ptr = tbuilder().build(
-        template_instantiation_type.getTemplateName().getAsTemplateDecl(),
-        template_instantiation_type, &c);
-
-    if (template_instantiation_type.isDependentType()) {
-        if (template_specialization_ptr) {
-            relationship r{
-                relationship_t::kDependency, template_specialization_ptr->id()};
-
-            c.add_relationship(std::move(r));
-        }
-    }
-    else {
-        if (template_specialization_ptr) {
-            relationship r{
-                relationship_t::kDependency, template_specialization_ptr->id()};
-
-            if (!diagram().has_element(template_specialization_ptr->id()))
-                diagram().add_class(std::move(template_specialization_ptr));
-
-            c.add_relationship(std::move(r));
-        }
     }
 }
 
@@ -1852,8 +1910,11 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr &&
         !field_type_is_template_template_parameter) {
         // Build the template instantiation for the field type
-        auto template_specialization_ptr =
-            tbuilder().build(&field_declaration, *template_field_type, {&c});
+        auto template_specialization_ptr = tbuilder().build(
+            field_type->getAs<clang::TemplateSpecializationType>()
+                ->getTemplateName()
+                .getAsTemplateDecl(),
+            *template_field_type, {&c});
 
         if (!field.skip_relationship() && template_specialization_ptr) {
             const auto &template_specialization = *template_specialization_ptr;
@@ -1862,14 +1923,14 @@ void translation_unit_visitor::process_field(
             // current diagram. Even if the top level template type for
             // this instantiation should not be part of the diagram, e.g.
             // it's a std::vector<>, it's nested types might be added
-            bool add_template_instantiation_to_diargam{false};
+            bool add_template_instantiation_to_diagram{false};
             if (diagram().should_include(
                     template_specialization.full_name(false))) {
 
                 found_relationships_t::value_type r{
                     template_specialization.id(), relationship_hint};
 
-                add_template_instantiation_to_diargam = true;
+                add_template_instantiation_to_diagram = true;
 
                 // If the template instantiation for the build type has been
                 // added as aggregation, skip its nested templates
@@ -1910,7 +1971,7 @@ void translation_unit_visitor::process_field(
 
             // Add the template instantiation object to the diagram if it
             // matches the include pattern
-            if (add_template_instantiation_to_diargam)
+            if (add_template_instantiation_to_diagram)
                 diagram().add_class(std::move(template_specialization_ptr));
         }
     }
