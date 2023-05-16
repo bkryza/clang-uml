@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Improved handling of class template specializations and their
+    relationships (#140)
   * Fixed handling of C99 typedef structs (#138)
 
 ### 0.3.5
