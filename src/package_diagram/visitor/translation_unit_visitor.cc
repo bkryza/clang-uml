@@ -388,7 +388,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             }
         }
     }
-    else if (type->isRecordType()) {
+    else if (type->isRecordType() && type->getAsCXXRecordDecl()) {
         const auto *namespace_context =
             type->getAsCXXRecordDecl()->getEnclosingNamespaceContext();
         if (namespace_context != nullptr && namespace_context->isNamespace()) {
