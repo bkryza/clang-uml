@@ -205,9 +205,27 @@ std::string to_string(
         return "nullptr";
     case clang::TemplateArgument::Integral:
         return std::to_string(arg.getAsIntegral().getExtValue());
+    case clang::TemplateArgument::Template:
+        return to_string(arg.getAsTemplate());
+    case clang::TemplateArgument::TemplateExpansion:
+        return to_string(arg.getAsTemplateOrTemplatePattern());
     default:
         return "";
     }
+}
+
+std::string to_string(const clang::TemplateName &templ)
+{
+    if (templ.getAsTemplateDecl() != nullptr) {
+        return templ.getAsTemplateDecl()->getQualifiedNameAsString();
+    }
+
+    std::string result;
+    const clang::LangOptions lang_options;
+    llvm::raw_string_ostream ostream(result);
+    templ.print(ostream, clang::PrintingPolicy(lang_options));
+
+    return result;
 }
 
 std::string to_string(const clang::Expr *expr)

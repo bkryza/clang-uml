@@ -484,10 +484,9 @@ void template_builder::argument_process_dispatch(
 template_parameter template_builder::process_template_argument(
     const clang::TemplateArgument &arg)
 {
-    LOG_DBG("Processing template argument: {}", common::to_string(arg));
+    auto arg_name = common::to_string(arg);
 
-    auto arg_name =
-        arg.getAsTemplate().getAsTemplateDecl()->getQualifiedNameAsString();
+    LOG_DBG("Processing template argument: {}", arg_name);
 
     return template_parameter::make_template_type(arg_name);
 }
@@ -495,11 +494,14 @@ template_parameter template_builder::process_template_argument(
 template_parameter template_builder::process_template_expansion(
     const clang::TemplateArgument &arg)
 {
-    LOG_DBG(
-        "Processing template expansion argument: {}", common::to_string(arg));
+    auto arg_name = common::to_string(arg);
 
-    auto arg_name =
-        arg.getAsTemplate().getAsTemplateDecl()->getQualifiedNameAsString();
+    LOG_DBG("Processing template expansion argument: {}", arg_name);
+
+    util::apply_if_not_null(
+        arg.getAsTemplate().getAsTemplateDecl(), [&arg_name](const auto *decl) {
+            arg_name = decl->getQualifiedNameAsString();
+        });
 
     auto param = template_parameter::make_template_type(arg_name);
     param.is_variadic(true);
