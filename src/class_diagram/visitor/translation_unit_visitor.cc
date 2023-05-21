@@ -40,6 +40,9 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
     assert(ns != nullptr);
 
+    if (config().package_type() == config::package_type_t::kDirectory)
+        return true;
+
     if (ns->isAnonymousNamespace() || ns->isInline())
         return true;
 
@@ -741,11 +744,11 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     }
     forward_declarations_.erase(id);
 
-    if (diagram_.should_include(class_model)) {
+    if (diagram().should_include(class_model)) {
         LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
             class_model.id());
 
-        diagram_.add_class(std::move(c_ptr));
+        add_class(std::move(c_ptr));
     }
     else {
         LOG_DBG("Skipping class {} with id {}", class_model.full_name(),
@@ -1320,7 +1323,7 @@ void translation_unit_visitor::process_method(
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
-                diagram().add_class(std::move(template_specialization_ptr));
+                add_class(std::move(template_specialization_ptr));
             }
         }
     }
@@ -1657,7 +1660,7 @@ void translation_unit_visitor::process_function_parameter(
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
-                diagram().add_class(std::move(template_specialization_ptr));
+                add_class(std::move(template_specialization_ptr));
             }
         }
 
@@ -1708,9 +1711,8 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
                 absolute_lambda_path_end -
                     (lambda_begin + lambda_prefix.size() - 1));
 
-        auto relative_lambda_path = util::path_to_url(std::filesystem::relative(
-            absolute_lambda_path, config().relative_to())
-                                                          .string());
+        auto relative_lambda_path = util::path_to_url(
+            config().make_path_relative(absolute_lambda_path).string());
 
         parameter_type = fmt::format("{}(lambda at {}{}",
             parameter_type.substr(0, lambda_begin), relative_lambda_path,
@@ -1972,7 +1974,7 @@ void translation_unit_visitor::process_field(
             // Add the template instantiation object to the diagram if it
             // matches the include pattern
             if (add_template_instantiation_to_diagram)
-                diagram().add_class(std::move(template_specialization_ptr));
+                add_class(std::move(template_specialization_ptr));
         }
     }
 
@@ -2004,7 +2006,7 @@ void translation_unit_visitor::add_incomplete_forward_declarations()
 {
     for (auto &[id, c] : forward_declarations_) {
         if (diagram().should_include(c->full_name(false))) {
-            diagram().add_class(std::move(c));
+            add_class(std::move(c));
         }
     }
     forward_declarations_.clear();
@@ -2090,6 +2092,37 @@ bool translation_unit_visitor::has_processed_template_class(
     const std::string &qualified_name) const
 {
     return util::contains(processed_template_qualified_names_, qualified_name);
+}
+
+void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{file, common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        // Make sure all parent directories are already packages in the model
+        for (auto it = p.begin(); it != p.end(); it++) {
+            auto pkg = std::make_unique<common::model::package>(
+                config().using_namespace());
+            pkg->set_name(*it);
+            auto ns = common::model::path(p.begin(), it);
+            // ns.pop_back();
+            pkg->set_namespace(ns);
+            pkg->set_id(common::to_id(pkg->full_name(false)));
+
+            diagram().add_package_fs(std::move(pkg));
+        }
+
+        diagram().add_class_fs(p, std::move(c));
+    }
+    else {
+        diagram().add_class(std::move(c));
+    }
 }
 
 } // namespace clanguml::class_diagram::visitor

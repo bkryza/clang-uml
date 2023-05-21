@@ -119,6 +119,8 @@ public:
     void finalize();
 
 private:
+    void add_class(std::unique_ptr<class_> &&c);
+
     bool should_include(const clang::NamedDecl *decl);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>

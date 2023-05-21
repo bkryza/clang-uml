@@ -29,7 +29,7 @@ struct ns_path_separator {
     static constexpr std::string_view value = "::";
 };
 
-using namespace_ = path<ns_path_separator>;
+using namespace_ = path;
 
 }
 

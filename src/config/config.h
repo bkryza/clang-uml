@@ -37,6 +37,8 @@ namespace config {
 
 enum class method_arguments { full, abbreviated, none };
 
+enum class package_type_t { kNamespace, kDirectory };
+
 std::string to_string(method_arguments ma);
 
 enum class comment_parser_t { plain, clang };
@@ -162,10 +164,17 @@ struct inheritable_diagram_options {
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
     option<bool> generate_packages{"generate_packages", false};
+    option<package_type_t> package_type{
+        "package_type", package_type_t::kNamespace};
     option<generate_links_config> generate_links{"generate_links"};
     option<git_config> git{"git"};
     option<layout_hints> layout{"layout"};
+    // This is the absolute filesystem path to the directory containing
+    // the current .clang-uml config file - it is set automatically
     option<std::filesystem::path> base_directory{"__parent_path"};
+    // This is the relative path with respect to the `base_directory`,
+    // against which all matches are made, if not provided it defaults to the
+    // `base_directory`
     option<std::filesystem::path> relative_to{"relative_to"};
     option<bool> generate_system_headers{"generate_system_headers", false};
     option<relationship_hints_t> relationship_hints{"relationship_hints"};
@@ -189,6 +198,11 @@ struct diagram : public inheritable_diagram_options {
     virtual common::model::diagram_t type() const = 0;
 
     std::vector<std::string> get_translation_units() const;
+
+    std::filesystem::path make_path_relative(
+        const std::filesystem::path &p) const;
+
+    std::filesystem::path root_directory() const;
 
     std::optional<std::string> get_together_group(
         const std::string &full_name) const;

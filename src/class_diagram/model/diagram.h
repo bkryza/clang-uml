@@ -31,10 +31,15 @@
 
 namespace clanguml::class_diagram::model {
 
-class diagram : public clanguml::common::model::diagram,
-                public clanguml::common::model::nested_trait<
-                    clanguml::common::model::element,
-                    clanguml::common::model::namespace_> {
+using common::opt_ref;
+using common::model::diagram_element;
+using common::model::diagram_t;
+
+using nested_trait_ns =
+    clanguml::common::model::nested_trait<clanguml::common::model::element,
+        clanguml::common::model::namespace_>;
+
+class diagram : public common::model::diagram::diagram, public nested_trait_ns {
 public:
     diagram() = default;
 
@@ -43,13 +48,11 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
-    common::model::diagram_t type() const override;
+    diagram_t type() const override;
 
-    common::optional_ref<common::model::diagram_element> get(
-        const std::string &full_name) const override;
+    opt_ref<diagram_element> get(const std::string &full_name) const override;
 
-    common::optional_ref<common::model::diagram_element> get(
-        clanguml::common::model::diagram_element::id_t id) const override;
+    opt_ref<diagram_element> get(diagram_element::id_t id) const override;
 
     const common::reference_vector<class_> &classes() const;
 
@@ -63,20 +66,20 @@ public:
 
     bool has_concept(const concept_ &e) const;
 
-    common::optional_ref<class_> get_class(const std::string &name) const;
+    opt_ref<class_> get_class(const std::string &name) const;
 
-    common::optional_ref<class_> get_class(
-        clanguml::common::model::diagram_element::id_t id) const;
+    opt_ref<class_> get_class(diagram_element::id_t id) const;
 
-    common::optional_ref<enum_> get_enum(const std::string &name) const;
+    opt_ref<enum_> get_enum(const std::string &name) const;
 
-    common::optional_ref<enum_> get_enum(
-        clanguml::common::model::diagram_element::id_t id) const;
+    opt_ref<enum_> get_enum(diagram_element::id_t id) const;
 
-    common::optional_ref<concept_> get_concept(const std::string &name) const;
+    opt_ref<concept_> get_concept(const std::string &name) const;
 
-    common::optional_ref<concept_> get_concept(
-        clanguml::common::model::diagram_element::id_t id) const;
+    opt_ref<concept_> get_concept(diagram_element::id_t id) const;
+
+    bool add_class_fs(
+        const common::model::path &p, std::unique_ptr<class_> &&c);
 
     bool add_class(std::unique_ptr<class_> &&c);
 
@@ -86,15 +89,15 @@ public:
 
     bool add_package(std::unique_ptr<common::model::package> &&p);
 
-    std::string to_alias(
-        clanguml::common::model::diagram_element::id_t id) const;
+    bool add_package_fs(std::unique_ptr<common::model::package> &&p);
+
+    std::string to_alias(diagram_element::id_t id) const;
 
     void get_parents(clanguml::common::reference_set<class_> &parents) const;
 
     friend void print_diagram_tree(const diagram &d, int level);
 
-    bool has_element(
-        clanguml::common::model::diagram_element::id_t id) const override;
+    bool has_element(diagram_element::id_t id) const override;
 
     inja::json context() const override;
 

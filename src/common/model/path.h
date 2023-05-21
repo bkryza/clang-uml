@@ -25,41 +25,84 @@
 
 namespace clanguml::common::model {
 
-template <typename Sep> class path {
+enum class path_type { kNamespace, kFilesystem };
+
+class path {
+
+    const char *separator() const
+    {
+        switch (path_type_) {
+        case path_type::kNamespace:
+            return "::";
+        case path_type::kFilesystem:
+#ifdef _WIN32
+            return "\\";
+#else
+            return "/";
+#endif
+        }
+
+        return "::";
+    }
+
 public:
     using container_type = std::vector<std::string>;
 
-    path() = default;
+    path(path_type pt = path_type::kNamespace)
+        : path_type_{pt}
+    {
+    }
 
-    explicit path(const std::string &ns)
+    path(const std::string &ns, path_type pt = path_type::kNamespace)
+        : path_type_{pt}
     {
         if (ns.empty())
             return;
 
-        path_ = util::split(ns, Sep::value);
+        path_ = util::split(ns, separator());
     }
 
+    virtual ~path() = default;
+
     path(container_type::const_iterator begin,
-        container_type::const_iterator end)
+        container_type::const_iterator end,
+        path_type pt = path_type::kNamespace)
+        : path(pt)
     {
+        if (begin == end)
+            return;
+
         std::copy(begin, end, std::back_inserter(path_));
     }
 
     path(const path &right)
-        : path_{right.path_}
+        : path_type_{right.path_type_}
+        , path_{right.path_}
     {
     }
 
-    path &operator=(const path &right) = default;
+    path &operator=(const path &right)
+    {
+        if (path_type_ != right.path_type_)
+            throw std::runtime_error("");
+
+        path_type_ = right.path_type_;
+        path_ = right.path_;
+
+        return *this;
+    }
 
     path(path &&right) noexcept = default;
 
     path &operator=(path &&right) noexcept = default;
 
-    path(std::initializer_list<std::string> ns)
+    path(std::initializer_list<std::string> ns,
+        path_type pt = path_type::kNamespace)
+        : path(pt)
     {
-        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value)) {
-            path_ = util::split(*ns.begin(), Sep::value);
+        if ((ns.size() == 1) &&
+            util::contains(*ns.begin(), std::string{separator()})) {
+            path_ = util::split(*ns.begin(), separator());
         }
         else if ((ns.size() == 1) && ns.begin()->empty()) {
         }
@@ -67,10 +110,13 @@ public:
             path_ = ns;
     }
 
-    explicit path(const std::vector<std::string> &ns)
+    explicit path(const std::vector<std::string> &ns,
+        path_type pt = path_type::kNamespace)
+        : path(pt)
     {
-        if ((ns.size() == 1) && util::contains(*ns.begin(), Sep::value)) {
-            path_ = util::split(*ns.begin(), Sep::value);
+        if ((ns.size() == 1) &&
+            util::contains(*ns.begin(), std::string{separator()})) {
+            path_ = util::split(*ns.begin(), separator());
         }
         else if ((ns.size() == 1) && ns.begin()->empty()) {
         }
@@ -78,19 +124,19 @@ public:
             path_ = ns;
     }
 
-    friend bool operator==(const path<Sep> &left, const path<Sep> &right)
+    friend bool operator==(const path &left, const path &right)
     {
         return left.path_ == right.path_;
     }
 
-    friend bool operator<(const path<Sep> &left, const path<Sep> &right)
+    friend bool operator<(const path &left, const path &right)
     {
-        return std::hash<path<Sep>>{}(left) < std::hash<path<Sep>>{}(right);
+        return left.to_string() < right.to_string();
     }
 
     std::string to_string() const
     {
-        return fmt::format("{}", fmt::join(path_, Sep::value));
+        return fmt::format("{}", fmt::join(path_, std::string{separator()}));
     }
 
     bool is_empty() const { return path_.empty(); }
@@ -190,7 +236,7 @@ public:
             return name;
 
         auto res = name;
-        auto ns_prefix = to_string() + std::string{Sep::value};
+        auto ns_prefix = to_string() + std::string{separator()};
 
         auto it = res.find(ns_prefix);
         while (it != std::string::npos) {
@@ -220,7 +266,10 @@ public:
     path::container_type::const_iterator begin() const { return path_.begin(); }
     path::container_type::const_iterator end() const { return path_.end(); }
 
+    path_type type() const { return path_type_; }
+
 private:
+    path_type path_type_;
     container_type path_;
 };
 

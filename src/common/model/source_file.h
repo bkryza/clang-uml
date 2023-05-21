@@ -46,7 +46,7 @@ struct fs_path_sep {
 #endif
 };
 
-using filesystem_path = common::model::path<fs_path_sep>;
+using filesystem_path = common::model::path;
 
 class source_file
     : public common::model::diagram_element,
@@ -60,7 +60,7 @@ public:
     {
         auto preferred = p;
         preferred.make_preferred();
-        set_path({preferred.parent_path().string()});
+        set_path({preferred.parent_path().string(), path_type::kFilesystem});
         set_name(preferred.filename().string());
         is_absolute_ = preferred.is_absolute();
         set_id(common::to_id(preferred));
@@ -126,7 +126,7 @@ public:
     }
 
 private:
-    filesystem_path path_;
+    filesystem_path path_{path_type::kFilesystem};
     source_file_t type_{source_file_t::kDirectory};
     bool is_absolute_{false};
 };
@@ -134,21 +134,24 @@ private:
 
 namespace std {
 
-template <> struct hash<clanguml::common::model::filesystem_path> {
-    std::size_t operator()(
-        const clanguml::common::model::filesystem_path &key) const
-    {
-        using clanguml::common::model::path;
+/*
+ template <> struct hash<clanguml::common::model::filesystem_path> {
+     std::size_t operator()(
+         const clanguml::common::model::filesystem_path &key) const
+     {
+         using clanguml::common::model::path;
 
-        std::size_t seed = key.size();
-        for (const auto &ns : key) {
-            seed ^=
-                std::hash<std::string>{}(ns) + clanguml::util::hash_seed(seed);
-        }
+         std::size_t seed = key.size();
+         for (const auto &ns : key) {
+             seed ^=
+                 std::hash<std::string>{}(ns) +
+                 clanguml::util::hash_seed(seed);
+         }
 
-        return seed;
-    }
-};
+         return seed;
+     }
+ };
+*/
 
 } // namespace std
 

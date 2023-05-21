@@ -173,6 +173,15 @@ common::optional_ref<concept_> diagram::get_concept(
     return {};
 }
 
+bool diagram::add_package_fs(std::unique_ptr<common::model::package> &&p)
+{
+    LOG_DBG("Adding filesystem package: {}, {}", p->name(), p->full_name(true));
+
+    auto ns = p->get_namespace();
+
+    return add_element(ns, std::move(p));
+}
+
 bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
@@ -180,6 +189,25 @@ bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
     auto ns = p->get_relative_namespace();
 
     return add_element(ns, std::move(p));
+}
+
+bool diagram::add_class_fs(
+    const common::model::path &p, std::unique_ptr<class_> &&c)
+{
+    const auto base_name = c->name();
+    const auto full_name = c->full_name(false);
+    const auto id = c->id();
+    auto &cc = *c;
+
+    if (add_element(p, std::move(c))) {
+        classes_.push_back(std::ref(cc));
+        return true;
+    }
+    else {
+        LOG_WARN("Cannot add class {} with id {} due to: {}", base_name, id);
+    }
+
+    return false;
 }
 
 bool diagram::add_class(std::unique_ptr<class_> &&c)
@@ -221,7 +249,7 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     }
     catch (const std::runtime_error &e) {
         LOG_WARN(
-            "Cannot add concept {} with id {} due to: {}", name, id, e.what());
+            "Cannot add class {} with id {} due to: {}", name, id, e.what());
         return false;
     }
 
