@@ -5,6 +5,8 @@ namespace clanguml {
 namespace t00065 {
 struct R {
     A *a;
+    C<B> c;
+    D<B> d;
 };
 }
 }
