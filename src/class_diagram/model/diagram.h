@@ -34,6 +34,8 @@ namespace clanguml::class_diagram::model {
 using common::opt_ref;
 using common::model::diagram_element;
 using common::model::diagram_t;
+using common::model::path;
+using common::model::path_type;
 
 using nested_trait_ns =
     clanguml::common::model::nested_trait<clanguml::common::model::element,
@@ -78,18 +80,14 @@ public:
 
     opt_ref<concept_> get_concept(diagram_element::id_t id) const;
 
-    bool add_class_fs(
-        const common::model::path &p, std::unique_ptr<class_> &&c);
+    bool add_class(const path &parent_path, std::unique_ptr<class_> &&c);
 
-    bool add_class(std::unique_ptr<class_> &&c);
+    bool add_enum(const path &parent_path, std::unique_ptr<enum_> &&e);
 
-    bool add_enum(std::unique_ptr<enum_> &&e);
+    bool add_concept(const path &parent_path, std::unique_ptr<concept_> &&e);
 
-    bool add_concept(std::unique_ptr<concept_> &&e);
-
-    bool add_package(std::unique_ptr<common::model::package> &&p);
-
-    bool add_package_fs(std::unique_ptr<common::model::package> &&p);
+    bool add_package(
+        const path &parent_path, std::unique_ptr<common::model::package> &&p);
 
     std::string to_alias(diagram_element::id_t id) const;
 
@@ -102,6 +100,22 @@ public:
     inja::json context() const override;
 
 private:
+    bool add_class_ns(std::unique_ptr<class_> &&c);
+    bool add_class_fs(
+        const common::model::path &parent_path, std::unique_ptr<class_> &&c);
+
+    bool add_enum_ns(std::unique_ptr<enum_> &&c);
+    bool add_enum_fs(
+        const common::model::path &parent_path, std::unique_ptr<enum_> &&c);
+
+    bool add_package_ns(std::unique_ptr<common::model::package> &&p);
+    bool add_package_fs(const common::model::path &parent_path,
+        std::unique_ptr<common::model::package> &&p);
+
+    bool add_concept_ns(std::unique_ptr<concept_> &&p);
+    bool add_concept_fs(
+        const common::model::path &parent_path, std::unique_ptr<concept_> &&p);
+
     common::reference_vector<class_> classes_;
 
     common::reference_vector<enum_> enums_;

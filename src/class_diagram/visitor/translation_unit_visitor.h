@@ -43,6 +43,7 @@ using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::class_parent;
+using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
@@ -118,9 +119,13 @@ public:
      */
     void finalize();
 
-private:
-    void add_class(std::unique_ptr<class_> &&c);
+    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
 
+    void add_class(std::unique_ptr<class_> &&c);
+    void add_enum(std::unique_ptr<enum_> &&e);
+    void add_concept(std::unique_ptr<concept_> &&c);
+
+private:
     bool should_include(const clang::NamedDecl *decl);
 
     std::unique_ptr<clanguml::class_diagram::model::class_>
@@ -219,8 +224,6 @@ private:
     void add_processed_template_class(std::string qualified_name);
 
     bool has_processed_template_class(const std::string &qualified_name) const;
-
-    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
 
     template_builder &tbuilder() { return template_builder_; }
 

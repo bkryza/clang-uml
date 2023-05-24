@@ -23,14 +23,13 @@
 
 namespace clanguml::class_diagram::visitor {
 
-template_builder::template_builder(class_diagram::model::diagram &d,
-    const config::class_diagram &config,
-    common::visitor::ast_id_mapper &id_mapper,
-    clang::SourceManager &source_manager)
-    : diagram_{d}
-    , config_{config}
-    , id_mapper_{id_mapper}
-    , source_manager_{source_manager}
+template_builder::template_builder(
+    clanguml::class_diagram::visitor::translation_unit_visitor &visitor)
+    : diagram_{visitor.diagram()}
+    , config_{visitor.config()}
+    , id_mapper_{visitor.id_mapper()}
+    , source_manager_{visitor.source_manager()}
+    , visitor_{visitor}
 {
 }
 
@@ -267,6 +266,8 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
 
     template_instantiation.set_id(
         common::to_id(template_instantiation_ptr->full_name(false)));
+
+    visitor_.set_source_location(*template_decl, *template_instantiation_ptr);
 
     return template_instantiation_ptr;
 }
@@ -1043,7 +1044,7 @@ template_builder::try_as_template_specialization_type(
     }
 
     if (diagram().should_include(nested_template_instantiation_full_name)) {
-        diagram().add_class(std::move(nested_template_instantiation));
+        visitor_.add_class(std::move(nested_template_instantiation));
     }
 
     return argument;
@@ -1155,7 +1156,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
 
-                diagram().add_class(std::move(tag_argument));
+                visitor_.add_class(std::move(tag_argument));
             }
         }
     }

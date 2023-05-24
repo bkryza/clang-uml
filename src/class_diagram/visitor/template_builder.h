@@ -34,12 +34,12 @@ using found_relationships_t =
     std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
         common::model::relationship_t>>;
 
+class translation_unit_visitor;
+
 class template_builder {
 public:
-    template_builder(class_diagram::model::diagram &d,
-        const config::class_diagram &config,
-        common::visitor::ast_id_mapper &id_mapper,
-        clang::SourceManager &source_manager);
+    template_builder(
+        clanguml::class_diagram::visitor::translation_unit_visitor &visitor);
 
     class_diagram::model::diagram &diagram();
 
@@ -192,6 +192,8 @@ private:
     common::visitor::ast_id_mapper &id_mapper_;
 
     clang::SourceManager &source_manager_;
+
+    clanguml::class_diagram::visitor::translation_unit_visitor &visitor_;
 };
 
 } // namespace clanguml::class_diagram::visitor

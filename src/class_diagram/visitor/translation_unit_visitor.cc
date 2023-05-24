@@ -32,7 +32,7 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
-    , template_builder_{diagram_, config_, id_mapper_, sm}
+    , template_builder_{*this}
 {
 }
 
@@ -84,7 +84,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         }
 
         if (!p->skip()) {
-            diagram().add_package(std::move(p));
+            diagram().add_package(package_path, std::move(p));
         }
     }
 
@@ -170,7 +170,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     }
 
     if (diagram().should_include(qualified_name))
-        diagram().add_enum(std::move(e_ptr));
+        add_enum(std::move(e_ptr));
 
     return true;
 }
@@ -225,14 +225,14 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
                 {relationship_t::kInstantiation, maybe_id.value()});
     }
 
-    if (diagram_.should_include(template_specialization)) {
+    if (diagram().should_include(template_specialization)) {
         const auto full_name = template_specialization.full_name(false);
         const auto id = template_specialization.id();
 
         LOG_DBG("Adding class template specialization {} with id {}", full_name,
             id);
 
-        diagram_.add_class(std::move(template_specialization_ptr));
+        add_class(std::move(template_specialization_ptr));
     }
 
     return true;
@@ -265,13 +265,13 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     if (!template_specialization_ptr)
         return true;
 
-    if (diagram_.should_include(*template_specialization_ptr)) {
+    if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name();
         const auto id = template_specialization_ptr->id();
 
         LOG_DBG("Adding class {} with id {}", name, id);
 
-        diagram_.add_class(std::move(template_specialization_ptr));
+        add_class(std::move(template_specialization_ptr));
     }
 
     return true;
@@ -327,11 +327,11 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     process_class_declaration(*cls->getTemplatedDecl(), *c_ptr);
     forward_declarations_.erase(id);
 
-    if (diagram_.should_include(*c_ptr)) {
+    if (diagram().should_include(*c_ptr)) {
         const auto name = c_ptr->full_name();
         LOG_DBG("Adding class template {} with id {}", name, id);
 
-        diagram_.add_class(std::move(c_ptr));
+        add_class(std::move(c_ptr));
     }
 
     return true;
@@ -380,11 +380,11 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     }
     forward_declarations_.erase(id);
 
-    if (diagram_.should_include(record_model)) {
+    if (diagram().should_include(record_model)) {
         LOG_DBG("Adding struct/union {} with id {}",
             record_model.full_name(false), record_model.id());
 
-        diagram_.add_class(std::move(record_ptr));
+        add_class(std::move(record_ptr));
     }
     else {
         LOG_DBG("Skipping struct/union {} with id {}", record_model.full_name(),
@@ -436,11 +436,11 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
             *concept_model, cpt->getConstraintExpr());
     }
 
-    if (diagram_.should_include(*concept_model)) {
+    if (diagram().should_include(*concept_model)) {
         LOG_DBG("Adding concept {} with id {}", concept_model->full_name(false),
             concept_model->id());
 
-        diagram_.add_concept(std::move(concept_model));
+        add_concept(std::move(concept_model));
     }
     else {
         LOG_DBG("Skipping concept {} with id {}", concept_model->full_name(),
@@ -2105,23 +2105,46 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
         common::model::path p{file, common::model::path_type::kFilesystem};
         p.pop_back();
 
-        // Make sure all parent directories are already packages in the model
-        for (auto it = p.begin(); it != p.end(); it++) {
-            auto pkg = std::make_unique<common::model::package>(
-                config().using_namespace());
-            pkg->set_name(*it);
-            auto ns = common::model::path(p.begin(), it);
-            // ns.pop_back();
-            pkg->set_namespace(ns);
-            pkg->set_id(common::to_id(pkg->full_name(false)));
-
-            diagram().add_package_fs(std::move(pkg));
-        }
-
-        diagram().add_class_fs(p, std::move(c));
+        diagram().add_class(p, std::move(c));
     }
     else {
-        diagram().add_class(std::move(c));
+        diagram().add_class(c->path(), std::move(c));
+    }
+}
+
+void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!e->file().empty());
+
+        const auto file = config().make_path_relative(e->file());
+
+        common::model::path p{file, common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        diagram().add_enum(p, std::move(e));
+    }
+    else {
+        diagram().add_enum(e->path(), std::move(e));
+    }
+}
+
+void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{file, common::model::path_type::kFilesystem};
+        p.pop_back();
+
+        diagram().add_concept(p, std::move(c));
+    }
+    else {
+        diagram().add_concept(c->path(), std::move(c));
     }
 }
 

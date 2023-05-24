@@ -173,16 +173,56 @@ common::optional_ref<concept_> diagram::get_concept(
     return {};
 }
 
-bool diagram::add_package_fs(std::unique_ptr<common::model::package> &&p)
+bool diagram::add_class(
+    const common::model::path &parent_path, std::unique_ptr<class_> &&c)
+{
+    if (parent_path.type() == common::model::path_type::kNamespace) {
+        return add_class_ns(std::move(c));
+    }
+
+    return add_class_fs(parent_path, std::move(c));
+}
+
+bool diagram::add_enum(const path &parent_path, std::unique_ptr<enum_> &&e)
+{
+    if (parent_path.type() == common::model::path_type::kNamespace) {
+        return add_enum_ns(std::move(e));
+    }
+
+    return add_enum_fs(parent_path, std::move(e));
+}
+
+bool diagram::add_concept(
+    const path &parent_path, std::unique_ptr<concept_> &&c)
+{
+    if (parent_path.type() == common::model::path_type::kNamespace) {
+        return add_concept_ns(std::move(c));
+    }
+
+    return add_concept_fs(parent_path, std::move(c));
+}
+
+bool diagram::add_package(
+    const path &parent_path, std::unique_ptr<common::model::package> &&p)
+{
+    if (parent_path.type() == common::model::path_type::kNamespace) {
+        return add_package_ns(std::move(p));
+    }
+
+    return add_package_fs(parent_path, std::move(p));
+}
+
+bool diagram::add_package_fs(
+    const path &parent_path, std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding filesystem package: {}, {}", p->name(), p->full_name(true));
 
-    auto ns = p->get_namespace();
+    auto ns = p->get_relative_namespace();
 
     return add_element(ns, std::move(p));
 }
 
-bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
+bool diagram::add_package_ns(std::unique_ptr<common::model::package> &&p)
 {
     LOG_DBG("Adding namespace package: {}, {}", p->name(), p->full_name(true));
 
@@ -192,14 +232,28 @@ bool diagram::add_package(std::unique_ptr<common::model::package> &&p)
 }
 
 bool diagram::add_class_fs(
-    const common::model::path &p, std::unique_ptr<class_> &&c)
+    const common::model::path &parent_path, std::unique_ptr<class_> &&c)
 {
+    // Make sure all parent directories are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg =
+            std::make_unique<common::model::package>(c->using_namespace());
+        pkg->set_name(*it);
+        auto ns = common::model::path(parent_path.begin(), it);
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add_package_fs(ns, std::move(pkg));
+    }
+
     const auto base_name = c->name();
     const auto full_name = c->full_name(false);
     const auto id = c->id();
     auto &cc = *c;
 
-    if (add_element(p, std::move(c))) {
+    if (add_element(parent_path, std::move(c))) {
         classes_.push_back(std::ref(cc));
         return true;
     }
@@ -210,7 +264,7 @@ bool diagram::add_class_fs(
     return false;
 }
 
-bool diagram::add_class(std::unique_ptr<class_> &&c)
+bool diagram::add_class_ns(std::unique_ptr<class_> &&c)
 {
     const auto base_name = c->name();
     const auto full_name = c->full_name(false);
@@ -259,7 +313,7 @@ bool diagram::add_class(std::unique_ptr<class_> &&c)
     return false;
 }
 
-bool diagram::add_enum(std::unique_ptr<enum_> &&e)
+bool diagram::add_enum_ns(std::unique_ptr<enum_> &&e)
 {
     const auto full_name = e->name();
 
@@ -282,7 +336,40 @@ bool diagram::add_enum(std::unique_ptr<enum_> &&e)
     return false;
 }
 
-bool diagram::add_concept(std::unique_ptr<concept_> &&c)
+bool diagram::add_enum_fs(
+    const common::model::path &parent_path, std::unique_ptr<enum_> &&e)
+{
+    // Make sure all parent directories are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg =
+            std::make_unique<common::model::package>(e->using_namespace());
+        pkg->set_name(*it);
+        auto ns = common::model::path(parent_path.begin(), it);
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add_package_fs(ns, std::move(pkg));
+    }
+
+    const auto base_name = e->name();
+    const auto full_name = e->full_name(false);
+    const auto id = e->id();
+    auto &cc = *e;
+
+    if (add_element(parent_path, std::move(e))) {
+        enums_.push_back(std::ref(cc));
+        return true;
+    }
+    else {
+        LOG_WARN("Cannot add class {} with id {} due to: {}", base_name, id);
+    }
+
+    return false;
+}
+
+bool diagram::add_concept_ns(std::unique_ptr<concept_> &&c)
 {
     const auto base_name = c->name();
     const auto full_name = c->full_name(false);
@@ -327,6 +414,38 @@ bool diagram::add_concept(std::unique_ptr<concept_> &&c)
 
     LOG_DBG("Concept {} ({} - [{}]) already in the model", base_name, full_name,
         id);
+
+    return false;
+}
+
+bool diagram::add_concept_fs(
+    const common::model::path &parent_path, std::unique_ptr<concept_> &&c)
+{
+    // Make sure all parent directories are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg =
+            std::make_unique<common::model::package>(c->using_namespace());
+        pkg->set_name(*it);
+        auto ns = common::model::path(parent_path.begin(), it);
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add_package_fs(ns, std::move(pkg));
+    }
+
+    const auto base_name = c->name();
+    const auto full_name = c->full_name(false);
+    const auto id = c->id();
+    auto &cc = *c;
+
+    if (add_element(parent_path, std::move(c))) {
+        concepts_.push_back(std::ref(cc));
+        return true;
+    }
+
+    LOG_WARN("Cannot add class {} with id {} due to: {}", base_name, id);
 
     return false;
 }
