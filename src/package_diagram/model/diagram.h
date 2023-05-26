@@ -48,13 +48,16 @@ public:
     common::optional_ref<clanguml::common::model::diagram_element> get(
         clanguml::common::model::diagram_element::id_t id) const override;
 
-    void add_package(std::unique_ptr<common::model::package> &&p);
-
     common::optional_ref<clanguml::common::model::package> get_package(
         const std::string &name) const;
 
     common::optional_ref<common::model::package> get_package(
         clanguml::common::model::diagram_element::id_t id) const;
+
+    void add_package(std::unique_ptr<common::model::package> &&p);
+
+    void add_package_fs(const common::model::path &parent_path,
+        std::unique_ptr<common::model::package> &&p);
 
     std::string to_alias(
         clanguml::common::model::diagram_element::id_t /*id*/) const;

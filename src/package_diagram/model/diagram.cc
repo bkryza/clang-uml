@@ -36,13 +36,39 @@ diagram::packages() const
 
 void diagram::add_package(std::unique_ptr<common::model::package> &&p)
 {
-    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
+    LOG_DBG(
+        "Adding package: {}, {}, [{}]", p->name(), p->full_name(true), p->id());
 
     auto ns = p->get_relative_namespace();
 
     packages_.emplace_back(*p);
 
     add_element(ns, std::move(p));
+}
+
+void diagram::add_package_fs(const common::model::path &parent_path,
+    std::unique_ptr<common::model::package> &&p)
+{
+    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
+
+    // Make sure all parent directories are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg =
+            std::make_unique<common::model::package>(p->using_namespace());
+        pkg->set_name(*it);
+        auto ns = common::model::path(parent_path.begin(), it);
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add_package_fs(ns, std::move(pkg));
+    }
+
+    auto pp = std::ref(*p);
+    if (add_element(parent_path, std::move(p))) {
+        packages_.emplace_back(pp);
+    }
 }
 
 common::optional_ref<common::model::package> diagram::get_package(
@@ -79,6 +105,8 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     const clanguml::common::model::diagram_element::id_t id) const
 {
+    LOG_DBG("Looking for package with id {}", id);
+
     return get_package(id);
 }
 

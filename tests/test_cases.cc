@@ -354,6 +354,7 @@ using namespace clanguml::test::matchers;
 #include "t30007/test_case.h"
 #include "t30008/test_case.h"
 #include "t30009/test_case.h"
+#include "t30010/test_case.h"
 
 ///
 /// Include diagram tests

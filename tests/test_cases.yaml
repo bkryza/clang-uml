@@ -308,6 +308,9 @@ test_cases:
     - name: t30009
       title: Together layout hint test
       description:
+    - name: t30010
+      title: Package diagram with packages from directory structure
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case

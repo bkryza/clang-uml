@@ -45,6 +45,9 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
     assert(ns != nullptr);
 
+    if (config().package_type() == config::package_type_t::kDirectory)
+        return true;
+
     if (ns->isAnonymousNamespace() || ns->isInline())
         return true;
 
@@ -144,23 +147,90 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     return true;
 }
-void translation_unit_visitor::add_relationships(
-    clang::DeclContext *cls, found_relationships_t &relationships)
-{
-    int64_t current_package_id{0};
 
-    const auto *namespace_context = cls->getEnclosingNamespaceContext();
-    if (namespace_context != nullptr && namespace_context->isNamespace()) {
-        current_package_id =
-            common::to_id(*llvm::cast<clang::NamespaceDecl>(namespace_context));
+bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    if (decl->isCompleteDefinition()) {
+        process_record_children(*decl, relationships);
+        add_relationships(decl, relationships);
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    if (decl->isCompleteDefinition()) {
+        add_relationships(decl, relationships);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitClassTemplateDecl(
+    clang::ClassTemplateDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    process_class_declaration(*decl->getTemplatedDecl(), relationships);
+    add_relationships(decl, relationships);
+
+    return true;
+}
+
+void translation_unit_visitor::add_relationships(
+    clang::Decl *cls, found_relationships_t &relationships)
+{
+    // If this diagram has directory packages, first make sure that the
+    // package for current directory is already in the model
+    if (config().package_type() == config::package_type_t::kDirectory) {
+        auto file = source_manager().getFilename(cls->getLocation()).str();
+        auto relative_file =
+            util::path_to_url(config().make_path_relative(file));
+
+        common::model::path parent_path{
+            relative_file, common::model::path_type::kFilesystem};
+        parent_path.pop_back();
+        auto pkg_name = parent_path.name();
+        parent_path.pop_back();
+
+        auto pkg = std::make_unique<common::model::package>(
+            config().using_namespace());
+
+        pkg->set_name(pkg_name);
+        pkg->set_id(get_package_id(cls));
+
+        diagram().add_package_fs(parent_path, std::move(pkg));
+    }
+
+    auto current_package_id = get_package_id(cls);
 
     if (current_package_id == 0)
         // These are relationships to a global namespace, and we don't care
         // about those
         return;
-
-    assert(current_package_id != 0);
 
     auto current_package = diagram().get(current_package_id);
 
@@ -172,6 +242,33 @@ void translation_unit_visitor::add_relationships(
             if (destination_id != current_package_id)
                 current_package.value().add_relationship(std::move(r));
         }
+    }
+}
+
+common::model::diagram_element::id_t translation_unit_visitor::get_package_id(
+    const clang::Decl *cls)
+{
+    if (config().package_type() == config::package_type_t::kNamespace) {
+        const auto *namespace_context =
+            cls->getDeclContext()->getEnclosingNamespaceContext();
+        if (namespace_context != nullptr && namespace_context->isNamespace()) {
+            return common::to_id(
+                *llvm::cast<clang::NamespaceDecl>(namespace_context));
+        }
+
+        return {};
+    }
+    else {
+        auto file = source_manager()
+                        .getFilename(cls->getSourceRange().getBegin())
+                        .str();
+        auto relative_file =
+            util::path_to_url(config().make_path_relative(file));
+        common::model::path parent_path{
+            relative_file, common::model::path_type::kFilesystem};
+        parent_path.pop_back();
+
+        return common::to_id(parent_path.to_string());
     }
 }
 
@@ -255,6 +352,44 @@ void translation_unit_visitor::process_method(
     }
 }
 
+void translation_unit_visitor::process_record_children(
+    const clang::RecordDecl &cls, found_relationships_t &relationships)
+{
+    if (const auto *decl_context =
+            clang::dyn_cast_or_null<clang::DeclContext>(&cls);
+        decl_context != nullptr) {
+        // Iterate over class template methods
+        for (auto const *decl_iterator : decl_context->decls()) {
+            auto const *method_template =
+                llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(
+                    decl_iterator);
+            if (method_template == nullptr)
+                continue;
+
+            process_template_method(*method_template, relationships);
+        }
+    }
+
+    // Iterate over regular class fields
+    for (const auto *field : cls.fields()) {
+        if (field != nullptr)
+            process_field(*field, relationships);
+    }
+
+    // Static fields have to be processed by iterating over variable
+    // declarations
+    for (const auto *decl : cls.decls()) {
+        if (decl->getKind() == clang::Decl::Var) {
+            const clang::VarDecl *variable_declaration{
+                clang::dyn_cast_or_null<clang::VarDecl>(decl)};
+            if ((variable_declaration != nullptr) &&
+                variable_declaration->isStaticDataMember()) {
+                process_static_field(*variable_declaration, relationships);
+            }
+        }
+    }
+}
+
 void translation_unit_visitor::process_template_method(
     const clang::FunctionTemplateDecl &method,
     found_relationships_t &relationships)
@@ -334,15 +469,22 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationships, relationship_t::kAggregation);
     }
     else if (type->isEnumeralType()) {
-        if (const auto *enum_type = type->getAs<clang::EnumType>();
-            enum_type != nullptr) {
+        if (const auto *enum_decl = type->getAs<clang::EnumType>()->getDecl();
+            enum_decl != nullptr) {
             relationships.emplace_back(
-                common::to_id(*enum_type), relationship_hint);
+                get_package_id(enum_decl), relationship_hint);
         }
     }
     else if (const auto *template_specialization_type =
                  type->getAs<clang::TemplateSpecializationType>()) {
         if (template_specialization_type != nullptr) {
+            // Add dependency to template declaration
+            relationships.emplace_back(
+                get_package_id(template_specialization_type->getTemplateName()
+                                   .getAsTemplateDecl()),
+                relationship_hint);
+
+            // Add dependencies to template arguments
             for (const auto &template_argument :
                 template_specialization_type->template_arguments()) {
                 const auto template_argument_kind = template_argument.getKind();
@@ -389,17 +531,29 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         }
     }
     else if (type->isRecordType() && type->getAsCXXRecordDecl()) {
-        const auto *namespace_context =
-            type->getAsCXXRecordDecl()->getEnclosingNamespaceContext();
-        if (namespace_context != nullptr && namespace_context->isNamespace()) {
-            const auto *namespace_declaration =
-                clang::cast<clang::NamespaceDecl>(namespace_context);
+        if (config().package_type() == config::package_type_t::kNamespace) {
+            const auto *namespace_context =
+                type->getAsCXXRecordDecl()->getEnclosingNamespaceContext();
+            if (namespace_context != nullptr &&
+                namespace_context->isNamespace()) {
+                const auto *namespace_declaration =
+                    clang::cast<clang::NamespaceDecl>(namespace_context);
 
-            if (namespace_declaration != nullptr &&
-                diagram().should_include(
-                    common::get_qualified_name(*namespace_declaration))) {
-                const auto target_id = common::to_id(
-                    *clang::cast<clang::NamespaceDecl>(namespace_context));
+                if (namespace_declaration != nullptr &&
+                    diagram().should_include(
+                        common::get_qualified_name(*namespace_declaration))) {
+                    const auto target_id =
+                        get_package_id(type->getAsCXXRecordDecl());
+                    relationships.emplace_back(target_id, relationship_hint);
+                    result = true;
+                }
+            }
+        }
+        else {
+            if (diagram().should_include(
+                    common::get_qualified_name(*type->getAsCXXRecordDecl()))) {
+                const auto target_id =
+                    get_package_id(type->getAsCXXRecordDecl());
                 relationships.emplace_back(target_id, relationship_hint);
                 result = true;
             }

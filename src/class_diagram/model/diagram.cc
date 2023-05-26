@@ -251,10 +251,10 @@ bool diagram::add_class_fs(
     const auto base_name = c->name();
     const auto full_name = c->full_name(false);
     const auto id = c->id();
-    auto &cc = *c;
+    auto cc = std::ref(*c);
 
     if (add_element(parent_path, std::move(c))) {
-        classes_.push_back(std::ref(cc));
+        classes_.push_back(cc);
         return true;
     }
     else {

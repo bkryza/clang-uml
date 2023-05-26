@@ -469,6 +469,13 @@ template <> struct convert<package_diagram> {
             return false;
 
         get_option(node, rhs.layout);
+        get_option(node, rhs.relative_to);
+        get_option(node, rhs.package_type);
+
+        // Ensure relative_to has a value
+        if (!rhs.relative_to.has_value)
+            rhs.relative_to.set(
+                std::filesystem::current_path().lexically_normal());
 
         return true;
     }
