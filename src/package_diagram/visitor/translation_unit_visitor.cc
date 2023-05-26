@@ -559,6 +559,18 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             }
         }
     }
+    else if (type->isRecordType() && type->getAsRecordDecl()) {
+        // This is only possible for plain C translation unit, so we don't
+        // need to consider namespaces here
+        if (config().package_type() == config::package_type_t::kDirectory) {
+            if (diagram().should_include(
+                    common::get_qualified_name(*type->getAsRecordDecl()))) {
+                const auto target_id = get_package_id(type->getAsRecordDecl());
+                relationships.emplace_back(target_id, relationship_hint);
+                result = true;
+            }
+        }
+    }
 
     return result;
 }

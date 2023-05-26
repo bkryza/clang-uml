@@ -311,6 +311,9 @@ test_cases:
     - name: t30010
       title: Package diagram with packages from directory structure
       description:
+    - name: t30011
+      title: Package diagram with packages from directory structure for plain C
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case

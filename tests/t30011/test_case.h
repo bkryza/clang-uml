@@ -1,5 +1,5 @@
 /**
- * tests/t30010/test_case.h
+ * tests/t30011/test_case.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30010", "[test-case][package]")
+TEST_CASE("t30011", "[test-case][package]")
 {
-    auto [config, db] = load_config("t30010");
+    auto [config, db] = load_config("t30011");
 
-    auto diagram = config.diagrams["t30010_package"];
+    auto diagram = config.diagrams["t30011_package"];
 
-    REQUIRE(diagram->name == "t30010_package");
+    REQUIRE(diagram->name == "t30011_package");
 
     auto model = generate_package_diagram(*db, diagram);
 
-    REQUIRE(model->name() == "t30010_package");
+    REQUIRE(model->name() == "t30011_package");
 
     {
         auto puml = generate_package_puml(diagram, *model);

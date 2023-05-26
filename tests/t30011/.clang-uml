@@ -1,0 +1,12 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t30011_package:
+    type: package
+    package_type: directory
+    glob:
+      - t30011.c
+    relative_to: ../../../tests/t30011
+    include:
+      paths:
+        - .
