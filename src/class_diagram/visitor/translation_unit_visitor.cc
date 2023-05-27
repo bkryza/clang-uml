@@ -84,7 +84,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         }
 
         if (!p->skip()) {
-            diagram().add_package(package_path, std::move(p));
+            diagram().add(package_path, std::move(p));
         }
     }
 
@@ -140,8 +140,8 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         }
     }
 
-    if (id_opt && diagram_.get_class(*id_opt)) {
-        auto parent_class = diagram_.get_class(*id_opt);
+    if (id_opt && diagram().find<class_>(*id_opt)) {
+        auto parent_class = diagram().find<class_>(*id_opt);
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
@@ -364,8 +364,8 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
 
     id_mapper().add(rec->getID(), rec_id);
 
-    auto &record_model = diagram().get_class(rec_id).has_value()
-        ? *diagram().get_class(rec_id).get()
+    auto &record_model = diagram().find<class_>(rec_id).has_value()
+        ? *diagram().find<class_>(rec_id).get()
         : *record_ptr;
 
     if (rec->isCompleteDefinition() && !record_model.complete()) {
@@ -730,8 +730,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     id_mapper().add(cls->getID(), cls_id);
 
-    auto &class_model = diagram().get_class(cls_id).has_value()
-        ? *diagram().get_class(cls_id).get()
+    auto &class_model = diagram().find<class_>(cls_id).has_value()
+        ? *diagram().find<class_>(cls_id).get()
         : *c_ptr;
 
     if (cls->isCompleteDefinition() && !class_model.complete())
@@ -899,11 +899,11 @@ void translation_unit_visitor::process_record_parent(
         }
     }
 
-    if (id_opt && diagram_.get_class(*id_opt)) {
+    if (id_opt && diagram_.find<class_>(*id_opt)) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
-        auto parent_class = diagram_.get_class(*id_opt);
+        auto parent_class = diagram_.find<class_>(*id_opt);
 
         c.set_namespace(parent_ns);
         const auto cls_name = cls->getNameAsString();
@@ -2105,10 +2105,10 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
         common::model::path p{file, common::model::path_type::kFilesystem};
         p.pop_back();
 
-        diagram().add_class(p, std::move(c));
+        diagram().add(p, std::move(c));
     }
     else {
-        diagram().add_class(c->path(), std::move(c));
+        diagram().add(c->path(), std::move(c));
     }
 }
 
@@ -2123,10 +2123,10 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
         common::model::path p{file, common::model::path_type::kFilesystem};
         p.pop_back();
 
-        diagram().add_enum(p, std::move(e));
+        diagram().add(p, std::move(e));
     }
     else {
-        diagram().add_enum(e->path(), std::move(e));
+        diagram().add(e->path(), std::move(e));
     }
 }
 
@@ -2141,10 +2141,10 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
         common::model::path p{file, common::model::path_type::kFilesystem};
         p.pop_back();
 
-        diagram().add_concept(p, std::move(c));
+        diagram().add(p, std::move(c));
     }
     else {
-        diagram().add_concept(c->path(), std::move(c));
+        diagram().add(c->path(), std::move(c));
     }
 }
 

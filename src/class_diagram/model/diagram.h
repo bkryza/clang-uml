@@ -19,6 +19,7 @@
 
 #include "class.h"
 #include "common/model/diagram.h"
+#include "common/model/element_view.h"
 #include "common/model/nested_trait.h"
 #include "common/model/package.h"
 #include "common/types.h"
@@ -34,6 +35,7 @@ namespace clanguml::class_diagram::model {
 using common::opt_ref;
 using common::model::diagram_element;
 using common::model::diagram_t;
+using common::model::element_view;
 using common::model::path;
 using common::model::path_type;
 
@@ -41,7 +43,11 @@ using nested_trait_ns =
     clanguml::common::model::nested_trait<clanguml::common::model::element,
         clanguml::common::model::namespace_>;
 
-class diagram : public common::model::diagram::diagram, public nested_trait_ns {
+class diagram : public common::model::diagram::diagram,
+                public element_view<class_>,
+                public element_view<enum_>,
+                public element_view<concept_>,
+                public nested_trait_ns {
 public:
     diagram() = default;
 
@@ -62,32 +68,23 @@ public:
 
     const common::reference_vector<concept_> &concepts() const;
 
-    bool has_class(const class_ &c) const;
+    template <typename ElementT> bool contains(const ElementT &e);
 
-    bool has_enum(const enum_ &e) const;
+    template <typename ElementT>
+    opt_ref<ElementT> find(const std::string &name) const;
 
-    bool has_concept(const concept_ &e) const;
+    template <typename ElementT>
+    opt_ref<ElementT> find(diagram_element::id_t id) const;
 
-    opt_ref<class_> get_class(const std::string &name) const;
+    template <typename ElementT>
+    bool add(const path &parent_path, std::unique_ptr<ElementT> &&e)
+    {
+        if (parent_path.type() == common::model::path_type::kNamespace) {
+            return add_with_namespace_path(std::move(e));
+        }
 
-    opt_ref<class_> get_class(diagram_element::id_t id) const;
-
-    opt_ref<enum_> get_enum(const std::string &name) const;
-
-    opt_ref<enum_> get_enum(diagram_element::id_t id) const;
-
-    opt_ref<concept_> get_concept(const std::string &name) const;
-
-    opt_ref<concept_> get_concept(diagram_element::id_t id) const;
-
-    bool add_class(const path &parent_path, std::unique_ptr<class_> &&c);
-
-    bool add_enum(const path &parent_path, std::unique_ptr<enum_> &&e);
-
-    bool add_concept(const path &parent_path, std::unique_ptr<concept_> &&e);
-
-    bool add_package(
-        const path &parent_path, std::unique_ptr<common::model::package> &&p);
+        return add_with_filesystem_path(parent_path, std::move(e));
+    }
 
     std::string to_alias(diagram_element::id_t id) const;
 
@@ -100,28 +97,148 @@ public:
     inja::json context() const override;
 
 private:
-    bool add_class_ns(std::unique_ptr<class_> &&c);
-    bool add_class_fs(
-        const common::model::path &parent_path, std::unique_ptr<class_> &&c);
+    template <typename ElementT>
+    bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
 
-    bool add_enum_ns(std::unique_ptr<enum_> &&c);
-    bool add_enum_fs(
-        const common::model::path &parent_path, std::unique_ptr<enum_> &&c);
-
-    bool add_package_ns(std::unique_ptr<common::model::package> &&p);
-    bool add_package_fs(const common::model::path &parent_path,
-        std::unique_ptr<common::model::package> &&p);
-
-    bool add_concept_ns(std::unique_ptr<concept_> &&p);
-    bool add_concept_fs(
-        const common::model::path &parent_path, std::unique_ptr<concept_> &&p);
-
-    common::reference_vector<class_> classes_;
-
-    common::reference_vector<enum_> enums_;
-
-    common::reference_vector<concept_> concepts_;
+    template <typename ElementT>
+    bool add_with_filesystem_path(
+        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
 };
+
+template <typename ElementT> bool diagram::contains(const ElementT &element)
+{
+    return std::any_of(element_view<ElementT>::view().cbegin(),
+        element_view<ElementT>::view().cend(),
+        [&element](
+            const auto &element_opt) { return element_opt.get() == element; });
+}
+
+template <typename ElementT>
+bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
+{
+    const auto base_name = e->name();
+    const auto full_name = e->full_name(false);
+    const auto element_type = e->type_name();
+
+    LOG_DBG("Adding {}: {}::{}, {}", element_type,
+        e->get_namespace().to_string(), base_name, full_name);
+
+    if (util::contains(base_name, "::"))
+        throw std::runtime_error("Name cannot contain namespace: " + base_name);
+
+    if (util::contains(base_name, "*"))
+        throw std::runtime_error("Name cannot contain *: " + base_name);
+
+    const auto ns = e->get_relative_namespace();
+    auto name = base_name;
+    auto name_with_ns = e->name_and_ns();
+    auto name_and_ns = ns | name;
+    auto &e_ref = *e;
+    auto id = e_ref.id();
+
+    try {
+        if (!contains(e_ref)) {
+            if (add_element(ns, std::move(e)))
+                element_view<ElementT>::add(std::ref(e_ref));
+
+            const auto &el = get_element<ElementT>(name_and_ns).value();
+
+            if ((el.name() != name) || !(el.get_relative_namespace() == ns))
+                throw std::runtime_error(
+                    "Invalid element stored in the diagram tree");
+
+            LOG_DBG("Added {} {} ({} - [{}])", element_type, base_name,
+                full_name, id);
+
+            return true;
+        }
+    }
+    catch (const std::runtime_error &e) {
+        LOG_WARN("Cannot add {} {} with id {} due to: {}", element_type, name,
+            id, e.what());
+        return false;
+    }
+
+    LOG_DBG("{} {} ({} - [{}]) already in the model", element_type, base_name,
+        full_name, id);
+
+    return false;
+}
+
+template <typename ElementT>
+bool diagram::add_with_filesystem_path(
+    const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
+{
+    const auto element_type = e->type_name();
+
+    // Make sure all parent directories are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg =
+            std::make_unique<common::model::package>(e->using_namespace());
+        pkg->set_name(*it);
+        auto ns = common::model::path(parent_path.begin(), it);
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add(ns, std::move(pkg));
+    }
+
+    const auto base_name = e->name();
+    const auto full_name = e->full_name(false);
+    const auto id = e->id();
+    auto &e_ref = *e;
+
+    if (add_element(parent_path, std::move(e))) {
+        element_view<ElementT>::add(std::ref(e_ref));
+        return true;
+    }
+
+    LOG_WARN(
+        "Cannot add {} {} with id {} due to: {}", element_type, base_name, id);
+
+    return false;
+}
+
+template <typename ElementT>
+opt_ref<ElementT> diagram::find(const std::string &name) const
+{
+    for (const auto &element : element_view<ElementT>::view()) {
+        const auto full_name = element.get().full_name(false);
+
+        if (full_name == name) {
+            return {element};
+        }
+    }
+
+    return {};
+}
+
+template <typename ElementT>
+opt_ref<ElementT> diagram::find(diagram_element::id_t id) const
+{
+    for (const auto &element : element_view<ElementT>::view()) {
+        if (element.get().id() == id) {
+            return {element};
+        }
+    }
+
+    return {};
+}
+
+//
+// Template method specialization pre-declarations...
+//
+template <>
+bool diagram::add_with_namespace_path<common::model::package>(
+    std::unique_ptr<common::model::package> &&p);
+
+template <>
+bool diagram::add_with_filesystem_path<common::model::package>(
+    const common::model::path &parent_path,
+    std::unique_ptr<common::model::package> &&p);
+
 } // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {

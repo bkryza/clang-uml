@@ -93,7 +93,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         }
 
         if (!p->skip()) {
-            diagram().add_package(std::move(p));
+            diagram().add(p->path(), std::move(p));
         }
     }
 
@@ -222,7 +222,7 @@ void translation_unit_visitor::add_relationships(
         pkg->set_name(pkg_name);
         pkg->set_id(get_package_id(cls));
 
-        diagram().add_package_fs(parent_path, std::move(pkg));
+        diagram().add(parent_path, std::move(pkg));
     }
 
     auto current_package_id = get_package_id(cls);

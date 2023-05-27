@@ -61,21 +61,21 @@ template <>
 const clanguml::common::optional_ref<class_diagram::model::class_> get(
     const class_diagram::model::diagram &d, const std::string &full_name)
 {
-    return d.get_class(full_name);
+    return d.find<class_diagram::model::class_>(full_name);
 }
 
 template <>
 const clanguml::common::optional_ref<common::model::package> get(
     const package_diagram::model::diagram &d, const std::string &full_name)
 {
-    return d.get_package(full_name);
+    return d.find<package>(full_name);
 }
 
 template <>
 const clanguml::common::optional_ref<common::model::source_file> get(
     const include_diagram::model::diagram &d, const std::string &full_name)
 {
-    return d.get_file(full_name);
+    return d.find<source_file>(full_name);
 }
 
 template <>
@@ -259,7 +259,7 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     clanguml::common::reference_set<class_diagram::model::class_> parents;
 
     const auto &fn = e.full_name(false);
-    auto class_ref = cd.get_class(fn);
+    auto class_ref = cd.find<class_diagram::model::class_>(fn);
 
     if (!class_ref.has_value())
         return false;
@@ -308,7 +308,7 @@ tvl::value_t parents_filter::match(const diagram &d, const element &e) const
     clanguml::common::reference_set<class_diagram::model::class_> parents;
 
     for (const auto &child : children_) {
-        auto child_ref = cd.get_class(child);
+        auto child_ref = cd.find<class_diagram::model::class_>(child);
         if (!child_ref.has_value())
             continue;
         parents.emplace(child_ref.value());
@@ -370,8 +370,8 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
     return tvl::any_of(context_.begin(), context_.end(),
         [&e, &d](const auto &context_root_name) {
             const auto &context_root =
-                static_cast<const class_diagram::model::diagram &>(d).get_class(
-                    context_root_name);
+                static_cast<const class_diagram::model::diagram &>(d)
+                    .find<class_diagram::model::class_>(context_root_name);
 
             if (context_root.has_value()) {
                 // This is a direct match to the context root
