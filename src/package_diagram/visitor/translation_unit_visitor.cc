@@ -258,18 +258,15 @@ common::model::diagram_element::id_t translation_unit_visitor::get_package_id(
 
         return {};
     }
-    else {
-        auto file = source_manager()
-                        .getFilename(cls->getSourceRange().getBegin())
-                        .str();
-        auto relative_file =
-            util::path_to_url(config().make_path_relative(file));
-        common::model::path parent_path{
-            relative_file, common::model::path_type::kFilesystem};
-        parent_path.pop_back();
 
-        return common::to_id(parent_path.to_string());
-    }
+    auto file =
+        source_manager().getFilename(cls->getSourceRange().getBegin()).str();
+    auto relative_file = util::path_to_url(config().make_path_relative(file));
+    common::model::path parent_path{
+        relative_file, common::model::path_type::kFilesystem};
+    parent_path.pop_back();
+
+    return common::to_id(parent_path.to_string());
 }
 
 void translation_unit_visitor::process_class_declaration(
@@ -469,10 +466,12 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             relationships, relationship_t::kAggregation);
     }
     else if (type->isEnumeralType()) {
-        if (const auto *enum_decl = type->getAs<clang::EnumType>()->getDecl();
-            enum_decl != nullptr) {
-            relationships.emplace_back(
-                get_package_id(enum_decl), relationship_hint);
+        if (const auto *enum_type = type->getAs<clang::EnumType>();
+            enum_type != nullptr) {
+            if (const auto *enum_decl = enum_type->getDecl();
+                enum_decl != nullptr)
+                relationships.emplace_back(
+                    get_package_id(enum_decl), relationship_hint);
         }
     }
     else if (const auto *template_specialization_type =
@@ -530,18 +529,30 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             }
         }
     }
-    else if (type->isRecordType() && type->getAsCXXRecordDecl()) {
-        if (config().package_type() == config::package_type_t::kNamespace) {
-            const auto *namespace_context =
-                type->getAsCXXRecordDecl()->getEnclosingNamespaceContext();
-            if (namespace_context != nullptr &&
-                namespace_context->isNamespace()) {
-                const auto *namespace_declaration =
-                    clang::cast<clang::NamespaceDecl>(namespace_context);
+    else if (type->isRecordType()) {
+        if (const auto *cxxrecord_decl = type->getAsCXXRecordDecl();
+            cxxrecord_decl != nullptr) {
+            if (config().package_type() == config::package_type_t::kNamespace) {
+                const auto *namespace_context =
+                    cxxrecord_decl->getEnclosingNamespaceContext();
+                if (namespace_context != nullptr &&
+                    namespace_context->isNamespace()) {
+                    const auto *namespace_declaration =
+                        clang::cast<clang::NamespaceDecl>(namespace_context);
 
-                if (namespace_declaration != nullptr &&
-                    diagram().should_include(
-                        common::get_qualified_name(*namespace_declaration))) {
+                    if (namespace_declaration != nullptr &&
+                        diagram().should_include(common::get_qualified_name(
+                            *namespace_declaration))) {
+                        const auto target_id = get_package_id(cxxrecord_decl);
+                        relationships.emplace_back(
+                            target_id, relationship_hint);
+                        result = true;
+                    }
+                }
+            }
+            else {
+                if (diagram().should_include(common::get_qualified_name(
+                        *type->getAsCXXRecordDecl()))) {
                     const auto target_id =
                         get_package_id(type->getAsCXXRecordDecl());
                     relationships.emplace_back(target_id, relationship_hint);
@@ -549,25 +560,17 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 }
             }
         }
-        else {
-            if (diagram().should_include(
-                    common::get_qualified_name(*type->getAsCXXRecordDecl()))) {
-                const auto target_id =
-                    get_package_id(type->getAsCXXRecordDecl());
-                relationships.emplace_back(target_id, relationship_hint);
-                result = true;
-            }
-        }
-    }
-    else if (type->isRecordType() && type->getAsRecordDecl()) {
-        // This is only possible for plain C translation unit, so we don't
-        // need to consider namespaces here
-        if (config().package_type() == config::package_type_t::kDirectory) {
-            if (diagram().should_include(
-                    common::get_qualified_name(*type->getAsRecordDecl()))) {
-                const auto target_id = get_package_id(type->getAsRecordDecl());
-                relationships.emplace_back(target_id, relationship_hint);
-                result = true;
+        else if (const auto *record_decl = type->getAsRecordDecl();
+                 record_decl != nullptr) {
+            // This is only possible for plain C translation unit, so we don't
+            // need to consider namespaces here
+            if (config().package_type() == config::package_type_t::kDirectory) {
+                if (diagram().should_include(
+                        common::get_qualified_name(*record_decl))) {
+                    const auto target_id = get_package_id(record_decl);
+                    relationships.emplace_back(target_id, relationship_hint);
+                    result = true;
+                }
             }
         }
     }

@@ -75,14 +75,13 @@ public:
         std::copy(begin, end, std::back_inserter(path_));
     }
 
-    path(const path &right)
-        : path_type_{right.path_type_}
-        , path_{right.path_}
-    {
-    }
+    path(const path &right) = default;
 
     path &operator=(const path &right)
     {
+        if (&right == this)
+            return *this;
+
         if (path_type_ != right.path_type_)
             throw std::runtime_error("");
 
@@ -161,9 +160,9 @@ public:
 
     void operator|=(const std::string &right) { append(right); }
 
-    std::string &operator[](const int index) { return path_[index]; }
+    std::string &operator[](const unsigned int index) { return path_[index]; }
 
-    const std::string &operator[](const int index) const
+    const std::string &operator[](const unsigned int index) const
     {
         return path_[index];
     }

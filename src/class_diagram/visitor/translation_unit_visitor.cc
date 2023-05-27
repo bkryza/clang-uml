@@ -1308,7 +1308,7 @@ void translation_unit_visitor::process_method(
                                 .getUnqualifiedType()
                                 ->getAs<clang::TemplateSpecializationType>();
         templ != nullptr) {
-        auto *unaliased_type = templ;
+        const auto *unaliased_type = templ;
         if (unaliased_type->isTypeAlias())
             unaliased_type = unaliased_type->getAliasedType()
                                  ->getAs<clang::TemplateSpecializationType>();
