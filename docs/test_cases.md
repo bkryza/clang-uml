@@ -63,6 +63,7 @@
  * [t00062](./test_cases/t00062.md) - Template specialization matching based on deduced context
  * [t00063](./test_cases/t00063.md) - Element types diagram filter test case
  * [t00064](./test_cases/t00064.md) - Template type list test case
+ * [t00065](./test_cases/t00065.md) - Class diagram with packages from directory structure
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -103,6 +104,8 @@
  * [t30007](./test_cases/t30007.md) - Package diagram layout hints test case
  * [t30008](./test_cases/t30008.md) - Dependants and dependencies package diagram filter test
  * [t30009](./test_cases/t30009.md) - Together layout hint test
+ * [t30010](./test_cases/t30010.md) - Package diagram with packages from directory structure
+ * [t30011](./test_cases/t30011.md) - Package diagram with packages from directory structure for plain C
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case

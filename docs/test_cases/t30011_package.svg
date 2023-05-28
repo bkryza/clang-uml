@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="202px" preserveAspectRatio="none" style="width:373px;height:202px;" version="1.1" viewBox="0 0 373 202" width="373px" zoomAndPan="magnify">
+  <defs>
+    <filter height="300%" id="f541dr54acmmw" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="22,86,92,86,99,108.2969,351,108.2969,351,190,22,190,22,86" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="99" y1="108.2969" y2="108.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="64" x="26" y="100.9951">libraries</text>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="287,121,321,121,328,143.2969,335,143.2969,335,173.5938,287,173.5938,287,121" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="287" x2="328" y1="143.2969" y2="143.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="291" y="135.9951">lib1</text>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="204,121,238,121,245,143.2969,252,143.2969,252,173.5938,204,173.5938,204,121" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="204" x2="245" y1="143.2969" y2="143.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="208" y="135.9951">lib2</text>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="121,121,155,121,162,143.2969,169,143.2969,169,173.5938,121,173.5938,121,121" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="121" x2="162" y1="143.2969" y2="143.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="125" y="135.9951">lib3</text>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="38,121,72,121,79,143.2969,86,143.2969,86,173.5938,38,173.5938,38,121" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="38" x2="79" y1="143.2969" y2="143.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="42" y="135.9951">lib4</text>
+    <polygon fill="#FFFFFF" filter="url(#f541dr54acmmw)" points="161.5,8,196.5,8,203.5,30.2969,210.5,30.2969,210.5,60.5938,161.5,60.5938,161.5,8" style="stroke: #000000; stroke-width: 1.5;"/>
+    <line style="stroke: #000000; stroke-width: 1.5;" x1="161.5" x2="203.5" y1="30.2969" y2="30.2969"/>
+    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="165.5" y="22.9951">app</text>
+    <path d="M210.65,43.72 C228.69,50.68 252.9,62.07 270,78 C281.47,88.69 290.81,103.3 297.66,116.29 " fill="none" id="C_0002001320261642080149-&gt;C_0000879212264535378961" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="300.07,120.99,299.5224,111.1564,297.7884,116.5409,292.4039,114.8069,300.07,120.99" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M195.74,61.24 C201.94,77.64 210.01,98.94 216.52,116.16 " fill="none" id="C_0002001320261642080149-&gt;C_0001522606219626203424" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="218.31,120.89,218.859,111.0565,216.5372,116.2148,211.3788,113.893,218.31,120.89" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M176.49,61.24 C170.44,77.64 162.57,98.94 156.21,116.16 " fill="none" id="C_0002001320261642080149-&gt;C_0002263709579652581325" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="154.46,120.89,161.3277,113.8306,156.1905,116.199,153.8221,111.0618,154.46,120.89" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M161.24,44.2 C143.75,51.27 120.55,62.6 104,78 C92.54,88.66 83.06,103.14 76.02,116.04 " fill="none" id="C_0002001320261642080149-&gt;C_0001103453030023410219" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="#A80036" points="73.54,120.71,81.3078,114.6551,75.8952,116.2994,74.2508,110.8868,73.54,120.71" style="stroke: #A80036; stroke-width: 1.0;"/>
+  </g>
+</svg>

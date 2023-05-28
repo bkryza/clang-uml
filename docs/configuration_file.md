@@ -26,6 +26,8 @@
 * `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `generate_method_arguments` - determines whether the class diagrams methods contain full arguments (`full`), are abbreviated (`abbreviated`) or skipped (`none`)
 * `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`, at most 1 value is supported
+* `generate_packages` - whether or not the class diagram should contain packages generated from namespaces or subdirectories
+* `package_type` - determines how the packages are inferred: `namespace` - use C++ namespaces, `directory` - use project's directory structure
 * `include` - definition of inclusion patterns:
     * `namespaces` - list of namespaces to include
     * `relationships` - list of relationships to include
@@ -86,8 +88,10 @@ diagrams:
     type: class
     # Do not include rendered relations in the class box
     include_relations_also_as_members: false
+    # Generate packages from the namespaces
+    generate_packages: true
+    package_type: namespace  # or 'directory' to generate from projects subdirectories
     # Limiting the number of files to include can significantly
-    # improve the generation time
     glob:
       - src/common/model/*.h
       - src/common/model/*.cc

@@ -155,3 +155,14 @@ template <typename T> std::map<T, std::shared_ptr<A::AA::A13::CM>> cm()
 generates the following diagram:
 
 ![package_deps](./test_cases/t30002_package.svg)
+
+By default, packages are generated from C++ namespaces in the code. However
+they can also be generated from the subdirectories in the filesystem tree by 
+adding the following option to the configuration file:
+
+```yaml
+package_type: directory
+```
+
+for example checkout this diagram
+![t30011_package](./test_cases/t30011_package.svg)
