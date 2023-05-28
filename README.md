@@ -4,7 +4,7 @@
 
 [![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
-[![Version](https://img.shields.io/badge/version-0.3.5-blue)](https://github.com/bkryza/clang-uml/releases)
+[![Version](https://img.shields.io/badge/version-0.3.6-blue)](https://github.com/bkryza/clang-uml/releases)
 [![Version](https://img.shields.io/badge/LLVM-12,13,14,15,16-orange)](https://github.com/bkryza/clang-uml/releases)
 
 `clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by 
@@ -32,7 +32,7 @@ Main features supported so far include:
     * Diagram content filtering based on namespaces, elements and relationships - [_example_](docs/test_cases/t00040.md)
     * Optional package generation from namespaces - [_example_](docs/test_cases/t00036.md)
     * Optional package generation from subdirectories - [_example_](docs/test_cases/t00065.md)
-    * Interactive links to online code to classes, methods and class fields in SVG diagrams [_example_](docs/test_cases/t00002_class.svg)
+    * Interactive links to online code to classes, methods and class fields in SVG diagrams [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00002_class.svg)
     * Support for plain C99/C11 code (struct and units relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
 * **Sequence diagram generation**
@@ -42,12 +42,12 @@ Main features supported so far include:
     * Generation of try/catch blocks - [_example_](docs/test_cases/t20023.md)
     * Handling of template code including constexpr conditionals - [_example_](docs/test_cases/t20018.md)
     * Handling of lambda expressions - [_example_](docs/test_cases/t20012.md)
-    * Interactive links to online code to classes and call expressions [_example_](docs/test_cases/t20021_sequence.svg)
+    * Interactive links to online code to classes and call expressions [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t20021_sequence.svg)
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
     * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)
     * Dependencies between packages based on symbols used in the code - [_example_](docs/test_cases/t30002.md)
-    * Interactive links to online code to packages - [_example_](docs/test_cases/t30002_package.svg)
+    * Interactive links to online code to packages - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t30002_package.svg)
 * **Include graph diagram generation**
     * Show include graph for selected files - [_example_](docs/test_cases/t40001.md)
 

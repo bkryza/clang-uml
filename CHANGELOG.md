@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.6
   * Added generation of packages in class and package diagrams from
     filesystem directories (#144)
   * Improved handling of class template specializations and their
