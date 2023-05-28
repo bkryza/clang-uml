@@ -31,7 +31,8 @@ Main features supported so far include:
     * Relationship inference from C++ containers and smart pointers - [_example_](docs/test_cases/t00007.md)
     * Diagram content filtering based on namespaces, elements and relationships - [_example_](docs/test_cases/t00040.md)
     * Optional package generation from namespaces - [_example_](docs/test_cases/t00036.md)
-    * Interactive links to online code to classes, methods and class fields in SVG diagrams
+    * Optional package generation from subdirectories - [_example_](docs/test_cases/t00065.md)
+    * Interactive links to online code to classes, methods and class fields in SVG diagrams [_example_](docs/test_cases/t00002_class.svg)
     * Support for plain C99/C11 code (struct and units relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
 * **Sequence diagram generation**
@@ -41,11 +42,12 @@ Main features supported so far include:
     * Generation of try/catch blocks - [_example_](docs/test_cases/t20023.md)
     * Handling of template code including constexpr conditionals - [_example_](docs/test_cases/t20018.md)
     * Handling of lambda expressions - [_example_](docs/test_cases/t20012.md)
-    * Interactive links to online code to classes and call expressions
+    * Interactive links to online code to classes and call expressions [_example_](docs/test_cases/t20021_sequence.svg)
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
+    * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)
     * Dependencies between packages based on symbols used in the code - [_example_](docs/test_cases/t30002.md)
-    * Interactive links to online code to packages
+    * Interactive links to online code to packages - [_example_](docs/test_cases/t30002_package.svg)
 * **Include graph diagram generation**
     * Show include graph for selected files - [_example_](docs/test_cases/t40001.md)
 

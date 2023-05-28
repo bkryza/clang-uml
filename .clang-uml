@@ -14,6 +14,8 @@ diagrams:
     include!: uml/common_model_class_diagram.yml
   class_model_class:
     include!: uml/class_model_class_diagram.yml
+  diagram_element_hierarchy_class:
+    include!: uml/diagram_element_hierarchy_diagram.yml
   sequence_model_class:
     include!: uml/sequence_model_class_diagram.yml
   main_sequence:

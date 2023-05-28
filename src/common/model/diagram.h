@@ -39,7 +39,7 @@ public:
 
     virtual diagram_t type() const = 0;
 
-    virtual common::optional_ref<clanguml::common::model::diagram_element> get(
+    virtual opt_ref<clanguml::common::model::diagram_element> get(
         const std::string &full_name) const = 0;
 
     virtual common::optional_ref<clanguml::common::model::diagram_element> get(

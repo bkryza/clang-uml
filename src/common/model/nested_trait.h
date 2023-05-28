@@ -70,7 +70,9 @@ public:
         if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
             return dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
-        spdlog::info("No parent element found at: {}", path.to_string());
+
+        LOG_INFO("No parent element found at: {}", path.to_string());
+
         throw std::runtime_error(
             "No parent element found for " + path.to_string());
     }
@@ -135,7 +137,29 @@ public:
             elements_.end();
     }
 
-    bool is_empty() const { return elements_.empty(); }
+    template <typename F> bool all_of(F &&f) const
+    {
+        return std::all_of(
+            elements_.cbegin(), elements_.cend(), [f](const auto &e) {
+                const auto *package_ptr =
+                    dynamic_cast<nested_trait<T, Path> *>(e.get());
+
+                if (package_ptr != nullptr)
+                    return package_ptr->all_of(f);
+
+                return f(*e);
+            });
+    }
+
+    bool is_empty() const
+    {
+        return elements_.empty() ||
+            std::all_of(elements_.cbegin(), elements_.cend(), [](auto &e) {
+                const auto *package_ptr =
+                    dynamic_cast<nested_trait<T, Path> *>(e.get());
+                return package_ptr != nullptr && package_ptr->is_empty();
+            });
+    }
 
     auto begin() { return elements_.begin(); }
     auto end() { return elements_.end(); }

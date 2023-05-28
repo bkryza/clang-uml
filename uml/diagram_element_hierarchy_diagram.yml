@@ -1,0 +1,29 @@
+type: class
+generate_packages: true
+glob:
+  - src/common/model/*.cc
+  - src/class_diagram/model/*.cc
+  - src/sequence_diagram/model/*.cc
+  - src/include_diagram/model/*.cc
+  - src/package_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml
+  subclasses:
+    - clanguml::common::model::decorated_element
+    - clanguml::common::model::source_location
+  include:
+    relationships:
+      - inheritance
+exclude:
+  relationships:
+    - dependency
+  access:
+    - public
+    - private
+    - protected
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clang-uml diagram element class inheritance model'

@@ -19,6 +19,7 @@
 
 #include "common/model/element.h"
 #include "common/model/nested_trait.h"
+#include "common/model/path.h"
 #include "common/model/stylable_element.h"
 #include "common/types.h"
 #include "util/util.h"
@@ -33,9 +34,9 @@ namespace clanguml::common::model {
 
 class package : public element,
                 public stylable_element,
-                public nested_trait<element, namespace_> {
+                public nested_trait<element, path> {
 public:
-    package(const common::model::namespace_ &using_namespace);
+    package(const common::model::path &using_namespace);
 
     package(const package &) = delete;
     package(package &&) = default;

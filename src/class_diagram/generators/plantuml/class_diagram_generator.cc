@@ -721,9 +721,14 @@ void generator::generate_relationships(
 {
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
-            // TODO: add option - generate_empty_packages
+            // TODO: add option - generate_empty_packages, currently
+            //       packages which do not contain anything but other packages
+            //       are skipped
             const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty())
+            if (!sp.is_empty() &&
+                !sp.all_of([this](const common::model::element &e) {
+                    return !m_model.should_include(e);
+                }))
                 generate_relationships(sp, ostr);
         }
         else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
@@ -774,7 +779,10 @@ void generator::generate_top_level_elements(std::ostream &ostr) const
 {
     for (const auto &p : m_model) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            if (!pkg->is_empty())
+            if (!pkg->is_empty() &&
+                !pkg->all_of([this](const common::model::element &e) {
+                    return !m_model.should_include(e);
+                }))
                 generate(*pkg, ostr);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {

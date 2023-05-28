@@ -40,8 +40,11 @@ TEST_CASE("t00036", "[test-case][class]")
         REQUIRE_THAT(puml, IsEnum(_A("E")));
         REQUIRE_THAT(puml, IsClass(_A("B")));
         REQUIRE_THAT(puml, IsClass(_A("C")));
+        REQUIRE_THAT(puml, !IsClass(_A("DImpl")));
         REQUIRE_THAT(puml, IsPackage("ns111"));
         REQUIRE_THAT(puml, IsPackage("ns22"));
+        REQUIRE_THAT(puml, !IsPackage("ns3"));
+        REQUIRE_THAT(puml, !IsPackage("ns33"));
 
         REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
 

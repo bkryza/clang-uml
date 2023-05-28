@@ -62,7 +62,6 @@ public:
      */
     clang::SourceManager &source_manager() const;
 
-protected:
     /**
      * @brief Set source location in diagram element
      *
@@ -93,6 +92,7 @@ protected:
     void set_source_location(const clang::SourceLocation &location,
         clanguml::common::model::source_location &element);
 
+protected:
     /**
      * @brief Set source location in diagram element
      *

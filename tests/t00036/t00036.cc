@@ -27,8 +27,18 @@ namespace ns22 {
 // TODO: Fix for incomplete struct C declaration "struct C;"
 struct C { };
 
+struct D { };
+
 }
 }
+
+namespace ns3 {
+namespace ns33 {
+namespace detail {
+struct DImpl : public ns2::ns22::D { };
+}
+} // namespace ns33
+} // namespace ns3
 
 } // namespace t00036
 } // namespace clanguml

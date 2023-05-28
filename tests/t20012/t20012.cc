@@ -3,6 +3,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 namespace clanguml {
 namespace t20012 {

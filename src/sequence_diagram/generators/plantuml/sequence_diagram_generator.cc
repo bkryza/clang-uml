@@ -329,11 +329,8 @@ void generator::generate_participant(
         if (is_participant_generated(file_id))
             return;
 
-        const auto &relative_to =
-            std::filesystem::canonical(m_config.relative_to());
-
         auto participant_name = util::path_to_url(std::filesystem::relative(
-            std::filesystem::path{file_path}, relative_to)
+            std::filesystem::path{file_path}, m_config.root_directory())
                                                       .string());
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "

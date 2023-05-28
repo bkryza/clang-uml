@@ -550,8 +550,7 @@ common::id_t generator::generate_participant(
 
         nlohmann::json j = function_participant;
         j["name"] = util::path_to_url(
-            std::filesystem::relative(function_participant.file(),
-                std::filesystem::canonical(m_config.relative_to()).string()));
+            m_config.make_path_relative(function_participant.file()).string());
 
         participant_id = common::to_id(function_participant.file_relative());
 

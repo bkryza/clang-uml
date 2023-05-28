@@ -129,6 +129,8 @@ private:
     T *value_{nullptr};
 };
 
+template <typename T> using opt_ref = optional_ref<T>;
+
 template <typename T>
 using reference_vector = std::vector<std::reference_wrapper<T>>;
 

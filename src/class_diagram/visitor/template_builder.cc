@@ -23,14 +23,13 @@
 
 namespace clanguml::class_diagram::visitor {
 
-template_builder::template_builder(class_diagram::model::diagram &d,
-    const config::class_diagram &config,
-    common::visitor::ast_id_mapper &id_mapper,
-    clang::SourceManager &source_manager)
-    : diagram_{d}
-    , config_{config}
-    , id_mapper_{id_mapper}
-    , source_manager_{source_manager}
+template_builder::template_builder(
+    clanguml::class_diagram::visitor::translation_unit_visitor &visitor)
+    : diagram_{visitor.diagram()}
+    , config_{visitor.config()}
+    , id_mapper_{visitor.id_mapper()}
+    , source_manager_{visitor.source_manager()}
+    , visitor_{visitor}
 {
 }
 
@@ -267,6 +266,8 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
 
     template_instantiation.set_id(
         common::to_id(template_instantiation_ptr->full_name(false)));
+
+    visitor_.set_source_location(*template_decl, *template_instantiation_ptr);
 
     return template_instantiation_ptr;
 }
@@ -936,9 +937,9 @@ std::optional<template_parameter> template_builder::try_as_decl_type(
 
 std::optional<template_parameter> template_builder::try_as_typedef_type(
     std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
-    size_t argument_index)
+    const clang::NamedDecl * /*cls*/,
+    const clang::TemplateDecl * /*template_decl*/, clang::QualType &type,
+    class_ & /*template_instantiation*/, size_t /*argument_index*/)
 {
     const auto *typedef_type =
         common::dereference(type)->getAs<clang::TypedefType>();
@@ -1045,7 +1046,9 @@ template_builder::try_as_template_specialization_type(
     }
 
     if (diagram().should_include(nested_template_instantiation_full_name)) {
-        diagram().add_class(std::move(nested_template_instantiation));
+        visitor_.set_source_location(
+            *template_decl, *nested_template_instantiation);
+        visitor_.add_class(std::move(nested_template_instantiation));
     }
 
     return argument;
@@ -1089,7 +1092,7 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
 
     argument.is_variadic(is_variadic);
 
-    ensure_lambda_type_is_relative(type_parameter_name);
+    visitor_.ensure_lambda_type_is_relative(type_parameter_name);
 
     return argument;
 }
@@ -1108,7 +1111,7 @@ std::optional<template_parameter> template_builder::try_as_lambda(
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
-    ensure_lambda_type_is_relative(type_name);
+    visitor_.ensure_lambda_type_is_relative(type_name);
     argument.set_type(type_name);
 
     return argument;
@@ -1156,8 +1159,8 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                 if (parent.has_value())
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
-
-                diagram().add_class(std::move(tag_argument));
+                visitor_.set_source_location(*template_decl, *tag_argument);
+                visitor_.add_class(std::move(tag_argument));
             }
         }
     }
@@ -1254,42 +1257,6 @@ bool template_builder::add_base_classes(class_ &tinst,
     }
 
     return variadic_params;
-}
-
-void template_builder::ensure_lambda_type_is_relative(
-    std::string &parameter_type) const
-{
-#ifdef _MSC_VER
-    auto root_name = fmt::format(
-        "{}\\", std::filesystem::current_path().root_name().string());
-    if (root_name.back() == '\\') {
-        root_name.pop_back();
-        root_name.push_back('/');
-    }
-#else
-    auto root_name = std::string{"/"};
-#endif
-
-    std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
-
-    while (parameter_type.find(lambda_prefix) != std::string::npos) {
-        auto lambda_begin = parameter_type.find(lambda_prefix);
-
-        auto absolute_lambda_path_end =
-            parameter_type.find(':', lambda_begin + lambda_prefix.size());
-        auto absolute_lambda_path =
-            parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
-                absolute_lambda_path_end -
-                    (lambda_begin + lambda_prefix.size() - 1));
-
-        auto relative_lambda_path = util::path_to_url(std::filesystem::relative(
-            absolute_lambda_path, config().relative_to())
-                                                          .string());
-
-        parameter_type = fmt::format("{}(lambda at {}{}",
-            parameter_type.substr(0, lambda_begin), relative_lambda_path,
-            parameter_type.substr(absolute_lambda_path_end));
-    }
 }
 
 } // namespace clanguml::class_diagram::visitor

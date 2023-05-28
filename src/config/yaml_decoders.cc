@@ -34,6 +34,7 @@ using clanguml::config::layout_hint;
 using clanguml::config::location_t;
 using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
+using clanguml::config::package_type_t;
 using clanguml::config::plantuml;
 using clanguml::config::relationship_hint_t;
 using clanguml::config::sequence_diagram;
@@ -82,6 +83,22 @@ void get_option<method_arguments>(
             option.set(method_arguments::abbreviated);
         else if (val == "none")
             option.set(method_arguments::none);
+        else
+            throw std::runtime_error(
+                "Invalid generate_method_arguments value: " + val);
+    }
+}
+
+template <>
+void get_option<package_type_t>(
+    const Node &node, clanguml::config::option<package_type_t> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "namespace")
+            option.set(package_type_t::kNamespace);
+        else if (val == "directory")
+            option.set(package_type_t::kDirectory);
         else
             throw std::runtime_error(
                 "Invalid generate_method_arguments value: " + val);
@@ -403,6 +420,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.package_type);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
         get_option(node, rhs.relative_to);
@@ -451,6 +469,13 @@ template <> struct convert<package_diagram> {
             return false;
 
         get_option(node, rhs.layout);
+        get_option(node, rhs.relative_to);
+        get_option(node, rhs.package_type);
+
+        // Ensure relative_to has a value
+        if (!rhs.relative_to.has_value)
+            rhs.relative_to.set(
+                std::filesystem::current_path().lexically_normal());
 
         return true;
     }
@@ -597,6 +622,7 @@ template <> struct convert<config> {
         get_option(node, rhs.puml);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
+        get_option(node, rhs.package_type);
         get_option(node, rhs.generate_links);
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);

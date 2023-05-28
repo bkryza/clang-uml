@@ -11,7 +11,9 @@ namespace A1 {
 struct CA { };
 }
 namespace A2 {
-struct CB { };
+template <typename T> struct CB {
+    T cb;
+};
 }
 namespace A3 {
 struct CC { };
@@ -58,12 +60,15 @@ struct CP { };
 namespace A17 {
 struct CR { };
 }
+namespace A18 {
+enum class S { s1, s2, s3 };
+}
 }
 namespace B::BB::BBB {
 class CBA : public A::AA::A6::CF {
 public:
     A::AA::A1::CA *ca_;
-    A::AA::A2::CB cb_;
+    A::AA::A2::CB<int> cb_;
     std::shared_ptr<A::AA::A3::CC> cc_;
     std::map<std::string, std::unique_ptr<A::AA::A4::CD>> *cd_;
     std::array<A::AA::A15::CO, 5> co_;
@@ -91,6 +96,8 @@ public:
     {
         return {};
     }
+
+    A::AA::A18::S s;
 };
 
 void cj(std::unique_ptr<A::AA::A10::CJ> /*cj_*/) { }

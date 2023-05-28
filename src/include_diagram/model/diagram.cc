@@ -31,19 +31,19 @@ common::model::diagram_t diagram::type() const
 common::optional_ref<common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
-    return get_file(full_name);
+    return find<source_file>(full_name);
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
     const common::model::diagram_element::id_t id) const
 {
-    return get_file(id);
+    return find<source_file>(id);
 }
 
 void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 {
     // Don't add the same file more than once
-    if (get_file(f->id()))
+    if (find<source_file>(f->id()))
         return;
 
     LOG_DBG("Adding source file: {}, {}", f->name(), f->fs_path().string());
@@ -53,14 +53,15 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     assert(!ff.name().empty());
     assert(ff.id() != 0);
 
-    files_.emplace_back(ff);
+    element_view<source_file>::add(ff);
 
     auto p = ff.path();
 
     if (!f->path().is_empty()) {
         // If the parent path is not empty, ensure relative parent directories
         // of this source_file are in the diagram
-        common::model::filesystem_path parent_path_so_far;
+        common::model::filesystem_path parent_path_so_far{
+            common::model::path_type::kFilesystem};
         for (const auto &directory : f->path()) {
             auto source_file_path = parent_path_so_far | directory;
             if (parent_path_so_far.is_empty())
@@ -83,35 +84,9 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
         }
     }
 
+    assert(p.type() == common::model::path_type::kFilesystem);
+
     add_element(p, std::move(f));
-}
-
-common::optional_ref<common::model::source_file> diagram::get_file(
-    const std::string &name) const
-{
-    // Convert the name to the OS preferred path
-    std::filesystem::path namePath{name};
-    namePath.make_preferred();
-
-    for (const auto &p : files_) {
-        if (p.get().full_name(false) == namePath.string()) {
-            return {p};
-        }
-    }
-
-    return {};
-}
-
-common::optional_ref<common::model::source_file> diagram::get_file(
-    const common::model::diagram_element::id_t id) const
-{
-    for (const auto &p : files_) {
-        if (p.get().id() == id) {
-            return {p};
-        }
-    }
-
-    return {};
 }
 
 std::string diagram::to_alias(const std::string &full_name) const
@@ -136,7 +111,7 @@ std::string diagram::to_alias(const std::string &full_name) const
 const common::reference_vector<common::model::source_file> &
 diagram::files() const
 {
-    return files_;
+    return element_view<source_file>::view();
 }
 
 common::optional_ref<clanguml::common::model::diagram_element>

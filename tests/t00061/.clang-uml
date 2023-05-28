@@ -3,7 +3,7 @@ output_directory: puml
 diagrams:
   t00061_class:
     type: class
-    relative_to: ../../tests/t00061
+    relative_to: ../../../tests/t00061
     glob:
       - t00061.cc
     include:

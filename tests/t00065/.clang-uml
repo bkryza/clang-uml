@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00065_class:
+    type: class
+    glob:
+      - t00065.cc
+    relative_to: ../../../tests/t00065
+    generate_packages: true
+    package_type: directory
+    include:
+      namespaces:
+        - clanguml::t00065
+    using_namespace:
+      - clanguml::t00065

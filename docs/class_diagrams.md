@@ -7,7 +7,7 @@
 * [Relationships](#relationships)
   * [Relationships to classes in containers or smart pointers](#relationships-to-classes-in-containers-or-smart-pointers)
 * [Inheritance diagrams](#inheritance-diagrams)
-* [Namespaces as packages](#namespaces-as-packages)
+* [Including packages in the diagram](#including-packages-in-the-diagram)
 * [Class context diagram](#class-context-diagram)
 * [Disabling dependency relationships](#disabling-dependency-relationships)
 
@@ -126,7 +126,7 @@ inclusion filters:
         - inheritance
 ```
 
-## Namespaces as packages
+## Including packages in the diagram
 By default, `clang-uml` will render all element names including a namespace (relative to `using_namespace` property),
 e.g. `ns1::ns2::MyClass`.
 In order to generate packages in the diagram for each namespace instead, the following option must be set to `true`:
@@ -137,7 +137,22 @@ generate_packages: true
 
 which results in the following diagram:
 
-![extension](test_cases/t00036_class.svg)
+![t00036_class](test_cases/t00036_class.svg)
+
+In case the code base is structured based on subdirectory instead of namespaces, packages can be generated
+based on the location of a given declaration in the filesystem tree, by adding also the following option:
+
+```yaml
+package_type: directory
+```
+
+which results in the following diagram:
+
+![t00065_class](test_cases/t00065_class.svg)
+
+> In this case make sure that the root path of the configuration file is properly configured
+> for your project, if necessary add `relative_to` option to denote the root path
+> against which all relative paths in the config file are calculated.
 
 ## Class context diagram
 Sometimes it's helpful to generate a class diagram depicting only direct relationships of a given class, e.g.
@@ -153,7 +168,7 @@ within the classes' documentation page, this can be easily achieved using `conte
 In many cases, dependency relationships between classes can clutter the diagram too much, for instance consider this
 diagram:
 
-![extension](test_cases/t00019_class.svg)
+![t00019_class](test_cases/t00019_class.svg)
 
 where the dependency relationships do not bring much information into the diagram. In such cases it might
 be useful to disable dependency relationships for this diagram completely using the following exclusion filter:

@@ -31,55 +31,21 @@ common::model::diagram_t diagram::type() const
 const common::reference_vector<clanguml::common::model::package> &
 diagram::packages() const
 {
-    return packages_;
-}
-
-void diagram::add_package(std::unique_ptr<common::model::package> &&p)
-{
-    LOG_DBG("Adding package: {}, {}", p->name(), p->full_name(true));
-
-    auto ns = p->get_relative_namespace();
-
-    packages_.emplace_back(*p);
-
-    add_element(ns, std::move(p));
-}
-
-common::optional_ref<common::model::package> diagram::get_package(
-    const std::string &name) const
-{
-    for (const auto &p : packages_) {
-        auto p_full_name = p.get().full_name(false);
-        if (p_full_name == name) {
-            return {p};
-        }
-    }
-
-    return {};
-}
-
-common::optional_ref<common::model::package> diagram::get_package(
-    const clanguml::common::model::diagram_element::id_t id) const
-{
-    for (const auto &p : packages_) {
-        if (p.get().id() == id) {
-            return {p};
-        }
-    }
-
-    return {};
+    return element_view<package>::view();
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     const std::string &full_name) const
 {
-    return get_package(full_name);
+    return find<package>(full_name);
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     const clanguml::common::model::diagram_element::id_t id) const
 {
-    return get_package(id);
+    LOG_DBG("Looking for package with id {}", id);
+
+    return find<package>(id);
 }
 
 std::string diagram::to_alias(
@@ -87,10 +53,9 @@ std::string diagram::to_alias(
 {
     LOG_DBG("Looking for alias for {}", id);
 
-    for (const auto &p : packages_) {
-        if (p.get().id() == id)
-            return p.get().alias();
-    }
+    auto p = find<package>(id);
+    if (p.has_value() && p.value().id() == id)
+        return p.value().alias();
 
     return {};
 }

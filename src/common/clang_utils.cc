@@ -754,4 +754,30 @@ std::vector<std::string> tokenize_unexposed_template_parameter(
     return result;
 }
 
+bool parse_source_location(const std::string &location_str, std::string &file,
+    unsigned &line, unsigned &column)
+{
+    auto tokens = util::split(location_str, ":");
+
+    if (tokens.size() < 3)
+        return false;
+
+    file = tokens.at(0);
+    try {
+        line = std::stoi(tokens.at(1));
+    }
+    catch (std::invalid_argument &e) {
+        line = 0;
+    }
+
+    try {
+        column = std::stoi(tokens.at(2));
+    }
+    catch (std::invalid_argument &e) {
+        column = 0;
+    }
+
+    return true;
+}
+
 } // namespace clanguml::common

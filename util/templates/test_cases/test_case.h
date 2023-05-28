@@ -42,7 +42,7 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
     }
 
     {
-        auto j = generate_class_json(diagram, *model);
+        auto j = generate_{{ type }}_json(diagram, *model);
 
         using namespace json;
 

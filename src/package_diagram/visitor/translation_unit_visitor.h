@@ -49,7 +49,13 @@ public:
 
     virtual bool VisitNamespaceDecl(clang::NamespaceDecl *ns);
 
+    virtual bool VisitEnumDecl(clang::EnumDecl *decl);
+
     virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *cls);
+
+    virtual bool VisitRecordDecl(clang::RecordDecl *cls);
+
+    virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
 
     virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
 
@@ -60,11 +66,16 @@ public:
     void finalize() { }
 
 private:
+    common::model::diagram_element::id_t get_package_id(const clang::Decl *cls);
+
     void process_class_declaration(
         const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
 
     void process_class_children(
         const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
+
+    void process_record_children(
+        const clang::RecordDecl &cls, found_relationships_t &relationships);
 
     void process_class_bases(
         const clang::CXXRecordDecl &cls, found_relationships_t &relationships);
@@ -90,7 +101,7 @@ private:
             common::model::relationship_t::kDependency);
 
     void add_relationships(
-        clang::DeclContext *cls, found_relationships_t &relationships);
+        clang::Decl *cls, found_relationships_t &relationships);
 
     // Reference to the output diagram model
     clanguml::package_diagram::model::diagram &diagram_;

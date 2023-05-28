@@ -85,14 +85,36 @@ void translation_unit_visitor::set_source_location(
     const clang::SourceLocation &location,
     clanguml::common::model::source_location &element)
 {
+    std::string file;
+    unsigned line{};
+    [[maybe_unused]] unsigned column{};
+
     if (location.isValid()) {
-        element.set_file(source_manager_.getFilename(location).str());
-        element.set_file_relative(util::path_to_url(
-            std::filesystem::relative(element.file(), relative_to_path_)
-                .string()));
-        element.set_line(source_manager_.getSpellingLineNumber(location));
-        element.set_location_id(location.getHashValue());
+        file = source_manager_.getFilename(location).str();
+        line = source_manager_.getSpellingLineNumber(location);
+        column = source_manager_.getSpellingColumnNumber(location);
+
+        if (file.empty()) {
+            // Why do I have to do this?
+            parse_source_location(
+                location.printToString(source_manager()), file, line, column);
+        }
     }
+    else {
+        auto success = parse_source_location(
+            location.printToString(source_manager()), file, line, column);
+        if (!success) {
+            LOG_DBG("Failed to extract source location for element from {}",
+                location.printToString(source_manager_));
+            return;
+        }
+    }
+
+    element.set_file(file);
+    element.set_file_relative(util::path_to_url(
+        std::filesystem::relative(element.file(), relative_to_path_).string()));
+    element.set_line(line);
+    element.set_location_id(location.getHashValue());
 }
 
 } // namespace clanguml::common::visitor
