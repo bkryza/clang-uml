@@ -37,41 +37,41 @@ TEST_CASE("t20012", "[test-case][sequence]")
         // Check if all calls exist
         REQUIRE_THAT(puml,
             HasCall(_A("tmain()"),
-                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 "operator()()"));
         REQUIRE_THAT(puml,
-            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 _A("A"), "a()"));
         REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aa()"));
         REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aaa()"));
 
         REQUIRE_THAT(puml,
-            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 _A("B"), "b()"));
         REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bb()"));
         REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bbb()"));
 
         REQUIRE_THAT(puml,
-            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
                 _A("C"), "c()"));
         REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "cc()"));
         REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
         REQUIRE_THAT(puml,
-            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)"),
-                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)"),
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 "operator()()"));
 
         REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
 
         REQUIRE_THAT(puml,
             HasCall(_A("tmain()"),
-                _A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"), "r()"));
+                _A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"), "r()"));
         REQUIRE_THAT(puml,
-            HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>"),
-                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
+            HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
                 "operator()()"));
         REQUIRE_THAT(puml,
-            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)"),
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
                 _A("C"), "c()"));
 
         REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
@@ -87,31 +87,31 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         std::vector<int> messages = {
             FindMessage(j, "tmain()",
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)",
                 "operator()()"),
             FindMessage(j,
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)", "A",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)", "A",
                 "a()"),
             FindMessage(j, "A", "A", "aa()"), FindMessage(j, "A", "A", "aaa()"),
             FindMessage(j,
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)", "B",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)", "B",
                 "b()"),
             FindMessage(j, "B", "B", "bb()"), FindMessage(j, "B", "B", "bbb()"),
             FindMessage(j,
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)", "C",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)", "C",
                 "c()"),
             FindMessage(j, "C", "C", "cc()"), FindMessage(j, "C", "C", "ccc()"),
             FindMessage(j,
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:79:20)",
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:66:20)",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)",
                 "operator()()"),
             FindMessage(j, "tmain()",
-                "R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>", "r()"),
-            FindMessage(j, "R<R::(lambda ../../tests/t20012/t20012.cc:85:9)>",
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)",
+                "R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>", "r()"),
+            FindMessage(j, "R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)",
                 "operator()()"),
             FindMessage(j,
-                "tmain()::(lambda ../../tests/t20012/t20012.cc:85:9)", "C",
+                "tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)", "C",
                 "c()"),
             FindMessage(j, "tmain()", "D", "add5(int)")};
 
