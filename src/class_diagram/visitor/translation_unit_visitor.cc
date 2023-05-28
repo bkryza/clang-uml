@@ -1690,11 +1690,7 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
 {
 #ifdef _MSC_VER
     auto root_name = fmt::format(
-        "{}\\", std::filesystem::current_path().root_name().string());
-    if (root_name.back() == '\\') {
-        root_name.pop_back();
-        root_name.push_back('/');
-    }
+        "{}", std::filesystem::current_path().root_name().string());
 #else
     auto root_name = std::string{"/"};
 #endif
@@ -1703,13 +1699,17 @@ void translation_unit_visitor::ensure_lambda_type_is_relative(
 
     while (parameter_type.find(lambda_prefix) != std::string::npos) {
         auto lambda_begin = parameter_type.find(lambda_prefix);
-
+        auto lambda_prefix_size = lambda_prefix.size();
+#ifdef _MSC_VER
+        // Skip the `\` or `/` after drive letter and semicolon
+        lambda_prefix_size++;
+#endif
         auto absolute_lambda_path_end =
-            parameter_type.find(':', lambda_begin + lambda_prefix.size());
+            parameter_type.find(':', lambda_begin + lambda_prefix_size);
         auto absolute_lambda_path =
-            parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
+            parameter_type.substr(lambda_begin + lambda_prefix_size - 1,
                 absolute_lambda_path_end -
-                    (lambda_begin + lambda_prefix.size() - 1));
+                    (lambda_begin + lambda_prefix_size - 1));
 
         auto relative_lambda_path = util::path_to_url(
             config().make_path_relative(absolute_lambda_path).string());
@@ -2102,7 +2102,7 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 
         const auto file = config().make_path_relative(c->file());
 
-        common::model::path p{file, common::model::path_type::kFilesystem};
+        common::model::path p{file.string(), common::model::path_type::kFilesystem};
         p.pop_back();
 
         diagram().add(p, std::move(c));
@@ -2120,7 +2120,7 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
         const auto file = config().make_path_relative(e->file());
 
-        common::model::path p{file, common::model::path_type::kFilesystem};
+        common::model::path p{file.string(), common::model::path_type::kFilesystem};
         p.pop_back();
 
         diagram().add(p, std::move(e));
@@ -2138,7 +2138,7 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 
         const auto file = config().make_path_relative(c->file());
 
-        common::model::path p{file, common::model::path_type::kFilesystem};
+        common::model::path p{file.string(), common::model::path_type::kFilesystem};
         p.pop_back();
 
         diagram().add(p, std::move(c));

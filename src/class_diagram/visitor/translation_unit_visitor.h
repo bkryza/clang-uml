@@ -125,6 +125,8 @@ public:
     void add_enum(std::unique_ptr<enum_> &&e);
     void add_concept(std::unique_ptr<concept_> &&c);
 
+    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
+
 private:
     bool should_include(const clang::NamedDecl *decl);
 
@@ -188,8 +190,6 @@ private:
         const clanguml::class_diagram::model::class_member &field,
         const found_relationships_t &relationships,
         bool break_on_first_aggregation = false);
-
-    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 
     void process_record_parent(
         clang::RecordDecl *cls, class_ &c, const namespace_ &ns);

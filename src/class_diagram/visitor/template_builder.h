@@ -181,8 +181,6 @@ public:
     clang::SourceManager &source_manager() const;
 
 private:
-    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
-
     // Reference to the output diagram model
     clanguml::class_diagram::model::diagram &diagram_;
 

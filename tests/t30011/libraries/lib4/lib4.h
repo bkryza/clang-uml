@@ -1,3 +1,5 @@
 #pragma once
 
-struct t30011_C { };
+struct t30011_C {
+    int c;
+};

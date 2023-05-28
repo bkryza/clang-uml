@@ -43,7 +43,7 @@ using nested_trait_ns =
     clanguml::common::model::nested_trait<clanguml::common::model::element,
         clanguml::common::model::namespace_>;
 
-class diagram : public common::model::diagram::diagram,
+class diagram : public common::model::diagram,
                 public element_view<class_>,
                 public element_view<enum_>,
                 public element_view<concept_>,

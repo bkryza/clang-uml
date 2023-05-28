@@ -207,11 +207,12 @@ void translation_unit_visitor::add_relationships(
     // package for current directory is already in the model
     if (config().package_type() == config::package_type_t::kDirectory) {
         auto file = source_manager().getFilename(cls->getLocation()).str();
-        auto relative_file =
-            util::path_to_url(config().make_path_relative(file));
+
+        auto relative_file = config().make_path_relative(file);
+        relative_file.make_preferred();
 
         common::model::path parent_path{
-            relative_file, common::model::path_type::kFilesystem};
+            relative_file.string(), common::model::path_type::kFilesystem};
         parent_path.pop_back();
         auto pkg_name = parent_path.name();
         parent_path.pop_back();
@@ -261,9 +262,10 @@ common::model::diagram_element::id_t translation_unit_visitor::get_package_id(
 
     auto file =
         source_manager().getFilename(cls->getSourceRange().getBegin()).str();
-    auto relative_file = util::path_to_url(config().make_path_relative(file));
+    auto relative_file = config().make_path_relative(file);
+    relative_file.make_preferred();
     common::model::path parent_path{
-        relative_file, common::model::path_type::kFilesystem};
+        relative_file.string(), common::model::path_type::kFilesystem};
     parent_path.pop_back();
 
     return common::to_id(parent_path.to_string());

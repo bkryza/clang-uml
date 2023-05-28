@@ -60,7 +60,7 @@ foreach(TEST_NAME ${TEST_CASES})
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
             -Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable
             -Wno-attributes -Wno-nonnull -Wno-deprecated-enum-enum-conversion>
-            $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4624>>)
+            $<$<CXX_COMPILER_ID:MSVC>:/W1 /bigobj /wd4624>>)
     target_link_libraries(${TEST_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
 endforeach()
 

@@ -745,8 +745,19 @@ bool parse_source_location(const std::string &location_str, std::string &file,
         return false;
 
     file = tokens.at(0);
-    line = std::stoi(tokens.at(1));
-    column = std::stoi(tokens.at(2));
+    try {
+        line = std::stoi(tokens.at(1));
+    }
+    catch(std::invalid_argument &e) {
+        line = 0;
+    }
+
+    try {
+        column = std::stoi(tokens.at(2));
+    }
+    catch(std::invalid_argument &e) {
+        column = 0;
+    }
 
     return true;
 }

@@ -1090,7 +1090,7 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
 
     argument.is_variadic(is_variadic);
 
-    ensure_lambda_type_is_relative(type_parameter_name);
+    visitor_.ensure_lambda_type_is_relative(type_parameter_name);
 
     return argument;
 }
@@ -1109,7 +1109,7 @@ std::optional<template_parameter> template_builder::try_as_lambda(
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
-    ensure_lambda_type_is_relative(type_name);
+    visitor_.ensure_lambda_type_is_relative(type_name);
     argument.set_type(type_name);
 
     return argument;
@@ -1255,42 +1255,6 @@ bool template_builder::add_base_classes(class_ &tinst,
     }
 
     return variadic_params;
-}
-
-void template_builder::ensure_lambda_type_is_relative(
-    std::string &parameter_type) const
-{
-#ifdef _MSC_VER
-    auto root_name = fmt::format(
-        "{}\\", std::filesystem::current_path().root_name().string());
-    if (root_name.back() == '\\') {
-        root_name.pop_back();
-        root_name.push_back('/');
-    }
-#else
-    auto root_name = std::string{"/"};
-#endif
-
-    std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
-
-    while (parameter_type.find(lambda_prefix) != std::string::npos) {
-        auto lambda_begin = parameter_type.find(lambda_prefix);
-
-        auto absolute_lambda_path_end =
-            parameter_type.find(':', lambda_begin + lambda_prefix.size());
-        auto absolute_lambda_path =
-            parameter_type.substr(lambda_begin + lambda_prefix.size() - 1,
-                absolute_lambda_path_end -
-                    (lambda_begin + lambda_prefix.size() - 1));
-
-        auto relative_lambda_path = util::path_to_url(std::filesystem::relative(
-            absolute_lambda_path, config().relative_to())
-                                                          .string());
-
-        parameter_type = fmt::format("{}(lambda at {}{}",
-            parameter_type.substr(0, lambda_begin), relative_lambda_path,
-            parameter_type.substr(absolute_lambda_path_end));
-    }
 }
 
 } // namespace clanguml::class_diagram::visitor
