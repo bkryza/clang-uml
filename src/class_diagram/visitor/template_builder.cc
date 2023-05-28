@@ -1044,6 +1044,8 @@ template_builder::try_as_template_specialization_type(
     }
 
     if (diagram().should_include(nested_template_instantiation_full_name)) {
+        visitor_.set_source_location(
+            *template_decl, *nested_template_instantiation);
         visitor_.add_class(std::move(nested_template_instantiation));
     }
 
@@ -1155,7 +1157,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                 if (parent.has_value())
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
-
+                visitor_.set_source_location(*template_decl, *tag_argument);
                 visitor_.add_class(std::move(tag_argument));
             }
         }

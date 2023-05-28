@@ -19,7 +19,6 @@
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
 #include "common/generators/generators.h"
-#include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "util/query_driver_output_extractor.h"
 #include "util/util.h"
 
@@ -33,8 +32,6 @@
 #include <spdlog/spdlog.h>
 
 #include <cstring>
-#include <iostream>
-#include <util/thread_pool_executor.h>
 
 #ifdef ENABLE_BACKWARD_CPP
 namespace backward {
@@ -54,6 +51,12 @@ int main(int argc, const char *argv[])
 
     if (res == cli::cli_flow_t::kError)
         return 1;
+
+#if !defined(NDEBUG)
+    // Catch invalid logger message formats, e.g. missing arguments
+    spdlog::set_error_handler(
+        [](const std::string & /*msg*/) { assert(0 == 1); });
+#endif
 
     try {
         const auto db =

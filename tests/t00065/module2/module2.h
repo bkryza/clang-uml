@@ -15,6 +15,7 @@ template <typename T> struct C {
 
 template <bconcept T> struct D {
     T t;
+    C<int> c;
 };
 
 }

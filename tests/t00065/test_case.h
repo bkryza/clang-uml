@@ -36,38 +36,16 @@ TEST_CASE("t00065", "[test-case][class]")
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        //    REQUIRE_THAT(puml, IsClass(_A("AAA")));
+        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(puml, IsClass(_A("AImpl")));
+        REQUIRE_THAT(puml, IsEnum(_A("XYZ")));
+        REQUIRE_THAT(puml, IsEnum(_A("ABC")));
 
-        // Check if class templates exist
-        // REQUIRE_THAT(puml, IsClassTemplate("A", "T,P,CMP,int N"));
-
-        // Check concepts
-        // REQUIRE_THAT(puml, IsConcept(_A("AConcept<T>")));
-        // REQUIRE_THAT(puml,
-        //    IsConceptRequirement(
-        //        _A("AConcept<T,P>"), "sizeof (T) > sizeof (P)"));
-
-        // Check if all enums exist
-        // REQUIRE_THAT(puml, IsEnum(_A("Lights")));
-
-        // Check if all inner classes exist
-        // REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("AA")));
-
-        // Check if all inheritance relationships exist
-        // REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Child")));
-
-        // Check if all methods exist
-        // REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
-
-        // Check if all fields exist
-        // REQUIRE_THAT(puml, (IsField<Private>("private_member", "int")));
-
-        // Check if all relationships exist
-        // REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
-        // REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-        // REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("D"), "-ag"));
-        // REQUIRE_THAT(puml, IsComposition(_A("R"), _A("D"), "-ac"));
-        // REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
+        REQUIRE_THAT(puml, IsPackage("module1"));
+        REQUIRE_THAT(puml, IsPackage("module2"));
+        REQUIRE_THAT(puml, IsPackage("submodule1a"));
+        REQUIRE_THAT(puml, IsPackage("concepts"));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

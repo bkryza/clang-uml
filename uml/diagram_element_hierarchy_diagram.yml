@@ -1,6 +1,4 @@
 type: class
-#include_relations_also_as_members: false
-#generate_method_arguments: none
 generate_packages: true
 glob:
   - src/common/model/*.cc

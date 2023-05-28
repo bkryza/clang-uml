@@ -11,3 +11,6 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00036
+    exclude:
+      subclasses:
+        - clanguml::t00036::ns2::ns22::D

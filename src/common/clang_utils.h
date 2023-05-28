@@ -170,6 +170,9 @@ void if_dyn_cast(P pointer, F &&func)
     }
 }
 
+bool parse_source_location(const std::string &location_str, std::string &file,
+    unsigned &line, unsigned &column);
+
 bool is_type_parameter(const std::string &t);
 
 bool is_qualifier(const std::string &q);

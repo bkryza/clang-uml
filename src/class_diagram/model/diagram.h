@@ -187,16 +187,12 @@ bool diagram::add_with_filesystem_path(
 
     const auto base_name = e->name();
     const auto full_name = e->full_name(false);
-    const auto id = e->id();
     auto &e_ref = *e;
 
     if (add_element(parent_path, std::move(e))) {
         element_view<ElementT>::add(std::ref(e_ref));
         return true;
     }
-
-    LOG_WARN(
-        "Cannot add {} {} with id {} due to: {}", element_type, base_name, id);
 
     return false;
 }
