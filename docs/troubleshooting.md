@@ -3,8 +3,11 @@
 <!-- toc -->
 
 * [General issues](#general-issues)
+  * [`clang-uml` crashed when generating diagram](#clang-uml-crashed-when-generating-diagram)
+  * [Diagram generation is very slow](#diagram-generation-is-very-slow)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
   * [`clang` produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
+  * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
@@ -15,6 +18,70 @@
 <!-- tocstop -->
 
 ## General issues
+
+### `clang-uml` crashed when generating diagram
+
+If `clang-uml` crashes with a segmentation fault, it is possible to trace the
+exact stack trace of the fault using the following steps:
+
+First, build `clang-uml` from source in debug mode, e.g.:
+```bash
+$ make debug
+```
+
+Then run `clang-uml`, preferably with `-vvv` for verbose log output. If your
+`.clang-uml` configuration file contains more than 1 diagram, specify only
+a single diagram to make it easier to trace the root cause of the crash, e.g.:
+
+```bash
+$ debug/src/clang-uml -vvv -n my_diagram
+```
+
+After `clang-uml` crashes again, detailed backtrace (generated using
+[backward-cpp](https://github.com/bombela/backward-cpp)) should be visible
+on the console.
+
+If possible, [create an issue](https://github.com/bkryza/clang-uml/issues) and
+paste the stack trace and few last logs from the console.
+
+### Diagram generation is very slow
+
+`clang-uml` uses Clang's [RecursiveASTVisitor](https://clang.llvm.org/doxygen/classclang_1_1RecursiveASTVisitor.html), to
+traverse the source code. By default, this visitor is invoked on every
+translation unit (i.e. each entry in your `compile_commands.json`), including
+all of their header dependencies recursively. This means, that for large code
+bases  with hundreds or thousands of translation units, traversing all of them
+will be slow (think `clang-tidy` slow...).
+
+Fortunately, in most practical cases it is not necessary to traverse the entire
+source code for each diagram, as all the information necessary to generate
+a single diagram usually can be found in just a few translation units, or even
+a single one.
+
+This is where the `glob` configuration parameter comes in. It can be used to
+limit the number of translation units to visit for a given diagram, for instance:
+
+```yaml
+diagrams:
+  ClassAContextDiagram:
+    type: class
+    ...
+    glob:
+      - src/classA.cpp
+    ...
+  InterfaceHierarchyDiagram:
+    type: class
+    ...
+    glob:
+      - src/interfaces/*.cpp
+    ...
+```
+
+This should improve the generation times for individual diagrams significantly.
+
+Furthermore, diagrams are generated in parallel if possible, by default using
+as many threads as virtual CPU's are available on the system, however it can
+be adjusted also manually using `-t` command line option.
 
 ### Diagram generated with PlantUML is cropped
 
@@ -68,6 +135,29 @@ add_compile_flags:
 remove_compile_flags:
   - -Wshadow
 ```
+
+### Cannot generate diagrams from header-only projects
+
+Currently, in order to generate UML diagrams using `clang-uml` it is necessary
+that at least one translation unit (e.g. one `cpp`) exists and it is included
+in the generated `compile_commands.json` database.
+
+However, even if your project is a header only library, first check if the
+generate `compile_commands.json` contains any entries - if yes you should be
+fine - just make sure the `glob` pattern in the configuration file matches
+any of them. This is due to the fact that most header only projects still have
+test cases, which are compiled and executed, and which include the headers.
+These are perfectly fine to be used as translation units to generate the
+diagrams.
+
+In case, the code really does not contain any translation units, you will have
+to create one, typically a basic `main.cpp` which includes the relevant headers
+should be fine.
+Also, it's possible to simply create a separate project, with a single
+translation unit, which includes the relevant headers and create diagrams
+from there.
+
+In the future there might be a workaround for this in `clang-uml`.
 
 ### YAML anchors and aliases are not fully supported
 
