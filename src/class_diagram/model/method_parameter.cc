@@ -55,8 +55,12 @@ std::string method_parameter::to_string(
     auto name_ns =
         using_namespace.relative(common::model::namespace_{name()}.to_string());
 
-    if (default_value().empty())
+    if (default_value().empty()) {
+        if (name_ns.empty())
+            return type_ns;
+
         return fmt::format("{} {}", type_ns, name_ns);
+    }
 
     return fmt::format("{} {} = {}", type_ns, name_ns, default_value());
 }

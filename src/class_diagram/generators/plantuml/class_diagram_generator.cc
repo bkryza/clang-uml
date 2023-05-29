@@ -189,8 +189,16 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         }
         ostr << ")";
 
+        if (m.is_constexpr())
+            ostr << " constexpr";
+        else if (m.is_consteval())
+            ostr << " consteval";
+
         if (m.is_const())
             ostr << " const";
+
+        if (m.is_noexcept())
+            ostr << " noexcept";
 
         assert(!(m.is_pure_virtual() && m.is_defaulted()));
 
@@ -199,6 +207,8 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
         if (m.is_defaulted())
             ostr << " = default";
+        else if (m.is_deleted())
+            ostr << " = deleted";
 
         ostr << " : " << type;
 

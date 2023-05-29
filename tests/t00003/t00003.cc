@@ -12,13 +12,24 @@ public:
     {
     }
     A(A &&) = default;
-    A(const A &) = default;
+    A(const A &) = delete;
     virtual ~A() = default;
 
     void basic_method() { }
     static int static_method() { return 0; }
     void const_method() const { }
     auto auto_method() { return 1; }
+
+    A &operator++()
+    {
+        private_member++;
+        return *this;
+    }
+
+    A &operator=(A &&other) noexcept { return *this; }
+    A &operator=(A &other) noexcept { return *this; }
+
+    constexpr std::size_t size() const { return private_member; }
 
     auto double_int(const int i) { return 2 * i; }
     auto sum(const double a, const double b) { return a_ + b_ + c_; }

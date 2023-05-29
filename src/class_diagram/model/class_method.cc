@@ -48,9 +48,56 @@ void class_method::is_defaulted(bool is_defaulted)
     is_defaulted_ = is_defaulted;
 }
 
+bool class_method::is_deleted() const { return is_deleted_; }
+
+void class_method::is_deleted(bool is_deleted) { is_deleted_ = is_deleted; }
+
 bool class_method::is_static() const { return is_static_; }
 
 void class_method::is_static(bool is_static) { is_static_ = is_static; }
+
+bool class_method::is_constexpr() const { return is_constexpr_; }
+
+void class_method::is_constexpr(bool is_constexpr)
+{
+    is_constexpr_ = is_constexpr;
+}
+
+bool class_method::is_consteval() const { return is_consteval_; }
+
+void class_method::is_consteval(bool is_consteval)
+{
+    is_consteval_ = is_consteval;
+}
+
+bool class_method::is_noexcept() const { return is_noexcept_; }
+
+void class_method::is_noexcept(bool is_noexcept) { is_noexcept_ = is_noexcept; }
+
+bool class_method::is_constructor() const { return is_constructor_; }
+
+void class_method::is_constructor(bool is_constructor)
+{
+    is_constructor_ = is_constructor;
+}
+
+bool class_method::is_move_assignment() const { return is_move_assignment_; }
+
+void class_method::is_move_assignment(bool is_move_assignment)
+{
+    is_move_assignment_ = is_move_assignment;
+}
+
+bool class_method::is_copy_assignment() const { return is_copy_assignment_; }
+
+void class_method::is_copy_assignment(bool is_copy_assignment)
+{
+    is_copy_assignment_ = is_copy_assignment;
+}
+
+bool class_method::is_operator() const { return is_operator_; }
+
+void class_method::is_operator(bool is_operator) { is_operator_ = is_operator; }
 
 const std::vector<method_parameter> &class_method::parameters() const
 {

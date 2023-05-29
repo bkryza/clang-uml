@@ -1283,11 +1283,21 @@ void translation_unit_visitor::process_method(
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(method_name), method_return_type};
 
+    const bool is_constructor = c.name() == method_name;
+
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
     method.is_const(mf.isConst());
     method.is_defaulted(mf.isDefaulted());
+    method.is_deleted(mf.isDeleted());
     method.is_static(mf.isStatic());
+    method.is_operator(mf.isOverloadedOperator());
+    method.is_constexpr(mf.isConstexprSpecified() && !is_constructor);
+    method.is_consteval(mf.isConsteval());
+    method.is_constructor(is_constructor);
+    method.is_move_assignment(mf.isMoveAssignmentOperator());
+    method.is_copy_assignment(mf.isCopyAssignmentOperator());
+    method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
 
     process_comment(mf, method);
 
