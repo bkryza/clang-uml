@@ -11,6 +11,13 @@ public:
         : private_member{i}
     {
     }
+
+    template <typename T>
+    A(T t)
+        : private_member{t.get()}
+    {
+    }
+
     A(A &&) = default;
     A(const A &) = delete;
     virtual ~A() = default;

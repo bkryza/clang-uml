@@ -251,5 +251,8 @@ private:
     // If yes, then we need to skip it
     // TODO: There must be a better way to do this...
     std::set<std::string> processed_template_qualified_names_;
+    void process_method_properties(const clang::CXXMethodDecl &mf,
+        const class_ &c, const std::string &method_name,
+        class_method &method) const;
 };
 } // namespace clanguml::class_diagram::visitor

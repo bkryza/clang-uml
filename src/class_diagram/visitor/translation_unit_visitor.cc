@@ -1282,23 +1282,7 @@ void translation_unit_visitor::process_method(
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(method_name), method_return_type};
 
-    const bool is_constructor = c.name() == method_name;
-    const bool is_destructor = fmt::format("~{}", c.name()) == method_name;
-
-    method.is_pure_virtual(mf.isPure());
-    method.is_virtual(mf.isVirtual());
-    method.is_const(mf.isConst());
-    method.is_defaulted(mf.isDefaulted());
-    method.is_deleted(mf.isDeleted());
-    method.is_static(mf.isStatic());
-    method.is_operator(mf.isOverloadedOperator());
-    method.is_constexpr(mf.isConstexprSpecified() && !is_constructor);
-    method.is_consteval(mf.isConsteval());
-    method.is_constructor(is_constructor);
-    method.is_destructor(is_destructor);
-    method.is_move_assignment(mf.isMoveAssignmentOperator());
-    method.is_copy_assignment(mf.isCopyAssignmentOperator());
-    method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
+    process_method_properties(mf, c, method_name, method);
 
     process_comment(mf, method);
 
@@ -1374,6 +1358,28 @@ void translation_unit_visitor::process_method(
 
     c.add_method(std::move(method));
 }
+void translation_unit_visitor::process_method_properties(
+    const clang::CXXMethodDecl &mf, const class_ &c,
+    const std::string &method_name, class_method &method) const
+{
+    const bool is_constructor = c.name() == method_name;
+    const bool is_destructor = fmt::format("~{}", c.name()) == method_name;
+
+    method.is_pure_virtual(mf.isPure());
+    method.is_virtual(mf.isVirtual());
+    method.is_const(mf.isConst());
+    method.is_defaulted(mf.isDefaulted());
+    method.is_deleted(mf.isDeleted());
+    method.is_static(mf.isStatic());
+    method.is_operator(mf.isOverloadedOperator());
+    method.is_constexpr(mf.isConstexprSpecified() && !is_constructor);
+    method.is_consteval(mf.isConsteval());
+    method.is_constructor(is_constructor);
+    method.is_destructor(is_destructor);
+    method.is_move_assignment(mf.isMoveAssignmentOperator());
+    method.is_copy_assignment(mf.isCopyAssignmentOperator());
+    method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
+}
 
 void translation_unit_visitor::
     process_function_parameter_find_relationships_in_autotype(
@@ -1439,11 +1445,19 @@ void translation_unit_visitor::process_template_method(
         util::trim(mf.getNameAsString()),
         mf.getTemplatedDecl()->getReturnType().getAsString()};
 
-    method.is_pure_virtual(mf.getTemplatedDecl()->isPure());
-    method.is_virtual(false);
-    method.is_const(false);
-    method.is_defaulted(mf.getTemplatedDecl()->isDefaulted());
-    method.is_static(mf.getTemplatedDecl()->isStatic());
+    auto method_name = mf.getNameAsString();
+    if (mf.isTemplated()) {
+        // Sometimes in template specializations method names contain the
+        // template parameters for some reason - drop them
+        // Is there a better way to do this?
+        method_name = method_name.substr(0, method_name.find('<'));
+    }
+
+    util::if_not_null(
+        clang::dyn_cast<clang::CXXMethodDecl>(mf.getTemplatedDecl()),
+        [&](const auto *decl) {
+            process_method_properties(*decl, c, method_name, method);
+        });
 
     process_template_parameters(mf, method);
 
