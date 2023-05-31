@@ -164,7 +164,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
             continue;
 
         try {
-            generate_relationship(r, rendered_relations, ostr);
+            generate_relationship(r, rendered_relations);
         }
         catch (error::uml_alias_missing &e) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -436,8 +436,8 @@ void generator::generate_relationships(std::ostream &ostr) const
     }
 }
 
-void generator::generate_relationship(const relationship &r,
-    std::set<std::string> &rendered_relations, std::ostream &ostr) const
+void generator::generate_relationship(
+    const relationship &r, std::set<std::string> &rendered_relations) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 

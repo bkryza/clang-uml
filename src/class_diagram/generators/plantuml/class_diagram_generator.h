@@ -91,8 +91,8 @@ public:
 
     void generate_relationships(const class_ &c, std::ostream &ostr) const;
 
-    void generate_relationship(const relationship &r,
-        std::set<std::string> &rendered_relations, std::ostream &ostr) const;
+    void generate_relationship(
+        const relationship &r, std::set<std::string> &rendered_relations) const;
 
     void generate(const enum_ &e, std::ostream &ostr) const;
 
