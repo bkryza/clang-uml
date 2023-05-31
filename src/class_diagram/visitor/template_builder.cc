@@ -499,7 +499,7 @@ template_parameter template_builder::process_template_expansion(
 
     LOG_DBG("Processing template expansion argument: {}", arg_name);
 
-    util::apply_if_not_null(
+    util::if_not_null(
         arg.getAsTemplate().getAsTemplateDecl(), [&arg_name](const auto *decl) {
             arg_name = decl->getQualifiedNameAsString();
         });

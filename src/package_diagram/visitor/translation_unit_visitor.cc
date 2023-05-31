@@ -194,8 +194,13 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     found_relationships_t relationships;
 
-    process_class_declaration(*decl->getTemplatedDecl(), relationships);
-    add_relationships(decl, relationships);
+    util::if_not_null(decl->getTemplatedDecl(),
+        [this, &relationships, decl](const auto *template_decl) {
+            if (template_decl->isCompleteDefinition()) {
+                process_class_declaration(*template_decl, relationships);
+                add_relationships(decl, relationships);
+            }
+        });
 
     return true;
 }

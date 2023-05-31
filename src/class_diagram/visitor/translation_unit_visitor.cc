@@ -495,7 +495,7 @@ void translation_unit_visitor::process_constraint_requirements(
                     llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
 
                 if (simple_req != nullptr) {
-                    util::apply_if_not_null(
+                    util::if_not_null(
                         simple_req->getExpr(), [&concept_model](const auto *e) {
                             auto simple_expr = common::to_string(e);
 
@@ -507,7 +507,7 @@ void translation_unit_visitor::process_constraint_requirements(
                 }
             }
             else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
-                util::apply_if_not_null(
+                util::if_not_null(
                     llvm::dyn_cast<clang::concepts::TypeRequirement>(req),
                     [&concept_model, cpt](const auto *t) {
                         auto type_name = common::to_string(
@@ -525,7 +525,7 @@ void translation_unit_visitor::process_constraint_requirements(
                     llvm::dyn_cast<clang::concepts::NestedRequirement>(req);
 
                 if (nested_req != nullptr) {
-                    util::apply_if_not_null(
+                    util::if_not_null(
                         nested_req->getConstraintExpr(), [](const auto *e) {
                             LOG_DBG("=== Processing nested requirement: {}",
                                 common::to_string(e));
@@ -805,7 +805,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
 
 #if LLVM_VERSION_MAJOR < 16
         if (record_name == "(anonymous)") {
-            util::apply_if_not_null(rec->getTypedefNameForAnonDecl(),
+            util::if_not_null(rec->getTypedefNameForAnonDecl(),
                 [&record_name](const clang::TypedefNameDecl *name) {
                     record_name = name->getNameAsString();
                 });
@@ -985,9 +985,8 @@ bool translation_unit_visitor::process_template_parameters(
                 default_arg, template_type_parameter->isParameterPack());
 
             if (template_type_parameter->getTypeConstraint() != nullptr) {
-                util::apply_if_not_null(
-                    template_type_parameter->getTypeConstraint()
-                        ->getNamedConcept(),
+                util::if_not_null(template_type_parameter->getTypeConstraint()
+                                      ->getNamedConcept(),
                     [this, &ct, &templated_element](
                         const clang::ConceptDecl *named_concept) mutable {
                         ct.set_concept_constraint(
