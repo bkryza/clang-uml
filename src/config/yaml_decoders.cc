@@ -32,6 +32,7 @@ using clanguml::config::hint_t;
 using clanguml::config::include_diagram;
 using clanguml::config::layout_hint;
 using clanguml::config::location_t;
+using clanguml::config::member_order_t;
 using clanguml::config::method_arguments;
 using clanguml::config::package_diagram;
 using clanguml::config::package_type_t;
@@ -90,6 +91,21 @@ void get_option<method_arguments>(
 }
 
 template <>
+void get_option<member_order_t>(
+    const Node &node, clanguml::config::option<member_order_t> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "as_is")
+            option.set(member_order_t::as_is);
+        else if (val == "lexical")
+            option.set(member_order_t::lexical);
+        else
+            throw std::runtime_error("Invalid member_order value: " + val);
+    }
+}
+
+template <>
 void get_option<package_type_t>(
     const Node &node, clanguml::config::option<package_type_t> &option)
 {
@@ -139,7 +155,6 @@ void get_option<std::map<std::string, clanguml::config::diagram_template>>(
 
         YAML::Node included_node = YAML::LoadFile(include_path.string());
 
-        //        diagram_config = parse_diagram_config(included_node);
         option.set(
             included_node.as<
                 std::map<std::string, clanguml::config::diagram_template>>());
@@ -419,6 +434,8 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.group_methods);
+        get_option(node, rhs.member_order);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
         get_option(node, rhs.relationship_hints);

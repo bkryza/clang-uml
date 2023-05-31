@@ -66,6 +66,9 @@ public:
     bool is_constructor() const;
     void is_constructor(bool is_constructor);
 
+    bool is_destructor() const;
+    void is_destructor(bool is_destructor);
+
     bool is_move_assignment() const;
     void is_move_assignment(bool is_move_assignment);
 
@@ -91,6 +94,7 @@ private:
     bool is_constexpr_{false};
     bool is_consteval_{false};
     bool is_constructor_{false};
+    bool is_destructor_{false};
     bool is_move_assignment_{false};
     bool is_copy_assignment_{false};
     bool is_operator_{false};

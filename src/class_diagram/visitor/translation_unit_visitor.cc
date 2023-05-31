@@ -1284,6 +1284,7 @@ void translation_unit_visitor::process_method(
         util::trim(method_name), method_return_type};
 
     const bool is_constructor = c.name() == method_name;
+    const bool is_destructor = fmt::format("~{}", c.name()) == method_name;
 
     method.is_pure_virtual(mf.isPure());
     method.is_virtual(mf.isVirtual());
@@ -1295,6 +1296,7 @@ void translation_unit_visitor::process_method(
     method.is_constexpr(mf.isConstexprSpecified() && !is_constructor);
     method.is_consteval(mf.isConsteval());
     method.is_constructor(is_constructor);
+    method.is_destructor(is_destructor);
     method.is_move_assignment(mf.isMoveAssignmentOperator());
     method.is_copy_assignment(mf.isCopyAssignmentOperator());
     method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));

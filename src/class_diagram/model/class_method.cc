@@ -81,6 +81,13 @@ void class_method::is_constructor(bool is_constructor)
     is_constructor_ = is_constructor;
 }
 
+bool class_method::is_destructor() const { return is_destructor_; }
+
+void class_method::is_destructor(bool is_destructor)
+{
+    is_destructor_ = is_destructor;
+}
+
 bool class_method::is_move_assignment() const { return is_move_assignment_; }
 
 void class_method::is_move_assignment(bool is_move_assignment)

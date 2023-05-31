@@ -192,6 +192,8 @@ test_cases:
     - name: t00065
       title: Class diagram with packages from directory structure
       description:
+    - name: t00066
+      title: Class fields and methods without grouping and sorting
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
