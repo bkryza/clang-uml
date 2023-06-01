@@ -58,6 +58,12 @@ public:
 
     diagram_t type() const override;
 
+    using common::model::diagram::should_include;
+
+    bool should_include(const class_member &m) const;
+
+    bool should_include(const class_method &m) const;
+
     opt_ref<diagram_element> get(const std::string &full_name) const override;
 
     opt_ref<diagram_element> get(diagram_element::id_t id) const override;

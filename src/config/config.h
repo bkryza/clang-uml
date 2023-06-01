@@ -37,6 +37,17 @@ namespace config {
 
 enum class method_arguments { full, abbreviated, none };
 
+enum class method_type {
+    constructor,
+    assignment,
+    operator_,
+    defaulted,
+    deleted,
+    static_
+};
+
+std::string to_string(method_type mt);
+
 enum class package_type_t { kNamespace, kDirectory };
 
 enum class member_order_t { lexical, as_is };
@@ -96,6 +107,8 @@ struct filter {
     std::vector<std::string> context;
 
     std::vector<std::filesystem::path> paths;
+
+    std::vector<method_type> method_types;
 };
 
 enum class hint_t { up, down, left, right, together, row, column };

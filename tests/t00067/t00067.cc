@@ -2,8 +2,7 @@
 #include <string>
 
 namespace clanguml {
-namespace t00066 {
-
+namespace t00067 {
 class A {
 public:
     A() = default;
@@ -64,5 +63,5 @@ private:
 };
 
 int A::static_int = 1;
-} // namespace t00066
-} // namespace clanguml
+}
+}

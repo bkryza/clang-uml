@@ -34,6 +34,10 @@ diagrams:
     exclude:
       relationships:
         - none
+      method_types:
+        - operator
+        - constructor
+        - deleted
     relationship_hints:
       std::vector: composition
       std::map:

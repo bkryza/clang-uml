@@ -59,6 +59,7 @@ public:
     std::string name() const;
 
     void set_filter(std::unique_ptr<diagram_filter> filter);
+    const diagram_filter &filter() const { return *filter_; }
 
     void set_complete(bool complete);
     bool complete() const;

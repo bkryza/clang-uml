@@ -1354,10 +1354,13 @@ void translation_unit_visitor::process_method(
         process_function_parameter_find_relationships_in_autotype(c, atsp);
     }
 
-    LOG_DBG("Adding method: {}", method.name());
+    if (diagram().should_include(method)) {
+        LOG_DBG("Adding method: {}", method.name());
 
-    c.add_method(std::move(method));
+        c.add_method(std::move(method));
+    }
 }
+
 void translation_unit_visitor::process_method_properties(
     const clang::CXXMethodDecl &mf, const class_ &c,
     const std::string &method_name, class_method &method) const
@@ -1471,9 +1474,11 @@ void translation_unit_visitor::process_template_method(
             process_function_parameter(*param, method, c);
     }
 
-    LOG_DBG("Adding method: {}", method.name());
+    if (diagram().should_include(method)) {
+        LOG_DBG("Adding method: {}", method.name());
 
-    c.add_method(std::move(method));
+        c.add_method(std::move(method));
+    }
 }
 
 bool translation_unit_visitor::find_relationships(const clang::QualType &type,

@@ -186,7 +186,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         ostr << "__\n";
 
     for (const auto &m : members) {
-        if (!m_model.should_include(m.access()))
+        if (!m_model.should_include(m))
             continue;
 
         if (!m_config.include_relations_also_as_members() &&
@@ -232,7 +232,7 @@ void generator::generate_methods(
     sort_class_elements(sorted_methods);
 
     for (const auto &m : sorted_methods) {
-        if (!m_model.should_include(m.access()))
+        if (!m_model.should_include(m))
             continue;
 
         generate_method(m, ostr);
@@ -250,7 +250,7 @@ generator::method_groups_t generator::group_methods(
     std::vector<class_method> filtered_methods;
     std::copy_if(methods.cbegin(), methods.cend(),
         std::back_inserter(filtered_methods),
-        [this](auto &m) { return m_model.should_include(m.access()); });
+        [this](auto &m) { return m_model.should_include(m); });
 
     for (const auto &g : method_groups_) {
         result[g] = {};

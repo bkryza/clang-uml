@@ -18,10 +18,21 @@
 
 #include "diagram.h"
 
+#include "common/model/diagram_filter.h"
 #include "util/error.h"
 #include "util/util.h"
 
 namespace clanguml::class_diagram::model {
+
+bool diagram::should_include(const class_member &m) const
+{
+    return filter().should_include(m);
+}
+
+bool diagram::should_include(const class_method &m) const
+{
+    return filter().should_include(m);
+}
 
 const common::reference_vector<class_> &diagram::classes() const
 {
