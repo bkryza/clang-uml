@@ -11,6 +11,8 @@
 * [`subclasses`](#subclasses)
 * [`parents`](#parents)
 * [`specializations`](#specializations)
+* [`access`](#access)
+* [`method_types`](#method_types)
 * [`dependants` and `dependencies`](#dependants-and-dependencies)
 
 <!-- tocstop -->
