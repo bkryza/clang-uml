@@ -39,6 +39,7 @@ enum class method_arguments { full, abbreviated, none };
 
 enum class method_type {
     constructor,
+    destructor,
     assignment,
     operator_,
     defaulted,

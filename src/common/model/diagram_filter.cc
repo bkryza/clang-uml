@@ -262,7 +262,9 @@ tvl::value_t method_type_filter::match(
         method_types_.begin(), method_types_.end(), [&m](auto mt) {
             switch (mt) {
             case config::method_type::constructor:
-                return m.is_constructor() || m.is_destructor();
+                return m.is_constructor();
+            case config::method_type::destructor:
+                return m.is_destructor();
             case config::method_type::assignment:
                 return m.is_copy_assignment() || m.is_move_assignment();
             case config::method_type::operator_:

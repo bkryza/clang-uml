@@ -67,6 +67,8 @@ std::string to_string(method_type mt)
     switch (mt) {
     case method_type::constructor:
         return "constructor";
+    case method_type::destructor:
+        return "destructor";
     case method_type::assignment:
         return "assignment";
     case method_type::operator_:

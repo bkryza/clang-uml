@@ -231,6 +231,8 @@ template <> struct convert<method_type> {
         const auto &val = node.as<std::string>();
         if (val == to_string(method_type::constructor))
             rhs = method_type::constructor;
+        else if (val == to_string(method_type::destructor))
+            rhs = method_type::destructor;
         else if (val == to_string(method_type::assignment))
             rhs = method_type::assignment;
         else if (val == to_string(method_type::operator_))

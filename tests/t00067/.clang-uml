@@ -11,6 +11,7 @@ diagrams:
     exclude:
       method_types:
         - constructor
+        - destructor
         - operator
         - assignment
         - static
