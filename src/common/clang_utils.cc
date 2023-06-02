@@ -163,7 +163,7 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
 
     // Try to get rid of 'type-parameter-X-Y' ugliness
     if (result.find("type-parameter-") != std::string::npos) {
-        util::apply_if_not_null(
+        util::if_not_null(
             common::dereference(type)->getAs<clang::TypedefType>(),
             [&result, &type](auto *p) {
                 auto [unqualified_type, context] =

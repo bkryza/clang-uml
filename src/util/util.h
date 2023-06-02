@@ -254,7 +254,7 @@ void for_each_if(const T &collection, C &&cond, F &&func)
 }
 
 template <typename T, typename F, typename FElse>
-void apply_if_not_null(const T *pointer, F &&func, FElse &&func_else)
+void if_not_null(const T *pointer, F &&func, FElse &&func_else)
 {
     if (pointer != nullptr) {
         std::forward<F>(func)(pointer);
@@ -264,14 +264,13 @@ void apply_if_not_null(const T *pointer, F &&func, FElse &&func_else)
     }
 }
 
-template <typename T, typename F>
-void apply_if_not_null(const T *pointer, F &&func)
+template <typename T, typename F> void if_not_null(const T *pointer, F &&func)
 {
-    apply_if_not_null(pointer, std::forward<F>(func), []() {});
+    if_not_null(pointer, std::forward<F>(func), []() {});
 }
 
 template <typename F, typename FElse>
-void apply_if(const bool condition, F &&func, FElse &&func_else)
+void _if(const bool condition, F &&func, FElse &&func_else)
 {
     if (condition) {
         std::forward<F>(func)();
@@ -281,9 +280,9 @@ void apply_if(const bool condition, F &&func, FElse &&func_else)
     }
 }
 
-template <typename F> void apply_if(const bool condition, F &&func)
+template <typename F> void _if(const bool condition, F &&func)
 {
-    apply_if(condition, std::forward<F>(func), []() {});
+    _if(condition, std::forward<F>(func), []() {});
 }
 
 std::size_t hash_seed(std::size_t seed);

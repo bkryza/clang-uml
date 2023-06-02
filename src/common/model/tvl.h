@@ -24,6 +24,31 @@ namespace clanguml::common::model::tvl {
 
 using value_t = std::optional<bool>;
 
+inline value_t and_(const value_t &l, const value_t &r)
+{
+    if (!l.has_value())
+        return r;
+
+    if (!r.has_value())
+        return l;
+
+    return r.value() && l.value();
+}
+
+inline value_t or_(const value_t &l, const value_t &r)
+{
+    if (!l.has_value() && !r.has_value())
+        return {};
+
+    if (l.has_value() && l.value())
+        return true;
+
+    if (r.has_value() && r.value())
+        return true;
+
+    return false;
+}
+
 inline bool is_true(const value_t &v) { return v.has_value() && v.value(); }
 
 inline bool is_false(const value_t &v) { return v.has_value() && !v.value(); }

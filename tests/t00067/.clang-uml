@@ -1,0 +1,19 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t00067_class:
+    type: class
+    glob:
+      - ../../tests/t00067/t00067.cc
+    include:
+      namespaces:
+        - clanguml::t00067
+    exclude:
+      method_types:
+        - constructor
+        - destructor
+        - operator
+        - assignment
+        - static
+    using_namespace:
+      - clanguml::t00067

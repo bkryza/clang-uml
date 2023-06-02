@@ -54,12 +54,19 @@ void to_json(nlohmann::json &j, const class_method &c)
 {
     j = dynamic_cast<const class_element &>(c);
 
-    j["is_static"] = c.is_static();
-    j["is_const"] = c.is_const();
-    j["is_defaulted"] = c.is_defaulted();
     j["is_pure_virtual"] = c.is_pure_virtual();
     j["is_virtual"] = c.is_virtual();
-    j["is_implicit"] = c.is_implicit();
+    j["is_const"] = c.is_const();
+    j["is_defaulted"] = c.is_defaulted();
+    j["is_deleted"] = c.is_deleted();
+    j["is_static"] = c.is_static();
+    j["is_noexcept"] = c.is_noexcept();
+    j["is_constexpr"] = c.is_constexpr();
+    j["is_consteval"] = c.is_consteval();
+    j["is_constructor"] = c.is_constructor();
+    j["is_move_assignment"] = c.is_move_assignment();
+    j["is_copy_assignment"] = c.is_copy_assignment();
+    j["is_operator"] = c.is_operator();
 
     j["parameters"] = c.parameters();
 }

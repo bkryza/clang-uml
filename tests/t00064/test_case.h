@@ -68,12 +68,14 @@ TEST_CASE("t00064", "[test-case][class]")
         REQUIRE_THAT(puml,
             (IsMethod<Public>("getp", "value_type const*", "unsigned int i")));
         REQUIRE_THAT(puml,
-            (IsMethod<Public>("find", "unsigned int", "value_type const& v")));
+            (IsMethod<Public, Constexpr>(
+                "find", "unsigned int", "value_type const& v")));
 #else
         REQUIRE_THAT(puml,
             (IsMethod<Public>("getp", "const value_type *", "unsigned int i")));
         REQUIRE_THAT(puml,
-            (IsMethod<Public>("find", "unsigned int", "const value_type & v")));
+            (IsMethod<Public, Constexpr>(
+                "find", "unsigned int", "const value_type & v")));
 
 #endif
         save_puml(

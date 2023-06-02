@@ -103,7 +103,15 @@ struct Static { };
 
 struct Const { };
 
+struct Constexpr { };
+
+struct Consteval { };
+
+struct Noexcept { };
+
 struct Default { };
+
+struct Deleted { };
 
 struct HasCallWithResultMatcher : ContainsMatcher {
     HasCallWithResultMatcher(
@@ -530,6 +538,12 @@ ContainsMatcher IsMethod(std::string const &name,
 
     pattern += "(" + params + ")";
 
+    if constexpr (has_type<Constexpr, Ts...>())
+        pattern += " constexpr";
+
+    if constexpr (has_type<Consteval, Ts...>())
+        pattern += " consteval";
+
     if constexpr (has_type<Const, Ts...>())
         pattern += " const";
 
@@ -538,6 +552,9 @@ ContainsMatcher IsMethod(std::string const &name,
 
     if constexpr (has_type<Default, Ts...>())
         pattern += " = default";
+
+    if constexpr (has_type<Deleted, Ts...>())
+        pattern += " = deleted";
 
     pattern += " : " + type;
 

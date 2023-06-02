@@ -4,7 +4,7 @@ test_cases:
       title: Basic class inheritance
       description:
     - name: t00003
-      title: Class field and methods
+      title: Class fields and methods
       description:
     - name: t00004
       title: Nested classes and enums
@@ -191,6 +191,12 @@ test_cases:
       description:
     - name: t00065
       title: Class diagram with packages from directory structure
+      description:
+    - name: t00066
+      title: Class fields and methods without grouping and sorting
+      description:
+    - name: t00067
+      title: Class method type filter test case
       description:
   Sequence diagrams:
     - name: t20001

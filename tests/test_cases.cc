@@ -304,6 +304,8 @@ using namespace clanguml::test::matchers;
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t00065/test_case.h"
 #endif
+#include "t00066/test_case.h"
+#include "t00067/test_case.h"
 
 ///
 /// Sequence diagram tests

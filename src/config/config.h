@@ -37,7 +37,21 @@ namespace config {
 
 enum class method_arguments { full, abbreviated, none };
 
+enum class method_type {
+    constructor,
+    destructor,
+    assignment,
+    operator_,
+    defaulted,
+    deleted,
+    static_
+};
+
+std::string to_string(method_type mt);
+
 enum class package_type_t { kNamespace, kDirectory };
+
+enum class member_order_t { lexical, as_is };
 
 std::string to_string(method_arguments ma);
 
@@ -94,6 +108,8 @@ struct filter {
     std::vector<std::string> context;
 
     std::vector<std::filesystem::path> paths;
+
+    std::vector<method_type> method_types;
 };
 
 enum class hint_t { up, down, left, right, together, row, column };
@@ -163,6 +179,9 @@ struct inheritable_diagram_options {
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> group_methods{"group_methods", true};
+    option<member_order_t> member_order{
+        "method_order", member_order_t::lexical};
     option<bool> generate_packages{"generate_packages", false};
     option<package_type_t> package_type{
         "package_type", package_type_t::kNamespace};

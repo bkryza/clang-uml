@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include "class_diagram/model/class_member.h"
+#include "class_diagram/model/class_method.h"
 #include "class_diagram/model/diagram.h"
 #include "common/clang_utils.h"
 #include "common/model/diagram.h"
@@ -78,6 +80,12 @@ public:
     virtual tvl::value_t match(
         const diagram &d, const common::model::source_location &f) const;
 
+    virtual tvl::value_t match(
+        const diagram &d, const class_diagram::model::class_method &m) const;
+
+    virtual tvl::value_t match(
+        const diagram &d, const class_diagram::model::class_member &m) const;
+
     bool is_inclusive() const;
     bool is_exclusive() const;
 
@@ -136,6 +144,19 @@ struct element_type_filter : public filter_visitor {
 
 private:
     std::vector<std::string> element_types_;
+};
+
+struct method_type_filter : public filter_visitor {
+    method_type_filter(
+        filter_t type, std::vector<config::method_type> method_types);
+
+    ~method_type_filter() override = default;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &e) const override;
+
+private:
+    std::vector<config::method_type> method_types_;
 };
 
 struct subclass_filter : public filter_visitor {
@@ -352,6 +373,32 @@ struct paths_filter : public filter_visitor {
 private:
     std::vector<std::filesystem::path> paths_;
     std::filesystem::path root_;
+};
+
+struct class_method_filter : public filter_visitor {
+    class_method_filter(filter_t type, std::unique_ptr<access_filter> af,
+        std::unique_ptr<method_type_filter> mtf);
+
+    ~class_method_filter() override = default;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+private:
+    std::unique_ptr<access_filter> access_filter_;
+    std::unique_ptr<method_type_filter> method_type_filter_;
+};
+
+struct class_member_filter : public filter_visitor {
+    class_member_filter(filter_t type, std::unique_ptr<access_filter> af);
+
+    ~class_member_filter() override = default;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+private:
+    std::unique_ptr<access_filter> access_filter_;
 };
 
 class diagram_filter {

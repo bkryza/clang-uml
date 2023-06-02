@@ -45,6 +45,13 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
 } // namespace clanguml::common::model
 
 namespace clanguml::config {
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
+{
+    out << to_string(m);
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 {
     out << YAML::BeginMap;
@@ -62,6 +69,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
         out << YAML::Key << "elements" << YAML::Value << f.elements;
     if (!f.element_types.empty())
         out << YAML::Key << "element_types" << YAML::Value << f.element_types;
+    if (!f.method_types.empty())
+        out << YAML::Key << "method_types" << YAML::Value << f.method_types;
     if (!f.paths.empty())
         out << YAML::Key << "paths" << YAML::Value << f.paths;
     if (!f.relationships.empty())

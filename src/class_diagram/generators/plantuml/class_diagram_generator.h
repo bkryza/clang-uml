@@ -48,20 +48,24 @@ using common_generator =
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_element;
+using clanguml::class_diagram::model::class_member;
+using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
+using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 
 using namespace clanguml::util;
 
 class generator : public common_generator<diagram_config, diagram_model> {
+    using method_groups_t = std::map<std::string, std::vector<class_method>>;
+
 public:
     generator(diagram_config &config, diagram_model &model);
 
-    void generate_link(
-        std::ostream &ostr, const class_diagram::model::class_element &e) const;
+    void generate_link(std::ostream &ostr, const class_element &e) const;
 
     void generate_alias(const class_ &c, std::ostream &ostr) const;
 
@@ -71,11 +75,24 @@ public:
 
     void generate(const class_ &c, std::ostream &ostr) const;
 
+    void generate_methods(
+        const std::vector<class_method> &methods, std::ostream &ostr) const;
+
+    void generate_methods(
+        const method_groups_t &methods, std::ostream &ostr) const;
+
+    void generate_method(const class_method &m, std::ostream &ostr) const;
+
+    void generate_member(const class_member &m, std::ostream &ostr) const;
+
     void generate_top_level_elements(std::ostream &ostr) const;
 
     void generate_relationships(std::ostream &ostr) const;
 
     void generate_relationships(const class_ &c, std::ostream &ostr) const;
+
+    void generate_relationship(
+        const relationship &r, std::set<std::string> &rendered_relations) const;
 
     void generate(const enum_ &e, std::ostream &ostr) const;
 
@@ -96,8 +113,25 @@ public:
 
     void generate(std::ostream &ostr) const override;
 
+    method_groups_t group_methods(
+        const std::vector<class_method> &methods) const;
+
 private:
+    const std::vector<std::string> method_groups_{
+        "constructors", "assignment", "operators", "other"};
+
     std::string render_name(std::string name) const;
+
+    template <typename T>
+    void sort_class_elements(std::vector<T> &elements) const
+    {
+        if (m_config.member_order() == config::member_order_t::lexical) {
+            std::sort(elements.begin(), elements.end(),
+                [](const auto &m1, const auto &m2) {
+                    return m1.name() < m2.name();
+                });
+        }
+    }
 
     mutable common::generators::nested_element_stack<common::model::element>
         together_group_stack_;

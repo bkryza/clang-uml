@@ -1,7 +1,7 @@
 # Test cases index
 ## Class diagrams
  * [t00002](./test_cases/t00002.md) - Basic class inheritance
- * [t00003](./test_cases/t00003.md) - Class field and methods
+ * [t00003](./test_cases/t00003.md) - Class fields and methods
  * [t00004](./test_cases/t00004.md) - Nested classes and enums
  * [t00005](./test_cases/t00005.md) - Basic class field relationships
  * [t00006](./test_cases/t00006.md) - Class field relationships inferred from templates
@@ -64,6 +64,8 @@
  * [t00063](./test_cases/t00063.md) - Element types diagram filter test case
  * [t00064](./test_cases/t00064.md) - Template type list test case
  * [t00065](./test_cases/t00065.md) - Class diagram with packages from directory structure
+ * [t00066](./test_cases/t00066.md) - Class fields and methods without grouping and sorting
+ * [t00067](./test_cases/t00067.md) - Class method type filter test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

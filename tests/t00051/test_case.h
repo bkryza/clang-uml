@@ -45,7 +45,7 @@ TEST_CASE("t00051", "[test-case][class]")
                 "Function && f, Args &&... args")));
         REQUIRE_THAT(puml,
             (IsMethod<Public>("thread", "void",
-                "(lambda at ../../tests/t00051/t00051.cc:59:27) && ")));
+                "(lambda at ../../tests/t00051/t00051.cc:59:27) &&")));
         REQUIRE_THAT(puml,
             (IsMethod<Private>("start_thread3",
                 "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "

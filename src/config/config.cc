@@ -62,6 +62,29 @@ std::string to_string(const method_arguments ma)
     }
 }
 
+std::string to_string(method_type mt)
+{
+    switch (mt) {
+    case method_type::constructor:
+        return "constructor";
+    case method_type::destructor:
+        return "destructor";
+    case method_type::assignment:
+        return "assignment";
+    case method_type::operator_:
+        return "operator";
+    case method_type::defaulted:
+        return "defaulted";
+    case method_type::deleted:
+        return "deleted";
+    case method_type::static_:
+        return "static";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 std::string to_string(const comment_parser_t cp)
 {
     switch (cp) {

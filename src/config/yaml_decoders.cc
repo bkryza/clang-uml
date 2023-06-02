@@ -32,7 +32,9 @@ using clanguml::config::hint_t;
 using clanguml::config::include_diagram;
 using clanguml::config::layout_hint;
 using clanguml::config::location_t;
+using clanguml::config::member_order_t;
 using clanguml::config::method_arguments;
+using clanguml::config::method_type;
 using clanguml::config::package_diagram;
 using clanguml::config::package_type_t;
 using clanguml::config::plantuml;
@@ -90,6 +92,21 @@ void get_option<method_arguments>(
 }
 
 template <>
+void get_option<member_order_t>(
+    const Node &node, clanguml::config::option<member_order_t> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "as_is")
+            option.set(member_order_t::as_is);
+        else if (val == "lexical")
+            option.set(member_order_t::lexical);
+        else
+            throw std::runtime_error("Invalid member_order value: " + val);
+    }
+}
+
+template <>
 void get_option<package_type_t>(
     const Node &node, clanguml::config::option<package_type_t> &option)
 {
@@ -139,7 +156,6 @@ void get_option<std::map<std::string, clanguml::config::diagram_template>>(
 
         YAML::Node included_node = YAML::LoadFile(include_path.string());
 
-        //        diagram_config = parse_diagram_config(included_node);
         option.set(
             included_node.as<
                 std::map<std::string, clanguml::config::diagram_template>>());
@@ -199,6 +215,34 @@ template <> struct convert<access_t> {
             rhs = access_t::kProtected;
         else if (node.as<std::string>() == "private")
             rhs = access_t::kPrivate;
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
+// config method_type decoder
+//
+template <> struct convert<method_type> {
+    static bool decode(const Node &node, method_type &rhs)
+    {
+        const auto &val = node.as<std::string>();
+        if (val == to_string(method_type::constructor))
+            rhs = method_type::constructor;
+        else if (val == to_string(method_type::destructor))
+            rhs = method_type::destructor;
+        else if (val == to_string(method_type::assignment))
+            rhs = method_type::assignment;
+        else if (val == to_string(method_type::operator_))
+            rhs = method_type::operator_;
+        else if (val == to_string(method_type::defaulted))
+            rhs = method_type::defaulted;
+        else if (val == to_string(method_type::deleted))
+            rhs = method_type::deleted;
+        else if (val == to_string(method_type::static_))
+            rhs = method_type::static_;
         else
             return false;
 
@@ -322,6 +366,10 @@ template <> struct convert<filter> {
             rhs.element_types =
                 node["element_types"].as<decltype(rhs.element_types)>();
 
+        if (node["method_types"])
+            rhs.method_types =
+                node["method_types"].as<decltype(rhs.method_types)>();
+
         if (node["access"])
             rhs.access = node["access"].as<decltype(rhs.access)>();
 
@@ -419,6 +467,8 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.group_methods);
+        get_option(node, rhs.member_order);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
         get_option(node, rhs.relationship_hints);
@@ -498,7 +548,8 @@ template <> struct convert<include_diagram> {
             rhs.relative_to.set(std::filesystem::current_path());
 
         // Convert the path in relative_to to an absolute path, with respect
-        // to the directory where the `.clang-uml` configuration file is located
+        // to the directory where the `.clang-uml` configuration file is
+        // located
         if (rhs.relative_to) {
             auto absolute_relative_to =
                 std::filesystem::path{node["__parent_path"].as<std::string>()} /

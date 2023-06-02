@@ -439,6 +439,7 @@ This project relies on the following great tools:
 * [inja](https://github.com/pantor/inja) - a template engine for modern C++
 * [backward-cpp](https://github.com/bombela/backward-cpp) - stack trace pretty printer for C++
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) - YAML parser library for C++
+* [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library
 
 ## Contributing
 

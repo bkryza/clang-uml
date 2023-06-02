@@ -44,6 +44,10 @@ TEST_CASE("t00003", "[test-case][class]")
         REQUIRE_THAT(puml, !IsDependency(_A("A"), _A("A")));
 
         REQUIRE_THAT(puml, (IsMethod<Public, Default>("A")));
+        REQUIRE_THAT(puml, (IsMethod<Public, Default>("A", "void", "A &&")));
+        REQUIRE_THAT(
+            puml, (IsMethod<Public, Deleted>("A", "void", "const A &")));
+
         REQUIRE_THAT(puml, (IsMethod<Public, Default>("~A")));
 
         REQUIRE_THAT(puml, (IsMethod<Public>("basic_method")));
@@ -54,6 +58,9 @@ TEST_CASE("t00003", "[test-case][class]")
         REQUIRE_THAT(puml,
             (IsMethod<Public>("default_string", "std::string",
                 "int i, std::string s = \"abc\"")));
+
+        REQUIRE_THAT(
+            puml, (IsMethod<Public, Const, Constexpr>("size", "std::size_t")));
 
         REQUIRE_THAT(puml, (IsMethod<Protected>("protected_method")));
         REQUIRE_THAT(puml, (IsMethod<Private>("private_method")));

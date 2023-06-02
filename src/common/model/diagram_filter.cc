@@ -127,6 +127,18 @@ tvl::value_t filter_visitor::match(
     return {};
 }
 
+tvl::value_t filter_visitor::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    return match(d, m.access());
+}
+
+tvl::value_t filter_visitor::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return match(d, m.access());
+}
+
 bool filter_visitor::is_inclusive() const
 {
     return type_ == filter_t::kInclusive;
@@ -233,6 +245,39 @@ tvl::value_t element_type_filter::match(
     return tvl::any_of(element_types_.begin(), element_types_.end(),
         [&e](const auto &element_type) {
             return e.type_name() == element_type;
+        });
+}
+
+method_type_filter::method_type_filter(
+    filter_t type, std::vector<config::method_type> method_types)
+    : filter_visitor{type}
+    , method_types_{std::move(method_types)}
+{
+}
+
+tvl::value_t method_type_filter::match(
+    const diagram & /*d*/, const class_diagram::model::class_method &m) const
+{
+    return tvl::any_of(
+        method_types_.begin(), method_types_.end(), [&m](auto mt) {
+            switch (mt) {
+            case config::method_type::constructor:
+                return m.is_constructor();
+            case config::method_type::destructor:
+                return m.is_destructor();
+            case config::method_type::assignment:
+                return m.is_copy_assignment() || m.is_move_assignment();
+            case config::method_type::operator_:
+                return m.is_operator();
+            case config::method_type::defaulted:
+                return m.is_defaulted();
+            case config::method_type::deleted:
+                return m.is_deleted();
+            case config::method_type::static_:
+                return m.is_static();
+            }
+
+            return false;
         });
 }
 
@@ -494,6 +539,36 @@ tvl::value_t paths_filter::match(
     return false;
 }
 
+class_method_filter::class_method_filter(filter_t type,
+    std::unique_ptr<access_filter> af, std::unique_ptr<method_type_filter> mtf)
+    : filter_visitor{type}
+    , access_filter_{std::move(af)}
+    , method_type_filter_{std::move(mtf)}
+{
+}
+
+tvl::value_t class_method_filter::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    tvl::value_t res = tvl::or_(
+        access_filter_->match(d, m.access()), method_type_filter_->match(d, m));
+
+    return res;
+}
+
+class_member_filter::class_member_filter(
+    filter_t type, std::unique_ptr<access_filter> af)
+    : filter_visitor{type}
+    , access_filter_{std::move(af)}
+{
+}
+
+tvl::value_t class_member_filter::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return access_filter_->match(d, m.access());
+}
+
 diagram_filter::diagram_filter(
     const common::model::diagram &d, const config::diagram &c)
     : diagram_{d}
@@ -540,6 +615,18 @@ void diagram_filter::init_filters(const config::diagram &c)
 
         add_inclusive_filter(std::make_unique<paths_filter>(
             filter_t::kInclusive, c.root_directory(), c.include().paths));
+
+        add_inclusive_filter(
+            std::make_unique<class_method_filter>(filter_t::kInclusive,
+                std::make_unique<access_filter>(
+                    filter_t::kInclusive, c.include().access),
+                std::make_unique<method_type_filter>(
+                    filter_t::kInclusive, c.include().method_types)));
+
+        add_inclusive_filter(
+            std::make_unique<class_member_filter>(filter_t::kInclusive,
+                std::make_unique<access_filter>(
+                    filter_t::kInclusive, c.include().access)));
 
         // Include any of these matches even if one them does not match
         std::vector<std::unique_ptr<filter_visitor>> element_filters;
@@ -636,6 +723,18 @@ void diagram_filter::init_filters(const config::diagram &c)
 
         add_exclusive_filter(std::make_unique<access_filter>(
             filter_t::kExclusive, c.exclude().access));
+
+        add_exclusive_filter(
+            std::make_unique<class_method_filter>(filter_t::kExclusive,
+                std::make_unique<access_filter>(
+                    filter_t::kExclusive, c.exclude().access),
+                std::make_unique<method_type_filter>(
+                    filter_t::kExclusive, c.exclude().method_types)));
+
+        add_exclusive_filter(
+            std::make_unique<class_member_filter>(filter_t::kExclusive,
+                std::make_unique<access_filter>(
+                    filter_t::kExclusive, c.exclude().access)));
 
         add_exclusive_filter(std::make_unique<subclass_filter>(
             filter_t::kExclusive, c.exclude().subclasses));

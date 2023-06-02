@@ -128,7 +128,7 @@ $ clang-uml --add-compile-flag -Wno-implicit-const-int-float-conversion \
 Please note that if your `compile_commands.json` already contains - for instance
 `-Wshadow` - then you also have to remove it, i.e.:
 
-```
+```yaml
 add_compile_flags:
   - -Wno-implicit-const-int-float-conversion
   - -Wno-shadow

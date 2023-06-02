@@ -26,6 +26,7 @@ TEST_CASE("Test config simple", "[unit-test]")
 {
     using clanguml::common::model::access_t;
     using clanguml::common::model::relationship_t;
+    using clanguml::config::method_type;
     using clanguml::util::contains;
 
     auto cfg = clanguml::config::load("./test_config_data/simple.yml");
@@ -71,6 +72,10 @@ TEST_CASE("Test config simple", "[unit-test]")
         contains(diagram.include().relationships, relationship_t::kOwnership));
 
     CHECK(contains(diagram.exclude().relationships, relationship_t::kNone));
+
+    CHECK(contains(diagram.exclude().method_types, method_type::operator_));
+    CHECK(contains(diagram.exclude().method_types, method_type::constructor));
+    CHECK(contains(diagram.exclude().method_types, method_type::deleted));
 
     CHECK(diagram.relationship_hints().at("std::vector").get(0) ==
         relationship_t::kComposition);

@@ -495,7 +495,7 @@ void translation_unit_visitor::process_constraint_requirements(
                     llvm::dyn_cast<clang::concepts::ExprRequirement>(req);
 
                 if (simple_req != nullptr) {
-                    util::apply_if_not_null(
+                    util::if_not_null(
                         simple_req->getExpr(), [&concept_model](const auto *e) {
                             auto simple_expr = common::to_string(e);
 
@@ -507,7 +507,7 @@ void translation_unit_visitor::process_constraint_requirements(
                 }
             }
             else if (req->getKind() == clang::concepts::Requirement::RK_Type) {
-                util::apply_if_not_null(
+                util::if_not_null(
                     llvm::dyn_cast<clang::concepts::TypeRequirement>(req),
                     [&concept_model, cpt](const auto *t) {
                         auto type_name = common::to_string(
@@ -525,7 +525,7 @@ void translation_unit_visitor::process_constraint_requirements(
                     llvm::dyn_cast<clang::concepts::NestedRequirement>(req);
 
                 if (nested_req != nullptr) {
-                    util::apply_if_not_null(
+                    util::if_not_null(
                         nested_req->getConstraintExpr(), [](const auto *e) {
                             LOG_DBG("=== Processing nested requirement: {}",
                                 common::to_string(e));
@@ -805,7 +805,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
 
 #if LLVM_VERSION_MAJOR < 16
         if (record_name == "(anonymous)") {
-            util::apply_if_not_null(rec->getTypedefNameForAnonDecl(),
+            util::if_not_null(rec->getTypedefNameForAnonDecl(),
                 [&record_name](const clang::TypedefNameDecl *name) {
                     record_name = name->getNameAsString();
                 });
@@ -985,9 +985,8 @@ bool translation_unit_visitor::process_template_parameters(
                 default_arg, template_type_parameter->isParameterPack());
 
             if (template_type_parameter->getTypeConstraint() != nullptr) {
-                util::apply_if_not_null(
-                    template_type_parameter->getTypeConstraint()
-                        ->getNamedConcept(),
+                util::if_not_null(template_type_parameter->getTypeConstraint()
+                                      ->getNamedConcept(),
                     [this, &ct, &templated_element](
                         const clang::ConceptDecl *named_concept) mutable {
                         ct.set_concept_constraint(
@@ -1283,11 +1282,7 @@ void translation_unit_visitor::process_method(
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(method_name), method_return_type};
 
-    method.is_pure_virtual(mf.isPure());
-    method.is_virtual(mf.isVirtual());
-    method.is_const(mf.isConst());
-    method.is_defaulted(mf.isDefaulted());
-    method.is_static(mf.isStatic());
+    process_method_properties(mf, c, method_name, method);
 
     process_comment(mf, method);
 
@@ -1359,9 +1354,34 @@ void translation_unit_visitor::process_method(
         process_function_parameter_find_relationships_in_autotype(c, atsp);
     }
 
-    LOG_DBG("Adding method: {}", method.name());
+    if (diagram().should_include(method)) {
+        LOG_DBG("Adding method: {}", method.name());
 
-    c.add_method(std::move(method));
+        c.add_method(std::move(method));
+    }
+}
+
+void translation_unit_visitor::process_method_properties(
+    const clang::CXXMethodDecl &mf, const class_ &c,
+    const std::string &method_name, class_method &method) const
+{
+    const bool is_constructor = c.name() == method_name;
+    const bool is_destructor = fmt::format("~{}", c.name()) == method_name;
+
+    method.is_pure_virtual(mf.isPure());
+    method.is_virtual(mf.isVirtual());
+    method.is_const(mf.isConst());
+    method.is_defaulted(mf.isDefaulted());
+    method.is_deleted(mf.isDeleted());
+    method.is_static(mf.isStatic());
+    method.is_operator(mf.isOverloadedOperator());
+    method.is_constexpr(mf.isConstexprSpecified() && !is_constructor);
+    method.is_consteval(mf.isConsteval());
+    method.is_constructor(is_constructor);
+    method.is_destructor(is_destructor);
+    method.is_move_assignment(mf.isMoveAssignmentOperator());
+    method.is_copy_assignment(mf.isCopyAssignmentOperator());
+    method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
 }
 
 void translation_unit_visitor::
@@ -1428,11 +1448,19 @@ void translation_unit_visitor::process_template_method(
         util::trim(mf.getNameAsString()),
         mf.getTemplatedDecl()->getReturnType().getAsString()};
 
-    method.is_pure_virtual(mf.getTemplatedDecl()->isPure());
-    method.is_virtual(false);
-    method.is_const(false);
-    method.is_defaulted(mf.getTemplatedDecl()->isDefaulted());
-    method.is_static(mf.getTemplatedDecl()->isStatic());
+    auto method_name = mf.getNameAsString();
+    if (mf.isTemplated()) {
+        // Sometimes in template specializations method names contain the
+        // template parameters for some reason - drop them
+        // Is there a better way to do this?
+        method_name = method_name.substr(0, method_name.find('<'));
+    }
+
+    util::if_not_null(
+        clang::dyn_cast<clang::CXXMethodDecl>(mf.getTemplatedDecl()),
+        [&](const auto *decl) {
+            process_method_properties(*decl, c, method_name, method);
+        });
 
     process_template_parameters(mf, method);
 
@@ -1446,9 +1474,11 @@ void translation_unit_visitor::process_template_method(
             process_function_parameter(*param, method, c);
     }
 
-    LOG_DBG("Adding method: {}", method.name());
+    if (diagram().should_include(method)) {
+        LOG_DBG("Adding method: {}", method.name());
 
-    c.add_method(std::move(method));
+        c.add_method(std::move(method));
+    }
 }
 
 bool translation_unit_visitor::find_relationships(const clang::QualType &type,
