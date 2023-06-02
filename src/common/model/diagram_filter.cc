@@ -256,7 +256,7 @@ method_type_filter::method_type_filter(
 }
 
 tvl::value_t method_type_filter::match(
-    const diagram &d, const class_diagram::model::class_method &m) const
+    const diagram & /*d*/, const class_diagram::model::class_method &m) const
 {
     return tvl::any_of(
         method_types_.begin(), method_types_.end(), [&m](auto mt) {

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+  * Added method type diagram filter (#145)
+  * Added default method grouping and sorting in class diagrams (#36)
+  * Improved generation of method attributes (e.g. constexpr, noexcept) (#142)
+
 ### 0.3.6
   * Added generation of packages in class and package diagrams from
     filesystem directories (#144)

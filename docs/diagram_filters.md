@@ -131,6 +131,28 @@ This filter allows to include or exclude all parents (base classes) of a given c
 
 This filter allows to include or exclude specializations and instantiations of a specific template from the diagram.
 
+## `access`
+
+This filter allows to include or exclude class methods and members based on their access scope, allowed values are:
+
+  * `public`
+  * `protected`
+  * `private`
+
+## `method_types`
+
+This filter allows to include or exclude various method types from the class diagram, allowed values are:
+  * constructor
+  * destructor
+  * assignment
+  * operator
+  * defaulted
+  * deleted
+  * static
+
+This filter is independent of the `access` filter, which controls which methods
+are included based on access scope (e.g. `public`).
+
 ## `dependants` and `dependencies`
 
 These filters allow to specify that only dependants or dependencies of a given class should be included in the diagram.

@@ -18,3 +18,15 @@ diagrams:
       paths:
         - sequence_diagram
         - util/error.h
+  method_type_include_test:
+    type: class
+    include:
+      method_types:
+        - constructor
+        - operator
+  method_type_exclude_test:
+    type: class
+    exclude:
+      method_types:
+        - deleted
+        - destructor
