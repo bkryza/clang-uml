@@ -4,6 +4,7 @@
 #pragma once
 
 #include <spdlog/fmt/fmt.h>
+#include <chrono>
 
 // Stopwatch support for spdlog  (using std::chrono::steady_clock).
 // Displays elapsed seconds since construction as double.
@@ -42,13 +43,20 @@ public:
 
     void reset()
     {
-        start_tp_ = clock ::now();
+        start_tp_ = clock::now();
     }
 };
 } // namespace spdlog
 
 // Support for fmt formatting  (e.g. "{:012.9}" or just "{}")
-namespace fmt {
+namespace
+#ifdef SPDLOG_USE_STD_FORMAT
+    std
+#else
+    fmt
+#endif
+{
+
 template<>
 struct formatter<spdlog::stopwatch> : formatter<double>
 {
@@ -58,4 +66,4 @@ struct formatter<spdlog::stopwatch> : formatter<double>
         return formatter<double>::format(sw.elapsed().count(), ctx);
     }
 };
-} // namespace fmt
+} // namespace std

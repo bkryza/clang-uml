@@ -49,7 +49,7 @@ public:
         push_cv_.notify_one();
     }
 
-    // try to dequeue item. if no item found. wait upto timeout and try again
+    // try to dequeue item. if no item found. wait up to timeout and try again
     // Return true, if succeeded dequeue item, false otherwise
     bool dequeue_for(T &popped_item, std::chrono::milliseconds wait_duration)
     {
@@ -87,7 +87,7 @@ public:
         push_cv_.notify_one();
     }
 
-    // try to dequeue item. if no item found. wait upto timeout and try again
+    // try to dequeue item. if no item found. wait up to timeout and try again
     // Return true, if succeeded dequeue item, false otherwise
     bool dequeue_for(T &popped_item, std::chrono::milliseconds wait_duration)
     {
@@ -114,6 +114,12 @@ public:
     {
         std::unique_lock<std::mutex> lock(queue_mutex_);
         return q_.size();
+    }
+
+    void reset_overrun_counter()
+    {
+        std::unique_lock<std::mutex> lock(queue_mutex_);
+        q_.reset_overrun_counter();
     }
 
 private:
