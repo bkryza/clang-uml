@@ -34,7 +34,7 @@ SPDLOG_INLINE spdlog::level::level_enum from_str(const std::string &name) SPDLOG
 {
     auto it = std::find(std::begin(level_string_views), std::end(level_string_views), name);
     if (it != std::end(level_string_views))
-        return static_cast<level::level_enum>(it - std::begin(level_string_views));
+        return static_cast<level::level_enum>(std::distance(std::begin(level_string_views), it));
 
     // check also for "warn" and "err" before giving up..
     if (name == "warn")
@@ -55,9 +55,13 @@ SPDLOG_INLINE spdlog_ex::spdlog_ex(std::string msg)
 
 SPDLOG_INLINE spdlog_ex::spdlog_ex(const std::string &msg, int last_errno)
 {
+#ifdef SPDLOG_USE_STD_FORMAT
+    msg_ = std::system_error(std::error_code(last_errno, std::generic_category()), msg).what();
+#else
     memory_buf_t outbuf;
     fmt::format_system_error(outbuf, last_errno, msg.c_str());
     msg_ = fmt::to_string(outbuf);
+#endif
 }
 
 SPDLOG_INLINE const char *spdlog_ex::what() const SPDLOG_NOEXCEPT
