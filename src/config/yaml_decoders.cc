@@ -41,6 +41,7 @@ using clanguml::config::plantuml;
 using clanguml::config::relationship_hint_t;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
+using clanguml::config::string_or_regex;
 
 inline bool has_key(const YAML::Node &n, const std::string &key)
 {
@@ -338,6 +339,23 @@ template <> struct convert<plantuml> {
 
         if (node["after"])
             rhs.after = node["after"].as<decltype(rhs.after)>();
+        return true;
+    }
+};
+
+template <> struct convert<string_or_regex> {
+    static bool decode(const Node &node, string_or_regex &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap()) {
+            auto pattern = node["r"].as<std::string>();
+            auto rx = std::regex(pattern);
+            rhs = string_or_regex{std::move(rx), std::move(pattern)};
+        }
+        else {
+            rhs = string_or_regex{node.as<std::string>()};
+        }
+
         return true;
     }
 };

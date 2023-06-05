@@ -30,3 +30,13 @@ diagrams:
       method_types:
         - deleted
         - destructor
+  regex_elements_test:
+    type: class
+    include:
+      elements:
+        - ns1::ClassA
+        - r: 'ns1::ns2::Class.+'
+        - r: 'ns1::.+::ns3::.+'
+    exclude:
+      elements:
+        - ns1::ns2::ClassZ

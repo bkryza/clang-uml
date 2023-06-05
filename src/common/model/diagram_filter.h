@@ -125,14 +125,15 @@ private:
 };
 
 struct element_filter : public filter_visitor {
-    element_filter(filter_t type, std::vector<std::string> elements);
+    element_filter(
+        filter_t type, std::vector<config::string_or_regex> elements);
 
     ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> elements_;
+    std::vector<config::string_or_regex> elements_;
 };
 
 struct element_type_filter : public filter_visitor {

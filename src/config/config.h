@@ -28,12 +28,87 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <regex>
 #include <string>
 #include <variant>
 #include <vector>
 
 namespace clanguml {
 namespace config {
+
+std::string to_string(const std::string &s);
+
+/**
+ * @brief Wrapper around std::regex, which contains original pattern
+ */
+struct regex {
+    regex(std::regex r, std::string p)
+        : regexp{std::move(r)}
+        , pattern{std::move(p)}
+    {
+    }
+
+    [[nodiscard]] bool operator==(const std::string &v)
+    {
+        return std::regex_match(v, regexp);
+    }
+
+    std::regex regexp;
+    std::string pattern;
+};
+
+template <typename T> struct or_regex {
+    or_regex() = default;
+
+    or_regex(T v)
+        : value_{std::move(v)}
+    {
+    }
+
+    or_regex(std::regex r, std::string p)
+        : value_{regex{std::move(r), std::move(p)}}
+    {
+    }
+
+    or_regex &operator=(const T &v)
+    {
+        value_ = v;
+        return *this;
+    }
+
+    or_regex &operator=(const regex &v)
+    {
+        value_ = v;
+        return *this;
+    }
+
+    [[nodiscard]] bool operator==(const T &v) const
+    {
+        if (std::holds_alternative<regex>(value_))
+            return std::regex_match(v, std::get<regex>(value_).regexp);
+
+        return std::get<T>(value_) == v;
+    }
+
+    std::string to_string() const
+    {
+        if (std::holds_alternative<regex>(value_))
+            return std::get<regex>(value_).pattern;
+
+        return clanguml::config::to_string(std::get<T>(value_));
+    }
+
+    const std::variant<T, regex> &value() const { return value_; }
+
+private:
+    std::variant<T, regex> value_;
+};
+
+using string_or_regex = or_regex<std::string>;
+
+std::string to_string(string_or_regex sr);
+
+using namespace_or_regex = std::variant<common::model::namespace_, regex>;
 
 enum class method_arguments { full, abbreviated, none };
 
@@ -75,7 +150,7 @@ struct diagram_template {
 struct filter {
     std::vector<common::model::namespace_> namespaces;
 
-    std::vector<std::string> elements;
+    std::vector<string_or_regex> elements;
 
     // E.g.:
     //   - class

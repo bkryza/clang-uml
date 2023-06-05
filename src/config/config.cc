@@ -24,6 +24,8 @@
 
 namespace clanguml::config {
 
+std::string to_string(const std::string &s) { return s; }
+
 std::string to_string(const hint_t t)
 {
     switch (t) {
@@ -84,6 +86,8 @@ std::string to_string(method_type mt)
         return "";
     }
 }
+
+std::string to_string(string_or_regex sr) { return sr.to_string(); }
 
 std::string to_string(const comment_parser_t cp)
 {

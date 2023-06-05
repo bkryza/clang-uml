@@ -52,6 +52,19 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const string_or_regex &m)
+{
+    if (std::holds_alternative<std::string>(m.value())) {
+        out << std::get<std::string>(m.value());
+    }
+    else {
+        out << YAML::Key << "r" << YAML::Value
+            << std::get<regex>(m.value()).pattern;
+    }
+
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 {
     out << YAML::BeginMap;

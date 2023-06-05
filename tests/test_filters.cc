@@ -19,6 +19,7 @@
 
 #include "catch.h"
 
+#include "class_diagram/model/class.h"
 #include "common/model/diagram_filter.h"
 #include "common/model/source_file.h"
 #include "config/config.h"
@@ -103,4 +104,44 @@ TEST_CASE("Test method_types exclude filter", "[unit-test]")
     cm.is_destructor(true);
 
     CHECK(!filter.should_include(cm));
+}
+
+TEST_CASE("Test elements regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::source_file;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_elements_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    diagram_filter filter(diagram, config);
+
+    class_ c{{}};
+
+    c.set_namespace(namespace_{"ns1"});
+    c.set_name("ClassA");
+
+    CHECK(filter.should_include(c));
+
+    c.set_namespace(namespace_{"ns1::ns2"});
+    c.set_name("ClassA");
+
+    CHECK(filter.should_include(c));
+
+    c.set_namespace(namespace_{"ns1::ns2"});
+    c.set_name("ClassZ");
+
+    CHECK(!filter.should_include(c));
+
+    c.set_namespace(namespace_{"ns1::ns5::ns3"});
+    c.set_name("ClassA");
+
+    CHECK(filter.should_include(c));
 }

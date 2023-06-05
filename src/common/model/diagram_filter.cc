@@ -216,7 +216,8 @@ tvl::value_t namespace_filter::match(
         [&e](const auto &nsit) { return e.get_namespace().starts_with(nsit); });
 }
 
-element_filter::element_filter(filter_t type, std::vector<std::string> elements)
+element_filter::element_filter(
+    filter_t type, std::vector<config::string_or_regex> elements)
     : filter_visitor{type}
     , elements_{std::move(elements)}
 {
@@ -227,8 +228,8 @@ tvl::value_t element_filter::match(
 {
     return tvl::any_of(
         elements_.begin(), elements_.end(), [&e](const auto &el) {
-            return (e.full_name(false) == el) ||
-                (fmt::format("::{}", e.full_name(false)) == el);
+            return ((el == e.full_name(false)) ||
+                (el == fmt::format("::{}", e.full_name(false))));
         });
 }
 
