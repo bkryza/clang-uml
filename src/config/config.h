@@ -170,7 +170,7 @@ struct filter {
     //   - private
     std::vector<common::model::access_t> access;
 
-    std::vector<std::string> subclasses;
+    std::vector<string_or_regex> subclasses;
 
     std::vector<std::string> parents;
 

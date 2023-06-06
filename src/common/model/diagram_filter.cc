@@ -311,7 +311,8 @@ tvl::value_t method_type_filter::match(
         });
 }
 
-subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
+subclass_filter::subclass_filter(
+    filter_t type, std::vector<config::string_or_regex> roots)
     : filter_visitor{type}
     , roots_{std::move(roots)}
 {

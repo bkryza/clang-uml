@@ -162,14 +162,14 @@ private:
 };
 
 struct subclass_filter : public filter_visitor {
-    subclass_filter(filter_t type, std::vector<std::string> roots);
+    subclass_filter(filter_t type, std::vector<config::string_or_regex> roots);
 
     ~subclass_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> roots_;
+    std::vector<config::string_or_regex> roots_;
 };
 
 struct parents_filter : public filter_visitor {

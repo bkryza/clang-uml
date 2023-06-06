@@ -49,3 +49,8 @@ diagrams:
     exclude:
       namespaces:
         - r: '.*detail.*'
+  regex_subclasses_test:
+    type: class
+    include:
+      subclasses:
+        - r: 'ns1::ns2::Base[A|B]'

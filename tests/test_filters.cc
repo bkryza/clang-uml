@@ -15,11 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+
+#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_CONSOLE_WIDTH 512
 
 #include "catch.h"
 
 #include "class_diagram/model/class.h"
+#include "cli/cli_handler.h"
 #include "common/model/diagram_filter.h"
 #include "common/model/source_file.h"
 #include "config/config.h"
@@ -149,6 +152,7 @@ TEST_CASE("Test elements regexp filter", "[unit-test]")
 TEST_CASE("Test namespaces regexp filter", "[unit-test]")
 {
     using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
@@ -202,4 +206,141 @@ TEST_CASE("Test namespaces regexp filter", "[unit-test]")
     p.set_name("interface");
 
     CHECK(filter.should_include(p));
+}
+
+TEST_CASE("Test subclasses regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::source_file;
+    using namespace std::string_literals;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_subclasses_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto p = std::make_unique<package>(config.using_namespace());
+    p->set_namespace({});
+    p->set_name("ns1");
+    diagram.add({}, std::move(p));
+    p = std::make_unique<package>(config.using_namespace());
+    p->set_namespace({"ns1"});
+    p->set_name("ns2");
+    diagram.add(namespace_{"ns1"}, std::move(p));
+
+    auto c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseA");
+    c->set_id(to_id("ns1::ns2::BaseA"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("A1");
+    c->set_id(to_id("ns1::ns2::A1"s));
+    c->add_parent({"ns1::ns2::BaseA"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("A2");
+    c->set_id(to_id("ns1::ns2::A2"s));
+    c->add_parent({"ns1::ns2::BaseA"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseB");
+    c->set_id(to_id("ns1::ns2::BaseB"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("B1");
+    c->set_id(to_id("ns1::ns2::B1"s));
+    c->add_parent({"ns1::ns2::BaseB"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("B2");
+    c->set_id(to_id("ns1::ns2::B2"s));
+    c->add_parent({"ns1::ns2::BaseB"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("Common");
+    c->set_id(to_id("ns1::ns2::Common"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("C1");
+    c->set_id(to_id("ns1::ns2::C1"s));
+    c->add_parent({"ns1::ns2::Common"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("A1");
+    c->set_id(to_id("ns1::ns2::A1"s));
+    CHECK(filter.should_include(*c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("B1");
+    c->set_id(to_id("ns1::ns2::B1"s));
+    CHECK(filter.should_include(*c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("C1");
+    c->set_id(to_id("ns1::ns2::C1"s));
+    CHECK(!filter.should_include(*c));
+}
+
+///
+/// Main test function
+///
+int main(int argc, char *argv[])
+{
+    Catch::Session session;
+    using namespace Catch::clara;
+
+    bool debug_log{false};
+    auto cli = session.cli() |
+        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
+
+    session.cli(cli);
+
+    int returnCode = session.applyCommandLine(argc, argv);
+    if (returnCode != 0)
+        return returnCode;
+
+    clanguml::cli::cli_handler clih;
+
+    std::vector<const char *> argvv = {
+        "clang-uml", "--config", "./test_config_data/simple.yml"};
+
+    if (debug_log)
+        argvv.push_back("-vvv");
+    else
+        argvv.push_back("-q");
+
+    clih.handle_options(argvv.size(), argvv.data());
+
+    return session.run();
 }
