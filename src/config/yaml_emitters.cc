@@ -65,6 +65,19 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const string_or_regex &m)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_or_regex &m)
+{
+    if (std::holds_alternative<common::model::namespace_>(m.value())) {
+        out << std::get<common::model::namespace_>(m.value());
+    }
+    else {
+        out << YAML::Key << "r" << YAML::Value
+            << std::get<regex>(m.value()).pattern;
+    }
+
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 {
     out << YAML::BeginMap;

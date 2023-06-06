@@ -112,7 +112,8 @@ private:
 };
 
 struct namespace_filter : public filter_visitor {
-    namespace_filter(filter_t type, std::vector<namespace_> namespaces);
+    namespace_filter(
+        filter_t type, std::vector<config::namespace_or_regex> namespaces);
 
     ~namespace_filter() override = default;
 
@@ -121,7 +122,7 @@ struct namespace_filter : public filter_visitor {
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<namespace_> namespaces_;
+    std::vector<config::namespace_or_regex> namespaces_;
 };
 
 struct element_filter : public filter_visitor {

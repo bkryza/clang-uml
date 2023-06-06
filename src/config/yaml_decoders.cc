@@ -35,6 +35,7 @@ using clanguml::config::location_t;
 using clanguml::config::member_order_t;
 using clanguml::config::method_arguments;
 using clanguml::config::method_type;
+using clanguml::config::namespace_or_regex;
 using clanguml::config::package_diagram;
 using clanguml::config::package_type_t;
 using clanguml::config::plantuml;
@@ -360,6 +361,23 @@ template <> struct convert<string_or_regex> {
     }
 };
 
+template <> struct convert<namespace_or_regex> {
+    static bool decode(const Node &node, namespace_or_regex &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap()) {
+            auto pattern = node["r"].as<std::string>();
+            auto rx = std::regex(pattern);
+            rhs = namespace_or_regex{std::move(rx), std::move(pattern)};
+        }
+        else {
+            rhs = namespace_or_regex{node.as<std::string>()};
+        }
+
+        return true;
+    }
+};
+
 //
 // filter Yaml decoder
 //
@@ -368,7 +386,7 @@ template <> struct convert<filter> {
     {
         if (node["namespaces"]) {
             auto namespace_list =
-                node["namespaces"].as<std::vector<std::string>>();
+                node["namespaces"].as<decltype(rhs.namespaces)>();
             for (const auto &ns : namespace_list)
                 rhs.namespaces.push_back({ns});
         }

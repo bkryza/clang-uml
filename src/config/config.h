@@ -48,7 +48,7 @@ struct regex {
     {
     }
 
-    [[nodiscard]] bool operator==(const std::string &v)
+    [[nodiscard]] bool operator==(const std::string &v) const
     {
         return std::regex_match(v, regexp);
     }
@@ -108,7 +108,7 @@ using string_or_regex = or_regex<std::string>;
 
 std::string to_string(string_or_regex sr);
 
-using namespace_or_regex = std::variant<common::model::namespace_, regex>;
+using namespace_or_regex = or_regex<common::model::namespace_>;
 
 enum class method_arguments { full, abbreviated, none };
 
@@ -148,7 +148,7 @@ struct diagram_template {
 };
 
 struct filter {
-    std::vector<common::model::namespace_> namespaces;
+    std::vector<namespace_or_regex> namespaces;
 
     std::vector<string_or_regex> elements;
 

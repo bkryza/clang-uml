@@ -173,7 +173,7 @@ tvl::value_t anyof_filter::match(
 }
 
 namespace_filter::namespace_filter(
-    filter_t type, std::vector<namespace_> namespaces)
+    filter_t type, std::vector<config::namespace_or_regex> namespaces)
     : filter_visitor{type}
     , namespaces_{std::move(namespaces)}
 {
@@ -185,8 +185,17 @@ tvl::value_t namespace_filter::match(
     if (ns.is_empty())
         return {};
 
-    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
-        [&ns](const auto &nsit) { return ns.starts_with(nsit) || ns == nsit; });
+    return tvl::any_of(
+        namespaces_.begin(), namespaces_.end(), [&ns](const auto &nsit) {
+            if (std::holds_alternative<namespace_>(nsit.value())) {
+                const auto &ns_pattern = std::get<namespace_>(nsit.value());
+                return ns.starts_with(ns_pattern) || ns == ns_pattern;
+            }
+            else {
+                const auto &regex = std::get<config::regex>(nsit.value());
+                return regex == ns.to_string();
+            }
+        });
 }
 
 tvl::value_t namespace_filter::match(
@@ -195,25 +204,45 @@ tvl::value_t namespace_filter::match(
     if (dynamic_cast<const package *>(&e) != nullptr) {
         return tvl::any_of(namespaces_.begin(), namespaces_.end(),
             [&e, is_inclusive = is_inclusive()](const auto &nsit) {
-                auto element_full_name_starts_with_namespace =
-                    (e.get_namespace() | e.name()).starts_with(nsit);
-                auto element_full_name_equals_pattern =
-                    (e.get_namespace() | e.name()) == nsit;
-                auto namespace_starts_with_element_qualified_name =
-                    nsit.starts_with(e.get_namespace());
+                if (std::holds_alternative<namespace_>(nsit.value())) {
+                    const auto &ns_pattern = std::get<namespace_>(nsit.value());
 
-                auto result = element_full_name_starts_with_namespace ||
-                    element_full_name_equals_pattern;
+                    auto element_full_name_starts_with_namespace =
+                        (e.get_namespace() | e.name()).starts_with(ns_pattern);
 
-                if (is_inclusive)
-                    result =
-                        result || namespace_starts_with_element_qualified_name;
+                    auto element_full_name_equals_pattern =
+                        (e.get_namespace() | e.name()) == ns_pattern;
 
-                return result;
+                    auto namespace_starts_with_element_qualified_name =
+                        ns_pattern.starts_with(e.get_namespace());
+
+                    auto result = element_full_name_starts_with_namespace ||
+                        element_full_name_equals_pattern;
+
+                    if (is_inclusive)
+                        result = result ||
+                            namespace_starts_with_element_qualified_name;
+
+                    return result;
+                }
+                else {
+                    return std::get<config::regex>(nsit.value()) ==
+                        e.full_name(false);
+                }
             });
     }
-    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
-        [&e](const auto &nsit) { return e.get_namespace().starts_with(nsit); });
+
+    return tvl::any_of(
+        namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
+            if (std::holds_alternative<namespace_>(nsit.value())) {
+                return e.get_namespace().starts_with(
+                    std::get<namespace_>(nsit.value()));
+            }
+            else {
+                return std::get<config::regex>(nsit.value()) ==
+                    e.full_name(false);
+            }
+        });
 }
 
 element_filter::element_filter(
@@ -524,7 +553,8 @@ tvl::value_t paths_filter::match(
 
     auto sl_path = std::filesystem::path{p.file()};
 
-    // Matching source paths doesn't make sens if they are not absolute or empty
+    // Matching source paths doesn't make sens if they are not absolute or
+    // empty
     if (p.file().empty() || sl_path.is_relative()) {
         return {};
     }

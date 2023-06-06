@@ -40,3 +40,12 @@ diagrams:
     exclude:
       elements:
         - ns1::ns2::ClassZ
+  regex_namespace_test:
+    type: class
+    include:
+      namespaces:
+        - ns1::ns2
+        - r: '.*interface.*'
+    exclude:
+      namespaces:
+        - r: '.*detail.*'
