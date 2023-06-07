@@ -173,7 +173,7 @@ tvl::value_t anyof_filter::match(
 }
 
 namespace_filter::namespace_filter(
-    filter_t type, std::vector<config::namespace_or_regex> namespaces)
+    filter_t type, std::vector<common::namespace_or_regex> namespaces)
     : filter_visitor{type}
     , namespaces_{std::move(namespaces)}
 {
@@ -192,7 +192,7 @@ tvl::value_t namespace_filter::match(
                 return ns.starts_with(ns_pattern) || ns == ns_pattern;
             }
             else {
-                const auto &regex = std::get<config::regex>(nsit.value());
+                const auto &regex = std::get<common::regex>(nsit.value());
                 return regex == ns.to_string();
             }
         });
@@ -226,7 +226,7 @@ tvl::value_t namespace_filter::match(
                     return result;
                 }
                 else {
-                    return std::get<config::regex>(nsit.value()) ==
+                    return std::get<common::regex>(nsit.value()) ==
                         e.full_name(false);
                 }
             });
@@ -239,14 +239,14 @@ tvl::value_t namespace_filter::match(
                     std::get<namespace_>(nsit.value()));
             }
             else {
-                return std::get<config::regex>(nsit.value()) ==
+                return std::get<common::regex>(nsit.value()) ==
                     e.full_name(false);
             }
         });
 }
 
 element_filter::element_filter(
-    filter_t type, std::vector<config::string_or_regex> elements)
+    filter_t type, std::vector<common::string_or_regex> elements)
     : filter_visitor{type}
     , elements_{std::move(elements)}
 {
@@ -312,7 +312,7 @@ tvl::value_t method_type_filter::match(
 }
 
 subclass_filter::subclass_filter(
-    filter_t type, std::vector<config::string_or_regex> roots)
+    filter_t type, std::vector<common::string_or_regex> roots)
     : filter_visitor{type}
     , roots_{std::move(roots)}
 {
@@ -361,7 +361,8 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     return false;
 }
 
-parents_filter::parents_filter(filter_t type, std::vector<std::string> children)
+parents_filter::parents_filter(
+    filter_t type, std::vector<common::string_or_regex> children)
     : filter_visitor{type}
     , children_{std::move(children)}
 {
@@ -383,11 +384,13 @@ tvl::value_t parents_filter::match(const diagram &d, const element &e) const
     // First get all parents of element e
     clanguml::common::reference_set<class_diagram::model::class_> parents;
 
-    for (const auto &child : children_) {
-        auto child_ref = cd.find<class_diagram::model::class_>(child);
-        if (!child_ref.has_value())
-            continue;
-        parents.emplace(child_ref.value());
+    for (const auto &child_pattern : children_) {
+        auto child_refs = cd.find<class_diagram::model::class_>(child_pattern);
+
+        for (auto &child : child_refs) {
+            if (child.has_value())
+                parents.emplace(child.value());
+        }
     }
 
     cd.get_parents(parents);

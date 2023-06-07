@@ -20,6 +20,8 @@
 #include "diagram_templates.h"
 
 namespace YAML {
+using clanguml::common::namespace_or_regex;
+using clanguml::common::string_or_regex;
 using clanguml::common::model::access_t;
 using clanguml::common::model::relationship_t;
 using clanguml::config::class_diagram;
@@ -35,14 +37,12 @@ using clanguml::config::location_t;
 using clanguml::config::member_order_t;
 using clanguml::config::method_arguments;
 using clanguml::config::method_type;
-using clanguml::config::namespace_or_regex;
 using clanguml::config::package_diagram;
 using clanguml::config::package_type_t;
 using clanguml::config::plantuml;
 using clanguml::config::relationship_hint_t;
 using clanguml::config::sequence_diagram;
 using clanguml::config::source_location;
-using clanguml::config::string_or_regex;
 
 inline bool has_key(const YAML::Node &n, const std::string &key)
 {

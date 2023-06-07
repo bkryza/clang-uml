@@ -113,7 +113,7 @@ private:
 
 struct namespace_filter : public filter_visitor {
     namespace_filter(
-        filter_t type, std::vector<config::namespace_or_regex> namespaces);
+        filter_t type, std::vector<common::namespace_or_regex> namespaces);
 
     ~namespace_filter() override = default;
 
@@ -122,19 +122,19 @@ struct namespace_filter : public filter_visitor {
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<config::namespace_or_regex> namespaces_;
+    std::vector<common::namespace_or_regex> namespaces_;
 };
 
 struct element_filter : public filter_visitor {
     element_filter(
-        filter_t type, std::vector<config::string_or_regex> elements);
+        filter_t type, std::vector<common::string_or_regex> elements);
 
     ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<config::string_or_regex> elements_;
+    std::vector<common::string_or_regex> elements_;
 };
 
 struct element_type_filter : public filter_visitor {
@@ -162,25 +162,25 @@ private:
 };
 
 struct subclass_filter : public filter_visitor {
-    subclass_filter(filter_t type, std::vector<config::string_or_regex> roots);
+    subclass_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
     ~subclass_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<config::string_or_regex> roots_;
+    std::vector<common::string_or_regex> roots_;
 };
 
 struct parents_filter : public filter_visitor {
-    parents_filter(filter_t type, std::vector<std::string> roots);
+    parents_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
     ~parents_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> children_;
+    std::vector<common::string_or_regex> children_;
 };
 
 template <typename DiagramT, typename ElementT,

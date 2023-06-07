@@ -312,6 +312,110 @@ TEST_CASE("Test subclasses regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*c));
 }
 
+TEST_CASE("Test parents regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::source_file;
+    using namespace std::string_literals;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_parents_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto p = std::make_unique<package>(config.using_namespace());
+    p->set_namespace({});
+    p->set_name("ns1");
+    diagram.add({}, std::move(p));
+    p = std::make_unique<package>(config.using_namespace());
+    p->set_namespace({"ns1"});
+    p->set_name("ns2");
+    diagram.add(namespace_{"ns1"}, std::move(p));
+
+    auto c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseA");
+    c->set_id(to_id("ns1::ns2::BaseA"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("A1");
+    c->set_id(to_id("ns1::ns2::A1"s));
+    c->add_parent({"ns1::ns2::BaseA"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("A2");
+    c->set_id(to_id("ns1::ns2::A2"s));
+    c->add_parent({"ns1::ns2::BaseA"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseB");
+    c->set_id(to_id("ns1::ns2::BaseB"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("B1");
+    c->set_id(to_id("ns1::ns2::B1"s));
+    c->add_parent({"ns1::ns2::BaseB"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("B2");
+    c->set_id(to_id("ns1::ns2::B2"s));
+    c->add_parent({"ns1::ns2::BaseB"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("Common");
+    c->set_id(to_id("ns1::ns2::Common"s));
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("C3");
+    c->set_id(to_id("ns1::ns2::C3"s));
+    c->add_parent({"ns1::ns2::Common"});
+    diagram.add(namespace_{"ns1::ns2"}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseA");
+    c->set_id(to_id("ns1::ns2::BaseA"s));
+    CHECK(filter.should_include(*c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("BaseB");
+    c->set_id(to_id("ns1::ns2::BaseB"s));
+    CHECK(filter.should_include(*c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_namespace(namespace_{"ns1::ns2"});
+    c->set_name("Common");
+    c->set_id(to_id("ns1::ns2::Common"s));
+    CHECK(!filter.should_include(*c));
+}
+
 ///
 /// Main test function
 ///

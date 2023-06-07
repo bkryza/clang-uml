@@ -18,39 +18,7 @@
 
 #include "config.h"
 
-namespace clanguml::common::model {
-YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_ &n)
-{
-    out << n.to_string();
-    return out;
-}
-
-YAML::Emitter &operator<<(YAML::Emitter &out, const relationship_t &r)
-{
-    out << to_string(r);
-    return out;
-}
-
-YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &a)
-{
-    out << to_string(a);
-    return out;
-}
-
-YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
-{
-    out << to_string(d);
-    return out;
-}
-} // namespace clanguml::common::model
-
-namespace clanguml::config {
-
-YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
-{
-    out << to_string(m);
-    return out;
-}
+namespace clanguml::common {
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const string_or_regex &m)
 {
@@ -75,6 +43,42 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_or_regex &m)
             << std::get<regex>(m.value()).pattern;
     }
 
+    return out;
+}
+
+namespace model {
+YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_ &n)
+{
+    out << n.to_string();
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const relationship_t &r)
+{
+    out << to_string(r);
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &a)
+{
+    out << to_string(a);
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
+{
+    out << to_string(d);
+    return out;
+}
+
+} // namespace model
+} // namespace clanguml::common
+
+namespace clanguml::config {
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
+{
+    out << to_string(m);
     return out;
 }
 

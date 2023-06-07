@@ -54,3 +54,8 @@ diagrams:
     include:
       subclasses:
         - r: 'ns1::ns2::Base[A|B]'
+  regex_parents_test:
+    type: class
+    include:
+      parents:
+        - r: 'ns1::ns2::.+[1|2]'
