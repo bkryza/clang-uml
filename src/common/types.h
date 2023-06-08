@@ -127,6 +127,18 @@ public:
         return *value_;
     }
 
+    T &operator*()
+    {
+        assert(value_ != nullptr);
+        return *value_;
+    }
+
+    const T &operator*() const
+    {
+        assert(value_ != nullptr);
+        return *value_;
+    }
+
     void reset() { value_ = nullptr; }
 
     T *get() const { return value_; }

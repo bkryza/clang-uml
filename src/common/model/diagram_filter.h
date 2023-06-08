@@ -363,14 +363,14 @@ private:
 };
 
 struct context_filter : public filter_visitor {
-    context_filter(filter_t type, std::vector<std::string> context);
+    context_filter(filter_t type, std::vector<common::string_or_regex> context);
 
     ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
 private:
-    std::vector<std::string> context_;
+    std::vector<common::string_or_regex> context_;
 };
 
 struct paths_filter : public filter_visitor {

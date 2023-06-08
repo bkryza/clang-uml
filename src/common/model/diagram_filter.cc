@@ -430,7 +430,8 @@ tvl::value_t access_filter::match(
         [&a](const auto &access) { return a == access; });
 }
 
-context_filter::context_filter(filter_t type, std::vector<std::string> context)
+context_filter::context_filter(
+    filter_t type, std::vector<common::string_or_regex> context)
     : filter_visitor{type}
     , context_{std::move(context)}
 {
@@ -447,48 +448,50 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
         return {};
 
     return tvl::any_of(context_.begin(), context_.end(),
-        [&e, &d](const auto &context_root_name) {
-            const auto &context_root =
+        [&e, &d](const auto &context_root_pattern) {
+            const auto &context_roots =
                 static_cast<const class_diagram::model::diagram &>(d)
-                    .find<class_diagram::model::class_>(context_root_name);
+                    .find<class_diagram::model::class_>(context_root_pattern);
 
-            if (context_root.has_value()) {
-                // This is a direct match to the context root
-                if (context_root.value().id() == e.id())
-                    return true;
+            for (auto &context_root : context_roots) {
+                if (context_root.has_value()) {
+                    // This is a direct match to the context root
+                    if (context_root.value().id() == e.id())
+                        return true;
 
-                // Return a positive match if the element e is in a direct
-                // relationship with any of the context_root's
-                for (const relationship &rel :
-                    context_root.value().relationships()) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == e.id())
-                        return true;
-                }
-                for (const relationship &rel : e.relationships()) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == context_root.value().id())
-                        return true;
-                }
-
-                // Return a positive match if the context_root is a parent
-                // of the element
-                for (const class_diagram::model::class_parent &p :
-                    context_root.value().parents()) {
-                    if (p.name() == e.full_name(false))
-                        return true;
-                }
-                if (dynamic_cast<const class_diagram::model::class_ *>(&e) !=
-                    nullptr) {
-                    for (const class_diagram::model::class_parent &p :
-                        static_cast<const class_diagram::model::class_ &>(e)
-                            .parents()) {
-                        if (p.name() == context_root.value().full_name(false))
+                    // Return a positive match if the element e is in a direct
+                    // relationship with any of the context_root's
+                    for (const relationship &rel :
+                        context_root.value().relationships()) {
+                        if (d.should_include(rel.type()) &&
+                            rel.destination() == e.id())
                             return true;
+                    }
+                    for (const relationship &rel : e.relationships()) {
+                        if (d.should_include(rel.type()) &&
+                            rel.destination() == context_root.value().id())
+                            return true;
+                    }
+
+                    // Return a positive match if the context_root is a parent
+                    // of the element
+                    for (const class_diagram::model::class_parent &p :
+                        context_root.value().parents()) {
+                        if (p.name() == e.full_name(false))
+                            return true;
+                    }
+                    if (dynamic_cast<const class_diagram::model::class_ *>(
+                            &e) != nullptr) {
+                        for (const class_diagram::model::class_parent &p :
+                            static_cast<const class_diagram::model::class_ &>(e)
+                                .parents()) {
+                            if (p.name() ==
+                                context_root.value().full_name(false))
+                                return true;
+                        }
                     }
                 }
             }
-
             return false;
         });
 }

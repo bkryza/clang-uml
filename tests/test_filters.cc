@@ -293,23 +293,9 @@ TEST_CASE("Test subclasses regexp filter", "[unit-test]")
 
     diagram_filter filter(diagram, config);
 
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("A1");
-    c->set_id(to_id("ns1::ns2::A1"s));
-    CHECK(filter.should_include(*c));
-
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("B1");
-    c->set_id(to_id("ns1::ns2::B1"s));
-    CHECK(filter.should_include(*c));
-
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("C1");
-    c->set_id(to_id("ns1::ns2::C1"s));
-    CHECK(!filter.should_include(*c));
+    CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::A1")));
+    CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::B1")));
+    CHECK(!filter.should_include(*diagram.find<class_>("ns1::ns2::C1")));
 }
 
 TEST_CASE("Test parents regexp filter", "[unit-test]")
@@ -397,23 +383,9 @@ TEST_CASE("Test parents regexp filter", "[unit-test]")
 
     diagram_filter filter(diagram, config);
 
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("BaseA");
-    c->set_id(to_id("ns1::ns2::BaseA"s));
-    CHECK(filter.should_include(*c));
-
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("BaseB");
-    c->set_id(to_id("ns1::ns2::BaseB"s));
-    CHECK(filter.should_include(*c));
-
-    c = std::make_unique<class_>(config.using_namespace());
-    c->set_namespace(namespace_{"ns1::ns2"});
-    c->set_name("Common");
-    c->set_id(to_id("ns1::ns2::Common"s));
-    CHECK(!filter.should_include(*c));
+    CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::BaseA")));
+    CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::BaseB")));
+    CHECK(!filter.should_include(*diagram.find<class_>("ns1::ns2::Common")));
 }
 
 TEST_CASE("Test specializations regexp filter", "[unit-test]")
@@ -476,18 +448,97 @@ TEST_CASE("Test specializations regexp filter", "[unit-test]")
 
     diagram_filter filter(diagram, config);
 
-    c = std::make_unique<class_>(config.using_namespace());
+    CHECK(filter.should_include(*diagram.find<class_>("A<int,std::string>")));
+    CHECK(!filter.should_include(*diagram.find<class_>("A<double>")));
+}
+
+TEST_CASE("Test context regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_;
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
+    using clanguml::common::model::relationship_t;
+    using clanguml::common::model::source_file;
+    using clanguml::common::model::template_parameter;
+    using namespace std::string_literals;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_context_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto c = std::make_unique<class_>(config.using_namespace());
     c->set_name("A");
-    c->add_template(template_parameter::make_argument("int"));
-    c->add_template(template_parameter::make_argument("std::string"));
-    c->set_id(to_id("A<int,std::string>"s));
-    CHECK(filter.should_include(*c));
+    c->set_id(to_id("A"s));
+    diagram.add(namespace_{}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
-    c->set_name("A");
-    c->add_template(template_parameter::make_argument("double"));
-    c->set_id(to_id("A<double>"s));
-    CHECK(!filter.should_include(*c));
+    c->set_name("A1");
+    c->set_id(to_id("A1"s));
+    c->add_relationship(
+        relationship{relationship_t::kAssociation, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A2");
+    c->set_id(to_id("A2"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A21");
+    c->set_id(to_id("A21"s));
+    c->add_relationship(
+        relationship{relationship_t::kDependency, to_id("A2"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B");
+    c->set_id(to_id("B"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B1");
+    c->set_id(to_id("B1"s));
+    c->add_relationship(
+        relationship{relationship_t::kAssociation, to_id("B"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C");
+    c->set_id(to_id("C"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C1");
+    c->set_id(to_id("C1"s));
+    c->add_relationship(
+        relationship{relationship_t::kAssociation, to_id("C"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    CHECK(filter.should_include(*diagram.find<class_>("A")));
+    CHECK(filter.should_include(*diagram.find<class_>("A1")));
+    CHECK(filter.should_include(*diagram.find<class_>("A2")));
+
+    CHECK(!filter.should_include(*diagram.find<class_>("A21")));
+
+    CHECK(filter.should_include(*diagram.find<class_>("B")));
+    CHECK(filter.should_include(*diagram.find<class_>("B1")));
+
+    CHECK(!filter.should_include(*diagram.find<class_>("C")));
+    CHECK(!filter.should_include(*diagram.find<class_>("C1")));
 }
 
 ///

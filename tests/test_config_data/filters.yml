@@ -64,3 +64,8 @@ diagrams:
     include:
       specializations:
         - r: 'A<int,.+>'
+  regex_context_test:
+    type: class
+    include:
+      context:
+        - r: '[A|B]'

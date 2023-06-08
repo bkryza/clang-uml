@@ -107,7 +107,7 @@ struct filter {
 
     std::vector<std::string> dependencies;
 
-    std::vector<std::string> context;
+    std::vector<common::string_or_regex> context;
 
     std::vector<std::filesystem::path> paths;
 
