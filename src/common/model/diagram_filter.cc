@@ -681,8 +681,9 @@ void diagram_filter::init_filters(const config::diagram &c)
 
             element_filters.emplace_back(std::make_unique<
                 edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kInstantiation, c.include().specializations));
+                    class_diagram::model::class_, common::string_or_regex>>(
+                filter_t::kInclusive, relationship_t::kInstantiation,
+                c.include().specializations));
 
             element_filters.emplace_back(std::make_unique<
                 edge_traversal_filter<class_diagram::model::diagram,
@@ -719,15 +720,15 @@ void diagram_filter::init_filters(const config::diagram &c)
                 dependencies.emplace_back(dep_path.lexically_normal().string());
             }
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<include_diagram::model::diagram,
-                    common::model::source_file, common::model::source_file>>(
+            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
+                    include_diagram::model::diagram, common::model::source_file,
+                    std::string, common::model::source_file>>(
                 filter_t::kInclusive, relationship_t::kAssociation,
                 dependants));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<include_diagram::model::diagram,
-                    common::model::source_file, common::model::source_file>>(
+            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
+                    include_diagram::model::diagram, common::model::source_file,
+                    std::string, common::model::source_file>>(
                 filter_t::kInclusive, relationship_t::kAssociation,
                 dependencies, true));
         }
@@ -777,8 +778,9 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_exclusive_filter(std::make_unique<parents_filter>(
             filter_t::kExclusive, c.exclude().parents));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
+        add_exclusive_filter(std::make_unique<
+            edge_traversal_filter<class_diagram::model::diagram,
+                class_diagram::model::class_, common::string_or_regex>>(
             filter_t::kExclusive, relationship_t::kInstantiation,
             c.exclude().specializations));
 

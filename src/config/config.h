@@ -101,7 +101,7 @@ struct filter {
 
     std::vector<common::string_or_regex> parents;
 
-    std::vector<std::string> specializations;
+    std::vector<common::string_or_regex> specializations;
 
     std::vector<std::string> dependants;
 

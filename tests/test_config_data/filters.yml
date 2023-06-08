@@ -59,3 +59,8 @@ diagrams:
     include:
       parents:
         - r: 'ns1::ns2::.+[1|2]'
+  regex_specializations_test:
+    type: class
+    include:
+      specializations:
+        - r: 'A<int,.+>'

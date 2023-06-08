@@ -416,6 +416,80 @@ TEST_CASE("Test parents regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*c));
 }
 
+TEST_CASE("Test specializations regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
+    using clanguml::common::model::relationship_t;
+    using clanguml::common::model::source_file;
+    using clanguml::common::model::template_parameter;
+    using namespace std::string_literals;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_specializations_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    const auto template_id = to_id("A<Ts...>"s);
+
+    auto c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(
+        template_parameter::make_template_type("T", std::nullopt, true));
+    c->set_id(template_id);
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(template_parameter::make_argument("double"));
+    c->set_id(to_id("A<double>"s));
+    c->add_relationship(
+        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(template_parameter::make_argument("int"));
+    c->set_id(to_id("A<int>"s));
+    c->add_relationship(
+        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(template_parameter::make_argument("int"));
+    c->add_template(template_parameter::make_argument("std::string"));
+    c->set_id(to_id("A<int,std::string>"s));
+    c->add_relationship(
+        relationship{relationship_t::kInstantiation, template_id});
+    diagram.add(namespace_{}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(template_parameter::make_argument("int"));
+    c->add_template(template_parameter::make_argument("std::string"));
+    c->set_id(to_id("A<int,std::string>"s));
+    CHECK(filter.should_include(*c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->add_template(template_parameter::make_argument("double"));
+    c->set_id(to_id("A<double>"s));
+    CHECK(!filter.should_include(*c));
+}
+
 ///
 /// Main test function
 ///
