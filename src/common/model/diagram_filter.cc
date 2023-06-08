@@ -640,6 +640,29 @@ bool diagram_filter::should_include(
 
 void diagram_filter::init_filters(const config::diagram &c)
 {
+    using specializations_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+
+    using class_dependants_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+    using class_dependencies_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+
+    using package_dependants_filter_t =
+        edge_traversal_filter<package_diagram::model::diagram,
+            common::model::package, common::string_or_regex>;
+    using package_dependencies_filter_t =
+        edge_traversal_filter<package_diagram::model::diagram,
+            common::model::package, common::string_or_regex>;
+
+    using source_file_dependency_filter_t =
+        edge_traversal_filter<include_diagram::model::diagram,
+            common::model::source_file, std::string,
+            common::model::source_file>;
+
     // Process inclusive filters
     if (c.include) {
         add_inclusive_filter(std::make_unique<namespace_filter>(
@@ -682,58 +705,55 @@ void diagram_filter::init_filters(const config::diagram &c)
             element_filters.emplace_back(std::make_unique<parents_filter>(
                 filter_t::kInclusive, c.include().parents));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_, common::string_or_regex>>(
-                filter_t::kInclusive, relationship_t::kInstantiation,
-                c.include().specializations));
+            element_filters.emplace_back(
+                std::make_unique<specializations_filter_t>(filter_t::kInclusive,
+                    relationship_t::kInstantiation,
+                    c.include().specializations));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kDependency, c.include().dependants));
+            element_filters.emplace_back(
+                std::make_unique<class_dependants_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependants));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kDependency, c.include().dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<class_dependencies_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependencies, true));
         }
         else if (c.type() == diagram_t::kPackage) {
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    package_diagram::model::diagram, common::model::package>>(
-                filter_t::kInclusive, relationship_t::kDependency,
-                c.include().dependants));
+            element_filters.emplace_back(
+                std::make_unique<package_dependants_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependants));
 
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    package_diagram::model::diagram, common::model::package>>(
-                filter_t::kInclusive, relationship_t::kDependency,
-                c.include().dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<package_dependencies_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependencies, true));
         }
         else if (c.type() == diagram_t::kInclude) {
             std::vector<std::string> dependants;
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.include().dependants) {
-                const std::filesystem::path dep_path{path};
+                const std::filesystem::path dep_path{*path.get<std::string>()};
                 dependants.emplace_back(dep_path.lexically_normal().string());
             }
 
             for (auto &&path : c.include().dependencies) {
-                const std::filesystem::path dep_path{path};
+                const std::filesystem::path dep_path{*path.get<std::string>()};
                 dependencies.emplace_back(dep_path.lexically_normal().string());
             }
 
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    include_diagram::model::diagram, common::model::source_file,
-                    std::string, common::model::source_file>>(
-                filter_t::kInclusive, relationship_t::kAssociation,
-                dependants));
+            element_filters.emplace_back(
+                std::make_unique<source_file_dependency_filter_t>(
+                    filter_t::kInclusive, relationship_t::kAssociation,
+                    dependants));
 
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    include_diagram::model::diagram, common::model::source_file,
-                    std::string, common::model::source_file>>(
-                filter_t::kInclusive, relationship_t::kAssociation,
-                dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<source_file_dependency_filter_t>(
+                    filter_t::kInclusive, relationship_t::kAssociation,
+                    dependencies, true));
         }
 
         element_filters.emplace_back(std::make_unique<context_filter>(
@@ -781,29 +801,23 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_exclusive_filter(std::make_unique<parents_filter>(
             filter_t::kExclusive, c.exclude().parents));
 
-        add_exclusive_filter(std::make_unique<
-            edge_traversal_filter<class_diagram::model::diagram,
-                class_diagram::model::class_, common::string_or_regex>>(
-            filter_t::kExclusive, relationship_t::kInstantiation,
-            c.exclude().specializations));
+        add_exclusive_filter(
+            std::make_unique<specializations_filter_t>(filter_t::kExclusive,
+                relationship_t::kInstantiation, c.exclude().specializations));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependants));
+        add_exclusive_filter(
+            std::make_unique<class_dependants_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependants));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                package_diagram::model::diagram, common::model::package>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependants));
+        add_exclusive_filter(
+            std::make_unique<package_dependants_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependants));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependencies, true));
+        add_exclusive_filter(
+            std::make_unique<class_dependencies_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependencies, true));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                package_diagram::model::diagram, common::model::package>>(
+        add_exclusive_filter(std::make_unique<package_dependencies_filter_t>(
             filter_t::kExclusive, relationship_t::kDependency,
             c.exclude().dependencies, true));
 
@@ -812,9 +826,9 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.exclude().dependants) {
-                std::filesystem::path dep_path{path};
+                std::filesystem::path dep_path{*path.get<std::string>()};
                 if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
+                    dep_path = c.base_directory() / *path.get<std::string>();
                     dep_path = relative(dep_path, c.relative_to());
                 }
 
@@ -822,9 +836,9 @@ void diagram_filter::init_filters(const config::diagram &c)
             }
 
             for (auto &&path : c.exclude().dependencies) {
-                std::filesystem::path dep_path{path};
+                std::filesystem::path dep_path{*path.get<std::string>()};
                 if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
+                    dep_path = c.base_directory() / *path.get<std::string>();
                     dep_path = relative(dep_path, c.relative_to());
                 }
 

@@ -207,6 +207,14 @@ template <typename T> struct or_regex {
         return std::get<T>(value_) == v;
     }
 
+    template <typename Ret> std::optional<Ret> get() const
+    {
+        if (!std::holds_alternative<Ret>(value_))
+            return std::nullopt;
+
+        return std::get<Ret>(value_);
+    }
+
     std::string to_string() const
     {
         if (std::holds_alternative<regex>(value_))

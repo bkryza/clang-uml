@@ -541,6 +541,174 @@ TEST_CASE("Test context regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("C1")));
 }
 
+TEST_CASE("Test dependencies regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_;
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
+    using clanguml::common::model::relationship_t;
+    using clanguml::common::model::source_file;
+    using clanguml::common::model::template_parameter;
+    using namespace std::string_literals;
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_dependencies_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->set_id(to_id("A"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A1");
+    c->set_id(to_id("A1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A2");
+    c->set_id(to_id("A2"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A21");
+    c->set_id(to_id("A21"s));
+    c->add_relationship(
+        relationship{relationship_t::kDependency, to_id("A2"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B");
+    c->set_id(to_id("B"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B1");
+    c->set_id(to_id("B1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("B"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C");
+    c->set_id(to_id("C"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C1");
+    c->set_id(to_id("C1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("C"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    CHECK(filter.should_include(*diagram.find<class_>("A")));
+    CHECK(!filter.should_include(*diagram.find<class_>("A1")));
+    CHECK(filter.should_include(*diagram.find<class_>("A2")));
+    CHECK(filter.should_include(*diagram.find<class_>("A21")));
+
+    CHECK(filter.should_include(*diagram.find<class_>("B")));
+    CHECK(filter.should_include(*diagram.find<class_>("B1")));
+
+    CHECK(!filter.should_include(*diagram.find<class_>("C")));
+    CHECK(!filter.should_include(*diagram.find<class_>("C1")));
+}
+
+TEST_CASE("Test dependants regexp filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_;
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::to_id;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
+    using clanguml::common::model::relationship_t;
+    using clanguml::common::model::source_file;
+    using clanguml::common::model::template_parameter;
+    using namespace std::string_literals;
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_dependants_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A");
+    c->set_id(to_id("A"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A1");
+    c->set_id(to_id("A1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A2");
+    c->set_id(to_id("A2"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("A"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("A21");
+    c->set_id(to_id("A21"s));
+    c->add_relationship(
+        relationship{relationship_t::kDependency, to_id("A2"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B");
+    c->set_id(to_id("B"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("B1");
+    c->set_id(to_id("B1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("B"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C");
+    c->set_id(to_id("C"s));
+    diagram.add(namespace_{}, std::move(c));
+
+    c = std::make_unique<class_>(config.using_namespace());
+    c->set_name("C1");
+    c->set_id(to_id("C1"s));
+    c->add_relationship(relationship{relationship_t::kDependency, to_id("C"s)});
+    diagram.add(namespace_{}, std::move(c));
+
+    diagram.set_complete(true);
+
+    diagram_filter filter(diagram, config);
+
+    CHECK(filter.should_include(*diagram.find<class_>("A")));
+    CHECK(filter.should_include(*diagram.find<class_>("A1")));
+    CHECK(filter.should_include(*diagram.find<class_>("A2")));
+    CHECK(filter.should_include(*diagram.find<class_>("A21")));
+
+    CHECK(filter.should_include(*diagram.find<class_>("B")));
+    CHECK(filter.should_include(*diagram.find<class_>("B1")));
+
+    CHECK(!filter.should_include(*diagram.find<class_>("C")));
+    CHECK(!filter.should_include(*diagram.find<class_>("C1")));
+}
+
 ///
 /// Main test function
 ///

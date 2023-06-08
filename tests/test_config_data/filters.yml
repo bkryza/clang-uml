@@ -69,3 +69,13 @@ diagrams:
     include:
       context:
         - r: '[A|B]'
+  regex_dependencies_test:
+    type: class
+    include:
+      dependencies:
+        - r: 'A21|B1'
+  regex_dependants_test:
+    type: class
+    include:
+      dependants:
+        - r: 'A|B'

@@ -103,9 +103,9 @@ struct filter {
 
     std::vector<common::string_or_regex> specializations;
 
-    std::vector<std::string> dependants;
+    std::vector<common::string_or_regex> dependants;
 
-    std::vector<std::string> dependencies;
+    std::vector<common::string_or_regex> dependencies;
 
     std::vector<common::string_or_regex> context;
 

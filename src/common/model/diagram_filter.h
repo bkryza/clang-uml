@@ -289,8 +289,7 @@ private:
         for (const auto &root_pattern : roots_) {
             if constexpr (std::is_same_v<ConfigEntryT,
                               common::string_or_regex>) {
-                auto root_refs = cd.template find<class_diagram::model::class_>(
-                    root_pattern);
+                auto root_refs = cd.template find<ElementT>(root_pattern);
 
                 for (auto &root : root_refs) {
                     if (root.has_value())
