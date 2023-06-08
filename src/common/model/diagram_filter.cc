@@ -191,10 +191,9 @@ tvl::value_t namespace_filter::match(
                 const auto &ns_pattern = std::get<namespace_>(nsit.value());
                 return ns.starts_with(ns_pattern) || ns == ns_pattern;
             }
-            else {
-                const auto &regex = std::get<common::regex>(nsit.value());
-                return regex == ns.to_string();
-            }
+
+            const auto &regex = std::get<common::regex>(nsit.value());
+            return regex == ns.to_string();
         });
 }
 
@@ -225,10 +224,9 @@ tvl::value_t namespace_filter::match(
 
                     return result;
                 }
-                else {
-                    return std::get<common::regex>(nsit.value()) ==
-                        e.full_name(false);
-                }
+
+                return std::get<common::regex>(nsit.value()) ==
+                    e.full_name(false);
             });
     }
 
@@ -238,10 +236,8 @@ tvl::value_t namespace_filter::match(
                 return e.get_namespace().starts_with(
                     std::get<namespace_>(nsit.value()));
             }
-            else {
-                return std::get<common::regex>(nsit.value()) ==
-                    e.full_name(false);
-            }
+
+            return std::get<common::regex>(nsit.value()) == e.full_name(false);
         });
 }
 
@@ -736,13 +732,19 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.include().dependants) {
-                const std::filesystem::path dep_path{*path.get<std::string>()};
-                dependants.emplace_back(dep_path.lexically_normal().string());
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    const std::filesystem::path dep_path{*p};
+                    dependants.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             for (auto &&path : c.include().dependencies) {
-                const std::filesystem::path dep_path{*path.get<std::string>()};
-                dependencies.emplace_back(dep_path.lexically_normal().string());
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    const std::filesystem::path dep_path{*p};
+                    dependencies.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             element_filters.emplace_back(
@@ -826,23 +828,29 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.exclude().dependants) {
-                std::filesystem::path dep_path{*path.get<std::string>()};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / *path.get<std::string>();
-                    dep_path = relative(dep_path, c.relative_to());
-                }
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    std::filesystem::path dep_path{*p};
+                    if (dep_path.is_relative()) {
+                        dep_path = c.base_directory() / *p;
+                        dep_path = relative(dep_path, c.relative_to());
+                    }
 
-                dependants.emplace_back(dep_path.lexically_normal().string());
+                    dependants.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             for (auto &&path : c.exclude().dependencies) {
-                std::filesystem::path dep_path{*path.get<std::string>()};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / *path.get<std::string>();
-                    dep_path = relative(dep_path, c.relative_to());
-                }
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    std::filesystem::path dep_path{*p};
+                    if (dep_path.is_relative()) {
+                        dep_path = c.base_directory() / *p;
+                        dep_path = relative(dep_path, c.relative_to());
+                    }
 
-                dependencies.emplace_back(dep_path.lexically_normal().string());
+                    dependencies.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             add_exclusive_filter(std::make_unique<

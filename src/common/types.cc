@@ -22,6 +22,6 @@ namespace clanguml::common {
 
 std::string to_string(const std::string &s) { return s; }
 
-std::string to_string(string_or_regex sr) { return sr.to_string(); }
+std::string to_string(const string_or_regex &sr) { return sr.to_string(); }
 
 };

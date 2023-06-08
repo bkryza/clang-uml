@@ -231,7 +231,7 @@ private:
 
 using string_or_regex = or_regex<std::string>;
 
-std::string to_string(string_or_regex sr);
+std::string to_string(const string_or_regex &sr);
 
 using namespace_or_regex = common::or_regex<common::model::namespace_>;
 
