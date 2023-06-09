@@ -61,7 +61,7 @@ int main(int argc, const char *argv[])
 
     try {
         const auto db =
-            clanguml::common::compilation_database::auto_detect_from_directory(
+            common::compilation_database::auto_detect_from_directory(
                 cli.config);
 
         const auto compilation_database_files = db->getAllFiles();
@@ -73,20 +73,20 @@ int main(int argc, const char *argv[])
         // We have to generate the translation units list for each diagram
         // before scheduling tasks, because std::filesystem::current_path
         // cannot be trusted with multiple threads
-        clanguml::common::generators::find_translation_units_for_diagrams(
+        common::generators::find_translation_units_for_diagrams(
             cli.diagram_names, cli.config, compilation_database_files,
             translation_units_map);
 
-        clanguml::common::generators::generate_diagrams(cli.diagram_names,
-            cli.config, cli.effective_output_directory, db, cli.verbose,
-            cli.thread_count, cli.generators, translation_units_map);
+        common::generators::generate_diagrams(cli.diagram_names, cli.config,
+            cli.effective_output_directory, db, cli.verbose, cli.thread_count,
+            cli.generators, translation_units_map);
     }
-    catch (clanguml::common::compilation_database_error &e) {
+    catch (common::compilation_database_error &e) {
         LOG_ERROR("Failed to load compilation database from {} due to: {}",
             cli.config.compilation_database_dir(), e.what());
         return 1;
     }
-    catch (clanguml::util::query_driver_no_paths &e) {
+    catch (util::query_driver_no_paths &e) {
         LOG_ERROR("Quering provided compiler driver {} did not provide any "
                   "paths, please make sure the path is correct and that your "
                   "compiler is GCC-compatible: {}",
