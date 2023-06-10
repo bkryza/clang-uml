@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/clang_utils.h"
 #include "common/model/enums.h"
 #include "common/types.h"
 
@@ -26,6 +27,13 @@ namespace clanguml::class_diagram::model {
 
 class class_parent {
 public:
+    class_parent() = default;
+    class_parent(const std::string &name)
+    {
+        set_name(name);
+        set_id(common::to_id(name));
+    }
+
     void set_name(const std::string &name);
     std::string name() const;
 

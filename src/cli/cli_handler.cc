@@ -305,8 +305,10 @@ cli_flow_t cli_handler::handle_post_config_options()
 
 cli_flow_t cli_handler::print_version()
 {
-    ostr_ << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
-    ostr_ << "Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>" << '\n';
+    ostr_ << "clang-uml " << clanguml::version::CLANG_UML_VERSION << std::endl;
+    ostr_ << "Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>"
+          << std::endl;
+    ostr_ << util::get_os_name() << std::endl;
     ostr_ << "Built against LLVM/Clang libraries version: "
           << LLVM_VERSION_STRING << std::endl;
     ostr_ << "Using LLVM/Clang libraries version: "

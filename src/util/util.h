@@ -76,6 +76,8 @@ std::string get_git_commit();
 
 std::string get_git_toplevel_dir();
 
+std::string get_os_name();
+
 /**
  * @brief Split a string using delimiter
  *

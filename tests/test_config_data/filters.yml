@@ -10,9 +10,10 @@ diagrams:
       - src/**/*.h
     include:
       paths:
-        - class_diagram/
+        - class_d*/
         - common
-        - util
+        - util/*.h
+        - util/*.cc
         - main.cc
     exclude:
       paths:
@@ -30,3 +31,52 @@ diagrams:
       method_types:
         - deleted
         - destructor
+  regex_elements_test:
+    type: class
+    include:
+      elements:
+        - ns1::ClassA
+        - r: 'ns1::ns2::Class.+'
+        - r: 'ns1::.+::ns3::.+'
+    exclude:
+      elements:
+        - ns1::ns2::ClassZ
+  regex_namespace_test:
+    type: class
+    include:
+      namespaces:
+        - ns1::ns2
+        - r: '.*interface.*'
+    exclude:
+      namespaces:
+        - r: '.*detail.*'
+  regex_subclasses_test:
+    type: class
+    include:
+      subclasses:
+        - r: 'ns1::ns2::Base[A|B]'
+  regex_parents_test:
+    type: class
+    include:
+      parents:
+        - r: 'ns1::ns2::.+[1|2]'
+  regex_specializations_test:
+    type: class
+    include:
+      specializations:
+        - r: 'A<int,.+>'
+  regex_context_test:
+    type: class
+    include:
+      context:
+        - r: '[A|B]'
+  regex_dependencies_test:
+    type: class
+    include:
+      dependencies:
+        - r: 'A21|B1'
+  regex_dependants_test:
+    type: class
+    include:
+      dependants:
+        - r: 'A|B'

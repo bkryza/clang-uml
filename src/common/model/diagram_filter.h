@@ -112,7 +112,8 @@ private:
 };
 
 struct namespace_filter : public filter_visitor {
-    namespace_filter(filter_t type, std::vector<namespace_> namespaces);
+    namespace_filter(
+        filter_t type, std::vector<common::namespace_or_regex> namespaces);
 
     ~namespace_filter() override = default;
 
@@ -121,18 +122,19 @@ struct namespace_filter : public filter_visitor {
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<namespace_> namespaces_;
+    std::vector<common::namespace_or_regex> namespaces_;
 };
 
 struct element_filter : public filter_visitor {
-    element_filter(filter_t type, std::vector<std::string> elements);
+    element_filter(
+        filter_t type, std::vector<common::string_or_regex> elements);
 
     ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> elements_;
+    std::vector<common::string_or_regex> elements_;
 };
 
 struct element_type_filter : public filter_visitor {
@@ -160,32 +162,33 @@ private:
 };
 
 struct subclass_filter : public filter_visitor {
-    subclass_filter(filter_t type, std::vector<std::string> roots);
+    subclass_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
     ~subclass_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> roots_;
+    std::vector<common::string_or_regex> roots_;
 };
 
 struct parents_filter : public filter_visitor {
-    parents_filter(filter_t type, std::vector<std::string> roots);
+    parents_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
     ~parents_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
-    std::vector<std::string> children_;
+    std::vector<common::string_or_regex> children_;
 };
 
 template <typename DiagramT, typename ElementT,
+    typename ConfigEntryT = std::string,
     typename MatchOverrideT = common::model::element>
 struct edge_traversal_filter : public filter_visitor {
     edge_traversal_filter(filter_t type, relationship_t relationship,
-        std::vector<std::string> roots, bool forward = false)
+        std::vector<ConfigEntryT> roots, bool forward = false)
         : filter_visitor{type}
         , roots_{std::move(roots)}
         , relationship_{relationship}
@@ -197,8 +200,8 @@ struct edge_traversal_filter : public filter_visitor {
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
-        // This filter should only be run on the completely generated diagram
-        // model by visitor
+        // This filter should only be run only on diagram models after the
+        // entire AST has been visited
         if (!d.complete())
             return {};
 
@@ -283,10 +286,21 @@ private:
         // First get all elements specified in the filter configuration
         // which will serve as starting points for the search
         // of matching elements
-        for (const auto &template_root : roots_) {
-            auto template_ref = detail::get<ElementT>(cd, template_root);
-            if (template_ref.has_value()) {
-                matching_elements_.emplace(template_ref.value());
+        for (const auto &root_pattern : roots_) {
+            if constexpr (std::is_same_v<ConfigEntryT,
+                              common::string_or_regex>) {
+                auto root_refs = cd.template find<ElementT>(root_pattern);
+
+                for (auto &root : root_refs) {
+                    if (root.has_value())
+                        matching_elements_.emplace(root.value());
+                }
+            }
+            else {
+                auto root_ref = detail::get<ElementT>(cd, root_pattern);
+                if (root_ref.has_value()) {
+                    matching_elements_.emplace(root_ref.value());
+                }
             }
         }
 
@@ -316,7 +330,7 @@ private:
         initialized_ = true;
     }
 
-    std::vector<std::string> roots_;
+    std::vector<ConfigEntryT> roots_;
     relationship_t relationship_;
     mutable bool initialized_{false};
     mutable clanguml::common::reference_set<ElementT> matching_elements_;
@@ -348,19 +362,19 @@ private:
 };
 
 struct context_filter : public filter_visitor {
-    context_filter(filter_t type, std::vector<std::string> context);
+    context_filter(filter_t type, std::vector<common::string_or_regex> context);
 
     ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
 private:
-    std::vector<std::string> context_;
+    std::vector<common::string_or_regex> context_;
 };
 
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
-        const std::vector<std::filesystem::path> &p);
+        const std::vector<std::string> &p);
 
     ~paths_filter() override = default;
 

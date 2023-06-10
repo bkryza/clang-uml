@@ -24,8 +24,10 @@
 #include "common/model/package.h"
 #include "common/types.h"
 #include "concept.h"
+#include "config/config.h"
 #include "enum.h"
 
+#include <regex>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -78,6 +80,10 @@ public:
 
     template <typename ElementT>
     opt_ref<ElementT> find(const std::string &name) const;
+
+    template <typename ElementT>
+    std::vector<opt_ref<ElementT>> find(
+        const clanguml::common::string_or_regex &pattern) const;
 
     template <typename ElementT>
     opt_ref<ElementT> find(diagram_element::id_t id) const;
@@ -215,6 +221,23 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
     }
 
     return {};
+}
+
+template <typename ElementT>
+std::vector<opt_ref<ElementT>> diagram::find(
+    const common::string_or_regex &pattern) const
+{
+    std::vector<opt_ref<ElementT>> result;
+
+    for (const auto &element : element_view<ElementT>::view()) {
+        const auto full_name = element.get().full_name(false);
+
+        if (pattern == full_name) {
+            result.emplace_back(element);
+        }
+    }
+
+    return result;
 }
 
 template <typename ElementT>

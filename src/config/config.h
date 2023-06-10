@@ -19,6 +19,7 @@
 
 #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
+#include "common/types.h"
 #include "option.h"
 #include "util/util.h"
 
@@ -28,6 +29,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <regex>
 #include <string>
 #include <variant>
 #include <vector>
@@ -73,9 +75,9 @@ struct diagram_template {
 };
 
 struct filter {
-    std::vector<common::model::namespace_> namespaces;
+    std::vector<common::namespace_or_regex> namespaces;
 
-    std::vector<std::string> elements;
+    std::vector<common::string_or_regex> elements;
 
     // E.g.:
     //   - class
@@ -95,19 +97,19 @@ struct filter {
     //   - private
     std::vector<common::model::access_t> access;
 
-    std::vector<std::string> subclasses;
+    std::vector<common::string_or_regex> subclasses;
 
-    std::vector<std::string> parents;
+    std::vector<common::string_or_regex> parents;
 
-    std::vector<std::string> specializations;
+    std::vector<common::string_or_regex> specializations;
 
-    std::vector<std::string> dependants;
+    std::vector<common::string_or_regex> dependants;
 
-    std::vector<std::string> dependencies;
+    std::vector<common::string_or_regex> dependencies;
 
-    std::vector<std::string> context;
+    std::vector<common::string_or_regex> context;
 
-    std::vector<std::filesystem::path> paths;
+    std::vector<std::string> paths;
 
     std::vector<method_type> method_types;
 };

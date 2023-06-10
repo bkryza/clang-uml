@@ -22,6 +22,7 @@
 
 #include "class_diagram/model/class.h"
 #include "common/model/package.h"
+#include "glob/glob.hpp"
 #include "include_diagram/model/diagram.h"
 #include "package_diagram/model/diagram.h"
 
@@ -173,7 +174,7 @@ tvl::value_t anyof_filter::match(
 }
 
 namespace_filter::namespace_filter(
-    filter_t type, std::vector<namespace_> namespaces)
+    filter_t type, std::vector<common::namespace_or_regex> namespaces)
     : filter_visitor{type}
     , namespaces_{std::move(namespaces)}
 {
@@ -185,8 +186,16 @@ tvl::value_t namespace_filter::match(
     if (ns.is_empty())
         return {};
 
-    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
-        [&ns](const auto &nsit) { return ns.starts_with(nsit) || ns == nsit; });
+    return tvl::any_of(
+        namespaces_.begin(), namespaces_.end(), [&ns](const auto &nsit) {
+            if (std::holds_alternative<namespace_>(nsit.value())) {
+                const auto &ns_pattern = std::get<namespace_>(nsit.value());
+                return ns.starts_with(ns_pattern) || ns == ns_pattern;
+            }
+
+            const auto &regex = std::get<common::regex>(nsit.value());
+            return regex == ns.to_string();
+        });
 }
 
 tvl::value_t namespace_filter::match(
@@ -195,28 +204,46 @@ tvl::value_t namespace_filter::match(
     if (dynamic_cast<const package *>(&e) != nullptr) {
         return tvl::any_of(namespaces_.begin(), namespaces_.end(),
             [&e, is_inclusive = is_inclusive()](const auto &nsit) {
-                auto element_full_name_starts_with_namespace =
-                    (e.get_namespace() | e.name()).starts_with(nsit);
-                auto element_full_name_equals_pattern =
-                    (e.get_namespace() | e.name()) == nsit;
-                auto namespace_starts_with_element_qualified_name =
-                    nsit.starts_with(e.get_namespace());
+                if (std::holds_alternative<namespace_>(nsit.value())) {
+                    const auto &ns_pattern = std::get<namespace_>(nsit.value());
 
-                auto result = element_full_name_starts_with_namespace ||
-                    element_full_name_equals_pattern;
+                    auto element_full_name_starts_with_namespace =
+                        (e.get_namespace() | e.name()).starts_with(ns_pattern);
 
-                if (is_inclusive)
-                    result =
-                        result || namespace_starts_with_element_qualified_name;
+                    auto element_full_name_equals_pattern =
+                        (e.get_namespace() | e.name()) == ns_pattern;
 
-                return result;
+                    auto namespace_starts_with_element_qualified_name =
+                        ns_pattern.starts_with(e.get_namespace());
+
+                    auto result = element_full_name_starts_with_namespace ||
+                        element_full_name_equals_pattern;
+
+                    if (is_inclusive)
+                        result = result ||
+                            namespace_starts_with_element_qualified_name;
+
+                    return result;
+                }
+
+                return std::get<common::regex>(nsit.value()) ==
+                    e.full_name(false);
             });
     }
-    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
-        [&e](const auto &nsit) { return e.get_namespace().starts_with(nsit); });
+
+    return tvl::any_of(
+        namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
+            if (std::holds_alternative<namespace_>(nsit.value())) {
+                return e.get_namespace().starts_with(
+                    std::get<namespace_>(nsit.value()));
+            }
+
+            return std::get<common::regex>(nsit.value()) == e.full_name(false);
+        });
 }
 
-element_filter::element_filter(filter_t type, std::vector<std::string> elements)
+element_filter::element_filter(
+    filter_t type, std::vector<common::string_or_regex> elements)
     : filter_visitor{type}
     , elements_{std::move(elements)}
 {
@@ -227,8 +254,8 @@ tvl::value_t element_filter::match(
 {
     return tvl::any_of(
         elements_.begin(), elements_.end(), [&e](const auto &el) {
-            return (e.full_name(false) == el) ||
-                (fmt::format("::{}", e.full_name(false)) == el);
+            return ((el == e.full_name(false)) ||
+                (el == fmt::format("::{}", e.full_name(false))));
         });
 }
 
@@ -281,7 +308,8 @@ tvl::value_t method_type_filter::match(
         });
 }
 
-subclass_filter::subclass_filter(filter_t type, std::vector<std::string> roots)
+subclass_filter::subclass_filter(
+    filter_t type, std::vector<common::string_or_regex> roots)
     : filter_visitor{type}
     , roots_{std::move(roots)}
 {
@@ -330,7 +358,8 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     return false;
 }
 
-parents_filter::parents_filter(filter_t type, std::vector<std::string> children)
+parents_filter::parents_filter(
+    filter_t type, std::vector<common::string_or_regex> children)
     : filter_visitor{type}
     , children_{std::move(children)}
 {
@@ -352,11 +381,13 @@ tvl::value_t parents_filter::match(const diagram &d, const element &e) const
     // First get all parents of element e
     clanguml::common::reference_set<class_diagram::model::class_> parents;
 
-    for (const auto &child : children_) {
-        auto child_ref = cd.find<class_diagram::model::class_>(child);
-        if (!child_ref.has_value())
-            continue;
-        parents.emplace(child_ref.value());
+    for (const auto &child_pattern : children_) {
+        auto child_refs = cd.find<class_diagram::model::class_>(child_pattern);
+
+        for (auto &child : child_refs) {
+            if (child.has_value())
+                parents.emplace(child.value());
+        }
     }
 
     cd.get_parents(parents);
@@ -396,7 +427,8 @@ tvl::value_t access_filter::match(
         [&a](const auto &access) { return a == access; });
 }
 
-context_filter::context_filter(filter_t type, std::vector<std::string> context)
+context_filter::context_filter(
+    filter_t type, std::vector<common::string_or_regex> context)
     : filter_visitor{type}
     , context_{std::move(context)}
 {
@@ -413,80 +445,93 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
         return {};
 
     return tvl::any_of(context_.begin(), context_.end(),
-        [&e, &d](const auto &context_root_name) {
-            const auto &context_root =
+        [&e, &d](const auto &context_root_pattern) {
+            const auto &context_roots =
                 static_cast<const class_diagram::model::diagram &>(d)
-                    .find<class_diagram::model::class_>(context_root_name);
+                    .find<class_diagram::model::class_>(context_root_pattern);
 
-            if (context_root.has_value()) {
-                // This is a direct match to the context root
-                if (context_root.value().id() == e.id())
-                    return true;
+            for (auto &context_root : context_roots) {
+                if (context_root.has_value()) {
+                    // This is a direct match to the context root
+                    if (context_root.value().id() == e.id())
+                        return true;
 
-                // Return a positive match if the element e is in a direct
-                // relationship with any of the context_root's
-                for (const relationship &rel :
-                    context_root.value().relationships()) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == e.id())
-                        return true;
-                }
-                for (const relationship &rel : e.relationships()) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == context_root.value().id())
-                        return true;
-                }
-
-                // Return a positive match if the context_root is a parent
-                // of the element
-                for (const class_diagram::model::class_parent &p :
-                    context_root.value().parents()) {
-                    if (p.name() == e.full_name(false))
-                        return true;
-                }
-                if (dynamic_cast<const class_diagram::model::class_ *>(&e) !=
-                    nullptr) {
-                    for (const class_diagram::model::class_parent &p :
-                        static_cast<const class_diagram::model::class_ &>(e)
-                            .parents()) {
-                        if (p.name() == context_root.value().full_name(false))
+                    // Return a positive match if the element e is in a direct
+                    // relationship with any of the context_root's
+                    for (const relationship &rel :
+                        context_root.value().relationships()) {
+                        if (d.should_include(rel.type()) &&
+                            rel.destination() == e.id())
                             return true;
+                    }
+                    for (const relationship &rel : e.relationships()) {
+                        if (d.should_include(rel.type()) &&
+                            rel.destination() == context_root.value().id())
+                            return true;
+                    }
+
+                    // Return a positive match if the context_root is a parent
+                    // of the element
+                    for (const class_diagram::model::class_parent &p :
+                        context_root.value().parents()) {
+                        if (p.name() == e.full_name(false))
+                            return true;
+                    }
+                    if (dynamic_cast<const class_diagram::model::class_ *>(
+                            &e) != nullptr) {
+                        for (const class_diagram::model::class_parent &p :
+                            static_cast<const class_diagram::model::class_ &>(e)
+                                .parents()) {
+                            if (p.name() ==
+                                context_root.value().full_name(false))
+                                return true;
+                        }
                     }
                 }
             }
-
             return false;
         });
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    const std::vector<std::filesystem::path> &p)
+    const std::vector<std::string> &p)
     : filter_visitor{type}
     , root_{root}
 {
     for (const auto &path : p) {
         std::filesystem::path absolute_path;
 
-        if (path.string().empty() || path.string() == ".")
+        if (path.empty() || path == ".")
             absolute_path = root;
-        else if (path.is_relative())
+        else if (std::filesystem::path{path}.is_relative())
             absolute_path = root / path;
         else
             absolute_path = path;
 
-        try {
-            absolute_path = absolute(absolute_path);
-            absolute_path = canonical(absolute_path.lexically_normal());
-        }
-        catch (std::filesystem::filesystem_error &e) {
-            LOG_WARN("Cannot add non-existent path {} to paths filter",
-                absolute_path.string());
-            continue;
+        bool match_successful{false};
+        for (auto &resolved_glob_path :
+            glob::glob(absolute_path.string(), true)) {
+            try {
+                auto resolved_absolute_path = absolute(resolved_glob_path);
+                resolved_absolute_path =
+                    canonical(resolved_absolute_path.lexically_normal());
+
+                resolved_absolute_path.make_preferred();
+
+                paths_.emplace_back(resolved_absolute_path);
+
+                match_successful = true;
+            }
+            catch (std::filesystem::filesystem_error &e) {
+                LOG_WARN("Cannot add non-existent path {} to paths filter",
+                    absolute_path.string());
+                continue;
+            }
         }
 
-        absolute_path.make_preferred();
-
-        paths_.emplace_back(std::move(absolute_path));
+        if (!match_successful)
+            LOG_WARN(
+                "Paths filter pattern '{}' did not match any files...", path);
     }
 }
 
@@ -523,7 +568,8 @@ tvl::value_t paths_filter::match(
 
     auto sl_path = std::filesystem::path{p.file()};
 
-    // Matching source paths doesn't make sens if they are not absolute or empty
+    // Matching source paths doesn't make sens if they are not absolute or
+    // empty
     if (p.file().empty() || sl_path.is_relative()) {
         return {};
     }
@@ -602,6 +648,29 @@ bool diagram_filter::should_include(
 
 void diagram_filter::init_filters(const config::diagram &c)
 {
+    using specializations_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+
+    using class_dependants_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+    using class_dependencies_filter_t =
+        edge_traversal_filter<class_diagram::model::diagram,
+            class_diagram::model::class_, common::string_or_regex>;
+
+    using package_dependants_filter_t =
+        edge_traversal_filter<package_diagram::model::diagram,
+            common::model::package, common::string_or_regex>;
+    using package_dependencies_filter_t =
+        edge_traversal_filter<package_diagram::model::diagram,
+            common::model::package, common::string_or_regex>;
+
+    using source_file_dependency_filter_t =
+        edge_traversal_filter<include_diagram::model::diagram,
+            common::model::source_file, std::string,
+            common::model::source_file>;
+
     // Process inclusive filters
     if (c.include) {
         add_inclusive_filter(std::make_unique<namespace_filter>(
@@ -644,57 +713,61 @@ void diagram_filter::init_filters(const config::diagram &c)
             element_filters.emplace_back(std::make_unique<parents_filter>(
                 filter_t::kInclusive, c.include().parents));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kInstantiation, c.include().specializations));
+            element_filters.emplace_back(
+                std::make_unique<specializations_filter_t>(filter_t::kInclusive,
+                    relationship_t::kInstantiation,
+                    c.include().specializations));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kDependency, c.include().dependants));
+            element_filters.emplace_back(
+                std::make_unique<class_dependants_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependants));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<class_diagram::model::diagram,
-                    class_diagram::model::class_>>(filter_t::kInclusive,
-                relationship_t::kDependency, c.include().dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<class_dependencies_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependencies, true));
         }
         else if (c.type() == diagram_t::kPackage) {
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    package_diagram::model::diagram, common::model::package>>(
-                filter_t::kInclusive, relationship_t::kDependency,
-                c.include().dependants));
+            element_filters.emplace_back(
+                std::make_unique<package_dependants_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependants));
 
-            element_filters.emplace_back(std::make_unique<edge_traversal_filter<
-                    package_diagram::model::diagram, common::model::package>>(
-                filter_t::kInclusive, relationship_t::kDependency,
-                c.include().dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<package_dependencies_filter_t>(
+                    filter_t::kInclusive, relationship_t::kDependency,
+                    c.include().dependencies, true));
         }
         else if (c.type() == diagram_t::kInclude) {
             std::vector<std::string> dependants;
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.include().dependants) {
-                const std::filesystem::path dep_path{path};
-                dependants.emplace_back(dep_path.lexically_normal().string());
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    const std::filesystem::path dep_path{*p};
+                    dependants.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             for (auto &&path : c.include().dependencies) {
-                const std::filesystem::path dep_path{path};
-                dependencies.emplace_back(dep_path.lexically_normal().string());
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    const std::filesystem::path dep_path{*p};
+                    dependencies.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<include_diagram::model::diagram,
-                    common::model::source_file, common::model::source_file>>(
-                filter_t::kInclusive, relationship_t::kAssociation,
-                dependants));
+            element_filters.emplace_back(
+                std::make_unique<source_file_dependency_filter_t>(
+                    filter_t::kInclusive, relationship_t::kAssociation,
+                    dependants));
 
-            element_filters.emplace_back(std::make_unique<
-                edge_traversal_filter<include_diagram::model::diagram,
-                    common::model::source_file, common::model::source_file>>(
-                filter_t::kInclusive, relationship_t::kAssociation,
-                dependencies, true));
+            element_filters.emplace_back(
+                std::make_unique<source_file_dependency_filter_t>(
+                    filter_t::kInclusive, relationship_t::kAssociation,
+                    dependencies, true));
         }
 
         element_filters.emplace_back(std::make_unique<context_filter>(
@@ -742,28 +815,23 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_exclusive_filter(std::make_unique<parents_filter>(
             filter_t::kExclusive, c.exclude().parents));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
-            filter_t::kExclusive, relationship_t::kInstantiation,
-            c.exclude().specializations));
+        add_exclusive_filter(
+            std::make_unique<specializations_filter_t>(filter_t::kExclusive,
+                relationship_t::kInstantiation, c.exclude().specializations));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependants));
+        add_exclusive_filter(
+            std::make_unique<class_dependants_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependants));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                package_diagram::model::diagram, common::model::package>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependants));
+        add_exclusive_filter(
+            std::make_unique<package_dependants_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependants));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                class_diagram::model::diagram, class_diagram::model::class_>>(
-            filter_t::kExclusive, relationship_t::kDependency,
-            c.exclude().dependencies, true));
+        add_exclusive_filter(
+            std::make_unique<class_dependencies_filter_t>(filter_t::kExclusive,
+                relationship_t::kDependency, c.exclude().dependencies, true));
 
-        add_exclusive_filter(std::make_unique<edge_traversal_filter<
-                package_diagram::model::diagram, common::model::package>>(
+        add_exclusive_filter(std::make_unique<package_dependencies_filter_t>(
             filter_t::kExclusive, relationship_t::kDependency,
             c.exclude().dependencies, true));
 
@@ -772,23 +840,29 @@ void diagram_filter::init_filters(const config::diagram &c)
             std::vector<std::string> dependencies;
 
             for (auto &&path : c.exclude().dependants) {
-                std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    std::filesystem::path dep_path{*p};
+                    if (dep_path.is_relative()) {
+                        dep_path = c.base_directory() / *p;
+                        dep_path = relative(dep_path, c.relative_to());
+                    }
 
-                dependants.emplace_back(dep_path.lexically_normal().string());
+                    dependants.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             for (auto &&path : c.exclude().dependencies) {
-                std::filesystem::path dep_path{path};
-                if (dep_path.is_relative()) {
-                    dep_path = c.base_directory() / path;
-                    dep_path = relative(dep_path, c.relative_to());
-                }
+                if (auto p = path.get<std::string>(); p.has_value()) {
+                    std::filesystem::path dep_path{*p};
+                    if (dep_path.is_relative()) {
+                        dep_path = c.base_directory() / *p;
+                        dep_path = relative(dep_path, c.relative_to());
+                    }
 
-                dependencies.emplace_back(dep_path.lexically_normal().string());
+                    dependencies.emplace_back(
+                        dep_path.lexically_normal().string());
+                }
             }
 
             add_exclusive_filter(std::make_unique<

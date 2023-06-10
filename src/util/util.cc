@@ -20,6 +20,9 @@
 #include <spdlog/spdlog.h>
 
 #include <regex>
+#if __has_include(<sys/utsname.h>)
+#include <sys/utsname.h>
+#endif
 
 namespace clanguml::util {
 
@@ -122,6 +125,29 @@ std::string get_git_toplevel_dir()
         return env;
 
     return trim(get_process_output("git rev-parse --show-toplevel"));
+}
+
+std::string get_os_name()
+{
+#ifdef _WIN32
+    return "Windows, 32-bit";
+#elif _WIN64
+    return "Windows, 64-bit";
+#elif __has_include(<sys/utsname.h>)
+    struct utsname utsn; // NOLINT
+    uname(&utsn);
+    return fmt::format("{} {} {}", utsn.sysname, utsn.machine, utsn.release);
+#elif __linux__
+    return "Linux";
+#elif __APPLE__ || __MACH__
+    return "macOS";
+#elif __FreeBSD__
+    return "FreeBSD";
+#elif __unix__ || __unix
+    return "Unix";
+#else
+    return "Unknown";
+#endif
 }
 
 std::string ltrim(const std::string &s)

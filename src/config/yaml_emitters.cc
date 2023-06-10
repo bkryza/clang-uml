@@ -18,7 +18,35 @@
 
 #include "config.h"
 
-namespace clanguml::common::model {
+namespace clanguml::common {
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const string_or_regex &m)
+{
+    if (std::holds_alternative<std::string>(m.value())) {
+        out << std::get<std::string>(m.value());
+    }
+    else {
+        out << YAML::Key << "r" << YAML::Value
+            << std::get<regex>(m.value()).pattern;
+    }
+
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_or_regex &m)
+{
+    if (std::holds_alternative<common::model::namespace_>(m.value())) {
+        out << std::get<common::model::namespace_>(m.value());
+    }
+    else {
+        out << YAML::Key << "r" << YAML::Value
+            << std::get<regex>(m.value()).pattern;
+    }
+
+    return out;
+}
+
+namespace model {
 YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_ &n)
 {
     out << n.to_string();
@@ -42,7 +70,9 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
     out << to_string(d);
     return out;
 }
-} // namespace clanguml::common::model
+
+} // namespace model
+} // namespace clanguml::common
 
 namespace clanguml::config {
 

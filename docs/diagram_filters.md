@@ -2,18 +2,18 @@
 
 <!-- toc -->
 
-* [`namespaces`](#namespaces)
-* [`elements`](#elements)
+* [`namespaces` _[string or regex]_](#namespaces-_string-or-regex_)
+* [`elements` _[string or regex]_](#elements-_string-or-regex_)
 * [`element_types`](#element_types)
-* [`paths`](#paths)
-* [`context`](#context)
+* [`paths` _[string or glob]_](#paths-_string-or-glob_)
+* [`context` _[string or regex]_](#context-_string-or-regex_)
 * [`relationships`](#relationships)
-* [`subclasses`](#subclasses)
-* [`parents`](#parents)
-* [`specializations`](#specializations)
+* [`subclasses` _[string or regex]_](#subclasses-_string-or-regex_)
+* [`parents` _[string or regex]_](#parents-_string-or-regex_)
+* [`specializations` _[string or regex]_](#specializations-_string-or-regex_)
 * [`access`](#access)
 * [`method_types`](#method_types)
-* [`dependants` and `dependencies`](#dependants-and-dependencies)
+* [`dependants` and `dependencies` _[string or regex]_](#dependants-and-dependencies-_string-or-regex_)
 
 <!-- tocstop -->
 
@@ -36,13 +36,48 @@ to your diagram configuration:
       - ns1::ns2::detail
 ```
 
+Some filters accept either specified exact values, some support regular
+expressions while some except glob patterns.
+
+For filters which accept regular expressions, the regular expression has to
+be provided as a map `r: 'pattern'` due to the fact the pointer (`*`) otherwise
+would have to be escaped in situations such as `mycontainer<char*>`, so for
+instance to specify that the diagram should exclude all classes containing the
+word `test` simply add the following filter:
+
+```yaml
+exclude:
+  elements:
+    - r: '.*test.*'
+```
+
+`paths` filter is currently the only filter which accepts `glob` like patterns.
+
+The following table specifies the values allowed in each filter:
+
+| Filter name       | Possible values                  | Example values                                                                                                                                            |
+|-------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `namespaces`      | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `r: '.*detail.*'`                                                                                                            |
+| `elements`        | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `r: '.*detail.*'`                                                                                                            |
+| `element_types`   | Types of diagram elements        | - `class`<br/>- `enum`<br/>- `concept`                                                                                                                    |
+| `paths`           | File or dir path or glob pattern | - `src/dir1`<br/>- `src/dir2/a.cpp`<br/>- `src/dir3/*.cpp`                                                                                                |
+| `context`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `relationships`   | Type of relationship             | - `inheritance`<br/>- `composition`<br/>- `aggregation`<br/>- `ownership`<br/>- `association`<br/>- `instantiation`<br/>- `friendship`<br/>- `dependency` |
+| `subclasses`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `parents`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `specializations` | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `access`          | Method or member access scope    | - `public`<br/>- `protected`<br/>- `private`                                                                                                              |
+| `method_types`    | Type of class method             | - `constructor`<br/>- `destructor`<br/>- `assignment`<br/>- `operator`<br/>- `defaulted`<br/>- `deleted`<br/>- `static`                                   |
+| `dependants`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `dependencies`    | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+
 The following filters are available.
 
-## `namespaces`
+## `namespaces` _[string or regex]_
 
 Allows to include or exclude entities from specific namespaces.
 
-## `elements`
+## `elements` _[string or regex]_
 
 Allows to directly include or exclude specific entities from the diagrams, for instance to exclude a specific class
 from an included namespace:
@@ -67,7 +102,7 @@ to remove all enums from a diagram add the following:
       - enum
 ```
 
-## `paths`
+## `paths` _[string or glob]_
 
 This filter allows to include or exclude from the diagram elements declared
 in specific files.
@@ -87,7 +122,7 @@ diagrams:
 Currently, this filter does not allow any globbing or wildcards, however
 paths to directories can be specified.
 
-## `context`
+## `context` _[string or regex]_
 
 This filter allows to limit the diagram elements only to classes which are in direct relationship (of any kind) with
 the specified class:
@@ -121,21 +156,21 @@ The following relationships can be used in this filter:
   * friendship
   * dependency
 
-## `subclasses`
+## `subclasses` _[string or regex]_
 
 This filter allows to include or exclude all subclasses of a given class in the diagram.
 
-## `parents`
+## `parents` _[string or regex]_
 
 This filter allows to include or exclude all parents (base classes) of a given class in the diagram.
 
-## `specializations`
+## `specializations` _[string or regex]_
 
 This filter allows to include or exclude specializations and instantiations of a specific template from the diagram.
 
 ## `access`
 
-This filter allows to include or exclude class methods and members based on their access scope, allowed values are:
+This filter allows to include or exclude class methods and members based on their access scope, allowed values ar:
 
   * `public`
   * `protected`
@@ -143,7 +178,7 @@ This filter allows to include or exclude class methods and members based on thei
 
 ## `method_types`
 
-This filter allows to include or exclude various method types from the class diagram, allowed values are:
+This filter allows to include or exclude various method types from the class diagram, allowed values ar:
   * constructor
   * destructor
   * assignment
@@ -155,7 +190,7 @@ This filter allows to include or exclude various method types from the class dia
 This filter is independent of the `access` filter, which controls which methods
 are included based on access scope (e.g. `public`).
 
-## `dependants` and `dependencies`
+## `dependants` and `dependencies` _[string or regex]_
 
 These filters allow to specify that only dependants or dependencies of a given class should be included in the diagram.
 This can be useful for analyzing what classes in your project depend on some other class, which could have impact for

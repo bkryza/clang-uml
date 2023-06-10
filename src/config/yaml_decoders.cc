@@ -20,6 +20,8 @@
 #include "diagram_templates.h"
 
 namespace YAML {
+using clanguml::common::namespace_or_regex;
+using clanguml::common::string_or_regex;
 using clanguml::common::model::access_t;
 using clanguml::common::model::relationship_t;
 using clanguml::config::class_diagram;
@@ -342,6 +344,40 @@ template <> struct convert<plantuml> {
     }
 };
 
+template <> struct convert<string_or_regex> {
+    static bool decode(const Node &node, string_or_regex &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap()) {
+            auto pattern = node["r"].as<std::string>();
+            auto rx = std::regex(pattern);
+            rhs = string_or_regex{std::move(rx), std::move(pattern)};
+        }
+        else {
+            rhs = string_or_regex{node.as<std::string>()};
+        }
+
+        return true;
+    }
+};
+
+template <> struct convert<namespace_or_regex> {
+    static bool decode(const Node &node, namespace_or_regex &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap()) {
+            auto pattern = node["r"].as<std::string>();
+            auto rx = std::regex(pattern);
+            rhs = namespace_or_regex{std::move(rx), std::move(pattern)};
+        }
+        else {
+            rhs = namespace_or_regex{node.as<std::string>()};
+        }
+
+        return true;
+    }
+};
+
 //
 // filter Yaml decoder
 //
@@ -350,7 +386,7 @@ template <> struct convert<filter> {
     {
         if (node["namespaces"]) {
             auto namespace_list =
-                node["namespaces"].as<std::vector<std::string>>();
+                node["namespaces"].as<decltype(rhs.namespaces)>();
             for (const auto &ns : namespace_list)
                 rhs.namespaces.push_back({ns});
         }
