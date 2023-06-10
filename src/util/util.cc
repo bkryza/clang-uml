@@ -134,7 +134,7 @@ std::string get_os_name()
 #elif _WIN64
     return "Windows, 64-bit";
 #elif __has_include(<sys/utsname.h>)
-    utsname utsn;
+    struct utsname utsn; // NOLINT
     uname(&utsn);
     return fmt::format("{} {} {}", utsn.sysname, utsn.machine, utsn.release);
 #elif __linux__

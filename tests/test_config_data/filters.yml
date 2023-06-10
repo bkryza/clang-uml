@@ -10,9 +10,10 @@ diagrams:
       - src/**/*.h
     include:
       paths:
-        - class_diagram/
+        - class_d*/
         - common
-        - util
+        - util/*.h
+        - util/*.cc
         - main.cc
     exclude:
       paths:

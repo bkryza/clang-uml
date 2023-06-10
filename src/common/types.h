@@ -235,4 +235,6 @@ std::string to_string(const string_or_regex &sr);
 
 using namespace_or_regex = common::or_regex<common::model::namespace_>;
 
+struct path_or_regex : public or_regex<std::filesystem::path> { };
+
 } // namespace clanguml::common

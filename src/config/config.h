@@ -109,7 +109,7 @@ struct filter {
 
     std::vector<common::string_or_regex> context;
 
-    std::vector<std::filesystem::path> paths;
+    std::vector<std::string> paths;
 
     std::vector<method_type> method_types;
 };

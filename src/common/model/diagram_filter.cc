@@ -22,6 +22,7 @@
 
 #include "class_diagram/model/class.h"
 #include "common/model/package.h"
+#include "glob/glob.hpp"
 #include "include_diagram/model/diagram.h"
 #include "package_diagram/model/diagram.h"
 
@@ -493,33 +494,44 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    const std::vector<std::filesystem::path> &p)
+    const std::vector<std::string> &p)
     : filter_visitor{type}
     , root_{root}
 {
     for (const auto &path : p) {
         std::filesystem::path absolute_path;
 
-        if (path.string().empty() || path.string() == ".")
+        if (path.empty() || path == ".")
             absolute_path = root;
-        else if (path.is_relative())
+        else if (std::filesystem::path{path}.is_relative())
             absolute_path = root / path;
         else
             absolute_path = path;
 
-        try {
-            absolute_path = absolute(absolute_path);
-            absolute_path = canonical(absolute_path.lexically_normal());
-        }
-        catch (std::filesystem::filesystem_error &e) {
-            LOG_WARN("Cannot add non-existent path {} to paths filter",
-                absolute_path.string());
-            continue;
+        bool match_successful{false};
+        for (auto &resolved_glob_path :
+            glob::glob(absolute_path.string(), true)) {
+            try {
+                auto resolved_absolute_path = absolute(resolved_glob_path);
+                resolved_absolute_path =
+                    canonical(resolved_absolute_path.lexically_normal());
+
+                resolved_absolute_path.make_preferred();
+
+                paths_.emplace_back(resolved_absolute_path);
+
+                match_successful = true;
+            }
+            catch (std::filesystem::filesystem_error &e) {
+                LOG_WARN("Cannot add non-existent path {} to paths filter",
+                    absolute_path.string());
+                continue;
+            }
         }
 
-        absolute_path.make_preferred();
-
-        paths_.emplace_back(std::move(absolute_path));
+        if (!match_successful)
+            LOG_WARN(
+                "Paths filter pattern '{}' did not match any files...", path);
     }
 }
 

@@ -374,7 +374,7 @@ private:
 
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
-        const std::vector<std::filesystem::path> &p);
+        const std::vector<std::string> &p);
 
     ~paths_filter() override = default;
 
