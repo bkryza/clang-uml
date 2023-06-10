@@ -40,7 +40,7 @@ Some filters accept either specified exact values, some support regular
 expressions while some except glob patterns.
 
 For filters which accept regular expressions, the regular expression has to
-be provided as a map `re: 'pattern'` due to the fact the pointer (`*`) otherwise
+be provided as a map `r: 'pattern'` due to the fact the pointer (`*`) otherwise
 would have to be escaped in situations such as `mycontainer<char*>`, so for
 instance to specify that the diagram should exclude all classes containing the
 word `test` simply add the following filter:
@@ -48,7 +48,7 @@ word `test` simply add the following filter:
 ```yaml
 exclude:
   elements:
-    - re: '.*test.*'
+    - r: '.*test.*'
 ```
 
 `paths` filter is currently the only filter which accepts `glob` like patterns.
@@ -57,18 +57,19 @@ The following table specifies the values allowed in each filter:
 
 | Filter name       | Possible values                  | Example values                                                                                                                                            |
 |-------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `namespaces`      | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `re: '.\*detail.\*'`                                                                                                          |
-| `elements`        | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `re: '.\*detail.\*'`                                                                                                          |
+| `namespaces`      | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `r: '.*detail.*'`                                                                                                            |
+| `elements`        | Qualified name or regex          | - `ns1::ns2::ClassA` <br/>- `r: '.*detail.*'`                                                                                                            |
+| `element_types`   | Types of diagram elements        | - `class`<br/>- `enum`<br/>- `concept`                                                                                                                    |
 | `paths`           | File or dir path or glob pattern | - `src/dir1`<br/>- `src/dir2/a.cpp`<br/>- `src/dir3/*.cpp`                                                                                                |
-| `context`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `context`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
 | `relationships`   | Type of relationship             | - `inheritance`<br/>- `composition`<br/>- `aggregation`<br/>- `ownership`<br/>- `association`<br/>- `instantiation`<br/>- `friendship`<br/>- `dependency` |
-| `subclasses`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
-| `parents`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
-| `specializations` | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `subclasses`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `parents`         | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `specializations` | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
 | `access`          | Method or member access scope    | - `public`<br/>- `protected`<br/>- `private`                                                                                                              |
 | `method_types`    | Type of class method             | - `constructor`<br/>- `destructor`<br/>- `assignment`<br/>- `operator`<br/>- `defaulted`<br/>- `deleted`<br/>- `static`                                   |
-| `dependants`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
-| `dependencies`    | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `re: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `dependants`      | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
+| `dependencies`    | Qualified name or regex          | - `ns1::ns2::ClassA`<br/>- `r: 'ns1::ns2::ClassA.+'`                                                                                                     |
 
 The following filters are available.
 
@@ -169,7 +170,7 @@ This filter allows to include or exclude specializations and instantiations of a
 
 ## `access`
 
-This filter allows to include or exclude class methods and members based on their access scope, allowed values are:
+This filter allows to include or exclude class methods and members based on their access scope, allowed values ar:
 
   * `public`
   * `protected`
@@ -177,7 +178,7 @@ This filter allows to include or exclude class methods and members based on thei
 
 ## `method_types`
 
-This filter allows to include or exclude various method types from the class diagram, allowed values are:
+This filter allows to include or exclude various method types from the class diagram, allowed values ar:
   * constructor
   * destructor
   * assignment
