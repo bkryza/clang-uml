@@ -11,6 +11,7 @@
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+  * [Cannot generate classes for `std` namespace](#cannot-generate-classes-for-std-namespace)
 * [Sequence diagrams](#sequence-diagrams)
   * [Generated diagram is empty](#generated-diagram-is-empty)
   * [Generated diagram contains several empty control blocks or calls which should not be there](#generated-diagram-contains-several-empty-control-blocks-or-calls-which-should-not-be-there)
@@ -65,16 +66,16 @@ limit the number of translation units to visit for a given diagram, for instance
 diagrams:
   ClassAContextDiagram:
     type: class
-    ...
+    # ...
     glob:
       - src/classA.cpp
-    ...
+    # ...
   InterfaceHierarchyDiagram:
     type: class
-    ...
+    # ...
     glob:
       - src/interfaces/*.cpp
-    ...
+    # ...
 ```
 
 This should improve the generation times for individual diagrams significantly.
@@ -143,7 +144,7 @@ that at least one translation unit (e.g. one `cpp`) exists and it is included
 in the generated `compile_commands.json` database.
 
 However, even if your project is a header only library, first check if the
-generate `compile_commands.json` contains any entries - if yes you should be
+generated `compile_commands.json` contains any entries - if yes you should be
 fine - just make sure the `glob` pattern in the configuration file matches
 any of them. This is due to the fact that most header only projects still have
 test cases, which are compiled and executed, and which include the headers.
@@ -178,9 +179,9 @@ output_directory: output
     - function: 'main(int,const char**)'
 
 diagrams:
-  main_sequence_diagram: *sequence_diagram_anchor
+  main_sequence_diagram: *sequence_diagram_anchor # This will work
   foo_sequence_diagram:
-    <<: *sequence_diagram_anchor
+    <<: *sequence_diagram_anchor # This will not work
     glob: [src/foo.cc]
     start_from:
       - function: 'foo(int,float)'
@@ -197,7 +198,7 @@ yq 'explode(.)' .clang-uml | clang-uml --config -
 ## Class diagrams
 ### "fatal error: 'stddef.h' file not found"
 
-This error means that Clang cannot find some standard headers in the include
+This error means that Clang cannot find some standard headers in include
 paths  specified in the `compile_commands.json`. This typically happens on macOS
 and sometimes on Linux, when the code was compiled with different Clang version
 than `clang-uml` itself.
@@ -251,6 +252,31 @@ $ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
             --remove-compile-flag -I/usr/include ...
 ```
 
+### Cannot generate classes for `std` namespace
+Currently, system headers are skipped automatically by `clang-uml`, due to 
+too many errors they produce when generating diagrams, especially when trying
+to process `GCC`'s or `MSVC`'s system headers by `Clang` - not yet sure why
+that is the case.
+
+Basically it's best to either include only specific namespaces through the
+inclusion filters, e.g.:
+
+```yaml
+include:
+  namespaces:
+    - myns1::myns12
+```
+
+or explicitly exclude `std` namespace:
+
+```yaml
+exclude:
+  namespaces:
+    - std
+```
+
+Hopefully this will be eventually resolved.
+
 ## Sequence diagrams
 ### Generated diagram is empty
 
@@ -275,7 +301,7 @@ configuration file.
 
 ### Generated diagram contains several empty control blocks or calls which should not be there
 
-Currently the filtering of call expressions and purging empty control blocks (
+Currently, the filtering of call expressions and purging empty control blocks (
 e.g. loops or conditional statements),
 within which no interesting calls were included in the diagram is not perfect.
 In case the regular `namespaces` filter
