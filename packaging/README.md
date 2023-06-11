@@ -46,8 +46,7 @@ First build release configuration using `cmake` and `msbuild` according
 to the [documentation](../docs/installation.md#visual-studio-native-build).
 
 ```bash
-cmake -S clang-uml -B .\clang-uml-build-pkg\ -DCMAKE_PREFIX_PATH="C:\clang-uml" -Thost=x64
-cd .\clang-uml-build-pkg\
-msbuild .\clang-uml.vcxproj -maxcpucount /p:Configuration=RelWithDebInfo
-cpack -C "RelWithDebInfo" -G NSIS64
+cd packaging
+.\make_installer.ps1
+ls .\_BUILD\windows\clang-uml-0.3.7-win64.exe
 ```

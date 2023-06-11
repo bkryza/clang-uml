@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.7
   * Added regexp support to selected diagram filters (#51, #132)
   * Added method type diagram filter (#145)
   * Added default method grouping and sorting in class diagrams (#36)
