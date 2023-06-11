@@ -55,6 +55,14 @@ public:
 
     virtual ~translation_unit_visitor() = default;
 
+    void set_tu_path(const std::string &translation_unit_path);
+
+    /**
+     * @brief Return relative path to current translation unit
+     * @return Current translation unit path
+     */
+    const std::filesystem::path &tu_path() const;
+
     /**
      * @brief Get clang::SourceManager
      * @return Reference to @link clang::SourceManager used by this translation
@@ -108,5 +116,7 @@ private:
     std::unique_ptr<comment::comment_visitor> comment_visitor_;
 
     std::filesystem::path relative_to_path_;
+
+    std::filesystem::path translation_unit_path_;
 };
 } // namespace clanguml::common::visitor

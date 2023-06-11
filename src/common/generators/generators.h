@@ -151,6 +151,8 @@ public:
     {
     }
 
+    TranslationUnitVisitor &visitor() { return visitor_; }
+
     void HandleTranslationUnit(clang::ASTContext &ast_context) override
     {
         visitor_.TraverseDecl(ast_context.getTranslationUnitDecl());
@@ -172,15 +174,22 @@ public:
     std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
         clang::CompilerInstance &CI, clang::StringRef /*file*/) override
     {
-        return std::make_unique<
+        auto ast_consumer = std::make_unique<
             diagram_ast_consumer<DiagramModel, DiagramConfig, DiagramVisitor>>(
             CI, diagram_, config_);
+
+        if constexpr (!std::is_same_v<DiagramModel,
+                          clanguml::include_diagram::model::diagram>) {
+            ast_consumer->visitor().set_tu_path(getCurrentFile().str());
+        }
+
+        return ast_consumer;
     }
 
 protected:
     bool BeginSourceFileAction(clang::CompilerInstance &ci) override
     {
-        LOG_DBG("Visiting source file: {}", getCurrentFile().str());
+        LOG_WARN("Visiting source file: {}", getCurrentFile().str());
 
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {

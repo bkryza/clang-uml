@@ -38,6 +38,19 @@ translation_unit_visitor::translation_unit_visitor(
     }
 }
 
+void translation_unit_visitor::set_tu_path(
+    const std::string &translation_unit_path)
+{
+    translation_unit_path_ = relative(
+        std::filesystem::path{translation_unit_path}, relative_to_path_);
+    translation_unit_path_.make_preferred();
+}
+
+const std::filesystem::path &translation_unit_visitor::tu_path() const
+{
+    return translation_unit_path_;
+}
+
 clang::SourceManager &translation_unit_visitor::source_manager() const
 {
     return source_manager_;
@@ -87,7 +100,7 @@ void translation_unit_visitor::set_source_location(
 {
     std::string file;
     unsigned line{};
-    [[maybe_unused]] unsigned column{};
+    unsigned column{};
 
     if (location.isValid()) {
         file = source_manager_.getFilename(location).str();
@@ -113,7 +126,9 @@ void translation_unit_visitor::set_source_location(
     element.set_file(file);
     element.set_file_relative(util::path_to_url(
         std::filesystem::relative(element.file(), relative_to_path_).string()));
+    element.set_translation_unit(tu_path().string());
     element.set_line(line);
+    element.set_column(column);
     element.set_location_id(location.getHashValue());
 }
 

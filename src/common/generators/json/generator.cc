@@ -32,7 +32,9 @@ std::string render_name(std::string name)
 
 void to_json(nlohmann::json &j, const source_location &sl)
 {
-    j = json{{"file", sl.file_relative()}, {"line", sl.line()}};
+    j = json{{"file", sl.file_relative()},
+        {"translation_unit", sl.translation_unit()}, {"line", sl.line()},
+        {"column", sl.column()}};
 }
 
 void to_json(nlohmann::json &j, const element &c)

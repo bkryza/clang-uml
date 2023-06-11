@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  * Extended source_location with column and translation unit info
+
 ### 0.3.7
   * Added regexp support to selected diagram filters (#51, #132)
   * Added method type diagram filter (#145)

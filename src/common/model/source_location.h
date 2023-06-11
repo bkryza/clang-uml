@@ -40,9 +40,20 @@ public:
 
     void set_file_relative(const std::string &file) { file_relative_ = file; }
 
+    const std::string &translation_unit() const { return translation_unit_; }
+
+    void set_translation_unit(const std::string &translation_unit)
+    {
+        translation_unit_ = translation_unit;
+    }
+
     unsigned int line() const { return line_; }
 
     void set_line(const unsigned line) { line_ = line; }
+
+    unsigned int column() const { return column_; }
+
+    void set_column(const unsigned column) { column_ = column; }
 
     unsigned int location_id() const { return hash_; }
 
@@ -51,7 +62,9 @@ public:
 private:
     std::string file_;
     std::string file_relative_;
+    std::string translation_unit_;
     unsigned int line_{0};
+    unsigned int column_{0};
     unsigned int hash_{0};
 };
 } // namespace clanguml::common::model

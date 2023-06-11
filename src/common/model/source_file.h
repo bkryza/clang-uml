@@ -133,29 +133,6 @@ private:
 } // namespace clanguml::common::model
 
 namespace std {
-
-/*
- template <> struct hash<clanguml::common::model::filesystem_path> {
-     std::size_t operator()(
-         const clanguml::common::model::filesystem_path &key) const
-     {
-         using clanguml::common::model::path;
-
-         std::size_t seed = key.size();
-         for (const auto &ns : key) {
-             seed ^=
-                 std::hash<std::string>{}(ns) +
-                 clanguml::util::hash_seed(seed);
-         }
-
-         return seed;
-     }
- };
-*/
-
-} // namespace std
-
-namespace std {
 template <>
 struct hash<std::reference_wrapper<clanguml::common::model::source_file>> {
     std::size_t operator()(
