@@ -189,7 +189,7 @@ public:
 protected:
     bool BeginSourceFileAction(clang::CompilerInstance &ci) override
     {
-        LOG_WARN("Visiting source file: {}", getCurrentFile().str());
+        LOG_DBG("Visiting source file: {}", getCurrentFile().str());
 
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {
