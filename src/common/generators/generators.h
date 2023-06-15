@@ -225,7 +225,7 @@ public:
         const DiagramConfig &config, std::function<void()> progress)
         : diagram_{diagram}
         , config_{config}
-        , progress_{progress}
+        , progress_{std::move(progress)}
     {
     }
 

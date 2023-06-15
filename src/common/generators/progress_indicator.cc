@@ -32,14 +32,17 @@ void progress_indicator::add_progress_bar(
 {
     auto postfix_text = max > 0 ? fmt::format("{}/{}", 0, max) : std::string{};
 
+    const auto kBarWidth = 35U;
+    const auto kPrefixTextWidth = 25U;
+
     auto bar = std::make_shared<indicators::ProgressBar>(
-        indicators::option::BarWidth{34},
+        indicators::option::BarWidth{kBarWidth},
         indicators::option::ForegroundColor{color},
         indicators::option::ShowElapsedTime{true},
         indicators::option::Fill{"█"}, indicators::option::Lead{"█"},
         indicators::option::Remainder{"-"},
         indicators::option::PrefixText{
-            fmt::format("{:<25}", util::abbreviate(name, 25))},
+            fmt::format("{:<25}", util::abbreviate(name, kPrefixTextWidth))},
         indicators::option::PostfixText{postfix_text});
 
     progress_bars_mutex_.lock();
@@ -55,6 +58,8 @@ void progress_indicator::add_progress_bar(
 
 void progress_indicator::increment(const std::string &name)
 {
+    const auto kASTTraverseProgressPercent = 95U;
+
     progress_bars_mutex_.lock();
 
     if (progress_bar_index_.count(name) == 0) {
@@ -67,7 +72,7 @@ void progress_indicator::increment(const std::string &name)
     progress_bars_mutex_.unlock();
 
     p.progress++;
-    bar.set_progress((p.progress * 95) / p.max);
+    bar.set_progress((p.progress * kASTTraverseProgressPercent) / p.max);
     bar.set_option(indicators::option::PostfixText{
         fmt::format("{}/{}", p.progress, p.max)});
 }
@@ -85,6 +90,8 @@ void progress_indicator::stop()
 
 void progress_indicator::complete(const std::string &name)
 {
+    const auto kCompleteProgressPercent = 100U;
+
     progress_bars_mutex_.lock();
 
     if (progress_bar_index_.count(name) == 0) {
@@ -96,7 +103,7 @@ void progress_indicator::complete(const std::string &name)
     auto &bar = progress_bars_[p.index];
     progress_bars_mutex_.unlock();
 
-    bar.set_progress(100);
+    bar.set_progress(kCompleteProgressPercent);
 
     bar.set_option(indicators::option::PostfixText{
         fmt::format("{}/{} ✔", p.progress, p.max)});
