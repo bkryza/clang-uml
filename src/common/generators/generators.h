@@ -26,6 +26,7 @@
 #include "config/config.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
+#include "indicators/indicators.hpp"
 #include "package_diagram/generators/json/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
@@ -164,10 +165,11 @@ template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 class diagram_fronted_action : public clang::ASTFrontendAction {
 public:
-    explicit diagram_fronted_action(
-        DiagramModel &diagram, const DiagramConfig &config)
+    explicit diagram_fronted_action(DiagramModel &diagram,
+        const DiagramConfig &config, std::function<void()> progress)
         : diagram_{diagram}
         , config_{config}
+        , progress_{std::move(progress)}
     {
     }
 
@@ -191,6 +193,9 @@ protected:
     {
         LOG_DBG("Visiting source file: {}", getCurrentFile().str());
 
+        if (progress_)
+            progress_();
+
         if constexpr (std::is_same_v<DiagramModel,
                           clanguml::include_diagram::model::diagram>) {
             auto find_includes_callback =
@@ -208,6 +213,7 @@ protected:
 private:
     DiagramModel &diagram_;
     const DiagramConfig &config_;
+    std::function<void()> progress_;
 };
 
 template <typename DiagramModel, typename DiagramConfig,
@@ -215,29 +221,32 @@ template <typename DiagramModel, typename DiagramConfig,
 class diagram_action_visitor_factory
     : public clang::tooling::FrontendActionFactory {
 public:
-    explicit diagram_action_visitor_factory(
-        DiagramModel &diagram, const DiagramConfig &config)
+    explicit diagram_action_visitor_factory(DiagramModel &diagram,
+        const DiagramConfig &config, std::function<void()> progress)
         : diagram_{diagram}
         , config_{config}
+        , progress_{std::move(progress)}
     {
     }
 
     std::unique_ptr<clang::FrontendAction> create() override
     {
         return std::make_unique<diagram_fronted_action<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(diagram_, config_);
+            DiagramConfig, DiagramVisitor>>(diagram_, config_, progress_);
     }
 
 private:
     DiagramModel &diagram_;
     const DiagramConfig &config_;
+    std::function<void()> progress_;
 };
 
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
     const std::string &name, DiagramConfig &config,
-    const std::vector<std::string> &translation_units, bool /*verbose*/ = false)
+    const std::vector<std::string> &translation_units, bool /*verbose*/ = false,
+    std::function<void()> progress = {})
 {
     LOG_INFO("Generating diagram {}", name);
 
@@ -252,7 +261,8 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
     clang::tooling::ClangTool clang_tool(db, translation_units);
     auto action_factory =
         std::make_unique<diagram_action_visitor_factory<DiagramModel,
-            DiagramConfig, DiagramVisitor>>(*diagram, config);
+            DiagramConfig, DiagramVisitor>>(
+            *diagram, config, std::move(progress));
 
     auto res = clang_tool.run(action_factory.get());
 
@@ -275,9 +285,11 @@ void generate_diagram(const std::string &od, const std::string &name,
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
     const common::compilation_database_ptr &db, int verbose,
-    unsigned int thread_count,
+    unsigned int thread_count, bool progress,
     const std::vector<clanguml::common::generator_type_t> &generators,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map);
+
+indicators::Color diagram_type_to_color(model::diagram_t diagram_type);
 
 } // namespace clanguml::common::generators

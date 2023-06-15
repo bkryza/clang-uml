@@ -79,7 +79,7 @@ int main(int argc, const char *argv[])
 
         common::generators::generate_diagrams(cli.diagram_names, cli.config,
             cli.effective_output_directory, db, cli.verbose, cli.thread_count,
-            cli.generators, translation_units_map);
+            cli.progress, cli.generators, translation_units_map);
     }
     catch (common::compilation_database_error &e) {
         LOG_ERROR("Failed to load compilation database from {} due to: {}",

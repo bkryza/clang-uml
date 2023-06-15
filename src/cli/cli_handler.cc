@@ -26,6 +26,7 @@
 
 #include <clang/Basic/Version.h>
 #include <clang/Config/config.h>
+#include <indicators/indicators.hpp>
 
 namespace clanguml::cli {
 cli_handler::cli_handler(
@@ -38,7 +39,17 @@ cli_handler::cli_handler(
 void cli_handler::setup_logging()
 {
     spdlog::drop("clanguml-logger");
-    spdlog::register_logger(logger_);
+
+    if (!progress) {
+        spdlog::register_logger(logger_);
+    }
+    else {
+        // Setup null logger for clean progress indicators
+        std::vector<spdlog::sink_ptr> sinks;
+        logger_ = std::make_shared<spdlog::logger>(
+            "clanguml-logger", begin(sinks), end(sinks));
+        spdlog::register_logger(logger_);
+    }
 
     logger_->set_pattern("[%^%l%^] [tid %t] %v");
 
@@ -79,6 +90,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
     app.add_flag("-V,--version", show_version, "Print version and exit");
     app.add_flag("-v,--verbose", verbose,
         "Verbose logging (use multiple times to increase - e.g. -vvv)");
+    app.add_flag(
+        "-p,--progress", progress, "Show progress bars for generated diagrams");
     app.add_flag("-q,--quiet", quiet, "Minimal logging");
     app.add_flag("-l,--list-diagrams", list_diagrams,
         "Print list of diagrams defined in the config file");
@@ -134,6 +147,9 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         verbose = 0;
     else
         verbose++;
+
+    if (progress)
+        verbose = 0;
 
     return cli_flow_t::kContinue;
 }

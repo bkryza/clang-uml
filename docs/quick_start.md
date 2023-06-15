@@ -40,6 +40,8 @@ To add an initial class diagram to your project, follow these steps:
 3. Run `clang-uml` in the projects top directory:
     ```bash
     $ clang-uml
+    # or to see generation progress for each diagram run
+    $ clang-uml --progress
     ```
 4. Generate SVG images from the PlantUML diagrams:
     ```bash

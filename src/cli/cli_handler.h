@@ -118,6 +118,7 @@ public:
     unsigned int thread_count{};
     bool show_version{false};
     int verbose{};
+    bool progress{false};
     bool list_diagrams{false};
     bool quiet{false};
     bool initialize{false};

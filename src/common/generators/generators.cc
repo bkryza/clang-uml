@@ -18,6 +18,8 @@
 
 #include "generators.h"
 
+#include "progress_indicator.h"
+
 namespace clanguml::common::generators {
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
@@ -82,7 +84,7 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
     const std::vector<clanguml::common::generator_type_t> &generators,
-    bool verbose)
+    bool verbose, std::function<void()> &&progress)
 {
     using diagram_config = DiagramConfig;
     using diagram_model = typename diagram_model_t<DiagramConfig>::type;
@@ -90,7 +92,8 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
 
     auto model = clanguml::common::generators::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram), translation_units, verbose);
+        dynamic_cast<diagram_config &>(*diagram), translation_units, verbose,
+        std::move(progress));
 
     for (const auto generator_type : generators) {
         if (generator_type == generator_type_t::plantuml) {
@@ -110,7 +113,7 @@ void generate_diagram(const std::string &od, const std::string &name,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
     const std::vector<clanguml::common::generator_type_t> &generators,
-    bool verbose)
+    bool verbose, std::function<void()> &&progress)
 {
     using clanguml::common::generator_type_t;
     using clanguml::common::model::diagram_t;
@@ -121,33 +124,41 @@ void generate_diagram(const std::string &od, const std::string &name,
     using clanguml::config::sequence_diagram;
 
     if (diagram->type() == diagram_t::kClass) {
-        detail::generate_diagram_impl<class_diagram>(
-            od, name, diagram, db, translation_units, generators, verbose);
+        detail::generate_diagram_impl<class_diagram>(od, name, diagram, db,
+            translation_units, generators, verbose, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kSequence) {
-        detail::generate_diagram_impl<sequence_diagram>(
-            od, name, diagram, db, translation_units, generators, verbose);
+        detail::generate_diagram_impl<sequence_diagram>(od, name, diagram, db,
+            translation_units, generators, verbose, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kPackage) {
-        detail::generate_diagram_impl<package_diagram>(
-            od, name, diagram, db, translation_units, generators, verbose);
+        detail::generate_diagram_impl<package_diagram>(od, name, diagram, db,
+            translation_units, generators, verbose, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kInclude) {
-        detail::generate_diagram_impl<include_diagram>(
-            od, name, diagram, db, translation_units, generators, verbose);
+        detail::generate_diagram_impl<include_diagram>(od, name, diagram, db,
+            translation_units, generators, verbose, std::move(progress));
     }
 }
 
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     config::config &config, const std::string &od,
     const common::compilation_database_ptr &db, const int verbose,
-    const unsigned int thread_count,
+    const unsigned int thread_count, bool progress,
     const std::vector<clanguml::common::generator_type_t> &generators,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map)
 {
     util::thread_pool_executor generator_executor{thread_count};
     std::vector<std::future<void>> futs;
+
+    std::unique_ptr<progress_indicator> indicator;
+
+    if (progress) {
+        std::cout << termcolor::white
+                  << "Processing translation units and generating diagrams:\n";
+        indicator = std::make_unique<progress_indicator>();
+    }
 
     for (const auto &[name, diagram] : config.diagrams) {
         // If there are any specific diagram names provided on the command
@@ -158,22 +169,44 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
         const auto &valid_translation_units = translation_units_map.at(name);
 
         if (valid_translation_units.empty()) {
-            LOG_ERROR("Diagram {} generation failed: no translation units "
-                      "found. Please make sure that your 'glob' patterns match "
-                      "at least 1 file in 'compile_commands.json'.",
-                name);
+            if (indicator) {
+                indicator->add_progress_bar(
+                    name, 0, diagram_type_to_color(diagram->type()));
+                indicator->fail(name);
+            }
+            else {
+                LOG_ERROR(
+                    "Diagram {} generation failed: no translation units "
+                    "found. Please make sure that your 'glob' patterns match "
+                    "at least 1 file in 'compile_commands.json'.",
+                    name);
+            }
             continue;
         }
 
         futs.emplace_back(generator_executor.add(
-            [&od, &generators, &name = name, &diagram = diagram,
+            [&od, &generators, &name = name, &diagram = diagram, &indicator,
                 db = std::ref(*db), translation_units = valid_translation_units,
-                verbose]() {
+                verbose]() mutable {
                 try {
+                    if (indicator)
+                        indicator->add_progress_bar(name,
+                            translation_units.size(),
+                            diagram_type_to_color(diagram->type()));
+
                     generate_diagram(od, name, diagram, db, translation_units,
-                        generators, verbose != 0);
+                        generators, verbose != 0, [&indicator, &name]() {
+                            if (indicator)
+                                indicator->increment(name);
+                        });
+
+                    if (indicator)
+                        indicator->complete(name);
                 }
                 catch (std::runtime_error &e) {
+                    if (indicator)
+                        indicator->fail(name);
+
                     LOG_ERROR(e.what());
                 }
             }));
@@ -181,6 +214,28 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
 
     for (auto &fut : futs) {
         fut.get();
+    }
+
+    if (progress) {
+        indicator->stop();
+        std::cout << termcolor::white << "Done\n";
+        std::cout << termcolor::reset;
+    }
+}
+
+indicators::Color diagram_type_to_color(model::diagram_t diagram_type)
+{
+    switch (diagram_type) {
+    case model::diagram_t::kClass:
+        return indicators::Color::yellow;
+    case model::diagram_t::kSequence:
+        return indicators::Color::blue;
+    case model::diagram_t::kPackage:
+        return indicators::Color::cyan;
+    case model::diagram_t::kInclude:
+        return indicators::Color::magenta;
+    default:
+        return indicators::Color::unspecified;
     }
 }
 

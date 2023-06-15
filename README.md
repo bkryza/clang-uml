@@ -18,6 +18,10 @@ The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON forma
 
 Full documentation can be found [here](./docs/README.md).
 
+To see what `clang-uml` can do, checkout the diagrams generated for unit
+test cases [here](./docs/test_cases.md) or examples in
+[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
+
 ## Features
 
 Main features supported so far include:
@@ -50,10 +54,6 @@ Main features supported so far include:
     * Interactive links to online code to packages - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t30002_package.svg)
 * **Include graph diagram generation**
     * Show include graph for selected files - [_example_](docs/test_cases/t40001.md)
-
-To see what `clang-uml` can do, checkout the diagrams generated for unit
-test cases [here](./docs/test_cases.md) and examples in
-[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
 More comprehensive documentation can be found [here](./docs/README.md).
 
@@ -210,7 +210,7 @@ public:
 };
 ```
 
-generates the following diagram (via PlantUML):
+results in the following diagram (via PlantUML):
 
 ![class_diagram_example](docs/test_cases/t00014_class.svg)
 
@@ -295,7 +295,7 @@ int tmain()
 }
 ```
 
-generates the following diagram (via PlantUML):
+results in the following diagram (via PlantUML):
 
 ![sequence_diagram_example](docs/test_cases/t20029_sequence.svg)
 
@@ -340,7 +340,7 @@ class B : public ns1::ns2::Anon {
 }
 ```
 
-generates the following diagram (via PlantUML):
+results in the following diagram (via PlantUML):
 
 ![package_diagram_example](docs/test_cases/t30003_package.svg)
 
@@ -364,7 +364,7 @@ tests/t40001
 
 ```
 
-generates the following diagram (via PlantUML) based on include directives in the code:
+results in the following diagram (via PlantUML) based on include directives in the code:
 
 ![package_diagram_example](docs/test_cases/t40001_include.svg)
 
@@ -435,6 +435,7 @@ This project relies on the following great tools:
 * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
 * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
 * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
+* [indicators](https://github.com/p-ranav/indicators) - Activity indicators for modern C++
 * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++
 * [inja](https://github.com/pantor/inja) - a template engine for modern C++
 * [backward-cpp](https://github.com/bombela/backward-cpp) - stack trace pretty printer for C++
