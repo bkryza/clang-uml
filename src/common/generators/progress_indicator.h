@@ -28,6 +28,13 @@ namespace clanguml::common::generators {
 class progress_indicator {
 public:
     struct progress_state {
+        explicit progress_state(size_t i, size_t p, size_t m)
+            : index{i}
+            , progress{p}
+            , max{m}
+        {
+        }
+
         size_t index;
         size_t progress;
         size_t max;

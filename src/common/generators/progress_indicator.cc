@@ -50,8 +50,7 @@ void progress_indicator::add_progress_bar(
     progress_bars_.push_back(*bar);
     bars_.push_back(bar);
     auto bar_index = bars_.size() - 1;
-    progress_bar_index_.emplace(
-        name, progress_state{.index = bar_index, .progress = 0, .max = max});
+    progress_bar_index_.emplace(name, progress_state{bar_index, 0, max});
 
     progress_bars_mutex_.unlock();
 }
