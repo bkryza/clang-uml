@@ -11,6 +11,7 @@
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+  * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
   * [Cannot generate classes for `std` namespace](#cannot-generate-classes-for-std-namespace)
 * [Sequence diagrams](#sequence-diagrams)
   * [Generated diagram is empty](#generated-diagram-is-empty)
@@ -250,6 +251,29 @@ These options can be also passed on the command line, for instance:
 ```bash
 $ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
             --remove-compile-flag -I/usr/include ...
+```
+
+### How can I generate class diagram of my entire project
+I want to generate a diagram containing all classes and relationships in my
+project - I don't care how big it is going to be.
+
+Of course this is possible, the best way to do this is to specify that `clang-uml`
+should only include elements defined in files contained in project sources, e.g.:
+
+```yaml
+diagrams:
+  all_classes:
+    type: class
+    include:
+      paths: [include, src]
+```
+
+As the diagram will be huge for even medium-sized projects, it will likely not
+be readable. However, this option can be useful for cases when we want to get
+a complete JSON model of the codebase using the JSON generator:
+
+```bash
+$ clang-uml -g json -n all_classes --progress
 ```
 
 ### Cannot generate classes for `std` namespace
