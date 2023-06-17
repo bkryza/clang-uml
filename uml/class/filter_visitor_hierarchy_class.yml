@@ -1,0 +1,17 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: true
+glob:
+  - src/common/model/diagram_filter.cc
+include:
+  namespaces:
+    - clanguml
+  subclasses:
+    - clanguml::common::model::filter_visitor
+exclude:
+  access: [public, protected, private]
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - left to right direction

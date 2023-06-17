@@ -334,7 +334,7 @@ void generator<C, D>::generate_plantuml_directives(
             // Render the directive with template engine first
             std::string directive{env().render(std::string_view{d}, context())};
 
-            // Now search for alias @A() directives in the text
+            // Now search for alias `@A()` directives in the text
             // (this is deprecated)
             std::tuple<std::string, size_t, size_t> alias_match;
             while (util::find_element_alias(directive, alias_match)) {

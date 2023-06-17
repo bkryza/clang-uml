@@ -1,0 +1,19 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: true
+glob:
+  - src/config/config.cc
+include:
+  namespaces:
+    - clanguml
+  subclasses:
+    - clanguml::config::diagram
+  parents:
+    - clanguml::config::diagram
+exclude:
+  access: [public, protected, private]
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clanguml::config::diagram class hierarchy'

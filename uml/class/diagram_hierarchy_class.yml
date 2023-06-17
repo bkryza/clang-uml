@@ -1,0 +1,21 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: true
+generate_method_arguments: none
+glob:
+  - src/common/model/diagram.cc
+  - src/class_diagram/model/diagram.cc
+  - src/sequence_diagram/model/diagram.cc
+  - src/include_diagram/model/diagram.cc
+  - src/package_diagram/model/diagram.cc
+include:
+  namespaces:
+    - clanguml
+  subclasses:
+    - clanguml::common::model::diagram
+  relationships:
+    - inheritance
+exclude:
+  access: [public, protected, private]
+using_namespace:
+  - clanguml

@@ -22,6 +22,10 @@
 namespace clanguml {
 namespace config {
 
+/**
+ * @brief Return YAML with predefined diagram templates
+ * @return YAML definition of predefined diagram templates
+ */
 const std::string &get_predefined_diagram_templates();
 
 } // namespace config

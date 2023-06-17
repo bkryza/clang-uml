@@ -49,8 +49,13 @@
 
 namespace clanguml::common::generators {
 
-// template trait for selecting diagram model type based on diagram config
-// type
+/** @defgroup diagram_model_t Diagram model selector
+ *
+ * Template traits for selecting diagram model type based on diagram config
+ * type
+ *
+ * @{
+ */
 template <typename DiagramConfig> struct diagram_model_t;
 template <> struct diagram_model_t<clanguml::config::class_diagram> {
     using type = clanguml::class_diagram::model::diagram;
@@ -64,9 +69,15 @@ template <> struct diagram_model_t<clanguml::config::package_diagram> {
 template <> struct diagram_model_t<clanguml::config::include_diagram> {
     using type = clanguml::include_diagram::model::diagram;
 };
+/** @} */
 
-// template trait for selecting diagram visitor type based on diagram config
-// type
+/** @defgroup diagram_visitor_t Diagram model selector
+ *
+ * Template traits for selecting diagram visitor type based on diagram config
+ * type
+ *
+ * @{
+ */
 template <typename DiagramConfig> struct diagram_visitor_t;
 template <> struct diagram_visitor_t<clanguml::config::class_diagram> {
     using type = clanguml::class_diagram::visitor::translation_unit_visitor;
@@ -80,16 +91,29 @@ template <> struct diagram_visitor_t<clanguml::config::package_diagram> {
 template <> struct diagram_visitor_t<clanguml::config::include_diagram> {
     using type = clanguml::include_diagram::visitor::translation_unit_visitor;
 };
+/** @} */
 
-// template trait for selecting diagram generator type based on diagram config
-// type
+/** @defgroup diagram_generator_tag Diagram model tags
+ *
+ * Tags to determine the generator output file extension
+ *
+ * @{
+ */
 struct plantuml_generator_tag {
     inline static const std::string extension = "puml";
 };
 struct json_generator_tag {
     inline static const std::string extension = "json";
 };
+/** @} */
 
+/** @defgroup diagram_generator_t Diagram generator selector
+ *
+ * Tags to determine the generator type based on diagram config type
+ * and output format
+ *
+ * @{
+ */
 template <typename DiagramConfig, typename GeneratorType>
 struct diagram_generator_t;
 template <>
@@ -132,14 +156,40 @@ struct diagram_generator_t<clanguml::config::include_diagram,
     json_generator_tag> {
     using type = clanguml::include_diagram::generators::json::generator;
 };
+/** @} */
 
-template <typename DiagramConfig> struct diagram_visitor_t;
+/**
+ * @brief Assign translation units to diagrams
+ *
+ * This function assigns for each diagram to be generated the list of
+ * translation units based on it's `glob` pattern if any.
+ *
+ * If `diagram_names` is empty, this function processes all diagrams in
+ * `config`.
+ *
+ * @param diagram_names List of diagram names, applies to all if empty
+ * @param config Reference to config instance
+ * @param compilation_database_files List of files found in compilation database
+ * @param translation_units_map Resulting translation units map is stored here
+ */
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
     const std::vector<std::string> &compilation_database_files,
     std::map<std::string, std::vector<std::string>> &translation_units_map);
 
+/**
+ * @brief Specialization of
+ * [clang::ASTConsumer](https://clang.llvm.org/doxygen/classclang_1_1ASTConsumer.html)
+ *
+ * This class provides overriden HandleTranslationUnit() method, which
+ * calls a translation_unit_visitor for a specific diagram type on
+ * each translation unit assigned to the diagram.
+ *
+ * @tparam DiagramModel Type of diagram_model
+ * @tparam DiagramConfig Type of diagram_config
+ * @tparam TranslationUnitVisitor Type of translation_unit_visitor
+ */
 template <typename DiagramModel, typename DiagramConfig,
     typename TranslationUnitVisitor>
 class diagram_ast_consumer : public clang::ASTConsumer {
@@ -161,6 +211,17 @@ public:
     }
 };
 
+/**
+ * @brief Specialization of
+ * [clang::ASTFrontendAction](https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html)
+ *
+ * This class overrides the BeginSourceFileAction() and CreateASTConsumer()
+ * methods to create and setup an appropriate diagram_ast_consumer instance.
+ *
+ * @tparam DiagramModel Type of diagram_model
+ * @tparam DiagramConfig Type of diagram_config
+ * @tparam TranslationUnitVisitor Type of translation_unit_visitor
+ */
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 class diagram_fronted_action : public clang::ASTFrontendAction {
@@ -193,6 +254,8 @@ protected:
     {
         LOG_DBG("Visiting source file: {}", getCurrentFile().str());
 
+        // Update progress indicators, if enabled, on each translation
+        // unit
         if (progress_)
             progress_();
 
@@ -216,6 +279,17 @@ private:
     std::function<void()> progress_;
 };
 
+/**
+ * @brief Specialization of
+ * [clang::ASTFrontendAction](https://clang.llvm.org/doxygen/classclang_1_1tooling_1_1FrontendActionFactory.html)
+ *
+ * This class overrides the create() method in order to create an instance
+ * of diagram_frontend_action of appropriate type.
+ *
+ * @tparam DiagramModel Type of diagram_model
+ * @tparam DiagramConfig Type of diagram_config
+ * @tparam TranslationUnitVisitor Type of translation_unit_visitor
+ */
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 class diagram_action_visitor_factory
@@ -241,6 +315,19 @@ private:
     std::function<void()> progress_;
 };
 
+/**
+ * @brief Specialization of
+ * [clang::ASTFrontendAction](https://clang.llvm.org/doxygen/classclang_1_1tooling_1_1FrontendActionFactory.html)
+ *
+ * This is the entry point function to initiate AST frontend action for a
+ * specific diagram.
+ *
+ * @embed{diagram_generate_generic_sequence.svg}
+ *
+ * @tparam DiagramModel Type of diagram_model
+ * @tparam DiagramConfig Type of diagram_config
+ * @tparam TranslationUnitVisitor Type of translation_unit_visitor
+ */
 template <typename DiagramModel, typename DiagramConfig,
     typename DiagramVisitor>
 std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
@@ -275,6 +362,17 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
     return diagram;
 }
 
+/**
+ * @brief Generate a single diagram
+ *
+ * @param od Output directory path
+ * @param name Name of the diagram
+ * @param diagram Effective diagram configuration
+ * @param db Reference to compilation database
+ * @param translation_units List of translation units for the diagram
+ * @param generators List of generator types to be used for the diagram
+ * @param verbose Log level
+ */
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
@@ -282,6 +380,19 @@ void generate_diagram(const std::string &od, const std::string &name,
     const std::vector<clanguml::common::generator_type_t> &generators,
     bool verbose);
 
+/**
+ * @brief Generate diagrams
+ *
+ * @param diagram_names List of diagram names to generate
+ * @param config Reference to config instance
+ * @param od Path to output directory
+ * @param db Reference to compilation database
+ * @param verbose Log level
+ * @param thread_count Number of diagrams to be generated in parallel
+ * @param progress Whether progress indicators should be displayed
+ * @param generators List of generator types to use for each diagram
+ * @param translation_units_map Map of translation units for each file
+ */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
     const common::compilation_database_ptr &db, int verbose,
@@ -290,6 +401,12 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map);
 
+/**
+ * @brief Return indicators progress bar color for diagram type
+ *
+ * @param diagram_type Diagram type
+ * @return Progress bar color
+ */
 indicators::Color diagram_type_to_color(model::diagram_t diagram_type);
 
 } // namespace clanguml::common::generators

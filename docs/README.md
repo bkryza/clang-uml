@@ -1,4 +1,19 @@
+@mainpage clang-uml
+
 # Documentation
+
+`clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by
+YAML configuration files. The main idea behind the
+project is to easily maintain up-to-date diagrams within a code-base or document
+legacy code. The configuration file or files for `clang-uml` define the
+types and contents of each generated diagram.
+The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON formats.
+
+`clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
+
+To see what `clang-uml` can do, checkout the diagrams generated for unit
+test cases [here](./test_cases.md) or examples in
+[clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
 * [Quick start](./quick_start.md)
 * [Installation](./installation.md)
@@ -18,3 +33,6 @@
 * [Doxygen integration](./doxygen_integration.md)
 * [Test cases documentation](./test_cases.md)
 * [Troubleshooting](./troubleshooting.md)
+* Development
+  * [Architecture](./architecture.md)
+  * [Contributing](../CONTRIBUTING.md)

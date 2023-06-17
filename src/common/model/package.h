@@ -32,6 +32,11 @@
 
 namespace clanguml::common::model {
 
+/**
+ * @brief Diagram element representing namespace or directory package
+ *
+ * @embed{package_hierarchy_class.svg}
+ */
 class package : public element,
                 public stylable_element,
                 public nested_trait<element, path> {
@@ -47,10 +52,25 @@ public:
 
     std::string full_name(bool relative) const override;
 
+    /**
+     * Returns whether the namespace is deprecated.
+     *
+     * @return True, if namespace is deprecated.
+     */
     bool is_deprecated() const;
 
+    /**
+     * Set namespace deprecation status.
+     *
+     * @param deprecated True, if namespace is deprecated
+     */
     void set_deprecated(bool deprecated);
 
+    /**
+     * Add subpackage.
+     *
+     * @param p Package.
+     */
     void add_package(std::unique_ptr<common::model::package> &&p);
 
 private:

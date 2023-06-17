@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: true
+glob:
+  - src/common/model/*.cc
+include:
+  namespaces:
+    - clanguml
+  subclasses:
+    - r: ".*nested_trait.*"
+exclude:
+  access: [private, protected, public]
+using_namespace:
+  - clanguml

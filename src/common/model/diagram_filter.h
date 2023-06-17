@@ -36,7 +36,15 @@
 
 namespace clanguml::common::model {
 
-enum filter_t { kInclusive, kExclusive };
+/**
+ * Diagram filters can be add in 2 modes:
+ *  - inclusive - the elements that match are included in the diagram
+ *  - exclusive - the elements that match are excluded from the diagram
+ */
+enum class filter_t {
+    kInclusive, /*!< Filter is inclusive */
+    kExclusive  /*!< Filter is exclusve */
+};
 
 namespace detail {
 template <typename ElementT, typename DiagramT>
@@ -56,6 +64,16 @@ clanguml::common::id_t destination_comparator(
     const common::model::source_file &f);
 } // namespace detail
 
+/**
+ * @brief Base class for any diagram filter.
+ *
+ * This class acts as a visitor for diagram elements. It provides a set of
+ * common methods which can be overriden by specific filters. If a filter
+ * does not implement a specific method, it is ignored through the 3 value
+ * logic implemented in @see clanguml::common::model::tvl
+ *
+ * @embed{filter_visitor_hierarchy_class.svg}
+ */
 class filter_visitor {
 public:
     filter_visitor(filter_t type);
@@ -111,6 +129,10 @@ private:
     std::vector<std::unique_ptr<filter_visitor>> filters_;
 };
 
+/**
+ * Match namespace or diagram element to a set of specified namespaces or
+ * regex patterns.
+ */
 struct namespace_filter : public filter_visitor {
     namespace_filter(
         filter_t type, std::vector<common::namespace_or_regex> namespaces);
@@ -125,6 +147,9 @@ private:
     std::vector<common::namespace_or_regex> namespaces_;
 };
 
+/**
+ * Match element's name to a set of names or regex patterns.
+ */
 struct element_filter : public filter_visitor {
     element_filter(
         filter_t type, std::vector<common::string_or_regex> elements);
@@ -137,6 +162,9 @@ private:
     std::vector<common::string_or_regex> elements_;
 };
 
+/**
+ * Match diagram elements based on elements type (e.g. class).
+ */
 struct element_type_filter : public filter_visitor {
     element_type_filter(filter_t type, std::vector<std::string> element_types);
 
@@ -148,6 +176,9 @@ private:
     std::vector<std::string> element_types_;
 };
 
+/**
+ * Match class methods based on their category (e.g. operator).
+ */
 struct method_type_filter : public filter_visitor {
     method_type_filter(
         filter_t type, std::vector<config::method_type> method_types);
@@ -161,6 +192,10 @@ private:
     std::vector<config::method_type> method_types_;
 };
 
+/**
+ * Match element based on whether it is a subclass of a set of base classes,
+ * or one of them.
+ */
 struct subclass_filter : public filter_visitor {
     subclass_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
@@ -172,6 +207,10 @@ private:
     std::vector<common::string_or_regex> roots_;
 };
 
+/**
+ * Match element based on whether it is a parent of a set of children, or one
+ * of them.
+ */
 struct parents_filter : public filter_visitor {
     parents_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
@@ -183,6 +222,20 @@ private:
     std::vector<common::string_or_regex> children_;
 };
 
+/**
+ * @brief Common template for filters involving traversing relationship graph.
+ *
+ * This class template provides a common implementation of a diagram
+ * relationship graph traversal. It is used for filters, which need to check
+ * for instance, whether an element is in some kind of relationship with other
+ * element.
+ *
+ * @tparam DiagramT Diagram type
+ * @tparam ElementT Element type
+ * @tparam ConfigEntryT Type of configuration option used to specify initial
+ *                      elements for traversal
+ * @tparam MatchOverrideT Type of the matched element
+ */
 template <typename DiagramT, typename ElementT,
     typename ConfigEntryT = std::string,
     typename MatchOverrideT = common::model::element>
@@ -337,6 +390,9 @@ private:
     bool forward_;
 };
 
+/**
+ * Match relationship types.
+ */
 struct relationship_filter : public filter_visitor {
     relationship_filter(
         filter_t type, std::vector<relationship_t> relationships);
@@ -350,6 +406,9 @@ private:
     std::vector<relationship_t> relationships_;
 };
 
+/**
+ * Match class members and methods based on access (public, protected, private).
+ */
 struct access_filter : public filter_visitor {
     access_filter(filter_t type, std::vector<access_t> access);
 
@@ -361,6 +420,10 @@ private:
     std::vector<access_t> access_;
 };
 
+/**
+ * Match diagram elements which are in direct relationship to any of the
+ * elements specified in context.
+ */
 struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<common::string_or_regex> context);
 
@@ -372,6 +435,10 @@ private:
     std::vector<common::string_or_regex> context_;
 };
 
+/**
+ * Match elements based on their source location, whether it matches to
+ * a specified file paths.
+ */
 struct paths_filter : public filter_visitor {
     paths_filter(filter_t type, const std::filesystem::path &root,
         const std::vector<std::string> &p);
@@ -389,6 +456,9 @@ private:
     std::filesystem::path root_;
 };
 
+/**
+ * Match class method based on specified method categories.
+ */
 struct class_method_filter : public filter_visitor {
     class_method_filter(filter_t type, std::unique_ptr<access_filter> af,
         std::unique_ptr<method_type_filter> mtf);
@@ -403,6 +473,9 @@ private:
     std::unique_ptr<method_type_filter> method_type_filter_;
 };
 
+/**
+ * Match class members.
+ */
 struct class_member_filter : public filter_visitor {
     class_member_filter(filter_t type, std::unique_ptr<access_filter> af);
 
@@ -415,16 +488,49 @@ private:
     std::unique_ptr<access_filter> access_filter_;
 };
 
+/**
+ * @brief Composite of all diagrams filters.
+ *
+ * Instances of this class contain all filters specified in configuration file
+ * for a given diagram.
+ *
+ * @embed{diagram_filter_context_class.svg}
+ *
+ * @see clanguml::common::model::filter_visitor
+ */
 class diagram_filter {
 public:
     diagram_filter(const common::model::diagram &d, const config::diagram &c);
 
+    /**
+     * Add inclusive filter.
+     *
+     * @param fv Filter visitor.
+     */
     void add_inclusive_filter(std::unique_ptr<filter_visitor> fv);
 
+    /** Add exclusive filter.
+     *
+     * @param fv Filter visitor.
+     */
     void add_exclusive_filter(std::unique_ptr<filter_visitor> fv);
 
+    /**
+     * `should_include` overload for namespace and name.
+     *
+     * @param ns Namespace
+     * @param name Name
+     * @return Match result.
+     */
     bool should_include(const namespace_ &ns, const std::string &name) const;
 
+    /**
+     * Generic `should_include` overload for various diagram elements.
+     *
+     * @tparam T Type to to match - must match one of filter_visitor's match(T)
+     * @param e Value of type T to match
+     * @return Match result.
+     */
     template <typename T> bool should_include(const T &e) const
     {
         auto exc = tvl::any_of(exclusive_.begin(), exclusive_.end(),
@@ -440,11 +546,22 @@ public:
     }
 
 private:
+    /**
+     * @brief Initialize filters.
+     *
+     * Some filters require initialization.
+     *
+     * @param c Diagram config.
+     */
     void init_filters(const config::diagram &c);
 
+    /*! List of inclusive filters */
     std::vector<std::unique_ptr<filter_visitor>> inclusive_;
+
+    /*! List of exclusive filters */
     std::vector<std::unique_ptr<filter_visitor>> exclusive_;
 
+    /*! Reference to the diagram model */
     const common::model::diagram &diagram_;
 };
 

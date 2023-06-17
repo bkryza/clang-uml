@@ -1,4 +1,4 @@
-/**
+/*
  * src/options/cli_handler.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
@@ -25,9 +25,21 @@
 #include <optional>
 
 namespace clanguml::cli {
+/**
+ * This enum represents possible exit states of the command line parser.
+ */
+enum class cli_flow_t {
+    kExit,    /*!< The application should exit (e.g. `-h`) */
+    kError,   /*!< The options or configuration file were invalid */
+    kContinue /*!< Continue with processing diagrams */
+};
 
-enum class cli_flow_t { kExit, kError, kContinue };
-
+/**
+ * @brief Command line options handler
+ *
+ * This class is responsible for handling the command line options
+ * and executing required actions.
+ */
 class cli_handler {
 public:
     cli_handler(std::ostream &ostr = std::cout,
@@ -37,45 +49,55 @@ public:
     /**
      * Main CLI handling method.
      *
+     * @embed{cli_handle_options_sequence.svg}
+     *
      * @param argc
      * @param argv
-     * @return
+     * @return Command line handler state
      */
     cli_flow_t handle_options(int argc, const char **argv);
 
     /**
      * Print the program version and basic information
+     *
+     * @return Command line handler state
      */
     cli_flow_t print_version();
 
     /**
      * Print list of diagrams available in the configuration file
+     *
+     * @return Command line handler state
      */
     cli_flow_t print_diagrams_list();
 
     /**
      * Print list of available diagram templates, including their names
      * and types.
+     *
+     * @return Command line handler state
      */
     cli_flow_t print_diagram_templates();
 
     /**
      * Print definition of a specific diagram template.
      *
-     * @param template_name
-     * @return
+     * @param template_name Name of the diagram template
+     * @return Command line handler state
      */
     cli_flow_t print_diagram_template(const std::string &template_name);
 
     /**
      * Print effective config after loading and setting default values.
+     *
+     * @return Command line handler state
      */
     cli_flow_t print_config();
 
     /**
      * Generate sample configuration file and exit.
      *
-     * @return 0 on success or error code
+     * @return Command line handler state
      */
     cli_flow_t create_config_file();
 
@@ -85,7 +107,7 @@ public:
      * @param type Type of the sample diagram to add
      * @param config_file_path Path to the config file
      * @param name Name of the new diagram
-     * @return 0 on success or error code
+     * @return Command line handler state
      */
     cli_flow_t add_config_diagram(clanguml::common::model::diagram_t type,
         const std::string &config_file_path, const std::string &name);
@@ -96,7 +118,7 @@ public:
      * @param config_file_path
      * @param template_name
      * @param template_variables
-     * @return
+     * @return Command line handler state
      */
     cli_flow_t add_config_diagram_from_template(
         const std::string &config_file_path, const std::string &template_name,
@@ -144,14 +166,39 @@ public:
     clanguml::config::config config;
 
 private:
+    /**
+     * This method parses the command line options using CLI11 library.
+     *
+     * @param argc
+     * @param argv
+     * @return Command line handler state
+     */
     cli_flow_t parse(int argc, const char **argv);
 
+    /**
+     * Handle command line options before parsing the configuration file
+     *
+     * @return Command line handler state
+     */
     cli_flow_t handle_pre_config_options();
 
+    /**
+     * Load configuration file from file or stdin
+     *
+     * @return Command line handler state
+     */
     cli_flow_t load_config();
 
+    /**
+     * Handle command line options before parsing the configuration file
+     *
+     * @return Command line handler state
+     */
     cli_flow_t handle_post_config_options();
 
+    /**
+     * Setup spdlog library depending on provided command line options
+     */
     void setup_logging();
 
     std::ostream &ostr_;

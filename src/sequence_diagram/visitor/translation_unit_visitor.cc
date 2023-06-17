@@ -1809,7 +1809,11 @@ void translation_unit_visitor::process_template_specialization_argument(
 
                 // Otherwise just set the name for the template argument to
                 // whatever clang says
-                argument.set_name(type_name);
+                if (template_params.size() > argument_index &&
+                    template_params[argument_index].type())
+                    argument.set_type(type_name);
+                else
+                    argument.set_name(type_name);
             }
             else
                 argument.set_type(type_name);

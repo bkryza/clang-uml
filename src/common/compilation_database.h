@@ -38,6 +38,16 @@ class compilation_database_error : public std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 
+/**
+ * @brief Custom compilation database class
+ *
+ * This class provides custom specialization of Clang's
+ * [CompilationDatabase](https://clang.llvm.org/doxygen/classclang_1_1tooling_1_1CompilationDatabase.html),
+ * which provides the possibility of adjusting the compilation flags after
+ * they have been loaded from the `compile_commands.json` file.
+ *
+ * @embed{compilation_database_context_class.svg}
+ */
 class compilation_database : public clang::tooling::CompilationDatabase {
 public:
     compilation_database(
@@ -46,19 +56,52 @@ public:
 
     ~compilation_database() override = default;
 
+    /**
+     * Loads the compilation database from directory specified on command
+     * line or in the configuration file.
+     *
+     * @param cfg Reference to config instance
+     * @return Instance of compilation_database.
+     */
     static std::unique_ptr<compilation_database> auto_detect_from_directory(
         const clanguml::config::config &cfg);
 
+    /**
+     * Retrieves and adjusts compilation commands from the database, for
+     * a given translation unit.
+     *
+     * @return List of adjusted compile commands.
+     */
     std::vector<clang::tooling::CompileCommand> getCompileCommands(
         clang::StringRef FilePath) const override;
 
+    /**
+     * Returns all files in the database.
+     *
+     * @return List of all files in compilation database.
+     */
     std::vector<std::string> getAllFiles() const override;
 
+    /**
+     * Retrieves and adjusts all compilation commands from the database.
+     *
+     * @return List of adjusted compile commands.
+     */
     std::vector<clang::tooling::CompileCommand>
     getAllCompileCommands() const override;
 
+    /**
+     * Returns reference to clanguml's config instance.
+     *
+     * @return Reference to config instance.
+     */
     const clanguml::config::config &config() const;
 
+    /**
+     * Returns reference to CompilationDatabase as was loaded from file.
+     *
+     * @return Reference to CompilationDatabase.
+     */
     const clang::tooling::CompilationDatabase &base() const;
 
     std::string guess_language_from_filename(const std::string &filename) const;
@@ -67,11 +110,17 @@ private:
     void adjust_compilation_database(
         std::vector<clang::tooling::CompileCommand> &commands) const;
 
-    // Actual instance of the compilation database is stored in here
-    // The inheritance is just to keep the interface
+    /*!
+     * Pointer to the Clang's original compilation database.
+     *
+     * Actual instance of the compilation database is stored in here.
+     * The inheritance is just to keep the interface.
+     */
     std::unique_ptr<clang::tooling::CompilationDatabase> base_;
 
-    // Reference to the clang-uml config
+    /*!
+     * Reference to the instance of clanguml config.
+     */
     const clanguml::config::config &config_;
 };
 

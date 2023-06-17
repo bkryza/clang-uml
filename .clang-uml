@@ -1,32 +1,63 @@
 compilation_database_dir: debug
 output_directory: docs/diagrams
+comment_parser: clang
 generate_links:
   link: https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
 diagrams:
-  main_package:
-    include!: uml/main_package_diagram.yml
+  # Class diagrams
   config_class:
-    include!: uml/config_class_diagram.yml
+    include!: uml/class/config_class.yml
+  config_context_class:
+    include!: uml/class/config_context_class.yml
+  compilation_database_context_class:
+    include!: uml/class/compilation_database_context_class.yml
+  inheritable_diagram_options_context_class:
+    include!: uml/class/inheritable_diagram_options_context_class.yml
+  diagram_config_hierarchy_class:
+    include!: uml/class/diagram_config_hierarchy_class.yml
+  diagram_hierarchy_class:
+    include!: uml/class/diagram_hierarchy_class.yml
+  decorated_element_hierarchy_class:
+    include!: uml/class/decorated_element_hierarchy_class.yml
+  filter_visitor_hierarchy_class:
+    include!: uml/class/filter_visitor_hierarchy_class.yml
+  diagram_filter_context_class:
+    include!: uml/class/diagram_filter_context_class.yml
+  nested_trait_hierarchy_class:
+    include!: uml/class/nested_trait_hierarchy_class.yml
+  package_hierarchy_class:
+    include!: uml/class/package_hierarchy_class.yml
   decorators_class:
-    include!: uml/decorators_class_diagram.yml
+    include!: uml/class/decorators_class.yml
   common_model_class:
-    include!: uml/common_model_class_diagram.yml
+    include!: uml/class/common_model_class.yml
   class_model_class:
-    include!: uml/class_model_class_diagram.yml
+    include!: uml/class/class_model_class.yml
   diagram_element_hierarchy_class:
-    include!: uml/diagram_element_hierarchy_diagram.yml
+    include!: uml/class/diagram_element_hierarchy_class.yml
   sequence_model_class:
-    include!: uml/sequence_model_class_diagram.yml
-  main_sequence:
-    include!: uml/main_sequence_diagram.yml
-  sequence_diagram_visitor_sequence:
-    include!: uml/sequence_diagram_visitor_sequence_diagram.yml
-  class_diagram_generator_sequence:
-    include!: uml/class_diagram_generator_sequence_diagram.yml
-  template_builder_sequence:
-    include!: uml/template_builder_sequence_diagram.yml
+    include!: uml/class/sequence_model_class.yml
   package_model_class:
-    include!: uml/package_model_class_diagram.yml
+    include!: uml/class/package_model_class.yml
+  # Sequence diargams
+  main_sequence:
+    include!: uml/sequence/main_sequence.yml
+  load_config_sequence:
+    include!: uml/sequence/load_config_sequence.yml
+  cli_handle_options_sequence:
+    include!: uml/sequence/cli_handle_options_sequence.yml
+  diagram_generate_generic_sequence:
+    include!: uml/sequence/diagram_generate_generic_sequence.yml
+  sequence_diagram_visitor_sequence:
+    include!: uml/sequence/sequence_diagram_visitor_sequence.yml
+  class_diagram_generator_sequence:
+    include!: uml/sequence/class_diagram_generator_sequence.yml
+  template_builder_sequence:
+    include!: uml/sequence/template_builder_sequence.yml
+  # Package diagrams
+  main_package:
+    include!: uml/package/main_package.yml
+  # Include diagrams
   include_graph:
-    include!: uml/include_diagram.yml
+    include!: uml/include/include.yml

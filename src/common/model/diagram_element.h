@@ -31,6 +31,12 @@
 
 namespace clanguml::common::model {
 
+/**
+ * @brief Base class for standalone diagram elements.
+ *
+ * This is a base cass of any standalone elements such as classes, structs,
+ * concepts, packages and so on participants and so on.
+ */
 class diagram_element : public decorated_element, public source_location {
 public:
     using id_t = int64_t;
@@ -39,26 +45,91 @@ public:
 
     virtual ~diagram_element() = default;
 
+    /**
+     * @brief Returns diagram element id.
+     *
+     * Each element in the diagram is uniquely identified by id. The id
+     * is currently calculated from the full string representation of the
+     * element, in order to be uniquely identifiable among multiple translation
+     * units.
+     *
+     * @return Elements id.
+     */
     id_t id() const;
 
+    /**
+     * Set elements id.
+     *
+     * @param id Elements id.
+     */
     void set_id(id_t id);
 
+    /**
+     * @brief Return elements' diagram alias.
+     *
+     * @todo This is a PlantUML specific method - it shouldn't be here.
+     *
+     * @return PlantUML's diagram element alias.
+     */
     virtual std::string alias() const;
 
+    /**
+     * Set diagram elements name.
+     *
+     * @param name Elements name.
+     */
     void set_name(const std::string &name) { name_ = name; }
 
+    /**
+     * Return diagram's name.
+     *
+     * @return Diagram's name.
+     */
     std::string name() const { return name_; }
 
+    /**
+     * Return the type name of the diagram.
+     *
+     * @return Diagrams type name.
+     */
     virtual std::string type_name() const { return "__undefined__"; };
 
+    /**
+     * @brief Return the elements fully qualified name.
+     *
+     * This method should be implemented in each subclass, and ensure that
+     * for instance it includes fully qualified namespace, template params, etc.
+     *
+     * @return Full elements name.
+     */
     virtual std::string full_name(bool /*relative*/) const { return name(); }
 
+    /**
+     * Return all relationships outgoing from this element.
+     *
+     * @return List of relationships.
+     */
     std::vector<relationship> &relationships();
 
+    /**
+     * Return all relationships outgoing from this element.
+     *
+     * @return List of relationships.
+     */
     const std::vector<relationship> &relationships() const;
 
+    /**
+     * Add relationships, whose source is this element.
+     *
+     * @param cr Relationship to another diagram element.
+     */
     void add_relationship(relationship &&cr);
 
+    /**
+     * Add element to the diagram.
+     *
+     * @param e Diagram element.
+     */
     void append(const decorated_element &e);
 
     friend bool operator==(const diagram_element &l, const diagram_element &r);
@@ -66,14 +137,39 @@ public:
     friend std::ostream &operator<<(
         std::ostream &out, const diagram_element &rhs);
 
+    /**
+     * Return elements inja JSON context.
+     *
+     * @return Element context.
+     */
     virtual inja::json context() const;
 
+    /**
+     * Whether this element is nested in another element.
+     *
+     * @return
+     */
     bool is_nested() const;
 
+    /**
+     * Set element's nested status.
+     *
+     * @param nested
+     */
     void nested(bool nested);
 
+    /**
+     * Returns the diagrams completion status.
+     *
+     * @return Whether the diagram is complete.
+     */
     bool complete() const;
 
+    /**
+     * Set the diagrams completion status.
+     *
+     * @param completed
+     */
     void complete(bool completed);
 
 private:
