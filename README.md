@@ -441,6 +441,8 @@ This project relies on the following great tools:
 * [backward-cpp](https://github.com/bombela/backward-cpp) - stack trace pretty printer for C++
 * [yaml-cpp](https://github.com/jbeder/yaml-cpp) - YAML parser library for C++
 * [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library
+* [Doxygen](https://www.doxygen.nl/) - C++ documentation generator
+* [Doxygen Awesome](https://jothepro.github.io/doxygen-awesome-css) - Doxygen CSS style
 
 ## Contributing
 

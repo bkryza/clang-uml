@@ -22,7 +22,9 @@ bin/
 /debug_tidy
 /.cache
 docs/diagrams
-docs/doxygen
+docs/doxygen/html
+docs/doxygen/xml
+docs/doxygen/latex
 
 coverage*.info
 

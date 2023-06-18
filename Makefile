@@ -138,6 +138,10 @@ iwyu_fixes: debug
 docs:
 	make -C docs toc
 
+.PHONY: doxygen
+doxygen:
+	doxygen
+
 .PHONY: fedora/%
 fedora/%:
 	mkdir -p packaging/_BUILD/fedora/$*
