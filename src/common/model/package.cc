@@ -1,5 +1,5 @@
 /**
- * src/common/model/package.cc
+ * @file src/common/model/package.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

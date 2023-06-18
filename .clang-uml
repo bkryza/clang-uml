@@ -20,6 +20,10 @@ diagrams:
     include!: uml/class/diagram_hierarchy_class.yml
   decorated_element_hierarchy_class:
     include!: uml/class/decorated_element_hierarchy_class.yml
+  stylable_element_hierarchy_class:
+    include!: uml/class/stylable_element_hierarchy_class.yml
+  source_location_hierarchy_class:
+    include!: uml/class/source_location_hierarchy_class.yml
   filter_visitor_hierarchy_class:
     include!: uml/class/filter_visitor_hierarchy_class.yml
   diagram_filter_context_class:
@@ -28,8 +32,16 @@ diagrams:
     include!: uml/class/nested_trait_hierarchy_class.yml
   package_hierarchy_class:
     include!: uml/class/package_hierarchy_class.yml
+  source_file_hierarchy_class:
+    include!: uml/class/source_file_hierarchy_class.yml
+  template_trait_hierarchy_class:
+    include!: uml/class/template_trait_hierarchy_class.yml
+  comment_visitor_hierarchy_class:
+    include!: uml/class/comment_visitor_hierarchy_class.yml
   decorators_class:
     include!: uml/class/decorators_class.yml
+  relationship_context_class:
+    include!: uml/class/relationship_context_class.yml
   common_model_class:
     include!: uml/class/common_model_class.yml
   class_model_class:

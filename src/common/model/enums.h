@@ -1,5 +1,5 @@
 /**
- * src/common/model/enums.h
+ * @file src/common/model/enums.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

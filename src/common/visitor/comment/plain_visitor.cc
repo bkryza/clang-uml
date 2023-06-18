@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/comment/plain_visitor.cc
+ * @file src/common/visitor/comment/plain_visitor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

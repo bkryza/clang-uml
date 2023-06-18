@@ -1,5 +1,5 @@
 /**
- * src/common/model/diagram.h
+ * @file src/common/model/diagram.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

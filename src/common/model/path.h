@@ -1,5 +1,5 @@
 /**
- * src/common/model/path.h
+ * @file src/common/model/path.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,10 +25,30 @@
 
 namespace clanguml::common::model {
 
-enum class path_type { kNamespace, kFilesystem };
+/**
+ * @brief Type of diagram path
+ *
+ * Paths in diagrams represent the nest structure within a diagram, e.g.
+ * a nested set of namespaces or nested set of directories.
+ */
+enum class path_type {
+    kNamespace, /*!< Namespace path */
+    kFilesystem /*!< Filesystem path */
+};
 
+/**
+ * @brief Diagram path
+ *
+ * This class stores a diagram path, such as a namespace or directory
+ * structure.
+ */
 class path {
 
+    /**
+     * Returns the path separator based on the path type.
+     *
+     * @return Path separator
+     */
     const char *separator() const
     {
         switch (path_type_) {
@@ -133,15 +153,36 @@ public:
         return left.to_string() < right.to_string();
     }
 
+    /**
+     * Render the path as string.
+     *
+     * @return  String representation of the path.
+     */
     std::string to_string() const
     {
         return fmt::format("{}", fmt::join(path_, std::string{separator()}));
     }
 
+    /**
+     * Whether the path is empty.
+     *
+     * @return
+     */
     bool is_empty() const { return path_.empty(); }
 
+    /**
+     * Return the number of elements in the path.
+     *
+     * @return Size of path.
+     */
     size_t size() const { return path_.size(); }
 
+    /**
+     * Append path to path.
+     *
+     * @param right Path to append at the end.
+     * @return New merged path.
+     */
     path operator|(const path &right) const
     {
         path res{*this};
@@ -149,8 +190,18 @@ public:
         return res;
     }
 
+    /**
+     * Append path to the current path.
+     *
+     * @param right
+     */
     void operator|=(const path &right) { append(right); }
 
+    /**
+     * Append path element to path.
+     *
+     * @return New path.
+     */
     path operator|(const std::string &right) const
     {
         path res{*this};
@@ -158,6 +209,11 @@ public:
         return res;
     }
 
+    /**
+     * Append path element to the current path.
+     *
+     * @param right Path element to append.
+     */
     void operator|=(const std::string &right) { append(right); }
 
     std::string &operator[](const unsigned int index) { return path_[index]; }
@@ -167,8 +223,18 @@ public:
         return path_[index];
     }
 
-    void append(const std::string &ns) { path_.push_back(ns); }
+    /**
+     * Append path element to path.
+     *
+     * @return New path.
+     */
+    void append(const std::string &name) { path_.push_back(name); }
 
+    /**
+     * Append path to current path.
+     *
+     * @param ns Path to append.
+     */
     void append(const path &ns)
     {
         for (const auto &n : ns) {
@@ -176,6 +242,9 @@ public:
         }
     }
 
+    /**
+     * Drop the last element of the path.
+     */
     void pop_back()
     {
         if (!path_.empty()) {
@@ -183,6 +252,11 @@ public:
         }
     }
 
+    /**
+     * Get the parent of the last element in the path.
+     *
+     * @return Path to the parent of the last element, or nullopt.
+     */
     std::optional<path> parent() const
     {
         if (size() <= 1) {
@@ -194,16 +268,34 @@ public:
         return {std::move(res)};
     }
 
-    bool starts_with(const path &right) const
+    /**
+     * Returns true if path starts with specified prefix.
+     * @param prefix Path prefix to check.
+     * @return
+     */
+    bool starts_with(const path &prefix) const
     {
-        return util::starts_with(path_, right.path_);
+        return util::starts_with(path_, prefix.path_);
     }
 
-    bool ends_with(const path &right) const
+    /**
+     * Returns true if path ends with suffix
+     * @param suffix Path suffix to check
+     * @return
+     */
+    bool ends_with(const path &suffix) const
     {
-        return util::ends_with(path_, right.path_);
+        return util::ends_with(path_, suffix.path_);
     }
 
+    /**
+     * @brief Returns the common prefix of 2 paths.
+     *
+     * If no common prefix exists between 2 paths, the result is an empty path.
+     *
+     * @param right Path to compare
+     * @return Common path prefix
+     */
     path common_path(const path &right) const
     {
         path res{};
@@ -216,6 +308,14 @@ public:
         return res;
     }
 
+    /**
+     * Make the current path relative to the other path, if possible.
+     *
+     * If not, return the original path.
+     *
+     * @param right Parent path
+     * @return Path relative to `right`
+     */
     path relative_to(const path &right) const
     {
         path res{*this};
@@ -226,15 +326,21 @@ public:
         return res;
     }
 
-    std::string relative(const std::string &name) const
+    /**
+     * Make path represented as a string relative to the current path.
+     *
+     * @param ns Path to make relative against *this.
+     * @return Relative path.
+     */
+    std::string relative(const std::string &ns) const
     {
         if (is_empty())
-            return name;
+            return ns;
 
-        if (name == to_string())
-            return name;
+        if (ns == to_string())
+            return ns;
 
-        auto res = name;
+        auto res = ns;
         auto ns_prefix = to_string() + std::string{separator()};
 
         auto it = res.find(ns_prefix);
@@ -246,6 +352,11 @@ public:
         return res;
     }
 
+    /**
+     * Return the name of the last element in the path.
+     *
+     * @return Name of the last element in the path.
+     */
     std::string name() const
     {
         assert(size() > 0);
@@ -265,6 +376,11 @@ public:
     path::container_type::const_iterator begin() const { return path_.begin(); }
     path::container_type::const_iterator end() const { return path_.end(); }
 
+    /**
+     * Get path type.
+     *
+     * @return Path type.
+     */
     path_type type() const { return path_type_; }
 
 private:

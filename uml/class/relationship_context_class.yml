@@ -1,0 +1,18 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: true
+glob:
+  - src/common/model/relationship.cc
+  - src/common/model/diagram_element.cc
+include:
+  namespaces:
+    - clanguml
+  context:
+    - clanguml::common::model::relationship
+exclude:
+  elements:
+    - clanguml::common::model::path
+  relationships:
+    - dependency
+using_namespace:
+  - clanguml

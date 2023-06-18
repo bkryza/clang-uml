@@ -1,5 +1,5 @@
 /**
- * src/common/generators/plantuml/generator.h
+ * @file src/common/generators/plantuml/generator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/common/model/namespace.h
+ * @file src/common/model/namespace.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

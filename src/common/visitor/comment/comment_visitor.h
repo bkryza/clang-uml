@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/comment/comment_visitor.h
+ * @file src/common/visitor/comment/comment_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,15 +24,31 @@
 
 namespace clanguml::common::visitor::comment {
 
+/**
+ * @brief Base class for comment visitors
+ *
+ * @embed{comment_visitor_hierarchy_class.svg}
+ */
 class comment_visitor {
 public:
     comment_visitor(clang::SourceManager &source_manager);
 
     virtual ~comment_visitor() = default;
 
+    /**
+     * Visit the comment in `decl` and extract it's contents to the diagram
+     * element.
+     *
+     * @param decl Clang's named declaration
+     * @param e Diagram element
+     */
     virtual void visit(
         const clang::NamedDecl &decl, common::model::decorated_element &e) = 0;
 
+    /**
+     * Return reference to current source manager.
+     * @return Reference to source manager.
+     */
     clang::SourceManager &source_manager();
 
 private:

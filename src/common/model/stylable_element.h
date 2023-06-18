@@ -1,5 +1,5 @@
 /**
- * src/common/model/stylable_element.h
+ * @file src/common/model/stylable_element.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -21,9 +21,25 @@
 
 namespace clanguml::common::model {
 
+/**
+ * @brief Diagram elements to which style can be applied.
+ *
+ * @embed{stylable_element_hierarchy_class.svg}
+ */
 class stylable_element {
 public:
+    /**
+     * Set style.
+     *
+     * @param style Style specification
+     */
     void set_style(const std::string &style);
+
+    /**
+     * Get style
+     *
+     * @return Style specification
+     */
     std::string style() const;
 
 private:

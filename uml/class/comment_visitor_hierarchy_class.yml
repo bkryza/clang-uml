@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: true
+glob:
+  - src/common/visitor/comment/*.cc
+include:
+  namespaces:
+    - clanguml::common::visitor::comment
+  subclasses:
+    - clanguml::common::visitor::comment::comment_visitor
+exclude:
+  access: [private, protected, public]
+using_namespace:
+  - clanguml

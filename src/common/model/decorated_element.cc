@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/decorated_element.cc
+ * @file src/class_diagram/model/decorated_element.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

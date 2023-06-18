@@ -1,5 +1,5 @@
 /**
- * src/common/compilation_database.cc
+ * @file src/common/compilation_database.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

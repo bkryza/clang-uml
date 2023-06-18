@@ -1,5 +1,5 @@
 /**
- * src/common/model/source_location.h
+ * @file src/common/model/source_location.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,6 +24,8 @@ namespace clanguml::common::model {
 
 /**
  * @brief Base class of all diagram elements that have source location.
+ *
+ * @embed{source_location_hierarchy_class.svg}
  */
 class source_location {
 public:

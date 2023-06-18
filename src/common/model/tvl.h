@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/tvl.h
+ * @file src/class_diagram/model/tvl.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -20,10 +20,29 @@
 #include <optional>
 #include <string>
 
+/**
+ * This namespace implements convenience functions to handle 3-value logic
+ * operations needed for applying diagram filters.
+ *
+ * @see clanguml::common::model::diagram_filter
+ * @see clanguml::common::model::filter_visitor
+ */
 namespace clanguml::common::model::tvl {
 
+/**
+ * Alias for 3-value logic values
+ *
+ * If optional holds nullopt, the value is undefined.
+ */
 using value_t = std::optional<bool>;
 
+/**
+ * Calculate 3-value logic AND value.
+ *
+ * @param l Left value
+ * @param r Right value
+ * @return Result of AND operation.
+ */
 inline value_t and_(const value_t &l, const value_t &r)
 {
     if (!l.has_value())
@@ -35,6 +54,13 @@ inline value_t and_(const value_t &l, const value_t &r)
     return r.value() && l.value();
 }
 
+/**
+ * Calculate 3-value logic OR value.
+ *
+ * @param l Left value
+ * @param r Right value
+ * @return Result of OR operation.
+ */
 inline value_t or_(const value_t &l, const value_t &r)
 {
     if (!l.has_value() && !r.has_value())
@@ -49,12 +75,40 @@ inline value_t or_(const value_t &l, const value_t &r)
     return false;
 }
 
+/**
+ * Whether the value holds true
+ *
+ * @param v Logical value
+ * @return True, if v holds true
+ */
 inline bool is_true(const value_t &v) { return v.has_value() && v.value(); }
 
+/**
+ * Whether the value holds false
+ *
+ * @param v Logical value
+ * @return True, if v holds false
+ */
 inline bool is_false(const value_t &v) { return v.has_value() && !v.value(); }
 
+/**
+ * Whether the value is undefined
+ *
+ * @param v Logical value
+ * @return True, if v has no value
+ */
 inline bool is_undefined(const value_t &v) { return !v.has_value(); }
 
+/**
+ * 3-value logic equivalent of std::all_of
+ *
+ * @tparam InputIterator Iterator type
+ * @tparam Predicate Predicate type
+ * @param first First iterator element
+ * @param last Last iterator element
+ * @param pred Predicate to apply to each element
+ * @return True, if all elements are true or undefined
+ */
 template <typename InputIterator, typename Predicate>
 inline value_t all_of(InputIterator first, InputIterator last, Predicate pred)
 {
@@ -76,6 +130,16 @@ inline value_t all_of(InputIterator first, InputIterator last, Predicate pred)
     return res;
 }
 
+/**
+ * 3-value logic equivalent of std::any_of
+ *
+ * @tparam InputIterator Iterator type
+ * @tparam Predicate Predicate type
+ * @param first First iterator element
+ * @param last Last iterator element
+ * @param pred Predicate to apply to each element
+ * @return True, if at least 1 element is true
+ */
 template <typename InputIterator, typename Predicate>
 inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
 {

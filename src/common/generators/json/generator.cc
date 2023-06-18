@@ -1,5 +1,5 @@
 /**
- * src/common/generators/json/generator.cc
+ * @file src/common/generators/json/generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/common/generators/progress_indicator.cc
+ * @file src/common/generators/progress_indicator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/common/types.h
+ * @file src/common/types.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

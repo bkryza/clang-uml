@@ -1,5 +1,5 @@
 /**
- * src/common/model/element.h
+ * @file src/common/model/element.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
