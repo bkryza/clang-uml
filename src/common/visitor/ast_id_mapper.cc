@@ -1,5 +1,5 @@
 /**
- * @file src/class_diagram/visitor/ast_id_mapper.cc
+ * @file src/common/visitor/ast_id_mapper.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
