@@ -7,9 +7,9 @@
 * [PlantUML custom directives](#plantuml-custom-directives)
 * [Adding debug information in the generated diagrams](#adding-debug-information-in-the-generated-diagrams)
 * [Resolving include path and compiler flags issues](#resolving-include-path-and-compiler-flags-issues)
-  * [Use `--query-driver` command line option](#use---query-driver-command-line-option)
+  * [Use '--query-driver' command line option](#use---query-driver-command-line-option)
   * [Manually add and remove compile flags from the compilation database](#manually-add-and-remove-compile-flags-from-the-compilation-database)
-  * [Using `CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES`](#using-cmake_cxx_implicit_include_directories)
+  * [Using 'CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES'](#using-cmake_cxx_implicit_include_directories)
 
 <!-- tocstop -->
 
@@ -18,14 +18,17 @@ By default, `clang-uml` will look for file `.clang-uml` in the projects director
 from it. The file must be specified in YAML and it's overall structure is as follows:
 
 ```yaml
-<common options for all diagrams>
+# common options for all diagrams
+...
 diagrams:
-  <first diagram name>:
-    type: [class|sequence|package|include]
-    <diagram specific options>
-  <second diagram name>:
-    type: [class|sequence|package|include]
-    <diagram specific options>
+  first_diagram_name>:
+    type: class|sequence|package|include
+    # diagram specific options
+    ...
+  second_diagram_name:
+    type: class|sequence|package|include
+    # diagram specific options
+    ...
   ...
 ```
 
@@ -116,7 +119,7 @@ These errors can be overcome, by ensuring that the Clang parser has the correct
 include paths to analyse your code base on the given platform. `clang-uml`
 provides several mechanisms to resolve this issue:
 
-### Use `--query-driver` command line option
+### Use '--query-driver' command line option
 
 > This option is not available on Windows.
 
@@ -133,7 +136,7 @@ system, when generating diagrams for an embedded project and providing
 `arm-none-eabi-gcc` as driver:
 
 ```bash
-$ clang-uml --query-driver arm-none-eabi-gcc
+clang-uml --query-driver arm-none-eabi-gcc
 ```
 
 the following options are appended to each command line after `argv[0]` of the
@@ -148,7 +151,7 @@ already as `argv[0]` in your `compile_commands.json`, you can simply invoke
 `clang-uml` as:
 
 ```bash
-$ clang-uml --query-driver .
+clang-uml --query-driver .
 ```
 
 however please make sure that the `compile_commands.json` contain a command,
@@ -173,11 +176,11 @@ remove_compile_flags:
 These options can be also passed on the command line, for instance:
 
 ```bash
-$ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
-            --remove-compile-flag -I/usr/include ...
+clang-uml --add-compile-flag -I/opt/my_toolchain/include \
+          --remove-compile-flag -I/usr/include ...
 ```
 
-### Using `CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES`
+### Using 'CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES'
 Yet another option, for CMake based projects, is to use the following CMake option:
 
 ```cmake

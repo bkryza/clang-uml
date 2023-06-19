@@ -89,9 +89,11 @@ Then you just need to copy and paste the signature exactly and rerun `clang-uml`
 By default, `clang-uml` will generate a new participant for each call to a free function (not method), which can lead
 to a very large number of participants in the diagram. If it's an issue, an option can be provided in the diagram 
 definition:
+
 ```yaml
 combine_free_functions_into_file_participants: true
 ```
+
 which will aggregate free functions per source file where they were declared thus minimizing the
 diagram size. An example of such diagram is presented below:
 
@@ -109,6 +111,7 @@ following rules:
 Another issue is the naming of lambda participants. Currently, each lambda is rendered in the diagram as a separate
 class whose name is composed of the lambda location in the code (the only unique way of identifying lambdas I was able
 to find). For example the following code:
+
 ```cpp
 #include <algorithm>
 #include <functional>

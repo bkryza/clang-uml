@@ -9,15 +9,20 @@ legacy code. The configuration file or files for `clang-uml` define the
 types and contents of each generated diagram.
 The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON formats.
 
+Example sequence diagram generated using `clang-uml` from [this code](https://github.com/bkryza/clang-uml/blob/master/tests/t20029/t20029.cc):
+![Sample sequence diagram](test_cases/t20029_sequence.svg)
+
 `clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
 
 To see what `clang-uml` can do, checkout the diagrams generated for unit
 test cases [here](./test_cases.md) or examples in
 [clang-uml-examples](https://github.com/bkryza/clang-uml-examples) repository.
 
+These pages provide both user and developer documentation.
+
 * [Quick start](./quick_start.md)
 * [Installation](./installation.md)
-* Generating diagrams
+* **Generating diagrams**
   * [Common options](./common_options.md)
   * [Generator types](./generator_types.md)
   * [Class diagrams](./class_diagrams.md)
@@ -33,6 +38,8 @@ test cases [here](./test_cases.md) or examples in
 * [Doxygen integration](./doxygen_integration.md)
 * [Test cases documentation](./test_cases.md)
 * [Troubleshooting](./troubleshooting.md)
-* Development
+* [Changelog](./changelog.md)
+* [License](./license.md)
+* **Development**
   * [Architecture](./architecture.md)
-  * [Contributing](../CONTRIBUTING.md)
+  * [Contributing](./contributing.md)

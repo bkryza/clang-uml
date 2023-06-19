@@ -1,8 +1,10 @@
-# Contributing to `clang-uml`
+# Contributing to clang-uml
 
 Thanks for taking interest in `clang-uml`!
 
-> Please, make sure you're ok with [Code of conduct](./CODE_OF_CONDUCT.md) and [LICENSE](./LICENSE.md)
+> Please, make sure you're ok with 
+> [Code of conduct](./CODE_OF_CONDUCT.md)
+> and [LICENSE](./LICENSE.md)
 
 
 ## If you found a bug
@@ -18,12 +20,12 @@ Thanks for taking interest in `clang-uml`!
   the C++ code which triggers the issue, and in `tests/t00050/test_case.h` write the test checks.
   The test case must be also added manually to `tests/test_cases.cc`:
    ```cpp
-   ...
+   // ...
    #include "t00047/test_case.h"
    #include "t00048/test_case.h"
    #include "t00049/test_case.h"
-   #include "t00050/test_case.h"
-   ...
+   #include "t00050/test_case.h" // <<<
+   // ...
    ```
   
   Finally, create an issue with a link to your branch with the new test case.
@@ -82,8 +84,8 @@ Thanks for taking interest in `clang-uml`!
   the feature to ensure we're on the same page as to its purpose and possible implementation
 * Next, implement the feature, please try to adapt to the overall code style:
   * 80-character line width
-  * snakes over camels
-  * use `make format` before submitting PR to ensure consistent formatting
+  * snakes not camels
+  * use `make format` before submitting PR to ensure consistent formatting (requires Docker)
   * use `make tidy` to check if your code doesn't introduce any `clang-tidy` warnings
 * Add test case (or multiple test cases), which cover the new feature
 * Finally, create a pull request!

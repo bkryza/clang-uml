@@ -3,16 +3,16 @@
 <!-- toc -->
 
 * [General issues](#general-issues)
-  * [`clang-uml` crashed when generating diagram](#clang-uml-crashed-when-generating-diagram)
+  * [clang-uml crashes when generating diagram](#clang-uml-crashes-when-generating-diagram)
   * [Diagram generation is very slow](#diagram-generation-is-very-slow)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
-  * [`clang` produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
+  * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
   * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
-  * [Cannot generate classes for `std` namespace](#cannot-generate-classes-for-std-namespace)
+  * [Cannot generate classes for 'std' namespace](#cannot-generate-classes-for-std-namespace)
 * [Sequence diagrams](#sequence-diagrams)
   * [Generated diagram is empty](#generated-diagram-is-empty)
   * [Generated diagram contains several empty control blocks or calls which should not be there](#generated-diagram-contains-several-empty-control-blocks-or-calls-which-should-not-be-there)
@@ -21,14 +21,14 @@
 
 ## General issues
 
-### `clang-uml` crashed when generating diagram
+### clang-uml crashes when generating diagram
 
 If `clang-uml` crashes with a segmentation fault, it is possible to trace the
 exact stack trace of the fault using the following steps:
 
 First, build `clang-uml` from source in debug mode, e.g.:
 ```bash
-$ make debug
+make debug
 ```
 
 Then run `clang-uml`, preferably with `-vvv` for verbose log output. If your
@@ -36,7 +36,7 @@ Then run `clang-uml`, preferably with `-vvv` for verbose log output. If your
 a single diagram to make it easier to trace the root cause of the crash, e.g.:
 
 ```bash
-$ debug/src/clang-uml -vvv -n my_diagram
+debug/src/clang-uml -vvv -n my_diagram
 ```
 
 After `clang-uml` crashes again, detailed backtrace (generated using
@@ -96,11 +96,11 @@ format and then convert
 to PNG, e.g.:
 
 ```bash
-$ plantuml -tsvg mydiagram.puml
-$ convert +antialias mydiagram.svg mydiagram.png
+plantuml -tsvg mydiagram.puml
+convert +antialias mydiagram.svg mydiagram.png
 ```
 
-### `clang` produces several warnings during diagram generation
+### Clang produces several warnings during diagram generation
 
 During the generation of the diagram `clang` may report a lot of warnings, which
 do not occur during the compilation with other compiler (e.g. GCC). This can be
@@ -123,8 +123,8 @@ add_compile_flags:
 Alternatively, the same can be passed through the `clang-uml` command line, e.g.
 
 ```bash
-$ clang-uml --add-compile-flag -Wno-implicit-const-int-float-conversion \
-            --add-compile-flag -Wno-shadow ...
+clang-uml --add-compile-flag -Wno-implicit-const-int-float-conversion \
+          --add-compile-flag -Wno-shadow ...
 ```
 
 Please note that if your `compile_commands.json` already contains - for instance
@@ -219,7 +219,7 @@ will be added to each compile command in the database. This is especially useful
 on macOS as well as for embedded toolchains, example usage:
 
 ```bash
-$ clang-uml --query-driver arm-none-eabi-g++
+clang-uml --query-driver arm-none-eabi-g++
 ```
 
 Another option is to make sure that the Clang is installed on the system (even
@@ -249,8 +249,8 @@ remove_compile_flags:
 These options can be also passed on the command line, for instance:
 
 ```bash
-$ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
-            --remove-compile-flag -I/usr/include ...
+clang-uml --add-compile-flag -I/opt/my_toolchain/include \
+          --remove-compile-flag -I/usr/include ...
 ```
 
 ### How can I generate class diagram of my entire project
@@ -273,10 +273,10 @@ be readable. However, this option can be useful for cases when we want to get
 a complete JSON model of the codebase using the JSON generator:
 
 ```bash
-$ clang-uml -g json -n all_classes --progress
+clang-uml -g json -n all_classes --progress
 ```
 
-### Cannot generate classes for `std` namespace
+### Cannot generate classes for 'std' namespace
 Currently, system headers are skipped automatically by `clang-uml`, due to 
 too many errors they produce when generating diagrams, especially when trying
 to process `GCC`'s or `MSVC`'s system headers by `Clang` - not yet sure why
@@ -302,6 +302,7 @@ exclude:
 Hopefully this will be eventually resolved.
 
 ## Sequence diagrams
+
 ### Generated diagram is empty
 
 In order to generate sequence diagram the `start_from` configuration option must

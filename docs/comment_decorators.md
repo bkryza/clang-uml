@@ -2,10 +2,10 @@
 
 <!-- toc -->
 
-* [`note`](#note)
-* [`skip` and `skiprelationship`](#skip-and-skiprelationship)
-* [`composition`, `association` and `aggregation`](#composition-association-and-aggregation)
-* [`style`](#style)
+* ['note'](#note)
+* ['skip' and 'skiprelationship'](#skip-and-skiprelationship)
+* ['composition', 'association' and 'aggregation'](#composition-association-and-aggregation)
+* ['style'](#style)
 
 <!-- tocstop -->
 
@@ -27,7 +27,7 @@ The optional `:<diagram_name>` suffix will apply this decorator only to a specif
 
 Currently, the following decorators are supported.
 
-## `note`
+## 'note'
 
 This decorator allows to specify directly in the code comments that should be included in the generated diagrams.
 
@@ -91,7 +91,7 @@ generates the following class diagram:
 
 ![note](./test_cases/t00028_class.svg)
 
-## `skip` and `skiprelationship`
+## 'skip' and 'skiprelationship'
 This decorator allows to skip the specific classes or methods from the diagrams, for instance the following code:
 ```cpp
 
@@ -145,7 +145,7 @@ generates the following diagram:
 
 ![skip](./test_cases/t00029_class.svg)
 
-## `composition`, `association` and `aggregation`
+## 'composition', 'association' and 'aggregation'
 
 These decorators allow to specify explicitly the type of relationship within a class diagram that should be
 generated for a given class member. For instance the following code:
@@ -190,7 +190,7 @@ generates the following diagram:
 ![skip](./test_cases/t00030_class.svg)
 
 
-## `style`
+## 'style'
 This decorator allows to specify in the code specific styles for diagram elements, for instance:
 
 ```cpp

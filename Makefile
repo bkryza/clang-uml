@@ -139,8 +139,10 @@ docs:
 	make -C docs toc
 
 .PHONY: doxygen
-doxygen:
-	doxygen
+doxygen: docs
+	cp CONTRIBUTING.md docs/contributing.md
+	cp CHANGELOG.md docs/changelog.md
+	../doxygen/_build/bin/doxygen
 
 .PHONY: fedora/%
 fedora/%:
