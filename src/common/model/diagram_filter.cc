@@ -251,8 +251,8 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
                     if (is_inclusive)
                         return e_ns.starts_with(nsit_ns) ||
                             nsit_ns.starts_with(e_ns) || e_ns == nsit_ns;
-                    else
-                        return e_ns.starts_with(nsit_ns) || e_ns == nsit_ns;
+
+                    return e_ns.starts_with(nsit_ns) || e_ns == nsit_ns;
                 }
 
                 return std::get<common::regex>(nsit.value()) %=

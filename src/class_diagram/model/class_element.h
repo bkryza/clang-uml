@@ -32,7 +32,7 @@ public:
     class_element(
         common::model::access_t scope, std::string name, std::string type);
 
-    virtual ~class_element() = default;
+    ~class_element() override = default;
 
     common::model::access_t access() const;
     std::string name() const;

@@ -31,7 +31,7 @@ public:
     method_parameter(
         std::string type, std::string name, std::string default_value = {});
 
-    virtual ~method_parameter() = default;
+    ~method_parameter() override = default;
 
     void set_type(const std::string &type);
     std::string type() const;

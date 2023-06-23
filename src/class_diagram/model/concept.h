@@ -53,7 +53,7 @@ public:
 
     std::string full_name_no_ns() const override;
 
-    void add_parameter(method_parameter mp);
+    void add_parameter(const method_parameter &mp);
 
     const std::vector<method_parameter> &requires_parameters() const;
 

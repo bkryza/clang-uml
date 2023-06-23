@@ -138,7 +138,7 @@ bool class_::template_specialization_found() const
 
 std::optional<std::string> class_::doxygen_link() const
 {
-    auto type = is_struct() ? "struct" : "class";
+    const auto *type = is_struct() ? "struct" : "class";
 
     auto name = name_and_ns();
     util::replace_all(name, "_", "__");

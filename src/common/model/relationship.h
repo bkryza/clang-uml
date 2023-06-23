@@ -52,7 +52,7 @@ public:
         std::string multiplicity_source = "",
         std::string multiplicity_destination = "");
 
-    virtual ~relationship() = default;
+    ~relationship() override = default;
 
     /**
      * Set the type of relatinoship.

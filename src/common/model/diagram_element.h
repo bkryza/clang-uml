@@ -43,7 +43,7 @@ public:
 
     diagram_element();
 
-    virtual ~diagram_element() = default;
+    ~diagram_element() override = default;
 
     /**
      * @brief Returns diagram element id.
