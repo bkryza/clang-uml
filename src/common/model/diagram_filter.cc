@@ -186,60 +186,100 @@ tvl::value_t namespace_filter::match(
     if (ns.is_empty())
         return {};
 
-    return tvl::any_of(
-        namespaces_.begin(), namespaces_.end(), [&ns](const auto &nsit) {
+    return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+        [&ns, is_inclusive = is_inclusive()](const auto &nsit) {
             if (std::holds_alternative<namespace_>(nsit.value())) {
                 const auto &ns_pattern = std::get<namespace_>(nsit.value());
-                return ns.starts_with(ns_pattern) || ns == ns_pattern;
+                if (is_inclusive)
+                    return ns.starts_with(ns_pattern) ||
+                        ns_pattern.starts_with(ns);
+
+                return ns.starts_with(ns_pattern);
             }
 
             const auto &regex = std::get<common::regex>(nsit.value());
-            return regex == ns.to_string();
+            return regex %= ns.to_string();
         });
 }
 
-tvl::value_t namespace_filter::match(
-    const diagram & /*d*/, const element &e) const
+tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
 {
-    if (dynamic_cast<const package *>(&e) != nullptr) {
-        return tvl::any_of(namespaces_.begin(), namespaces_.end(),
+    if (d.type() != diagram_t::kPackage &&
+        dynamic_cast<const package *>(&e) != nullptr) {
+        auto result = tvl::any_of(namespaces_.begin(), namespaces_.end(),
             [&e, is_inclusive = is_inclusive()](const auto &nsit) {
                 if (std::holds_alternative<namespace_>(nsit.value())) {
                     const auto &ns_pattern = std::get<namespace_>(nsit.value());
 
                     auto element_full_name_starts_with_namespace =
-                        (e.get_namespace() | e.name()).starts_with(ns_pattern);
+                        namespace_{e.name_and_ns()}.starts_with(ns_pattern);
 
                     auto element_full_name_equals_pattern =
-                        (e.get_namespace() | e.name()) == ns_pattern;
+                        namespace_{e.name_and_ns()} == ns_pattern;
 
-                    auto namespace_starts_with_element_qualified_name =
-                        ns_pattern.starts_with(e.get_namespace());
+                    auto pattern_starts_with_element_full_name =
+                        ns_pattern.starts_with(namespace_{e.name_and_ns()});
 
                     auto result = element_full_name_starts_with_namespace ||
                         element_full_name_equals_pattern;
 
                     if (is_inclusive)
-                        result = result ||
-                            namespace_starts_with_element_qualified_name;
+                        result =
+                            result || pattern_starts_with_element_full_name;
 
                     return result;
                 }
 
-                return std::get<common::regex>(nsit.value()) ==
+                return std::get<common::regex>(nsit.value()) %=
                     e.full_name(false);
             });
+
+        if (tvl::is_false(result))
+            LOG_DBG("Element {} rejected by namespace_filter 1",
+                e.full_name(false));
+
+        return result;
     }
 
-    return tvl::any_of(
+    if (d.type() == diagram_t::kPackage) {
+        auto result = tvl::any_of(namespaces_.begin(), namespaces_.end(),
+            [&e, is_inclusive = is_inclusive()](const auto &nsit) {
+                if (std::holds_alternative<namespace_>(nsit.value())) {
+                    auto e_ns = namespace_{e.full_name(false)};
+                    auto nsit_ns = std::get<namespace_>(nsit.value());
+
+                    if (is_inclusive)
+                        return e_ns.starts_with(nsit_ns) ||
+                            nsit_ns.starts_with(e_ns) || e_ns == nsit_ns;
+                    else
+                        return e_ns.starts_with(nsit_ns) || e_ns == nsit_ns;
+                }
+
+                return std::get<common::regex>(nsit.value()) %=
+                    e.full_name(false);
+            });
+
+        if (tvl::is_false(result))
+            LOG_DBG("Element {} rejected by namespace_filter (package diagram)",
+                e.full_name(false));
+
+        return result;
+    }
+
+    auto result = tvl::any_of(
         namespaces_.begin(), namespaces_.end(), [&e](const auto &nsit) {
             if (std::holds_alternative<namespace_>(nsit.value())) {
                 return e.get_namespace().starts_with(
                     std::get<namespace_>(nsit.value()));
             }
 
-            return std::get<common::regex>(nsit.value()) == e.full_name(false);
+            return std::get<common::regex>(nsit.value()) %= e.full_name(false);
         });
+
+    if (tvl::is_false(result))
+        LOG_DBG("Element {} rejected by namespace_filter", e.full_name(false));
+
+    return result;
 }
 
 element_filter::element_filter(
@@ -249,9 +289,12 @@ element_filter::element_filter(
 {
 }
 
-tvl::value_t element_filter::match(
-    const diagram & /*d*/, const element &e) const
+tvl::value_t element_filter::match(const diagram &d, const element &e) const
 {
+    // Do not apply element filter to packages in class diagrams
+    if (d.type() == diagram_t::kClass && e.type_name() == "package")
+        return std::nullopt;
+
     return tvl::any_of(
         elements_.begin(), elements_.end(), [&e](const auto &el) {
             return ((el == e.full_name(false)) ||

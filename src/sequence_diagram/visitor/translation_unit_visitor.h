@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/visitor/translation_unit_visitor.h
+ * @file src/sequence_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

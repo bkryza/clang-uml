@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/json/class_diagram_generator.cc
+ * @file rc/class_diagram/generators/json/class_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/main.cc
+ * @file src/main.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

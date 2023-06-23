@@ -1,5 +1,5 @@
 /**
- * @file src/config/diagram_templates.h
+ * @file docs/architecture.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,18 +15,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include <string>
-
-namespace clanguml {
-namespace config {
-
-/**
- * @brief Return YAML with predefined diagram templates
- * @return YAML definition of predefined diagram templates
- */
-const std::string &get_predefined_diagram_templates();
-
-} // namespace config
-} // namespace clanguml
+#include "architecture.h"

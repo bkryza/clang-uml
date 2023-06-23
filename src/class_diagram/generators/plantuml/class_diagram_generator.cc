@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/plantuml/class_diagram_generator.cc
+ * @file src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -813,10 +813,9 @@ void generator::generate(const package &p, std::ostream &ostr) const
         // using_namespace
         if (!uns.starts_with({p.full_name(false)})) {
             ostr << "}" << '\n';
+            generate_notes(ostr, p);
         }
     }
-
-    generate_notes(ostr, p);
 }
 
 void generator::generate_relationships(

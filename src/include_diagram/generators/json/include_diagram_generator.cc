@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/generators/json/include_diagram_generator.cc
+ * @file src/include_diagram/generators/json/include_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

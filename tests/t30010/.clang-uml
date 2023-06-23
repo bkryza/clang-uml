@@ -9,9 +9,8 @@ diagrams:
       - t30010.cc
     relative_to: ../../../tests/t30010
     include:
-      namespaces:
-        - clanguml::t30010
-#      paths:
-#        - .
+      paths:
+        - app
+        - libraries
     using_namespace:
       - clanguml::t30010

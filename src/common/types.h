@@ -194,7 +194,12 @@ struct regex {
     {
     }
 
-    [[nodiscard]] bool operator==(const std::string &v) const
+    /**
+     * @brief Regular expression match operator
+     * @param v Value to match against internal std::regex
+     * @return True, if the argument matches the regular expression
+     */
+    [[nodiscard]] bool operator%=(const std::string &v) const
     {
         return std::regex_match(v, regexp);
     }

@@ -67,11 +67,14 @@ public:
     void set_deprecated(bool deprecated);
 
     /**
-     * Add subpackage.
+     * @brief Generate Doxygen style HTML link for the class.
      *
-     * @param p Package.
+     * This method generates a link, which can be used in SVG diagrams to
+     * create links from classes to Doxygen documentation pages.
+     *
+     * @return Doxygen-style HTML link for the class.
      */
-    void add_package(std::unique_ptr<common::model::package> &&p);
+    std::optional<std::string> doxygen_link() const override;
 
 private:
     bool is_deprecated_{false};

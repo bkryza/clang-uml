@@ -1,5 +1,5 @@
 /**
- * tests/test_compilation_database.cc
+ * @file tests/test_compilation_database.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

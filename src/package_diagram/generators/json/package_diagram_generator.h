@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/generators/json/package_diagram_generator.h
+ * @file src/package_diagram/generators/json/package_diagram_generator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

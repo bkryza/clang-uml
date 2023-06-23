@@ -1,5 +1,5 @@
 /**
- * src/util/query_driver_include_extractor.h
+ * @file src/util/query_driver_include_extractor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

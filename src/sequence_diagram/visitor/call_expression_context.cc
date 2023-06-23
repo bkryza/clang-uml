@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/visitor/call_expression_context.cc
+ * @file src/sequence_diagram/visitor/call_expression_context.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

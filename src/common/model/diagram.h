@@ -132,7 +132,7 @@ public:
 
     // TODO: refactor to a template method
     bool should_include(const element &e) const;
-    bool should_include(const std::string &e) const;
+    bool should_include(const namespace_ &ns) const;
     bool should_include(const source_file &path) const;
     bool should_include(relationship r) const;
     bool should_include(relationship_t r) const;

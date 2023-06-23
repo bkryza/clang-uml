@@ -1,5 +1,5 @@
 /**
- * tests/test_filters.cc
+ * @file tests/test_filters.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -109,6 +109,70 @@ TEST_CASE("Test method_types exclude filter", "[unit-test]")
     CHECK(!filter.should_include(cm));
 }
 
+TEST_CASE("Test namespaces filter", "[unit-test]")
+{
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::class_parent;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::source_file;
+
+    using clanguml::class_diagram::model::class_;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["namespace_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    diagram_filter filter(diagram, config);
+
+    class_ c{{}};
+
+    c.set_namespace(namespace_{"ns1::ns2"});
+    c.set_name("ClassA");
+
+    CHECK(filter.should_include(c));
+
+    c.set_namespace(namespace_{"ns1::ns2::detail"});
+    c.set_name("ClassAImpl");
+
+    CHECK(!filter.should_include(c));
+
+    c.set_namespace(namespace_{"ns1::interface"});
+    c.set_name("IClassA");
+
+    CHECK(!filter.should_include(c));
+
+    CHECK(filter.should_include(namespace_{"ns1"}));
+    CHECK(filter.should_include(namespace_{"ns1::ns2"}));
+    CHECK(!filter.should_include(namespace_{"ns1::ns2::detail"}));
+    CHECK(!filter.should_include(namespace_{"ns1::ns2::detail::more_detail"}));
+    CHECK(!filter.should_include(namespace_{"ns1::interface"}));
+
+    package p{{}};
+
+    p.set_namespace({"ns1"});
+
+    CHECK(filter.should_include(p));
+
+    p.set_namespace({"ns1"});
+    p.set_name("ns2");
+
+    CHECK(filter.should_include(p));
+
+    p.set_namespace({"ns1::ns2"});
+    p.set_name("detail");
+
+    CHECK(!filter.should_include(p));
+
+    p.set_namespace({"ns1"});
+    p.set_name("interface");
+
+    CHECK(!filter.should_include(p));
+}
+
 TEST_CASE("Test elements regexp filter", "[unit-test]")
 {
     using clanguml::class_diagram::model::class_method;
@@ -185,7 +249,7 @@ TEST_CASE("Test namespaces regexp filter", "[unit-test]")
 
     CHECK(filter.should_include(c));
 
-    CHECK(!filter.should_include(namespace_{"ns1"}));
+    CHECK(filter.should_include(namespace_{"ns1"}));
     CHECK(filter.should_include(namespace_{"ns1::ns2"}));
     CHECK(!filter.should_include(namespace_{"ns1::ns2::detail"}));
     CHECK(filter.should_include(namespace_{"ns1::interface"}));

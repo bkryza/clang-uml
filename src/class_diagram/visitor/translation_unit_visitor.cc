@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/visitor/translation_unit_visitor.cc
+ * @file src/class_diagram/visitor/translation_unit_visitor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

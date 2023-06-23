@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/visitor/template_builder.h
+ * @file src/class_diagram/visitor/template_builder.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

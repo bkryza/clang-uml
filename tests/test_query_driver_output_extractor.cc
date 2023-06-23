@@ -1,5 +1,5 @@
 /**
- * tests/test_query_driver_output_extractor.cc
+ * @file tests/test_query_driver_output_extractor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

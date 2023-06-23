@@ -1,5 +1,5 @@
 /**
- * src/config/config.h
+ * @file src/config/config.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

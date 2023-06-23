@@ -1,5 +1,5 @@
 /**
- * src/util/thread_pool_executor.h
+ * @file src/util/thread_pool_executor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

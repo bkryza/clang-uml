@@ -1,5 +1,5 @@
 /**
- * tests/test_model.cc
+ * @file tests/test_model.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

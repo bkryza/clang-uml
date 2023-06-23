@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/diagram.cc
+ * @file src/package_diagram/model/diagram.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -43,8 +43,6 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
     const clanguml::common::model::diagram_element::id_t id) const
 {
-    LOG_DBG("Looking for package with id {}", id);
-
     return find<package>(id);
 }
 

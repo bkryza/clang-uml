@@ -1,5 +1,5 @@
 /**
- * src/config/option.h
+ * @file src/config/option.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_element.h
+ * @file src/class_diagram/model/class_element.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

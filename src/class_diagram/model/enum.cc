@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/enum.cc
+ * @file src/class_diagram/model/enum.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -54,4 +54,11 @@ std::vector<std::string> &enum_::constants() { return constants_; }
 
 const std::vector<std::string> &enum_::constants() const { return constants_; }
 
+std::optional<std::string> enum_::doxygen_link() const
+{
+    auto name = name_and_ns();
+    util::replace_all(name, "_", "__");
+    util::replace_all(name, "::", "_1_1");
+    return fmt::format("enum{}.html", name);
+}
 } // namespace clanguml::class_diagram::model

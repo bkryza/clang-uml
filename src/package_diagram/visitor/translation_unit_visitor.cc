@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/visitor/translation_unit_visitor.cc
+ * @file src/package_diagram/visitor/translation_unit_visitor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -53,7 +53,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 
     auto qualified_name = common::get_qualified_name(*ns);
 
-    if (!diagram().should_include(qualified_name))
+    if (!diagram().should_include(namespace_{qualified_name}))
         return true;
 
     LOG_DBG("Visiting namespace declaration: {}", qualified_name);
@@ -93,6 +93,8 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
         }
 
         if (!p->skip()) {
+            LOG_DBG("Adding package {}", p->full_name(false));
+
             diagram().add(p->path(), std::move(p));
         }
     }
@@ -212,6 +214,9 @@ void translation_unit_visitor::add_relationships(
     // package for current directory is already in the model
     if (config().package_type() == config::package_type_t::kDirectory) {
         auto file = source_manager().getFilename(cls->getLocation()).str();
+
+        if (file.empty())
+            return;
 
         auto relative_file = config().make_path_relative(file);
         relative_file.make_preferred();

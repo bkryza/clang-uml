@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/message.cc
+ * @file src/sequence_diagram/model/message.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

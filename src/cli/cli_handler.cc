@@ -1,5 +1,5 @@
 /**
- * src/options/cli_handler.cc
+ * @file src/options/cli_handler.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

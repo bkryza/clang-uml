@@ -28,10 +28,6 @@ TEST_CASE("t30001", "[test-case][package]")
 
     REQUIRE(model->name() == "t30001_package");
 
-    REQUIRE(model->should_include("clanguml::t30001::A"));
-    REQUIRE(!model->should_include("clanguml::t30001::detail::C"));
-    REQUIRE(!model->should_include("std::vector"));
-
     {
         auto puml = generate_package_puml(diagram, *model);
         AliasMatcher _A(puml);

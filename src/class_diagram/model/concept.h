@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/concept.h
+ * @file src/class_diagram/model/concept.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/enum.h
+ * @file src/class_diagram/model/enum.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -44,6 +44,8 @@ public:
     std::vector<std::string> &constants();
 
     const std::vector<std::string> &constants() const;
+
+    std::optional<std::string> doxygen_link() const override;
 
 private:
     std::vector<std::string> constants_;

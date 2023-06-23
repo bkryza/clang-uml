@@ -1,5 +1,5 @@
 /**
- * src/util/util.h
+ * @file src/util/util.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

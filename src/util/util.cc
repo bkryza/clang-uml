@@ -1,5 +1,5 @@
 /**
- * src/util/util.cc
+ * @file src/util/util.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

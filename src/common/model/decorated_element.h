@@ -47,6 +47,8 @@ using comment_t = inja::json;
  */
 class decorated_element {
 public:
+    virtual ~decorated_element() = default;
+
     /**
      * Whether this element should be skipped from the diagram.
      *
@@ -124,6 +126,13 @@ public:
      * @param c Comment model.
      */
     void set_comment(const comment_t &c);
+
+    /**
+     * Return Doxygen HTML documentation link for the element.
+     *
+     * @return Element context.
+     */
+    virtual std::optional<std::string> doxygen_link() const;
 
 private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;

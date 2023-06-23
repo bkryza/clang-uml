@@ -150,7 +150,7 @@ inline value_t any_of(InputIterator first, InputIterator last, Predicate pred)
         if (m.has_value()) {
             if (m.value()) {
                 res = true;
-                break;
+                return res;
             }
             res = false;
         }

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/method_parameter.h
+ * @file src/class_diagram/model/method_parameter.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -30,6 +30,8 @@ public:
     method_parameter() = default;
     method_parameter(
         std::string type, std::string name, std::string default_value = {});
+
+    virtual ~method_parameter() = default;
 
     void set_type(const std::string &type);
     std::string type() const;

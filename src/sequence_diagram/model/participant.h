@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/participant.h
+ * @file src/sequence_diagram/model/participant.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

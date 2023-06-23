@@ -28,12 +28,6 @@ TEST_CASE("t00006", "[test-case][class]")
 
     REQUIRE(model->name() == "t00006_class");
 
-    REQUIRE(model->should_include("clanguml::t00006::A"));
-    REQUIRE(model->should_include("clanguml::t00006::B"));
-    REQUIRE(model->should_include("clanguml::t00006::C"));
-    REQUIRE(model->should_include("clanguml::t00006::D"));
-    REQUIRE(model->should_include("clanguml::t00006::E"));
-
     {
         auto puml = generate_class_puml(diagram, *model);
         AliasMatcher _A(puml);
