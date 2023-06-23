@@ -19,6 +19,7 @@ UPDATE_TOC := markdown-toc  --bullets "*" -i
 
 .PHONY: toc
 toc:
+		$(UPDATE_TOC) architecture.md
 		$(UPDATE_TOC) class_diagrams.md
 		$(UPDATE_TOC) comment_decorators.md
 		$(UPDATE_TOC) common_options.md

@@ -30,11 +30,11 @@
       <tab type="structlist" visible="yes" title="" intro=""/>
       <tab type="structindex" visible="$ALPHABETICAL_INDEX" title=""/>
     </tab>
-    <tab type="exceptions" visible="yes" title="">
-      <tab type="exceptionlist" visible="yes" title="" intro=""/>
-      <tab type="exceptionindex" visible="$ALPHABETICAL_INDEX" title=""/>
-      <tab type="exceptionhierarchy" visible="yes" title="" intro=""/>
-    </tab>
+<!--    <tab type="exceptions" visible="yes" title="">-->
+<!--      <tab type="exceptionlist" visible="yes" title="" intro=""/>-->
+<!--      <tab type="exceptionindex" visible="$ALPHABETICAL_INDEX" title=""/>-->
+<!--      <tab type="exceptionhierarchy" visible="yes" title="" intro=""/>-->
+<!--    </tab>-->
     <tab type="files" visible="yes" title="">
       <tab type="filelist" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
@@ -46,6 +46,7 @@
   <!-- Layout definition for a class page -->
   <class>
     <briefdescription visible="yes"/>
+    <detaileddescription title=""/>
     <includes visible="$SHOW_HEADERFILE"/>
     <inheritancegraph visible="$CLASS_GRAPH"/>
     <collaborationgraph visible="$COLLABORATION_GRAPH"/>
@@ -83,7 +84,6 @@
       <related title="" subtitle=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <inlineclasses title=""/>
       <typedefs title=""/>
@@ -105,6 +105,7 @@
   <!-- Layout definition for a namespace page -->
   <namespace>
     <briefdescription visible="yes"/>
+    <detaileddescription title=""/>
     <memberdecl>
       <nestednamespaces visible="yes" title=""/>
       <constantgroups visible="yes" title=""/>
@@ -121,7 +122,6 @@
       <variables title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <inlineclasses title=""/>
       <typedefs title=""/>
@@ -137,6 +137,7 @@
   <!-- Layout definition for a concept page -->
   <concept>
     <briefdescription visible="yes"/>
+    <detaileddescription title=""/>
     <includes visible="$SHOW_HEADERFILE"/>
     <definition visible="yes" title=""/>
     <detaileddescription title=""/>
@@ -146,6 +147,7 @@
   <!-- Layout definition for a file page -->
   <file>
     <briefdescription visible="yes"/>
+<!--    <detaileddescription title=""/>-->
     <includes visible="$SHOW_INCLUDE_FILES"/>
     <includegraph visible="$INCLUDE_GRAPH"/>
     <includedbygraph visible="$INCLUDED_BY_GRAPH"/>
@@ -167,7 +169,6 @@
       <variables title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <inlineclasses title=""/>
       <defines title=""/>
@@ -184,6 +185,7 @@
   <!-- Layout definition for a group page -->
   <group>
     <briefdescription visible="yes"/>
+    <detaileddescription title=""/>
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
       <nestedgroups visible="yes" title=""/>
@@ -209,7 +211,6 @@
       <friends title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <pagedocs/>
       <inlineclasses title=""/>
@@ -240,6 +241,6 @@
       <dirs visible="yes"/>
       <files visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
+<!--    <detaileddescription title=""/>-->
   </directory>
 </doxygenlayout>

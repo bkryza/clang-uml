@@ -27,6 +27,7 @@ If `clang-uml` crashes with a segmentation fault, it is possible to trace the
 exact stack trace of the fault using the following steps:
 
 First, build `clang-uml` from source in debug mode, e.g.:
+
 ```bash
 make debug
 ```
@@ -48,11 +49,13 @@ paste the stack trace and few last logs from the console.
 
 ### Diagram generation is very slow
 
-`clang-uml` uses Clang's [RecursiveASTVisitor](https://clang.llvm.org/doxygen/classclang_1_1RecursiveASTVisitor.html), to
+`clang-uml` uses
+Clang's [RecursiveASTVisitor](https://clang.llvm.org/doxygen/classclang_1_1RecursiveASTVisitor.html),
+to
 traverse the source code. By default, this visitor is invoked on every
 translation unit (i.e. each entry in your `compile_commands.json`), including
 all of their header dependencies recursively. This means, that for large code
-bases  with hundreds or thousands of translation units, traversing all of them
+bases with hundreds or thousands of translation units, traversing all of them
 will be slow (think `clang-tidy` slow...).
 
 Fortunately, in most practical cases it is not necessary to traverse the entire
@@ -61,7 +64,8 @@ a single diagram usually can be found in just a few translation units, or even
 a single one.
 
 This is where the `glob` configuration parameter comes in. It can be used to
-limit the number of translation units to visit for a given diagram, for instance:
+limit the number of translation units to visit for a given diagram, for
+instance:
 
 ```yaml
 diagrams:
@@ -175,7 +179,7 @@ output_directory: output
 
 .sequence_diagram_anchor: &sequence_diagram_anchor
   type: sequence
-  glob: []
+  glob: [ ]
   start_from:
     - function: 'main(int,const char**)'
 
@@ -183,7 +187,7 @@ diagrams:
   main_sequence_diagram: *sequence_diagram_anchor # This will work
   foo_sequence_diagram:
     <<: *sequence_diagram_anchor # This will not work
-    glob: [src/foo.cc]
+    glob: [ src/foo.cc ]
     start_from:
       - function: 'foo(int,float)'
 ```
@@ -197,10 +201,11 @@ yq 'explode(.)' .clang-uml | clang-uml --config -
 ```
 
 ## Class diagrams
+
 ### "fatal error: 'stddef.h' file not found"
 
 This error means that Clang cannot find some standard headers in include
-paths  specified in the `compile_commands.json`. This typically happens on macOS
+paths specified in the `compile_commands.json`. This typically happens on macOS
 and sometimes on Linux, when the code was compiled with different Clang version
 than `clang-uml` itself.
 
@@ -213,7 +218,7 @@ set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTOR
 
 Another option is to provide an option (on command line or in configuration
 file) called `query_driver` (inspired by the [clangd](https://clangd.llvm.org/)
-language  server - although much less flexible), which will invoke the
+language server - although much less flexible), which will invoke the
 provider compiler command and query it for its default system paths, which then
 will be added to each compile command in the database. This is especially useful
 on macOS as well as for embedded toolchains, example usage:
@@ -253,19 +258,25 @@ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
           --remove-compile-flag -I/usr/include ...
 ```
 
+Also see
+[here](./md_docs_2common__options.html#resolving-include-path-and-compiler-flags-issues).
+
 ### How can I generate class diagram of my entire project
+
 I want to generate a diagram containing all classes and relationships in my
 project - I don't care how big it is going to be.
 
-Of course this is possible, the best way to do this is to specify that `clang-uml`
-should only include elements defined in files contained in project sources, e.g.:
+Of course this is possible, the best way to do this is to specify
+that `clang-uml`
+should only include elements defined in files contained in project sources,
+e.g.:
 
 ```yaml
 diagrams:
   all_classes:
     type: class
     include:
-      paths: [include, src]
+      paths: [ include, src ]
 ```
 
 As the diagram will be huge for even medium-sized projects, it will likely not
@@ -277,7 +288,8 @@ clang-uml -g json -n all_classes --progress
 ```
 
 ### Cannot generate classes for 'std' namespace
-Currently, system headers are skipped automatically by `clang-uml`, due to 
+
+Currently, system headers are skipped automatically by `clang-uml`, due to
 too many errors they produce when generating diagrams, especially when trying
 to process `GCC`'s or `MSVC`'s system headers by `Clang` - not yet sure why
 that is the case.

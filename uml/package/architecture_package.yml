@@ -1,0 +1,21 @@
+type: package
+glob:
+  - src/config/config.cc
+  - src/common/model/diagram.cc
+  - src/**/model/diagram.cc
+  - src/**/visitor/translation_unit_visitor.cc
+  - src/**/generators/**/*generator.cc
+include:
+  namespaces:
+    - clanguml
+  elements:
+    - clanguml
+    - clanguml::common
+    - clanguml::config
+    - r: "clanguml::.+_diagram"
+    - r: "clanguml::.+::model"
+    - r: "clanguml::.+::visitor"
+    - r: "clanguml::.+::generators"
+plantuml:
+  before:
+    - 'title clang-uml top level packages'

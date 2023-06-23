@@ -1,6 +1,6 @@
 type: class
 include_relations_also_as_members: true
-generate_packages: true
+generate_packages: false
 glob:
   - src/common/model/diagram_filter.cc
   - src/common/model/diagram.cc
@@ -12,5 +12,9 @@ include:
 exclude:
   elements:
     - clanguml::common::model::path
+  method_types:
+    - constructor
+    - destructor
+    - operator
 using_namespace:
   - clanguml

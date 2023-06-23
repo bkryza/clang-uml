@@ -21,7 +21,7 @@ from it. The file must be specified in YAML and it's overall structure is as fol
 # common options for all diagrams
 ...
 diagrams:
-  first_diagram_name>:
+  first_diagram_name:
     type: class|sequence|package|include
     # diagram specific options
     ...

@@ -8,8 +8,15 @@ include:
 exclude:
   relationships:
     - dependency
+  subclasses:
+    - clanguml::common::model::filter_visitor
+  access: [public, protected, private]
+  element_types:
+    - enum
 using_namespace:
   - clanguml::common::model
 plantuml:
   before:
     - 'title clang-uml common diagram model'
+  after:
+    - 'note top of {{ alias("diagram") }}: Common class for specific diagram types'

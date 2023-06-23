@@ -2,10 +2,12 @@ compilation_database_dir: debug
 output_directory: docs/diagrams
 comment_parser: clang
 generate_links:
-  link: https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}
+  link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
 diagrams:
   # Class diagrams
+  architecture_visitors_class:
+    include!: uml/class/architecture_visitors_class.yml
   config_class:
     include!: uml/class/config_class.yml
   config_context_class:
@@ -52,7 +54,7 @@ diagrams:
     include!: uml/class/sequence_model_class.yml
   package_model_class:
     include!: uml/class/package_model_class.yml
-  # Sequence diargams
+  # Sequence diagrams
   main_sequence:
     include!: uml/sequence/main_sequence.yml
   load_config_sequence:
@@ -70,6 +72,8 @@ diagrams:
   # Package diagrams
   main_package:
     include!: uml/package/main_package.yml
+  architecture_package:
+    include!: uml/package/architecture_package.yml
   # Include diagrams
   include_graph:
     include!: uml/include/include.yml

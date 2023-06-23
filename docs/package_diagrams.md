@@ -31,7 +31,7 @@ diagrams:
 ```
 
 For instance the following C++ code:
-```
+```cpp
 namespace A::AA {
 namespace A1 {
 struct CA {
@@ -152,7 +152,7 @@ template <typename T> std::map<T, std::shared_ptr<A::AA::A13::CM>> cm()
 }
 ```
 
-generates the following diagram:
+results the following diagram:
 
 ![package_deps](./test_cases/t30002_package.svg)
 
