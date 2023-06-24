@@ -16,7 +16,7 @@ For instance to generate both types of diagrams run `clang-uml` as follows:
 clang-uml -g plantuml -g json
 ```
 
-By default, only `plantuml` diagram are generated.
+By default, only `plantuml` diagrams are generated.
 
 ## PlantUML
 
