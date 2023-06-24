@@ -6,7 +6,7 @@
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
 [![Version](https://img.shields.io/badge/version-0.3.7-blue)](https://github.com/bkryza/clang-uml/releases)
 [![Version](https://img.shields.io/badge/LLVM-12,13,14,15,16-orange)](https://github.com/bkryza/clang-uml/releases)
-[![Doxygen](https://img.shields.io/badge/Docs-Doxygen-gainsboro)](https://clanguml-uml.github.io)
+[![Doxygen](https://img.shields.io/badge/Docs-Doxygen-gainsboro)](https://clang-uml.github.io)
 
 `clang-uml` is an automatic C++ to UML class, sequence, package and include diagram generator, driven by
 YAML configuration files. The main idea behind the
@@ -17,7 +17,7 @@ The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON forma
 
 `clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
 
-Full documentation can be found at [clanguml-uml.github.io](https://clanguml-uml.github.io).
+Full documentation can be found at [clang-uml.github.io](https://clang-uml.github.io).
 
 To see what `clang-uml` can do, checkout the diagrams generated for unit
 test cases [here](./docs/test_cases.md) or examples in
@@ -56,7 +56,7 @@ Main features supported so far include:
 * **Include graph diagram generation**
     * Show include graph for selected files - [_example_](docs/test_cases/t40001.md)
 
-More comprehensive documentation can be at [clanguml-uml.github.io](https://clanguml-uml.github.io).
+More comprehensive documentation can be at [clang-uml.github.io](https://clang-uml.github.io).
 
 ## Installation
 
