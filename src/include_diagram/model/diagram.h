@@ -32,6 +32,9 @@ using clanguml::common::opt_ref;
 using clanguml::common::model::diagram_element;
 using clanguml::common::model::source_file;
 
+/**
+ * @brief Class representing an include diagram model.
+ */
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_view<source_file>,
                 public clanguml::common::model::nested_trait<source_file,
@@ -44,24 +47,87 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    /**
+     * @brief Get the diagram model type - in this case include.
+     *
+     * @return Type of include diagram.
+     */
     common::model::diagram_t type() const override;
 
+    /**
+     * @brief Search for element in the diagram by fully qualified name.
+     *
+     * @param full_name Fully qualified element name.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(const std::string &full_name) const override;
 
+    /**
+     * @brief Search for element in the diagram by id.
+     *
+     * @param id Element id.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(diagram_element::id_t id) const override;
 
+    /**
+     * @brief Add include diagram element, an include file.
+     *
+     * @param f Include diagram element
+     */
     void add_file(std::unique_ptr<common::model::source_file> &&f);
 
+    /**
+     * @brief Find an element in the diagram by name.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from `ElementT`.
+     *
+     * @tparam ElementT Type of element (e.g. source_file)
+     * @param name Fully qualified name of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(const std::string &name) const;
 
+    /**
+     * @brief Find an element in the diagram by id.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from `ElementT`.
+     *
+     * @tparam ElementT Type of element (e.g. source_file)
+     * @param id Id of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(diagram_element::id_t id) const;
 
+    /**
+     * @brief Convert element id to PlantUML alias.
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @param full_name Full name of the diagram element.
+     * @return PlantUML alias.
+     */
     std::string to_alias(const std::string &full_name) const;
 
+    /**
+     * @brief Get list of references to files in the diagram model.
+     *
+     * @return List of references to concepts in the diagram model.
+     */
     const common::reference_vector<source_file> &files() const;
 
+    /**
+     * @brief Find diagram element with a specified name and path.
+     *
+     * @param name Name of the element
+     * @param ns Path relative to the diagram
+     * @return Optional reference to diagram element, if found.
+     */
     opt_ref<diagram_element> get_with_namespace(const std::string &name,
         const common::model::namespace_ &ns) const override;
 
