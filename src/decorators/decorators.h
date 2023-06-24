@@ -33,19 +33,42 @@ struct decorator_toks {
     std::string text;
 };
 
+/**
+ * @brief Base class for clang-uml comment tags
+ *
+ * This class provides basic interface for `clang-uml` comment tags, called
+ * decorators. All decorators are added to the code using `uml` Doxygen-style
+ * tag.
+ */
 struct decorator {
+    /** List of diagram names to which a given decorator applies */
     std::vector<std::string> diagrams;
 
     virtual ~decorator() = default;
 
+    /**
+     * @brief Create decorator of specific type based on it's string
+     *        representation.
+     * @param c Decorator string representation extracted from the comment
+     * @return Decorator instance
+     */
     static std::shared_ptr<decorator> from_string(std::string_view c);
 
+    /**
+     * @brief Check if decorator applies to a specific diagram.
+     *
+     * @param name Name of the diagram
+     * @return True, if this decorator applies to diagram `name`
+     */
     bool applies_to_diagram(const std::string &name);
 
 protected:
     decorator_toks tokenize(const std::string &label, std::string_view c);
 };
 
+/**
+ * @brief Represents a note diagram element
+ */
 struct note : public decorator {
     static inline const std::string label{"note"};
 
@@ -55,18 +78,27 @@ struct note : public decorator {
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Whether a decorated element should be skipped from a diagram
+ */
 struct skip : public decorator {
     static inline const std::string label{"skip"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Whether a decorated relationships should be skipped from a diagram
+ */
 struct skip_relationship : public decorator {
     static inline const std::string label{"skiprelationship"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Apply specific style to a decorated diagram element
+ */
 struct style : public decorator {
     static inline const std::string label{"style"};
 
@@ -74,28 +106,47 @@ struct style : public decorator {
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Base class for decorators overriding default relationship types
+ */
 struct relationship : public decorator {
     std::string multiplicity;
 };
 
+/**
+ * @brief Make a member an aggregation relationship
+ */
 struct aggregation : public relationship {
     static inline const std::string label{"aggregation"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Make a member a composition relationship
+ */
 struct composition : public relationship {
     static inline const std::string label{"composition"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Make a member an association relationship
+ */
 struct association : public relationship {
     static inline const std::string label{"association"};
 
     static std::shared_ptr<decorator> from_string(std::string_view c);
 };
 
+/**
+ * @brief Parse a documentation block and extract all clang-uml decorators
+ *
+ * @param documentation_block Documentation block extracted from source code
+ * @param clanguml_tag Name of the clanguml tag (default `uml`)
+ * @return List of clang-uml decorators extracted from comment
+ */
 std::vector<std::shared_ptr<decorator>> parse(
     std::string documentation_block, const std::string &clanguml_tag = "uml");
 
