@@ -31,10 +31,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace clanguml {
-namespace package_diagram {
-namespace generators {
-namespace json {
+namespace clanguml::package_diagram::generators::json {
 
 using diagram_config = clanguml::config::package_diagram;
 using diagram_model = clanguml::package_diagram::model::diagram;
@@ -47,21 +44,41 @@ using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
 using namespace clanguml::util;
 
+/**
+ * @brief Package diagram JSON generator
+ */
 class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    /**
+     * @brief Main generator method.
+     *
+     * This method is called first and coordinates the entire diagram
+     * generation.
+     *
+     * @param ostr Output stream.
+     */
+    void generate(std::ostream &ostr) const override;
+
+    /**
+     * @brief Generate relationships originating from package `p`
+     *
+     * @param p Diagram element
+     * @param parent JSON node
+     */
     void generate_relationships(const package &p, nlohmann::json &parent) const;
 
-    void generate(const package &e, nlohmann::json &parent) const;
-
-    void generate(std::ostream &ostr) const override;
+    /**
+     * @brief Generate diagram package
+     *
+     * @param p Diagram package element
+     * @param parent Parent JSON node
+     */
+    void generate(const package &p, nlohmann::json &parent) const;
 
 private:
     mutable nlohmann::json json_;
 };
 
-} // namespace json
-} // namespace generators
-} // namespace package_diagram
-} // namespace clanguml
+} // namespace clanguml::package_diagram::generators::json

@@ -592,4 +592,17 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     return result;
 }
 
+clanguml::package_diagram::model::diagram &translation_unit_visitor::diagram()
+{
+    return diagram_;
+}
+
+const clanguml::config::package_diagram &
+translation_unit_visitor::config() const
+{
+    return config_;
+}
+
+void translation_unit_visitor::finalize() { }
+
 } // namespace clanguml::package_diagram::visitor

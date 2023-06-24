@@ -57,7 +57,7 @@ using clanguml::common::model::template_trait;
 /**
  * @brief Class diagram translation unit visitor
  *
- * This class implements the @link clang::RecursiveASTVisitor interface
+ * This class implements the `clang::RecursiveASTVisitor` interface
  * for selected visitors relevant to generating class diagrams.
  */
 class translation_unit_visitor
