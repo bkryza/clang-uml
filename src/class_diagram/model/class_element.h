@@ -26,6 +26,9 @@
 
 namespace clanguml::class_diagram::model {
 
+/**
+ * @brief Base class for class elements (e.g. member or method).
+ */
 class class_element : public common::model::decorated_element,
                       public common::model::source_location {
 public:
@@ -34,13 +37,46 @@ public:
 
     ~class_element() override = default;
 
+    /**
+     * @brief Get elements access scope.
+     *
+     * @return Elements access scope.
+     */
     common::model::access_t access() const;
+
+    /**
+     * @brief Get elements name.
+     *
+     * @return Elements name.
+     */
     std::string name() const;
+
+    /**
+     * @brief Set elements name.
+     *
+     * @param name Elements name.
+     */
     void set_name(const std::string &name);
 
+    /**
+     * @brief Get elements type as string.
+     *
+     * @return Elements type as string.
+     */
     std::string type() const;
+
+    /**
+     * @brief Set elements type as string.
+     *
+     * @param type Elements type as string.
+     */
     void set_type(const std::string &type);
 
+    /**
+     * @brief Get elements inja context in JSON.
+     *
+     * @return Context in JSON
+     */
     virtual inja::json context() const;
 
 private:

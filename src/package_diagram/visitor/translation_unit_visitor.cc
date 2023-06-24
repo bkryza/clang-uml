@@ -553,8 +553,9 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                         clang::cast<clang::NamespaceDecl>(namespace_context);
 
                     if (namespace_declaration != nullptr &&
-                        diagram().should_include(common::get_qualified_name(
-                            *namespace_declaration))) {
+                        diagram().should_include(
+                            namespace_{common::get_qualified_name(
+                                *namespace_declaration)})) {
                         const auto target_id = get_package_id(cxxrecord_decl);
                         relationships.emplace_back(
                             target_id, relationship_hint);
@@ -563,8 +564,9 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 }
             }
             else {
-                if (diagram().should_include(common::get_qualified_name(
-                        *type->getAsCXXRecordDecl()))) {
+                if (diagram().should_include(
+                        namespace_{common::get_qualified_name(
+                            *type->getAsCXXRecordDecl())})) {
                     const auto target_id =
                         get_package_id(type->getAsCXXRecordDecl());
                     relationships.emplace_back(target_id, relationship_hint);
@@ -578,7 +580,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             // need to consider namespaces here
             if (config().package_type() == config::package_type_t::kDirectory) {
                 if (diagram().should_include(
-                        common::get_qualified_name(*record_decl))) {
+                        namespace_{common::get_qualified_name(*record_decl)})) {
                     const auto target_id = get_package_id(record_decl);
                     relationships.emplace_back(target_id, relationship_hint);
                     result = true;

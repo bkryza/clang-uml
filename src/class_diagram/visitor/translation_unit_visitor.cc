@@ -100,7 +100,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     if (enm->getNameAsString().empty())
         return true;
 
-    if (!diagram().should_include(enm->getQualifiedNameAsString()))
+    if (!should_include(enm))
         return true;
 
     LOG_DBG("= Visiting enum declaration {} at {}",
@@ -169,8 +169,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         e.constants().push_back(ev->getNameAsString());
     }
 
-    if (diagram().should_include(qualified_name))
-        add_enum(std::move(e_ptr));
+    add_enum(std::move(e_ptr));
 
     return true;
 }
@@ -178,10 +177,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl *cls)
 {
-    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
-        return true;
-
-    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+    if (!should_include(cls))
         return true;
 
     LOG_DBG("= Visiting template specialization declaration {} at {} "
@@ -241,10 +237,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     clang::TypeAliasTemplateDecl *cls)
 {
-    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
-        return true;
-
-    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+    if (!should_include(cls))
         return true;
 
     LOG_DBG("= Visiting template type alias declaration {} at {}",
@@ -280,10 +273,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 bool translation_unit_visitor::VisitClassTemplateDecl(
     clang::ClassTemplateDecl *cls)
 {
-    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
-        return true;
-
-    if (!diagram().should_include(cls->getQualifiedNameAsString()))
+    if (!should_include(cls))
         return true;
 
     LOG_DBG("= Visiting class template declaration {} at {}",
@@ -339,16 +329,12 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
 bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
 {
-    // Skip system headers
-    if (source_manager().isInSystemHeader(rec->getSourceRange().getBegin()))
-        return true;
-
     if (clang::dyn_cast_or_null<clang::CXXRecordDecl>(rec) != nullptr)
         // This is handled by VisitCXXRecordDecl()
         return true;
 
     // It seems we are in a C (not C++) translation unit
-    if (!diagram().should_include(rec->getQualifiedNameAsString()))
+    if (!should_include(rec))
         return true;
 
     LOG_DBG("= Visiting record declaration {} at {}",
@@ -396,11 +382,7 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
 
 bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 {
-    // Skip system headers
-    if (source_manager().isInSystemHeader(cpt->getSourceRange().getBegin()))
-        return true;
-
-    if (!diagram().should_include(cpt->getQualifiedNameAsString()))
+    if (!should_include(cpt))
         return true;
 
     LOG_DBG("= Visiting concept (isType: {}) declaration {} at {}",
@@ -1314,7 +1296,7 @@ void translation_unit_visitor::process_method(
                 *unaliased_type, &c);
 
             if (diagram().should_include(
-                    template_specialization_ptr->full_name(false))) {
+                    template_specialization_ptr->get_namespace())) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
@@ -1686,7 +1668,7 @@ void translation_unit_visitor::process_function_parameter(
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
             if (diagram().should_include(
-                    template_specialization_ptr->full_name(false))) {
+                    template_specialization_ptr->get_namespace())) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
@@ -1956,7 +1938,7 @@ void translation_unit_visitor::process_field(
             // it's a std::vector<>, it's nested types might be added
             bool add_template_instantiation_to_diagram{false};
             if (diagram().should_include(
-                    template_specialization.full_name(false))) {
+                    template_specialization.get_namespace())) {
 
                 found_relationships_t::value_type r{
                     template_specialization.id(), relationship_hint};
@@ -2034,7 +2016,7 @@ void translation_unit_visitor::process_field(
 void translation_unit_visitor::add_incomplete_forward_declarations()
 {
     for (auto &[id, c] : forward_declarations_) {
-        if (diagram().should_include(c->full_name(false))) {
+        if (diagram().should_include(c->get_namespace())) {
             add_class(std::move(c));
         }
     }
@@ -2107,8 +2089,21 @@ void translation_unit_visitor::extract_constrained_template_param_name(
 
 bool translation_unit_visitor::should_include(const clang::NamedDecl *decl)
 {
-    return decl != nullptr &&
-        diagram().should_include(decl->getQualifiedNameAsString());
+    if (decl == nullptr)
+        return false;
+
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return false;
+
+    auto should_include_namespace =
+        diagram().should_include(namespace_{decl->getQualifiedNameAsString()});
+
+    const auto decl_file = decl->getLocation().printToString(source_manager());
+
+    const auto should_include_decl_file =
+        diagram().should_include(common::model::source_file{decl_file});
+
+    return should_include_namespace && should_include_decl_file;
 }
 
 void translation_unit_visitor::add_processed_template_class(

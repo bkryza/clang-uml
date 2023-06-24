@@ -235,7 +235,7 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
 
     auto templated_decl_id =
         template_type.getTemplateName().getAsTemplateDecl()->getID();
-    auto templated_decl_local_id =
+    auto templated_decl_global_id =
         id_mapper().get_global_id(templated_decl_id).value_or(0);
 
     if (best_match_id > 0) {
@@ -246,12 +246,13 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     }
     // If we can't find optimal match for parent template specialization,
     // just use whatever clang suggests
-    else if (diagram().has_element(templated_decl_local_id)) {
+    else if (diagram().has_element(templated_decl_global_id)) {
         template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, templated_decl_local_id});
+            {relationship_t::kInstantiation, templated_decl_global_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (diagram().should_include(full_template_specialization_name)) {
+    else if (diagram().should_include(
+                 namespace_{full_template_specialization_name})) {
         LOG_DBG("Skipping instantiation relationship from {} to {}",
             template_instantiation_ptr->full_name(false), templated_decl_id);
     }
@@ -351,7 +352,7 @@ template_builder::build_from_class_template_specialization(
             {relationship_t::kInstantiation, templated_decl_local_id});
         template_instantiation.template_specialization_found(true);
     }
-    else if (diagram().should_include(qualified_name)) {
+    else if (diagram().should_include(namespace_{qualified_name})) {
         LOG_DBG("Skipping instantiation relationship from {} to {}",
             template_instantiation_ptr->full_name(false), templated_decl_id);
     }
@@ -380,7 +381,7 @@ void template_builder::process_template_arguments(
         //       default values, and add them when they are specifically
         //       overridden
         if (!diagram().should_include(
-                template_decl->getQualifiedNameAsString())) {
+                namespace_{template_decl->getQualifiedNameAsString()})) {
             const auto *maybe_type_parm_decl =
                 clang::dyn_cast<clang::TemplateTypeParmDecl>(
                     template_decl->getTemplateParameters()->getParam(
@@ -1012,7 +1013,8 @@ template_builder::try_as_template_specialization_type(
     argument.set_type(nested_type_name);
 
     auto nested_template_instantiation = build(cls, *nested_template_type,
-        diagram().should_include(template_decl->getQualifiedNameAsString())
+        diagram().should_include(
+            namespace_{template_decl->getQualifiedNameAsString()})
             ? std::make_optional(&template_instantiation)
             : parent);
 
@@ -1031,9 +1033,10 @@ template_builder::try_as_template_specialization_type(
         nested_template_instantiation->full_name(false);
 
     if (nested_template_instantiation &&
-        diagram().should_include(nested_template_instantiation_full_name)) {
+        diagram().should_include(
+            namespace_{nested_template_instantiation_full_name})) {
         if (diagram().should_include(
-                template_decl->getQualifiedNameAsString())) {
+                namespace_{template_decl->getQualifiedNameAsString()})) {
             template_instantiation.add_relationship(
                 {relationship_t::kDependency,
                     nested_template_instantiation->id()});
@@ -1045,7 +1048,8 @@ template_builder::try_as_template_specialization_type(
         }
     }
 
-    if (diagram().should_include(nested_template_instantiation_full_name)) {
+    if (diagram().should_include(
+            namespace_{nested_template_instantiation_full_name})) {
         visitor_.set_source_location(
             *template_decl, *nested_template_instantiation);
         visitor_.add_class(std::move(nested_template_instantiation));
@@ -1155,7 +1159,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                 template_instantiation.add_relationship(std::move(r));
             }
 
-            if (diagram().should_include(tag_argument->full_name(false))) {
+            if (diagram().should_include(tag_argument->get_namespace())) {
                 if (parent.has_value())
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
@@ -1166,7 +1170,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
              record_type_decl != nullptr) {
-        if (diagram().should_include(type_name)) {
+        if (diagram().should_include(namespace_{type_name})) {
             // Add dependency relationship to the parent
             // template
             template_instantiation.add_relationship(

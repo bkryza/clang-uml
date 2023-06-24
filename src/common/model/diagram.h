@@ -137,6 +137,8 @@ public:
     bool should_include(relationship r) const;
     bool should_include(relationship_t r) const;
     bool should_include(access_t s) const;
+    // Disallow std::string overload
+    bool should_include(const std::string &s) const = delete;
 
     virtual bool has_element(const diagram_element::id_t /*id*/) const
     {

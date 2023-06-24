@@ -25,25 +25,75 @@
 
 namespace clanguml::class_diagram::model {
 
+/**
+ * @brief Class parent relationship model.
+ *
+ * @todo Consider refactoring this class to a regular relationship.
+ */
 class class_parent {
 public:
     class_parent() = default;
+
     class_parent(const std::string &name)
     {
         set_name(name);
         set_id(common::to_id(name));
     }
 
+    /**
+     * @brief Set the fully qualified name of class parent.
+     *
+     * @param name Fully qualified name of the parent class.
+     */
     void set_name(const std::string &name);
+
+    /**
+     * @brief Get the fully qualified name of class parent.
+     *
+     * @return Fully qualified name of the parent class.
+     */
     std::string name() const;
 
-    clanguml::common::id_t id() const noexcept { return id_; }
-    void set_id(clanguml::common::id_t id) { id_ = id; }
+    /**
+     * @brief Set the id of class parent.
+     *
+     * @param id Id of the parent class.
+     */
+    void set_id(clanguml::common::id_t id);
 
+    /**
+     * @brief Get the id of class parent.
+     *
+     * @return Id of the parent class.
+     */
+    clanguml::common::id_t id() const noexcept;
+
+    /**
+     * @brief Set whether the parent is virtual.
+     *
+     * @param is_virtual True if the parent is virtual
+     */
     void is_virtual(bool is_virtual);
+
+    /**
+     * @brief Get whether the parent is virtual.
+     *
+     * @return True, if the parent is virtual
+     */
     bool is_virtual() const;
 
+    /**
+     * @brief Set the parents access scope
+     *
+     * @param access Parents access scope
+     */
     void set_access(common::model::access_t access);
+
+    /**
+     * @brief Get parents access scope.
+     *
+     * @return Parents access scope.
+     */
     common::model::access_t access() const;
 
 private:

@@ -30,6 +30,7 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
+using common::model::namespace_;
 using common::model::template_parameter;
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);

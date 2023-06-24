@@ -24,6 +24,9 @@
 
 namespace clanguml::class_diagram::model {
 
+/*
+ * @brief Diagram element representing an enum.
+ */
 class enum_ : public common::model::element,
               public common::model::stylable_element {
 public:
@@ -36,15 +39,29 @@ public:
 
     std::string type_name() const override { return "enum"; }
 
-    // TODO: Do we need this?
     friend bool operator==(const enum_ &l, const enum_ &r);
 
     std::string full_name(bool relative = true) const override;
 
+    /**
+     * @brief Get the enums constants.
+     *
+     * @return Enums constants names list.
+     */
     std::vector<std::string> &constants();
 
+    /**
+     * @brief Get the enums constants.
+     *
+     * @return Enums constants names list.
+     */
     const std::vector<std::string> &constants() const;
 
+    /**
+     * @brief Get Doxygen link to documentation page for this element.
+     *
+     * @return Doxygen link for this element.
+     */
     std::optional<std::string> doxygen_link() const override;
 
 private:
