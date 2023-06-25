@@ -54,28 +54,101 @@
 
 namespace clanguml::util {
 
-std::string ltrim(const std::string &s);
-std::string rtrim(const std::string &s);
-std::string trim(const std::string &s);
-std::string trim_typename(const std::string &s);
-
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+/**
+ * @brief Left trim a string
+ *
+ * @param s Input string
+ * @return Left trimmed string
+ */
+std::string ltrim(const std::string &s);
+
+/**
+ * @brief Right trim a string
+ *
+ * @param s Input string
+ * @return Right trimmed string
+ */
+std::string rtrim(const std::string &s);
+
+/**
+ * @brief Trim a string
+ *
+ * @param s Input string
+ * @return Trimmed string
+ */
+std::string trim(const std::string &s);
+
+/**
+ * @brief Remove `typename` prefix from a string if exists
+ * @param s Input string
+ * @return String without `typename` prefix
+ */
+std::string trim_typename(const std::string &s);
+
+/**
+ * @brief Execute a shell `command` and return console output as string
+ *
+ * @param command Shell command to execute
+ * @return Console output of the command
+ */
 std::string get_process_output(const std::string &command);
 
+/**
+ * @brief Get value of an environment variable
+ *
+ * @param name Name of the environment variable
+ * @return Value of the environment variable, or empty if it doesn't exist
+ */
 std::string get_env(const std::string &name);
 
+/**
+ * @brief Check if `$PWD` is in a Git repository
+ *
+ * This can be overridden by exporting `CLANGUML_GIT_COMMIT` environment
+ * variable.
+ *
+ * @return True, if the current directory is in a Git repository
+ */
 bool is_git_repository();
 
+/**
+ * @brief Get current Git branch
+ *
+ * @return Name of the current Git branch
+ */
 std::string get_git_branch();
 
+/**
+ * @brief Get current Git revision
+ *
+ * Generates a Git revision tag using `git describe --tags --always` command
+ *
+ * @return Current repository Git revision
+ */
 std::string get_git_revision();
 
+/**
+ * @brief Get current Git commit
+ *
+ * @return Latest Git commit hash
+ */
 std::string get_git_commit();
 
+/**
+ * @brief Get path to the top level Git directory
+ *
+ * @return Absolut path to the nearest directory containing `.git` folder
+ */
 std::string get_git_toplevel_dir();
 
+/**
+ * @brief Get descriptive name of the current operating system.
+ *
+ * @return Name of the operating system
+ */
 std::string get_os_name();
 
 /**
@@ -94,14 +167,37 @@ std::string get_os_name();
 std::vector<std::string> split(
     std::string str, std::string_view delimiter, bool skip_empty = true);
 
+/**
+ * @brief Remove and erase elements from a vector
+ *
+ * @tparam T Element type
+ * @tparam F Functor type
+ * @param v Vector to remove elements from
+ * @param f Functor to decide which elements to remove
+ */
 template <typename T, typename F> void erase_if(std::vector<T> &v, F &&f)
 {
     v.erase(std::remove_if(v.begin(), v.end(), std::forward<F>(f)), v.end());
 }
 
+/**
+ * @brief Join `toks` into string using `delimiter` as separator
+ *
+ * @param toks Elements to join into string
+ * @param delimiter Separator to use to join elements
+ * @return Concatenated elements into one string
+ */
 std::string join(
     const std::vector<std::string> &toks, std::string_view delimiter);
 
+/**
+ * @brief Join `args` into string using `delimiter` as separator
+ *
+ * @tparam Args Element type
+ * @param delimiter Separator to use to join elements
+ * @param args Elements to join into string
+ * @return Arguments concatenated into one string
+ */
 template <typename... Args>
 std::string join(std::string_view delimiter, Args... args)
 {
@@ -287,6 +383,12 @@ template <typename F> void _if(const bool condition, F &&func)
     _if(condition, std::forward<F>(func), []() {});
 }
 
+/**
+ * @brief Generate a hash seed.
+ *
+ * @param seed Initial seed.
+ * @return Hash seed.
+ */
 std::size_t hash_seed(std::size_t seed);
 
 /**

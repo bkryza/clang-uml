@@ -23,8 +23,17 @@
 #include <vector>
 
 namespace clanguml::util {
+
+/**
+ * @brief Simple thread pool executor for parallelizing diagram generation.
+ */
 class thread_pool_executor {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param pool_size Number of threads in the pool
+     */
     explicit thread_pool_executor(unsigned int pool_size);
 
     thread_pool_executor(const thread_pool_executor &) = delete;
@@ -34,21 +43,31 @@ public:
 
     ~thread_pool_executor();
 
+    /**
+     * @brief Add a task to run on the pool.
+     *
+     * @param task Function to execute
+     * @return Future, allowing awaiting the result
+     */
     std::future<void> add(std::function<void()> &&task);
 
+    /**
+     * @brief Join all active threads in the pool
+     */
     void stop();
 
 private:
+    /**
+     * @brief Main worker pool thread method - take task from queue and execute
+     */
     void worker();
 
     std::packaged_task<void()> get();
 
     std::atomic_bool done_;
-
     std::deque<std::packaged_task<void()>> tasks_;
     std::mutex tasks_mutex_;
     std::condition_variable tasks_cond_;
-
     std::vector<std::thread> threads_;
 };
 } // namespace clanguml::util

@@ -143,6 +143,7 @@ std::optional<std::string> class_::doxygen_link() const
     auto name = name_and_ns();
     util::replace_all(name, "_", "__");
     util::replace_all(name, "::", "_1_1");
+    util::replace_all(name, "##", "_1_1"); // nested classes
     return fmt::format("{}{}.html", type, name);
 }
 } // namespace clanguml::class_diagram::model

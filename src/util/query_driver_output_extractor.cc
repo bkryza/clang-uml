@@ -18,6 +18,7 @@
 
 #include "query_driver_output_extractor.h"
 
+#include "error.h"
 #include "util.h"
 
 #include <sstream>
@@ -46,7 +47,7 @@ void query_driver_output_extractor::execute()
     extract_target(driver_output);
 
     if (system_include_paths_.empty()) {
-        throw query_driver_no_paths(fmt::format(
+        throw error::query_driver_no_paths(fmt::format(
             "Compiler driver {} did not report any system include paths "
             "in its output: {}",
             command_, driver_output));

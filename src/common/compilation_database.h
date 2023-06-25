@@ -22,6 +22,7 @@
 #include "common/model/template_parameter.h"
 #include "config/config.h"
 #include "types.h"
+#include "util/error.h"
 #include "util/util.h"
 
 #include <clang/Frontend/CompilerInstance.h>
@@ -33,10 +34,6 @@
 #include <string>
 
 namespace clanguml::common {
-
-class compilation_database_error : public std::runtime_error {
-    using std::runtime_error::runtime_error;
-};
 
 /**
  * @brief Custom compilation database class
