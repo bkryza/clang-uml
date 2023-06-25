@@ -25,29 +25,107 @@
 
 namespace clanguml::sequence_diagram::model {
 
+/**
+ * @brief Model of a sequence diagram message.
+ */
 class message : public common::model::diagram_element {
 public:
     message() = default;
 
+    /**
+     * @brief Constructor
+     *
+     * @param type Message type
+     * @param from Id of originating sequence
+     */
     message(common::model::message_t type,
         common::model::diagram_element::id_t from);
 
+    /**
+     * @brief Set message type
+     *
+     * @param t Message type
+     */
     void set_type(common::model::message_t t);
+
+    /**
+     * @brief Get message type
+     *
+     * @return Message type
+     */
     common::model::message_t type() const;
 
+    /**
+     * @brief Set the id of message source participant
+     *
+     * @param f Id of the participant from which message originates
+     */
     void set_from(common::model::diagram_element::id_t f);
+
+    /**
+     * @brief Get the id of source of message
+     *
+     * @return
+     */
     common::model::diagram_element::id_t from() const;
 
+    /**
+     * @brief Set the id of the message target
+     *
+     * @param t Id of the message target
+     */
     void set_to(common::model::diagram_element::id_t t);
+
+    /**
+     * @brief Get the id of the message target
+     *
+     * @return Id of the message target
+     */
     common::model::diagram_element::id_t to() const;
 
+    /**
+     * @brief Set the message label
+     *
+     * @param name Message label
+     */
     void set_message_name(std::string name);
+
+    /**
+     * @brief Get the message label
+     *
+     * @return Message label
+     */
     const std::string &message_name() const;
 
+    /**
+     * @brief Set the return message type label
+     *
+     * @param t Message return type label
+     */
     void set_return_type(std::string t);
+
+    /**
+     * @brief Get the return message type label
+     *
+     * @return Message return type label
+     */
     const std::string &return_type() const;
 
+    /**
+     * @brief Set message scope
+     *
+     * Message scope currently means whether the message was called from
+     * regular statement, or a statement embedded in a statement block condition
+     *
+     * @param scope Message scope
+     */
     void set_message_scope(common::model::message_scope_t scope);
+
+    /**
+     * @brief Get message scope
+     *
+     * @return Message scope
+     */
     common::model::message_scope_t message_scope() const;
 
 private:

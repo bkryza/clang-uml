@@ -35,16 +35,33 @@ using common::model::template_parameter;
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);
 
+/**
+ * @brief Sequence diagram translation unit visitor
+ *
+ * This class implements the `clang::RecursiveASTVisitor` interface
+ * for selected visitors relevant to generating sequence diagrams.
+ */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
       public common::visitor::translation_unit_visitor {
 public:
+    /**
+     * @brief Constructor.
+     *
+     * @param sm Current source manager reference
+     * @param diagram Diagram model
+     * @param config Diagram configuration
+     */
     translation_unit_visitor(clang::SourceManager &sm,
         clanguml::sequence_diagram::model::diagram &diagram,
         const clanguml::config::sequence_diagram &config);
 
     ~translation_unit_visitor() override = default;
 
+    /**
+     * \defgroup Implementation of ResursiveASTVisitor methods
+     * @{
+     */
     bool shouldVisitTemplateInstantiations();
 
     bool VisitCallExpr(clang::CallExpr *expr);
@@ -99,19 +116,50 @@ public:
     bool TraverseDefaultStmt(clang::DefaultStmt *stmt);
 
     bool TraverseConditionalOperator(clang::ConditionalOperator *stmt);
+    /** @} */
 
+    /**
+     * @brief Get diagram model reference
+     *
+     * @return Reference to diagram model created by the visitor
+     */
     clanguml::sequence_diagram::model::diagram &diagram();
 
+    /**
+     * @brief Get diagram model reference
+     *
+     * @return Reference to diagram model created by the visitor
+     */
     const clanguml::sequence_diagram::model::diagram &diagram() const;
 
+    /**
+     * @brief Get diagram config instance
+     *
+     * @return Reference to config instance
+     */
     const clanguml::config::sequence_diagram &config() const;
 
+    /**
+     * @brief Get current call expression context reference
+     *
+     * @return Reference to the current call expression context
+     */
     call_expression_context &context();
 
+    /**
+     * @brief Get current call expression context reference
+     *
+     * @return Reference to the current call expression context
+     */
     const call_expression_context &context() const;
 
-    void finalize();
-
+    /**
+     * @brief Get participant by declaration
+     *
+     * @tparam T Participant type
+     * @param decl Clang entity declaration
+     * @return Optional reference to participant diagram element
+     */
     template <typename T = model::participant>
     common::optional_ref<T> get_participant(const clang::Decl *decl)
     {
@@ -124,6 +172,13 @@ public:
         return get_participant<T>(unique_participant_id.value());
     }
 
+    /**
+     * @brief Get participant by declaration
+     *
+     * @tparam T Participant type
+     * @param decl Clang entity declaration
+     * @return Optional reference to participant diagram element
+     */
     template <typename T = model::participant>
     common::optional_ref<T> get_participant(const clang::Decl *decl) const
     {
@@ -136,6 +191,13 @@ public:
         return get_participant<T>(unique_participant_id.value());
     }
 
+    /**
+     * @brief Get participant by global element id
+     *
+     * @tparam T Participant type
+     * @param id Global element id
+     * @return Optional reference to participant diagram element
+     */
     template <typename T = model::participant>
     common::optional_ref<T> get_participant(
         const common::model::diagram_element::id_t id)
@@ -147,6 +209,13 @@ public:
             *(static_cast<T *>(diagram().participants().at(id).get())));
     }
 
+    /**
+     * @brief Get participant by global element id
+     *
+     * @tparam T Participant type
+     * @param id Global element id
+     * @return Optional reference to participant diagram element
+     */
     template <typename T = model::participant>
     common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id) const
@@ -158,24 +227,94 @@ public:
             *(static_cast<T *>(diagram().participants().at(id).get())));
     }
 
-    /// Store the mapping from local clang entity id (obtained using
-    /// getID()) method to clang-uml global id
+    /**
+     * @brief Store the mapping from local clang entity id (obtained using
+     *        getID()) method to clang-uml global id
+     *
+     * @todo Refactor to @ref ast_id_mapper
+     *
+     * @param local_id Local AST element id
+     * @param global_id Globa diagram element id
+     */
     void set_unique_id(
         int64_t local_id, common::model::diagram_element::id_t global_id);
 
-    /// Retrieve the global clang-uml entity id based on the clang local id
+    /**
+     * @brief Retrieve the global `clang-uml` entity id based on the Clang
+     *        local id
+     * @param local_id AST local element id
+     * @return Global diagram element id
+     */
     std::optional<common::model::diagram_element::id_t> get_unique_id(
         int64_t local_id) const;
 
+    /**
+     * @brief Finalize diagram model
+     */
+    void finalize();
+
 private:
+    /**
+     * @brief Check if the diagram should include a declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
     bool should_include(const clang::TagDecl *decl) const;
+
+    /**
+     * @brief Check if the diagram should include a lambda expression.
+     *
+     * @param expr Lambda expression.
+     * @return True, if the expression should be included in the diagram.
+     */
     bool should_include(const clang::LambdaExpr *expr) const;
+
+    /**
+     * @brief Check if the diagram should include a call expression.
+     *
+     * @param expr Call expression.
+     * @return True, if the expression should be included in the diagram.
+     */
     bool should_include(const clang::CallExpr *expr) const;
+
+    /**
+     * @brief Check if the diagram should include a declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
     bool should_include(const clang::CXXMethodDecl *decl) const;
+
+    /**
+     * @brief Check if the diagram should include a declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
     bool should_include(const clang::FunctionDecl *decl) const;
+
+    /**
+     * @brief Check if the diagram should include a declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
     bool should_include(const clang::FunctionTemplateDecl *decl) const;
+
+    /**
+     * @brief Check if the diagram should include a declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
     bool should_include(const clang::ClassTemplateDecl *decl) const;
 
+    /**
+     * @todo Refactor this group of methods to @ref template_builder
+     *
+     * @{
+     */
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
     create_class_model(clang::CXXRecordDecl *cls);
 
@@ -251,31 +390,107 @@ private:
         const std::string &full_name) const;
 
     std::string simplify_system_template(const std::string &full_name) const;
+    /** }@ */
 
+    /**
+     * @brief Assuming `cls` is a lambda, create it's full name.
+     *
+     * @note Currently, lambda names are generated using their source code
+     *       location including file path, line and column to ensure
+     *       unique names.
+     *
+     * @param cls Lambda declaration
+     * @return Full lambda unique name
+     */
     std::string make_lambda_name(const clang::CXXRecordDecl *cls) const;
 
+    /**
+     * @brief Check if template is a smart pointer
+     *
+     * @param primary_template Template declaration
+     * @return True, if template declaration is a smart pointer
+     */
     bool is_smart_pointer(const clang::TemplateDecl *primary_template) const;
 
+    /**
+     * @brief Check, the callee is a template specialization
+     *
+     * @param dependent_member_expr Dependent member expression
+     * @return True, if the callee is a template specialization
+     */
     bool is_callee_valid_template_specialization(
         const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const;
 
+    /**
+     * @brief Handle a operator call expresion
+     *
+     * @param m Message model
+     * @param operator_call_expr Operator call expression
+     * @return True, if `m` contains now a valid call expression model
+     */
     bool process_operator_call_expression(model::message &m,
         const clang::CXXOperatorCallExpr *operator_call_expr);
 
+    /**
+     * @brief Handle a class method call expresion
+     *
+     * @param m Message model
+     * @param method_call_expr Operator call expression
+     * @return True, if `m` contains now a valid call expression model
+     */
     bool process_class_method_call_expression(
-        model::message &m, const clang::CXXMemberCallExpr *operator_call_expr);
+        model::message &m, const clang::CXXMemberCallExpr *method_call_expr);
 
+    /**
+     * @brief Handle a class template method call expresion
+     *
+     * @param m Message model
+     * @param expr Class template method call expression
+     * @return True, if `m` contains now a valid call expression model
+     */
     bool process_class_template_method_call_expression(
         model::message &m, const clang::CallExpr *expr);
 
+    /**
+     * @brief Handle a function call expresion
+     *
+     * @param m Message model
+     * @param expr Function call expression
+     * @return True, if `m` contains now a valid call expression model
+     */
     bool process_function_call_expression(
         model::message &m, const clang::CallExpr *expr);
 
+    /**
+     * @brief Handle an unresolved lookup call expresion
+     *
+     * Unresolved lookup expression is a reference to a name which Clang was
+     * not able to look up during parsing but could not resolve to a
+     * specific declaration.
+     *
+     * @param m Message model
+     * @param expr Call expression
+     * @return True, if `m` contains now a valid call expression model
+     */
     bool process_unresolved_lookup_call_expression(
         model::message &m, const clang::CallExpr *expr) const;
 
+    /**
+     * @brief Register a message model `m` with a call expression
+     *
+     * This is used to know whether a model for a specific call expression
+     * has already been created, but not yet added to the diagram.
+     *
+     * @param expr Call expresion
+     * @param m Message model
+     */
     void push_message(clang::CallExpr *expr, model::message &&m);
 
+    /**
+     * @brief Move a message model to diagram.
+     *
+     * @param expr Call expression
+     */
     void pop_message_to_diagram(clang::CallExpr *expr);
 
     // Reference to the output diagram model
@@ -286,16 +501,20 @@ private:
 
     call_expression_context call_expression_context_;
 
-    /// This is used to generate messages in proper order in case of
-    /// nested call expressions (e.g. a(b(c(), d())), as they need to
-    /// be added to the diagram sequence after the visitor leaves the
-    /// call expression AST node
+    /**
+     * This is used to generate messages in proper order in case of nested call
+     * expressions (e.g. a(b(c(), d())), as they need to be added to the diagram
+     * sequence after the visitor leaves the call expression AST node
+     */
     std::map<clang::CallExpr *, model::message> call_expr_message_map_;
 
     std::map<common::model::diagram_element::id_t,
         std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
+    /**
+     * @todo Refactor to @ref ast_id_mapper
+     */
     std::map</* local id from ->getID() */ int64_t,
         /* global ID based on full name */ common::model::diagram_element::id_t>
         local_ast_id_map_;

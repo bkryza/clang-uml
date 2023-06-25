@@ -29,6 +29,12 @@ with open(r'tests/test_cases.yaml') as f:
     # Generate test_cases.md index
     with open(r'docs/test_cases.md', 'w') as tc_index:
         tc_index.write('# Test cases index\n')
+        tc_index.write("* [Class diagrams](#class-diagrams)")
+        tc_index.write("* [Sequence diagrams](#sequence-diagrams)")
+        tc_index.write("* [Package diagrams](#package-diagrams)")
+        tc_index.write("* [Include diagrams](#include-diagrams)")
+        tc_index.write("* [Other diagrams](#other-diagrams)")
+        tc_index.write(" ")
         for test_group, test_cases in test_groups.items():
             tc_index.write(f'## {test_group}\n')
             for test_case in test_cases:

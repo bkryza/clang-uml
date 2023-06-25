@@ -40,53 +40,198 @@ using diagram_model = clanguml::sequence_diagram::model::diagram;
 template <typename C, typename D>
 using common_generator = clanguml::common::generators::json::generator<C, D>;
 
+/**
+ * @brief Sequence diagram JSON generator
+ */
 class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    /**
+     * @brief Main generator method.
+     *
+     * This method is called first and coordinates the entire diagram
+     * generation.
+     *
+     * @param ostr Output stream.
+     */
+    void generate(std::ostream &ostr) const override;
+
+    /**
+     * @brief Generate sequence diagram message.
+     *
+     * @param m Message model
+     * @param parent JSON node
+     */
     void generate_call(const sequence_diagram::model::message &m,
         nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate sequence diagram participant
+     *
+     * @param parent JSON node
+     * @param id Participant id
+     * @param force If true, generate the participant even if its not in
+     *              the set of active participants
+     * @return Id of the generated participant
+     */
     common::id_t generate_participant(
         nlohmann::json &parent, common::id_t id, bool force = false) const;
 
+    /**
+     * @brief Generate sequence diagram participant by name
+     *
+     * This is convienience wrapper over `generate_participant()` by id.
+     *
+     * @param parent JSON node
+     * @param name Full participant name
+     */
     void generate_participant(
         nlohmann::json &parent, const std::string &name) const;
 
+    /**
+     * @brief Generate sequence diagram activity.
+     *
+     * @param a Activity model
+     * @param visited List of already visited participants, this is necessary
+     *                for breaking infinite recursion on recursive calls
+     */
     void generate_activity(const sequence_diagram::model::activity &a,
         std::vector<common::model::diagram_element::id_t> &visited) const;
 
-    void generate(std::ostream &ostr) const override;
-
-    nlohmann::json &current_block_statement() const
-    {
-        assert(!block_statements_stack_.empty());
-
-        return block_statements_stack_.back().get();
-    }
+    /**
+     * @brief Get reference to the current block statement.
+     *
+     * This method returns a reference to the last block statement (e.g if
+     * statement or for loop) in the call stack.
+     *
+     * @return Reference to the current block statement.
+     */
+    nlohmann::json &current_block_statement() const;
 
 private:
+    /**
+     * @brief Check if specified participant has already been generated.
+     *
+     * @param id Participant id.
+     * @return True, if participant has already been generated.
+     */
     bool is_participant_generated(common::id_t id) const;
+
+    /**
+     * @brief Process call message
+     *
+     * @param m Message model
+     * @param visited List of already visited participants
+     */
     void process_call_message(const model::message &m,
         std::vector<common::model::diagram_element::id_t> &visited) const;
+
+    /**
+     * @brief Process `if` statement message
+     *
+     * @param m Message model
+     */
     void process_if_message(const model::message &m) const;
+
+    /**
+     * @brief Process `else if` statement message
+     */
     void process_else_if_message() const;
+
+    /**
+     * @brief Process `end if` statement message
+     */
     void process_end_if_message() const;
-    void process_end_conditional_message() const;
-    void process_conditional_else_message() const;
+
+    /**
+     * @brief Process `:?` statement message
+     *
+     * @param m Message model
+     */
     void process_conditional_message(const model::message &m) const;
-    void process_end_switch_message() const;
-    void process_case_message(const model::message &m) const;
+
+    /**
+     * @brief Process end of conditional statement message
+     */
+    void process_end_conditional_message() const;
+
+    /**
+     * @brief Process conditional else statement message
+     */
+    void process_conditional_else_message() const;
+
+    /**
+     * @brief Process `switch` statement message
+     *
+     * @param m Message model
+     */
     void process_switch_message(const model::message &m) const;
-    void process_end_try_message() const;
-    void process_catch_message() const;
+
+    /**
+     * @brief Process switch end statement message
+     */
+    void process_end_switch_message() const;
+
+    /**
+     * @brief Process `switch` `case` statement message
+     *
+     * @param m Message model
+     */
+    void process_case_message(const model::message &m) const;
+
+    /**
+     * @brief Process `try` statement message
+     *
+     * @param m Message model
+     */
     void process_try_message(const model::message &m) const;
-    void process_end_do_message() const;
+
+    /**
+     * @brief Process `try` end statement message
+     */
+    void process_end_try_message() const;
+
+    /**
+     * @brief Process `catch` statement message
+     */
+    void process_catch_message() const;
+
+    /**
+     * @brief Process `do` loop statement message
+     *
+     * @param m Message model
+     */
     void process_do_message(const model::message &m) const;
-    void process_end_for_message() const;
+
+    /**
+     * @brief Process `do` end statement message
+     */
+    void process_end_do_message() const;
+
+    /**
+     * @brief Process `for` loop statement message
+     *
+     * @param m Message model
+     */
     void process_for_message(const model::message &m) const;
-    void process_end_while_message() const;
+
+    /**
+     * @brief Process `for` end statement message
+     */
+    void process_end_for_message() const;
+
+    /**
+     * @brief Process `while` loop message
+     *
+     * @param m Message model
+     */
     void process_while_message(const model::message &m) const;
+
+    /**
+     * @brief Process `while` end loop message
+     */
+    void process_end_while_message() const;
 
     mutable std::set<common::id_t> generated_participants_;
 

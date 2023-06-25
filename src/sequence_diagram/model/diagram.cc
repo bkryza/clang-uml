@@ -142,10 +142,6 @@ void diagram::add_case_stmt_message(model::message &&m)
     }
 }
 
-bool diagram::started() const { return started_; }
-
-void diagram::started(bool s) { started_ = s; }
-
 std::map<common::model::diagram_element::id_t, activity> &diagram::sequences()
 {
     return sequences_;
@@ -171,12 +167,6 @@ diagram::participants() const
 }
 
 std::set<common::model::diagram_element::id_t> &diagram::active_participants()
-{
-    return active_participants_;
-}
-
-const std::set<common::model::diagram_element::id_t> &
-diagram::active_participants() const
 {
     return active_participants_;
 }

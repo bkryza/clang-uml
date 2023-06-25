@@ -242,6 +242,13 @@ void generator::generate_activity(const activity &a,
     }
 }
 
+nlohmann::json &generator::current_block_statement() const
+{
+    assert(!block_statements_stack_.empty());
+
+    return block_statements_stack_.back().get();
+}
+
 void generator::process_call_message(const model::message &m,
     std::vector<common::model::diagram_element::id_t> &visited) const
 {

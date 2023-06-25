@@ -25,18 +25,44 @@
 
 namespace clanguml::sequence_diagram::model {
 
+/**
+ * @brief Model of a sequence diagram activity
+ */
 class activity {
 public:
+    /**
+     * @brief Constructor
+     *
+     * @param id Id of the participant parent for the activity
+     */
     activity(common::model::diagram_element::id_t id);
 
+    /**
+     * @brief Add a message call to the activity
+     *
+     * @param m Message model
+     */
     void add_message(message m);
 
+    /**
+     * @brief Get list of messages in the activity
+     *
+     * @return Reference to list of messages in the activity
+     */
     std::vector<message> &messages();
 
+    /**
+     * @brief Get list of messages in the activity
+     *
+     * @return Reference to list of messages in the activity
+     */
     const std::vector<message> &messages() const;
 
-    void set_from(common::model::diagram_element::id_t f);
-
+    /**
+     * @brief Get the id of activity parent participant
+     *
+     * @return Id of activity participant
+     */
     common::model::diagram_element::id_t from() const;
 
 private:
