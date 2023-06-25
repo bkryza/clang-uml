@@ -1,0 +1,20 @@
+type: sequence
+combine_free_functions_into_file_participants: true
+generate_method_arguments: none
+glob:
+  - src/cli/cli_handler.cc
+  - src/config/config.cc
+  - src/config/yaml_decoders.cc
+include:
+  namespaces:
+    - clanguml
+    - YAML
+exclude:
+  elements:
+    - r: "clanguml::config::option.*"
+  paths:
+    - src/util/util.h
+using_namespace:
+  - clanguml
+start_from:
+  - function: "clanguml::cli::cli_handler::handle_options(int,const char **)"

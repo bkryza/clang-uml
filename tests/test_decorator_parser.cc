@@ -1,5 +1,5 @@
 /**
- * tests/test_decorator_parser.cc
+ * @file tests/test_decorator_parser.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

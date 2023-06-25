@@ -1,5 +1,5 @@
 /**
- * src/common/model/template_trait.cc
+ * @file src/common/model/template_trait.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -39,24 +39,10 @@ std::ostream &template_trait::render_template_params(std::ostream &ostr,
     return ostr;
 }
 
-void template_trait::set_base_template(const std::string &full_name)
-{
-    base_template_full_name_ = full_name;
-}
-
-std::string template_trait::base_template() const
-{
-    return base_template_full_name_;
-}
-
 void template_trait::add_template(template_parameter &&tmplt)
 {
     templates_.push_back(std::move(tmplt));
 }
-
-bool template_trait::is_implicit() const { return is_implicit_; }
-
-void template_trait::set_implicit(bool implicit) { is_implicit_ = implicit; }
 
 const std::vector<template_parameter> &template_trait::template_params() const
 {

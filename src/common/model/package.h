@@ -1,5 +1,5 @@
 /**
- * src/common/model/package.h
+ * @file src/common/model/package.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -32,6 +32,11 @@
 
 namespace clanguml::common::model {
 
+/**
+ * @brief Diagram element representing namespace or directory package
+ *
+ * @embed{package_hierarchy_class.svg}
+ */
 class package : public element,
                 public stylable_element,
                 public nested_trait<element, path> {
@@ -47,11 +52,29 @@ public:
 
     std::string full_name(bool relative) const override;
 
+    /**
+     * Returns whether the namespace is deprecated.
+     *
+     * @return True, if namespace is deprecated.
+     */
     bool is_deprecated() const;
 
+    /**
+     * Set namespace deprecation status.
+     *
+     * @param deprecated True, if namespace is deprecated
+     */
     void set_deprecated(bool deprecated);
 
-    void add_package(std::unique_ptr<common::model::package> &&p);
+    /**
+     * @brief Generate Doxygen style HTML link for the class.
+     *
+     * This method generates a link, which can be used in SVG diagrams to
+     * create links from classes to Doxygen documentation pages.
+     *
+     * @return Doxygen-style HTML link for the class.
+     */
+    std::optional<std::string> doxygen_link() const override;
 
 private:
     bool is_deprecated_{false};

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/diagram.h
+ * @file src/class_diagram/model/diagram.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -45,6 +45,9 @@ using nested_trait_ns =
     clanguml::common::model::nested_trait<clanguml::common::model::element,
         clanguml::common::model::namespace_>;
 
+/**
+ * @brief Class representing a class diagram.
+ */
 class diagram : public common::model::diagram,
                 public element_view<class_>,
                 public element_view<enum_>,
@@ -58,36 +61,132 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    /**
+     * @brief Get the diagram model type - in this case class.
+     *
+     * @return Type of class diagram.
+     */
     diagram_t type() const override;
 
+    /**
+     * Inherit the should_include methods from the common diagram model.
+     */
     using common::model::diagram::should_include;
 
+    /**
+     * @brief Whether a class_member should be included in the diagram.
+     *
+     * @param m Class member
+     * @return True, if class member should be included in the diagram.
+     */
     bool should_include(const class_member &m) const;
 
+    /**
+     * @brief Whether a class_method should be included in the diagram.
+     *
+     * @param m Class method
+     * @return True, if class method should be included in the diagram.
+     */
     bool should_include(const class_method &m) const;
 
+    /**
+     * @brief Search for element in the diagram by fully qualified name.
+     *
+     * @param full_name Fully qualified element name.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(const std::string &full_name) const override;
 
+    /**
+     * @brief Search for element in the diagram by id.
+     *
+     * @param id Element id.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(diagram_element::id_t id) const override;
 
+    /**
+     * @brief Get list of references to classes in the diagram model.
+     *
+     * @return List of references to classes in the diagram model.
+     */
     const common::reference_vector<class_> &classes() const;
 
+    /**
+     * @brief Get list of references to enums in the diagram model.
+     *
+     * @return List of references to enums in the diagram model.
+     */
     const common::reference_vector<enum_> &enums() const;
 
+    /**
+     * @brief Get list of references to concepts in the diagram model.
+     *
+     * @return List of references to concepts in the diagram model.
+     */
     const common::reference_vector<concept_> &concepts() const;
 
+    /**
+     * @brief Check, if diagram contains a specific element.
+     *
+     * @tparam ElementT Type of diagram element (e.g. class_)
+     * @param e Element to check
+     * @return True, if element already exists in the diagram
+     */
     template <typename ElementT> bool contains(const ElementT &e);
 
+    /**
+     * @brief Find an element in the diagram by name.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. class_)
+     * @param name Fully qualified name of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(const std::string &name) const;
 
+    /**
+     * @brief Find elements in the diagram by regex pattern.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. class_)
+     * @param name String or regex pattern
+     * @return List of optional references to matched elements.
+     */
     template <typename ElementT>
     std::vector<opt_ref<ElementT>> find(
         const clanguml::common::string_or_regex &pattern) const;
 
+    /**
+     * @brief Find an element in the diagram by id.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. class_)
+     * @param id Id of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(diagram_element::id_t id) const;
 
+    /**
+     * @brief Add element to the diagram at a specified nested path.
+     *
+     * Adds an element to a diagram, at a specific package (if any exist).
+     * The package is specified by the `parent_path`, which can be either
+     * a namespace or a directory path.
+     *
+     * @tparam ElementT Type of diagram element.
+     * @param parent_path Path to the parent package of the new diagram element.
+     * @param e Diagram element to be added.
+     * @return True, if the element was added to the diagram.
+     */
     template <typename ElementT>
     bool add(const path &parent_path, std::unique_ptr<ElementT> &&e)
     {
@@ -98,14 +197,41 @@ public:
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
+    /**
+     * @brief Convert element id to PlantUML alias.
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @param id Id of the diagram element.
+     * @return PlantUML alias.
+     */
     std::string to_alias(diagram_element::id_t id) const;
 
+    /**
+     * @brief Given an initial set of classes, add all their parents to the
+     *        argument.
+     * @param parents In and out parameter with the parent classes.
+     */
     void get_parents(clanguml::common::reference_set<class_> &parents) const;
 
     friend void print_diagram_tree(const diagram &d, int level);
 
+    /**
+     * @brief Check if diagram contains element by id.
+     *
+     * @todo Remove in favour of 'contains'
+     *
+     * @param id Id of the element.
+     * @return True, if diagram contains an element with a specific id.
+     */
     bool has_element(diagram_element::id_t id) const override;
 
+    /**
+     * @brief Return the elements JSON context for inja templates.
+     *
+     * @return JSON node with elements context.
+     */
     inja::json context() const override;
 
 private:

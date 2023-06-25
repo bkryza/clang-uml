@@ -1,5 +1,5 @@
 /**
- * tests/test_compilation_database.cc
+ * @file tests/test_compilation_database.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -73,7 +73,7 @@ TEST_CASE("Test compilation_database should work", "[unit-test]")
         REQUIRE(
             !contains(ccs.at(0).CommandLine, "-Wno-deprecated-declarations"));
     }
-    catch (clanguml::common::compilation_database_error &e) {
+    catch (clanguml::error::compilation_database_error &e) {
         REQUIRE(false);
     }
 }
@@ -81,8 +81,8 @@ TEST_CASE("Test compilation_database should work", "[unit-test]")
 TEST_CASE("Test compilation_database should throw", "[unit-test]")
 {
     using clanguml::common::compilation_database;
-    using clanguml::common::compilation_database_error;
     using clanguml::common::compilation_database_ptr;
+    using clanguml::error::compilation_database_error;
     using clanguml::util::contains;
 
     auto cfg = clanguml::config::load(

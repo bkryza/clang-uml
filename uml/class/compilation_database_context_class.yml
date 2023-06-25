@@ -1,0 +1,11 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: false
+glob:
+  - src/common/compilation_database.cc
+include:
+  namespaces:
+    - clanguml
+    - clang::tooling
+  context:
+    - clanguml::common::compilation_database

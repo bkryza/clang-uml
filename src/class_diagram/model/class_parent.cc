@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_parent.cc
+ * @file src/class_diagram/model/class_parent.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -23,6 +23,10 @@ namespace clanguml::class_diagram::model {
 void class_parent::set_name(const std::string &name) { name_ = name; }
 
 std::string class_parent::name() const { return name_; }
+
+void class_parent::set_id(clanguml::common::id_t id) { id_ = id; }
+
+clanguml::common::id_t class_parent::id() const noexcept { return id_; }
 
 void class_parent::is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
 

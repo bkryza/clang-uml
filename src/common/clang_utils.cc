@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/clang_utils.cc
+ * @file src/common/clang_utils.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

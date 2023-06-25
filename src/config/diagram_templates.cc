@@ -1,5 +1,5 @@
 /**
- * src/config/diagram_templates.cc
+ * @file src/config/diagram_templates.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

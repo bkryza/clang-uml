@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class_member.h
+ * @file src/class_diagram/model/class_member.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -23,18 +23,38 @@
 
 namespace clanguml::class_diagram::model {
 
+/**
+ * @brief Class member model.
+ */
 class class_member : public class_element {
 public:
+    /**
+     * @brief Constructor.
+     *
+     * @param access Members access scope (e.g. public)
+     * @param name Members name.
+     * @param type Members type as string.
+     */
     class_member(common::model::access_t access, const std::string &name,
         const std::string &type);
 
     ~class_member() override = default;
 
+    /**
+     * @brief Whether the member is static.
+     *
+     * @return True, if the member is static.
+     */
     bool is_static() const;
+
+    /**
+     * @brief Set members static status.
+     *
+     * @param is_static True, if the member is static.
+     */
     void is_static(bool is_static);
 
 private:
-    bool is_relationship_{false};
     bool is_static_{false};
 };
 

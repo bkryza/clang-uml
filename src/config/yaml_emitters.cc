@@ -1,5 +1,5 @@
 /**
- * src/config/yaml_emitters.cc
+ * @file src/config/yaml_emitters.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

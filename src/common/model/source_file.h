@@ -1,5 +1,5 @@
 /**
- * src/common/model/source_file.h
+ * @file src/common/model/source_file.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -34,7 +34,14 @@
 
 namespace clanguml::common::model {
 
-enum class source_file_t { kDirectory, kHeader, kImplementation };
+/**
+ * This enum represents different kinds of files in the diagram.
+ */
+enum class source_file_t {
+    kDirectory,     /*!< Diagram element is a directory */
+    kHeader,        /*!< Diagram element is a header */
+    kImplementation /*!< Diagram element is a source file (e.g. cpp) */
+};
 
 std::string to_string(source_file_t sf);
 
@@ -48,6 +55,11 @@ struct fs_path_sep {
 
 using filesystem_path = common::model::path;
 
+/**
+ * @brief Diagram element representing some file or directory.
+ *
+ * @embed{source_file_hierarchy_class.svg}
+ */
 class source_file
     : public common::model::diagram_element,
       public common::model::stylable_element,
@@ -66,16 +78,6 @@ public:
         set_id(common::to_id(preferred));
     }
 
-    void set_path(const filesystem_path &p) { path_ = p; }
-
-    void set_absolute() { is_absolute_ = true; }
-
-    bool is_absolute() const { return is_absolute_; }
-
-    void set_type(source_file_t type) { type_ = type; }
-
-    source_file_t type() const { return type_; }
-
     source_file(const source_file &) = delete;
     source_file(source_file &&) = default;
     source_file &operator=(const source_file &) = delete;
@@ -87,15 +89,64 @@ public:
             (type_ == right.type_);
     }
 
+    /**
+     * Set the path to the element in the diagram.
+     *
+     * @param p Diagram path.
+     */
+    void set_path(const filesystem_path &p) { path_ = p; }
+
+    /**
+     * Is the elements path absolute?
+     *
+     * @return True if the elements path is absolute.
+     */
+    bool is_absolute() const { return is_absolute_; }
+
+    /**
+     * Set the type of the source file.
+     *
+     * @param type Type of the source file.
+     */
+    void set_type(source_file_t type) { type_ = type; }
+
+    /**
+     * Get the source file elements type.
+     *
+     * @return Type of the source file.
+     */
+    source_file_t type() const { return type_; }
+
+    /**
+     * Get the source file's parent path.
+     *
+     * @return Source file parent path.
+     */
     const filesystem_path &path() const { return path_; }
 
+    /**
+     * Return the full path string, i.e. parent path and elements name.
+     *
+     * @return Full source file path as string.
+     */
     std::string full_name(bool /*relative*/) const override
     {
         return (path_ | name()).to_string();
     }
 
+    /**
+     * Return full path, i.e. parent path and elements name.
+     *
+     * @return Full source file path.
+     */
     auto full_path() const { return path() | name(); }
 
+    /**
+     * Convert the source file path to std::filesystem::path, relative to `base`
+     *
+     * @param base Base path
+     * @return Filesystem path to the source file.
+     */
     std::filesystem::path fs_path(const std::filesystem::path &base = {}) const
     {
         std::filesystem::path res;
@@ -114,6 +165,11 @@ public:
         return res.lexically_normal();
     }
 
+    /**
+     * Return inja context for this element.
+     *
+     * @return Inja context.
+     */
     inja::json context() const override
     {
         inja::json ctx = diagram_element::context();

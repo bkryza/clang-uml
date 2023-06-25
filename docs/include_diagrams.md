@@ -2,7 +2,7 @@
 
 <!-- toc -->
 
-* [Tracking system headers directly included by projects files](#tracking-system-headers-directly-included-by-projects-files)
+* [Tracking system headers directly included by project sources](#tracking-system-headers-directly-included-by-project-sources)
 
 <!-- tocstop -->
 
@@ -46,7 +46,7 @@ The following table presents the PlantUML arrows representing relationships in t
 | Include (local)                        | ![association](img/puml_association.png) |
 | Include (system)                       | ![dependency](img/puml_dependency.png) |
 
-## Tracking system headers directly included by projects files
+## Tracking system headers directly included by project sources
 
 In case you would like to include the information about what system headers your projects file include simply add
 the following option to the diagram:

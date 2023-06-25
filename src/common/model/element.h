@@ -1,5 +1,5 @@
 /**
- * src/common/model/element.h
+ * @file src/common/model/element.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -32,36 +32,83 @@
 
 namespace clanguml::common::model {
 
+/**
+ * @brief Base class for any element qualified by namespace.
+ */
 class element : public diagram_element {
 public:
     element(namespace_ using_namespace);
 
     ~element() override = default;
 
+    /**
+     * Return the elements fully qualified name, but without template
+     * arguments or function params.
+     *
+     * @return Fully qualified element name.
+     */
     std::string name_and_ns() const
     {
         auto ns = ns_ | name();
         return ns.to_string();
     }
 
+    /**
+     * Set elements namespace.
+     *
+     * @param ns Namespace.
+     */
     void set_namespace(const namespace_ &ns) { ns_ = ns; }
 
+    /**
+     * Return elements namespace.
+     *
+     * @return Namespace.
+     */
     namespace_ get_namespace() const { return ns_; }
 
+    /**
+     * Return elements relative namespace.
+     *
+     * @return Namespace.
+     */
     namespace_ get_relative_namespace() const
     {
         return ns_.relative_to(using_namespace_);
     }
 
+    /**
+     * Return elements namespace as path.
+     *
+     * Namespace is a nested path in diagrams where packages are generated
+     * from namespaces.
+     *
+     * @return Namespace.
+     */
     const namespace_ &path() const { return ns_; }
 
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
     std::string full_name(bool /*relative*/) const override
     {
         return name_and_ns();
     }
 
+    /**
+     * Return elements full name but without namespace.
+     *
+     * @return Elements full name without namespace.
+     */
     virtual std::string full_name_no_ns() const { return name(); }
 
+    /**
+     * Return the relative namespace from config.
+     *
+     * @return Namespace.
+     */
     const namespace_ &using_namespace() const;
 
     friend bool operator==(const element &l, const element &r);

@@ -1,5 +1,5 @@
 /**
- * tests/test_thread_pool_executor.cc
+ * @file tests/test_thread_pool_executor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

@@ -1,5 +1,5 @@
 /**
- * src/common/generators/progress_indicator.h
+ * @file src/common/generators/progress_indicator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,6 +25,9 @@
 
 namespace clanguml::common::generators {
 
+/**
+ * @brief Container for diagram generation progress indicators
+ */
 class progress_indicator {
 public:
     struct progress_state {
@@ -42,15 +45,40 @@ public:
 
     progress_indicator();
 
+    /**
+     * Add a new progress bar to the indicator set
+     *
+     * @param name Name (prefix) of the progress bar
+     * @param max Total number of steps in the progress bar
+     * @param color Color of the progress bar
+     */
     void add_progress_bar(
         const std::string &name, size_t max, indicators::Color color);
 
+    /**
+     * Increment specified progress bar.
+     *
+     * @param name Name of the progress bar
+     */
     void increment(const std::string &name);
 
+    /**
+     * Stop all the progress bars.
+     */
     void stop();
 
+    /**
+     * Set specified progress bar as complete.
+     *
+     * @param name Name of the progress bar
+     */
     void complete(const std::string &name);
 
+    /**
+     * Set progress bar as failed.
+     *
+     * @param name Name of the progress bar
+     */
     void fail(const std::string &name);
 
 private:

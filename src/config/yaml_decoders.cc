@@ -1,5 +1,5 @@
 /**
- * src/config/yaml_decoders.cc
+ * @file src/config/yaml_decoders.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -510,7 +510,6 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
         get_option(node, rhs.relative_to);
-        get_option(node, rhs.comment_parser);
 
         rhs.initialize_relationship_hints();
         rhs.initialize_type_aliases();
@@ -713,6 +712,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_links);
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
+        get_option(node, rhs.comment_parser);
         get_option(node, rhs.debug_mode);
         get_option(node, rhs.generate_metadata);
         rhs.base_directory.set(node["__parent_path"].as<std::string>());

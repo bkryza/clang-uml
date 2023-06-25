@@ -28,9 +28,6 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20001_sequence");
 
-    REQUIRE(model->should_include("clanguml::t20001::A"));
-    REQUIRE(!model->should_include("clanguml::t20001::detail::C"));
-    REQUIRE(!model->should_include("std::vector"));
     {
         auto puml = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(puml);

@@ -1,0 +1,13 @@
+type: class
+include_relations_also_as_members: true
+glob:
+  - src/common/model/source_file.cc
+include:
+  namespaces:
+    - clanguml
+  parents:
+    - clanguml::common::model::source_file
+exclude:
+  access: [private, protected, public]
+using_namespace:
+  - clanguml

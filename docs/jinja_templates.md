@@ -3,8 +3,8 @@
 <!-- toc -->
 
 * [Accessing comment content](#accessing-comment-content)
-  * [`plain` comment parser](#plain-comment-parser)
-  * [`clang` comment parser](#clang-comment-parser)
+  * ['plain' comment parser](#plain-comment-parser)
+  * ['clang' comment parser](#clang-comment-parser)
 
 <!-- tocstop -->
 
@@ -102,12 +102,12 @@ Currently there are 2 available comment parsers:
 
 They can be selected using `comment_parser` config option.
 
-#### `plain` comment parser
+#### 'plain' comment parser
 This parser provides only 2 options to the Jinja context:
 * `comment.raw` - raw comment text, including comment markers such as `///` or `/**`
 * `comment.formatted` - formatted entire comment
 
-#### `clang` comment parser
+#### 'clang' comment parser
 This parser uses Clang comment parsing API to extract commands from the command:
 * `comment.raw` - raw comment text, including comment markers such as `///` or `/**`
 * `comment.formatted` - formatted entire comment

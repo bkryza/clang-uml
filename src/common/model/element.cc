@@ -1,5 +1,5 @@
 /**
- * src/common/model/element.cc
+ * @file src/common/model/element.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -34,11 +34,7 @@ const namespace_ &element::using_namespace() const { return using_namespace_; }
 
 inja::json element::context() const
 {
-    inja::json ctx;
-    ctx["name"] = name();
-    ctx["type"] = type_name();
-    ctx["alias"] = alias();
-    ctx["full_name"] = full_name(false);
+    inja::json ctx = diagram_element::context();
     ctx["namespace"] = get_namespace().to_string();
     if (const auto maybe_comment = comment(); maybe_comment.has_value()) {
         ctx["comment"] = maybe_comment.value();

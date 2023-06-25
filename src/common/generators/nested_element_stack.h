@@ -1,5 +1,5 @@
 /**
- * src/common/generators/nested_element_stack.h
+ * @file src/common/generators/nested_element_stack.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -38,6 +38,9 @@ public:
         current_level_groups_.push_back({});
     }
 
+    /**
+     * Switch to next level in the element stack
+     */
     void enter()
     {
         if (!is_flat_)
@@ -46,6 +49,9 @@ public:
         current_level_groups_.push_back({});
     }
 
+    /**
+     * Switch to previous level in the element stack
+     */
     void leave()
     {
         if (!is_flat_)
@@ -54,16 +60,30 @@ public:
         current_level_groups_.pop_back();
     }
 
+    /**
+     * Add element pointer to a specified group at the current level
+     */
     void group_together(const std::string &group_name, T *e)
     {
         current_level_groups_[current_level_][group_name].push_back(e);
     }
 
+    /**
+     * Get map of element groups at the current level.
+     *
+     * @return Reference to element groups.
+     */
     const std::map<std::string, std::vector<T *>> &get_current_groups()
     {
         return current_level_groups_.at(current_level_);
     }
 
+    /**
+     * Get element group by name - the group must exist at the current level.
+     *
+     * @param group_name Element group name
+     * @return
+     */
     const std::vector<T *> &get_group(const std::string &group_name)
     {
         return get_current_groups().at(group_name);

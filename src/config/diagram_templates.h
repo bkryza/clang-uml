@@ -1,5 +1,5 @@
 /**
- * src/config/diagram_templates.h
+ * @file src/config/diagram_templates.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -22,6 +22,10 @@
 namespace clanguml {
 namespace config {
 
+/**
+ * @brief Return YAML with predefined diagram templates
+ * @return YAML definition of predefined diagram templates
+ */
 const std::string &get_predefined_diagram_templates();
 
 } // namespace config

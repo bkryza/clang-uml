@@ -1,5 +1,5 @@
 /**
- * src/common/model/diagram.cc
+ * @file src/common/model/diagram.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -68,12 +68,12 @@ bool diagram::should_include(const element &e) const
         filter_->should_include(dynamic_cast<const source_location &>(e));
 }
 
-bool diagram::should_include(const std::string &name) const
+bool diagram::should_include(const namespace_ &ns) const
 {
     if (filter_.get() == nullptr)
         return true;
 
-    return filter_->should_include(name);
+    return filter_->should_include(ns);
 }
 
 bool diagram::should_include(const relationship_t r) const

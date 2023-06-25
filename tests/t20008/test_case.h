@@ -27,6 +27,7 @@ TEST_CASE("t20008", "[test-case][sequence]")
     auto model = generate_sequence_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t20008_sequence");
+
     {
         auto puml = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(puml);

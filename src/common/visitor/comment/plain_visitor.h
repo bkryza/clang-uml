@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/comment/plain_visitor.h
+ * @file src/common/visitor/comment/plain_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,11 +25,22 @@
 
 namespace clanguml::common::visitor::comment {
 
+/**
+ * @brief Plain comment visitor which extracts raw and formatted comment.
+ */
 class plain_visitor : public comment_visitor {
 public:
     plain_visitor(clang::SourceManager &source_manager);
 
+    /**
+     * Extracts 'raw' and 'formatted' comment values from the Clang's
+     * parser.
+     *
+     * @param decl Clang's named declaration
+     * @param e Diagram element
+     */
     void visit(const clang::NamedDecl &decl,
         common::model::decorated_element &e) override;
 };
-}
+
+} // namespace clanguml::common::visitor::comment

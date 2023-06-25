@@ -31,6 +31,14 @@ diagrams:
       method_types:
         - deleted
         - destructor
+  namespace_test:
+    type: class
+    include:
+      namespaces:
+        - ns1::ns2
+    exclude:
+      namespaces:
+        - ns1::ns2::detail
   regex_elements_test:
     type: class
     include:

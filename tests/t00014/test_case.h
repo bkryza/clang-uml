@@ -27,7 +27,6 @@ TEST_CASE("t00014", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00014_class");
-    REQUIRE(model->should_include("clanguml::t00014::B"));
 
     {
         auto puml = generate_class_puml(diagram, *model);

@@ -1,5 +1,5 @@
 /**
- * tests/test_cases.h
+ * @file tests/test_cases.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

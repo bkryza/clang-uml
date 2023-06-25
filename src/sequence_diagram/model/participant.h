@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/participant.h
+ * @file src/sequence_diagram/model/participant.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -28,8 +28,16 @@ namespace clanguml::sequence_diagram::model {
 
 using clanguml::common::model::template_trait;
 
+/**
+ * @brief Base class for various types of sequence diagram participants
+ */
 struct participant : public common::model::element,
                      public common::model::stylable_element {
+    using common::model::element::element;
+
+    /**
+     * @brief Enum representing stereotype of a participant
+     */
     enum class stereotype_t {
         participant = 0,
         actor,
@@ -41,20 +49,31 @@ struct participant : public common::model::element,
         queue
     };
 
-    using common::model::element::element;
-
     participant(const participant &) = delete;
     participant(participant &&) noexcept = delete;
     participant &operator=(const participant &) = delete;
     participant &operator=(participant &&) = delete;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "participant"; }
 
+    /**
+     * @brief Create a string representation of the participant
+     *
+     * @return Participant representation as string
+     */
     virtual std::string to_string() const;
 
     stereotype_t stereotype_{stereotype_t::participant};
 };
 
+/**
+ * @brief Sequence diagram participant representing a class.
+ */
 struct class_ : public participant, public template_trait {
 public:
     class_(const common::model::namespace_ &using_namespace);
@@ -64,31 +83,104 @@ public:
     class_ &operator=(const class_ &) = delete;
     class_ &operator=(class_ &&) = delete;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "class"; }
 
+    /**
+     * @brief Check if class is a struct.
+     *
+     * @return True, if the class is declared as struct.
+     */
     bool is_struct() const;
+
+    /**
+     * @brief Set whether the class is a struct.
+     *
+     * @param is_struct True, if the class is declared as struct
+     */
     void is_struct(bool is_struct);
 
+    /**
+     * @brief Check if class is a template.
+     *
+     * @return True, if the class is a template.
+     */
     bool is_template() const;
+
+    /**
+     * @brief Set whether the class is a template instantiation.
+     *
+     * @param is_template True, if the class is a template
+     */
     void is_template(bool is_template);
 
+    /**
+     * @brief Check if class is a template instantiation.
+     *
+     * @return True, if the class is a template instantiation.
+     */
     bool is_template_instantiation() const;
+
+    /**
+     * @brief Set whether the class is a template instantiation.
+     *
+     * @param is_template_instantiation True, if the class is a template
+     *                                  instantiation.
+     */
     void is_template_instantiation(bool is_template_instantiation);
 
     friend bool operator==(const class_ &l, const class_ &r);
 
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
     std::string full_name(bool relative = true) const override;
 
+    /**
+     * Return elements full name but without namespace.
+     *
+     * @return Elements full name without namespace.
+     */
     std::string full_name_no_ns() const override;
 
+    /**
+     * @brief Check if class is a abstract.
+     *
+     * @return True, if the class is abstract.
+     */
     bool is_abstract() const;
 
+    /**
+     * @brief Check if class is a typedef/using alias.
+     *
+     * @return True, if the class is a typedef/using alias.
+     */
     bool is_alias() const;
 
+    /**
+     * @brief Set whether the class is an alias
+     *
+     * @param alias True if the class is a typedef/using alias.
+     */
     void is_alias(bool alias);
 
+    /**
+     * @brief Check if the class is lambda
+     * @return
+     */
     bool is_lambda() const;
 
+    /**
+     * @brief Set whether the class is a lambda.
+     *
+     * @param is_lambda True, if the class is a lambda
+     */
     void is_lambda(bool is_lambda);
 
 private:
@@ -101,12 +193,23 @@ private:
     std::string full_name_;
 };
 
+/**
+ * @brief Participant representing a C++ lambda.
+ */
 struct lambda : public class_ {
     using class_::class_;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "lambda"; }
 };
 
+/**
+ * @brief Participant mode representing a free function.
+ */
 struct function : public participant {
     enum class message_render_mode { full, abbreviated, no_arguments };
 
@@ -117,28 +220,92 @@ struct function : public participant {
     function &operator=(const function &) = delete;
     function &operator=(function &&) = delete;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "function"; }
 
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
     std::string full_name(bool relative = true) const override;
 
+    /**
+     * Return elements full name but without namespace.
+     *
+     * @return Elements full name without namespace.
+     */
     std::string full_name_no_ns() const override;
 
+    /**
+     * @brief Render function name as message label
+     *
+     * @param mode Function argument render mode
+     * @return Message label
+     */
     virtual std::string message_name(message_render_mode mode) const;
 
+    /**
+     * @brief Check if function is const
+     *
+     * @return True, if function is const
+     */
     bool is_const() const;
 
+    /**
+     * @brief Set whether the function is const
+     *
+     * @param c True, if function is const
+     */
     void is_const(bool c);
 
+    /**
+     * @brief Check, if the function has no return value
+     *
+     * @return True, if the function has no return value
+     */
     bool is_void() const;
 
+    /**
+     * @brief Set whether the function has a return value
+     *
+     * @param v True, if the function has no return value
+     */
     void is_void(bool v);
 
+    /**
+     * @brief Check, if the function is static
+     *
+     * @return True, if the function is static
+     */
     bool is_static() const;
 
+    /**
+     * @brief Set whether the function is static
+     *
+     * @param v True, if the function is static
+     */
     void is_static(bool s);
 
+    /**
+     * @brief Add a function parameter
+     *
+     * @note In sequence diagrams we don't care about relationships from
+     * function or method parameters, so we don't need to model them in detail.
+     *
+     * @param a Function parameter label including name and type
+     */
     void add_parameter(const std::string &a);
 
+    /**
+     * @brief Get the list of function parameters
+     *
+     * @return List of function parameters
+     */
     const std::vector<std::string> &parameters() const;
 
 private:
@@ -148,6 +315,9 @@ private:
     std::vector<std::string> parameters_;
 };
 
+/**
+ * @brief Participant model representing a method
+ */
 struct method : public function {
     method(const common::model::namespace_ &using_namespace);
 
@@ -156,26 +326,79 @@ struct method : public function {
     method &operator=(const method &) = delete;
     method &operator=(method &&) = delete;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "method"; }
 
+    /**
+     * @brief Get method name
+     * @return Method name
+     */
     std::string method_name() const;
 
-    std::string alias() const override;
-
+    /**
+     * @brief Set method name
+     *
+     * @param name Method name
+     */
     void set_method_name(const std::string &name);
 
+    /**
+     * @brief Get the participant PlantUML alias
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @return PlantUML alias for the participant to which this method belongs
+     *         to.
+     */
+    std::string alias() const override;
+
+    /**
+     * @brief Set the id of the participant to which this method belongs to.
+     *
+     * @param id Id of the class to which this method belongs to
+     */
     void set_class_id(diagram_element::id_t id);
 
+    /**
+     * @brief Set full qualified name of the class
+     *
+     * @param name Name of the class including namespace
+     */
     void set_class_full_name(const std::string &name);
 
+    /**
+     * @brief Get the class full name.
+     *
+     * @return Class full name
+     */
     const auto &class_full_name() const;
 
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
     std::string full_name(bool /*relative*/) const override;
 
     std::string message_name(message_render_mode mode) const override;
 
+    /**
+     * @brief Get the class id
+     *
+     * @return Class id
+     */
     diagram_element::id_t class_id() const;
 
+    /**
+     * @brief Create a string representation of the participant
+     *
+     * @return Participant representation as string
+     */
     std::string to_string() const override;
 
 private:
@@ -184,6 +407,9 @@ private:
     std::string class_full_name_;
 };
 
+/**
+ * @brief Participant model representing a function template.
+ */
 struct function_template : public function, public template_trait {
     function_template(const common::model::namespace_ &using_namespace);
 
@@ -192,12 +418,33 @@ struct function_template : public function, public template_trait {
     function_template &operator=(const function_template &) = delete;
     function_template &operator=(function_template &&) = delete;
 
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
     std::string type_name() const override { return "function_template"; }
 
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
     std::string full_name(bool relative = true) const override;
 
+    /**
+     * Return elements full name but without namespace.
+     *
+     * @return Elements full name without namespace.
+     */
     std::string full_name_no_ns() const override;
 
+    /**
+     * @brief Render function name as message label
+     *
+     * @param mode Function argument render mode
+     * @return Message label
+     */
     std::string message_name(message_render_mode mode) const override;
 };
 } // namespace clanguml::sequence_diagram::model

@@ -1,5 +1,5 @@
 /**
- * src/util/query_driver_include_extractor.h
+ * @file src/util/query_driver_include_extractor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -23,25 +23,57 @@
 
 namespace clanguml::util {
 
-class query_driver_no_paths : public std::runtime_error {
-    using std::runtime_error::runtime_error;
-};
-
+/**
+ * @brief Executed compiler frontend and extract default system paths
+ *
+ * This class - inspired by the `clangd` language server - will invoke the
+ * provided compiler command and query it for its default system paths,
+ * which then will be added to each compile command in the database.
+ */
 class query_driver_output_extractor {
 public:
+    /**
+     * @brief Constructor.
+     *
+     * @param command Command to execute the compiler frontend
+     * @param language Language name to query for (C or C++)
+     */
     query_driver_output_extractor(std::string command, std::string language);
 
     ~query_driver_output_extractor() = default;
 
+    /**
+     * @brief Execute the command and extract compiler flags and include paths
+     */
     void execute();
 
+    /**
+     * @brief Extract target name from the compiler output
+     *
+     * @param output Compiler query driver output
+     */
     void extract_target(const std::string &output);
 
+    /**
+     * @brief Extract system include paths from the compiler output
+     *
+     * @param output Compiler query driver output
+     */
     void extract_system_include_paths(const std::string &output);
 
-    const std::vector<std::string> &system_include_paths() const;
-
+    /**
+     * @brief Name of the target of the compiler command (e.g. x86_64-linux-gnu)
+     *
+     * @return Target name
+     */
     const std::string &target() const;
+
+    /**
+     * @brief Return list of include system paths
+     *
+     * @return List of include system paths
+     */
+    const std::vector<std::string> &system_include_paths() const;
 
 private:
     const std::string command_;

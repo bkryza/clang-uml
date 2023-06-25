@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/concept.h
+ * @file src/class_diagram/model/concept.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -29,11 +29,9 @@
 
 namespace clanguml::class_diagram::model {
 
-struct requires_expression {
-    common::model::template_parameter parameter;
-    std::vector<std::string> requirements;
-};
-
+/**
+ * @brief Model of C++ concept.
+ */
 class concept_ : public common::model::element,
                  public common::model::stylable_element,
                  public common::model::template_trait {
@@ -45,6 +43,11 @@ public:
     concept_ &operator=(const concept_ &) = delete;
     concept_ &operator=(concept_ &&) = delete;
 
+    /**
+     * @brief Get the elements type name.
+     *
+     * @return 'concept'
+     */
     std::string type_name() const override { return "concept"; }
 
     friend bool operator==(const concept_ &l, const concept_ &r);
@@ -53,12 +56,35 @@ public:
 
     std::string full_name_no_ns() const override;
 
-    void add_parameter(method_parameter mp);
+    /**
+     * @brief Add concept parameter
+     *
+     * Concept class for convenience uses the same method parameter model
+     * as regular methods and functions.
+     *
+     * @param mp Concept parameter
+     */
+    void add_parameter(const method_parameter &mp);
 
+    /**
+     * @brief Get concepts requires expression parameters
+     *
+     * @return List of concept requires expression parameters
+     */
     const std::vector<method_parameter> &requires_parameters() const;
 
+    /**
+     * @brief Add a concept statement
+     *
+     * @param stmt Concept statement
+     */
     void add_statement(std::string stmt);
 
+    /**
+     * @brief Get the concepts requires statements
+     *
+     * @return List of concepts requires statements
+     */
     const std::vector<std::string> &requires_statements() const;
 
 private:

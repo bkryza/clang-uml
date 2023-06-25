@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/visitor/translation_unit_visitor.cc
+ * @file src/include_diagram/visitor/translation_unit_visitor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -116,12 +116,23 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     }
 }
 
-std::optional<common::id_t>
-translation_unit_visitor::include_visitor::process_internal_header(
+clanguml::include_diagram::model::diagram &
+translation_unit_visitor::include_visitor::diagram()
+{
+    return diagram_;
+}
+
+const clanguml::config::include_diagram &
+translation_unit_visitor::include_visitor::config() const
+{
+    return config_;
+}
+
+void translation_unit_visitor::include_visitor::process_internal_header(
     const std::filesystem::path &include_path, bool is_system,
     const common::id_t current_file_id)
 {
-    // Relativize the path with respect to relative_to config option
+    // Make the path relative with respect to relative_to config option
     auto relative_include_path = include_path;
     if (config().relative_to) {
         const std::filesystem::path relative_to{config().relative_to()};
@@ -158,12 +169,9 @@ translation_unit_visitor::include_visitor::process_internal_header(
             .add_relationship(common::model::relationship{relationship_type,
                 include_file.id(), common::model::access_t::kNone});
     }
-
-    return include_file.id();
 }
 
-std::optional<common::id_t>
-translation_unit_visitor::include_visitor::process_external_system_header(
+void translation_unit_visitor::include_visitor::process_external_system_header(
     const std::filesystem::path &include_path,
     const common::id_t current_file_id)
 {
@@ -187,8 +195,6 @@ translation_unit_visitor::include_visitor::process_external_system_header(
                 common::model::relationship_t::kDependency, f_id,
                 common::model::access_t::kNone});
     }
-
-    return f_id;
 }
 
 std::optional<common::id_t>
@@ -252,5 +258,18 @@ translation_unit_visitor::include_visitor::process_source_file(
 
     return {};
 }
+
+clanguml::include_diagram::model::diagram &translation_unit_visitor::diagram()
+{
+    return diagram_;
+}
+
+const clanguml::config::include_diagram &
+translation_unit_visitor::config() const
+{
+    return config_;
+}
+
+void translation_unit_visitor::finalize() { }
 
 } // namespace clanguml::include_diagram::visitor

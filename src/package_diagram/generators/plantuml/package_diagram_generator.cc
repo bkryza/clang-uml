@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/generators/plantuml/package_diagram_generator.cc
+ * @file src/package_diagram/generators/plantuml/package_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

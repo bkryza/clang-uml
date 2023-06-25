@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/method_parameter.h
+ * @file src/class_diagram/model/method_parameter.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,21 +25,73 @@
 
 namespace clanguml::class_diagram::model {
 
+/**
+ * @brief Model of a method parameter.
+ */
 class method_parameter : public common::model::decorated_element {
 public:
     method_parameter() = default;
+
+    /**
+     * @brief Constructor.
+     *
+     * @param type Type of the method parameter as string.
+     * @param name Name of the method parameter.
+     * @param default_value Default value of the parameter or empty.
+     */
     method_parameter(
         std::string type, std::string name, std::string default_value = {});
 
+    ~method_parameter() override = default;
+
+    /**
+     * @brief Set parameters type.
+     *
+     * @param type Parameters type as string.
+     */
     void set_type(const std::string &type);
+
+    /**
+     * @brief Get parameters type.
+     *
+     * @return Parameters type as string.
+     */
     std::string type() const;
 
+    /**
+     * @brief Set parameters name.
+     *
+     * @param type Parameters name.
+     */
     void set_name(const std::string &name);
+
+    /**
+     * @brief Get parameters name.
+     *
+     * @return Parameters name.
+     */
     std::string name() const;
 
+    /**
+     * @brief Set parameters default value.
+     *
+     * @param type Parameters default value as string.
+     */
     void set_default_value(const std::string &value);
+
+    /**
+     * @brief Get parameters name.
+     *
+     * @return Parameters name.
+     */
     std::string default_value() const;
 
+    /**
+     * @brief Render the method parameter to a string.
+     *
+     * @param using_namespaces If provided, make all namespaces relative to it.
+     * @return String representation of the parameter.
+     */
     std::string to_string(
         const common::model::namespace_ &using_namespaces) const;
 

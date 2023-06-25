@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/translation_unit_visitor.h
+ * @file src/common/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -46,8 +46,8 @@ public:
     /**
      * @brief Constructor
      *
-     * @param sm Reference to @link clang::SourceManager instance
-     * @param config Reference to @link clanguml::config::diagram configuration
+     * @param sm Reference to @ref clang::SourceManager instance
+     * @param config Reference to @ref clanguml::config::diagram configuration
      *        instance
      */
     explicit translation_unit_visitor(
@@ -65,7 +65,7 @@ public:
 
     /**
      * @brief Get clang::SourceManager
-     * @return Reference to @link clang::SourceManager used by this translation
+     * @return Reference to @ref clang::SourceManager used by this translation
      *         unit visitor
      */
     clang::SourceManager &source_manager() const;
@@ -73,7 +73,7 @@ public:
     /**
      * @brief Set source location in diagram element
      *
-     * @param decl Reference to @link clang::Decl
+     * @param decl Reference to @ref clang::Decl
      * @param element Reference to element to be updated
      */
     void set_source_location(const clang::Decl &decl,
@@ -82,7 +82,7 @@ public:
     /**
      * @brief Set source location in diagram element
      *
-     * @param expr Reference to @link clang::Expr
+     * @param expr Reference to @ref clang::Expr
      * @param element Reference to element to be updated
      */
     void set_source_location(const clang::Expr &expr,
@@ -94,7 +94,7 @@ public:
     /**
      * @brief Set source location in diagram element
      *
-     * @param location Reference to @link clang::SourceLocation
+     * @param location Reference to @ref clang::SourceLocation
      * @param element Reference to element to be updated
      */
     void set_source_location(const clang::SourceLocation &location,
@@ -104,7 +104,7 @@ protected:
     /**
      * @brief Set source location in diagram element
      *
-     * @param decl Reference to @link clang::NamedDecl
+     * @param decl Reference to @ref clang::NamedDecl
      * @param element Reference to element to be updated
      */
     void process_comment(const clang::NamedDecl &decl,

@@ -1,5 +1,5 @@
 /**
- * src/common/model/element_view.h
+ * @file src/common/model/element_view.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

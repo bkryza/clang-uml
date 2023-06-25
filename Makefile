@@ -138,6 +138,15 @@ iwyu_fixes: debug
 docs:
 	make -C docs toc
 
+.PHONY: doxygen
+doxygen: docs
+	cp CONTRIBUTING.md docs/contributing.md
+	cp CHANGELOG.md docs/changelog.md
+	cp docs/diagrams/*.svg docs/doxygen/html/
+	mkdir -p docs/doxygen/html/test_cases
+	cp docs/test_cases/*.svg docs/doxygen/html/test_cases/
+	../doxygen/_build/bin/doxygen
+
 .PHONY: fedora/%
 fedora/%:
 	mkdir -p packaging/_BUILD/fedora/$*

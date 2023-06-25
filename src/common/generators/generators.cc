@@ -1,5 +1,5 @@
 /**
- * src/common/generators/generators.cc
+ * @file src/common/generators/generators.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -184,32 +184,33 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
             continue;
         }
 
-        futs.emplace_back(generator_executor.add(
-            [&od, &generators, &name = name, &diagram = diagram, &indicator,
-                db = std::ref(*db), translation_units = valid_translation_units,
-                verbose]() mutable {
-                try {
-                    if (indicator)
-                        indicator->add_progress_bar(name,
-                            translation_units.size(),
-                            diagram_type_to_color(diagram->type()));
+        auto generator = [&od, &generators, &name = name, &diagram = diagram,
+                             &indicator, db = std::ref(*db),
+                             translation_units = valid_translation_units,
+                             verbose]() mutable {
+            try {
+                if (indicator)
+                    indicator->add_progress_bar(name, translation_units.size(),
+                        diagram_type_to_color(diagram->type()));
 
-                    generate_diagram(od, name, diagram, db, translation_units,
-                        generators, verbose != 0, [&indicator, &name]() {
-                            if (indicator)
-                                indicator->increment(name);
-                        });
+                generate_diagram(od, name, diagram, db, translation_units,
+                    generators, verbose != 0, [&indicator, &name]() {
+                        if (indicator)
+                            indicator->increment(name);
+                    });
 
-                    if (indicator)
-                        indicator->complete(name);
-                }
-                catch (std::runtime_error &e) {
-                    if (indicator)
-                        indicator->fail(name);
+                if (indicator)
+                    indicator->complete(name);
+            }
+            catch (std::runtime_error &e) {
+                if (indicator)
+                    indicator->fail(name);
 
-                    LOG_ERROR(e.what());
-                }
-            }));
+                LOG_ERROR(e.what());
+            }
+        };
+
+        futs.emplace_back(generator_executor.add(std::move(generator)));
     }
 
     for (auto &fut : futs) {

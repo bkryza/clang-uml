@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/visitor/translation_unit_visitor.cc
+ * @file src/sequence_diagram/visitor/translation_unit_visitor.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -1222,18 +1222,15 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
         config().using_namespace())};
     auto &c = *c_ptr;
 
-    // TODO: refactor to method get_qualified_name()
-    auto qualified_name =
-        cls->getQualifiedNameAsString(); //  common::get_qualified_name(*cls);
+    auto qualified_name = cls->getQualifiedNameAsString();
 
     if (!cls->isLambda())
-        if (!diagram().should_include(qualified_name))
+        if (!should_include(cls))
             return {};
 
     auto ns = common::get_tag_namespace(*cls);
 
-    if (cls->isLambda() &&
-        !diagram().should_include(ns.to_string() + "::lambda"))
+    if (cls->isLambda() && !diagram().should_include(ns | "lambda"))
         return {};
 
     const auto *parent = cls->getParent();
@@ -1809,7 +1806,11 @@ void translation_unit_visitor::process_template_specialization_argument(
 
                 // Otherwise just set the name for the template argument to
                 // whatever clang says
-                argument.set_name(type_name);
+                if (template_params.size() > argument_index &&
+                    template_params[argument_index].type())
+                    argument.set_type(type_name);
+                else
+                    argument.set_name(type_name);
             }
             else
                 argument.set_type(type_name);
@@ -2198,7 +2199,8 @@ bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 
     const auto decl_file = decl->getLocation().printToString(source_manager());
 
-    return diagram().should_include(decl->getQualifiedNameAsString()) &&
+    return diagram().should_include(
+               namespace_{decl->getQualifiedNameAsString()}) &&
         diagram().should_include(common::model::source_file{decl_file});
 }
 
@@ -2251,7 +2253,8 @@ bool translation_unit_visitor::should_include(
 {
     const auto decl_file = decl->getLocation().printToString(source_manager());
 
-    return diagram().should_include(decl->getQualifiedNameAsString()) &&
+    return diagram().should_include(
+               namespace_{decl->getQualifiedNameAsString()}) &&
         diagram().should_include(common::model::source_file{decl_file});
 }
 
@@ -2269,7 +2272,8 @@ bool translation_unit_visitor::should_include(
 
     const auto decl_file = decl->getLocation().printToString(source_manager());
 
-    return diagram().should_include(decl->getQualifiedNameAsString()) &&
+    return diagram().should_include(
+               namespace_{decl->getQualifiedNameAsString()}) &&
         diagram().should_include(common::model::source_file{decl_file});
 }
 } // namespace clanguml::sequence_diagram::visitor

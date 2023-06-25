@@ -1,0 +1,29 @@
+type: class
+include_relations_also_as_members: true
+generate_method_arguments: none
+generate_packages: true
+glob:
+  - src/common/model/*.cc
+  - src/sequence_diagram/model/*.cc
+include:
+  namespaces:
+    - clanguml::common::model
+    - clanguml::sequence_diagram::model
+  context:
+    - clanguml::sequence_diagram::model::diagram
+    - clanguml::sequence_diagram::model::message
+    - clanguml::sequence_diagram::model::activity
+  subclasses:
+    - clanguml::sequence_diagram::model::participant
+exclude:
+  relationships:
+    - dependency
+  method_types:
+    - constructor
+    - destructor
+    - operator
+using_namespace:
+  - clanguml
+plantuml:
+  before:
+    - 'title clang-uml sequence diagram model'

@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/diagram.h
+ * @file src/sequence_diagram/model/diagram.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -27,6 +27,11 @@
 
 namespace clanguml::sequence_diagram::model {
 
+/**
+ * @brief Model of a sequence diagram
+ *
+ * @embed{sequence_model_class.svg}
+ */
 class diagram : public clanguml::common::model::diagram {
 public:
     diagram() = default;
@@ -36,20 +41,37 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    /**
+     * @brief Get the diagram model type - in this case sequence.
+     *
+     * @return Type of sequence diagram.
+     */
     common::model::diagram_t type() const override;
 
+    /**
+     * @brief Search for element in the diagram by fully qualified name.
+     *
+     * @param full_name Fully qualified element name.
+     * @return Optional reference to a diagram element.
+     */
     common::optional_ref<common::model::diagram_element> get(
         const std::string &full_name) const override;
 
+    /**
+     * @brief Search for element in the diagram by id.
+     *
+     * @param id Element id.
+     * @return Optional reference to a diagram element.
+     */
     common::optional_ref<common::model::diagram_element> get(
         common::model::diagram_element::id_t id) const override;
 
-    std::string to_alias(const std::string &full_name) const;
-
-    inja::json context() const override;
-
-    void print() const;
-
+    /**
+     * @brief Get participant by id
+     *
+     * @param id Participant id.
+     * @return Optional reference to a diagram element.
+     */
     template <typename T>
     common::optional_ref<T> get_participant(
         common::model::diagram_element::id_t id)
@@ -62,52 +84,123 @@ public:
             static_cast<T *>(participants_.at(id).get()));
     }
 
-    template <typename T>
-    common::optional_ref<T> get_participant(
-        common::model::diagram_element::id_t id) const
-    {
-        if (participants_.find(id) == participants_.end()) {
-            return {};
-        }
-
-        return common::optional_ref<T>(
-            static_cast<T *>(participants_.at(id).get()));
-    }
-
+    /**
+     * @brief Add sequence diagram participant
+     *
+     * @param p Sequence diagram participant model
+     */
     void add_participant(std::unique_ptr<participant> p);
 
+    /**
+     * @brief Set participant with `id` as active
+     *
+     * @param id Id of participant to activate
+     */
     void add_active_participant(common::model::diagram_element::id_t id);
 
+    /**
+     * @brief Get reference to current activity of a participant
+     *
+     * @param id Participant id
+     * @return
+     */
     activity &get_activity(common::model::diagram_element::id_t id);
 
+    /**
+     * @brief Add message to current activity
+     *
+     * @param message Message model
+     */
     void add_message(model::message &&message);
 
+    /**
+     * @brief Add block message to the current activity
+     *
+     * Block messages represent sequence diagram blocks such as `alt`
+     * or `loop`.
+     *
+     * The block messages can be stacked.
+     *
+     * @param message Message model
+     */
     void add_block_message(model::message &&message);
 
+    /**
+     * @brief End current block message
+     *
+     * @param message Message model
+     * @param start_type Type of block statement.
+     */
     void end_block_message(
         model::message &&message, common::model::message_t start_type);
 
+    /**
+     * @brief Add `switch` block `case` statement
+     * @param m Message model
+     */
     void add_case_stmt_message(model::message &&m);
 
-    bool started() const;
-    void started(bool s);
-
+    /**
+     * @brief Get all sequences in the diagram
+     *
+     * @return Map of sequences in the diagram
+     */
     std::map<common::model::diagram_element::id_t, activity> &sequences();
 
+    /**
+     * @brief Get all sequences in the diagram
+     *
+     * @return Map of sequences in the diagram
+     */
     const std::map<common::model::diagram_element::id_t, activity> &
     sequences() const;
 
+    /**
+     * @brief Get map of all participants in the diagram
+     *
+     * @return Map of participants in the diagram
+     */
     std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
         &participants();
 
+    /**
+     * @brief Get map of all participants in the diagram
+     *
+     * @return Map of participants in the diagram
+     */
     const std::map<common::model::diagram_element::id_t,
         std::unique_ptr<participant>> &
     participants() const;
 
+    /**
+     * @brief Get all active participants in the diagram
+     *
+     * @return Set of all active participant ids
+     */
     std::set<common::model::diagram_element::id_t> &active_participants();
 
-    const std::set<common::model::diagram_element::id_t> &
-    active_participants() const;
+    /**
+     * @brief Convert element full name to PlantUML alias.
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @param full_name Full name of the diagram element.
+     * @return PlantUML alias.
+     */
+    std::string to_alias(const std::string &full_name) const;
+
+    /**
+     * @brief Return the elements JSON context for inja templates.
+     *
+     * @return JSON node with elements context.
+     */
+    inja::json context() const override;
+
+    /**
+     * @brief Debug method for printing entire diagram to console.
+     */
+    void print() const;
 
 private:
     /**

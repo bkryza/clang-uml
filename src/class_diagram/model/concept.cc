@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/concept.cc
+ * @file src/class_diagram/model/concept.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -70,9 +70,9 @@ std::string concept_::full_name(bool relative) const
     return res;
 }
 
-void concept_::add_parameter(method_parameter mp)
+void concept_::add_parameter(const method_parameter &mp)
 {
-    requires_parameters_.emplace_back(std::move(mp));
+    requires_parameters_.emplace_back(mp);
 }
 
 const std::vector<method_parameter> &concept_::requires_parameters() const

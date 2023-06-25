@@ -1,0 +1,20 @@
+type: class
+include_relations_also_as_members: true
+generate_packages: false
+glob:
+  - src/common/model/diagram_filter.cc
+  - src/common/model/diagram.cc
+include:
+  namespaces:
+    - clanguml
+  context:
+    - clanguml::common::model::diagram_filter
+exclude:
+  elements:
+    - clanguml::common::model::path
+  method_types:
+    - constructor
+    - destructor
+    - operator
+using_namespace:
+  - clanguml

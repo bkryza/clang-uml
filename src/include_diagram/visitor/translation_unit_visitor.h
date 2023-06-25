@@ -1,5 +1,5 @@
 /**
- * src/include_diagram/visitor/translation_unit_visitor.h
+ * @file src/include_diagram/visitor/translation_unit_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -35,14 +35,33 @@
 
 namespace clanguml::include_diagram::visitor {
 
+/**
+ * @brief Include diagram translation unit visitor wrapper
+ *
+ * This class implements the @link clang::RecursiveASTVisitor interface,
+ * for compatibility with other diagram visitors. However, for include
+ * diagrams this class does not inherit from
+ * @ref common::visitor::translation_unit_visitor, instead it contains an
+ * inner class @ref include_visitor, which implements `clang::PPCallbacks`
+ * interface to handle inclusion directives.
+ */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor> {
 public:
-    // This is an internal class for convenience to be able to access the
-    // include_visitor type from translation_unit_visitor type
+    /**
+     * This is an internal class for convenience to be able to access the
+     * include_visitor type from translation_unit_visitor type
+     */
     class include_visitor : public clang::PPCallbacks,
                             public common::visitor::translation_unit_visitor {
     public:
+        /**
+         * @brief Constructor.
+         *
+         * @param sm Reference to current tu source manager.
+         * @param diagram Reference to the include diagram model.
+         * @param config Reference to the diagram configuration.
+         */
         include_visitor(clang::SourceManager &sm,
             clanguml::include_diagram::model::diagram &diagram,
             const clanguml::config::include_diagram &config);
@@ -73,26 +92,51 @@ public:
             clang::SrcMgr::CharacteristicKind file_type) override;
 #endif
 
-        std::optional<common::id_t> process_internal_header(
-            const std::filesystem::path &include_path, bool is_system,
-            common::id_t current_file_id);
+        /**
+         * @brief Handle internal header include directive
+         *
+         * @param include_path Include path
+         * @param is_system True, if the path points to a system path
+         * @param current_file_id File id
+         */
+        void process_internal_header(const std::filesystem::path &include_path,
+            bool is_system, common::id_t current_file_id);
 
-        std::optional<common::id_t> process_external_system_header(
+        /**
+         * @brief Handle system header include directive
+         *
+         * @param include_path Include path
+         * @param current_file_id File id
+         */
+        void process_external_system_header(
             const std::filesystem::path &include_path,
             common::id_t current_file_id);
 
+        /**
+         * @brief Handle a source file
+         *
+         * This method allows to process path of the currently visited
+         * source file.
+         *
+         * @param file Absolute path to a source file
+         * @return Diagram element id, in case the file was added to the diagram
+         */
         std::optional<common::id_t> process_source_file(
             const std::filesystem::path &file);
 
-        clanguml::include_diagram::model::diagram &diagram()
-        {
-            return diagram_;
-        }
+        /**
+         * @brief Get reference to the include diagram model
+         *
+         * @return Reference to the include diagram model
+         */
+        clanguml::include_diagram::model::diagram &diagram();
 
-        const clanguml::config::include_diagram &config() const
-        {
-            return config_;
-        }
+        /**
+         * @brief Get reference to the diagram configuration
+         *
+         * @return Reference to the diagram configuration
+         */
+        const clanguml::config::include_diagram &config() const;
 
     private:
         // Reference to the output diagram model
@@ -102,15 +146,35 @@ public:
         const clanguml::config::include_diagram &config_;
     };
 
+    /**
+     * @brief Constructor
+     *
+     * @param sm Reference to the source manager for current tu
+     * @param diagram Reference to the include diagram model
+     * @param config Reference to the diagram configuration
+     */
     translation_unit_visitor(clang::SourceManager &sm,
         clanguml::include_diagram::model::diagram &diagram,
         const clanguml::config::include_diagram &config);
 
-    clanguml::include_diagram::model::diagram &diagram() { return diagram_; }
+    /**
+     * @brief Get reference to the include diagram model
+     *
+     * @return Reference to the include diagram model
+     */
+    clanguml::include_diagram::model::diagram &diagram();
 
-    const clanguml::config::include_diagram &config() const { return config_; }
+    /**
+     * @brief Get reference to the diagram configuration
+     *
+     * @return Reference to the diagram configuration
+     */
+    const clanguml::config::include_diagram &config() const;
 
-    void finalize() { }
+    /**
+     * @brief Run any finalization after traversal is complete
+     */
+    void finalize();
 
 private:
     // Reference to the output diagram model

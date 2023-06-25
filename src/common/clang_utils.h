@@ -1,5 +1,5 @@
 /**
- * src/common/clang_utils.h
+ * @file src/common/clang_utils.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -35,23 +35,35 @@ class NamespaceDecl;
 
 namespace clanguml::common {
 /**
- * @brief Convert @link clang::AccessSpecifier to @link model::access_t
+ * @brief Convert `clang::AccessSpecifier` to @see clanguml::model::access_t
  *
  * @param access_specifier Clang member access specifier
- * @return Enum value of @link model::access_t
+ * @return Enum value of @see clanguml::model::access_t
  */
 model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
 
 /**
- * @brief Generate full qualified name for @link clang::TagDecl instance
+ * @brief Generate full qualified name for
+ * [clang::TagDecl](https://clang.llvm.org/doxygen/classclang_1_1TagDecl.html)
+ * instance
  *
  * @param declaration Input declaration
  * @return String representation including any templates, parameters and
- * attribtues
+ *         attribtues
  */
 std::string get_tag_name(const clang::TagDecl &declaration);
 
+/**
+ * @brief Get qualified name of some Clang declaration
+ *
+ * This template is convenient for getting qualified name of various types of
+ * clang declarations.
+ *
+ * @tparam T Type of Clang's declaration, e.g. `clang::TagDecl`
+ * @param declaration Reference to a clang declaration
+ * @return Fully qualified name
+ */
 template <typename T> std::string get_qualified_name(const T &declaration)
 {
     auto qualified_name = declaration.getQualifiedNameAsString();
@@ -70,8 +82,20 @@ template <typename T> std::string get_qualified_name(const T &declaration)
     return qualified_name;
 }
 
+/**
+ * Get namespace of a specific `clang::TagDecl`
+ *
+ * @param declaration Reference to clang::TagDecl
+ * @return Namespace instance
+ */
 model::namespace_ get_tag_namespace(const clang::TagDecl &declaration);
 
+/**
+ * Get namespace of a specific `clang::TemplateDecl`
+ *
+ * @param declaration Reference to clang::TemplateDecl
+ * @return Namespace instance
+ */
 model::namespace_ get_template_namespace(
     const clang::TemplateDecl &declaration);
 
@@ -94,12 +118,35 @@ std::string to_string(const clang::TypeConstraint *tc);
 
 std::string to_string(const clang::TemplateName &templ);
 
+/**
+ * @brief Get raw text of specific source range
+ *
+ * @param range Source range
+ * @param sm Source manager reference
+ * @return Raw source text
+ */
 std::string get_source_text_raw(
     clang::SourceRange range, const clang::SourceManager &sm);
 
+/**
+ * @brief Get printable range of text of specific source range
+ *
+ * @param range Source range
+ * @param sm Source manager reference
+ * @return Printable source text
+ */
 std::string get_source_text(
     clang::SourceRange range, const clang::SourceManager &sm);
 
+/**
+ * @brief Extract template depth and index
+ *
+ * This function extracts template depth and index values from Clang's
+ * `type-parameter-` names.
+ *
+ * @param type_parameter Clang's type parameter string
+ * @return (depth, index, qualifier)
+ */
 std::tuple<unsigned int, unsigned int, std::string>
 extract_template_parameter_index(const std::string &type_parameter);
 
@@ -115,17 +162,14 @@ extract_template_parameter_index(const std::string &type_parameter);
  */
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
 
-/**
- * @brief Forward template for convertions to ID from various entities
+/** @defgroup to_id Forward template for convertions to ID from various entities
  *
  * These methods provide the main mechanism for generating globally unique
  * identifiers for all elements in the diagrams. The identifiers must be unique
  * between different translation units in order for element relationships to
  * be properly rendered in diagrams.
  *
- * @tparam T Type of entity for which ID should be computed
- * @param declaration Element (e.g. declaration) for which the ID is needed
- * @return Unique ID
+ * @{
  */
 template <typename T> id_t to_id(const T &declaration);
 
@@ -148,10 +192,25 @@ template <> id_t to_id(const clang::EnumType &type);
 template <> id_t to_id(const clang::TemplateSpecializationType &type);
 
 template <> id_t to_id(const std::filesystem::path &type);
+/** @} */ // end of to_id
 
+/**
+ * @brief Split qualified name to namespace and name
+ *
+ * @param full_name Fully qualified element name
+ * @return (namespace, name)
+ */
 std::pair<common::model::namespace_, std::string> split_ns(
     const std::string &full_name);
 
+/**
+ * @brief Parse unexposed (available as string) template params
+ *
+ * @param params String parameters as provided by Clang
+ * @param ns_resolve Namespace resolver function
+ * @param depth Current depth in the template specification
+ * @return Parsed template parameter
+ */
 std::vector<common::model::template_parameter> parse_unexposed_template_params(
     const std::string &params,
     const std::function<std::string(const std::string &)> &ns_resolve,
@@ -191,6 +250,17 @@ bool is_type_token(const std::string &t);
 
 clang::QualType dereference(clang::QualType type);
 
+/**
+ * @brief Extract type context and return raw type
+ *
+ * This function removes the context for a type, for example for:
+ * `std::string const&`
+ * it will return
+ * `(std::string, [const&])`
+ *
+ * @param type Type to process
+ * @return (type, [qualifiers])
+ */
 std::pair<clang::QualType, std::deque<common::model::context>>
 consume_type_context(clang::QualType type);
 

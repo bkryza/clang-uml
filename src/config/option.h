@@ -1,5 +1,5 @@
 /**
- * src/config/option.h
+ * @file src/config/option.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -24,9 +24,28 @@ namespace clanguml {
 namespace config {
 
 template <typename T> void append_value(T &l, const T &r) { l = r; }
+/**
+ * Possible option inheritance methods from top level to diagram level.
+ */
+enum class option_inherit_mode {
+    kOverride, /*!< Override entire options */
+    kAppend    /*!< Append to list options */
+};
 
-enum class option_inherit_mode { kOverride, kAppend };
-
+/**
+ * @brief Generic configuration option type
+ *
+ * This class template represents a single configuration option, which can
+ * be either a simple type such as bool or std::string or can be a list
+ * or dictionary.
+ *
+ * If the option is constructed only from default value, it's `is_declared`
+ * member is false, so we can deduce whether user provided the option or not.
+ *
+ * For each option type, there has to be defined a YAML decoder and emitter.
+ *
+ * @tparam T The type of the configuration option
+ */
 template <typename T> struct option {
     option(std::string name_,
         option_inherit_mode im = option_inherit_mode::kOverride)
@@ -44,6 +63,11 @@ template <typename T> struct option {
     {
     }
 
+    /**
+     * @brief Set the option value
+     *
+     * @param v Option value
+     */
     void set(const T &v)
     {
         value = v;
@@ -51,6 +75,13 @@ template <typename T> struct option {
         has_value = true;
     }
 
+    /**
+     * @brief Override option value
+     *
+     * This method overrides the option depending on it's inheritance type.
+     *
+     * @param o New option value
+     */
     void override(const option<T> &o)
     {
         if (o.is_declared && inheritance_mode == option_inherit_mode::kAppend) {
@@ -73,10 +104,22 @@ template <typename T> struct option {
 
     operator bool() const { return has_value; }
 
+    /*! Option name, it is also the YAML key in the configuration file */
     std::string name;
+
+    /*! Option value */
     T value;
+
+    /*! Whether or not the value was provided by the user or default */
     bool is_declared{false};
+
+    /*!
+     * Whether the option has value, if the option has no default value
+     * and wasn't provided in the config this is set to `false`.
+     */
     bool has_value{false};
+
+    /*! The inheritance mode for this option */
     option_inherit_mode inheritance_mode;
 };
 } // namespace config

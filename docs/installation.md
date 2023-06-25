@@ -30,12 +30,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.1/clang-uml-0.3.1-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.1-1.fc36.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.7/clang-uml-0.3.7-1.fc36.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.7-1.fc36.x86_64.rpm
 
 # Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.1/clang-uml-0.3.1-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.1-1.fc37.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.7/clang-uml-0.3.7-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.7-1.fc37.x86_64.rpm
+
+# Fedora 38
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.7/clang-uml-0.3.7-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.7-1.fc38.x86_64.rpm
 ```
 
 #### Conda

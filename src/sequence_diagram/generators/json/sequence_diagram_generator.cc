@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/generators/json/sequence_diagram_generator.cc
+ * @file src/sequence_diagram/generators/json/sequence_diagram_generator.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -240,6 +240,13 @@ void generator::generate_activity(const activity &a,
         case message_t::kReturn:; // noop
         }
     }
+}
+
+nlohmann::json &generator::current_block_statement() const
+{
+    assert(!block_statements_stack_.empty());
+
+    return block_statements_stack_.back().get();
 }
 
 void generator::process_call_message(const model::message &m,

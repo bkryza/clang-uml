@@ -88,7 +88,7 @@ clang-uml --show-template parents_hierarchy_tmpl
 users configuration file defines another template with a name which already
 exists as built-in template it will override the predefined templates.
 
-Currently the following templates are built-in:
+Currently, the following templates are built-in:
 * `parents_hierarchy_tmpl` - generate inheritance hierarchy diagram including
    parents of a specified class
 * `subclass_hierarchy_tmpl` - generate inheritance hierarchy diagram including

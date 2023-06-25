@@ -1,12 +1,14 @@
 type: class
-include_relations_also_as_members: false
+include_relations_also_as_members: true
 glob:
   - src/config/config.cc
 include:
   namespaces:
     - clanguml::config
+  context:
+    - clanguml::config::config
 using_namespace:
   - clanguml::config
 plantuml:
   before:
-    - 'title clang-uml configuration model'
+    - 'title clanguml::config::config context diagram'

@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/diagram.cc
+ * @file src/class_diagram/model/diagram.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -196,6 +196,11 @@ inja::json diagram::context() const
     // Add enums
     for (const auto &e : enums()) {
         elements.emplace_back(e.get().context());
+    }
+
+    // Add enums
+    for (const auto &c : concepts()) {
+        elements.emplace_back(c.get().context());
     }
 
     ctx["elements"] = elements;

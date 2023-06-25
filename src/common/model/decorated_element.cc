@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/decorated_element.cc
+ * @file src/common/model/decorated_element.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -90,4 +90,10 @@ void decorated_element::append(const decorated_element &de)
 std::optional<comment_t> decorated_element::comment() const { return comment_; }
 
 void decorated_element::set_comment(const comment_t &c) { comment_ = c; }
+
+std::optional<std::string> decorated_element::doxygen_link() const
+{
+    return std::nullopt;
+}
+
 } // namespace clanguml::common::model

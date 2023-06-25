@@ -1,5 +1,5 @@
 /**
- * src/common/visitor/comment/clang_visitor.h
+ * @file src/common/visitor/comment/clang_visitor.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,10 +25,19 @@
 
 namespace clanguml::common::visitor::comment {
 
+/**
+ * @brief Uses Clang's comment parser to extract Doxygen-style comment blocks.
+ */
 class clang_visitor : public comment_visitor {
 public:
     clang_visitor(clang::SourceManager &source_manager);
 
+    /**
+     * Extracts Doxygen style comment blocks from the comment.
+     *
+     * @param decl Clang's named declaration
+     * @param e Diagram element
+     */
     void visit(const clang::NamedDecl &decl,
         common::model::decorated_element &e) override;
 

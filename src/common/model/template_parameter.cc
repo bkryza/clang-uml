@@ -1,5 +1,5 @@
 /**
- * src/common/model/template_parameter.cc
+ * @file src/common/model/template_parameter.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -209,6 +209,8 @@ std::optional<std::string> template_parameter::name() const
 
 void template_parameter::set_default_value(const std::string &value)
 {
+    assert(kind_ != template_parameter_kind_t::argument);
+
     default_value_ = value;
 }
 
@@ -648,10 +650,6 @@ void template_parameter::deduced_context(std::deque<context> c)
 void template_parameter::is_ellipsis(bool e) { is_ellipsis_ = e; }
 
 bool template_parameter::is_ellipsis() const { return is_ellipsis_; }
-
-void template_parameter::is_noexcept(bool e) { is_noexcept_ = e; }
-
-bool template_parameter::is_noexcept() const { return is_noexcept_; }
 
 int calculate_template_params_specialization_match(
     const std::vector<template_parameter> &specialization_params,

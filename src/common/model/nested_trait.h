@@ -1,5 +1,5 @@
 /**
- * src/common/model/nested_trait.h
+ * @file src/common/model/nested_trait.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,6 +25,18 @@
 #include <vector>
 
 namespace clanguml::common::model {
+
+/**
+ * @brief Base class for elements nested in the diagram.
+ *
+ * This class provides a common trait for diagram elements which can contain
+ * other nested elements, e.g. packages.
+ *
+ * @embed{nested_trait_hierarchy_class.svg}
+ *
+ * @tparam T Type of element
+ * @tparam Path Type of nested path (e.g. namespace or directory path)
+ */
 template <typename T, typename Path> class nested_trait {
 public:
     nested_trait() = default;
@@ -37,6 +49,13 @@ public:
 
     virtual ~nested_trait() = default;
 
+    /**
+     * Add element at the current nested level.
+     *
+     * @tparam V Type of element
+     * @param p Element
+     * @return True, if element was added.
+     */
     template <typename V = T>
     [[nodiscard]] bool add_element(std::unique_ptr<V> p)
     {
@@ -53,6 +72,14 @@ public:
         return true;
     }
 
+    /**
+     * Add element at a nested path.
+     *
+     * @tparam V Type of element
+     * @param path Nested path (e.g. list of namespaces)
+     * @param p Element
+     * @return True, if element was added.
+     */
     template <typename V = T>
     bool add_element(const Path &path, std::unique_ptr<V> p)
     {
@@ -77,6 +104,13 @@ public:
             "No parent element found for " + path.to_string());
     }
 
+    /**
+     * Get element at path, if exists.
+     *
+     * @tparam V Element type.
+     * @param path Path to the element.
+     * @return Optional reference to the element.
+     */
     template <typename V = T> auto get_element(const Path &path) const
     {
         if (path.is_empty() || !has_element(path[0])) {
@@ -100,18 +134,13 @@ public:
         return optional_ref<V>{};
     }
 
-    template <typename V = T> auto get_element_parent(const T &element) const
-    {
-        auto path = element.path();
-        auto parent = get_element(path);
-
-        if (parent.has_value())
-            return optional_ref<V>{
-                std::ref<V>(dynamic_cast<V &>(parent.value()))};
-
-        return optional_ref<V>{};
-    }
-
+    /**
+     * Get element by name at the current nested level.
+     *
+     * @tparam V Type of element.
+     * @param name Name of the element (cannot contain namespace or path)
+     * @return Optional reference to the element.
+     */
     template <typename V = T> auto get_element(const std::string &name) const
     {
         assert(!util::contains(name, "::"));
@@ -130,6 +159,13 @@ public:
         return optional_ref<V>{};
     }
 
+    /**
+     * Returns true of this nested level contains an element with specified
+     * name.
+     *
+     * @param name Name of the element.
+     * @return True if element exists.
+     */
     bool has_element(const std::string &name) const
     {
         return std::find_if(elements_.cbegin(), elements_.cend(),
@@ -137,6 +173,12 @@ public:
             elements_.end();
     }
 
+    /**
+     * Return result of functor f applied to all_of elements.
+     * @tparam F Functor type
+     * @param f Functor value
+     * @return True, if functor return true for elements, including nested ones.
+     */
     template <typename F> bool all_of(F &&f) const
     {
         return std::all_of(
@@ -151,6 +193,11 @@ public:
             });
     }
 
+    /**
+     * Check if nested element is empty.
+     *
+     * @return True if this nested element is empty.
+     */
     bool is_empty() const
     {
         return elements_.empty() ||
@@ -170,6 +217,13 @@ public:
     auto begin() const { return elements_.begin(); }
     auto end() const { return elements_.end(); }
 
+    /**
+     * Print the nested trait in the form of a tree.
+     *
+     * This method is used for debugging only.
+     *
+     * @param level Tree level
+     */
     void print_tree(const int level)
     {
         const auto &d = *this;

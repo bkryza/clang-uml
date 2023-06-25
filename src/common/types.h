@@ -1,5 +1,5 @@
 /**
- * src/common/types.h
+ * @file src/common/types.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -31,10 +31,32 @@ namespace clanguml::common {
 
 using id_t = int64_t;
 
-enum class generator_type_t { plantuml, json };
+/**
+ * Type of output diagram format generator.
+ */
+enum class generator_type_t {
+    plantuml, /*!< Diagrams will be gnerated in PlantUML format */
+    json      /*!< Diagrams will be generated in JSON format */
+};
 
 std::string to_string(const std::string &s);
 
+/**
+ * @brief Simple optional reference type.
+ *
+ * This class template provides a convenient way around the std::optional
+ * limitation of not allowing references. This is useful for storing
+ * references to diagram elements in various `views`, and writing methods
+ * which return can return an empty value if the diagram does not contain
+ * something.
+ *
+ * This is not an owning type - it will not accept an rvalue - the actual
+ * value must be stored somewhere else as lvalue or some kind of smart pointer.
+ *
+ * @note Probably unsafe - do not use at home.
+ *
+ * @tparam T Type of reference
+ */
 template <typename T> class optional_ref {
 public:
     using optional_type = T;
@@ -159,29 +181,59 @@ using reference_set = std::unordered_set<std::reference_wrapper<T>>;
  * @brief Wrapper around std::regex, which contains original pattern
  */
 struct regex {
+    /**
+     * @brief Constructor
+     *
+     * @param r Parsed regular expression
+     * @param p Raw regular expression pattern used for regenerating config and
+     *          debugging
+     */
     regex(std::regex r, std::string p)
         : regexp{std::move(r)}
         , pattern{std::move(p)}
     {
     }
 
-    [[nodiscard]] bool operator==(const std::string &v) const
+    /**
+     * @brief Regular expression match operator
+     * @param v Value to match against internal std::regex
+     * @return True, if the argument matches the regular expression
+     */
+    [[nodiscard]] bool operator%=(const std::string &v) const
     {
         return std::regex_match(v, regexp);
     }
 
-    std::regex regexp;
-    std::string pattern;
+    std::regex regexp;   /*!< Parsed regular expression */
+    std::string pattern; /*!< Original regular expression pattern */
 };
 
+/**
+ * @brief Convenience class for configuration options with regex support
+ *
+ * This template class provides a convenient way of handling configuraiton
+ * options, which can be either some basic type like std::string or regex.
+ *
+ * @tparam T Type of alternative to regex (e.g. std::string)
+ */
 template <typename T> struct or_regex {
     or_regex() = default;
 
+    /**
+     * @brief Constructor from alternative type
+     */
     or_regex(T v)
         : value_{std::move(v)}
     {
     }
 
+    /**
+     * @brief Constructor from regex
+     *
+     * @param r Parsed regular expression
+     * @param p Raw regular expression pattern used for regenerating config and
+     *          debugging
+     */
     or_regex(std::regex r, std::string p)
         : value_{regex{std::move(r), std::move(p)}}
     {

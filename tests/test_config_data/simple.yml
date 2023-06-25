@@ -1,4 +1,5 @@
 compilation_database_dir: debug
+comment_parser: clang
 output_directory: output
 diagrams:
   class_main:
@@ -6,7 +7,6 @@ diagrams:
     glob:
       - src/**/*.cc
       - src/**/*.h
-    comment_parser: clang
     using_namespace: clanguml
     generate_method_arguments: full
     generate_packages: true

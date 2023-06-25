@@ -1,5 +1,5 @@
 /**
- * src/common/model/package.cc
+ * @file src/common/model/package.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -40,4 +40,11 @@ bool package::is_deprecated() const { return is_deprecated_; }
 
 void package::set_deprecated(bool deprecated) { is_deprecated_ = deprecated; }
 
+std::optional<std::string> package::doxygen_link() const
+{
+    auto name = full_name(false);
+    util::replace_all(name, "_", "__");
+    util::replace_all(name, "::", "_1_1");
+    return fmt::format("namespace{}.html", name);
+}
 } // namespace clanguml::common::model

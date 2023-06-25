@@ -1,5 +1,5 @@
 /**
- * src/common/compilation_database.cc
+ * @file src/common/compilation_database.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -17,7 +17,7 @@
  */
 
 #include "compilation_database.h"
-
+#include "util/error.h"
 #include "util/query_driver_output_extractor.h"
 
 namespace clanguml::common {
@@ -31,7 +31,7 @@ compilation_database::auto_detect_from_directory(
         cfg.compilation_database_dir(), error_message);
 
     if (!error_message.empty())
-        throw compilation_database_error(error_message);
+        throw error::compilation_database_error(error_message);
 
     return std::make_unique<compilation_database>(std::move(res), cfg);
 }

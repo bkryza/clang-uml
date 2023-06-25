@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/generators/json/class_diagram_generator.h
+ * @file src/class_diagram/generators/json/class_diagram_generator.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -56,36 +56,110 @@ using clanguml::common::model::relationship_t;
 
 using namespace clanguml::util;
 
+/**
+ * @brief Class diagram JSON generator
+ */
 class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    /**
+     * @brief Main generator method.
+     *
+     * This method is called first and coordinates the entire diagram
+     * generation.
+     *
+     * @param ostr Output stream.
+     */
     void generate(std::ostream &ostr) const override;
 
+    /**
+     * Render class element into a JSON node.
+     *
+     * @param c class diagram element
+     * @param parent JSON node
+     */
     void generate(const class_ &c, nlohmann::json &parent) const;
 
+    /**
+     * Render enum element into a JSON node.
+     *
+     * @param c enum diagram element
+     * @param parent JSON node
+     */
     void generate(const enum_ &c, nlohmann::json &parent) const;
 
+    /**
+     * Render concept element into a JSON node.
+     *
+     * @param c concept diagram element
+     * @param parent JSON node
+     */
     void generate(const concept_ &c, nlohmann::json &parent) const;
 
+    /**
+     * Render package element into a JSON node.
+     *
+     * @param p package diagram element
+     * @param parent JSON node
+     */
     void generate(const package &p, nlohmann::json &parent) const;
 
+    /**
+     * @brief In a nested diagram, generate the top level elements.
+     *
+     * This method iterates over the top level elements. In case the diagram
+     * is nested (i.e. includes packages), for each package it recursively
+     * call generation of elements contained in each package.
+     *
+     * @param parent JSON node
+     */
     void generate_top_level_elements(nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate all relationships in the diagram.
+     *
+     * @param parent JSON node
+     */
     void generate_relationships(nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate all relationships originating at a class element.
+     *
+     * @param c Class diagram element
+     * @param parent JSON node
+     */
     void generate_relationships(const class_ &c, nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate all relationships originating at an enum element.
+     *
+     * @param c Enum diagram element
+     * @param parent JSON node
+     */
     void generate_relationships(const enum_ &c, nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate all relationships originating at a concept element.
+     *
+     * @param c Concept diagram element
+     * @param parent JSON node
+     */
     void generate_relationships(
         const concept_ &c, nlohmann::json &parent) const;
 
+    /**
+     * @brief Generate all relationships in a package.
+     *
+     * If the diagram is nested, it recursively calls relationship generation
+     * for all subelements.
+     *
+     * @param p Package diagram element
+     * @param parent JSON node
+     */
     void generate_relationships(const package &p, nlohmann::json &parent) const;
 
 private:
-    std::string render_name(std::string name) const;
-
     mutable nlohmann::json json_;
 };
 

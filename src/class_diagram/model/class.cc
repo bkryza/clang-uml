@@ -1,5 +1,5 @@
 /**
- * src/class_diagram/model/class.cc
+ * @file src/class_diagram/model/class.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -36,6 +36,10 @@ void class_::is_struct(bool is_struct) { is_struct_ = is_struct; }
 bool class_::is_template() const { return is_template_; }
 
 void class_::is_template(bool is_template) { is_template_ = is_template; }
+
+bool class_::is_union() const { return is_union_; }
+
+void class_::is_union(bool is_union) { is_union_ = is_union; }
 
 void class_::add_member(class_member &&member)
 {
@@ -120,5 +124,26 @@ int class_::calculate_template_specialization_match(const class_ &other) const
     }
 
     return template_trait::calculate_template_specialization_match(other);
+}
+
+void class_::template_specialization_found(bool found)
+{
+    template_specialization_found_ = found;
+}
+
+bool class_::template_specialization_found() const
+{
+    return template_specialization_found_;
+}
+
+std::optional<std::string> class_::doxygen_link() const
+{
+    const auto *type = is_struct() ? "struct" : "class";
+
+    auto name = name_and_ns();
+    util::replace_all(name, "_", "__");
+    util::replace_all(name, "::", "_1_1");
+    util::replace_all(name, "##", "_1_1"); // nested classes
+    return fmt::format("{}{}.html", type, name);
 }
 } // namespace clanguml::class_diagram::model

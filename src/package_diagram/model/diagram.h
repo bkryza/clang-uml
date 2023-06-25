@@ -1,5 +1,5 @@
 /**
- * src/package_diagram/model/diagram.h
+ * @file src/package_diagram/model/diagram.h
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -31,6 +31,9 @@ using clanguml::common::model::diagram_element;
 using clanguml::common::model::package;
 using clanguml::common::model::path;
 
+/**
+ * @brief Package diagram model.
+ */
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_view<package>,
                 public clanguml::common::model::nested_trait<
@@ -44,24 +47,88 @@ public:
     diagram &operator=(const diagram &) = delete;
     diagram &operator=(diagram &&) = default;
 
+    /**
+     * @brief Get the diagram model type - in this case package.
+     *
+     * @return Type of package diagram.
+     */
     common::model::diagram_t type() const override;
 
+    /**
+     * @brief Get list of references to packages in the diagram model.
+     *
+     * @return List of references to packages in the diagram model.
+     */
     const common::reference_vector<package> &packages() const;
 
+    /**
+     * @brief Search for element in the diagram by fully qualified name.
+     *
+     * @param full_name Fully qualified element name.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(const std::string &full_name) const override;
 
+    /**
+     * @brief Search for element in the diagram by id.
+     *
+     * @param id Element id.
+     * @return Optional reference to a diagram element.
+     */
     opt_ref<diagram_element> get(diagram_element::id_t id) const override;
 
+    /**
+     * @brief Find an element in the diagram by name.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. package)
+     * @param name Fully qualified name of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(const std::string &name) const;
 
+    /**
+     * @brief Find an element in the diagram by id.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. package)
+     * @param id Id of the element
+     * @return Optional reference to a diagram element
+     */
     template <typename ElementT>
     opt_ref<ElementT> find(diagram_element::id_t id) const;
 
+    /**
+     * @brief Find elements in the diagram by regex pattern.
+     *
+     * This method allows for typed search, where the type of searched for
+     * element is determined from template specialization.
+     *
+     * @tparam ElementT Type of element (e.g. class_)
+     * @param name String or regex pattern
+     * @return List of optional references to matched elements.
+     */
     template <typename ElementT>
     std::vector<opt_ref<ElementT>> find(
         const clanguml::common::string_or_regex &pattern) const;
 
+    /**
+     * @brief Add diagram element at nested path
+     *
+     * This method handled both diagrams where packages are created from
+     * namespaces, as well as those were packages are created from project
+     * subdirectories.
+     *
+     * @tparam ElementT Type of diagram element to add
+     * @param parent_path Package nested path where the element should be added
+     * @param e Diagram element to add
+     * @return True, if the element was added.
+     */
     template <typename ElementT>
     bool add(const path &parent_path, std::unique_ptr<ElementT> &&e)
     {
@@ -72,16 +139,43 @@ public:
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
+    /**
+     * @brief Get alias of existing diagram element
+     *
+     * @param id Id of a package in the diagram
+     * @return PlantUML alias of the element
+     */
+    std::string to_alias(diagram_element::id_t id) const;
+
+    /**
+     * @brief Return the elements JSON context for inja templates.
+     *
+     * @return JSON node with elements context.
+     */
+    inja::json context() const override;
+
+private:
+    /**
+     * @brief Add element using namespace as diagram path
+     *
+     * @tparam ElementT Element type
+     * @param e Element to add
+     * @return True, if the element was added
+     */
     template <typename ElementT>
     bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
 
+    /**
+     * @brief Add element using relative filesystem path as diagram path
+     *
+     * @tparam ElementT Element type
+     * @param parent_path Path to diagram elements parent package
+     * @param e Element to add
+     * @return True, if the element was added
+     */
     template <typename ElementT>
     bool add_with_filesystem_path(
         const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
-
-    std::string to_alias(diagram_element::id_t /*id*/) const;
-
-    inja::json context() const override;
 };
 
 template <typename ElementT>

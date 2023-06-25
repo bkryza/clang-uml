@@ -1,5 +1,5 @@
 /**
- * src/config/config.cc
+ * @file src/config/config.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *

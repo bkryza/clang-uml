@@ -1,5 +1,5 @@
 /**
- * src/sequence_diagram/model/activity.cc
+ * @file src/sequence_diagram/model/activity.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -30,8 +30,6 @@ void activity::add_message(message m) { messages_.emplace_back(std::move(m)); }
 std::vector<message> &activity::messages() { return messages_; }
 
 const std::vector<message> &activity::messages() const { return messages_; }
-
-void activity::set_from(common::model::diagram_element::id_t f) { from_ = f; }
 
 common::model::diagram_element::id_t activity::from() const { return from_; }
 

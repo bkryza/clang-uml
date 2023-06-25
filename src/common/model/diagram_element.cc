@@ -1,5 +1,5 @@
 /**
- * src/common/model/diagram_element.cc
+ * @file src/common/model/diagram_element.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -73,8 +73,12 @@ inja::json diagram_element::context() const
 {
     inja::json ctx;
     ctx["name"] = name();
+    ctx["type"] = type_name();
     ctx["alias"] = alias();
     ctx["full_name"] = full_name(false);
+    auto maybe_doxygen_link = doxygen_link();
+    if (maybe_doxygen_link)
+        ctx["doxygen_link"] = maybe_doxygen_link.value();
 
     return ctx;
 }
