@@ -1,16 +1,5 @@
 # Test cases index
-
-<!-- toc -->
-
-* [Class diagrams](#class-diagrams)
-* [Sequence diagrams](#sequence-diagrams)
-* [Package diagrams](#package-diagrams)
-* [Include diagrams](#include-diagrams)
-* [Other diagrams](#other-diagrams)
-
-<!-- tocstop -->
-
-## Class diagrams
+* [Class diagrams](#class-diagrams)* [Sequence diagrams](#sequence-diagrams)* [Package diagrams](#package-diagrams)* [Include diagrams](#include-diagrams)* [Other diagrams](#other-diagrams) ## Class diagrams
  * [t00002](./test_cases/t00002.md) - Basic class inheritance
  * [t00003](./test_cases/t00003.md) - Class fields and methods
  * [t00004](./test_cases/t00004.md) - Nested classes and enums
@@ -123,5 +112,5 @@
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case
  * [t40003](./test_cases/t40003.md) - Dependants and dependencies include diagram filter test
-## Other diagrams
+## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test
