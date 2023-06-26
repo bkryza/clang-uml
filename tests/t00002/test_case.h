@@ -71,6 +71,20 @@ TEST_CASE("t00002", "[test-case][class]")
                     clanguml::util::get_git_commit()),
                 "This is class B"));
 
+        REQUIRE_THAT(puml,
+            HasMemberLink("+foo_a() : void",
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L18",
+                    clanguml::util::get_git_commit()),
+                "foo_a"));
+
+        REQUIRE_THAT(puml,
+            HasMemberLink("-as : std::vector<A *>",
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L83",
+                    clanguml::util::get_git_commit()),
+                "as"));
+
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);
     }

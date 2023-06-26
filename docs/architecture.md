@@ -85,8 +85,6 @@ and a YAML emitter - e.g.
 The diagram model namespace is divided into the [`common`](#common-model) model
 namespace and 1 namespace for each supported diagram type.
 
-![clang-uml packages](./architecture_model.svg)
-
 ### Common model
 
 The [common diagram model namespace](./namespaceclanguml_1_1common_1_1model.html),
