@@ -515,6 +515,15 @@ ContainsMatcher HasLink(std::string const &alias, std::string const &link,
         fmt::format("{} [[{}{{{}}}]]", alias, link, tooltip), caseSensitivity));
 }
 
+ContainsMatcher HasMemberLink(std::string const &method,
+    std::string const &link, std::string const &tooltip,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} [[[{}{{{}}}]]]", method, link, tooltip),
+            caseSensitivity));
+}
+
 template <typename... Ts>
 ContainsMatcher IsMethod(std::string const &name,
     std::string const &type = "void", std::string const &params = "",

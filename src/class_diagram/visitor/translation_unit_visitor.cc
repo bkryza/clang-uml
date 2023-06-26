@@ -1268,6 +1268,9 @@ void translation_unit_visitor::process_method(
 
     process_comment(mf, method);
 
+    // Register the source location of the field declaration
+    set_source_location(mf, method);
+
     if (method.skip())
         return;
 
