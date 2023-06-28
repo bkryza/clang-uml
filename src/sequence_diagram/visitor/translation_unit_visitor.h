@@ -72,8 +72,11 @@ public:
 
     bool TraverseCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr);
 
-    // TODO
-    // bool TraverseCXXConstructExpr(clang::CXXConstructExpr *expr);
+    bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr);
+
+    bool TraverseCXXConstructExpr(clang::CXXConstructExpr *expr);
+
+    bool TraverseCXXTemporaryObjectExpr(clang::CXXTemporaryObjectExpr *expr);
 
     bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
@@ -422,7 +425,17 @@ private:
         const clang::CXXDependentScopeMemberExpr *dependent_member_expr) const;
 
     /**
-     * @brief Handle a operator call expresion
+     * @brief Handle CXX constructor call
+     *
+     * @param m Message model
+     * @param construct_expr CXX Construct expression
+     * @return True, if `m` contains a valid constructor call
+     */
+    bool process_construct_expression(
+        model::message &m, const clang::CXXConstructExpr *construct_expr);
+
+    /**
+     * @brief Handle a operator call expression
      *
      * @param m Message model
      * @param operator_call_expr Operator call expression
@@ -485,6 +498,7 @@ private:
      * @param m Message model
      */
     void push_message(clang::CallExpr *expr, model::message &&m);
+    void push_message(clang::CXXConstructExpr *expr, model::message &&m);
 
     /**
      * @brief Move a message model to diagram.
@@ -492,6 +506,7 @@ private:
      * @param expr Call expression
      */
     void pop_message_to_diagram(clang::CallExpr *expr);
+    void pop_message_to_diagram(clang::CXXConstructExpr *expr);
 
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
@@ -507,6 +522,8 @@ private:
      * sequence after the visitor leaves the call expression AST node
      */
     std::map<clang::CallExpr *, model::message> call_expr_message_map_;
+    std::map<clang::CXXConstructExpr *, model::message>
+        construct_expr_message_map_;
 
     std::map<common::model::diagram_element::id_t,
         std::unique_ptr<clanguml::sequence_diagram::model::class_>>

@@ -37,6 +37,15 @@ namespace clanguml::sequence_diagram::visitor {
  * e.g. a class method or function.
  */
 struct call_expression_context {
+    /**
+     * In Clang, call to a class constructor is represented by
+     * `clang::CXXConstructExpr`, which does inherit from `clang::CallExpr`.
+     * So to enable to track calls to constructors, we need to be able
+     * to add to the call stack either type.
+     */
+    using callexpr_stack_t = std::variant<std::monostate, clang::CallExpr *,
+        clang::CXXConstructExpr *>;
+
     call_expression_context();
 
     /**
@@ -252,14 +261,21 @@ struct call_expression_context {
      *
      * @return Call expression
      */
-    clang::CallExpr *current_callexpr() const;
+    callexpr_stack_t current_callexpr() const;
 
     /**
      * @brief Enter a call expression
      *
-     * @param stmt Call expression
+     * @param expr Call expression
      */
     void enter_callexpr(clang::CallExpr *expr);
+
+    /**
+     * @brief Enter a constructor call expression
+     *
+     * @param expr Constructor call expression
+     */
+    void enter_callexpr(clang::CXXConstructExpr *expr);
 
     /**
      * @brief Leave call expression
@@ -302,7 +318,7 @@ private:
     std::int64_t current_caller_id_{0};
     std::stack<std::int64_t> current_lambda_caller_id_;
 
-    std::stack<clang::CallExpr *> call_expr_stack_;
+    std::stack<callexpr_stack_t> call_expr_stack_;
 
     std::stack<clang::IfStmt *> if_stmt_stack_;
     std::stack<clang::IfStmt *> elseif_stmt_stack_;
