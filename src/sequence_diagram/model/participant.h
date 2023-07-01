@@ -194,20 +194,6 @@ private:
 };
 
 /**
- * @brief Participant representing a C++ lambda.
- */
-struct lambda : public class_ {
-    using class_::class_;
-
-    /**
-     * Get the type name of the diagram element.
-     *
-     * @return Type name of the diagram element.
-     */
-    std::string type_name() const override { return "lambda"; }
-};
-
-/**
  * @brief Participant mode representing a free function.
  */
 struct function : public participant {
