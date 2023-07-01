@@ -13,6 +13,7 @@
 * [specializations](#specializations)
 * [access](#access)
 * [method_types](#method_types)
+* [callee_types](#callee_types)
 * [dependants and dependencies](#dependants-and-dependencies)
 
 <!-- tocstop -->
