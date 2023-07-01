@@ -401,10 +401,70 @@ struct method : public function {
      */
     std::string to_string() const override;
 
+    /**
+     * @brief Check, if the method is a constructor
+     *
+     * @return True, if the method is a constructor
+     */
+    bool is_constructor() const;
+
+    /**
+     * @brief Set whether the method is a constructor
+     *
+     * @param v True, if the method is a constructor
+     */
+    void is_constructor(bool c);
+
+    /**
+     * @brief Check, if the method is defaulted
+     *
+     * @return True, if the method is defaulted
+     */
+    bool is_defaulted() const;
+
+    /**
+     * @brief Set whether the method is defaulted
+     *
+     * @param v True, if the method is defaulted
+     */
+    void is_defaulted(bool c);
+
+    /**
+     * @brief Check, if the method is an assignment operator
+     *
+     * @return True, if the method is an assignment operator
+     */
+    bool is_assignment() const;
+
+    /**
+     * @brief Set whether the method is an assignment operator
+     *
+     * @param v True, if the method is an assignment operator
+     */
+    void is_assignment(bool a);
+
+    /**
+     * @brief Check, if the method is an operator
+     *
+     * @return True, if the method is an operator
+     */
+    bool is_operator() const;
+
+    /**
+     * @brief Set whether the method is an operator
+     *
+     * @param v True, if the method is an operator
+     */
+    void is_operator(bool o);
+
 private:
     diagram_element::id_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
+    bool is_constructor_{false};
+    bool is_defaulted_{false};
+    bool is_assignment_{false};
+    bool is_operator_{false};
 };
 
 /**

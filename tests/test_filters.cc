@@ -26,8 +26,8 @@
 #include "common/model/diagram_filter.h"
 #include "common/model/source_file.h"
 #include "config/config.h"
-
 #include "include_diagram/model/diagram.h"
+#include "sequence_diagram/model/diagram.h"
 
 #include <filesystem>
 
@@ -771,6 +771,57 @@ TEST_CASE("Test dependants regexp filter", "[unit-test]")
 
     CHECK(!filter.should_include(*diagram.find<class_>("C")));
     CHECK(!filter.should_include(*diagram.find<class_>("C1")));
+}
+
+TEST_CASE("Test callee_types filter", "[unit-test]")
+{
+    using clanguml::common::to_id;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::sequence_diagram::model::class_;
+    using clanguml::sequence_diagram::model::function;
+    using clanguml::sequence_diagram::model::function_template;
+    using clanguml::sequence_diagram::model::method;
+    using clanguml::sequence_diagram::model::participant;
+
+    using namespace std::string_literals;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["callee_type_include_test"];
+    clanguml::sequence_diagram::model::diagram diagram;
+
+    std::unique_ptr<participant> p;
+
+    p = std::make_unique<function>(config.using_namespace());
+    p->set_name("A");
+    p->set_id(to_id("A"s));
+    diagram.add_participant(std::move(p));
+
+    p = std::make_unique<function_template>(config.using_namespace());
+    p->set_name("A1");
+    p->set_id(to_id("A1"s));
+    diagram.add_participant(std::move(p));
+
+    p = std::make_unique<class_>(config.using_namespace());
+    p->set_name("C1");
+    p->set_id(to_id("C1"s));
+    diagram.add_participant(std::move(p));
+
+    p = std::make_unique<method>(config.using_namespace());
+    p->set_name("M1");
+    p->set_id(to_id("M1"s));
+    dynamic_cast<method *>(p.get())->set_class_id(to_id("C1"s));
+    diagram.add_participant(std::move(p));
+
+    diagram.set_complete(true);
+    diagram_filter filter(diagram, config);
+
+    CHECK(
+        filter.should_include(*diagram.get_participant<function>(to_id("A"s))));
+    CHECK(filter.should_include(
+        *diagram.get_participant<function_template>(to_id("A1"s))));
+    CHECK(!filter.should_include(
+        *diagram.get_participant<participant>(to_id("M1"s))));
 }
 
 ///

@@ -74,7 +74,7 @@ public:
      */
     template <typename T>
     common::optional_ref<T> get_participant(
-        common::model::diagram_element::id_t id)
+        common::model::diagram_element::id_t id) const
     {
         if (participants_.find(id) == participants_.end()) {
             return {};
@@ -201,6 +201,16 @@ public:
      * @brief Debug method for printing entire diagram to console.
      */
     void print() const;
+
+    // Implicitly import should_include overloads from base class
+    using common::model::diagram::should_include;
+
+    /**
+     * @brief Convenience `should_include` overload for participant
+     * @param p Participant model
+     * @return True, if the participant should be included in the diagram
+     */
+    bool should_include(const sequence_diagram::model::participant &p) const;
 
 private:
     /**

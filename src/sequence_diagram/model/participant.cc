@@ -164,6 +164,22 @@ std::string method::alias() const
     return fmt::format("C_{:022}", class_id_);
 }
 
+bool method::is_constructor() const { return is_constructor_; }
+
+void method::is_constructor(bool c) { is_constructor_ = c; }
+
+bool method::is_defaulted() const { return is_defaulted_; }
+
+void method::is_defaulted(bool d) { is_defaulted_ = d; }
+
+bool method::is_assignment() const { return is_assignment_; }
+
+void method::is_assignment(bool a) { is_assignment_ = a; }
+
+bool method::is_operator() const { return is_operator_; }
+
+void method::is_operator(bool o) { is_operator_ = o; }
+
 void method::set_method_name(const std::string &name) { method_name_ = name; }
 
 void method::set_class_id(diagram_element::id_t id) { class_id_ = id; }

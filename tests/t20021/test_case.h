@@ -76,7 +76,7 @@ TEST_CASE("t20021", "[test-case][sequence]")
             FindMessage(j, "tmain()", "C", "c2()"),
             FindMessage(j, "tmain()", "A", "a1()"),
             FindMessage(j, "tmain()", "C", "c3()"),
-            FindMessage(j, "tmain()", "B", "b2()"),
+            FindMessage(j, "tmain()", "B", "b2() const"),
             FindMessage(j, "tmain()", "C", "contents()")
             // TODO: Repeated messge gets wrong index
             // FindMessage(j, "tmain()", "B", "b2()")

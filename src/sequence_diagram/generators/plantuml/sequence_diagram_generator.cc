@@ -142,9 +142,15 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             if (!to || to.value().skip())
                 continue;
 
+            if (!m_model.should_include(to.value())) {
+                LOG_DBG("Excluding call from [{}] to {} [{}]", m.from(),
+                    to.value().full_name(false), m.to());
+                continue;
+            }
+
             visited.push_back(m.from());
 
-            LOG_DBG("Generating message {} --> {}", m.from(), m.to());
+            LOG_DBG("Generating message [{}] --> [{}]", m.from(), m.to());
 
             generate_call(m, ostr);
 

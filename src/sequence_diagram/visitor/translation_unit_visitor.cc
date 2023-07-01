@@ -897,14 +897,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
     if (context().lambda_caller_id() != 0) {
-        if (!std::holds_alternative<clang::CallExpr *>(
-                context().current_callexpr())) {
-            m.set_from(context().lambda_caller_id());
-        }
-        else {
-            LOG_DBG("Current lambda declaration is passed to a method or "
-                    "function - keep the original caller id");
-        }
+        m.set_from(context().lambda_caller_id());
     }
 
     if (context().is_expr_in_current_control_statement_condition(expr)) {
@@ -1009,7 +1002,11 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    if (!should_include(expr->getConstructor()))
+    if (expr == nullptr)
+        return true;
+
+    if (const auto *ctor = expr->getConstructor();
+        ctor != nullptr && !should_include(ctor))
         return true;
 
     LOG_TRACE("Visiting cxx construct expression at {} [caller_id = {}]",
@@ -1021,14 +1018,7 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
     set_source_location(*expr, m);
 
     if (context().lambda_caller_id() != 0) {
-        if (!std::holds_alternative<clang::CallExpr *>(
-                context().current_callexpr())) {
-            m.set_from(context().lambda_caller_id());
-        }
-        else {
-            LOG_DBG("Current lambda declaration is passed to a method or "
-                    "function - keep the original caller id");
-        }
+        m.set_from(context().lambda_caller_id());
     }
 
     if (context().is_expr_in_current_control_statement_condition(expr)) {
@@ -1427,7 +1417,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             c.set_id(common::to_id(c.full_name(false)));
 
             // TODO: Check if lambda is declared as an argument passed to a
-            // function/method call
+            //       function/method call
         }
         else {
             LOG_WARN("Cannot find parent declaration for lambda {}",
@@ -2302,6 +2292,16 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     ns.pop_back();
     method_model_ptr->set_name(ns.name());
     ns.pop_back();
+
+    method_model_ptr->is_defaulted(declaration->isDefaulted());
+    method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
+        declaration->isMoveAssignmentOperator());
+    method_model_ptr->is_const(declaration->isConst());
+    method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_operator(declaration->isOverloadedOperator());
+    method_model_ptr->is_constructor(
+        clang::dyn_cast<clang::CXXConstructorDecl>(declaration) != nullptr);
 
     clang::Decl *parent_decl = declaration->getParent();
 

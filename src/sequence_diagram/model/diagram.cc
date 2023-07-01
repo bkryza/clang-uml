@@ -18,6 +18,8 @@
 
 #include "diagram.h"
 
+#include "common/model/diagram_filter.h"
+
 #include <functional>
 #include <memory>
 
@@ -169,6 +171,14 @@ diagram::participants() const
 std::set<common::model::diagram_element::id_t> &diagram::active_participants()
 {
     return active_participants_;
+}
+
+bool diagram::should_include(
+    const sequence_diagram::model::participant &p) const
+{
+    return filter().should_include(p) &&
+        filter().should_include(
+            dynamic_cast<const common::model::source_location &>(p));
 }
 
 void diagram::print() const

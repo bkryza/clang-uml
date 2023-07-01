@@ -63,6 +63,21 @@ enum class method_type {
 
 std::string to_string(method_type mt);
 
+/*! Types of call expressions, which can be used in sequence diagram filters */
+enum class callee_type {
+    constructor,
+    assignment,
+    operator_,
+    defaulted,
+    static_,
+    method,
+    function,
+    function_template,
+    lambda
+};
+
+std::string to_string(callee_type mt);
+
 /*! How packages in diagrams should be generated */
 enum class package_type_t {
     kNamespace, /*!< From namespaces */
@@ -313,6 +328,23 @@ struct filter {
      * ```
      */
     std::vector<method_type> method_types;
+
+    /*! @brief Callee types filter
+     *
+     * This filter allows to filter sequence diagram calls by callee types.
+     *
+     * @see method_type
+     *
+     * Example:
+     *
+     * ```yaml
+     *   exclude:
+     *     callee_types:
+     *       - constructor
+     *       - operator
+     * ```
+     */
+    std::vector<callee_type> callee_types;
 };
 
 enum class hint_t { up, down, left, right, together, row, column };
