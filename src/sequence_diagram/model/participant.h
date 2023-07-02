@@ -278,6 +278,20 @@ struct function : public participant {
     void is_static(bool s);
 
     /**
+     * @brief Check, if the method is an operator
+     *
+     * @return True, if the method is an operator
+     */
+    bool is_operator() const;
+
+    /**
+     * @brief Set whether the method is an operator
+     *
+     * @param v True, if the method is an operator
+     */
+    void is_operator(bool o);
+
+    /**
      * @brief Add a function parameter
      *
      * @note In sequence diagrams we don't care about relationships from
@@ -298,6 +312,7 @@ private:
     bool is_const_{false};
     bool is_void_{false};
     bool is_static_{false};
+    bool is_operator_{false};
     std::vector<std::string> parameters_;
 };
 
@@ -429,20 +444,6 @@ struct method : public function {
      */
     void is_assignment(bool a);
 
-    /**
-     * @brief Check, if the method is an operator
-     *
-     * @return True, if the method is an operator
-     */
-    bool is_operator() const;
-
-    /**
-     * @brief Set whether the method is an operator
-     *
-     * @param v True, if the method is an operator
-     */
-    void is_operator(bool o);
-
 private:
     diagram_element::id_t class_id_{};
     std::string method_name_;
@@ -450,7 +451,6 @@ private:
     bool is_constructor_{false};
     bool is_defaulted_{false};
     bool is_assignment_{false};
-    bool is_operator_{false};
 };
 
 /**

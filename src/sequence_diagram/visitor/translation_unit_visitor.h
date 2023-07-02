@@ -252,7 +252,7 @@ public:
         int64_t local_id) const;
 
     /**
-     * @brief Finalize diagram model
+     * @brief Finalize diagram model for this translation unit
      */
     void finalize();
 

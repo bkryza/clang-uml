@@ -124,11 +124,23 @@ public:
     void set_complete(bool complete);
 
     /**
-     * Whether the diagram is complete.
+     * @brief Whether the diagram is complete.
+     *
+     * This flag is set to true, when all translation units for this diagram
+     * have been visited.
      *
      * @return Diagram completion status.
      */
     bool complete() const;
+
+    /**
+     * @brief Once the diagram is complete, run any final processing.
+     *
+     * This method should be overriden by specific diagram models to do some
+     * final tasks like cleaning up the model (e.g. some filters only work
+     * on completed diagrams).
+     */
+    virtual void finalize();
 
     // TODO: refactor to a template method
     bool should_include(const element &e) const;

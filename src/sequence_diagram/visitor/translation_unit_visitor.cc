@@ -330,6 +330,8 @@ bool translation_unit_visitor::VisitFunctionDecl(
 
     function_model_ptr->is_void(declaration->getReturnType()->isVoidType());
 
+    function_model_ptr->is_operator(declaration->isOverloadedOperator());
+
     context().update(declaration);
 
     context().set_caller_id(function_model_ptr->id());
@@ -372,6 +374,9 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
 
     function_template_model->set_id(
         common::to_id(function_template_model->full_name(false)));
+
+    function_template_model->is_operator(
+        declaration->getAsFunction()->isOverloadedOperator());
 
     context().update(declaration);
 
@@ -2260,6 +2265,7 @@ void translation_unit_visitor::finalize()
 {
     std::set<common::model::diagram_element::id_t> active_participants_unique;
 
+    // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {
         if (local_ast_id_map_.find(id) != local_ast_id_map_.end()) {
             active_participants_unique.emplace(local_ast_id_map_.at(id));
@@ -2271,6 +2277,7 @@ void translation_unit_visitor::finalize()
 
     diagram().active_participants() = std::move(active_participants_unique);
 
+    // Change all message callees AST local ids to diagram global ids
     for (auto &[id, activity] : diagram().sequences()) {
         for (auto &m : activity.messages()) {
             if (local_ast_id_map_.find(m.to()) != local_ast_id_map_.end()) {

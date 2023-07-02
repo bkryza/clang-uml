@@ -139,14 +139,6 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         if (m.type() == message_t::kCall) {
             const auto &to =
                 m_model.get_participant<model::participant>(m.to());
-            if (!to || to.value().skip())
-                continue;
-
-            if (!m_model.should_include(to.value())) {
-                LOG_DBG("Excluding call from [{}] to {} [{}]", m.from(),
-                    to.value().full_name(false), m.to());
-                continue;
-            }
 
             visited.push_back(m.from());
 

@@ -248,6 +248,81 @@ void diagram::fold_or_end_block_statement(message &&m,
         current_messages.emplace_back(std::move(m));
     }
 }
+
+void diagram::finalize()
+{
+    // Apply diagram filters and remove any empty block statements
+    using common::model::message_t;
+
+    // First in each sequence (activity) filter out any remaining
+    // uninteresting calls
+    for (auto &[id, act] : sequences_) {
+        util::erase_if(act.messages(), [this](auto &m) {
+            if (m.type() != message_t::kCall)
+                return false;
+
+            const auto &to = get_participant<model::participant>(m.to());
+            if (!to || to.value().skip())
+                return true;
+
+            if (!should_include(to.value())) {
+                LOG_DBG("Excluding call from [{}] to {} [{}]", m.from(),
+                    to.value().full_name(false), m.to());
+                return true;
+            }
+
+            return false;
+        });
+    }
+
+    // Now remove any empty block statements, e.g. if/endif
+    for (auto &[id, act] : sequences_) {
+        int64_t block_nest_level{0};
+        std::vector<std::vector<message>> block_message_stack;
+        // Add first stack level - this level will contain the filtered
+        // message sequence
+        block_message_stack.emplace_back();
+
+        // First create a recursive stack from the messages and
+        // message blocks (e.g. if statements)
+        for (auto &m : act.messages()) {
+            if (is_begin_block_message(m.type())) {
+                block_nest_level++;
+                block_message_stack.push_back({m});
+            }
+            else if (is_end_block_message(m.type())) {
+                block_nest_level--;
+
+                block_message_stack.back().push_back(m);
+
+                // Check the last stack for any calls, if yes, collapse it
+                // on the previous stack
+                if (std::count_if(block_message_stack.back().begin(),
+                        block_message_stack.back().end(), [](auto &m) {
+                            return m.type() == message_t::kCall;
+                        }) > 0) {
+                    std::copy(block_message_stack.back().begin(),
+                        block_message_stack.back().end(),
+                        std::back_inserter(
+                            block_message_stack.at(block_nest_level)));
+                }
+
+                block_message_stack.pop_back();
+
+                assert(block_nest_level >= 0);
+            }
+            else {
+                block_message_stack.back().push_back(m);
+            }
+        }
+
+        act.messages().clear();
+
+        for (auto &m : block_message_stack[0]) {
+            act.add_message(m);
+        }
+    }
+}
 } // namespace clanguml::sequence_diagram::model
 
 namespace clanguml::common::model {

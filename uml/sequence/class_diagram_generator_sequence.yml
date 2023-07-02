@@ -10,4 +10,4 @@ plantuml:
   before:
     - 'title clang-uml clanguml::class_diagram::generators::plantuml::generator sequence diagram'
 start_from:
-  - function: "clanguml::class_diagram::generators::plantuml::generator::generate(std::ostream &)"
+  - function: "clanguml::class_diagram::generators::plantuml::generator::generate(std::ostream &) const"
