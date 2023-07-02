@@ -252,10 +252,6 @@ nlohmann::json &generator::current_block_statement() const
 void generator::process_call_message(const model::message &m,
     std::vector<common::model::diagram_element::id_t> &visited) const
 {
-    const auto &to = m_model.get_participant<model::participant>(m.to());
-    if (!to || to.value().skip())
-        return;
-
     visited.push_back(m.from());
 
     LOG_DBG("Generating message {} --> {}", m.from(), m.to());

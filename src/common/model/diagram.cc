@@ -59,6 +59,8 @@ void diagram::set_complete(bool complete) { complete_ = complete; }
 
 bool diagram::complete() const { return complete_; }
 
+void diagram::finalize() { }
+
 bool diagram::should_include(const element &e) const
 {
     if (filter_.get() == nullptr)

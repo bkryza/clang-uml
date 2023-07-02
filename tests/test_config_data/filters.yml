@@ -88,3 +88,9 @@ diagrams:
     include:
       dependants:
         - r: 'A|B'
+  callee_type_include_test:
+    type: sequence
+    include:
+      callee_types:
+        - function
+        - function_template

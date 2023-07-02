@@ -24,6 +24,7 @@ using clanguml::common::namespace_or_regex;
 using clanguml::common::string_or_regex;
 using clanguml::common::model::access_t;
 using clanguml::common::model::relationship_t;
+using clanguml::config::callee_type;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::diagram_template;
@@ -253,6 +254,38 @@ template <> struct convert<method_type> {
 };
 
 //
+// config callee_type decoder
+//
+template <> struct convert<callee_type> {
+    static bool decode(const Node &node, callee_type &rhs)
+    {
+        const auto &val = node.as<std::string>();
+        if (val == to_string(callee_type::constructor))
+            rhs = callee_type::constructor;
+        else if (val == to_string(callee_type::assignment))
+            rhs = callee_type::assignment;
+        else if (val == to_string(callee_type::operator_))
+            rhs = callee_type::operator_;
+        else if (val == to_string(callee_type::defaulted))
+            rhs = callee_type::defaulted;
+        else if (val == to_string(callee_type::static_))
+            rhs = callee_type::static_;
+        else if (val == to_string(callee_type::function))
+            rhs = callee_type::function;
+        else if (val == to_string(callee_type::function_template))
+            rhs = callee_type::function_template;
+        else if (val == to_string(callee_type::method))
+            rhs = callee_type::method;
+        else if (val == to_string(callee_type::lambda))
+            rhs = callee_type::lambda;
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
 // config relationship_t decoder
 //
 template <> struct convert<relationship_t> {
@@ -431,6 +464,10 @@ template <> struct convert<filter> {
 
         if (node["paths"])
             rhs.paths = node["paths"].as<decltype(rhs.paths)>();
+
+        if (node["callee_types"])
+            rhs.callee_types =
+                node["callee_types"].as<decltype(rhs.callee_types)>();
 
         return true;
     }

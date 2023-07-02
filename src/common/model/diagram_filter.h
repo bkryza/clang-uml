@@ -28,6 +28,7 @@
 #include "config/config.h"
 #include "diagram.h"
 #include "include_diagram/model/diagram.h"
+#include "sequence_diagram/model/participant.h"
 #include "source_file.h"
 #include "tvl.h"
 
@@ -104,6 +105,9 @@ public:
     virtual tvl::value_t match(
         const diagram &d, const class_diagram::model::class_member &m) const;
 
+    virtual tvl::value_t match(
+        const diagram &d, const sequence_diagram::model::participant &p) const;
+
     bool is_inclusive() const;
     bool is_exclusive() const;
 
@@ -121,6 +125,9 @@ struct anyof_filter : public filter_visitor {
 
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
 
     tvl::value_t match(
         const diagram &d, const common::model::source_file &e) const override;
@@ -190,6 +197,21 @@ struct method_type_filter : public filter_visitor {
 
 private:
     std::vector<config::method_type> method_types_;
+};
+
+/**
+ * Sequence diagram callee type filter.
+ */
+struct callee_filter : public filter_visitor {
+    callee_filter(filter_t type, std::vector<config::callee_type> callee_types);
+
+    ~callee_filter() override = default;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
+
+private:
+    std::vector<config::callee_type> callee_types_;
 };
 
 /**

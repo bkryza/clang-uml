@@ -79,10 +79,37 @@ std::string to_string(method_type mt)
         return "deleted";
     case method_type::static_:
         return "static";
-    default:
-        assert(false);
-        return "";
     }
+
+    assert(false);
+    return "";
+}
+
+std::string to_string(callee_type mt)
+{
+    switch (mt) {
+    case callee_type::constructor:
+        return "constructor";
+    case callee_type::assignment:
+        return "assignment";
+    case callee_type::operator_:
+        return "operator";
+    case callee_type::defaulted:
+        return "defaulted";
+    case callee_type::static_:
+        return "static";
+    case callee_type::method:
+        return "method";
+    case callee_type::function:
+        return "function";
+    case callee_type::function_template:
+        return "function_template";
+    case callee_type::lambda:
+        return "lambda";
+    }
+
+    assert(false);
+    return "";
 }
 
 std::string to_string(const comment_parser_t cp)

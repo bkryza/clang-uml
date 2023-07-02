@@ -146,6 +146,7 @@ public:
         util::replace_all(m_message, "*", "\\*");
         util::replace_all(m_message, "[", "\\[");
         util::replace_all(m_message, "]", "\\]");
+        util::replace_all(m_message, "+", "\\+");
     }
 
     bool match(T const &in) const override

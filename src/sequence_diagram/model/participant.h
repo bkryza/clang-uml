@@ -194,20 +194,6 @@ private:
 };
 
 /**
- * @brief Participant representing a C++ lambda.
- */
-struct lambda : public class_ {
-    using class_::class_;
-
-    /**
-     * Get the type name of the diagram element.
-     *
-     * @return Type name of the diagram element.
-     */
-    std::string type_name() const override { return "lambda"; }
-};
-
-/**
  * @brief Participant mode representing a free function.
  */
 struct function : public participant {
@@ -292,6 +278,20 @@ struct function : public participant {
     void is_static(bool s);
 
     /**
+     * @brief Check, if the method is an operator
+     *
+     * @return True, if the method is an operator
+     */
+    bool is_operator() const;
+
+    /**
+     * @brief Set whether the method is an operator
+     *
+     * @param v True, if the method is an operator
+     */
+    void is_operator(bool o);
+
+    /**
      * @brief Add a function parameter
      *
      * @note In sequence diagrams we don't care about relationships from
@@ -312,6 +312,7 @@ private:
     bool is_const_{false};
     bool is_void_{false};
     bool is_static_{false};
+    bool is_operator_{false};
     std::vector<std::string> parameters_;
 };
 
@@ -401,10 +402,55 @@ struct method : public function {
      */
     std::string to_string() const override;
 
+    /**
+     * @brief Check, if the method is a constructor
+     *
+     * @return True, if the method is a constructor
+     */
+    bool is_constructor() const;
+
+    /**
+     * @brief Set whether the method is a constructor
+     *
+     * @param v True, if the method is a constructor
+     */
+    void is_constructor(bool c);
+
+    /**
+     * @brief Check, if the method is defaulted
+     *
+     * @return True, if the method is defaulted
+     */
+    bool is_defaulted() const;
+
+    /**
+     * @brief Set whether the method is defaulted
+     *
+     * @param v True, if the method is defaulted
+     */
+    void is_defaulted(bool c);
+
+    /**
+     * @brief Check, if the method is an assignment operator
+     *
+     * @return True, if the method is an assignment operator
+     */
+    bool is_assignment() const;
+
+    /**
+     * @brief Set whether the method is an assignment operator
+     *
+     * @param v True, if the method is an assignment operator
+     */
+    void is_assignment(bool a);
+
 private:
     diagram_element::id_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
+    bool is_constructor_{false};
+    bool is_defaulted_{false};
+    bool is_assignment_{false};
 };
 
 /**

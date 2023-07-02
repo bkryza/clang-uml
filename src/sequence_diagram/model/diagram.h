@@ -74,7 +74,7 @@ public:
      */
     template <typename T>
     common::optional_ref<T> get_participant(
-        common::model::diagram_element::id_t id)
+        common::model::diagram_element::id_t id) const
     {
         if (participants_.find(id) == participants_.end()) {
             return {};
@@ -202,6 +202,25 @@ public:
      */
     void print() const;
 
+    // Implicitly import should_include overloads from base class
+    using common::model::diagram::should_include;
+
+    /**
+     * @brief Convenience `should_include` overload for participant
+     * @param p Participant model
+     * @return True, if the participant should be included in the diagram
+     */
+    bool should_include(const sequence_diagram::model::participant &p) const;
+
+    /**
+     * @brief Once the diagram is complete, run any final processing.
+     *
+     * This method should be overriden by specific diagram models to do some
+     * final tasks like cleaning up the model (e.g. some filters only work
+     * on completed diagrams).
+     */
+    void finalize() override;
+
 private:
     /**
      * This method checks the last messages in sequence (current_messages),
@@ -222,6 +241,27 @@ private:
     void fold_or_end_block_statement(message &&m,
         common::model::message_t statement_begin,
         std::vector<message> &current_messages) const;
+
+    bool is_begin_block_message(common::model::message_t mt)
+    {
+        using common::model::message_t;
+        static std::set<message_t> block_begin_types{message_t::kIf,
+            message_t::kWhile, message_t::kDo, message_t::kFor, message_t::kTry,
+            message_t::kSwitch, message_t::kConditional};
+
+        return block_begin_types.count(mt) > 0;
+    };
+
+    bool is_end_block_message(common::model::message_t mt)
+    {
+        using common::model::message_t;
+        static std::set<message_t> block_end_types{message_t::kIfEnd,
+            message_t::kWhileEnd, message_t::kDoEnd, message_t::kForEnd,
+            message_t::kTryEnd, message_t::kSwitchEnd,
+            message_t::kConditionalEnd};
+
+        return block_end_types.count(mt) > 0;
+    };
 
     bool started_{false};
 

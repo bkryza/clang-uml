@@ -286,6 +286,12 @@ test_cases:
     - name: t20029
       title: Combined feature sequence diagram test case
       description:
+    - name: t20030
+      title: Constructor and operator call test case
+      description:
+    - name: t20031
+      title: Callee type sequence diagram filter test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

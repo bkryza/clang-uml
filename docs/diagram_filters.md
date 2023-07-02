@@ -13,6 +13,7 @@
 * [specializations](#specializations)
 * [access](#access)
 * [method_types](#method_types)
+* [callee_types](#callee_types)
 * [dependants and dependencies](#dependants-and-dependencies)
 
 <!-- tocstop -->
@@ -59,17 +60,18 @@ The following table specifies the values allowed in each filter:
 |-------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | `namespaces`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                            |
 | `elements`        | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                            |
-| `element_types`   | Types of diagram elements        | ```class```, ```enum```, ```concept```                                                                                          |
-| `paths`           | File or dir path or glob pattern | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                      |
+| `element_types`   | Types of diagram elements        | ```class```, ```enum```, ```concept```                                                                                        |
+| `paths`           | File or dir path or glob pattern | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                    |
 | `context`         | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                        |
 | `relationships`   | Type of relationship             | ```inheritance```, ```composition```, ```aggregation```, ```ownership```, ```association```, ```instantiation```, ```friendship```, ```dependency``` |
-| `subclasses`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                          |
-| `parents`         | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                          |
-| `specializations` | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                          |
-| `access`          | Method or member access scope    | ```public```, ```protected```, ```private```                                                                                      |
-| `method_types`    | Type of class method             | ```constructor```, ```destructor```, ```assignment```, ```operator```, ```defaulted```, ```deleted```, ```static```                                |
-| `dependants`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                          |
-| `dependencies`    | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                          |
+| `subclasses`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
+| `parents`         | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
+| `specializations` | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
+| `access`          | Method or member access scope    | ```public```, ```protected```, ```private```                                                                                  |
+| `method_types`    | Type of class method             | ```constructor```, ```destructor```, ```assignment```, ```operator```, ```defaulted```, ```deleted```, ```static```                          |
+| `dependants`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
+| `dependencies`    | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
+| `callee_types`    | Callee types in sequence diagrams| ```constructor```, ```assignment```, ```operator```, ```defaulted```, ```static```, ```method```, ```function```, ```function_template```, ```lambda``` |
 
 The following filters are available.
 
@@ -189,6 +191,22 @@ This filter allows to include or exclude various method types from the class dia
 
 This filter is independent of the `access` filter, which controls which methods
 are included based on access scope (e.g. `public`).
+
+## callee_types
+
+This filter is specific for `sequence diagrams` and allows to control which types calls should be included/excluded from the diagram.
+In a sequence diagram, a `callee` is the receiver of a message, and this filter specifies which types of receivers should match.
+
+The following callee types are supported:
+  * constructor
+  * assignment
+  * operator
+  * defaulted
+  * static
+  * method
+  * function
+  * function_template
+  * lambda
 
 ## dependants and dependencies
 

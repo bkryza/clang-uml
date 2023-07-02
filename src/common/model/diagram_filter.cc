@@ -25,6 +25,7 @@
 #include "glob/glob.hpp"
 #include "include_diagram/model/diagram.h"
 #include "package_diagram/model/diagram.h"
+#include "sequence_diagram/model/diagram.h"
 
 namespace clanguml::common::model {
 
@@ -140,6 +141,12 @@ tvl::value_t filter_visitor::match(
     return match(d, m.access());
 }
 
+tvl::value_t filter_visitor::match(const diagram & /*d*/,
+    const sequence_diagram::model::participant & /*p*/) const
+{
+    return {};
+}
+
 bool filter_visitor::is_inclusive() const
 {
     return type_ == filter_t::kInclusive;
@@ -164,6 +171,13 @@ tvl::value_t anyof_filter::match(
 {
     return tvl::any_of(filters_.begin(), filters_.end(),
         [&d, &e](const auto &f) { return f->match(d, e); });
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    return tvl::any_of(filters_.begin(), filters_.end(),
+        [&d, &p](const auto &f) { return f->match(d, p); });
 }
 
 tvl::value_t anyof_filter::match(
@@ -349,6 +363,67 @@ tvl::value_t method_type_filter::match(
 
             return false;
         });
+}
+
+callee_filter::callee_filter(
+    filter_t type, std::vector<config::callee_type> callee_types)
+    : filter_visitor{type}
+    , callee_types_{std::move(callee_types)}
+{
+}
+
+tvl::value_t callee_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    using sequence_diagram::model::class_;
+    using sequence_diagram::model::function;
+    using sequence_diagram::model::method;
+    using sequence_diagram::model::participant;
+
+    auto is_lambda = [&d](const method &m) {
+        auto class_participant =
+            dynamic_cast<const sequence_diagram::model::diagram &>(d)
+                .get_participant<class_>(m.class_id());
+        if (!class_participant)
+            return false;
+
+        return class_participant.value().is_lambda();
+    };
+
+    tvl::value_t res = tvl::any_of(
+        callee_types_.begin(), callee_types_.end(), [&p, is_lambda](auto ct) {
+            auto is_function = [](const participant *p) {
+                return dynamic_cast<const function *>(p) != nullptr;
+            };
+
+            switch (ct) {
+            case config::callee_type::method:
+                return p.type_name() == "method";
+            case config::callee_type::constructor:
+                return p.type_name() == "method" &&
+                    ((method &)p).is_constructor();
+            case config::callee_type::assignment:
+                return p.type_name() == "method" &&
+                    ((method &)p).is_assignment();
+            case config::callee_type::operator_:
+                return is_function(&p) && ((function &)p).is_operator();
+            case config::callee_type::defaulted:
+                return p.type_name() == "method" &&
+                    ((method &)p).is_defaulted();
+            case config::callee_type::static_:
+                return is_function(&p) && ((function &)p).is_static();
+            case config::callee_type::function:
+                return p.type_name() == "function";
+            case config::callee_type::function_template:
+                return p.type_name() == "function_template";
+            case config::callee_type::lambda:
+                return p.type_name() == "method" && is_lambda((method &)p);
+            }
+
+            return false;
+        });
+
+    return res;
 }
 
 subclass_filter::subclass_filter(
@@ -771,6 +846,10 @@ void diagram_filter::init_filters(const config::diagram &c)
                     filter_t::kInclusive, relationship_t::kDependency,
                     c.include().dependencies, true));
         }
+        else if (c.type() == diagram_t::kSequence) {
+            element_filters.emplace_back(std::make_unique<callee_filter>(
+                filter_t::kInclusive, c.include().callee_types));
+        }
         else if (c.type() == diagram_t::kPackage) {
             element_filters.emplace_back(
                 std::make_unique<package_dependants_filter_t>(
@@ -878,7 +957,11 @@ void diagram_filter::init_filters(const config::diagram &c)
             filter_t::kExclusive, relationship_t::kDependency,
             c.exclude().dependencies, true));
 
-        if (c.type() == diagram_t::kInclude) {
+        if (c.type() == diagram_t::kSequence) {
+            add_exclusive_filter(std::make_unique<callee_filter>(
+                filter_t::kExclusive, c.exclude().callee_types));
+        }
+        else if (c.type() == diagram_t::kInclude) {
             std::vector<std::string> dependants;
             std::vector<std::string> dependencies;
 

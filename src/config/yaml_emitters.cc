@@ -82,6 +82,12 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const callee_type &m)
+{
+    out << to_string(m);
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 {
     out << YAML::BeginMap;
@@ -112,7 +118,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
         out << YAML::Key << "subclasses" << YAML::Value << f.subclasses;
     if (!f.parents.empty())
         out << YAML::Key << "parents" << YAML::Value << f.parents;
-
+    if (!f.method_types.empty())
+        out << YAML::Key << "callee_types" << YAML::Value << f.callee_types;
     out << YAML::EndMap;
     return out;
 }

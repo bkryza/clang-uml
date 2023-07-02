@@ -359,6 +359,8 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
 
     diagram->set_complete(true);
 
+    diagram->finalize();
+
     return diagram;
 }
 

@@ -63,15 +63,11 @@ diagrams:
     include!: uml/sequence/cli_handle_options_sequence.yml
   diagram_generate_generic_sequence:
     include!: uml/sequence/diagram_generate_generic_sequence.yml
-  sequence_diagram_visitor_sequence:
-    include!: uml/sequence/sequence_diagram_visitor_sequence.yml
   class_diagram_generator_sequence:
     include!: uml/sequence/class_diagram_generator_sequence.yml
   template_builder_sequence:
     include!: uml/sequence/template_builder_sequence.yml
   # Package diagrams
-  main_package:
-    include!: uml/package/main_package.yml
   architecture_package:
     include!: uml/package/architecture_package.yml
   # Include diagrams

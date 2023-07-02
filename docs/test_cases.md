@@ -102,6 +102,8 @@
  * [t20027](./test_cases/t20027.md) - Filter call expressions based on access test case
  * [t20028](./test_cases/t20028.md) - Conditional (ternary) '?:' operator test case
  * [t20029](./test_cases/t20029.md) - Combined feature sequence diagram test case
+ * [t20030](./test_cases/t20030.md) - Constructor and operator call test case
+ * [t20031](./test_cases/t20031.md) - Callee type sequence diagram filter test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

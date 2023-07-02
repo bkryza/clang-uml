@@ -143,6 +143,10 @@ bool function::is_static() const { return is_static_; }
 
 void function::is_static(bool s) { is_static_ = s; }
 
+bool function::is_operator() const { return is_operator_; }
+
+void function::is_operator(bool o) { is_operator_ = o; }
+
 void function::add_parameter(const std::string &a) { parameters_.push_back(a); }
 
 const std::vector<std::string> &function::parameters() const
@@ -163,6 +167,18 @@ std::string method::alias() const
 
     return fmt::format("C_{:022}", class_id_);
 }
+
+bool method::is_constructor() const { return is_constructor_; }
+
+void method::is_constructor(bool c) { is_constructor_ = c; }
+
+bool method::is_defaulted() const { return is_defaulted_; }
+
+void method::is_defaulted(bool d) { is_defaulted_ = d; }
+
+bool method::is_assignment() const { return is_assignment_; }
+
+void method::is_assignment(bool a) { is_assignment_ = a; }
 
 void method::set_method_name(const std::string &name) { method_name_ = name; }
 

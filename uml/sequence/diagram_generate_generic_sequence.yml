@@ -7,12 +7,8 @@ using_namespace:
   - clanguml
 include:
   namespaces:
-    - clang
     - clanguml::common::generators
 exclude:
-  namespaces:
-    - clanguml::model::tvl
-    - clanguml::decorators
   paths:
     - src/common/model/source_location.h
 start_from:

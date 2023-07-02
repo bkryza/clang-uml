@@ -218,15 +218,21 @@ void call_expression_context::leave_loopstmt()
         return loop_stmt_stack_.pop();
 }
 
-clang::CallExpr *call_expression_context::current_callexpr() const
+call_expression_context::callexpr_stack_t
+call_expression_context::current_callexpr() const
 {
     if (call_expr_stack_.empty())
-        return nullptr;
+        return {};
 
     return call_expr_stack_.top();
 }
 
 void call_expression_context::enter_callexpr(clang::CallExpr *expr)
+{
+    call_expr_stack_.push(expr);
+}
+
+void call_expression_context::enter_callexpr(clang::CXXConstructExpr *expr)
 {
     call_expr_stack_.push(expr);
 }

@@ -45,8 +45,11 @@ TEST_CASE("t20020", "[test-case][sequence]")
         REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "b2()"));
         REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "log()"));
 
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("C"), "c1()"));
-        REQUIRE_THAT(puml, HasCallInControlCondition(_A("C"), _A("C"), "c2()"));
+        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("C"), "c1() const"));
+        REQUIRE_THAT(
+            puml, HasCallInControlCondition(_A("C"), _A("C"), "c2() const"));
+        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "log() const"));
+
         REQUIRE_THAT(
             puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c3(int)"));
 
@@ -67,8 +70,9 @@ TEST_CASE("t20020", "[test-case][sequence]")
             FindMessage(j, "tmain()", "B", "b2()"),
             FindMessage(j, "tmain()", "A", "a4()"),
             FindMessage(j, "tmain()", "B", "log()"),
-            FindMessage(j, "tmain()", "C", "c1()"),
-            FindMessage(j, "C", "C", "c2()"), FindMessage(j, "C", "C", "log()"),
+            FindMessage(j, "tmain()", "C", "c1() const"),
+            FindMessage(j, "C", "C", "c2() const"),
+            FindMessage(j, "C", "C", "log() const"),
             FindMessage(j, "tmain()", "D<int>", "d1(int,int)")};
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));

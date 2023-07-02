@@ -330,6 +330,8 @@ bool translation_unit_visitor::VisitFunctionDecl(
 
     function_model_ptr->is_void(declaration->getReturnType()->isVoidType());
 
+    function_model_ptr->is_operator(declaration->isOverloadedOperator());
+
     context().update(declaration);
 
     context().set_caller_id(function_model_ptr->id());
@@ -372,6 +374,9 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
 
     function_template_model->set_id(
         common::to_id(function_template_model->full_name(false)));
+
+    function_template_model->is_operator(
+        declaration->getAsFunction()->isOverloadedOperator());
 
     context().update(declaration);
 
@@ -482,6 +487,41 @@ bool translation_unit_visitor::TraverseCXXOperatorCallExpr(
 {
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXOperatorCallExpr(
         expr);
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXTemporaryObjectExpr(
+    clang::CXXTemporaryObjectExpr *expr)
+{
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<
+        translation_unit_visitor>::TraverseCXXTemporaryObjectExpr(expr);
+
+    translation_unit_visitor::VisitCXXConstructExpr(
+        clang::dyn_cast<clang::CXXConstructExpr>(expr));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCXXConstructExpr(
+    clang::CXXConstructExpr *expr)
+{
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXConstructExpr(
+        expr);
+
+    translation_unit_visitor::VisitCXXConstructExpr(expr);
+
+    context().leave_callexpr();
 
     pop_message_to_diagram(expr);
 
@@ -862,13 +902,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
     if (context().lambda_caller_id() != 0) {
-        if (context().current_callexpr() == nullptr) {
-            m.set_from(context().lambda_caller_id());
-        }
-        else {
-            LOG_DBG("Current lambda declaration is passed to a method or "
-                    "function - keep the original caller id");
-        }
+        m.set_from(context().lambda_caller_id());
     }
 
     if (context().is_expr_in_current_control_statement_condition(expr)) {
@@ -885,6 +919,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         if (!process_operator_call_expression(m, operator_call_expr))
             return true;
     }
+
     //
     // Call to a class method
     //
@@ -963,15 +998,64 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     return true;
 }
 
+bool translation_unit_visitor::VisitCXXConstructExpr(
+    clang::CXXConstructExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (expr == nullptr)
+        return true;
+
+    if (const auto *ctor = expr->getConstructor();
+        ctor != nullptr && !should_include(ctor))
+        return true;
+
+    LOG_TRACE("Visiting cxx construct expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    message m{message_t::kCall, context().caller_id()};
+
+    set_source_location(*expr, m);
+
+    if (context().lambda_caller_id() != 0) {
+        m.set_from(context().lambda_caller_id());
+    }
+
+    if (context().is_expr_in_current_control_statement_condition(expr)) {
+        m.set_message_scope(common::model::message_scope_t::kCondition);
+    }
+
+    if (!process_construct_expression(m, expr))
+        return true;
+
+    if (m.from() > 0 && m.to() > 0) {
+        if (diagram().sequences().find(m.from()) ==
+            diagram().sequences().end()) {
+            activity a{m.from()};
+            diagram().sequences().insert({m.from(), std::move(a)});
+        }
+
+        diagram().add_active_participant(m.from());
+        diagram().add_active_participant(m.to());
+
+        LOG_DBG("Found constructor call {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::process_operator_call_expression(
     model::message &m, const clang::CXXOperatorCallExpr *operator_call_expr)
 {
     if (operator_call_expr->getCalleeDecl() == nullptr)
-        return false;
-
-    // For now we only handle call overloaded operators
-    if (operator_call_expr->getOperator() !=
-        clang::OverloadedOperatorKind::OO_Call)
         return false;
 
     LOG_DBG("Operator '{}' call expression to {} at {}",
@@ -989,6 +1073,39 @@ bool translation_unit_visitor::process_operator_call_expression(
 
     m.set_message_name(fmt::format(
         "operator{}", getOperatorSpelling(operator_call_expr->getOperator())));
+
+    return true;
+}
+
+bool translation_unit_visitor::process_construct_expression(
+    model::message &m, const clang::CXXConstructExpr *construct_expr)
+{
+    const auto *constructor = construct_expr->getConstructor();
+    if (constructor == nullptr)
+        return false;
+
+    const auto *constructor_parent = constructor->getParent();
+    if (constructor_parent == nullptr)
+        return false;
+
+    LOG_DBG("Constructor '{}' call expression to {} at {}",
+        construct_expr->getConstructor()->getNameAsString(),
+        constructor->getID(),
+        construct_expr->getBeginLoc().printToString(source_manager()));
+
+    auto maybe_id = get_unique_id(constructor->getID());
+    if (maybe_id.has_value()) {
+        m.set_to(maybe_id.value());
+    }
+    else {
+        m.set_to(constructor->getID());
+    }
+
+    m.set_message_name(
+        fmt::format("{}::{}", constructor_parent->getQualifiedNameAsString(),
+            constructor_parent->getNameAsString()));
+
+    diagram().add_active_participant(constructor->getID());
 
     return true;
 }
@@ -1305,7 +1422,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             c.set_id(common::to_id(c.full_name(false)));
 
             // TODO: Check if lambda is declared as an argument passed to a
-            // function/method call
+            //       function/method call
         }
         else {
             LOG_WARN("Cannot find parent declaration for lambda {}",
@@ -2102,6 +2219,12 @@ void translation_unit_visitor::push_message(
     call_expr_message_map_.emplace(expr, std::move(m));
 }
 
+void translation_unit_visitor::push_message(
+    clang::CXXConstructExpr *expr, model::message &&m)
+{
+    construct_expr_message_map_.emplace(expr, std::move(m));
+}
+
 void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
 {
     assert(expr != nullptr);
@@ -2119,10 +2242,30 @@ void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
     call_expr_message_map_.erase(expr);
 }
 
+void translation_unit_visitor::pop_message_to_diagram(
+    clang::CXXConstructExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (construct_expr_message_map_.find(expr) ==
+        construct_expr_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(construct_expr_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    construct_expr_message_map_.erase(expr);
+}
+
 void translation_unit_visitor::finalize()
 {
     std::set<common::model::diagram_element::id_t> active_participants_unique;
 
+    // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {
         if (local_ast_id_map_.find(id) != local_ast_id_map_.end()) {
             active_participants_unique.emplace(local_ast_id_map_.at(id));
@@ -2134,6 +2277,7 @@ void translation_unit_visitor::finalize()
 
     diagram().active_participants() = std::move(active_participants_unique);
 
+    // Change all message callees AST local ids to diagram global ids
     for (auto &[id, activity] : diagram().sequences()) {
         for (auto &m : activity.messages()) {
             if (local_ast_id_map_.find(m.to()) != local_ast_id_map_.end()) {
@@ -2155,6 +2299,16 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     ns.pop_back();
     method_model_ptr->set_name(ns.name());
     ns.pop_back();
+
+    method_model_ptr->is_defaulted(declaration->isDefaulted());
+    method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
+        declaration->isMoveAssignmentOperator());
+    method_model_ptr->is_const(declaration->isConst());
+    method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_operator(declaration->isOverloadedOperator());
+    method_model_ptr->is_constructor(
+        clang::dyn_cast<clang::CXXConstructorDecl>(declaration) != nullptr);
 
     clang::Decl *parent_decl = declaration->getParent();
 

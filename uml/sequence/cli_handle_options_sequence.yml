@@ -1,6 +1,7 @@
 type: sequence
 combine_free_functions_into_file_participants: true
 generate_method_arguments: none
+debug_mode: true
 glob:
   - src/cli/cli_handler.cc
   - src/config/config.cc
@@ -14,6 +15,8 @@ exclude:
     - r: "clanguml::config::option.*"
   paths:
     - src/util/util.h
+  callee_types:
+    - operator
 using_namespace:
   - clanguml
 start_from:
