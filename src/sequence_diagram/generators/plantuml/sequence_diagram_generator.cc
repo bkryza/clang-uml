@@ -128,7 +128,13 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 
         ostr << to_alias << " "
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
-             << " " << from_alias << '\n';
+             << " " << from_alias;
+
+        if (m_config.generate_return_types()) {
+            ostr << " : //" << m.return_type() << "//";
+        }
+
+        ostr << '\n';
     }
 }
 
@@ -451,7 +457,12 @@ void generator::generate(std::ostream &ostr) const
 
                 if (!from.value().is_void()) {
                     ostr << "[<--"
-                         << " " << from_alias << std::endl;
+                         << " " << from_alias;
+
+                    if (m_config.generate_return_types())
+                        ostr << " : //" << from.value().return_type() << "//";
+
+                    ostr << '\n';
                 }
             }
 

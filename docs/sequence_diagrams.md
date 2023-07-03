@@ -7,6 +7,7 @@
 * [Grouping free functions by file](#grouping-free-functions-by-file)
 * [Lambda expressions in sequence diagrams](#lambda-expressions-in-sequence-diagrams)
 * [Customizing participants order](#customizing-participants-order)
+* [Generating return types](#generating-return-types)
 
 <!-- tocstop -->
 
@@ -246,4 +247,19 @@ diagrams:
       - clanguml::t20029::ConnectionPool
       - clanguml::t20029::encode_b64(std::string &&)
 ```
+
+## Generating return types
+By default, return messages do not contain the return type information from
+the function or method. Instead, if the result is void there is no return
+arrow from the activity representing the function body.
+
+It is however possible to enable rendering of return types, by adding the
+following configuration option:
+
+```yaml
+generate_return_types: true
+```
+
+This option only affects the `plantuml` generation, in `json` generator
+`return_type` property is always present in the message nodes.
 

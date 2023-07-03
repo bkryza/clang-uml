@@ -445,6 +445,7 @@ struct inheritable_diagram_options {
         "comment_parser", comment_parser_t::plain};
     option<bool> combine_free_functions_into_file_participants{
         "combine_free_functions_into_file_participants", false};
+    option<bool> generate_return_types{"generate_return_types", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};

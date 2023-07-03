@@ -147,6 +147,10 @@ bool function::is_operator() const { return is_operator_; }
 
 void function::is_operator(bool o) { is_operator_ = o; }
 
+void function::return_type(const std::string &rt) { return_type_ = rt; }
+
+const std::string &function::return_type() const { return return_type_; }
+
 void function::add_parameter(const std::string &a) { parameters_.push_back(a); }
 
 const std::vector<std::string> &function::parameters() const

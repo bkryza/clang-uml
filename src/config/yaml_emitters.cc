@@ -289,6 +289,7 @@ YAML::Emitter &operator<<(
     }
     out << c.comment_parser;
     out << c.combine_free_functions_into_file_participants;
+    out << c.generate_return_types;
     out << c.participants_order;
     out << c.debug_mode;
 

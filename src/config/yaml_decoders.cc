@@ -513,6 +513,7 @@ template <> struct convert<git_config> {
 
 template <typename T> bool decode_diagram(const Node &node, T &rhs)
 {
+    // Decode options common for all diagrams
     get_option(node, rhs.glob);
     get_option(node, rhs.using_namespace);
     get_option(node, rhs.include);
@@ -566,6 +567,7 @@ template <> struct convert<sequence_diagram> {
 
         get_option(node, rhs.start_from);
         get_option(node, rhs.combine_free_functions_into_file_participants);
+        get_option(node, rhs.generate_return_types);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
@@ -752,6 +754,9 @@ template <> struct convert<config> {
         get_option(node, rhs.comment_parser);
         get_option(node, rhs.debug_mode);
         get_option(node, rhs.generate_metadata);
+        get_option(node, rhs.combine_free_functions_into_file_participants);
+        get_option(node, rhs.generate_return_types);
+
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);
 

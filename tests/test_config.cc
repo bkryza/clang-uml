@@ -323,3 +323,20 @@ TEST_CASE("Test config diagram_templates", "[unit-test]")
     REQUIRE(cfg.diagram_templates()["main_sequence_tmpl"].type ==
         clanguml::common::model::diagram_t::kSequence);
 }
+
+TEST_CASE("Test config sequence inherited", "[unit-test]")
+{
+    auto cfg = clanguml::config::load(
+        "./test_config_data/sequence_inheritable_options.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["sequence_default"];
+    CHECK(def.type() == clanguml::common::model::diagram_t::kSequence);
+    CHECK(def.combine_free_functions_into_file_participants() == true);
+    CHECK(def.generate_return_types() == true);
+
+    def = *cfg.diagrams["sequence_default2"];
+    CHECK(def.type() == clanguml::common::model::diagram_t::kSequence);
+    CHECK(def.combine_free_functions_into_file_participants() == false);
+    CHECK(def.generate_return_types() == false);
+}

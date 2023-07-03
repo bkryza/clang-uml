@@ -134,12 +134,15 @@ struct HasCallWithResultMatcher : ContainsMatcher {
 
 template <typename T> class HasCallMatcher : public Catch::MatcherBase<T> {
     T m_from, m_to, m_message;
+    bool m_is_response;
+    std::string call_pattern, response_pattern;
 
 public:
-    HasCallMatcher(T from, T to, T message)
+    HasCallMatcher(T from, T to, T message, bool is_response = false)
         : m_from(from)
         , m_to{to}
         , m_message{message}
+        , m_is_response{is_response}
     {
         util::replace_all(m_message, "(", "\\(");
         util::replace_all(m_message, ")", "\\)");
@@ -147,15 +150,22 @@ public:
         util::replace_all(m_message, "[", "\\[");
         util::replace_all(m_message, "]", "\\]");
         util::replace_all(m_message, "+", "\\+");
+
+        call_pattern = fmt::format("{} -> {} "
+                                   "(\\[\\[.*\\]\\] )?: {}",
+            m_from, m_to, m_message);
+
+        response_pattern =
+            fmt::format("{} --> {} : //{}//", m_from, m_to, m_message);
     }
 
     bool match(T const &in) const override
     {
         std::istringstream fin(in);
         std::string line;
-        std::regex r{fmt::format("{} -> {} "
-                                 "(\\[\\[.*\\]\\] )?: {}",
-            m_from, m_to, m_message)};
+
+        std::regex r{m_is_response ? response_pattern : call_pattern};
+
         while (std::getline(fin, line)) {
             std::smatch base_match;
             std::regex_search(in, base_match, r);
@@ -180,6 +190,13 @@ auto HasCall(std::string const &from, std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return HasCallMatcher(from, to, message);
+}
+
+auto HasResponse(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return HasCallMatcher(to, from, message, true);
 }
 
 auto HasCallInControlCondition(std::string const &from, std::string const &to,
@@ -955,7 +972,8 @@ bool IsFileParticipant(const nlohmann::json &j, const std::string &name)
 
 namespace detail {
 int find_message_nested(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg, const nlohmann::json &from_p,
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type, const nlohmann::json &from_p,
     const nlohmann::json &to_p, int &count)
 {
     const auto &messages = j["messages"];
@@ -965,23 +983,25 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
     for (const auto &m : messages) {
         if (m.contains("branches")) {
             for (const auto &b : m["branches"]) {
-                auto nested_res =
-                    find_message_nested(b, from, to, msg, from_p, to_p, count);
+                auto nested_res = find_message_nested(
+                    b, from, to, msg, return_type, from_p, to_p, count);
 
                 if (nested_res >= 0)
                     return nested_res;
             }
         }
         else if (m.contains("messages")) {
-            auto nested_res =
-                find_message_nested(m, from, to, msg, from_p, to_p, count);
+            auto nested_res = find_message_nested(
+                m, from, to, msg, return_type, from_p, to_p, count);
 
             if (nested_res >= 0)
                 return nested_res;
         }
         else {
             if ((m["from"]["participant_id"] == from_p["id"]) &&
-                (m["to"]["participant_id"] == to_p["id"]) && (m["name"] == msg))
+                (m["to"]["participant_id"] == to_p["id"]) &&
+                (m["name"] == msg) &&
+                (!return_type || m["return_type"] == *return_type))
                 return count;
 
             count++;
@@ -992,7 +1012,8 @@ int find_message_nested(const nlohmann::json &j, const std::string &from,
 }
 
 int find_message_impl(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg)
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type)
 {
 
     auto from_p = get_participant(j, from);
@@ -1004,7 +1025,7 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
     int count{0};
 
     auto res = detail::find_message_nested(
-        sequence_0, from, to, msg, *from_p, *to_p, count);
+        sequence_0, from, to, msg, return_type, *from_p, *to_p, count);
 
     if (res >= 0)
         return res;
@@ -1018,14 +1039,15 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
 int FindMessage(const nlohmann::json &j, const File &from, const File &to,
     const std::string &msg)
 {
-    return detail::find_message_impl(j, from.file, to.file, msg);
+    return detail::find_message_impl(j, from.file, to.file, msg, {});
 }
 
 int FindMessage(const nlohmann::json &j, const std::string &from,
-    const std::string &to, const std::string &msg)
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type = {})
 {
     return detail::find_message_impl(
-        j, expand_name(j, from), expand_name(j, to), msg);
+        j, expand_name(j, from), expand_name(j, to), msg, return_type);
 }
 
 } // namespace json

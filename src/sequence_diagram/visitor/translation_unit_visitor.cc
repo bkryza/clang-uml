@@ -972,13 +972,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
     }
 
-    //
-    // This crashes on LLVM <= 12, for now just return empty type
-    //
-    // const auto &return_type =
-    //    function_call_expr->getCallReturnType(current_ast_context);
-    // m.return_type = return_type.getAsString();
-
     if (m.from() > 0 && m.to() > 0) {
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {
@@ -1550,6 +1543,10 @@ translation_unit_visitor::build_function_template(
 
     process_template_parameters(declaration, *function_template_model_ptr);
 
+    function_template_model_ptr->return_type(
+        common::to_string(declaration.getAsFunction()->getReturnType(),
+            declaration.getASTContext()));
+
     for (const auto *param : declaration.getTemplatedDecl()->parameters()) {
         function_template_model_ptr->add_parameter(
             simplify_system_template(common::to_string(
@@ -1611,6 +1608,9 @@ std::unique_ptr<model::function> translation_unit_visitor::build_function_model(
     function_model_ptr->set_name(ns.name());
     ns.pop_back();
     function_model_ptr->set_namespace(ns);
+
+    function_model_ptr->return_type(common::to_string(
+        declaration.getReturnType(), declaration.getASTContext()));
 
     for (const auto *param : declaration.parameters()) {
         function_model_ptr->add_parameter(
@@ -2336,6 +2336,9 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
                                    .full_name_no_ns() +
         "::" + declaration->getNameAsString());
     method_model_ptr->is_static(declaration->isStatic());
+
+    method_model_ptr->return_type(common::to_string(
+        declaration->getReturnType(), declaration->getASTContext()));
 
     for (const auto *param : declaration->parameters()) {
         method_model_ptr->add_parameter(config().using_namespace().relative(

@@ -312,6 +312,16 @@ void diagram::finalize()
                 assert(block_nest_level >= 0);
             }
             else {
+                if (m.type() == message_t::kCall) {
+                    // Set the message return type based on the callee return
+                    // type
+                    auto to_participant =
+                        get_participant<sequence_diagram::model::function>(
+                            m.to());
+                    if (to_participant.has_value()) {
+                        m.set_return_type(to_participant.value().return_type());
+                    }
+                }
                 block_message_stack.back().push_back(m);
             }
         }

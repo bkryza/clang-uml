@@ -292,6 +292,9 @@ test_cases:
     - name: t20031
       title: Callee type sequence diagram filter test case
       description:
+    - name: t20032
+      title: Return type generation option sequence diagram test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

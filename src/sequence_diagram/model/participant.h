@@ -292,6 +292,20 @@ struct function : public participant {
     void is_operator(bool o);
 
     /**
+     * @brief Set functions return type
+     *
+     * @param rt Return type
+     */
+    void return_type(const std::string &rt);
+
+    /**
+     * @brief Get function return type
+     *
+     * @return Return type
+     */
+    const std::string &return_type() const;
+
+    /**
      * @brief Add a function parameter
      *
      * @note In sequence diagrams we don't care about relationships from
@@ -313,6 +327,7 @@ private:
     bool is_void_{false};
     bool is_static_{false};
     bool is_operator_{false};
+    std::string return_type_;
     std::vector<std::string> parameters_;
 };
 

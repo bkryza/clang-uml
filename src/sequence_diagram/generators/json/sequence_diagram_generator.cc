@@ -645,16 +645,15 @@ void generator::generate(std::ostream &ostr) const
             generate_activity(
                 m_model.get_activity(start_from), visited_participants);
 
-            json_["sequences"].push_back(std::move(sequence));
-
             block_statements_stack_.pop_back();
 
             if (from.value().type_name() == "method" ||
                 m_config.combine_free_functions_into_file_participants()) {
 
-                // TODO
-                // sequence["return_type"] = from.value().id()
+                sequence["return_type"] = from.value().return_type();
             }
+
+            json_["sequences"].push_back(std::move(sequence));
         }
         else {
             // TODO: Add support for other sequence start location types

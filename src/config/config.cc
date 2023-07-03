@@ -166,7 +166,8 @@ void inheritable_diagram_options::inherit(
     relative_to.override(parent.relative_to);
     comment_parser.override(parent.comment_parser);
     combine_free_functions_into_file_participants.override(
-        combine_free_functions_into_file_participants);
+        parent.combine_free_functions_into_file_participants);
+    generate_return_types.override(parent.generate_return_types);
     debug_mode.override(parent.debug_mode);
     generate_metadata.override(parent.generate_metadata);
 }

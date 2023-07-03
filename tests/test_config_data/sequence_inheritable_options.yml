@@ -1,0 +1,15 @@
+compilation_database_dir: debug
+output_directory: output
+combine_free_functions_into_file_participants: true
+generate_return_types: true
+diagrams:
+  sequence_default:
+    type: sequence
+    glob:
+      - src/*.cc
+  sequence_default2:
+    type: sequence
+    glob:
+      - src/*.cc
+    combine_free_functions_into_file_participants: false
+    generate_return_types: false
