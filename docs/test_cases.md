@@ -104,6 +104,7 @@
  * [t20029](./test_cases/t20029.md) - Combined feature sequence diagram test case
  * [t20030](./test_cases/t20030.md) - Constructor and operator call test case
  * [t20031](./test_cases/t20031.md) - Callee type sequence diagram filter test case
+ * [t20032](./test_cases/t20032.md) - Return type generation option sequence diagram test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
