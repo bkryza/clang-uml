@@ -178,11 +178,17 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kIf) {
             print_debug(m, ostr);
-            ostr << "alt\n";
+            ostr << "alt";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kElseIf) {
             print_debug(m, ostr);
-            ostr << "else\n";
+            ostr << "else";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kElse) {
             print_debug(m, ostr);
@@ -193,21 +199,30 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kWhile) {
             print_debug(m, ostr);
-            ostr << "loop\n";
+            ostr << "loop";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kWhileEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kFor) {
             print_debug(m, ostr);
-            ostr << "loop\n";
+            ostr << "loop";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kForEnd) {
             ostr << "end\n";
         }
         else if (m.type() == message_t::kDo) {
             print_debug(m, ostr);
-            ostr << "loop\n";
+            ostr << "loop";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kDoEnd) {
             ostr << "end\n";
@@ -237,7 +252,10 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kConditional) {
             print_debug(m, ostr);
-            ostr << "alt\n";
+            ostr << "alt";
+            if (m.condition_text())
+                ostr << " " << m.condition_text().value();
+            ostr << '\n';
         }
         else if (m.type() == message_t::kConditionalElse) {
             print_debug(m, ostr);

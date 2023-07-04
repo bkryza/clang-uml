@@ -23,6 +23,7 @@
 #include "types.h"
 #include "util/util.h"
 
+#include <clang/AST/Expr.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 
 #include <deque>
@@ -247,6 +248,23 @@ bool is_identifier(const std::string &t);
 bool is_qualified_identifier(const std::string &t);
 
 bool is_type_token(const std::string &t);
+
+std::string format_condition_text(const std::string &condition_text);
+
+std::string get_condition_text(clang::SourceManager &sm, clang::IfStmt *stmt);
+
+std::string get_condition_text(
+    clang::SourceManager &sm, clang::WhileStmt *stmt);
+
+std::string get_condition_text(
+    clang::SourceManager &sm, clang::CXXForRangeStmt *stmt);
+
+std::string get_condition_text(clang::SourceManager &sm, clang::ForStmt *stmt);
+
+std::string get_condition_text(clang::SourceManager &sm, clang::DoStmt *stmt);
+
+std::string get_condition_text(
+    clang::SourceManager &sm, clang::ConditionalOperator *stmt);
 
 clang::QualType dereference(clang::QualType type);
 

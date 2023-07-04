@@ -231,7 +231,7 @@ void generator::generate_activity(const activity &a,
             process_conditional_message(m);
             break;
         case message_t::kConditionalElse:
-            process_conditional_else_message();
+            process_conditional_else_message(m);
             break;
         case message_t::kConditionalEnd:
             process_end_conditional_message();
@@ -279,6 +279,8 @@ void generator::process_while_message(const message &m) const
     while_block["type"] = "loop";
     while_block["name"] = "while";
     while_block["activity_id"] = std::to_string(m.from());
+    if (auto text = m.condition_text(); text.has_value())
+        while_block["condition_text"] = *text;
 
     current_block_statement()["messages"].push_back(std::move(while_block));
 
@@ -298,6 +300,8 @@ void generator::process_for_message(const message &m) const
     for_block["type"] = "loop";
     for_block["name"] = "for";
     for_block["activity_id"] = std::to_string(m.from());
+    if (auto text = m.condition_text(); text.has_value())
+        for_block["condition_text"] = *text;
 
     current_block_statement()["messages"].push_back(std::move(for_block));
 
@@ -317,6 +321,8 @@ void generator::process_do_message(const message &m) const
     do_block["type"] = "loop";
     do_block["name"] = "do";
     do_block["activity_id"] = std::to_string(m.from());
+    if (auto text = m.condition_text(); text.has_value())
+        do_block["condition_text"] = *text;
 
     current_block_statement()["messages"].push_back(std::move(do_block));
 
@@ -413,6 +419,8 @@ void generator::process_conditional_message(const message &m) const
     if_block["type"] = "alt";
     if_block["name"] = "conditional";
     if_block["activity_id"] = std::to_string(m.from());
+    if (auto text = m.condition_text(); text.has_value())
+        if_block["condition_text"] = *text;
 
     current_block_statement()["messages"].push_back(std::move(if_block));
 
@@ -427,13 +435,15 @@ void generator::process_conditional_message(const message &m) const
         std::ref(current_block_statement()["branches"].back()));
 }
 
-void generator::process_conditional_else_message() const
+void generator::process_conditional_else_message(const message &m) const
 {
     // remove previous branch from the stack
     block_statements_stack_.pop_back();
 
     nlohmann::json branch;
     branch["type"] = "alternative";
+    if (auto text = m.condition_text(); text.has_value())
+        branch["condition_text"] = *text;
     current_block_statement()["branches"].push_back(std::move(branch));
 
     block_statements_stack_.push_back(
@@ -477,6 +487,8 @@ void generator::process_if_message(const message &m) const
     if_block["type"] = "alt";
     if_block["name"] = "if";
     if_block["activity_id"] = std::to_string(m.from());
+    if (auto text = m.condition_text(); text.has_value())
+        if_block["condition_text"] = *text;
 
     current_block_statement()["messages"].push_back(std::move(if_block));
 

@@ -584,6 +584,10 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
     const auto current_caller_id = context().caller_id();
     const auto *current_ifstmt = context().current_ifstmt();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     // Check if this is a beginning of a new if statement, or an
     // else if condition of the current if statement
     if (current_ifstmt != nullptr) {
@@ -601,6 +605,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
             message m{message_t::kElseIf, current_caller_id};
             set_source_location(*stmt, m);
+            m.condition_text(condition_text);
             diagram().add_block_message(std::move(m));
         }
         else {
@@ -608,6 +613,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
             message m{message_t::kIf, current_caller_id};
             set_source_location(*stmt, m);
+            m.condition_text(condition_text);
             diagram().add_block_message(std::move(m));
         }
     }
@@ -631,10 +637,15 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kWhile, current_caller_id};
         set_source_location(*stmt, m);
+        m.condition_text(condition_text);
         diagram().add_block_message(std::move(m));
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
@@ -656,10 +667,15 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kDo, current_caller_id};
         set_source_location(*stmt, m);
+        m.condition_text(condition_text);
         diagram().add_block_message(std::move(m));
     }
 
@@ -682,10 +698,15 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
+        m.condition_text(condition_text);
         diagram().add_block_message(std::move(m));
     }
 
@@ -761,10 +782,15 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
 
     const auto current_caller_id = context().caller_id();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     if (current_caller_id != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
+        m.condition_text(condition_text);
         diagram().add_block_message(std::move(m));
     }
 
@@ -847,10 +873,15 @@ bool translation_unit_visitor::TraverseConditionalOperator(
 
     const auto current_caller_id = context().caller_id();
 
+    std::string condition_text;
+    if (config().generate_condition_statements())
+        condition_text = common::get_condition_text(source_manager(), stmt);
+
     if (current_caller_id != 0) {
         context().enter_conditionaloperator(stmt);
         model::message m{message_t::kConditional, current_caller_id};
         set_source_location(*stmt, m);
+        m.condition_text(condition_text);
         diagram().add_block_message(std::move(m));
     }
 

@@ -8,6 +8,7 @@
 * [Lambda expressions in sequence diagrams](#lambda-expressions-in-sequence-diagrams)
 * [Customizing participants order](#customizing-participants-order)
 * [Generating return types](#generating-return-types)
+* [Generating condition statements](#generating-condition-statements)
 
 <!-- tocstop -->
 
@@ -262,4 +263,16 @@ generate_return_types: true
 
 This option only affects the `plantuml` generation, in `json` generator
 `return_type` property is always present in the message nodes.
+
+
+## Generating condition statements
+Sometimes, it is useful to include actual condition statements (for instance
+contents of the `if()` condition in the `alt` or `loop` blocks in the sequence
+diagrams, to make them more readable.
+
+This can be enabled using the following option:
+
+```yaml
+generate_condition_statements: true
+```
 

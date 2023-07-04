@@ -168,6 +168,8 @@ void inheritable_diagram_options::inherit(
     combine_free_functions_into_file_participants.override(
         parent.combine_free_functions_into_file_participants);
     generate_return_types.override(parent.generate_return_types);
+    generate_condition_statements.override(
+        parent.generate_condition_statements);
     debug_mode.override(parent.debug_mode);
     generate_metadata.override(parent.generate_metadata);
 }

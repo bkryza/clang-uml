@@ -564,6 +564,75 @@ bool is_type_token(const std::string &t)
         (is_identifier(t) && !is_qualifier(t) && !is_bracket(t));
 }
 
+std::string format_condition_text(const std::string &condition_text)
+{
+    std::string result{condition_text};
+
+    if (result.size() < 2)
+        return {};
+
+    std::vector<std::string> text_lines = util::split(result, "\n", true);
+
+    // Trim each line
+    for (auto &line : text_lines) {
+        line = util::trim(line);
+    }
+
+    result = util::join(" ", text_lines);
+
+    if (result.at(0) == '(' && result.back() == ')')
+        return result.substr(1, result.size() - 2);
+
+    return result;
+}
+
+std::string get_condition_text(clang::SourceManager &sm, clang::IfStmt *stmt)
+{
+    auto condition_range =
+        clang::SourceRange(stmt->getLParenLoc(), stmt->getRParenLoc());
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
+std::string get_condition_text(clang::SourceManager &sm, clang::WhileStmt *stmt)
+{
+    auto condition_range =
+        clang::SourceRange(stmt->getLParenLoc(), stmt->getRParenLoc());
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
+std::string get_condition_text(
+    clang::SourceManager &sm, clang::CXXForRangeStmt *stmt)
+{
+    auto condition_range = stmt->getRangeStmt()->getSourceRange();
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
+std::string get_condition_text(clang::SourceManager &sm, clang::ForStmt *stmt)
+{
+    auto condition_range =
+        clang::SourceRange(stmt->getLParenLoc(), stmt->getRParenLoc());
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
+std::string get_condition_text(clang::SourceManager &sm, clang::DoStmt *stmt)
+{
+    auto condition_range = stmt->getCond()->getSourceRange();
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
+std::string get_condition_text(
+    clang::SourceManager &sm, clang::ConditionalOperator *stmt)
+{
+    auto condition_range = stmt->getCond()->getSourceRange();
+
+    return format_condition_text(get_source_text(condition_range, sm));
+}
+
 clang::QualType dereference(clang::QualType type)
 {
     auto res = type;

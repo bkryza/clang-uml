@@ -568,6 +568,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.start_from);
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.generate_return_types);
+        get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.relative_to);
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
@@ -756,6 +757,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_metadata);
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.generate_return_types);
+        get_option(node, rhs.generate_condition_statements);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);

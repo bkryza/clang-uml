@@ -158,8 +158,10 @@ private:
 
     /**
      * @brief Process conditional else statement message
+     *
+     * @param m Message model
      */
-    void process_conditional_else_message() const;
+    void process_conditional_else_message(const model::message &m) const;
 
     /**
      * @brief Process `switch` statement message

@@ -128,6 +128,20 @@ public:
      */
     common::model::message_scope_t message_scope() const;
 
+    /**
+     * @brief Set condition text for block statements (e.g. if(<THIS TEXT>))
+     *
+     * @param condition_text Condition text
+     */
+    void condition_text(const std::string &condition_text);
+
+    /**
+     * @brief Get condition text
+     *
+     * @return Block statement condition text
+     */
+    std::optional<std::string> condition_text() const;
+
 private:
     common::model::message_t type_{common::model::message_t::kNone};
 
@@ -143,6 +157,8 @@ private:
     std::string message_name_{};
 
     std::string return_type_{};
+
+    std::optional<std::string> condition_text_;
 };
 
 } // namespace clanguml::sequence_diagram::model

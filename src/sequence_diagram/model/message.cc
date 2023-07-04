@@ -57,4 +57,17 @@ void message::set_message_scope(common::model::message_scope_t scope)
 
 common::model::message_scope_t message::message_scope() const { return scope_; }
 
+void message::condition_text(const std::string &condition_text)
+{
+    if (condition_text.empty())
+        condition_text_ = std::nullopt;
+    else
+        condition_text_ = condition_text;
+}
+
+std::optional<std::string> message::condition_text() const
+{
+    return condition_text_;
+}
+
 } // namespace clanguml::sequence_diagram::model

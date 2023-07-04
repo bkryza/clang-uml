@@ -307,15 +307,25 @@ bool call_expression_context::is_expr_in_current_control_statement_condition(
     const clang::Stmt *stmt) const
 {
     if (current_ifstmt() != nullptr) {
-        if (common::is_subexpr_of(current_ifstmt()->getCond(), stmt)) {
+        if (common::is_subexpr_of(current_ifstmt()->getCond(), stmt))
             return true;
+
+        if (const auto *condition_decl_stmt = current_ifstmt()->getInit();
+            condition_decl_stmt != nullptr) {
+            if (common::is_subexpr_of(condition_decl_stmt, stmt))
+                return true;
         }
     }
 
     if (current_elseifstmt() != nullptr) {
-        if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt)) {
+        if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt))
             return true;
-        }
+    }
+
+    if (current_conditionaloperator() != nullptr) {
+        if (common::is_subexpr_of(
+                current_conditionaloperator()->getCond(), stmt))
+            return true;
     }
 
     if (const auto *loop_stmt = current_loopstmt(); loop_stmt != nullptr) {
