@@ -181,6 +181,22 @@ bool diagram::should_include(
             dynamic_cast<const common::model::source_location &>(p));
 }
 
+std::vector<std::string> diagram::list_start_from_values() const
+{
+    std::vector<std::string> result;
+
+    for (const auto &[from_id, act] : sequences_) {
+
+        const auto &from_activity = *(participants_.at(from_id));
+
+        result.push_back(from_activity.full_name(false));
+    }
+
+    std::sort(result.begin(), result.end());
+
+    return result;
+}
+
 void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");

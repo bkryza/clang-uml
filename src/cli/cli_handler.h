@@ -25,6 +25,19 @@
 #include <optional>
 
 namespace clanguml::cli {
+
+/**
+ * @brief This class holds command line parameters not directly related to
+ *        specific diagram configurations.
+ */
+struct runtime_config {
+    int verbose{};
+    std::vector<clanguml::common::generator_type_t> generators{};
+    bool print_start_from{};
+    bool progress{};
+    unsigned int thread_count{};
+};
+
 /**
  * This enum represents possible exit states of the command line parser.
  */
@@ -132,6 +145,13 @@ public:
      */
     bool ensure_output_directory_exists(const std::string &dir);
 
+    /**
+     * @brief Combines runtime configuration parameters into a single structure
+     *
+     * @return Runtime config instance
+     */
+    runtime_config get_runtime_config() const;
+
     std::string config_path{".clang-uml"};
     std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};
@@ -155,6 +175,7 @@ public:
     std::optional<std::string> add_include_diagram;
     std::optional<std::string> add_diagram_from_template;
     bool dump_config{false};
+    bool print_start_from{false};
     std::optional<bool> paths_relative_to_pwd{};
     std::vector<std::string> template_variables{};
     bool list_templates{false};

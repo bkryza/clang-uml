@@ -374,13 +374,14 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
  * @param translation_units List of translation units for the diagram
  * @param generators List of generator types to be used for the diagram
  * @param verbose Log level
+ * @param progress Function to report translation unit progress
  */
 void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
-    const std::vector<clanguml::common::generator_type_t> &generators,
-    bool verbose);
+    const cli::runtime_config &runtime_config,
+    std::function<void()> &&progress);
 
 /**
  * @brief Generate diagrams
@@ -397,9 +398,8 @@ void generate_diagram(const std::string &od, const std::string &name,
  */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     clanguml::config::config &config, const std::string &od,
-    const common::compilation_database_ptr &db, int verbose,
-    unsigned int thread_count, bool progress,
-    const std::vector<clanguml::common::generator_type_t> &generators,
+    const common::compilation_database_ptr &db,
+    const cli::runtime_config &runtime_config,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map);
 

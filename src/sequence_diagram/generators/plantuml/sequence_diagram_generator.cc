@@ -179,15 +179,15 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kIf) {
             print_debug(m, ostr);
             ostr << "alt";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kElseIf) {
             print_debug(m, ostr);
             ostr << "else";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kElse) {
@@ -200,8 +200,8 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kWhile) {
             print_debug(m, ostr);
             ostr << "loop";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kWhileEnd) {
@@ -210,8 +210,8 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kFor) {
             print_debug(m, ostr);
             ostr << "loop";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kForEnd) {
@@ -220,8 +220,8 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kDo) {
             print_debug(m, ostr);
             ostr << "loop";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kDoEnd) {
@@ -253,8 +253,8 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         else if (m.type() == message_t::kConditional) {
             print_debug(m, ostr);
             ostr << "alt";
-            if (m.condition_text())
-                ostr << " " << m.condition_text().value();
+            if (const auto &text = m.condition_text(); text.has_value())
+                ostr << " " << text.value();
             ostr << '\n';
         }
         else if (m.type() == message_t::kConditionalElse) {

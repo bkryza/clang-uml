@@ -213,6 +213,13 @@ public:
     bool should_include(const sequence_diagram::model::participant &p) const;
 
     /**
+     * @brief Get list of all possible 'start_from' values in the model
+     *
+     * @return List of all possible 'start_from' values
+     */
+    std::vector<std::string> list_start_from_values() const;
+
+    /**
      * @brief Once the diagram is complete, run any final processing.
      *
      * This method should be overriden by specific diagram models to do some

@@ -83,8 +83,7 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
-    const std::vector<clanguml::common::generator_type_t> &generators,
-    bool verbose, std::function<void()> &&progress)
+    const cli::runtime_config &rc, std::function<void()> &&progress)
 {
     using diagram_config = DiagramConfig;
     using diagram_model = typename diagram_model_t<DiagramConfig>::type;
@@ -92,10 +91,22 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
 
     auto model = clanguml::common::generators::generate<diagram_model,
         diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram), translation_units, verbose,
+        dynamic_cast<diagram_config &>(*diagram), translation_units, rc.verbose,
         std::move(progress));
 
-    for (const auto generator_type : generators) {
+    if constexpr (std::is_same_v<DiagramConfig, config::sequence_diagram>) {
+        if (rc.print_start_from) {
+            auto start_from_values = model->list_start_from_values();
+
+            for (const auto &start_from : start_from_values) {
+                std::cout << start_from << std::endl;
+            }
+
+            return;
+        }
+    }
+
+    for (const auto generator_type : rc.generators) {
         if (generator_type == generator_type_t::plantuml) {
             generate_diagram_select_generator<diagram_config,
                 plantuml_generator_tag>(od, name, diagram, model);
@@ -112,8 +123,7 @@ void generate_diagram(const std::string &od, const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
-    const std::vector<clanguml::common::generator_type_t> &generators,
-    bool verbose, std::function<void()> &&progress)
+    const cli::runtime_config &runtime_config, std::function<void()> &&progress)
 {
     using clanguml::common::generator_type_t;
     using clanguml::common::model::diagram_t;
@@ -125,36 +135,35 @@ void generate_diagram(const std::string &od, const std::string &name,
 
     if (diagram->type() == diagram_t::kClass) {
         detail::generate_diagram_impl<class_diagram>(od, name, diagram, db,
-            translation_units, generators, verbose, std::move(progress));
+            translation_units, runtime_config, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kSequence) {
         detail::generate_diagram_impl<sequence_diagram>(od, name, diagram, db,
-            translation_units, generators, verbose, std::move(progress));
+            translation_units, runtime_config, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kPackage) {
         detail::generate_diagram_impl<package_diagram>(od, name, diagram, db,
-            translation_units, generators, verbose, std::move(progress));
+            translation_units, runtime_config, std::move(progress));
     }
     else if (diagram->type() == diagram_t::kInclude) {
         detail::generate_diagram_impl<include_diagram>(od, name, diagram, db,
-            translation_units, generators, verbose, std::move(progress));
+            translation_units, runtime_config, std::move(progress));
     }
 }
 
 void generate_diagrams(const std::vector<std::string> &diagram_names,
     config::config &config, const std::string &od,
-    const common::compilation_database_ptr &db, const int verbose,
-    const unsigned int thread_count, bool progress,
-    const std::vector<clanguml::common::generator_type_t> &generators,
+    const common::compilation_database_ptr &db,
+    const cli::runtime_config &runtime_config,
     const std::map<std::string, std::vector<std::string>>
         &translation_units_map)
 {
-    util::thread_pool_executor generator_executor{thread_count};
+    util::thread_pool_executor generator_executor{runtime_config.thread_count};
     std::vector<std::future<void>> futs;
 
     std::unique_ptr<progress_indicator> indicator;
 
-    if (progress) {
+    if (runtime_config.progress) {
         std::cout << termcolor::white
                   << "Processing translation units and generating diagrams:\n";
         indicator = std::make_unique<progress_indicator>();
@@ -184,17 +193,17 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
             continue;
         }
 
-        auto generator = [&od, &generators, &name = name, &diagram = diagram,
-                             &indicator, db = std::ref(*db),
+        auto generator = [&od, &name = name, &diagram = diagram, &indicator,
+                             db = std::ref(*db),
                              translation_units = valid_translation_units,
-                             verbose]() mutable {
+                             runtime_config]() mutable {
             try {
                 if (indicator)
                     indicator->add_progress_bar(name, translation_units.size(),
                         diagram_type_to_color(diagram->type()));
 
                 generate_diagram(od, name, diagram, db, translation_units,
-                    generators, verbose != 0, [&indicator, &name]() {
+                    runtime_config, [&indicator, &name]() {
                         if (indicator)
                             indicator->increment(name);
                     });
@@ -217,7 +226,7 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
         fut.get();
     }
 
-    if (progress) {
+    if (runtime_config.progress) {
         indicator->stop();
         std::cout << termcolor::white << "Done\n";
         std::cout << termcolor::reset;

@@ -129,6 +129,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "instead of actual location of `.clang-uml` file.");
     app.add_flag("--no-metadata", no_metadata,
         "Skip metadata (e.g. clang-uml version) from diagrams");
+    app.add_flag("--print-start-from", print_start_from,
+        "Print all possible 'start_from' values for a given diagram");
 
     try {
         app.parse(argc, argv);
@@ -143,7 +145,7 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         exit(app.exit(e)); // NOLINT(concurrency-mt-unsafe)
     }
 
-    if (quiet || dump_config)
+    if (quiet || dump_config || print_start_from)
         verbose = 0;
     else
         verbose++;
@@ -194,6 +196,16 @@ cli_flow_t cli_handler::handle_pre_config_options()
             "ERROR: Cannot add a diagram config to configuration from stdin");
 
         return cli_flow_t::kError;
+    }
+
+    if (print_start_from) {
+        if (diagram_names.size() != 1) {
+            LOG_ERROR(
+                "ERROR: '--print-start-from' requires specifying one diagram "
+                "name using '-n' option");
+
+            return cli_flow_t::kError;
+        }
     }
 
     if (initialize) {
@@ -317,6 +329,18 @@ cli_flow_t cli_handler::handle_post_config_options()
 #endif
 
     return cli_flow_t::kContinue;
+}
+
+runtime_config cli_handler::get_runtime_config() const
+{
+    runtime_config cfg;
+    cfg.generators = generators;
+    cfg.verbose = verbose;
+    cfg.print_start_from = print_start_from;
+    cfg.progress = progress;
+    cfg.thread_count = thread_count;
+
+    return cfg;
 }
 
 cli_flow_t cli_handler::print_version()
@@ -546,8 +570,8 @@ cli_flow_t cli_handler::add_config_diagram_from_template(
         return cli_flow_t::kError;
     }
 
-    // First, try to render the template using inja and create a YAML node from
-    // it
+    // First, try to render the template using inja and create a YAML node
+    // from it
     inja::json ctx;
     for (const auto &tv : template_variables) {
         const auto var = util::split(tv, "=");

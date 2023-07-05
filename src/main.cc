@@ -78,8 +78,8 @@ int main(int argc, const char *argv[])
             translation_units_map);
 
         common::generators::generate_diagrams(cli.diagram_names, cli.config,
-            cli.effective_output_directory, db, cli.verbose, cli.thread_count,
-            cli.progress, cli.generators, translation_units_map);
+            cli.effective_output_directory, db, cli.get_runtime_config(),
+            translation_units_map);
     }
     catch (error::compilation_database_error &e) {
         LOG_ERROR("Failed to load compilation database from {} due to: {}",
