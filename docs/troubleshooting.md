@@ -320,7 +320,8 @@ Hopefully this will be eventually resolved.
 In order to generate sequence diagram the `start_from` configuration option must
 have a valid starting point
 for the diagram (e.g. `function`), which must match exactly the function
-signature in the `clang-uml` model.
+or method signature in the `clang-uml` diagram model.
+
 Look for error in the console output such as:
 
 ```bash
@@ -330,11 +331,18 @@ Failed to find participant mynamespace::foo(int) for start_from condition
 which means that either you have a typo in the function signature in the
 configuration file, or that the function
 was not defined in the translation units you specified in the `glob` patterns
-for this diagram. Run again the
-`clang-uml` tool with `-vvv` option and look in the console output for any
-mentions of the function from
-which the diagram should start and copy the exact signature into the
-configuration file.
+for this diagram.
+
+To find the exact function signature run `clang-uml` as follows:
+
+```bash
+clang-uml -n my_sequence_diagram --print-start-from | grep foo
+```
+
+Command line flag `--print-start-from` will print on stdout all functions
+and methods available in the diagram model, and each line of this output
+can be directly used as a value of `start_from` option in the config file.
+
 
 ### Generated diagram contains several empty control blocks or calls which should not be there
 

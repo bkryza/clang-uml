@@ -61,7 +61,7 @@ diagram should start. Currently, the entry point can only be a method or a free 
 configuration property, for instance:
 ```yaml
     start_from:
-      - function: "main(int,char**)"
+      - function: "main(int,const char**)"
 ```
 or
 ```yaml
@@ -69,23 +69,21 @@ start_from:
   - function: "clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *)"
 ```
 
-The entrypoints must be fully qualified and they must match exactly the string representation of given function or
-method in the `clang-uml` model, which can be frustrating after few attempts.
-If not sure, the best way is to put anything in the `function`
-property value at first, run the `clang-uml` on the diagram with verbose set to `-vvv` and look in the logs
-for the relevant function signature. At the end of the diagram generation at this verbosity level, `clang-uml` will
-generate a textual representation of all discovered activities relevant for this diagram, for instance if you're looking
-_for exact signature of method `translation_unit_visitor::VisitCXXRecordDecl`, look for similar_
-output in the logs:
+The entrypoints must be fully qualified and they must match exactly the string 
+representation of given function or method in the `clang-uml` model.
+
+To find the exact function signature run `clang-uml` as follows:
 
 ```bash
-[trace] [tid 3842954] [diagram.cc:194] Sequence id=1875210076312968845:
-[trace] [tid 3842954] [diagram.cc:198]    Activity id=1875210076312968845, from=clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *):
-[trace] [tid 3842954] [diagram.cc:208]        Message from=clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *), from_id=1875210076312968845, to=__UNRESOLVABLE_ID__, to_id=0, name=, type=if
-[trace] [tid 3842954] [diagram.cc:217]        Message from=clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *), from_id=1875210076312968845, to=clanguml::sequence_diagram::visitor::translation_unit_visitor::should_include(const clang::TagDecl *), to_id=664596622746486441, name=should_include, type=call
+clang-uml --print-start-from -n main_sequence | grep main
 ```
 
-Then you just need to copy and paste the signature exactly and rerun `clang-uml`.
+Command line flag `--print-start-from` will print on stdout all functions
+and methods available in the diagram model, and each line of this output
+can be directly used as a value of `start_from` option in the config file.
+
+Since that list can be quite large, it's best to filter the output to limit
+the number of lines to a subset of possible candidates.
 
 ## Grouping free functions by file
 By default, `clang-uml` will generate a new participant for each call to a free function (not method), which can lead
