@@ -415,7 +415,60 @@ void generator::generate_diagram(std::ostream &ostr) const
         }
     }
 
-    for (const auto &sf : config().start_from()) {
+    for (const auto &ft : m_config.from_to()) {
+        // First, find the sequence of activities from 'from' location
+        // to 'to' location
+        assert(ft.size() == 2);
+
+        const auto &from_location = ft.front();
+        const auto &to_location = ft.back();
+
+        if (from_location.location_type == location_t::function) {
+            common::model::diagram_element::id_t from_activity{0};
+            common::model::diagram_element::id_t to_activity{0};
+
+            for (const auto &[k, v] : m_model.sequences()) {
+                const auto &caller = *m_model.participants().at(v.from());
+                std::string vfrom = caller.full_name(false);
+                if (vfrom == from_location.location) {
+                    LOG_DBG("Found sequence diagram start point: {}", k);
+                    from_activity = k;
+                    break;
+                }
+            }
+
+            if (from_activity == 0) {
+                LOG_WARN("Failed to find participant with {} for start_from "
+                         "condition",
+                    from_location.location);
+                continue;
+            }
+
+            for (const auto &[k, v] : m_model.sequences()) {
+                const auto &caller = *m_model.participants().at(v.from());
+                std::string vfrom = caller.full_name(false);
+                if (vfrom == to_location.location) {
+                    LOG_DBG("Found sequence diagram end point: {}", k);
+                    to_activity = k;
+                    break;
+                }
+            }
+
+            if (to_activity == 0) {
+                LOG_WARN("Failed to find participant with {} for from_to "
+                         "condition",
+                    to_location.location);
+                continue;
+            }
+
+            call_chain_t activity_path;
+            activity_path.push_back(from_activity);
+
+            auto found = search_path_to(activity_path, to_activity);
+        }
+    }
+
+    for (const auto &sf : m_config.start_from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : model().sequences()) {

@@ -42,6 +42,8 @@ template <typename C, typename D>
 using common_generator =
     clanguml::common::generators::plantuml::generator<C, D>;
 
+using call_chain_t = std::vector<common::model::diagram_element::id_t>;
+
 /**
  * @brief Sequence diagram PlantUML generator
  */
