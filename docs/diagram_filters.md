@@ -194,8 +194,10 @@ are included based on access scope (e.g. `public`).
 
 ## callee_types
 
-This filter is specific for `sequence diagrams` and allows to control which types calls should be included/excluded from the diagram.
-In a sequence diagram, a `callee` is the receiver of a message, and this filter specifies which types of receivers should match.
+This filter is specific for `sequence diagrams` and allows to control, which
+types of callees should be included/excluded from the diagram. In a sequence diagram,
+a `callee` is the receiver of a message, and this filter specifies which types
+of receivers should match.
 
 The following callee types are supported:
   * constructor
@@ -210,8 +212,9 @@ The following callee types are supported:
 
 ## dependants and dependencies
 
-These filters allow to specify that only dependants or dependencies of a given class should be included in the diagram.
-This can be useful for analyzing what classes in your project depend on some other class, which could have impact for
+These filters allow to specify that only dependants or dependencies of a given
+class should be included in the diagram. This can be useful for analyzing what
+classes in your project depend on some other class, which could have impact for
 instance on refactoring.
 
 For instance the following code:
@@ -283,6 +286,6 @@ and the following filter:
         - dependency
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![t00043_class](./test_cases/t00043_class.svg)

@@ -54,7 +54,7 @@ diagram_templates:
 
 ## Adding templates to the configuration file
 Diagram templates can be added directly to the `.clang-uml` configuration file,
-under a `diagram_templates:` key. However, for practical reasons its better
+under a `diagram_templates:` key. However, for practical reasons it is better
 to keep diagram template definitions in a separate Yaml file, and reference
 it in the configuration file using `include!` directive, e.g.:
 

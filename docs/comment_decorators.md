@@ -87,7 +87,7 @@ class R {
 };
 ```
 
-generates the following class diagram:
+results in the following class diagram:
 
 ![note](./test_cases/t00028_class.svg)
 
@@ -141,7 +141,7 @@ struct R {
 };
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![skip](./test_cases/t00029_class.svg)
 
@@ -185,7 +185,7 @@ struct R {
 };
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![skip](./test_cases/t00030_class.svg)
 
@@ -226,6 +226,6 @@ struct R {
 };
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![skip](./test_cases/t00031_class.svg)

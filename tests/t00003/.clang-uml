@@ -5,8 +5,7 @@ diagrams:
     type: class
     glob:
       - ../../tests/t00003/t00003.cc
-    using_namespace:
-      - clanguml::t00003
+    using_namespace: clanguml::t00003
     include:
       namespaces:
         - clanguml::t00003

@@ -26,8 +26,7 @@ To add an initial class diagram to your project, follow these steps:
         glob:
           - src/*.cc
         # Render all names relative to `myproject` namespace
-        using_namespace:
-          - myproject
+        using_namespace: myproject
         include:
           # Include only elements in `myproject` namespace
           namespaces:

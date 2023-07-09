@@ -6,8 +6,9 @@
 
 <!-- tocstop -->
 
-Package diagrams are simple diagrams which can be useful to determine the high level structure of a C++ project, 
-by rendering all projects namespaces as UML packages and their interdependencies.
+Package diagrams are simple diagrams, which can be useful to visualize a high
+level structure of a C++ project, by rendering all projects namespaces or
+subdirectories as UML packages and their interdependencies.
 
 The minimal config required to generate a package diagram is presented below:
 ```yaml
@@ -156,7 +157,7 @@ results the following diagram:
 
 ![package_deps](./test_cases/t30002_package.svg)
 
-By default, packages are generated from C++ namespaces in the code. However
+By default, packages are generated from C++ namespaces in the code. However,
 they can also be generated from the subdirectories in the filesystem tree by 
 adding the following option to the configuration file:
 

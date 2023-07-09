@@ -114,8 +114,7 @@ diagrams:
     type: class
     glob:
       - src/*.cc
-    using_namespace:
-      - myproject
+    using_namespace: myproject
     include:
       namespaces:
         - myproject
