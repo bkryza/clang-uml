@@ -105,8 +105,8 @@ following rules:
   * If lambda expression is called within the scope of the diagram, the calls from the lambda will be placed 
     at the lambda invocation and not declaration
   * If lambda expression is passed to some function or method, which is outside the scope of the diagram
-    (e.g. used in `std::transform` call) the call will be generated at the point where lambda is passed as parameter
-  * If the lambda is passed as template parameter in instantiation it will not be generated at the moment at all
+    (e.g. used in `std::transform` call) the call will not be generated
+  * If the lambda is passed as template parameter in instantiation it will not be generated
 
 Another issue is the naming of lambda participants. Currently, each lambda is rendered in the diagram as a separate
 class whose name is composed of the lambda location in the code (the only unique way of identifying lambdas I was able
@@ -211,7 +211,7 @@ void tmain()
 }
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![extension](test_cases/t20012_sequence.svg)
 
@@ -235,16 +235,15 @@ diagrams:
     exclude:
       access:
         - private
-    using_namespace:
-      - clanguml::t20029
+    using_namespace: clanguml::t20029
     start_from:
       - function: clanguml::t20029::tmain()
     participants_order:
-      - clanguml::t20029::tmain()
-      - clanguml::t20029::Encoder<clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>>
-      - clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>
-      - clanguml::t20029::ConnectionPool
-      - clanguml::t20029::encode_b64(std::string &&)
+      - "clanguml::t20029::tmain()"
+      - "clanguml::t20029::Encoder<clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>>"
+      - "clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>"
+      - "clanguml::t20029::ConnectionPool"
+      - "clanguml::t20029::encode_b64(std::string &&)"
 ```
 
 ## Generating return types
@@ -262,6 +261,9 @@ generate_return_types: true
 This option only affects the `plantuml` generation, in `json` generator
 `return_type` property is always present in the message nodes.
 
+The diagram below presents what it looks like in a PlantUML generated diagram:
+![extension](test_cases/t20032_sequence.svg)
+
 
 ## Generating condition statements
 Sometimes, it is useful to include actual condition statements (for instance
@@ -273,4 +275,7 @@ This can be enabled using the following option:
 ```yaml
 generate_condition_statements: true
 ```
+
+An example of a diagram with this feature enabled is presented below:
+![extension](test_cases/t20033_sequence.svg)
 

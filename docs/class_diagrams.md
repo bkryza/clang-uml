@@ -29,8 +29,7 @@ diagrams:
     glob:
       - src/*.cc
     # Render all names in the diagram relative to specific namespace
-    using_namespace:
-      - ns1
+    using_namespace: ns1
     # Include only classes from specific namespace
     include:
       namespaces:
@@ -109,7 +108,7 @@ public:
 };
 ```
 
-generates the following diagram:
+results in the following diagram:
 
 ![extension](test_cases/t00007_class.svg)
 

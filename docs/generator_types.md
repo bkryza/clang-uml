@@ -46,45 +46,45 @@ An example PlantUML diagram is presented below:
 ```plantuml
 @startuml
 class "A" as C_0001371951663534295727
-class C_0001371951663534295727 [[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L7{A}]] {
-+A() = default : void
-+A(int i) : void
-+A(A &&) = default : void
-+A(const A &) = deleted : void
+class C_0001371951663534295727 [[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L7{A}]] {
++A() = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L9{A}]]]
++A(int i) : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L10{A}]]]
++A(A &&) = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L21{A}]]]
++A(const A &) = deleted : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L22{A}]]]
 +A<T>(T t) : void
-+~A() = default : void
++~A() = default : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L23{~A}]]]
 ..
-+operator=(A && other) noexcept : A &
-+operator=(A & other) noexcept : A &
++operator=(A && other) noexcept : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L36{operator=}]]]
++operator=(A & other) noexcept : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L37{operator=}]]]
 ..
-+operator++() : A &
++operator++() : A & [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L30{operator++}]]]
 ..
-+auto_method() : int
-+basic_method() : void
-+const_method() const : void
-{static} +create_from_int(int i) : A
-+default_int(int i = 12) : int
-+default_string(int i, std::string s = "abc") : std::string
-+double_int(const int i) : int
--private_method() : void
-#protected_method() : void
-+size() constexpr const : std::size_t
-{static} +static_method() : int
-+sum(const double a, const double b) : int
++auto_method() : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L28{auto_method}]]]
++basic_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L25{basic_method}]]]
++const_method() const : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L27{const_method}]]]
+{static} +create_from_int(int i) : A [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L50{create_from_int}]]]
++default_int(int i = 12) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L44{default_int}]]]
++default_string(int i, std::string s = "abc") : std::string [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L45{default_string}]]]
++double_int(const int i) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L41{double_int}]]]
+-private_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L67{private_method}]]]
+#protected_method() : void [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L58{protected_method}]]]
++size() constexpr const : std::size_t [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L39{size}]]]
+{static} +static_method() : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L26{static_method}]]]
++sum(const double a, const double b) : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L42{sum}]]]
 __
--a_ : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L70{a_}]]]
-{static} +auto_member : const unsigned long [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L55{auto_member}]]]
--b_ : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L70{b_}]]]
--c_ : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L70{c_}]]]
-#compare : std::function<bool (const int)> [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L62{compare}]]]
--private_member : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L69{private_member}]]]
-#protected_member : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L60{protected_member}]]]
-+public_member : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L52{public_member}]]]
-{static} +static_const_int : const int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L54{static_const_int}]]]
-{static} +static_int : int [[[https://github.com/bkryza/clang-uml/blob/a39af67987036732468c95087191562780a518de/tests/t00003/t00003.cc#L53{static_int}]]]
+-a_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{a_}]]]
+{static} +auto_member : const unsigned long [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L55{auto_member}]]]
+-b_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{b_}]]]
+-c_ : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L70{c_}]]]
+#compare : std::function<bool (const int)> [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L62{compare}]]]
+-private_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L69{private_member}]]]
+#protected_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L60{protected_member}]]]
++public_member : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L52{public_member}]]]
+{static} +static_const_int : const int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L54{static_const_int}]]]
+{static} +static_int : int [[[https://github.com/bkryza/clang-uml/blob/59d6fd5c7f14e028d1817274d80da29c338c2b53/tests/t00003/t00003.cc#L53{static_int}]]]
 }
 
-'Generated with clang-uml, version 0.3.7-20-ga39af67
+'Generated with clang-uml, version 0.3.8
 'LLVM version Ubuntu clang version 15.0.6
 @enduml
 ```
@@ -253,6 +253,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "A",
           "parameters": [],
+          "source_location": {
+            "column": 5,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 9,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -277,6 +283,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "int"
             }
           ],
+          "source_location": {
+            "column": 5,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 10,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -301,6 +313,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "clanguml::t00003::A &&"
             }
           ],
+          "source_location": {
+            "column": 5,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 21,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -325,6 +343,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "const clanguml::t00003::A &"
             }
           ],
+          "source_location": {
+            "column": 5,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 22,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -344,6 +368,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": true,
           "name": "~A",
           "parameters": [],
+          "source_location": {
+            "column": 13,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 23,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -363,6 +393,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "basic_method",
           "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 25,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -382,6 +418,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "static_method",
           "parameters": [],
+          "source_location": {
+            "column": 16,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 26,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "int"
         },
         {
@@ -401,6 +443,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "const_method",
           "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 27,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -420,6 +468,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "auto_method",
           "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 28,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "int"
         },
         {
@@ -439,6 +493,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "operator++",
           "parameters": [],
+          "source_location": {
+            "column": 8,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 30,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "clanguml::t00003::A &"
         },
         {
@@ -463,6 +523,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "clanguml::t00003::A &&"
             }
           ],
+          "source_location": {
+            "column": 8,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 36,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "clanguml::t00003::A &"
         },
         {
@@ -487,6 +553,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "clanguml::t00003::A &"
             }
           ],
+          "source_location": {
+            "column": 8,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 37,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "clanguml::t00003::A &"
         },
         {
@@ -506,6 +578,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "size",
           "parameters": [],
+          "source_location": {
+            "column": 27,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 39,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "std::size_t"
         },
         {
@@ -530,6 +608,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "const int"
             }
           ],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 41,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "int"
         },
         {
@@ -558,6 +642,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "const double"
             }
           ],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 42,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "int"
         },
         {
@@ -583,6 +673,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "int"
             }
           ],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 44,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "int"
         },
         {
@@ -612,6 +708,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "std::string"
             }
           ],
+          "source_location": {
+            "column": 17,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 45,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "std::string"
         },
         {
@@ -636,6 +738,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
               "type": "int"
             }
           ],
+          "source_location": {
+            "column": 14,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 50,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "clanguml::t00003::A"
         },
         {
@@ -655,6 +763,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "protected_method",
           "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 58,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -674,6 +788,12 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
           "is_virtual": false,
           "name": "private_method",
           "parameters": [],
+          "source_location": {
+            "column": 10,
+            "file": "../../tests/t00003/t00003.cc",
+            "line": 67,
+            "translation_unit": "../../tests/t00003/t00003.cc"
+          },
           "type": "void"
         },
         {
@@ -714,7 +834,7 @@ An equivalent of the above PlantUML diagram in JSON is presented below:
     }
   ],
   "metadata": {
-    "clang_uml_version": "0.3.7-20-ga39af67",
+    "clang_uml_version": "0.3.8",
     "llvm_version": "Ubuntu clang version 15.0.6",
     "schema_version": 1
   },

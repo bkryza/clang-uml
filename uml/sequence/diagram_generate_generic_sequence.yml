@@ -12,4 +12,4 @@ exclude:
   paths:
     - src/common/model/source_location.h
 start_from:
-  - function: "clanguml::common::generators::generate_diagram(const std::string &,const std::string &,std::shared_ptr<clanguml::config::diagram>,const common::compilation_database &,const std::vector<std::string> &,const std::vector<clanguml::common::generator_type_t> &,bool,std::function<void ()> &&)"
+  - function: "clanguml::common::generators::generate_diagram(const std::string &,const std::string &,std::shared_ptr<clanguml::config::diagram>,const common::compilation_database &,const std::vector<std::string> &,const cli::runtime_config &,std::function<void ()> &&)"

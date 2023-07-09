@@ -57,7 +57,7 @@ The syntax is simple and based on glob patterns, which can be added to the confi
 
 The glob patterns only need to match the translation units, which are also in the `compile_commands.json` file, i.e.
 any files that match the glob patterns but are not in `compile_commands.json` will be ignored. In case the `glob`
-pattern set does not much any translation units an error will be printed on the standard output.
+pattern set does not match any translation units an error will be printed on the standard output.
 
 For small projects, the `glob` property can be omitted, which will result in `clang-uml` parsing all translation units
 from `compile_commands.json` for the diagram. However for large projects, constraining the number of translation units
@@ -96,13 +96,14 @@ specific diagram element.
 
 ## Resolving include path and compiler flags issues
 Due to the fact, that your project can be compiled with different compilers
-and toolchains than the Clang version, which `clang-uml` uses on your platform,
-include paths specified in the generated `compile_commands.json` can be incorrect.
+and toolchains, the system paths and compilation flags detected by the Clang
+version linked to your `clang-uml` installation might differ from the ones
+actually used to compile your project.
 
 > This is often an issue on macOS, when `clang-uml` uses Homebrew version of LLVM
 > and your project was built using system Apple Clang
 
-Typically, this results in ugly error messages on the screen during diagram
+Typically, this results in error messages on the console during diagram
 generation, such as:
 
 ```
@@ -154,15 +155,15 @@ already as `argv[0]` in your `compile_commands.json`, you can simply invoke
 clang-uml --query-driver .
 ```
 
-however please make sure that the `compile_commands.json` contain a command,
+however please make sure that the `compile_commands.json` contains a command,
 which is safe to execute.
 
 ### Manually add and remove compile flags from the compilation database
 If the system paths extracted from the compiler are not sufficient to resolve
 include paths issues, it is possible to manually adjust the compilation
-flags providing `add_compile_flags` and `remove_compile_flags` in the
+flags by providing `add_compile_flags` and `remove_compile_flags` in the
 configuration file, or providing `--add-compile-flag` and `--remove-compile-flag`
-in the `clang-uml` command line.
+on the `clang-uml` command line.
 
 For instance:
 

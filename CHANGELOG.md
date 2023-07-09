@@ -1,5 +1,9 @@
 # CHANGELOG
 
+### 0.3.8
+  * Added option to display block conditional statements in sequence diagrams (#162)
+  * Added Doxygen documentation (#161)
+  * Added diagram generation progress indicators options (#158)
   * Extended source_location with column and translation unit info
 
 ### 0.3.7
