@@ -443,6 +443,7 @@ This project relies on the following great tools:
 * [spdlog](https://github.com/gabime/spdlog) - Fast C++ logging library
 * [Doxygen](https://www.doxygen.nl/) - C++ documentation generator
 * [Doxygen Awesome](https://jothepro.github.io/doxygen-awesome-css) - Doxygen CSS style
+* [miroir](https://gitlab.com/madyanov/miroir) - YAML schema validation library for C++
 
 ## Contributing
 
