@@ -140,6 +140,32 @@ std::string to_string(location_t cp)
     }
 }
 
+std::string to_string(package_type_t pt)
+{
+    switch (pt) {
+    case package_type_t::kNamespace:
+        return "namespace";
+    case package_type_t::kDirectory:
+        return "directory";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+std::string to_string(member_order_t mo)
+{
+    switch (mo) {
+    case member_order_t::lexical:
+        return "lexical";
+    case member_order_t::as_is:
+        return "as_is";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 void plantuml::append(const plantuml &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());

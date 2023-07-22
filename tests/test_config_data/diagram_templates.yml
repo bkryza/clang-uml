@@ -6,11 +6,11 @@ diagram_templates:
     description: Sequence diagram of the main() function
     type: sequence
     template: |
-    main_sequence_diagram:
-      type: sequence
-      glob: [ {{ glob }} ]
-      start_from:
-        - function: 'main(int,const char**)'
+      main_sequence_diagram:
+        type: sequence
+        glob: [ {{ glob }} ]
+        start_from:
+          - function: 'main(int,const char**)'
 diagrams:
   diagram1:
     type: class

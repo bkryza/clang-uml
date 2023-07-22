@@ -26,8 +26,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const string_or_regex &m)
         out << std::get<std::string>(m.value());
     }
     else {
+        out << YAML::BeginMap;
         out << YAML::Key << "r" << YAML::Value
             << std::get<regex>(m.value()).pattern;
+        out << YAML::EndMap;
     }
 
     return out;
@@ -39,8 +41,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const namespace_or_regex &m)
         out << std::get<common::model::namespace_>(m.value());
     }
     else {
+        out << YAML::BeginMap;
         out << YAML::Key << "r" << YAML::Value
             << std::get<regex>(m.value()).pattern;
+        out << YAML::EndMap;
     }
 
     return out;
@@ -85,6 +89,18 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const method_type &m)
 YAML::Emitter &operator<<(YAML::Emitter &out, const callee_type &m)
 {
     out << to_string(m);
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const member_order_t &r)
+{
+    out << to_string(r);
+    return out;
+}
+
+YAML::Emitter &operator<<(YAML::Emitter &out, const package_type_t &r)
+{
+    out << to_string(r);
     return out;
 }
 
@@ -267,32 +283,50 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
 YAML::Emitter &operator<<(
     YAML::Emitter &out, const inheritable_diagram_options &c)
 {
-    out << c.glob;
-    out << c.using_namespace;
-    out << c.include_relations_also_as_members;
-    out << c.include;
+    // Common options
+    out << c.base_directory;
+    out << c.comment_parser;
+    out << c.debug_mode;
     out << c.exclude;
-    out << c.puml;
-    out << c.generate_method_arguments;
-    out << c.generate_packages;
     out << c.generate_links;
     out << c.git;
-    out << c.base_directory;
+    out << c.glob;
+    out << c.include;
+    out << c.puml;
     out << c.relative_to;
-    out << c.generate_system_headers;
-    if (c.relationship_hints) {
-        out << YAML::Key << "relationship_hints" << YAML::Value
-            << c.relationship_hints();
+    out << c.using_namespace;
+    out << c.generate_metadata;
+
+    if (dynamic_cast<const class_diagram *>(&c) != nullptr) {
+        out << c.generate_method_arguments;
+        out << c.generate_packages;
+        out << c.include_relations_also_as_members;
+        if (c.relationship_hints) {
+            out << YAML::Key << "relationship_hints" << YAML::Value
+                << c.relationship_hints();
+        }
+
+        if (c.type_aliases) {
+            out << YAML::Key << "type_aliases" << YAML::Value
+                << c.type_aliases();
+        }
+        out << c.member_order;
+        out << c.package_type;
     }
-    if (c.type_aliases) {
-        out << YAML::Key << "type_aliases" << YAML::Value << c.type_aliases();
+    else if (dynamic_cast<const sequence_diagram *>(&c) != nullptr) {
+        out << c.combine_free_functions_into_file_participants;
+        out << c.generate_condition_statements;
+        out << c.generate_method_arguments;
+        out << c.generate_return_types;
+        out << c.participants_order;
     }
-    out << c.comment_parser;
-    out << c.combine_free_functions_into_file_participants;
-    out << c.generate_return_types;
-    out << c.generate_condition_statements;
-    out << c.participants_order;
-    out << c.debug_mode;
+    else if (dynamic_cast<const package_diagram *>(&c) != nullptr) {
+        out << c.generate_packages;
+        out << c.package_type;
+    }
+    else if (dynamic_cast<const include_diagram *>(&c) != nullptr) {
+        out << c.generate_system_headers;
+    }
 
     return out;
 }

@@ -15,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
-
+#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_CONSOLE_WIDTH 512
 #include "catch.h"
 
+#include "cli/cli_handler.h"
 #include "config/config.h"
 #include "util/util.h"
 
@@ -339,4 +340,45 @@ TEST_CASE("Test config sequence inherited", "[unit-test]")
     CHECK(def.type() == clanguml::common::model::diagram_t::kSequence);
     CHECK(def.combine_free_functions_into_file_participants() == false);
     CHECK(def.generate_return_types() == false);
+}
+
+TEST_CASE("Test config full clang uml dump", "[unit-test]")
+{
+    auto cfg =
+        clanguml::config::load("./test_config_data/clang_uml_config.yml");
+
+    CHECK(cfg.diagrams.size() == 32);
+}
+
+///
+/// Main test function
+///
+int main(int argc, char *argv[])
+{
+    Catch::Session session;
+    using namespace Catch::clara;
+
+    bool debug_log{false};
+    auto cli = session.cli() |
+        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
+
+    session.cli(cli);
+
+    int returnCode = session.applyCommandLine(argc, argv);
+    if (returnCode != 0)
+        return returnCode;
+
+    clanguml::cli::cli_handler clih;
+
+    std::vector<const char *> argvv = {
+        "clang-uml", "--config", "./test_config_data/simple.yml"};
+
+    if (debug_log)
+        argvv.push_back("-vvv");
+    else
+        argvv.push_back("-q");
+
+    clih.handle_options(argvv.size(), argvv.data());
+
+    return session.run();
 }

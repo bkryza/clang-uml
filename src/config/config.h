@@ -50,6 +50,8 @@ enum class method_arguments {
     none         /*! Empty string between '(' and ')' */
 };
 
+std::string to_string(method_arguments ma);
+
 /*! Types of methods, which can be used in diagram filters */
 enum class method_type {
     constructor,
@@ -84,6 +86,8 @@ enum class package_type_t {
     kDirectory  /*!< From directories */
 };
 
+std::string to_string(package_type_t mt);
+
 /*! How class methods and members should be ordered in diagrams */
 enum class member_order_t {
     lexical, /*! Lexical order based on entire method or member signature
@@ -91,7 +95,7 @@ enum class member_order_t {
     as_is    /*! As written in source code */
 };
 
-std::string to_string(method_arguments ma);
+std::string to_string(member_order_t mt);
 
 /*! Which comment parser should be used */
 enum class comment_parser_t {
@@ -413,6 +417,8 @@ struct source_location {
  * @embed{inheritable_diagram_options_context_class.svg}
  */
 struct inheritable_diagram_options {
+    virtual ~inheritable_diagram_options() = default;
+
     option<std::vector<std::string>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<bool> include_relations_also_as_members{
@@ -424,7 +430,7 @@ struct inheritable_diagram_options {
         "generate_method_arguments", method_arguments::full};
     option<bool> group_methods{"group_methods", true};
     option<member_order_t> member_order{
-        "method_order", member_order_t::lexical};
+        "member_order", member_order_t::lexical};
     option<bool> generate_packages{"generate_packages", false};
     option<package_type_t> package_type{
         "package_type", package_type_t::kNamespace};
@@ -621,8 +627,6 @@ struct config : public inheritable_diagram_options {
 config load(const std::string &config_file,
     std::optional<bool> paths_relative_to_pwd = {},
     std::optional<bool> no_metadata = {});
-
-config load_plain(const std::string &config_file);
 
 } // namespace config
 
