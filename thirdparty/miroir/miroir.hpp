@@ -550,18 +550,17 @@ auto Validator<Node>::validate(const Node &doc) const -> std::vector<Error> {
 
 template <typename Node>
 auto Validator<Node>::schema_settings(const Node &schema) -> SchemaSettings {
-    SchemaSettings settings{
-        .default_required = true,
-        .optional_tag = "optional",
-        .required_tag = "required",
-        .embed_tag = "embed",
-        .variant_tag = "variant",
-        .key_type_prefix = "$",
-        .generic_brackets = "<>",
-        .generic_separator = ";",
-        .attribute_separator = ":",
-        .ignore_attributes = false,
-    };
+    SchemaSettings settings;
+    settings.default_required = true;
+    settings.optional_tag = "optional";
+    settings.required_tag = "required";
+    settings.embed_tag = "embed";
+    settings.variant_tag = "variant";
+    settings.key_type_prefix = "$";
+    settings.generic_brackets = "<>";
+    settings.generic_separator = ";";
+    settings.attribute_separator = ":";
+    settings.ignore_attributes = false;
 
     const Node settings_node = NodeAccessor::at(schema, "settings");
 
@@ -623,12 +622,12 @@ auto Validator<Node>::make_error(ErrorType type, const Context &ctx,
                                  const std::vector<std::vector<Error>> &variant_errors) const
     -> Error {
 
-    return Error{
-        .type = type,
-        .path = ctx.path,
-        .expected = ctx.expected,
-        .variant_errors = variant_errors,
-    };
+    Error err;
+    err.type = type;
+    err.path = ctx.path;
+    err.expected = ctx.expected;
+    err.variant_errors = variant_errors;
+    return err;
 }
 
 template <typename Node>
@@ -1022,7 +1021,7 @@ auto Validator<Node>::parse_generic_type(const std::string &type) const -> Gener
             generic_type.name += c;
             break;
         case ST_ARGS:
-            arg = std::string_view{!arg.empty() ? arg.cbegin() : &(*it), arg.size() + 1};
+            arg = std::string_view{!arg.empty() ? arg.data() : &(*it), arg.size() + 1};
             break;
         case ST_SEP:
             state = ST_ARGS;
