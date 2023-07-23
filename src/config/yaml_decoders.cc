@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+#include "cli/cli_handler.h"
 #include "config.h"
 #include "diagram_templates.h"
+#include "schema.h"
+
+#define MIROIR_IMPLEMENTATION
+#define MIROIR_YAMLCPP_SPECIALIZATION
+#include <miroir/miroir.hpp>
 
 namespace YAML {
 using clanguml::common::namespace_or_regex;
@@ -766,28 +772,13 @@ template <> struct convert<config> {
 
         auto diagrams = node["diagrams"];
 
-        assert(diagrams.Type() == NodeType::Map);
-
         for (auto d : diagrams) {
             auto name = d.first.as<std::string>();
             std::shared_ptr<clanguml::config::diagram> diagram_config{};
             auto parent_path = node["__parent_path"].as<std::string>();
+            d.second.force_insert("__parent_path", parent_path);
 
-            if (has_key(d.second, "include!")) {
-                auto include_path = std::filesystem::path{parent_path};
-                include_path /= d.second["include!"].as<std::string>();
-
-                YAML::Node included_node =
-                    YAML::LoadFile(include_path.string());
-                included_node.force_insert("__parent_path", parent_path);
-
-                diagram_config = parse_diagram_config(included_node);
-            }
-            else {
-                d.second.force_insert("__parent_path", parent_path);
-                diagram_config = parse_diagram_config(d.second);
-            }
-
+            diagram_config = parse_diagram_config(d.second);
             if (diagram_config) {
                 diagram_config->name = name;
                 diagram_config->inherit(rhs);
@@ -841,9 +832,13 @@ void resolve_option_path(YAML::Node &doc, const std::string &option)
 } // namespace
 
 config load(const std::string &config_file,
-    std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata)
+    std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata,
+    bool validate)
 {
     try {
+        auto schema = YAML::Load(clanguml::config::schema_str);
+        auto schema_validator = miroir::Validator<YAML::Node>(schema);
+
         YAML::Node doc;
         std::filesystem::path config_file_path{};
 
@@ -860,6 +855,8 @@ config load(const std::string &config_file,
 
         // Store the parent path of the config_file to properly resolve
         // the include files paths
+        if (has_key(doc, "__parent_path"))
+            doc.remove("__parent_path");
         if (config_file == "-") {
             config_file_path = std::filesystem::current_path();
             doc.force_insert("__parent_path", config_file_path.string());
@@ -914,31 +911,44 @@ config load(const std::string &config_file,
             doc["git"] = git_config;
         }
 
+        // Resolve diagram includes
+        auto diagrams = doc["diagrams"];
+
+        assert(diagrams.Type() == YAML::NodeType::Map);
+
+        for (auto d : diagrams) {
+            auto name = d.first.as<std::string>();
+            std::shared_ptr<clanguml::config::diagram> diagram_config{};
+            auto parent_path = doc["__parent_path"].as<std::string>();
+
+            if (has_key(d.second, "include!")) {
+                auto include_path = std::filesystem::path{parent_path};
+                include_path /= d.second["include!"].as<std::string>();
+
+                YAML::Node included_node =
+                    YAML::LoadFile(include_path.string());
+
+                diagrams[name] = included_node;
+            }
+        }
+
+        if (validate) {
+            auto schema_errors = schema_validator.validate(doc);
+
+            if (!schema_errors.empty()) {
+                // print validation errors
+                for (const auto &err : schema_errors) {
+                    LOG_ERROR("Schema error: {}", err.description());
+                }
+
+                throw YAML::Exception({}, "Invalid configuration schema");
+            }
+        }
+
         auto d = doc.as<config>();
 
         d.initialize_diagram_templates();
 
-        return d;
-    }
-    catch (YAML::BadFile &e) {
-        throw std::runtime_error(fmt::format(
-            "Could not open config file {}: {}", config_file, e.what()));
-    }
-    catch (YAML::Exception &e) {
-        throw std::runtime_error(fmt::format(
-            "Cannot parse YAML file {}: {}", config_file, e.what()));
-    }
-}
-
-config load_plain(const std::string &config_file)
-{
-    try {
-        YAML::Node doc;
-        std::filesystem::path config_file_path{};
-
-        doc = YAML::LoadFile(config_file);
-
-        auto d = doc.as<config>();
         return d;
     }
     catch (YAML::BadFile &e) {

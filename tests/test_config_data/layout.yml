@@ -28,7 +28,6 @@ diagrams:
       - src/**/*.h
     using_namespace:
       - clanguml
-    generate_method_arguments: full
     layout:
       ABCD:
         - up: ABCD_SUBCLASS

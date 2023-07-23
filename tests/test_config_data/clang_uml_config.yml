@@ -1,0 +1,1154 @@
+compilation_database_dir: /home/bartek/devel/clang-uml/debug
+output_directory: /home/bartek/devel/clang-uml/docs/diagrams
+__parent_path: /home/bartek/devel/clang-uml
+comment_parser: clang
+debug_mode: false
+generate_links:
+  link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+  tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+git:
+  branch: add-configuration-file-validation
+  revision: 0.3.8-6-g18c40310
+  commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+  toplevel: /home/bartek/devel/clang-uml
+relative_to: /home/bartek/devel/clang-uml
+generate_metadata: true
+diagrams:
+  architecture_package:
+    type: package
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+      - src/common/model/diagram.cc
+      - src/**/model/diagram.cc
+      - src/**/visitor/translation_unit_visitor.cc
+      - src/**/generators/**/*generator.cc
+    include:
+      namespaces:
+        - clanguml
+      elements:
+        - clanguml
+        - clanguml::common
+        - clanguml::config
+        - r: clanguml::.+_diagram
+        - r: clanguml::.+::model
+        - r: clanguml::.+::visitor
+        - r: clanguml::.+::generators
+    plantuml:
+      before:
+        - title clang-uml top level packages
+    relative_to: /home/bartek/devel/clang-uml
+    generate_metadata: true
+    generate_packages: false
+    package_type: namespace
+  architecture_visitors_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/docs/architecture.cc
+    include:
+      namespaces:
+        - clanguml
+      elements:
+        - r: clanguml::.+::translation_unit_visitor.*
+        - r: clanguml::.+::model::diagram
+    plantuml:
+      before:
+        - title clang-uml top level architecture - AST visitors
+    relative_to: /home/bartek/devel/clang-uml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  class_diagram_generator_sequence:
+    type: sequence
+    start_from:
+      - function: clanguml::class_diagram::generators::plantuml::generator::generate(std::ostream &) const
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/class_diagram/generators/plantuml/*.cc
+    include:
+      namespaces:
+        - clanguml
+    plantuml:
+      before:
+        - title clang-uml clanguml::class_diagram::generators::plantuml::generator sequence diagram
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::class_diagram::generators::plantuml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: false
+    generate_condition_statements: false
+    generate_method_arguments: full
+    generate_return_types: false
+  class_model_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml::common::model
+        - clanguml::class_diagram::model
+    plantuml:
+      before:
+        - title clang-uml class diagram model
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: none
+    generate_packages: true
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+  cli_handle_options_sequence:
+    type: sequence
+    start_from:
+      - function: clanguml::cli::cli_handler::handle_options(int,const char **)
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: true
+    exclude:
+      elements:
+        - r: clanguml::config::option.*
+      paths:
+        - src/util/util.h
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/cli/cli_handler.cc
+      - src/config/config.cc
+      - src/config/yaml_decoders.cc
+    include:
+      namespaces:
+        - clanguml
+        - YAML
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: true
+    generate_condition_statements: false
+    generate_method_arguments: none
+    generate_return_types: false
+  comment_visitor_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/visitor/comment/*.cc
+    include:
+      namespaces:
+        - clanguml::common::visitor::comment
+      subclasses:
+        - clanguml::common::visitor::comment::comment_visitor
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  common_model_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      element_types:
+        - enum
+      relationships:
+        - dependency
+      subclasses:
+        - clanguml::common::model::filter_visitor
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+    include:
+      namespaces:
+        - clanguml::common::model
+    plantuml:
+      before:
+        - title clang-uml common diagram model
+      after:
+        - "note top of {{ alias(\"diagram\") }}: Common class for specific diagram types"
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::common::model
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+  compilation_database_context_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/compilation_database.cc
+    include:
+      namespaces:
+        - clanguml
+        - clang::tooling
+      context:
+        - clanguml::common::compilation_database
+    relative_to: /home/bartek/devel/clang-uml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  config_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      elements:
+        - r: clanguml::config::option<.*>
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+    include:
+      namespaces:
+        - clanguml::config
+      context:
+        - clanguml::config::inheritable_diagram_options
+        - clanguml::config::config
+        - clanguml::config::diagram
+    plantuml:
+      before:
+        - title clang-uml configuration model
+      after:
+        - "note left of {{ alias(\"inheritable_diagram_options\") }}: Options common to all diagram types."
+        - "note right of {{ alias(\"config\") }}: General options not used by diagrams."
+        - "note bottom of {{ alias(\"class_diagram\") }}: Options for specific class diagrams"
+        - "note bottom of {{ alias(\"sequence_diagram\") }}: Options for specific sequence diagrams"
+        - "note bottom of {{ alias(\"package_diagram\") }}: Options for specific package diagrams"
+        - "note bottom of {{ alias(\"include_diagram\") }}: Options for specific include diagrams"
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::config
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  config_context_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+    include:
+      namespaces:
+        - clanguml::config
+      context:
+        - clanguml::config::config
+    plantuml:
+      before:
+        - title clanguml::config::config context diagram
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::config
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  decorated_element_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+      - src/sequence_diagram/model/*.cc
+      - src/include_diagram/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::decorated_element
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  decorators_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/decorators/decorators.cc
+    include:
+      namespaces:
+        - clanguml::decorators
+    plantuml:
+      before:
+        - title clang-uml decorators model
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::decorators
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+  diagram_config_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - clanguml::config::diagram
+      parents:
+        - clanguml::config::diagram
+    plantuml:
+      before:
+        - title clanguml::config::diagram class hierarchy
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  diagram_element_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - private
+        - protected
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+      - src/sequence_diagram/model/*.cc
+      - src/include_diagram/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::decorated_element
+        - clanguml::common::model::source_location
+    plantuml:
+      before:
+        - title clang-uml diagram element class inheritance model
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  diagram_filter_context_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      elements:
+        - clanguml::common::model::path
+      method_types:
+        - constructor
+        - destructor
+        - operator
+      callee_types:
+        []
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/diagram_filter.cc
+      - src/common/model/diagram.cc
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - clanguml::common::model::diagram_filter
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  diagram_generate_generic_sequence:
+    type: sequence
+    start_from:
+      - function: clanguml::common::generators::generate_diagram(const std::string &,const std::string &,std::shared_ptr<clanguml::config::diagram>,const common::compilation_database &,const std::vector<std::string> &,const cli::runtime_config &,std::function<void ()> &&)
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      paths:
+        - src/common/model/source_location.h
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/generators/generators.cc
+    include:
+      namespaces:
+        - clanguml::common::generators
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: true
+    generate_condition_statements: false
+    generate_method_arguments: none
+    generate_return_types: false
+  diagram_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/diagram.cc
+      - src/class_diagram/model/diagram.cc
+      - src/sequence_diagram/model/diagram.cc
+      - src/include_diagram/model/diagram.cc
+      - src/package_diagram/model/diagram.cc
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::diagram
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: none
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  filter_visitor_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/diagram_filter.cc
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - clanguml::common::model::filter_visitor
+    plantuml:
+      before:
+        - left to right direction
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  include_graph:
+    type: include
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/**/*.cc
+    include:
+      paths:
+        - src
+    plantuml:
+      before:
+        - title clang-uml include graph diagram
+    relative_to: /home/bartek/devel/clang-uml/
+    generate_metadata: true
+    generate_system_headers: false
+  inheritable_diagram_options_context_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+    include:
+      namespaces:
+        - clanguml::config
+      context:
+        - clanguml::config::inheritable_diagram_options
+    plantuml:
+      before:
+        - title clanguml::config::config context diagram
+        - left to right direction
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::config
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  load_config_sequence:
+    type: sequence
+    start_from:
+      - function: clanguml::config::load(const std::string &,std::optional<bool>,std::optional<bool>)
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      elements:
+        - r: clanguml::config::option.*
+      paths:
+        - src/util/util.h
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/config/config.cc
+      - src/config/yaml_decoders.cc
+    include:
+      namespaces:
+        - clanguml
+        - YAML
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: true
+    generate_condition_statements: false
+    generate_method_arguments: none
+    generate_return_types: false
+  main_sequence:
+    type: sequence
+    start_from:
+      - function: main(int,const char **)
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      elements:
+        - clanguml::config::option<std::string>
+      paths:
+        - src/util/util.h
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/main.cc
+    include:
+      paths:
+        - src
+    plantuml:
+      before:
+        - title clang-uml main function sequence diagram
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: true
+    generate_condition_statements: false
+    generate_method_arguments: none
+    generate_return_types: false
+  nested_trait_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      subclasses:
+        - r: .*nested_trait.*
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  package_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/package.cc
+    include:
+      namespaces:
+        - clanguml
+      parents:
+        - clanguml::common::model::package
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  package_model_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml::common::model
+        - clanguml::package_diagram::model
+    plantuml:
+      before:
+        - title clang-uml package diagram model
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml::package_diagram::model
+    generate_metadata: true
+    generate_method_arguments: none
+    generate_packages: false
+    include_relations_also_as_members: false
+    member_order: lexical
+    package_type: namespace
+  relationship_context_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      elements:
+        - clanguml::common::model::path
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/relationship.cc
+      - src/common/model/diagram_element.cc
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - clanguml::common::model::relationship
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  sequence_model_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      method_types:
+        - constructor
+        - destructor
+        - operator
+      relationships:
+        - dependency
+      callee_types:
+        []
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/sequence_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml::common::model
+        - clanguml::sequence_diagram::model
+      context:
+        - clanguml::sequence_diagram::model::diagram
+        - clanguml::sequence_diagram::model::message
+        - clanguml::sequence_diagram::model::activity
+      subclasses:
+        - clanguml::sequence_diagram::model::participant
+    plantuml:
+      before:
+        - title clang-uml sequence diagram model
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: none
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  source_file_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - private
+        - protected
+        - public
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/source_file.cc
+    include:
+      namespaces:
+        - clanguml
+      parents:
+        - clanguml::common::model::source_file
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: false
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  source_location_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+      - src/sequence_diagram/model/*.cc
+      - src/include_diagram/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::source_location
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  stylable_element_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+      - src/sequence_diagram/model/*.cc
+      - src/include_diagram/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      relationships:
+        - extension
+      subclasses:
+        - clanguml::common::model::stylable_element
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace
+  template_builder_sequence:
+    type: sequence
+    start_from:
+      - function: clanguml::class_diagram::visitor::template_builder::build(const clang::NamedDecl *,const clang::TemplateSpecializationType &,std::optional<class_diagram::model::class_ *>)
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      paths:
+        - src/common/model/source_location.h
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/class_diagram/visitor/template_builder.cc
+    include:
+      namespaces:
+        - clanguml
+      paths:
+        - src/class_diagram/visitor/template_builder.h
+        - src/class_diagram/visitor/template_builder.cc
+    plantuml:
+      before:
+        - title clang-uml class_diagram::visitor::template_builder::build sequence diagram
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    combine_free_functions_into_file_participants: true
+    generate_condition_statements: false
+    generate_method_arguments: none
+    generate_return_types: false
+  template_trait_hierarchy_class:
+    type: class
+    __parent_path: /home/bartek/devel/clang-uml
+    comment_parser: clang
+    debug_mode: false
+    exclude:
+      access:
+        - public
+        - protected
+        - private
+      relationships:
+        - dependency
+    generate_links:
+      link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
+      tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+    git:
+      branch: add-configuration-file-validation
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
+      toplevel: /home/bartek/devel/clang-uml
+    glob:
+      - src/common/model/*.cc
+      - src/class_diagram/model/*.cc
+      - src/sequence_diagram/model/*.cc
+      - src/include_diagram/model/*.cc
+      - src/package_diagram/model/*.cc
+    include:
+      namespaces:
+        - clanguml
+      context:
+        - clanguml::common::model::template_trait
+      subclasses:
+        - clanguml::common::model::template_trait
+    relative_to: /home/bartek/devel/clang-uml
+    using_namespace: clanguml
+    generate_metadata: true
+    generate_method_arguments: full
+    generate_packages: true
+    include_relations_also_as_members: true
+    member_order: lexical
+    package_type: namespace

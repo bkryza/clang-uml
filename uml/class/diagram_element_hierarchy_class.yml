@@ -12,9 +12,8 @@ include:
   subclasses:
     - clanguml::common::model::decorated_element
     - clanguml::common::model::source_location
-  include:
-    relationships:
-      - inheritance
+  relationships:
+    - inheritance
 exclude:
   relationships:
     - dependency
