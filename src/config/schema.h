@@ -39,7 +39,11 @@ types:
     generate_links_t:
         link: string
         tooltip: string
-    git_t: map_t<string;string>
+    git_t:
+        branch: string
+        revision: string
+        commit: string
+        toplevel: string
     layout_hint_key: !variant
         - up
         - left
@@ -51,8 +55,12 @@ types:
     layout_hint_value: [string, [string]]
     layout_hint_t: [map_t<layout_hint_key;layout_hint_value>]
     layout_t: map_t<string;layout_hint_t>
-    package_type_t: !variant [namespace, directory]
-    member_order_t: !variant [lexical, as_is]
+    package_type_t: !variant
+        - namespace
+        - directory
+    member_order_t: !variant
+        - lexical
+        - as_is
     regex_t:
         r: string
     regex_or_string_t: [string, regex_t]
@@ -151,7 +159,6 @@ types:
         generate_method_arguments: !optional generate_method_arguments_t
         generate_packages: !optional bool
         package_type: !optional package_type_t
-        method_order: !optional member_order_t
         member_order: !optional member_order_t
         group_methods: !optional bool
         type_aliases: !optional map_t<string;string>

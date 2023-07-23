@@ -251,7 +251,7 @@ cli_flow_t cli_handler::load_config()
         config = clanguml::config::load(
             config_path, paths_relative_to_pwd, no_metadata, !no_validate);
         if (validate_only) {
-            LOG_INFO("Configuration file {} is valid.", config_path);
+            std::cout << "Configuration file " << config_path << " is valid.\n";
 
             return cli_flow_t::kExit;
         }

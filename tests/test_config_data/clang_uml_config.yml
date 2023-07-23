@@ -8,8 +8,8 @@ generate_links:
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
 git:
   branch: add-configuration-file-validation
-  revision: 0.3.8-2-g561a2b16
-  commit: 561a2b16fd48052fc284ac598c9b782be3341662
+  revision: 0.3.8-6-g18c40310
+  commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
   toplevel: /home/bartek/devel/clang-uml
 relative_to: /home/bartek/devel/clang-uml
 generate_metadata: true
@@ -24,8 +24,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -68,8 +68,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/docs/architecture.cc
@@ -87,7 +87,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   class_diagram_generator_sequence:
     type: sequence
@@ -101,8 +101,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/class_diagram/generators/plantuml/*.cc
@@ -132,8 +132,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -151,7 +151,7 @@ diagrams:
     generate_method_arguments: none
     generate_packages: true
     include_relations_also_as_members: false
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   cli_handle_options_sequence:
     type: sequence
@@ -170,8 +170,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/cli/cli_handler.cc
@@ -203,8 +203,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/visitor/comment/*.cc
@@ -219,7 +219,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   common_model_class:
     type: class
@@ -242,8 +242,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -261,7 +261,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: false
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   compilation_database_context_class:
     type: class
@@ -273,8 +273,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/compilation_database.cc
@@ -289,7 +289,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   config_class:
     type: class
@@ -304,8 +304,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -332,7 +332,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   config_context_class:
     type: class
@@ -344,8 +344,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -363,7 +363,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   decorated_element_hierarchy_class:
     type: class
@@ -380,8 +380,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -402,7 +402,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   decorators_class:
     type: class
@@ -414,8 +414,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/decorators/decorators.cc
@@ -431,7 +431,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: false
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   diagram_config_hierarchy_class:
     type: class
@@ -448,8 +448,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -469,7 +469,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   diagram_element_hierarchy_class:
     type: class
@@ -488,8 +488,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -500,6 +500,8 @@ diagrams:
     include:
       namespaces:
         - clanguml
+      relationships:
+        - extension
       subclasses:
         - clanguml::common::model::decorated_element
         - clanguml::common::model::source_location
@@ -512,7 +514,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   diagram_filter_context_class:
     type: class
@@ -533,8 +535,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/diagram_filter.cc
@@ -550,7 +552,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   diagram_generate_generic_sequence:
     type: sequence
@@ -567,8 +569,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/generators/generators.cc
@@ -597,8 +599,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/diagram.cc
@@ -619,7 +621,7 @@ diagrams:
     generate_method_arguments: none
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   filter_visitor_hierarchy_class:
     type: class
@@ -636,8 +638,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/diagram_filter.cc
@@ -655,7 +657,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   include_graph:
     type: include
@@ -667,8 +669,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/**/*.cc
@@ -691,8 +693,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -711,7 +713,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   load_config_sequence:
     type: sequence
@@ -730,8 +732,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/config/config.cc
@@ -764,8 +766,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/main.cc
@@ -797,8 +799,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -813,7 +815,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   package_hierarchy_class:
     type: class
@@ -830,8 +832,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/package.cc
@@ -846,7 +848,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   package_model_class:
     type: class
@@ -861,8 +863,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -880,7 +882,7 @@ diagrams:
     generate_method_arguments: none
     generate_packages: false
     include_relations_also_as_members: false
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   relationship_context_class:
     type: class
@@ -897,8 +899,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/relationship.cc
@@ -914,7 +916,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   sequence_model_class:
     type: class
@@ -935,8 +937,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -960,7 +962,7 @@ diagrams:
     generate_method_arguments: none
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   source_file_hierarchy_class:
     type: class
@@ -977,8 +979,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/source_file.cc
@@ -993,7 +995,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: false
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   source_location_hierarchy_class:
     type: class
@@ -1010,8 +1012,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -1032,7 +1034,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   stylable_element_hierarchy_class:
     type: class
@@ -1049,8 +1051,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -1071,7 +1073,7 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
   template_builder_sequence:
     type: sequence
@@ -1088,8 +1090,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/class_diagram/visitor/template_builder.cc
@@ -1126,8 +1128,8 @@ diagrams:
       tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
     git:
       branch: add-configuration-file-validation
-      revision: 0.3.8-2-g561a2b16
-      commit: 561a2b16fd48052fc284ac598c9b782be3341662
+      revision: 0.3.8-6-g18c40310
+      commit: 18c40310475e2fc3382d7f6c42747fc1469ec336
       toplevel: /home/bartek/devel/clang-uml
     glob:
       - src/common/model/*.cc
@@ -1148,5 +1150,5 @@ diagrams:
     generate_method_arguments: full
     generate_packages: true
     include_relations_also_as_members: true
-    method_order: lexical
+    member_order: lexical
     package_type: namespace
