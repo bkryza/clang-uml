@@ -131,6 +131,10 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "Skip metadata (e.g. clang-uml version) from diagrams");
     app.add_flag("--print-start-from", print_start_from,
         "Print all possible 'start_from' values for a given diagram");
+    app.add_flag("--no-validate", no_validate,
+        "Do not perform configuration file schema validation");
+    app.add_flag("--validate-only", validate_only,
+        "Perform configuration file schema validation and exit");
 
     try {
         app.parse(argc, argv);
@@ -245,7 +249,13 @@ cli_flow_t cli_handler::load_config()
 {
     try {
         config = clanguml::config::load(
-            config_path, paths_relative_to_pwd, no_metadata);
+            config_path, paths_relative_to_pwd, no_metadata, !no_validate);
+        if (validate_only) {
+            LOG_INFO("Configuration file {} is valid.", config_path);
+
+            return cli_flow_t::kExit;
+        }
+
         return cli_flow_t::kContinue;
     }
     catch (std::runtime_error &e) {

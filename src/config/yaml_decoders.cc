@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#include "cli/cli_handler.h"
 #include "config.h"
 #include "diagram_templates.h"
 #include "schema.h"
@@ -831,7 +832,8 @@ void resolve_option_path(YAML::Node &doc, const std::string &option)
 } // namespace
 
 config load(const std::string &config_file,
-    std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata)
+    std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata,
+    bool validate)
 {
     try {
         auto schema = YAML::Load(clanguml::config::schema_str);
@@ -930,15 +932,17 @@ config load(const std::string &config_file,
             }
         }
 
-        auto schema_errors = schema_validator.validate(doc);
+        if (validate) {
+            auto schema_errors = schema_validator.validate(doc);
 
-        if (schema_errors.size() > 0) {
-            // print validation errors
-            for (const auto &err : schema_errors) {
-                LOG_ERROR("Schema error: {}", err.description());
+            if (!schema_errors.empty()) {
+                // print validation errors
+                for (const auto &err : schema_errors) {
+                    LOG_ERROR("Schema error: {}", err.description());
+                }
+
+                throw YAML::Exception({}, "Invalid configuration schema");
             }
-
-            throw YAML::Exception({}, "Invalid configuration schema");
         }
 
         auto d = doc.as<config>();

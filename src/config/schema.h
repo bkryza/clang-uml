@@ -64,6 +64,10 @@ types:
         - class
         - enum
         - concept
+        - method
+        - function
+        - function_template
+        - lambda
     relationship_filter_t: !variant
         - extension
         - inheritance

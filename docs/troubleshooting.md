@@ -200,6 +200,13 @@ the configuration file to `clang-uml` using `stdin`, e.g.:
 yq 'explode(.)' .clang-uml | clang-uml --config -
 ```
 
+## Schema validation error is thrown, but the configuration file is correct
+Current version of `clang-uml` performs automatic configuration file
+schema validation, and exits if the configuration file is invalid.
+
+In case there is a bug in the schema validation, the schema validation
+step can be skipped by providing `--no-validate` command line option.
+
 ## Class diagrams
 
 ### "fatal error: 'stddef.h' file not found"

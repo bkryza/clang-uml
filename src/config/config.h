@@ -36,6 +36,10 @@
 
 namespace clanguml {
 
+namespace cli {
+struct runtime_config;
+} // namespace cli
+
 /**
  * @brief Configuration file related classes
  *
@@ -472,7 +476,7 @@ struct inheritable_diagram_options {
  * @embed{diagram_config_hierarchy_class.svg}
  */
 struct diagram : public inheritable_diagram_options {
-    virtual ~diagram() = default;
+    ~diagram() override = default;
 
     virtual common::model::diagram_t type() const = 0;
 
@@ -622,11 +626,12 @@ struct config : public inheritable_diagram_options {
  *                              the configuration file or to the current
  *                              directory (`$PWD`)
  * @param no_metadata Whether the diagram should skip metadata at the end
+ * @param validate If true, perform schema validation
  * @return Configuration instance
  */
 config load(const std::string &config_file,
     std::optional<bool> paths_relative_to_pwd = {},
-    std::optional<bool> no_metadata = {});
+    std::optional<bool> no_metadata = {}, bool validate = true);
 
 } // namespace config
 

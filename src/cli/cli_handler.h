@@ -183,6 +183,8 @@ public:
     std::optional<std::string> show_template;
     std::vector<clanguml::common::generator_type_t> generators{
         clanguml::common::generator_type_t::plantuml};
+    bool no_validate{false};
+    bool validate_only{false};
 
     clanguml::config::config config;
 
