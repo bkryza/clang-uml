@@ -285,7 +285,7 @@ cli_flow_t cli_handler::handle_post_config_options()
 
     if (config_path != "-" && add_diagram_from_template) {
         return add_config_diagram_from_template(
-            config_path, add_diagram_from_template.value(), template_variables);
+            config_path, add_diagram_from_template.value());
     }
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
@@ -569,8 +569,7 @@ cli_flow_t cli_handler::add_config_diagram(
 }
 
 cli_flow_t cli_handler::add_config_diagram_from_template(
-    const std::string &config_file_path, const std::string &template_name,
-    const std::vector<std::string> &template_variables)
+    const std::string &config_file_path, const std::string &template_name)
 {
     if (!config.diagram_templates ||
         !(config.diagram_templates().find(template_name) !=

@@ -128,14 +128,12 @@ public:
     /**
      * Add diagram based on template
      *
-     * @param config_file_path
-     * @param template_name
-     * @param template_variables
+     * @param config_file_path Path to the configuration file
+     * @param template_name Name of the diagram template
      * @return Command line handler state
      */
     cli_flow_t add_config_diagram_from_template(
-        const std::string &config_file_path, const std::string &template_name,
-        const std::vector<std::string> &template_variables);
+        const std::string &config_file_path, const std::string &template_name);
 
     /**
      * Check if diagram output directory exists, if not create it
