@@ -68,6 +68,8 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    using common_generator<diagram_config, diagram_model>::generate;
+
     /**
      * @brief Main generator method.
      *
@@ -76,7 +78,7 @@ public:
      *
      * @param ostr Output stream.
      */
-    void generate(std::ostream &ostr) const override;
+    void generate_diagram(std::ostream &ostr) const override;
 
     /**
      * @brief In a nested diagram, generate the top level elements.
@@ -273,7 +275,7 @@ private:
     template <typename T>
     void sort_class_elements(std::vector<T> &elements) const
     {
-        if (m_config.member_order() == config::member_order_t::lexical) {
+        if (config().member_order() == config::member_order_t::lexical) {
             std::sort(elements.begin(), elements.end(),
                 [](const auto &m1, const auto &m2) {
                     return m1.name() < m2.name();

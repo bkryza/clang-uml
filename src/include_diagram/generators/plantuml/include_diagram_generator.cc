@@ -47,21 +47,20 @@ void generator::generate_relationships(
         util::for_each_if(
             f.relationships(),
             [this](const auto &r) {
-                return m_model.should_include(r.type()) &&
+                return model().should_include(r.type()) &&
                     util::contains(m_generated_aliases,
-                        m_model.get(r.destination()).value().alias());
+                        model().get(r.destination()).value().alias());
             },
             [&f, &ostr, this](const auto &r) {
                 ostr << f.alias() << " "
                      << plantuml_common::to_plantuml(r.type(), r.style()) << " "
-                     << m_model.get(r.destination()).value().alias() << '\n';
+                     << model().get(r.destination()).value().alias() << '\n';
             });
     }
 }
 
 void generator::generate(const source_file &f, std::ostream &ostr) const
 {
-
     if (f.type() == common::model::source_file_t::kDirectory) {
         LOG_DBG("Generating directory {}", f.name());
 
@@ -80,10 +79,10 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
     else {
         LOG_DBG("Generating file {}", f.name());
 
-        if (m_model.should_include(f)) {
+        if (model().should_include(f)) {
             ostr << "file \"" << f.name() << "\" as " << f.alias();
 
-            if (m_config.generate_links) {
+            if (config().generate_links) {
                 generate_link(ostr, f);
             }
 
@@ -94,34 +93,18 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
     }
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_diagram(std::ostream &ostr) const
 {
-    update_context();
-
-    ostr << "@startuml" << '\n';
-
-    if (m_config.puml)
-        generate_plantuml_directives(ostr, m_config.puml().before);
-
     // Generate files and folders
-    util::for_each_if(
-        m_model, [](const auto & /*f*/) { return true; },
-        [this, &ostr](const auto &f) {
-            generate(dynamic_cast<source_file &>(*f), ostr);
-        });
+    util::for_each(model(), [this, &ostr](const auto &f) {
+        generate(dynamic_cast<source_file &>(*f), ostr);
+    });
 
     // Process file include relationships
-    util::for_each(m_model, [this, &ostr](const auto &f) {
+    util::for_each(model(), [this, &ostr](const auto &f) {
         generate_relationships(dynamic_cast<source_file &>(*f), ostr);
     });
 
     generate_config_layout_hints(ostr);
-
-    if (m_config.puml)
-        generate_plantuml_directives(ostr, m_config.puml().after);
-
-    generate_metadata(ostr);
-
-    ostr << "@enduml" << '\n';
 }
 } // namespace clanguml::include_diagram::generators::plantuml

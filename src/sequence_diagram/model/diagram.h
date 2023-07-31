@@ -104,6 +104,14 @@ public:
      * @param id Participant id
      * @return
      */
+    const activity &get_activity(common::model::diagram_element::id_t id) const;
+
+    /**
+     * @brief Get reference to current activity of a participant
+     *
+     * @param id Participant id
+     * @return
+     */
     activity &get_activity(common::model::diagram_element::id_t id);
 
     /**
@@ -178,6 +186,14 @@ public:
      * @return Set of all active participant ids
      */
     std::set<common::model::diagram_element::id_t> &active_participants();
+
+    /**
+     * @brief Get all active participants in the diagram
+     *
+     * @return Set of all active participant ids
+     */
+    const std::set<common::model::diagram_element::id_t> &
+    active_participants() const;
 
     /**
      * @brief Convert element full name to PlantUML alias.

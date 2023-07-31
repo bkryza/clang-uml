@@ -55,6 +55,8 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    using common_generator<diagram_config, diagram_model>::generate;
+
     /**
      * @brief Main generator method.
      *
@@ -63,7 +65,7 @@ public:
      *
      * @param ostr Output stream.
      */
-    void generate(std::ostream &ostr) const override;
+    void generate_diagram(std::ostream &ostr) const override;
 
     /**
      * @brief Generate relationships originating from package `p`

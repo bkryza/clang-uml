@@ -41,11 +41,11 @@ void generator::generate_relationships(
     else {
         util::for_each_if(
             f.relationships(),
-            [this](const auto &r) { return m_model.should_include(r.type()); },
-            [&f, this](const auto &r) {
+            [this](const auto &r) { return model().should_include(r.type()); },
+            [&f, &parent](const auto &r) {
                 nlohmann::json rel = r;
                 rel["source"] = std::to_string(f.id());
-                json_["relationships"].push_back(std::move(rel));
+                parent["relationships"].push_back(std::move(rel));
             });
     }
 }
@@ -73,7 +73,7 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
         parent["elements"].push_back(std::move(j));
     }
     else {
-        if (m_model.should_include(f)) {
+        if (model().should_include(f)) {
             LOG_DBG("Generating file {}", f.name());
 
             j["type"] = "file";
@@ -84,28 +84,19 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
     }
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_diagram(nlohmann::json &parent) const
 {
-    json_["name"] = m_model.name();
-    json_["diagram_type"] = "include";
-
-    json_["elements"] = std::vector<nlohmann::json>{};
-    json_["relationships"] = std::vector<nlohmann::json>{};
+    parent["elements"] = std::vector<nlohmann::json>{};
+    parent["relationships"] = std::vector<nlohmann::json>{};
 
     // Generate files and folders
-    util::for_each_if(
-        m_model, [](const auto & /*f*/) { return true; },
-        [this](const auto &f) {
-            generate(dynamic_cast<source_file &>(*f), json_);
-        });
-
-    // Process file include relationships
-    util::for_each(m_model, [this](const auto &f) {
-        generate_relationships(dynamic_cast<source_file &>(*f), json_);
+    util::for_each(model(), [this, &parent](const auto &f) {
+        generate(dynamic_cast<source_file &>(*f), parent);
     });
 
-    generate_metadata(json_);
-
-    ostr << json_;
+    // Process file include relationships
+    util::for_each(model(), [this, &parent](const auto &f) {
+        generate_relationships(dynamic_cast<source_file &>(*f), parent);
+    });
 }
 } // namespace clanguml::include_diagram::generators::json

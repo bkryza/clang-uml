@@ -93,6 +93,12 @@ void diagram::add_active_participant(common::model::diagram_element::id_t id)
     active_participants_.emplace(id);
 }
 
+const activity &diagram::get_activity(
+    common::model::diagram_element::id_t id) const
+{
+    return sequences_.at(id);
+}
+
 activity &diagram::get_activity(common::model::diagram_element::id_t id)
 {
     return sequences_.at(id);
@@ -169,6 +175,12 @@ diagram::participants() const
 }
 
 std::set<common::model::diagram_element::id_t> &diagram::active_participants()
+{
+    return active_participants_;
+}
+
+const std::set<common::model::diagram_element::id_t> &
+diagram::active_participants() const
 {
     return active_participants_;
 }

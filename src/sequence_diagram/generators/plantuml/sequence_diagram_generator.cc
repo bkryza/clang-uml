@@ -45,8 +45,8 @@ std::string generator::render_name(std::string name) const
 
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
-    const auto &from = m_model.get_participant<model::participant>(m.from());
-    const auto &to = m_model.get_participant<model::participant>(m.to());
+    const auto &from = model().get_participant<model::participant>(m.from());
+    const auto &to = model().get_participant<model::participant>(m.to());
 
     if (!from || !to) {
         LOG_DBG("Skipping empty call from '{}' to '{}'", m.from(), m.to());
@@ -61,10 +61,10 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     model::function::message_render_mode render_mode =
         model::function::message_render_mode::full;
 
-    if (m_config.generate_method_arguments() ==
+    if (config().generate_method_arguments() ==
         config::method_arguments::abbreviated)
         render_mode = model::function::message_render_mode::abbreviated;
-    else if (m_config.generate_method_arguments() ==
+    else if (config().generate_method_arguments() ==
         config::method_arguments::none)
         render_mode = model::function::message_render_mode::no_arguments;
 
@@ -74,7 +74,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         message =
             fmt::format("{}{}{}", style, f.message_name(render_mode), style);
     }
-    else if (m_config.combine_free_functions_into_file_participants()) {
+    else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
             message = dynamic_cast<const model::function &>(to.value())
                           .message_name(render_mode);
@@ -95,7 +95,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     ostr << to_alias;
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, m);
     }
 
@@ -119,8 +119,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 {
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
-    const auto &from = m_model.get_participant<model::participant>(m.from());
-    const auto &to = m_model.get_participant<model::function>(m.to());
+    const auto &from = model().get_participant<model::participant>(m.from());
+    const auto &to = model().get_participant<model::function>(m.to());
     if ((m.from() != m.to()) && !to.value().is_void()) {
         const std::string from_alias = generate_alias(from.value());
 
@@ -130,7 +130,7 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
              << common::generators::plantuml::to_plantuml(message_t::kReturn)
              << " " << from_alias;
 
-        if (m_config.generate_return_types()) {
+        if (config().generate_return_types()) {
             ostr << " : //" << m.return_type() << "//";
         }
 
@@ -144,7 +144,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
     for (const auto &m : a.messages()) {
         if (m.type() == message_t::kCall) {
             const auto &to =
-                m_model.get_participant<model::participant>(m.to());
+                model().get_participant<model::participant>(m.to());
 
             visited.push_back(m.from());
 
@@ -156,14 +156,14 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
             ostr << "activate " << to_alias << std::endl;
 
-            if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
+            if (model().sequences().find(m.to()) != model().sequences().end()) {
                 if (std::find(visited.begin(), visited.end(), m.to()) ==
                     visited
                         .end()) { // break infinite recursion on recursive calls
                     LOG_DBG("Creating activity {} --> {} - missing sequence {}",
                         m.from(), m.to(), m.to());
                     generate_activity(
-                        m_model.get_activity(m.to()), ostr, visited);
+                        model().get_activity(m.to()), ostr, visited);
                 }
             }
             else
@@ -270,7 +270,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 void generator::generate_participant(
     std::ostream &ostr, const std::string &name) const
 {
-    auto p = m_model.get(name);
+    auto p = model().get(name);
 
     if (!p.has_value()) {
         LOG_WARN("Cannot find participant {} from `participants_order` option",
@@ -287,7 +287,7 @@ void generator::generate_participant(
     common::id_t participant_id{0};
 
     if (!force) {
-        for (const auto pid : m_model.active_participants()) {
+        for (const auto pid : model().active_participants()) {
             if (pid == id) {
                 participant_id = pid;
                 break;
@@ -304,11 +304,12 @@ void generator::generate_participant(
         return;
 
     const auto &participant =
-        m_model.get_participant<model::participant>(participant_id).value();
+        model().get_participant<model::participant>(participant_id).value();
 
     if (participant.type_name() == "method") {
         const auto class_id =
-            m_model.get_participant<model::method>(participant_id)
+            model()
+                .get_participant<model::method>(participant_id)
                 .value()
                 .class_id();
 
@@ -316,16 +317,16 @@ void generator::generate_participant(
             return;
 
         const auto &class_participant =
-            m_model.get_participant<model::participant>(class_id).value();
+            model().get_participant<model::participant>(class_id).value();
 
         print_debug(class_participant, ostr);
 
         ostr << "participant \""
-             << render_name(m_config.using_namespace().relative(
+             << render_name(config().using_namespace().relative(
                     class_participant.full_name(false)))
              << "\" as " << class_participant.alias();
 
-        if (m_config.generate_links) {
+        if (config().generate_links) {
             common_generator<diagram_config, diagram_model>::generate_link(
                 ostr, class_participant);
         }
@@ -336,11 +337,12 @@ void generator::generate_participant(
     }
     else if ((participant.type_name() == "function" ||
                  participant.type_name() == "function_template") &&
-        m_config.combine_free_functions_into_file_participants()) {
+        config().combine_free_functions_into_file_participants()) {
         // Create a single participant for all functions declared in a
         // single file
         const auto &file_path =
-            m_model.get_participant<model::function>(participant_id)
+            model()
+                .get_participant<model::function>(participant_id)
                 .value()
                 .file();
 
@@ -352,7 +354,7 @@ void generator::generate_participant(
             return;
 
         auto participant_name = util::path_to_url(std::filesystem::relative(
-            std::filesystem::path{file_path}, m_config.root_directory())
+            std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "
@@ -366,11 +368,11 @@ void generator::generate_participant(
         print_debug(participant, ostr);
 
         ostr << "participant \""
-             << m_config.using_namespace().relative(
+             << config().using_namespace().relative(
                     participant.full_name(false))
              << "\" as " << participant.alias();
 
-        if (m_config.generate_links) {
+        if (config().generate_links) {
             common_generator<diagram_config, diagram_model>::generate_link(
                 ostr, participant);
         }
@@ -388,28 +390,36 @@ bool generator::is_participant_generated(common::id_t id) const
                id) != generated_participants_.end();
 }
 
-void generator::generate(std::ostream &ostr) const
+std::string generator::generate_alias(
+    const model::participant &participant) const
 {
-    update_context();
+    if ((participant.type_name() == "function" ||
+            participant.type_name() == "function_template") &&
+        config().combine_free_functions_into_file_participants()) {
+        const auto file_id = common::to_id(participant.file());
 
-    m_model.print();
+        return fmt::format("C_{:022}", file_id);
+    }
 
-    ostr << "@startuml" << std::endl;
+    return participant.alias();
+}
 
-    generate_plantuml_directives(ostr, m_config.puml().before);
+void generator::generate_diagram(std::ostream &ostr) const
+{
+    model().print();
 
-    if (m_config.participants_order.has_value) {
-        for (const auto &p : m_config.participants_order()) {
+    if (config().participants_order.has_value) {
+        for (const auto &p : config().participants_order()) {
             LOG_DBG("Pregenerating participant {}", p);
             generate_participant(ostr, p);
         }
     }
 
-    for (const auto &sf : m_config.start_from()) {
+    for (const auto &sf : config().start_from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
-            for (const auto &[k, v] : m_model.sequences()) {
-                const auto &caller = *m_model.participants().at(v.from());
+            for (const auto &[k, v] : model().sequences()) {
+                const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {
                     LOG_DBG("Found sequence diagram start point: {}", k);
@@ -430,7 +440,7 @@ void generator::generate(std::ostream &ostr) const
                 visited_participants;
 
             const auto &from =
-                m_model.get_participant<model::function>(start_from);
+                model().get_participant<model::function>(start_from);
 
             if (!from.has_value()) {
                 LOG_WARN("Failed to find participant {} for start_from "
@@ -446,10 +456,10 @@ void generator::generate(std::ostream &ostr) const
             model::function::message_render_mode render_mode =
                 model::function::message_render_mode::full;
 
-            if (m_config.generate_method_arguments() ==
+            if (config().generate_method_arguments() ==
                 config::method_arguments::abbreviated)
                 render_mode = model::function::message_render_mode::abbreviated;
-            else if (m_config.generate_method_arguments() ==
+            else if (config().generate_method_arguments() ==
                 config::method_arguments::none)
                 render_mode =
                     model::function::message_render_mode::no_arguments;
@@ -459,7 +469,7 @@ void generator::generate(std::ostream &ostr) const
             // which method relates to the first activity for this 'start_from'
             // condition
             if (from.value().type_name() == "method" ||
-                m_config.combine_free_functions_into_file_participants()) {
+                config().combine_free_functions_into_file_participants()) {
                 ostr << "[->"
                      << " " << from_alias << " : "
                      << from.value().message_name(render_mode) << std::endl;
@@ -468,16 +478,16 @@ void generator::generate(std::ostream &ostr) const
             ostr << "activate " << from_alias << std::endl;
 
             generate_activity(
-                m_model.get_activity(start_from), ostr, visited_participants);
+                model().get_activity(start_from), ostr, visited_participants);
 
             if (from.value().type_name() == "method" ||
-                m_config.combine_free_functions_into_file_participants()) {
+                config().combine_free_functions_into_file_participants()) {
 
                 if (!from.value().is_void()) {
                     ostr << "[<--"
                          << " " << from_alias;
 
-                    if (m_config.generate_return_types())
+                    if (config().generate_return_types())
                         ostr << " : //" << from.value().return_type() << "//";
 
                     ostr << '\n';
@@ -491,25 +501,6 @@ void generator::generate(std::ostream &ostr) const
             continue;
         }
     }
-
-    generate_plantuml_directives(ostr, m_config.puml().after);
-
-    generate_metadata(ostr);
-
-    ostr << "@enduml" << std::endl;
 }
 
-std::string generator::generate_alias(
-    const model::participant &participant) const
-{
-    if ((participant.type_name() == "function" ||
-            participant.type_name() == "function_template") &&
-        m_config.combine_free_functions_into_file_participants()) {
-        const auto file_id = common::to_id(participant.file());
-
-        return fmt::format("C_{:022}", file_id);
-    }
-
-    return participant.alias();
-}
 } // namespace clanguml::sequence_diagram::generators::plantuml

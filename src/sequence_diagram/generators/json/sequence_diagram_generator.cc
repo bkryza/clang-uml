@@ -70,8 +70,8 @@ generator::generator(
 
 void generator::generate_call(const message &m, nlohmann::json &parent) const
 {
-    const auto &from = m_model.get_participant<model::participant>(m.from());
-    const auto &to = m_model.get_participant<model::participant>(m.to());
+    const auto &from = model().get_participant<model::participant>(m.from());
+    const auto &to = model().get_participant<model::participant>(m.to());
 
     if (!from || !to) {
         LOG_DBG("Skipping empty call from '{}' to '{}'", m.from(), m.to());
@@ -90,7 +90,7 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         message = dynamic_cast<const model::function &>(to.value())
                       .message_name(render_mode);
     }
-    else if (m_config.combine_free_functions_into_file_participants()) {
+    else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
             message = dynamic_cast<const model::function &>(to.value())
                           .message_name(render_mode);
@@ -113,16 +113,17 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     if (from.value().type_name() == "method") {
         const auto &class_participant =
-            m_model.get_participant<model::method>(from.value().id()).value();
+            model().get_participant<model::method>(from.value().id()).value();
 
         msg["from"]["participant_id"] =
             std::to_string(class_participant.class_id());
     }
     else if (from.value().type_name() == "function" ||
         from.value().type_name() == "function_template") {
-        if (m_config.combine_free_functions_into_file_participants()) {
+        if (config().combine_free_functions_into_file_participants()) {
             const auto &file_participant =
-                m_model.get_participant<model::function>(from.value().id())
+                model()
+                    .get_participant<model::function>(from.value().id())
                     .value();
             msg["from"]["participant_id"] =
                 std::to_string(common::to_id(file_participant.file_relative()));
@@ -138,16 +139,17 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     if (to.value().type_name() == "method") {
         const auto &class_participant =
-            m_model.get_participant<model::method>(to.value().id()).value();
+            model().get_participant<model::method>(to.value().id()).value();
 
         msg["to"]["participant_id"] =
             std::to_string(class_participant.class_id());
     }
     else if (to.value().type_name() == "function" ||
         to.value().type_name() == "function_template") {
-        if (m_config.combine_free_functions_into_file_participants()) {
+        if (config().combine_free_functions_into_file_participants()) {
             const auto &file_participant =
-                m_model.get_participant<model::function>(to.value().id())
+                model()
+                    .get_participant<model::function>(to.value().id())
                     .value();
             msg["to"]["participant_id"] =
                 std::to_string(common::to_id(file_participant.file_relative()));
@@ -258,14 +260,14 @@ void generator::process_call_message(const model::message &m,
 
     generate_call(m, current_block_statement());
 
-    if (m_model.sequences().find(m.to()) != m_model.sequences().end()) {
+    if (model().sequences().find(m.to()) != model().sequences().end()) {
         if (std::find(visited.begin(), visited.end(), m.to()) ==
             visited.end()) { // break infinite recursion on recursive calls
 
             LOG_DBG("Creating activity {} --> {} - missing sequence {}",
                 m.from(), m.to(), m.to());
 
-            generate_activity(m_model.get_activity(m.to()), visited);
+            generate_activity(model().get_activity(m.to()), visited);
         }
     }
     else
@@ -506,7 +508,7 @@ void generator::process_if_message(const message &m) const
 void generator::generate_participant(
     nlohmann::json &parent, const std::string &name) const
 {
-    auto p = m_model.get(name);
+    auto p = model().get(name);
 
     if (!p.has_value()) {
         LOG_WARN("Cannot find participant {} from `participants_order` option",
@@ -523,7 +525,7 @@ common::id_t generator::generate_participant(
     common::id_t participant_id{0};
 
     if (!force) {
-        for (const auto pid : m_model.active_participants()) {
+        for (const auto pid : model().active_participants()) {
             if (pid == id) {
                 participant_id = pid;
                 break;
@@ -540,10 +542,11 @@ common::id_t generator::generate_participant(
         return participant_id;
 
     const auto &participant =
-        m_model.get_participant<model::participant>(participant_id).value();
+        model().get_participant<model::participant>(participant_id).value();
 
     if (participant.type_name() == "method") {
-        participant_id = m_model.get_participant<model::method>(participant_id)
+        participant_id = model()
+                             .get_participant<model::method>(participant_id)
                              .value()
                              .class_id();
 
@@ -551,21 +554,21 @@ common::id_t generator::generate_participant(
             return participant_id;
 
         const auto &class_participant =
-            m_model.get_participant<model::participant>(participant_id).value();
+            model().get_participant<model::participant>(participant_id).value();
 
         parent["participants"].push_back(class_participant);
     }
     else if ((participant.type_name() == "function" ||
                  participant.type_name() == "function_template") &&
-        m_config.combine_free_functions_into_file_participants()) {
+        config().combine_free_functions_into_file_participants()) {
         // Create a single participant for all functions declared in a
         // single file
         const auto &function_participant =
-            m_model.get_participant<model::function>(participant_id).value();
+            model().get_participant<model::function>(participant_id).value();
 
         nlohmann::json j = function_participant;
         j["name"] = util::path_to_url(
-            m_config.make_path_relative(function_participant.file()).string());
+            config().make_path_relative(function_participant.file()).string());
 
         participant_id = common::to_id(function_participant.file_relative());
 
@@ -592,28 +595,26 @@ bool generator::is_participant_generated(common::id_t id) const
                id) != generated_participants_.end();
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_diagram(nlohmann::json &parent) const
 {
-    m_model.print();
+    model().print();
 
-    json_["name"] = m_model.name();
-    json_["diagram_type"] = "sequence";
-    if (m_config.using_namespace)
-        json_["using_namespace"] = m_config.using_namespace().to_string();
+    if (config().using_namespace)
+        parent["using_namespace"] = config().using_namespace().to_string();
 
-    if (m_config.participants_order.has_value) {
-        for (const auto &p : m_config.participants_order()) {
+    if (config().participants_order.has_value) {
+        for (const auto &p : config().participants_order()) {
             LOG_DBG("Pregenerating participant {}", p);
-            generate_participant(json_, p);
+            generate_participant(parent, p);
         }
     }
 
-    for (const auto &sf : m_config.start_from()) {
+    for (const auto &sf : config().start_from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             std::string start_from_str;
-            for (const auto &[k, v] : m_model.sequences()) {
-                const auto &caller = *m_model.participants().at(v.from());
+            for (const auto &[k, v] : model().sequences()) {
+                const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {
                     LOG_DBG("Found sequence diagram start point: {}", k);
@@ -634,7 +635,7 @@ void generator::generate(std::ostream &ostr) const
                 visited_participants;
 
             const auto &from =
-                m_model.get_participant<model::function>(start_from);
+                model().get_participant<model::function>(start_from);
 
             if (!from.has_value()) {
                 LOG_WARN("Failed to find participant {} for start_from "
@@ -655,12 +656,12 @@ void generator::generate(std::ostream &ostr) const
             block_statements_stack_.push_back(std::ref(sequence));
 
             generate_activity(
-                m_model.get_activity(start_from), visited_participants);
+                model().get_activity(start_from), visited_participants);
 
             block_statements_stack_.pop_back();
 
             if (from.value().type_name() == "method" ||
-                m_config.combine_free_functions_into_file_participants()) {
+                config().combine_free_functions_into_file_participants()) {
 
                 sequence["return_type"] = from.value().return_type();
             }
@@ -673,8 +674,6 @@ void generator::generate(std::ostream &ostr) const
         }
     }
 
-    generate_metadata(json_);
-
-    ostr << json_;
+    parent.update(json_);
 }
 } // namespace clanguml::sequence_diagram::generators::json

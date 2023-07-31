@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "common/generators/generator.h"
 #include "common/model/diagram_filter.h"
 #include "config/config.h"
 #include "util/error.h"
@@ -56,32 +57,36 @@ using clanguml::common::model::relationship_t;
  * @tparam ConfigType Configuration type
  * @tparam DiagramType Diagram model type
  */
-template <typename ConfigType, typename DiagramType> class generator {
+template <typename ConfigType, typename DiagramType>
+class generator
+    : public clanguml::common::generators::generator<ConfigType, DiagramType> {
 public:
-    /**
-     * @brief Constructor
-     *
-     * @param config Reference to instance of @link clanguml::config::diagram
-     * @param model Reference to instance of @link clanguml::model::diagram
-     */
-    generator(ConfigType &config, DiagramType &model)
-        : m_config{config}
-        , m_model{model}
-    {
-    }
+    using clanguml::common::generators::generator<ConfigType,
+        DiagramType>::generator;
 
-    virtual ~generator() = default;
+    ~generator() override = default;
 
     /**
      * @brief Generate diagram
      *
-     * This method must be implemented in subclasses for specific diagram
-     * types. It is responsible for calling other methods in appropriate
-     * order to generate the diagram into the output stream.
+     * This is the main diagram generation entrypoint. It is responsible for
+     * calling other methods in appropriate order to generate the diagram into
+     * the output stream. It generates diagram elements, that are common
+     * to all types of diagrams in a given generator.
      *
      * @param ostr Output stream
      */
-    virtual void generate(std::ostream &ostr) const = 0;
+    void generate(std::ostream &ostr) const override;
+
+    /**
+     * @brief Generate diagram model
+     *
+     * This method must be implemented in subclasses for specific diagram
+     * types.
+     *
+     * @param ostr Output stream
+     */
+    virtual void generate_diagram(nlohmann::json &parent) const = 0;
 
     /**
      * @brief Generate metadata element with diagram metadata
@@ -89,11 +94,6 @@ public:
      * @param parent Root JSON object
      */
     void generate_metadata(nlohmann::json &parent) const;
-
-private:
-protected:
-    ConfigType &m_config;
-    DiagramType &m_model;
 };
 
 template <typename DiagramModel, typename DiagramConfig>
@@ -105,9 +105,23 @@ std::ostream &operator<<(
 }
 
 template <typename C, typename D>
+void generator<C, D>::generate(std::ostream &ostr) const
+{
+    nlohmann::json j;
+    j["name"] = generators::generator<C, D>::model().name();
+    j["diagram_type"] = to_string(generators::generator<C, D>::model().type());
+
+    generate_diagram(j);
+
+    generate_metadata(j);
+
+    ostr << j;
+}
+
+template <typename C, typename D>
 void generator<C, D>::generate_metadata(nlohmann::json &parent) const
 {
-    if (m_config.generate_metadata()) {
+    if (generators::generator<C, D>::config().generate_metadata()) {
         parent["metadata"]["clang_uml_version"] =
             clanguml::version::CLANG_UML_VERSION;
         parent["metadata"]["schema_version"] =

@@ -33,11 +33,11 @@ void generator::generate_relationships(
     LOG_DBG("Generating relationships for package {}", p.full_name(true));
 
     // Generate this packages relationship
-    if (m_model.should_include(relationship_t::kDependency)) {
+    if (model().should_include(relationship_t::kDependency)) {
         for (const auto &r : p.relationships()) {
             nlohmann::json rel = r;
             rel["source"] = std::to_string(p.id());
-            json_["relationships"].push_back(std::move(rel));
+            parent["relationships"].push_back(std::move(rel));
         }
     }
 
@@ -66,7 +66,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 
     for (const auto &subpackage : p) {
         auto &pkg = dynamic_cast<package &>(*subpackage);
-        if (m_model.should_include(pkg)) {
+        if (model().should_include(pkg)) {
             generate(pkg, j);
         }
     }
@@ -74,33 +74,29 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     parent["elements"].push_back(std::move(j));
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_diagram(nlohmann::json &parent) const
 {
-    if (m_config.using_namespace)
-        json_["using_namespace"] = m_config.using_namespace().to_string();
+    if (config().using_namespace)
+        parent["using_namespace"] = config().using_namespace().to_string();
 
-    json_["name"] = m_model.name();
-    json_["diagram_type"] = "package";
+    parent["name"] = model().name();
+    parent["diagram_type"] = "package";
 
-    json_["elements"] = std::vector<nlohmann::json>{};
-    json_["relationships"] = std::vector<nlohmann::json>{};
+    parent["elements"] = std::vector<nlohmann::json>{};
+    parent["relationships"] = std::vector<nlohmann::json>{};
 
-    for (const auto &p : m_model) {
+    for (const auto &p : model()) {
         auto &pkg = dynamic_cast<package &>(*p);
-        if (m_model.should_include(pkg)) {
-            generate(pkg, json_);
+        if (model().should_include(pkg)) {
+            generate(pkg, parent);
         }
     }
 
     // Process package relationships
-    for (const auto &p : m_model) {
-        if (m_model.should_include(dynamic_cast<package &>(*p)))
-            generate_relationships(dynamic_cast<package &>(*p), json_);
+    for (const auto &p : model()) {
+        if (model().should_include(dynamic_cast<package &>(*p)))
+            generate_relationships(dynamic_cast<package &>(*p), parent);
     }
-
-    generate_metadata(json_);
-
-    ostr << json_;
 }
 
 } // namespace clanguml::package_diagram::generators::json

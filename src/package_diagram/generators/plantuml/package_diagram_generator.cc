@@ -34,11 +34,11 @@ void generator::generate_relationships(
     LOG_DBG("Generating relationships for package {}", p.full_name(true));
 
     // Generate this packages relationship
-    if (m_model.should_include(relationship_t::kDependency)) {
+    if (model().should_include(relationship_t::kDependency)) {
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                auto destination = m_model.to_alias(r.destination());
+                auto destination = model().to_alias(r.destination());
                 if (!destination.empty()) {
                     relstr << p.alias() << " ..> " << destination << '\n';
                     ostr << relstr.str();
@@ -65,7 +65,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     together_group_stack_.enter();
 
-    const auto &uns = m_config.using_namespace();
+    const auto &uns = config().using_namespace();
 
     // Don't generate packages from namespaces filtered out by
     // using_namespace
@@ -76,7 +76,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
         if (p.is_deprecated())
             ostr << " <<deprecated>>";
 
-        if (m_config.generate_links) {
+        if (config().generate_links) {
             generate_link(ostr, p);
         }
 
@@ -88,9 +88,9 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     for (const auto &subpackage : p) {
         auto &pkg = dynamic_cast<package &>(*subpackage);
-        if (m_model.should_include(pkg)) {
+        if (model().should_include(pkg)) {
             auto together_group =
-                m_config.get_together_group(pkg.full_name(false));
+                config().get_together_group(pkg.full_name(false));
             if (together_group) {
                 together_group_stack_.group_together(
                     together_group.value(), &pkg);
@@ -112,19 +112,27 @@ void generator::generate(const package &p, std::ostream &ostr) const
     together_group_stack_.leave();
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_groups(std::ostream &ostr) const
 {
-    update_context();
+    for (const auto &[group_name, group_elements] :
+        together_group_stack_.get_current_groups()) {
+        ostr << "together {\n";
 
-    ostr << "@startuml" << '\n';
+        for (auto *pkg : group_elements) {
+            generate(*pkg, ostr);
+        }
 
-    generate_plantuml_directives(ostr, m_config.puml().before);
+        ostr << "}\n";
+    }
+}
 
-    for (const auto &p : m_model) {
+void generator::generate_diagram(std::ostream &ostr) const
+{
+    for (const auto &p : model()) {
         auto &pkg = dynamic_cast<package &>(*p);
-        if (m_model.should_include(pkg)) {
+        if (model().should_include(pkg)) {
             auto together_group =
-                m_config.get_together_group(pkg.full_name(false));
+                config().get_together_group(pkg.full_name(false));
             if (together_group) {
                 together_group_stack_.group_together(
                     together_group.value(), &pkg);
@@ -138,32 +146,12 @@ void generator::generate(std::ostream &ostr) const
     generate_groups(ostr);
 
     // Process package relationships
-    for (const auto &p : m_model) {
-        if (m_model.should_include(dynamic_cast<package &>(*p)))
+    for (const auto &p : model()) {
+        if (model().should_include(dynamic_cast<package &>(*p)))
             generate_relationships(dynamic_cast<package &>(*p), ostr);
     }
 
     generate_config_layout_hints(ostr);
-
-    generate_plantuml_directives(ostr, m_config.puml().after);
-
-    generate_metadata(ostr);
-
-    ostr << "@enduml" << '\n';
-}
-
-void generator::generate_groups(std::ostream &ostr) const
-{
-    for (const auto &[group_name, group_elements] :
-        together_group_stack_.get_current_groups()) {
-        ostr << "together {\n";
-
-        for (auto *pkg : group_elements) {
-            generate(*pkg, ostr);
-        }
-
-        ostr << "}\n";
-    }
 }
 
 } // namespace clanguml::package_diagram::generators::plantuml

@@ -63,6 +63,8 @@ class generator : public common_generator<diagram_config, diagram_model> {
 public:
     generator(diagram_config &config, diagram_model &model);
 
+    using common_generator<diagram_config, diagram_model>::generate;
+
     /**
      * @brief Main generator method.
      *
@@ -71,7 +73,7 @@ public:
      *
      * @param ostr Output stream.
      */
-    void generate(std::ostream &ostr) const override;
+    void generate_diagram(nlohmann::json &parent) const override;
 
     /**
      * Render class element into a JSON node.
@@ -158,9 +160,6 @@ public:
      * @param parent JSON node
      */
     void generate_relationships(const package &p, nlohmann::json &parent) const;
-
-private:
-    mutable nlohmann::json json_;
 };
 
 } // namespace json

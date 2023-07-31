@@ -38,16 +38,16 @@ void generator::generate_link(
 
     auto context = element_context(e);
 
-    if (!m_config.generate_links().link.empty()) {
+    if (!config().generate_links().link.empty()) {
         ostr << " [[[";
         ostr << env().render(
-            std::string_view{m_config.generate_links().link}, context);
+            std::string_view{config().generate_links().link}, context);
     }
 
-    if (!m_config.generate_links().tooltip.empty()) {
+    if (!config().generate_links().tooltip.empty()) {
         ostr << "{";
         ostr << env().render(
-            std::string_view{m_config.generate_links().tooltip}, context);
+            std::string_view{config().generate_links().tooltip}, context);
         ostr << "}";
     }
     ostr << "]]]";
@@ -67,7 +67,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
         class_type = "abstract";
 
     std::string full_name;
-    if (m_config.generate_packages())
+    if (config().generate_packages())
         full_name = c.full_name_no_ns();
     else
         full_name = c.full_name();
@@ -77,7 +77,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
     print_debug(c, ostr);
 
     ostr << class_type << " \""
-         << m_config.simplify_template_type(render_name(full_name));
+         << config().simplify_template_type(render_name(full_name));
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -89,7 +89,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
     print_debug(e, ostr);
 
-    if (m_config.generate_packages())
+    if (config().generate_packages())
         ostr << "enum"
              << " \"" << e.name();
     else
@@ -106,7 +106,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 {
     print_debug(c, ostr);
 
-    if (m_config.generate_packages())
+    if (config().generate_packages())
         ostr << "class"
              << " \"" << c.name();
     else
@@ -133,7 +133,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         ostr << " "
              << "<<union>>";
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
     }
 
@@ -145,7 +145,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     //
     // Process methods
     //
-    if (m_config.group_methods()) {
+    if (config().group_methods()) {
         generate_methods(group_methods(c.methods()), ostr);
     }
     else {
@@ -160,7 +160,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     std::stringstream all_relations_str;
     for (const auto &r : c.relationships()) {
-        if (!m_model.should_include(r.type()))
+        if (!model().should_include(r.type()))
             continue;
 
         try {
@@ -182,14 +182,14 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     sort_class_elements(members);
 
-    if (m_config.group_methods())
+    if (config().group_methods())
         ostr << "__\n";
 
     for (const auto &m : members) {
-        if (!m_model.should_include(m))
+        if (!model().should_include(m))
             continue;
 
-        if (!m_config.include_relations_also_as_members() &&
+        if (!config().include_relations_also_as_members() &&
             rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
 
@@ -232,7 +232,7 @@ void generator::generate_methods(
     sort_class_elements(sorted_methods);
 
     for (const auto &m : sorted_methods) {
-        if (!m_model.should_include(m))
+        if (!model().should_include(m))
             continue;
 
         generate_method(m, ostr);
@@ -250,7 +250,7 @@ generator::method_groups_t generator::group_methods(
     std::vector<class_method> filtered_methods;
     std::copy_if(methods.cbegin(), methods.cend(),
         std::back_inserter(filtered_methods),
-        [this](auto &m) { return m_model.should_include(m); });
+        [this](auto &m) { return model().should_include(m); });
 
     for (const auto &g : method_groups_) {
         result[g] = {};
@@ -278,7 +278,7 @@ void generator::generate_method(
     const class_diagram::model::class_method &m, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
-    const auto &uns = m_config.using_namespace();
+    const auto &uns = config().using_namespace();
 
     constexpr auto kAbbreviatedMethodArgumentsLength{15};
 
@@ -290,25 +290,25 @@ void generator::generate_method(
     if (m.is_static())
         ostr << "{static} ";
 
-    std::string type{uns.relative(m_config.simplify_template_type(m.type()))};
+    std::string type{uns.relative(config().simplify_template_type(m.type()))};
 
     ostr << plantuml_common::to_plantuml(m.access()) << m.name();
 
     if (!m.template_params().empty()) {
-        m.render_template_params(ostr, m_config.using_namespace(), false);
+        m.render_template_params(ostr, config().using_namespace(), false);
     }
 
     ostr << "(";
-    if (m_config.generate_method_arguments() !=
+    if (config().generate_method_arguments() !=
         config::method_arguments::none) {
         std::vector<std::string> params;
         std::transform(m.parameters().cbegin(), m.parameters().cend(),
             std::back_inserter(params), [this](const auto &mp) {
-                return m_config.simplify_template_type(
-                    mp.to_string(m_config.using_namespace()));
+                return config().simplify_template_type(
+                    mp.to_string(config().using_namespace()));
             });
         auto args_string = fmt::format("{}", fmt::join(params, ", "));
-        if (m_config.generate_method_arguments() ==
+        if (config().generate_method_arguments() ==
             config::method_arguments::abbreviated) {
             args_string = clanguml::util::abbreviate(
                 args_string, kAbbreviatedMethodArgumentsLength);
@@ -340,7 +340,7 @@ void generator::generate_method(
 
     ostr << " : " << type;
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         generate_link(ostr, m);
     }
 }
@@ -349,7 +349,7 @@ void generator::generate_member(
     const class_diagram::model::class_member &m, std::ostream &ostr) const
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
-    const auto &uns = m_config.using_namespace();
+    const auto &uns = config().using_namespace();
 
     print_debug(m, ostr);
 
@@ -358,9 +358,9 @@ void generator::generate_member(
 
     ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
          << render_name(
-                uns.relative(m_config.simplify_template_type(m.type())));
+                uns.relative(config().simplify_template_type(m.type())));
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         generate_link(ostr, m);
     }
 }
@@ -371,7 +371,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 
     ostr << class_type << " " << c.alias() << " <<concept>>";
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
     }
 
@@ -385,7 +385,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
         std::vector<std::string> parameters;
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {
-            parameters.emplace_back(p.to_string(m_config.using_namespace()));
+            parameters.emplace_back(p.to_string(config().using_namespace()));
         }
 
         ostr << fmt::format("({})\n", fmt::join(parameters, ","));
@@ -403,7 +403,7 @@ void generator::generate_member_notes(std::ostream &ostr,
 {
     for (const auto &decorator : member.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-        if (note && note->applies_to_diagram(m_config.name)) {
+        if (note && note->applies_to_diagram(config().name)) {
             ostr << "note " << note->position << " of " << alias
                  << "::" << member.name() << '\n'
                  << note->text << '\n'
@@ -414,22 +414,22 @@ void generator::generate_member_notes(std::ostream &ostr,
 
 void generator::generate_relationships(std::ostream &ostr) const
 {
-    for (const auto &p : m_model) {
+    for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
             generate_relationships(*pkg, ostr);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            if (m_model.should_include(*cls)) {
+            if (model().should_include(*cls)) {
                 generate_relationships(*cls, ostr);
             }
         }
         else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            if (m_model.should_include(*enm)) {
+            if (model().should_include(*enm)) {
                 generate_relationships(*enm, ostr);
             }
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            if (m_model.should_include(*cpt)) {
+            if (model().should_include(*cpt)) {
                 generate_relationships(*cpt, ostr);
             }
         }
@@ -446,7 +446,7 @@ void generator::generate_relationship(
 
     std::string destination;
 
-    auto target_element = m_model.get(r.destination());
+    auto target_element = model().get(r.destination());
     if (!target_element.has_value())
         throw error::uml_alias_missing{fmt::format(
             "Missing element in the model for ID: {}", r.destination())};
@@ -484,7 +484,7 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        if (!m_model.should_include(r.type()))
+        if (!model().should_include(r.type()))
             continue;
 
         LOG_DBG("== Processing relationship {}",
@@ -506,7 +506,7 @@ void generator::generate_relationships(
 
             std::string target_alias;
             try {
-                target_alias = m_model.to_alias(destination);
+                target_alias = model().to_alias(destination);
             }
             catch (...) {
                 LOG_DBG("Failed to find alias to {}", destination);
@@ -543,11 +543,11 @@ void generator::generate_relationships(
         }
     }
 
-    if (m_model.should_include(relationship_t::kExtension)) {
+    if (model().should_include(relationship_t::kExtension)) {
         for (const auto &b : c.parents()) {
             std::stringstream relstr;
             try {
-                auto target_alias = m_model.to_alias(b.id());
+                auto target_alias = model().to_alias(b.id());
 
                 if (m_generated_aliases.find(target_alias) ==
                     m_generated_aliases.end())
@@ -581,7 +581,7 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        if (!m_model.should_include(r.type()))
+        if (!model().should_include(r.type()))
             continue;
 
         LOG_DBG("== Processing relationship {}",
@@ -603,7 +603,7 @@ void generator::generate_relationships(
 
             std::string target_alias;
             try {
-                target_alias = m_model.to_alias(destination);
+                target_alias = model().to_alias(destination);
             }
             catch (...) {
                 LOG_DBG("Failed to find alias to {}", destination);
@@ -647,7 +647,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 {
     ostr << "enum " << e.alias();
 
-    if (m_config.generate_links) {
+    if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, e);
     }
 
@@ -668,7 +668,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 {
     for (const auto &r : e.relationships()) {
-        if (!m_model.should_include(r.type()))
+        if (!model().should_include(r.type()))
             continue;
 
         clanguml::common::id_t destination{0};
@@ -676,7 +676,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         try {
             destination = r.destination();
 
-            auto target_alias = m_model.to_alias(destination);
+            auto target_alias = model().to_alias(destination);
 
             if (m_generated_aliases.find(target_alias) ==
                 m_generated_aliases.end())
@@ -706,9 +706,9 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
-    const auto &uns = m_config.using_namespace();
+    const auto &uns = config().using_namespace();
 
-    if (m_config.generate_packages()) {
+    if (config().generate_packages()) {
         LOG_DBG("Generating package {}", p.name());
 
         // Don't generate packages from namespaces filtered out by
@@ -741,9 +741,9 @@ void generator::generate(const package &p, std::ostream &ostr) const
             }
         }
         else if (auto *cls = dynamic_cast<class_ *>(subpackage.get()); cls) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 auto together_group =
-                    m_config.get_together_group(cls->full_name(false));
+                    config().get_together_group(cls->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), cls);
@@ -755,9 +755,9 @@ void generator::generate(const package &p, std::ostream &ostr) const
             }
         }
         else if (auto *enm = dynamic_cast<enum_ *>(subpackage.get()); enm) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 auto together_group =
-                    m_config.get_together_group(subpackage->full_name(false));
+                    config().get_together_group(subpackage->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), enm);
@@ -769,9 +769,9 @@ void generator::generate(const package &p, std::ostream &ostr) const
             }
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(subpackage.get()); cpt) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 auto together_group =
-                    m_config.get_together_group(cpt->full_name(false));
+                    config().get_together_group(cpt->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), cpt);
@@ -784,7 +784,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
         }
     }
 
-    if (m_config.generate_packages()) {
+    if (config().generate_packages()) {
         // Now generate any diagram elements which are in together
         // groups
         for (const auto &[group_name, group_elements] :
@@ -829,24 +829,24 @@ void generator::generate_relationships(
             const auto &sp = dynamic_cast<package &>(*subpackage);
             if (!sp.is_empty() &&
                 !sp.all_of([this](const common::model::element &e) {
-                    return !m_model.should_include(e);
+                    return !model().should_include(e);
                 }))
                 generate_relationships(sp, ostr);
         }
         else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<class_ &>(*subpackage), ostr);
             }
         }
         else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<enum_ &>(*subpackage), ostr);
             }
         }
         else if (dynamic_cast<concept_ *>(subpackage.get()) != nullptr) {
-            if (m_model.should_include(*subpackage)) {
+            if (model().should_include(*subpackage)) {
                 generate_relationships(
                     dynamic_cast<concept_ &>(*subpackage), ostr);
             }
@@ -854,14 +854,8 @@ void generator::generate_relationships(
     }
 }
 
-void generator::generate(std::ostream &ostr) const
+void generator::generate_diagram(std::ostream &ostr) const
 {
-    update_context();
-
-    ostr << "@startuml" << '\n';
-
-    generate_plantuml_directives(ostr, m_config.puml().before);
-
     generate_top_level_elements(ostr);
 
     generate_groups(ostr);
@@ -869,28 +863,22 @@ void generator::generate(std::ostream &ostr) const
     generate_relationships(ostr);
 
     generate_config_layout_hints(ostr);
-
-    generate_plantuml_directives(ostr, m_config.puml().after);
-
-    generate_metadata(ostr);
-
-    ostr << "@enduml" << '\n';
 }
 
 void generator::generate_top_level_elements(std::ostream &ostr) const
 {
-    for (const auto &p : m_model) {
+    for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
             if (!pkg->is_empty() &&
                 !pkg->all_of([this](const common::model::element &e) {
-                    return !m_model.should_include(e);
+                    return !model().should_include(e);
                 }))
                 generate(*pkg, ostr);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            if (m_model.should_include(*cls)) {
+            if (model().should_include(*cls)) {
                 auto together_group =
-                    m_config.get_together_group(cls->full_name(false));
+                    config().get_together_group(cls->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), cls);
@@ -902,9 +890,9 @@ void generator::generate_top_level_elements(std::ostream &ostr) const
             }
         }
         else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            if (m_model.should_include(*enm)) {
+            if (model().should_include(*enm)) {
                 auto together_group =
-                    m_config.get_together_group(enm->full_name(false));
+                    config().get_together_group(enm->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), enm);
@@ -916,9 +904,9 @@ void generator::generate_top_level_elements(std::ostream &ostr) const
             }
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            if (m_model.should_include(*cpt)) {
+            if (model().should_include(*cpt)) {
                 auto together_group =
-                    m_config.get_together_group(cpt->full_name(false));
+                    config().get_together_group(cpt->full_name(false));
                 if (together_group) {
                     together_group_stack_.group_together(
                         together_group.value(), cpt);
