@@ -1,5 +1,9 @@
 # CHANGELOG
 
+  * Add option to disable generation of dependency relation to template
+    arguments (#141)
+  * Added configuration file validation (#57)
+
 ### 0.3.8
   * Added option to display block conditional statements in sequence diagrams (#162)
   * Added Doxygen documentation (#161)

@@ -184,7 +184,11 @@ void inheritable_diagram_options::inherit(
     puml.override(parent.puml);
     generate_method_arguments.override(parent.generate_method_arguments);
     generate_packages.override(parent.generate_packages);
+    generate_template_argument_dependencies.override(
+        parent.generate_template_argument_dependencies);
     package_type.override(parent.package_type);
+    generate_template_argument_dependencies.override(
+        parent.generate_template_argument_dependencies);
     generate_links.override(parent.generate_links);
     generate_system_headers.override(parent.generate_system_headers);
     git.override(parent.git);

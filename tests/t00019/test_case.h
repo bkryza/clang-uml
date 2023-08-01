@@ -38,16 +38,28 @@ TEST_CASE("t00019", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("Layer1", "LowerLayer"));
         REQUIRE_THAT(puml, IsClassTemplate("Layer2", "LowerLayer"));
         REQUIRE_THAT(puml, IsClassTemplate("Layer3", "LowerLayer"));
+
         REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Layer3<Base>")));
+        REQUIRE_THAT(puml, !IsDependency(_A("Base"), _A("Layer3<Base>")));
+
         REQUIRE_THAT(
             puml, IsBaseClass(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
+        REQUIRE_THAT(puml,
+            !IsDependency(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
+
         REQUIRE_THAT(puml,
             IsBaseClass(_A("Layer2<Layer3<Base>>"),
                 _A("Layer1<Layer2<Layer3<Base>>>")));
 
         REQUIRE_THAT(puml,
+            !IsDependency(_A("Layer2<Layer3<Base>>"),
+                _A("Layer1<Layer2<Layer3<Base>>>")));
+
+        REQUIRE_THAT(puml,
             IsAggregation(
                 _A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
+        REQUIRE_THAT(
+            puml, !IsDependency(_A("A"), _A("Layer1<Layer2<Layer3<Base>>>")));
 
         REQUIRE_THAT(puml,
             !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));

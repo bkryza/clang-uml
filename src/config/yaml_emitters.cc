@@ -312,6 +312,7 @@ YAML::Emitter &operator<<(
         }
         out << c.member_order;
         out << c.package_type;
+        out << c.generate_template_argument_dependencies;
     }
     else if (dynamic_cast<const sequence_diagram *>(&c) != nullptr) {
         out << c.combine_free_functions_into_file_participants;

@@ -181,4 +181,21 @@ Dependency relationships are inferred whenever a class uses another class, thus 
 will be rendered in addition to other relationships such as association or inheritance. In the future there might
 be an option to remove the redundant dependency relationships from the diagram automatically.
 
+It is also possible to only disable dependency relationships generated from
+template arguments to other templates. By default, the following code:
 
+```cpp
+
+class A {};
+
+class B {
+  std::vector<A> a;
+};
+```
+
+will generate a dependency from `B` to `A` in addition to aggregation
+relationship. This can be disabled by specifying the following option:
+
+```yaml
+generate_template_argument_dependencies: false
+```

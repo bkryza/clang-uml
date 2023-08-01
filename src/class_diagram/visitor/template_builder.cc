@@ -616,7 +616,7 @@ bool template_builder::find_relationships_in_unexposed_template_params(
     }
 
     auto element_opt = diagram().get(type_with_namespace.value().to_string());
-    if (element_opt) {
+    if (config_.generate_template_argument_dependencies() && element_opt) {
         relationships.emplace_back(
             element_opt.value().id(), relationship_t::kDependency);
         found = true;
@@ -1035,16 +1035,19 @@ template_builder::try_as_template_specialization_type(
     if (nested_template_instantiation &&
         diagram().should_include(
             namespace_{nested_template_instantiation_full_name})) {
-        if (diagram().should_include(
-                namespace_{template_decl->getQualifiedNameAsString()})) {
-            template_instantiation.add_relationship(
-                {relationship_t::kDependency,
-                    nested_template_instantiation->id()});
-        }
-        else {
-            if (parent.has_value())
-                parent.value()->add_relationship({relationship_t::kDependency,
-                    nested_template_instantiation->id()});
+        if (config_.generate_template_argument_dependencies()) {
+            if (diagram().should_include(
+                    namespace_{template_decl->getQualifiedNameAsString()})) {
+                template_instantiation.add_relationship(
+                    {relationship_t::kDependency,
+                        nested_template_instantiation->id()});
+            }
+            else {
+                if (parent.has_value())
+                    parent.value()->add_relationship(
+                        {relationship_t::kDependency,
+                            nested_template_instantiation->id()});
+            }
         }
     }
 
@@ -1159,7 +1162,8 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                 template_instantiation.add_relationship(std::move(r));
             }
 
-            if (diagram().should_include(tag_argument->get_namespace())) {
+            if (config_.generate_template_argument_dependencies() &&
+                diagram().should_include(tag_argument->get_namespace())) {
                 if (parent.has_value())
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
@@ -1170,7 +1174,8 @@ std::optional<template_parameter> template_builder::try_as_record_type(
     }
     else if (const auto *record_type_decl = record_type->getAsRecordDecl();
              record_type_decl != nullptr) {
-        if (diagram().should_include(namespace_{type_name})) {
+        if (config_.generate_template_argument_dependencies() &&
+            diagram().should_include(namespace_{type_name})) {
             // Add dependency relationship to the parent
             // template
             template_instantiation.add_relationship(
@@ -1200,7 +1205,8 @@ std::optional<template_parameter> template_builder::try_as_enum_type(
     const auto type_id = common::to_id(type_name);
     argument.set_id(type_id);
 
-    if (enum_type->getAsTagDecl() != nullptr) {
+    if (enum_type->getAsTagDecl() != nullptr &&
+        config_.generate_template_argument_dependencies()) {
         template_instantiation.add_relationship(
             {relationship_t::kDependency, type_id});
     }

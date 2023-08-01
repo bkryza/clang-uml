@@ -551,6 +551,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.member_order);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
+        get_option(node, rhs.generate_template_argument_dependencies);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
         get_option(node, rhs.relative_to);
@@ -755,6 +756,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
+        get_option(node, rhs.generate_template_argument_dependencies);
         get_option(node, rhs.generate_links);
         get_option(node, rhs.generate_system_headers);
         get_option(node, rhs.git);
