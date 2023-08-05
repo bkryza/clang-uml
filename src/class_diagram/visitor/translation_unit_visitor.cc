@@ -2061,6 +2061,9 @@ void translation_unit_visitor::finalize()
 {
     add_incomplete_forward_declarations();
     resolve_local_to_global_ids();
+    if (config().skip_redundant_dependencies()) {
+        diagram().remove_redundant_dependencies();
+    }
 }
 
 void translation_unit_visitor::extract_constrained_template_param_name(

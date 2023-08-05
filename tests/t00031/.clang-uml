@@ -5,6 +5,7 @@ diagrams:
     type: class
     glob:
       - ../../tests/t00031/t00031.cc
+    skip_redundant_dependencies: false
     using_namespace:
       - clanguml::t00031
     include:

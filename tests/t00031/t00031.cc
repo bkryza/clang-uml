@@ -25,6 +25,8 @@ struct R {
     /// @uml{style[#green,dashed,thickness=4]}
     std::vector<B> bbb;
 
+    void add_b(B b) { bbb.push_back(b); }
+
     /// @uml{style[#blue,dotted,thickness=8]}
     C<int> ccc;
 
