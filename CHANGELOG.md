@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Implemented removal of redundant dependency relationhips (#28)
   * Add option to disable generation of dependency relation to template
     arguments (#141)
   * Added configuration file validation (#57)
