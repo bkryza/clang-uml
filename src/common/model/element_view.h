@@ -46,6 +46,13 @@ public:
     const reference_vector<T> &view() const { return elements_; }
 
     /**
+     * @brief Get collection of reference to diagram elements
+     *
+     * @return
+     */
+    reference_vector<T> &view() { return elements_; }
+
+    /**
      * @brief Get typed diagram element by id
      * @param id Global id of a diagram element
      *

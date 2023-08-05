@@ -440,6 +440,8 @@ struct inheritable_diagram_options {
         "package_type", package_type_t::kNamespace};
     option<bool> generate_template_argument_dependencies{
         "generate_template_argument_dependencies", true};
+    option<bool> skip_redundant_dependencies{
+        "skip_redundant_dependencies", true};
     option<generate_links_config> generate_links{"generate_links"};
     option<git_config> git{"git"};
     option<layout_hints> layout{"layout"};

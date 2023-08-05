@@ -46,6 +46,7 @@ TEST_CASE("t00031", "[test-case][class]")
         REQUIRE_THAT(puml,
             IsCompositionWithStyle(
                 _A("R"), _A("B"), "+bbb", "#green,dashed,thickness=4"));
+        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
         REQUIRE_THAT(puml,
             IsAggregationWithStyle(
                 _A("R"), _A("C<int>"), "+ccc", "#blue,dotted,thickness=8"));

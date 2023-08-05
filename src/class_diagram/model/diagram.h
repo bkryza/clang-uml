@@ -228,6 +228,11 @@ public:
     bool has_element(diagram_element::id_t id) const override;
 
     /**
+     * @brief Remove redundant dependency relationships
+     */
+    void remove_redundant_dependencies();
+
+    /**
      * @brief Return the elements JSON context for inja templates.
      *
      * @return JSON node with elements context.

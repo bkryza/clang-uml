@@ -160,6 +160,7 @@ types:
         generate_packages: !optional bool
         package_type: !optional package_type_t
         generate_template_argument_dependencies: !optional bool
+        skip_redundant_dependencies: !optional bool
         member_order: !optional member_order_t
         group_methods: !optional bool
         type_aliases: !optional map_t<string;string>
@@ -292,6 +293,7 @@ root:
     group_methods: !optional bool
     package_type: !optional package_type_t
     generate_template_argument_dependencies: !optional bool
+    skip_redundant_dependencies: !optional bool
 )";
 
 } // namespace clanguml::config

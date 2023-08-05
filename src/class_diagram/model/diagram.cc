@@ -208,6 +208,33 @@ inja::json diagram::context() const
     return ctx;
 }
 
+void diagram::remove_redundant_dependencies()
+{
+    using common::id_t;
+    using common::model::relationship;
+    using common::model::relationship_t;
+
+    for (auto &c : element_view<class_>::view()) {
+        std::set<id_t> dependency_relationships_to_remove;
+
+        for (auto &r : c.get().relationships()) {
+            if (r.type() != relationship_t::kDependency)
+                dependency_relationships_to_remove.emplace(r.destination());
+        }
+
+        for (const auto &base : c.get().parents()) {
+            dependency_relationships_to_remove.emplace(base.id());
+        }
+
+        util::erase_if(c.get().relationships(),
+            [&dependency_relationships_to_remove](const auto &r) {
+                return r.type() == relationship_t::kDependency &&
+                    dependency_relationships_to_remove.count(r.destination()) >
+                    0;
+            });
+    }
+}
+
 } // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {

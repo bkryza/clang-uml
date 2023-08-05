@@ -189,6 +189,7 @@ void inheritable_diagram_options::inherit(
     package_type.override(parent.package_type);
     generate_template_argument_dependencies.override(
         parent.generate_template_argument_dependencies);
+    skip_redundant_dependencies.override(parent.skip_redundant_dependencies);
     generate_links.override(parent.generate_links);
     generate_system_headers.override(parent.generate_system_headers);
     git.override(parent.git);

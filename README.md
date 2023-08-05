@@ -83,7 +83,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
 
 ### Invocation
 
-By default, `config-uml` will assume that the configuration file `.clang-uml`
+By default, `clang-uml` will assume that the configuration file `.clang-uml`
 and compilation database `compile_commands.json` files are in the
 current directory, so if they are in the top level directory of a project,
 simply run:
