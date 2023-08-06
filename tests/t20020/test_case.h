@@ -63,6 +63,7 @@ TEST_CASE("t20020", "[test-case][sequence]")
         using namespace json;
 
         std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a1()"),
+            FindMessage(j, "tmain()", "A", "a5()"),
             FindMessage(j, "tmain()", "A", "a2()"),
             FindMessage(j, "tmain()", "C", "c3(int)"),
             FindMessage(j, "tmain()", "B", "b1()"),

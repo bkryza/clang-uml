@@ -539,7 +539,8 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
         return true;
 
     const auto *current_ifstmt = context().current_ifstmt();
-    const auto *current_elseifstmt = context().current_elseifstmt();
+    const auto *current_elseifstmt =
+        current_ifstmt != nullptr ? context().current_elseifstmt() : nullptr;
 
     //
     // Add final else block (not else if)
@@ -583,6 +584,8 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
     const auto *current_ifstmt = context().current_ifstmt();
+    const auto *current_elseifstmt =
+        current_ifstmt != nullptr ? context().current_elseifstmt() : nullptr;
 
     std::string condition_text;
     if (config().generate_condition_statements())
@@ -590,14 +593,18 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     // Check if this is a beginning of a new if statement, or an
     // else if condition of the current if statement
-    if (current_ifstmt != nullptr) {
-        for (const auto *child_stmt : current_ifstmt->children()) {
-            if (child_stmt == stmt) {
-                elseif_block = true;
-                break;
-            }
-        }
-    }
+    auto child_stmt_compare = [stmt](auto *child_stmt) {
+        return child_stmt == stmt;
+    };
+
+    if (current_ifstmt != nullptr)
+        elseif_block = elseif_block ||
+            std::any_of(current_ifstmt->children().begin(),
+                current_ifstmt->children().end(), child_stmt_compare);
+    if (current_elseifstmt != nullptr)
+        elseif_block = elseif_block ||
+            std::any_of(current_elseifstmt->children().begin(),
+                current_elseifstmt->children().end(), child_stmt_compare);
 
     if ((current_caller_id != 0) && !stmt->isConstexpr()) {
         if (elseif_block) {
@@ -620,10 +627,12 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
-    if ((current_caller_id != 0) && !stmt->isConstexpr() && !elseif_block) {
-        diagram().end_block_message(
-            {message_t::kIfEnd, current_caller_id}, message_t::kIf);
-        context().leave_ifstmt();
+    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
+        if (!elseif_block) {
+            diagram().end_block_message(
+                {message_t::kIfEnd, current_caller_id}, message_t::kIf);
+            context().leave_ifstmt();
+        }
     }
 
     return true;

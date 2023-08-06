@@ -8,6 +8,7 @@ struct A {
     int a2() { return 1; }
     int a3() { return 2; }
     int a4() { return 3; }
+    int a5() { return 4; }
 };
 
 struct B {
@@ -47,6 +48,9 @@ int tmain()
 
     if (reinterpret_cast<uint64_t>(&a) % 100 == 0ULL) {
         result = a.a1();
+    }
+    else if (reinterpret_cast<uint64_t>(&a) % 100 == 42ULL) {
+        result = a.a5();
     }
     else if (reinterpret_cast<uint64_t>(&a) % 64 == 0ULL) {
         if (c.c3(a.a2()) > 2)

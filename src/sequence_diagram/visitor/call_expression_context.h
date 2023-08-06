@@ -321,7 +321,7 @@ private:
     std::stack<callexpr_stack_t> call_expr_stack_;
 
     std::stack<clang::IfStmt *> if_stmt_stack_;
-    std::stack<clang::IfStmt *> elseif_stmt_stack_;
+    std::map<clang::IfStmt *, std::stack<clang::IfStmt *>> elseif_stmt_stacks_;
 
     std::stack<clang::Stmt *> loop_stmt_stack_;
     std::stack<clang::Stmt *> try_stmt_stack_;

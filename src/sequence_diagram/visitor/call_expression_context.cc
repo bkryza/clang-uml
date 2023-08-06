@@ -181,22 +181,27 @@ void call_expression_context::enter_ifstmt(clang::IfStmt *stmt)
 void call_expression_context::leave_ifstmt()
 {
     if (!if_stmt_stack_.empty()) {
+        elseif_stmt_stacks_.erase(current_ifstmt());
         if_stmt_stack_.pop();
-        std::stack<clang::IfStmt *>{}.swap(elseif_stmt_stack_);
     }
 }
 
 void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 {
-    elseif_stmt_stack_.push(stmt);
+    assert(current_ifstmt() != nullptr);
+
+    elseif_stmt_stacks_[current_ifstmt()].push(stmt);
 }
 
 clang::IfStmt *call_expression_context::current_elseifstmt() const
 {
-    if (elseif_stmt_stack_.empty())
+    assert(current_ifstmt() != nullptr);
+
+    if (elseif_stmt_stacks_.count(current_ifstmt()) == 0 ||
+        elseif_stmt_stacks_.at(current_ifstmt()).empty())
         return nullptr;
 
-    return elseif_stmt_stack_.top();
+    return elseif_stmt_stacks_.at(current_ifstmt()).top();
 }
 
 clang::Stmt *call_expression_context::current_loopstmt() const
@@ -315,11 +320,11 @@ bool call_expression_context::is_expr_in_current_control_statement_condition(
             if (common::is_subexpr_of(condition_decl_stmt, stmt))
                 return true;
         }
-    }
 
-    if (current_elseifstmt() != nullptr) {
-        if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt))
-            return true;
+        if (current_elseifstmt() != nullptr) {
+            if (common::is_subexpr_of(current_elseifstmt()->getCond(), stmt))
+                return true;
+        }
     }
 
     if (current_conditionaloperator() != nullptr) {

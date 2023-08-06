@@ -211,7 +211,7 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
                 if (indicator)
                     indicator->complete(name);
             }
-            catch (std::runtime_error &e) {
+            catch (std::exception &e) {
                 if (indicator)
                     indicator->fail(name);
 

@@ -1,5 +1,6 @@
 # CHANGELOG
 
+  * Fixed 'else if' statement generation in sequence diagrams (#81)
   * Implemented removal of redundant dependency relationhips (#28)
   * Add option to disable generation of dependency relation to template
     arguments (#141)
