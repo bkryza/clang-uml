@@ -59,14 +59,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     std::string message;
 
     model::function::message_render_mode render_mode =
-        model::function::message_render_mode::full;
-
-    if (config().generate_method_arguments() ==
-        config::method_arguments::abbreviated)
-        render_mode = model::function::message_render_mode::abbreviated;
-    else if (config().generate_method_arguments() ==
-        config::method_arguments::none)
-        render_mode = model::function::message_render_mode::no_arguments;
+        select_method_arguments_render_mode();
 
     if (to.value().type_name() == "method") {
         const auto &f = dynamic_cast<const model::method &>(to.value());
@@ -415,7 +408,7 @@ void generator::generate_diagram(std::ostream &ostr) const
         }
     }
 
-    for (const auto &ft : m_config.from_to()) {
+    for (const auto &ft : config().from_to()) {
         // First, find the sequence of activities from 'from' location
         // to 'to' location
         assert(ft.size() == 2);
@@ -423,52 +416,156 @@ void generator::generate_diagram(std::ostream &ostr) const
         const auto &from_location = ft.front();
         const auto &to_location = ft.back();
 
-        if (from_location.location_type == location_t::function) {
+        if ((from_location.location_type == location_t::function) &&
+            (to_location.location_type == location_t::function)) {
             common::model::diagram_element::id_t from_activity{0};
             common::model::diagram_element::id_t to_activity{0};
 
-            for (const auto &[k, v] : m_model.sequences()) {
-                const auto &caller = *m_model.participants().at(v.from());
+            for (const auto &[k, v] : model().sequences()) {
+                const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == from_location.location) {
-                    LOG_DBG("Found sequence diagram start point: {}", k);
+                    LOG_DBG("Found sequence diagram start point '{}': {}",
+                        vfrom, k);
                     from_activity = k;
                     break;
                 }
             }
 
             if (from_activity == 0) {
-                LOG_WARN("Failed to find participant with {} for start_from "
+                LOG_WARN("Failed to find 'from' participant {} for start_from "
                          "condition",
                     from_location.location);
                 continue;
             }
 
-            for (const auto &[k, v] : m_model.sequences()) {
-                const auto &caller = *m_model.participants().at(v.from());
-                std::string vfrom = caller.full_name(false);
-                if (vfrom == to_location.location) {
-                    LOG_DBG("Found sequence diagram end point: {}", k);
-                    to_activity = k;
-                    break;
+            for (const auto &[k, v] : model().sequences()) {
+                for (const auto &m : v.messages()) {
+                    if (m.type() != message_t::kCall)
+                        continue;
+                    const auto &callee = *model().participants().at(m.to());
+                    std::string vto = callee.full_name(false);
+                    if (vto == to_location.location) {
+                        LOG_DBG("Found sequence diagram end point '{}': {}",
+                            vto, m.to());
+                        to_activity = m.to();
+                        break;
+                    }
                 }
             }
 
             if (to_activity == 0) {
-                LOG_WARN("Failed to find participant with {} for from_to "
+                LOG_WARN("Failed to find 'to' participant {} for from_to "
                          "condition",
                     to_location.location);
                 continue;
             }
 
-            call_chain_t activity_path;
-            activity_path.push_back(from_activity);
+            // Message (call) chains matching the specified from_to condition
+            std::vector<message_chain_t> message_chains;
 
-            auto found = search_path_to(activity_path, to_activity);
+            // First find all 'to_activity' call targets in the sequences, i.e.
+            // all messages pointing to the final 'to_activity' activity
+            for (const auto &[k, v] : model().sequences()) {
+                for (const auto &m : v.messages()) {
+                    if (m.type() != message_t::kCall)
+                        continue;
+
+                    if (m.to() == to_activity) {
+                        message_chains.push_back(message_chain_t{});
+                        message_chains.back().push_back(m);
+                    }
+                }
+            }
+
+            std::map<int, model::message> calls_to_current_chain;
+            std::map<int, message_chain_t> current_chain;
+
+            while (true) {
+                bool added_message_to_some_chain{false};
+                // If target of current message matches any of the
+                // 'from' constraints in the last messages in
+                // current chains - append
+
+                if (!calls_to_current_chain.empty()) {
+                    for (auto &[message_chain_index, message] :
+                        calls_to_current_chain) {
+                        message_chains.push_back(
+                            current_chain[message_chain_index]);
+                        message_chains.back().push_back(std::move(
+                            calls_to_current_chain[message_chain_index]));
+                    }
+                    calls_to_current_chain.clear();
+                }
+
+                for (auto i = 0U; i < message_chains.size(); i++) {
+                    auto &mc = message_chains[i];
+                    current_chain[i] = mc;
+                    for (const auto &[k, v] : model().sequences()) {
+
+                        for (const auto &m : v.messages()) {
+                            if (m.type() != message_t::kCall)
+                                continue;
+
+                            // Ignore recursive calls
+                            if (m.to() == m.from()) {
+                                continue;
+                            }
+
+                            if (m.to() == mc.back().from()) {
+                                calls_to_current_chain[i] = m;
+                                added_message_to_some_chain = true;
+                            }
+                        }
+                    }
+
+                    // If there are more than one call to the current chain,
+                    // duplicate it as many times as there are calls - 1
+                    if (calls_to_current_chain.size() >= 1) {
+                        mc.push_back(calls_to_current_chain[i]);
+                        calls_to_current_chain.erase(i);
+                    }
+                }
+
+                // There is nothing more to find
+                if (!added_message_to_some_chain)
+                    break;
+            }
+
+
+
+            // Reverse the message chains order (they were added starting from
+            // the destination activity)
+            for (auto &mc : message_chains)
+                std::reverse(mc.begin(), mc.end());
+
+            // Remove identical chains
+            std::unordered_set<message_chain_t> message_chains_unique{
+                message_chains.begin(), message_chains.end()};
+
+            auto idx{0U};
+            for (const auto &mc : message_chains_unique) {
+                if (mc.empty())
+                    continue;
+
+                if (mc.front().from() != from_activity)
+                    continue;
+
+                for (const auto &m : mc) {
+                    generate_call(m, ostr);
+                }
+
+                if (idx++ < message_chains_unique.size() - 1)
+                    ostr << "====\n";
+            }
+        }
+        else {
+            // TODO: Add support for other sequence start location types
+            continue;
         }
     }
 
-    for (const auto &sf : m_config.start_from()) {
+    for (const auto &sf : config().start_from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : model().sequences()) {
@@ -507,15 +604,7 @@ void generator::generate_diagram(std::ostream &ostr) const
             std::string from_alias = generate_alias(from.value());
 
             model::function::message_render_mode render_mode =
-                model::function::message_render_mode::full;
-
-            if (config().generate_method_arguments() ==
-                config::method_arguments::abbreviated)
-                render_mode = model::function::message_render_mode::abbreviated;
-            else if (config().generate_method_arguments() ==
-                config::method_arguments::none)
-                render_mode =
-                    model::function::message_render_mode::no_arguments;
+                select_method_arguments_render_mode();
 
             // For methods or functions in diagrams where they are combined into
             // file participants, we need to add an 'entry' point call to know
@@ -554,6 +643,19 @@ void generator::generate_diagram(std::ostream &ostr) const
             continue;
         }
     }
+}
+
+model::function::message_render_mode
+generator::select_method_arguments_render_mode() const
+{
+    if (config().generate_method_arguments() ==
+        config::method_arguments::abbreviated)
+        return model::function::message_render_mode::abbreviated;
+
+    if (config().generate_method_arguments() == config::method_arguments::none)
+        return model::function::message_render_mode::no_arguments;
+
+    return model::function::message_render_mode::full;
 }
 
 } // namespace clanguml::sequence_diagram::generators::plantuml

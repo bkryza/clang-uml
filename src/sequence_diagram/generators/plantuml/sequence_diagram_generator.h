@@ -42,7 +42,8 @@ template <typename C, typename D>
 using common_generator =
     clanguml::common::generators::plantuml::generator<C, D>;
 
-using call_chain_t = std::vector<common::model::diagram_element::id_t>;
+using message_chain_t =
+    std::vector<sequence_diagram::model::message>;
 
 /**
  * @brief Sequence diagram PlantUML generator
@@ -142,6 +143,8 @@ private:
     std::string render_name(std::string name) const;
 
     mutable std::set<common::id_t> generated_participants_;
+    model::function::message_render_mode
+    select_method_arguments_render_mode() const;
 };
 
 } // namespace plantuml
