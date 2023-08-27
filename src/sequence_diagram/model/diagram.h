@@ -246,8 +246,8 @@ public:
      * @return List of message chains
      */
     std::unordered_set<message_chain_t> get_all_from_to_message_chains(
-        const common::model::diagram_element::id_t from_activity,
-        const common::model::diagram_element::id_t to_activity) const;
+        common::model::diagram_element::id_t from_activity,
+        common::model::diagram_element::id_t to_activity) const;
 
     /**
      * @brief Get ids of from and to activities in from_to constraint

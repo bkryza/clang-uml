@@ -276,14 +276,14 @@ std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
                 continue;
 
             if (m.to() == to_activity) {
-                message_chains.push_back(message_chain_t{});
+                message_chains.emplace_back();
                 message_chains.back().push_back(m);
             }
         }
     }
 
-    std::map<int, std::vector<model::message>> calls_to_current_chain;
-    std::map<int, message_chain_t> current_chain;
+    std::map<unsigned int, std::vector<model::message>> calls_to_current_chain;
+    std::map<unsigned int, message_chain_t> current_chain;
 
     int iter = 0;
     while (true) {
@@ -294,11 +294,11 @@ std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
         if (!calls_to_current_chain.empty()) {
             for (auto &[message_chain_index, messages] :
                 calls_to_current_chain) {
-                for (auto i = 0U; i < messages.size(); i++) {
+                for (auto &m : messages) {
                     message_chains.push_back(
                         current_chain[message_chain_index]);
 
-                    message_chains.back().push_back(std::move(messages[i]));
+                    message_chains.back().push_back(std::move(m));
                 }
             }
             calls_to_current_chain.clear();
@@ -342,7 +342,7 @@ std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
             // If there are more than one call to the current chain,
             // duplicate it as many times as there are calls - 1
             if (calls_to_current_chain.count(i) > 0 &&
-                calls_to_current_chain[i].size() >= 1) {
+                !calls_to_current_chain[i].empty()) {
                 mc.push_back(calls_to_current_chain[i][0]);
                 calls_to_current_chain[i].erase(
                     calls_to_current_chain[i].begin());
