@@ -432,6 +432,19 @@ void generator::generate_diagram(std::ostream &ostr) const
             else
                 ostr << "====\n";
 
+            const auto &from =
+                model().get_participant<model::function>(from_activity_id);
+
+            if (from.value().type_name() == "method" ||
+                config().combine_free_functions_into_file_participants()) {
+                generate_participant(ostr, from_activity_id);
+                ostr << "[->"
+                     << " " << generate_alias(from.value()) << " : "
+                     << from.value().message_name(
+                            select_method_arguments_render_mode())
+                     << std::endl;
+            }
+
             for (const auto &m : mc) {
                 generate_call(m, ostr);
             }
