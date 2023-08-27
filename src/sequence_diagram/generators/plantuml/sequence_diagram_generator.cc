@@ -416,8 +416,14 @@ void generator::generate_diagram(std::ostream &ostr) const
         const auto &from_location = ft.front();
         const auto &to_location = ft.back();
 
-        auto message_chains_unique =
-            model().get_all_from_to_message_chains(from_location, to_location);
+        auto [from_activity_id, to_activity_id] =
+            model().get_from_to_activity_ids(from_location, to_location);
+
+        if (from_activity_id == 0 || to_activity_id == 0)
+            continue;
+
+        auto message_chains_unique = model().get_all_from_to_message_chains(
+            from_activity_id, to_activity_id);
 
         bool first_separator_skipped{false};
         for (const auto &mc : message_chains_unique) {

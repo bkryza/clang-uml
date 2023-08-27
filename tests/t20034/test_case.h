@@ -51,12 +51,11 @@ TEST_CASE("t20034", "[test-case][sequence]")
             config.output_directory() + "/" + diagram->name + ".puml", puml);
     }
 
-    //    {
-    //        auto j = generate_sequence_json(diagram, *model);
-    //
-    //        using namespace json;
-    //
-    //        save_json(config.output_directory() + "/" + diagram->name +
-    //        ".json", j);
-    //    }
+    {
+        auto j = generate_sequence_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+    }
 }

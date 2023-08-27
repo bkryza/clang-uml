@@ -609,6 +609,52 @@ void generator::generate_diagram(nlohmann::json &parent) const
         }
     }
 
+    for (const auto &ft : config().from_to()) {
+        // First, find the sequence of activities from 'from' location
+        // to 'to' location
+        assert(ft.size() == 2);
+
+        const auto &from_location = ft.front();
+        const auto &to_location = ft.back();
+
+        auto [from_activity_id, to_activity_id] =
+            model().get_from_to_activity_ids(from_location, to_location);
+
+        if (from_activity_id == 0 || to_activity_id == 0)
+            continue;
+
+        auto message_chains_unique = model().get_all_from_to_message_chains(
+            from_activity_id, to_activity_id);
+
+        nlohmann::json sequence;
+        sequence["from_to"]["from"]["location"] = from_location.location;
+        sequence["from_to"]["from"]["id"] = from_activity_id;
+        sequence["from_to"]["to"]["location"] = to_location.location;
+        sequence["from_to"]["to"]["id"] = to_activity_id;
+
+        block_statements_stack_.push_back(std::ref(sequence));
+
+        sequence["message_chains"] = nlohmann::json::array();
+
+        for (const auto &mc : message_chains_unique) {
+            nlohmann::json message_chain;
+
+            block_statements_stack_.push_back(std::ref(message_chain));
+
+            for (const auto &m : mc) {
+                generate_call(m, current_block_statement());
+            }
+
+            block_statements_stack_.pop_back();
+
+            sequence["message_chains"].push_back(std::move(message_chain));
+        }
+
+        block_statements_stack_.pop_back();
+
+        json_["sequences"].push_back(std::move(sequence));
+    }
+
     for (const auto &sf : config().start_from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};

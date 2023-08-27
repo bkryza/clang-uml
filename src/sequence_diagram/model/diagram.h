@@ -241,11 +241,25 @@ public:
     /**
      * @brief Generate a list of message chains matching a from_to constraint
      *
+     * @param from_activity Source activity for from_to message chain
+     * @param to_activity Target activity for from_to message chain
      * @return List of message chains
      */
     std::unordered_set<message_chain_t> get_all_from_to_message_chains(
-        const config::source_location &from,
-        const config::source_location &to) const;
+        const common::model::diagram_element::id_t from_activity,
+        const common::model::diagram_element::id_t to_activity) const;
+
+    /**
+     * @brief Get ids of from and to activities in from_to constraint
+     *
+     * @param from_activity Source activity for from_to message chain
+     * @param to_activity Target activity for from_to message chain
+     * @return Pair of activity ids (0 if not found)
+     */
+    std::pair<common::model::diagram_element::id_t,
+        common::model::diagram_element::id_t>
+    get_from_to_activity_ids(const config::source_location &from_activity,
+        const config::source_location &to_activity) const;
 
     /**
      * @brief Once the diagram is complete, run any final processing.
