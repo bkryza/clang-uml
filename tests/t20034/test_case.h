@@ -43,21 +43,20 @@ TEST_CASE("t20034", "[test-case][sequence]")
         REQUIRE_THAT(puml, HasCall(_A("C"), _A("B"), "b2()"));
         REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "a2()"));
 
+        REQUIRE_THAT(puml, HasCall(_A("D"), _A("C"), "c4()"));
 
-
-        REQUIRE_THAT(puml, HasCall(_A("D"), _A("C"), "c2()"));
-        REQUIRE_THAT(puml, !HasCall(_A("D"), _A("C"), "c1()"));
-
+        REQUIRE_THAT(puml, !HasCall(_A("C"), _A("B"), "b3()"));
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);
     }
 
-//    {
-//        auto j = generate_sequence_json(diagram, *model);
-//
-//        using namespace json;
-//
-//        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
-//    }
+    //    {
+    //        auto j = generate_sequence_json(diagram, *model);
+    //
+    //        using namespace json;
+    //
+    //        save_json(config.output_directory() + "/" + diagram->name +
+    //        ".json", j);
+    //    }
 }

@@ -209,6 +209,161 @@ std::vector<std::string> diagram::list_start_from_values() const
     return result;
 }
 
+std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
+    const config::source_location &from_location,
+    const config::source_location &to_location) const
+{
+    std::unordered_set<message_chain_t> message_chains_unique{};
+
+    if ((from_location.location_type == config::location_t::function) &&
+        (to_location.location_type == config::location_t::function)) {
+        common::model::diagram_element::id_t from_activity{0};
+        common::model::diagram_element::id_t to_activity{0};
+
+        for (const auto &[k, v] : sequences()) {
+            const auto &caller = *participants().at(v.from());
+            std::string vfrom = caller.full_name(false);
+            if (vfrom == from_location.location) {
+                LOG_DBG(
+                    "Found sequence diagram start point '{}': {}", vfrom, k);
+                from_activity = k;
+                break;
+            }
+        }
+
+        if (from_activity == 0) {
+            LOG_WARN("Failed to find 'from' participant {} for start_from "
+                     "condition",
+                from_location.location);
+            return {};
+        }
+
+        for (const auto &[k, v] : sequences()) {
+            for (const auto &m : v.messages()) {
+                if (m.type() != common::model::message_t::kCall)
+                    continue;
+                const auto &callee = *participants().at(m.to());
+                std::string vto = callee.full_name(false);
+                if (vto == to_location.location) {
+                    LOG_DBG("Found sequence diagram end point '{}': {}", vto,
+                        m.to());
+                    to_activity = m.to();
+                    break;
+                }
+            }
+        }
+
+        if (to_activity == 0) {
+            LOG_WARN("Failed to find 'to' participant {} for from_to "
+                     "condition",
+                to_location.location);
+            return {};
+        }
+
+        // Message (call) chains matching the specified from_to condition
+        std::vector<message_chain_t> message_chains;
+
+        // First find all 'to_activity' call targets in the sequences, i.e.
+        // all messages pointing to the final 'to_activity' activity
+        for (const auto &[k, v] : sequences()) {
+            for (const auto &m : v.messages()) {
+                if (m.type() != common::model::message_t::kCall)
+                    continue;
+
+                if (m.to() == to_activity) {
+                    message_chains.push_back(message_chain_t{});
+                    message_chains.back().push_back(m);
+                }
+            }
+        }
+
+        std::map<int, std::vector<model::message>> calls_to_current_chain;
+        std::map<int, message_chain_t> current_chain;
+
+        int iter = 0;
+        while (true) {
+            bool added_message_to_some_chain{false};
+            // If target of current message matches any of the
+            // 'from' constraints in the last messages in
+            // current chains found on previous iteration - append
+            if (!calls_to_current_chain.empty()) {
+                for (auto &[message_chain_index, messages] :
+                    calls_to_current_chain) {
+                    for (auto i = 0U; i < messages.size(); i++) {
+                        message_chains.push_back(
+                            current_chain[message_chain_index]);
+
+                        message_chains.back().push_back(std::move(messages[i]));
+                    }
+                }
+                calls_to_current_chain.clear();
+            }
+
+            LOG_TRACE("Message chains after iteration {}", iter++);
+            int message_chain_index{};
+            for (const auto &mc : message_chains) {
+                LOG_TRACE("\t{}: {}", message_chain_index++,
+                    fmt::join(util::map<std::string>(mc,
+                                  [](const model::message &m) -> std::string {
+                                      return m.message_name();
+                                  }),
+                        "<-"));
+            }
+
+            for (auto i = 0U; i < message_chains.size(); i++) {
+                auto &mc = message_chains[i];
+                current_chain[i] = mc;
+                for (const auto &[k, v] : sequences()) {
+                    for (const auto &m : v.messages()) {
+                        if (m.type() != common::model::message_t::kCall)
+                            continue;
+
+                        // Ignore recursive calls and call loops
+                        if (m.to() == m.from() ||
+                            std::any_of(
+                                cbegin(mc), cend(mc), [&m](const auto &msg) {
+                                    return msg.to() == m.from();
+                                })) {
+                            continue;
+                        }
+
+                        if (m.to() == mc.back().from()) {
+                            calls_to_current_chain[i].push_back(m);
+                            added_message_to_some_chain = true;
+                        }
+                    }
+                }
+
+                // If there are more than one call to the current chain,
+                // duplicate it as many times as there are calls - 1
+                if (calls_to_current_chain.count(i) > 0 &&
+                    calls_to_current_chain[i].size() >= 1) {
+                    mc.push_back(calls_to_current_chain[i][0]);
+                    calls_to_current_chain[i].erase(
+                        calls_to_current_chain[i].begin());
+                }
+            }
+
+            // There is nothing more to find
+            if (!added_message_to_some_chain)
+                break;
+        }
+
+        // Reverse the message chains order (they were added starting from
+        // the destination activity)
+        for (auto &mc : message_chains)
+            std::reverse(mc.begin(), mc.end());
+
+        std::copy_if(message_chains.begin(), message_chains.end(),
+            std::inserter(message_chains_unique, message_chains_unique.begin()),
+            [from_activity](const message_chain_t &mc) {
+                return !mc.empty() && (mc.front().from() == from_activity);
+            });
+    }
+
+    return message_chains_unique;
+}
+
 void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");

@@ -42,9 +42,6 @@ template <typename C, typename D>
 using common_generator =
     clanguml::common::generators::plantuml::generator<C, D>;
 
-using message_chain_t =
-    std::vector<sequence_diagram::model::message>;
-
 /**
  * @brief Sequence diagram PlantUML generator
  */

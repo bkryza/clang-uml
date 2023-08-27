@@ -7,6 +7,8 @@ struct A {
     void a3() { }
 };
 
+struct C;
+
 struct B {
     void b1()
     {
@@ -15,8 +17,11 @@ struct B {
     }
     void b2() { a.a2(); }
     void b3() { a.a3(); }
+    void b4();
 
     A a;
+
+    C *c;
 };
 
 struct C {
@@ -29,6 +34,8 @@ struct C {
         else
             c2();
     }
+
+    void c4() { b.b4(); }
 
     B b;
 };
@@ -43,6 +50,8 @@ struct D {
         c.c3();
         a.a2();
 
+        c.c4();
+
         auto l = [this]() { a.a2(); };
         l();
     }
@@ -51,5 +60,11 @@ struct D {
     A a;
     C c;
 };
+
+void B::b4()
+{
+    c->c4();
+    b2();
+}
 }
 }

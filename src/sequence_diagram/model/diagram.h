@@ -20,12 +20,15 @@
 #include "activity.h"
 #include "common/model/diagram.h"
 #include "common/types.h"
+#include "config/config.h"
 #include "participant.h"
 
 #include <map>
 #include <string>
 
 namespace clanguml::sequence_diagram::model {
+
+using message_chain_t = std::vector<sequence_diagram::model::message>;
 
 /**
  * @brief Model of a sequence diagram
@@ -234,6 +237,15 @@ public:
      * @return List of all possible 'start_from' values
      */
     std::vector<std::string> list_start_from_values() const;
+
+    /**
+     * @brief Generate a list of message chains matching a from_to constraint
+     *
+     * @return List of message chains
+     */
+    std::unordered_set<message_chain_t> get_all_from_to_message_chains(
+        const config::source_location &from,
+        const config::source_location &to) const;
 
     /**
      * @brief Once the diagram is complete, run any final processing.
