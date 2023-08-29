@@ -1050,6 +1050,49 @@ int FindMessage(const nlohmann::json &j, const std::string &from,
         j, expand_name(j, from), expand_name(j, to), msg, return_type);
 }
 
+struct message_test_spec_t {
+    std::string from;
+    std::string to;
+    std::optional<std::string> return_type;
+
+    bool operator==(const message_test_spec_t &r) const noexcept
+    {
+        return from == r.from && to == r.to && return_type == r.return_type;
+    }
+};
+
+void from_json(const nlohmann::json &j, message_test_spec_t &p)
+{
+    j.at("from").at("activity_name").get_to(p.from);
+    j.at("to").at("activity_name").get_to(p.to);
+    j.at("return_type").get_to(p.return_type);
+}
+
+bool HasMessageChain(
+    const nlohmann::json &j, std::vector<message_test_spec_t> msgs)
+{
+    std::vector<message_test_spec_t> full_name_messages;
+    std::transform(msgs.begin(), msgs.end(),
+        std::back_inserter(full_name_messages),
+        [&j](const message_test_spec_t &m) {
+            auto res = m;
+            res.from = expand_name(j, m.from);
+            res.to = expand_name(j, m.to);
+            return res;
+        });
+
+    for (const auto &seq : j.at("sequences"))
+        for (const auto &mc : seq.at("message_chains")) {
+            auto mc_msgs =
+                mc.at("messages").get<std::vector<message_test_spec_t>>();
+
+            if (full_name_messages == mc_msgs)
+                return true;
+        }
+
+    return false;
+}
+
 } // namespace json
 }
 }

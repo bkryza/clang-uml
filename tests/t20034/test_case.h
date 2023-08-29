@@ -56,6 +56,22 @@ TEST_CASE("t20034", "[test-case][sequence]")
 
         using namespace json;
 
+        REQUIRE(HasMessageChain(j,
+            {{"D::d2()", "C::c3()", "void"}, {"C::c3()", "C::c2()", "void"},
+                {"C::c2()", "B::b2()", "void"},
+                {"B::b2()", "A::a2()", "void"}}));
+        REQUIRE(HasMessageChain(j,
+            {{"D::d2()", "C::c4()", "void"}, {"C::c4()", "B::b4()", "void"},
+                {"B::b4()", "B::b2()", "void"},
+                {"B::b2()", "A::a2()", "void"}}));
+        REQUIRE(HasMessageChain(j, {{"D::d2()", "A::a2()", "void"}}));
+        REQUIRE(HasMessageChain(j,
+            {{"D::d2()", "C::c1()", "void"}, {"C::c1()", "B::b1()", "void"},
+                {"B::b1()", "A::a2()", "void"}}));
+        REQUIRE(HasMessageChain(j,
+            {{"D::d2()", "C::c2()", "void"}, {"C::c2()", "B::b2()", "void"},
+                {"B::b2()", "A::a2()", "void"}}));
+
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
 }
