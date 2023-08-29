@@ -106,6 +106,8 @@
  * [t20031](./test_cases/t20031.md) - Callee type sequence diagram filter test case
  * [t20032](./test_cases/t20032.md) - Return type generation option sequence diagram test case
  * [t20033](./test_cases/t20033.md) - Control statement text in sequence diagram test case
+ * [t20034](./test_cases/t20034.md) - from_to sequence diagram test case
+ * [t20035](./test_cases/t20035.md) - from_to sequence diagram test case with free functions
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
