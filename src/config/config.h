@@ -543,6 +543,7 @@ struct sequence_diagram : public diagram {
 
     option<std::vector<source_location>> start_from{"start_from"};
     option<std::vector<std::vector<source_location>>> from_to{"from_to"};
+    option<std::vector<source_location>> to{"to"};
 };
 
 /**

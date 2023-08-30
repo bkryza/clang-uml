@@ -196,6 +196,7 @@ types:
         participants_order: !optional [string]
         start_from: !optional [source_location_t]
         from_to: !optional [[source_location_t]]
+        to: !optional [source_location_t]
     package_diagram_t:
         type: !variant [package]
         #

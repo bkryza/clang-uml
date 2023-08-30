@@ -241,6 +241,9 @@ public:
     /**
      * @brief Generate a list of message chains matching a from_to constraint
      *
+     * If 'from_activity' is 0, this method will return all message chains
+     * ending in 'to_activity'.
+     *
      * @param from_activity Source activity for from_to message chain
      * @param to_activity Target activity for from_to message chain
      * @return List of message chains
@@ -250,16 +253,22 @@ public:
         common::model::diagram_element::id_t to_activity) const;
 
     /**
-     * @brief Get ids of from and to activities in from_to constraint
+     * @brief Get id of a 'to' activity
      *
-     * @param from_activity Source activity for from_to message chain
-     * @param to_activity Target activity for from_to message chain
-     * @return Pair of activity ids (0 if not found)
+     * @param to_location Target activity
+     * @return Activity id
      */
-    std::pair<common::model::diagram_element::id_t,
-        common::model::diagram_element::id_t>
-    get_from_to_activity_ids(const config::source_location &from_activity,
-        const config::source_location &to_activity) const;
+    common::model::diagram_element::id_t get_to_activity_id(
+        const config::source_location &to_location) const;
+
+    /**
+     * @brief Get id of a 'from' activity
+     *
+     * @param from_location Source activity
+     * @return Activity id
+     */
+    common::model::diagram_element::id_t get_from_activity_id(
+        const config::source_location &from_location) const;
 
     /**
      * @brief Once the diagram is complete, run any final processing.

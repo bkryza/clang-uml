@@ -209,30 +209,10 @@ std::vector<std::string> diagram::list_start_from_values() const
     return result;
 }
 
-std::pair<common::model::diagram_element::id_t,
-    common::model::diagram_element::id_t>
-diagram::get_from_to_activity_ids(const config::source_location &from_location,
+common::model::diagram_element::id_t diagram::get_to_activity_id(
     const config::source_location &to_location) const
 {
-    common::model::diagram_element::id_t from_activity{0};
     common::model::diagram_element::id_t to_activity{0};
-
-    for (const auto &[k, v] : sequences()) {
-        const auto &caller = *participants().at(v.from());
-        std::string vfrom = caller.full_name(false);
-        if (vfrom == from_location.location) {
-            LOG_DBG("Found sequence diagram start point '{}': {}", vfrom, k);
-            from_activity = k;
-            break;
-        }
-    }
-
-    if (from_activity == 0) {
-        LOG_WARN("Failed to find 'from' participant {} for start_from "
-                 "condition",
-            from_location.location);
-        return {from_activity, to_activity};
-    }
 
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
@@ -250,13 +230,36 @@ diagram::get_from_to_activity_ids(const config::source_location &from_location,
     }
 
     if (to_activity == 0) {
-        LOG_WARN("Failed to find 'to' participant {} for from_to "
+        LOG_WARN("Failed to find 'to' participant {} for to "
                  "condition",
             to_location.location);
-        return {from_activity, to_activity};
     }
 
-    return {from_activity, to_activity};
+    return to_activity;
+}
+
+common::model::diagram_element::id_t diagram::get_from_activity_id(
+    const config::source_location &from_location) const
+{
+    common::model::diagram_element::id_t from_activity{0};
+
+    for (const auto &[k, v] : sequences()) {
+        const auto &caller = *participants().at(v.from());
+        std::string vfrom = caller.full_name(false);
+        if (vfrom == from_location.location) {
+            LOG_DBG("Found sequence diagram start point '{}': {}", vfrom, k);
+            from_activity = k;
+            break;
+        }
+    }
+
+    if (from_activity == 0) {
+        LOG_WARN("Failed to find 'from' participant {} for from "
+                 "condition",
+            from_location.location);
+    }
+
+    return from_activity;
 }
 
 std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
@@ -362,7 +365,8 @@ std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
     std::copy_if(message_chains.begin(), message_chains.end(),
         std::inserter(message_chains_unique, message_chains_unique.begin()),
         [from_activity](const message_chain_t &mc) {
-            return !mc.empty() && (mc.front().from() == from_activity);
+            return !mc.empty() &&
+                (from_activity == 0 || (mc.front().from() == from_activity));
         });
 
     return message_chains_unique;

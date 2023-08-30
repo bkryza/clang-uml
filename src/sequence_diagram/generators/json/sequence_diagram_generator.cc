@@ -617,8 +617,8 @@ void generator::generate_diagram(nlohmann::json &parent) const
         const auto &from_location = ft.front();
         const auto &to_location = ft.back();
 
-        auto [from_activity_id, to_activity_id] =
-            model().get_from_to_activity_ids(from_location, to_location);
+        auto from_activity_id = model().get_from_activity_id(from_location);
+        auto to_activity_id = model().get_to_activity_id(to_location);
 
         if (from_activity_id == 0 || to_activity_id == 0)
             continue;
@@ -631,6 +631,42 @@ void generator::generate_diagram(nlohmann::json &parent) const
         sequence["from_to"]["from"]["id"] = from_activity_id;
         sequence["from_to"]["to"]["location"] = to_location.location;
         sequence["from_to"]["to"]["id"] = to_activity_id;
+
+        block_statements_stack_.push_back(std::ref(sequence));
+
+        sequence["message_chains"] = nlohmann::json::array();
+
+        for (const auto &mc : message_chains_unique) {
+            nlohmann::json message_chain;
+
+            block_statements_stack_.push_back(std::ref(message_chain));
+
+            for (const auto &m : mc) {
+                generate_call(m, current_block_statement());
+            }
+
+            block_statements_stack_.pop_back();
+
+            sequence["message_chains"].push_back(std::move(message_chain));
+        }
+
+        block_statements_stack_.pop_back();
+
+        json_["sequences"].push_back(std::move(sequence));
+    }
+
+    for (const auto &to_location : config().to()) {
+        auto to_activity_id = model().get_to_activity_id(to_location);
+
+        if (to_activity_id == 0)
+            continue;
+
+        auto message_chains_unique =
+            model().get_all_from_to_message_chains(0, to_activity_id);
+
+        nlohmann::json sequence;
+        sequence["to"]["location"] = to_location.location;
+        sequence["to"]["id"] = to_activity_id;
 
         block_statements_stack_.push_back(std::ref(sequence));
 
