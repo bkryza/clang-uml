@@ -232,11 +232,18 @@ public:
     bool should_include(const sequence_diagram::model::participant &p) const;
 
     /**
-     * @brief Get list of all possible 'start_from' values in the model
+     * @brief Get list of all possible 'from' values in the model
      *
-     * @return List of all possible 'start_from' values
+     * @return List of all possible 'from' values
      */
-    std::vector<std::string> list_start_from_values() const;
+    std::vector<std::string> list_from_values() const;
+
+    /**
+     * @brief Get list of all possible 'to' values in the model
+     *
+     * @return List of all possible 'to' values
+     */
+    std::vector<std::string> list_to_values() const;
 
     /**
      * @brief Generate a list of message chains matching a from_to constraint

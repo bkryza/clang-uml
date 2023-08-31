@@ -193,18 +193,41 @@ bool diagram::should_include(
             dynamic_cast<const common::model::source_location &>(p));
 }
 
-std::vector<std::string> diagram::list_start_from_values() const
+std::vector<std::string> diagram::list_from_values() const
 {
     std::vector<std::string> result;
 
     for (const auto &[from_id, act] : sequences_) {
 
         const auto &from_activity = *(participants_.at(from_id));
-
-        result.push_back(from_activity.full_name(false));
+        const auto &full_name = from_activity.full_name(false);
+        if (!full_name.empty())
+            result.push_back(full_name);
     }
 
     std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
+
+    return result;
+}
+
+std::vector<std::string> diagram::list_to_values() const
+{
+    std::vector<std::string> result;
+
+    for (const auto &[from_id, act] : sequences_) {
+        for (const auto &m : act.messages()) {
+            if (participants_.count(m.to()) > 0) {
+                const auto &to_activity = *(participants_.at(m.to()));
+                const auto &full_name = to_activity.full_name(false);
+                if (!full_name.empty())
+                    result.push_back(full_name);
+            }
+        }
+    }
+
+    std::sort(result.begin(), result.end());
+    result.erase(std::unique(result.begin(), result.end()), result.end());
 
     return result;
 }

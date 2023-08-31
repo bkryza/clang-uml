@@ -129,8 +129,10 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "instead of actual location of `.clang-uml` file.");
     app.add_flag("--no-metadata", no_metadata,
         "Skip metadata (e.g. clang-uml version) from diagrams");
-    app.add_flag("--print-start-from", print_start_from,
-        "Print all possible 'start_from' values for a given diagram");
+    app.add_flag("--print-from,--print-start-from", print_from,
+        "Print all possible 'from' values for a given diagram");
+    app.add_flag("--print-to", print_to,
+        "Print all possible 'to' values for a given diagram");
     app.add_flag("--no-validate", no_validate,
         "Do not perform configuration file schema validation");
     app.add_flag("--validate-only", validate_only,
@@ -149,7 +151,7 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         exit(app.exit(e)); // NOLINT(concurrency-mt-unsafe)
     }
 
-    if (quiet || dump_config || print_start_from)
+    if (quiet || dump_config || print_from || print_to)
         verbose = 0;
     else
         verbose++;
@@ -202,11 +204,10 @@ cli_flow_t cli_handler::handle_pre_config_options()
         return cli_flow_t::kError;
     }
 
-    if (print_start_from) {
+    if (print_from || print_to) {
         if (diagram_names.size() != 1) {
-            LOG_ERROR(
-                "ERROR: '--print-start-from' requires specifying one diagram "
-                "name using '-n' option");
+            LOG_ERROR("ERROR: '--print-from' and '--print-to' require "
+                      "specifying one diagram name using '-n' option");
 
             return cli_flow_t::kError;
         }
@@ -346,7 +347,8 @@ runtime_config cli_handler::get_runtime_config() const
     runtime_config cfg;
     cfg.generators = generators;
     cfg.verbose = verbose;
-    cfg.print_start_from = print_start_from;
+    cfg.print_from = print_from;
+    cfg.print_to = print_to;
     cfg.progress = progress;
     cfg.thread_count = thread_count;
 

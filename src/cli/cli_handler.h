@@ -33,7 +33,8 @@ namespace clanguml::cli {
 struct runtime_config {
     int verbose{};
     std::vector<clanguml::common::generator_type_t> generators{};
-    bool print_start_from{};
+    bool print_from{};
+    bool print_to{};
     bool progress{};
     unsigned int thread_count{};
 };
@@ -173,7 +174,8 @@ public:
     std::optional<std::string> add_include_diagram;
     std::optional<std::string> add_diagram_from_template;
     bool dump_config{false};
-    bool print_start_from{false};
+    bool print_from{false};
+    bool print_to{false};
     std::optional<bool> paths_relative_to_pwd{};
     std::vector<std::string> template_variables{};
     bool list_templates{false};
