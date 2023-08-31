@@ -45,71 +45,106 @@ Consider the following diagram:
 
 ![extension](test_cases/t20029_sequence.svg)
 
-`clang-uml` generated sequence diagrams are not strictly speaking conforming to the UML specification. In order to 
-make them more useful for documenting modern C++ code, the following assumptions were made:
- * Free functions are included in the sequence diagrams as standalone participants (in fact `clang-uml` can be used
-   to generate sequence diagrams from plain old C code). Functions can also be aggregated into file participants,
-   based on their place of declaration
- * Call expressions in conditional expressions in block statements (e.g. `if` or `while`) are rendered inside the
-   PlantUML `alt` or `loop` blocks but wrapped in `[`, `]` brackets
- * Lambda expressions are generated as standalone participants, whose name comprises the parent context where they
-   are defined and the exact source code location
+`clang-uml` generated sequence diagrams are not strictly speaking conforming to
+the UML specification. In order to make them more useful for documenting modern
+C++ code, the following assumptions were made:
+ * Free functions are included in the sequence diagrams as standalone
+   participants (in fact `clang-uml` can be used to generate sequence diagrams
+   from plain old C code). Functions can also be aggregated into file
+   participants, based on their place of declaration
+ * Call expressions in conditional expressions in block statements (e.g. `if`
+   or `while`) are rendered inside the PlantUML `alt` or `loop` blocks but
+   wrapped in `[`, `]` brackets
+ * Lambda expressions are generated as standalone participants, whose name
+   comprises the parent context where they are defined and the exact source code
+   location
 
-## Specifying diagram entry point
-Sequence diagrams require an entry point for the diagram in order to determine, at which point in the code the sequence
-diagram should start. Currently, the entry point can only be a method or a free function, both specified using `start_from`
-configuration property, for instance:
+## Specifying diagram location constraints
+Sequence diagrams require a specification of location constraints in order to
+determine, which call chains should be included in the diagram. Currently,
+there are 3 types of constraints:
+* `from` - will include all message call chains which start at the
+           locations specified in this constraint (this was previously named
+           `start_from`)
+* `to` - will include all message call chains which end at the specified
+         locations
+* `from_to` - will include all call chains which start and end at the specified
+              location constraints
+
+Currently, the constraints can be a method or a free function, both specified
+using the full signature of the function, e.g.
+
 ```yaml
-    start_from:
+    from:
       - function: "main(int,const char**)"
 ```
 or
 ```yaml
-start_from:
-  - function: "clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *)"
+    to:
+      - function: "clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *)"
 ```
 
-The entrypoints must be fully qualified and they must match exactly the string 
-representation of given function or method in the `clang-uml` model.
+The locations must be fully qualified, and they must match exactly the string
+representation of a given function or method in the `clang-uml` model.
 
-To find the exact function signature run `clang-uml` as follows:
+In case of the `from_to` constraint, it is necessary to provide both `from`
+and `to` locations as follows:
+```yaml
+    from_to:
+      - [function: "clanguml::t20034::D::d2()",
+         function: "clanguml::t20034::A::a2()"]
+```
+
+To find the exact function signature which can be used as a `from` location,
+run `clang-uml` as follows:
 
 ```bash
-clang-uml --print-start-from -n main_sequence | grep main
+clang-uml --print-from -n main_sequence | grep main
 ```
 
-Command line flag `--print-start-from` will print on stdout all functions
-and methods available in the diagram model, and each line of this output
-can be directly used as a value of `start_from` option in the config file.
+or to get all possible `to` locations, run:
+
+```bash
+clang-uml --print-to -n main_sequence | grep main
+```
+
+Command line flags `--print-from` and `--print-to` will print on stdout all
+functions and methods available in the diagram model, and each line of this
+output can be directly used as a value of `start_from`, `from_to` or `to`
+properties in the config file.
 
 Since that list can be quite large, it's best to filter the output to limit
 the number of lines to a subset of possible candidates.
 
 ## Grouping free functions by file
-By default, `clang-uml` will generate a new participant for each call to a free function (not method), which can lead
-to a very large number of participants in the diagram. If it's an issue, an option can be provided in the diagram 
+By default, `clang-uml` will generate a new participant for each call to a free
+function (not method), which can lead to a very large number of participants in
+the diagram. If it's an issue, an option can be provided in the diagram
 definition:
 
 ```yaml
 combine_free_functions_into_file_participants: true
 ```
 
-which will aggregate free functions per source file where they were declared thus minimizing the
-diagram size. An example of such diagram is presented below:
+which will aggregate free functions per source file where they were declared
+thus minimizing the diagram size. An example of such diagram is presented below:
 
 ![extension](test_cases/t20017_sequence.svg)
 
 ## Lambda expressions in sequence diagrams
-Lambda expressions in sequence diagrams are... tricky. There is currently tentative support, which follows the 
-following rules:
-  * If lambda expression is called within the scope of the diagram, the calls from the lambda will be placed 
-    at the lambda invocation and not declaration
-  * If lambda expression is passed to some function or method, which is outside the scope of the diagram
-    (e.g. used in `std::transform` call) the call will not be generated
-  * If the lambda is passed as template parameter in instantiation it will not be generated
+Lambda expressions in sequence diagrams are... tricky. There is currently
+tentative support, which follows the following rules:
+  * If lambda expression is called within the scope of the diagram, the calls
+    from the lambda will be placed at the lambda invocation and not declaration
+  * If lambda expression is passed to some function or method, which is outside
+    the scope of the diagram (e.g. used in `std::transform` call) the call will
+    not be generated
+  * If the lambda is passed as template parameter in instantiation it will not
+    be generated
 
-Another issue is the naming of lambda participants. Currently, each lambda is rendered in the diagram as a separate
-class whose name is composed of the lambda location in the code (the only unique way of identifying lambdas I was able
+Another issue is the naming of lambda participants. Currently, each lambda is
+rendered in the diagram as a separate class whose name is composed of the lambda
+location in the code (the only unique way of identifying lambdas I was able
 to find). For example the following code:
 
 ```cpp
@@ -216,10 +251,11 @@ results in the following diagram:
 ![extension](test_cases/t20012_sequence.svg)
 
 ## Customizing participants order
-The default participant order in the sequence diagram can be suboptimal in the sense that consecutive calls
-can go right, then left, then right again depending on the specific call chain in the code. It is however
-possible to override this order in the diagram definition using `participants_order` property,
-for instance like this test case:
+The default participant order in the sequence diagram can be suboptimal in the
+sense that consecutive calls can go right, then left, then right again
+depending on the specific call chain in the code. It is however
+possible to override this order in the diagram definition using
+`participants_order` property, for instance like this test case:
 
 ```yaml
 compilation_database_dir: ..

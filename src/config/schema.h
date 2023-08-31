@@ -194,7 +194,8 @@ types:
         generate_return_types: !optional bool
         generate_condition_statements: !optional bool
         participants_order: !optional [string]
-        start_from: !optional [source_location_t]
+        start_from: !optional [source_location_t] # deprecated -> 'from'
+        from: !optional [source_location_t]
         from_to: !optional [[source_location_t]]
         to: !optional [source_location_t]
     package_diagram_t:

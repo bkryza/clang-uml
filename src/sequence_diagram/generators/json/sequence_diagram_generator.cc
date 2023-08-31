@@ -691,7 +691,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
         json_["sequences"].push_back(std::move(sequence));
     }
 
-    for (const auto &sf : config().start_from()) {
+    for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             std::string start_from_str;

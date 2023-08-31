@@ -12,5 +12,5 @@ diagrams:
         - public
     using_namespace:
       - clanguml::t20027
-    start_from:
+    from:
       - function: "clanguml::t20027::tmain()"

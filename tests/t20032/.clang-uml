@@ -11,5 +11,5 @@ diagrams:
     using_namespace:
       - clanguml::t20032
     generate_return_types: true
-    start_from:
+    from:
       - function: "clanguml::t20032::tmain(int,char **)"

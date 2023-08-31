@@ -65,6 +65,12 @@ void get_option(const Node &node, clanguml::config::option<T> &option)
 {
     if (node[option.name])
         option.set(node[option.name].template as<T>());
+
+    for (const auto &alt_name : option.alternate_names)
+        if (node[alt_name]) {
+            option.set(node[alt_name].template as<T>());
+            break;
+        }
 }
 
 template <>
@@ -573,7 +579,7 @@ template <> struct convert<sequence_diagram> {
         if (!decode_diagram(node, rhs))
             return false;
 
-        get_option(node, rhs.start_from);
+        get_option(node, rhs.from);
         get_option(node, rhs.from_to);
         get_option(node, rhs.to);
         get_option(node, rhs.combine_free_functions_into_file_participants);

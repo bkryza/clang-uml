@@ -15,6 +15,6 @@ diagrams:
         - lambda
     using_namespace:
       - clanguml::t20031
-    start_from:
+    from:
       - function: "clanguml::t20031::tmain(int)"
       - function: "clanguml::t20031::tmain(bool,int)"

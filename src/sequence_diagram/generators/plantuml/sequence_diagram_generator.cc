@@ -488,7 +488,7 @@ void generator::generate_diagram(std::ostream &ostr) const
         }
     }
 
-    for (const auto &sf : config().start_from()) {
+    for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
             common::model::diagram_element::id_t start_from{0};
             for (const auto &[k, v] : model().sequences()) {
