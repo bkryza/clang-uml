@@ -9,5 +9,5 @@ using_namespace:
 plantuml:
   before:
     - 'title clang-uml clanguml::class_diagram::generators::plantuml::generator sequence diagram'
-start_from:
+from:
   - function: "clanguml::common::generators::plantuml::generator<clanguml::config::class_diagram,clanguml::class_diagram::model::diagram>::generate(std::ostream &) const"

@@ -17,5 +17,5 @@ using_namespace:
 plantuml:
   before:
     - 'title clang-uml class_diagram::visitor::template_builder::build sequence diagram'
-start_from:
+from:
   - function: "clanguml::class_diagram::visitor::template_builder::build(const clang::NamedDecl *,const clang::TemplateSpecializationType &,std::optional<class_diagram::model::class_ *>)"
