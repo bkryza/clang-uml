@@ -32,6 +32,8 @@ enum class option_inherit_mode {
     kAppend    /*!< Append to list options */
 };
 
+struct option_with_alt_names_tag { };
+
 /**
  * @brief Generic configuration option type
  *
@@ -59,6 +61,15 @@ template <typename T> struct option {
         : name{std::move(name_)}
         , value{std::move(initial_value)}
         , has_value{true}
+        , inheritance_mode{im}
+    {
+    }
+    option(option_with_alt_names_tag /*unused*/, std::string name_,
+        std::vector<std::string> alternate_names_,
+        option_inherit_mode im = option_inherit_mode::kOverride)
+        : name{std::move(name_)}
+        , alternate_names{std::move(alternate_names_)}
+        , value{}
         , inheritance_mode{im}
     {
     }
@@ -106,6 +117,9 @@ template <typename T> struct option {
 
     /*! Option name, it is also the YAML key in the configuration file */
     std::string name;
+
+    /*! Alternate option names */
+    std::vector<std::string> alternate_names;
 
     /*! Option value */
     T value;

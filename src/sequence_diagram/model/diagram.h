@@ -20,12 +20,15 @@
 #include "activity.h"
 #include "common/model/diagram.h"
 #include "common/types.h"
+#include "config/config.h"
 #include "participant.h"
 
 #include <map>
 #include <string>
 
 namespace clanguml::sequence_diagram::model {
+
+using message_chain_t = std::vector<sequence_diagram::model::message>;
 
 /**
  * @brief Model of a sequence diagram
@@ -229,11 +232,50 @@ public:
     bool should_include(const sequence_diagram::model::participant &p) const;
 
     /**
-     * @brief Get list of all possible 'start_from' values in the model
+     * @brief Get list of all possible 'from' values in the model
      *
-     * @return List of all possible 'start_from' values
+     * @return List of all possible 'from' values
      */
-    std::vector<std::string> list_start_from_values() const;
+    std::vector<std::string> list_from_values() const;
+
+    /**
+     * @brief Get list of all possible 'to' values in the model
+     *
+     * @return List of all possible 'to' values
+     */
+    std::vector<std::string> list_to_values() const;
+
+    /**
+     * @brief Generate a list of message chains matching a from_to constraint
+     *
+     * If 'from_activity' is 0, this method will return all message chains
+     * ending in 'to_activity'.
+     *
+     * @param from_activity Source activity for from_to message chain
+     * @param to_activity Target activity for from_to message chain
+     * @return List of message chains
+     */
+    std::unordered_set<message_chain_t> get_all_from_to_message_chains(
+        common::model::diagram_element::id_t from_activity,
+        common::model::diagram_element::id_t to_activity) const;
+
+    /**
+     * @brief Get id of a 'to' activity
+     *
+     * @param to_location Target activity
+     * @return Activity id
+     */
+    common::model::diagram_element::id_t get_to_activity_id(
+        const config::source_location &to_location) const;
+
+    /**
+     * @brief Get id of a 'from' activity
+     *
+     * @param from_location Source activity
+     * @return Activity id
+     */
+    common::model::diagram_element::id_t get_from_activity_id(
+        const config::source_location &from_location) const;
 
     /**
      * @brief Once the diagram is complete, run any final processing.

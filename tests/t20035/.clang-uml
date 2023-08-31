@@ -1,0 +1,15 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t20035_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t20035/t20035.cc
+    include:
+      namespaces:
+        - clanguml::t20035
+    using_namespace:
+      - clanguml::t20035
+    from_to:
+      - [function: "clanguml::t20035::tmain(int,char **)",
+         function: "clanguml::t20035::c(int)"]

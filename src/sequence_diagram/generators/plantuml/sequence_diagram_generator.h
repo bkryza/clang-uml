@@ -140,6 +140,8 @@ private:
     std::string render_name(std::string name) const;
 
     mutable std::set<common::id_t> generated_participants_;
+    model::function::message_render_mode
+    select_method_arguments_render_mode() const;
 };
 
 } // namespace plantuml

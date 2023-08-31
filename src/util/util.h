@@ -351,6 +351,15 @@ void for_each_if(const T &collection, C &&cond, F &&func)
         });
 }
 
+template <typename R, typename T, typename F>
+std::vector<R> map(const std::vector<T> &in, F &&f)
+{
+    std::vector<R> out;
+    std::transform(
+        in.cbegin(), in.cend(), std::back_inserter(out), std::forward<F>(f));
+    return out;
+}
+
 template <typename T, typename F, typename FElse>
 void if_not_null(const T *pointer, F &&func, FElse &&func_else)
 {

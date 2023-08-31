@@ -10,5 +10,5 @@ diagrams:
         - clanguml::t20016
     using_namespace:
       - clanguml::t20016
-    start_from:
+    from:
       - function: "clanguml::t20016::tmain()"

@@ -347,7 +347,9 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const sequence_diagram &c)
 {
     out << YAML::BeginMap;
     out << YAML::Key << "type" << YAML::Value << c.type();
-    out << c.start_from;
+    out << c.from;
+    out << c.from_to;
+    out << c.to;
     out << dynamic_cast<const inheritable_diagram_options &>(c);
     out << YAML::EndMap;
     return out;

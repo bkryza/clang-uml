@@ -298,6 +298,15 @@ test_cases:
     - name: t20033
       title: Control statement text in sequence diagram test case
       description:
+    - name: t20034
+      title: Test case for rendering all call chains from one activity to another (from_to)
+      description:
+    - name: t20035
+      title: from_to sequence diagram test case with free functions
+      description:
+    - name: t20036
+      title: Test case for rendering all call chains leading to an activity (to)
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

@@ -1,0 +1,14 @@
+compilation_database_dir: ..
+output_directory: puml
+diagrams:
+  t20036_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t20036/t20036.cc
+    include:
+      namespaces:
+        - clanguml::t20036
+    using_namespace:
+      - clanguml::t20036
+    to:
+      - function: "clanguml::t20036::A::a2()"

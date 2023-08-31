@@ -95,11 +95,20 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
         std::move(progress));
 
     if constexpr (std::is_same_v<DiagramConfig, config::sequence_diagram>) {
-        if (rc.print_start_from) {
-            auto start_from_values = model->list_start_from_values();
+        if (rc.print_from) {
+            auto from_values = model->list_from_values();
 
-            for (const auto &start_from : start_from_values) {
-                std::cout << start_from << std::endl;
+            for (const auto &from : from_values) {
+                std::cout << from << std::endl;
+            }
+
+            return;
+        }
+        if (rc.print_to) {
+            auto to_values = model->list_to_values();
+
+            for (const auto &to : to_values) {
+                std::cout << "|" << to << "|" << std::endl;
             }
 
             return;

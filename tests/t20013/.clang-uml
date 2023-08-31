@@ -10,5 +10,5 @@ diagrams:
         - clanguml::t20013
     using_namespace:
       - clanguml::t20013
-    start_from:
+    from:
       - function: "clanguml::t20013::tmain(int,char **)"

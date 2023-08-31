@@ -23,5 +23,5 @@ plantuml:
   before:
     - 'title clang-uml main function sequence diagram'
 # Use clang-uml main function as entry point for this diagram
-start_from:
+from:
   - function: main(int,const char **)

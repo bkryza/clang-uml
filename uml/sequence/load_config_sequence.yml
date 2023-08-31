@@ -15,5 +15,5 @@ exclude:
     - src/util/util.h
 using_namespace:
   - clanguml
-start_from:
+from:
   - function: "clanguml::config::load(const std::string &,std::optional<bool>,std::optional<bool>,bool)"
