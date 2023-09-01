@@ -77,9 +77,11 @@ release/src/clang-uml --help
 # To build using a specific installed version of LLVM use:
 LLVM_VERSION=14 make release
 
-# Optionally
+# Optionally, to install in default prefix
 make install
-# or
+# or to install in custom prefix
+make install DESTDIR=/opt/clang-uml
+# or simply
 export PATH=$PATH:$PWD/release
 ```
 

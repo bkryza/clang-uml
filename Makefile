@@ -39,6 +39,8 @@ PKG_VERSION	?= $(shell git describe --tags --always --abbrev=7 | tr - .)
 GIT_COMMIT ?= $(shell git rev-parse HEAD)
 GIT_BRANCH ?= $(shell git rev-parse --abbrev-ref HEAD)
 
+DESTDIR ?=
+
 .PHONY: clean
 clean:
 	rm -rf debug release debug_tidy
@@ -87,6 +89,9 @@ test: debug
 
 test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 make -C release test
+
+install: release
+	make -C release install DESTDIR=${DESTDIR}
 
 test_plantuml: test
 	plantuml -tsvg debug/tests/puml/*.puml
