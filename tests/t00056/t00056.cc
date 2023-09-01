@@ -1,3 +1,4 @@
+#include <concepts>
 #include <string>
 
 namespace clanguml {
