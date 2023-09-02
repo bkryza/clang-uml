@@ -27,6 +27,14 @@ message::message(
 {
 }
 
+bool message::operator==(const message &other) const noexcept
+{
+    return from_ == other.from_ && to_ == other.to_ && type_ == other.type_ &&
+        scope_ == other.scope_ && message_name_ == other.message_name_ &&
+        return_type_ == other.return_type_ &&
+        condition_text_ == other.condition_text_;
+}
+
 void message::set_type(common::model::message_t t) { type_ = t; }
 
 common::model::message_t message::type() const { return type_; }

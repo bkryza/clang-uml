@@ -42,6 +42,14 @@ public:
         common::model::diagram_element::id_t from);
 
     /**
+     * @brief Equality operator
+     *
+     * @param other Compare this to other message
+     * @return True, if 2 messages are equal
+     */
+    bool operator==(const message &other) const noexcept;
+
+    /**
      * @brief Set message type
      *
      * @param t Message type
@@ -162,33 +170,3 @@ private:
 };
 
 } // namespace clanguml::sequence_diagram::model
-
-namespace std {
-
-template <> struct hash<clanguml::sequence_diagram::model::message> {
-    std::size_t operator()(
-        const clanguml::sequence_diagram::model::message &m) const
-    {
-        std::size_t seed = clanguml::util::hash_seed(m.from());
-        seed ^= m.to();
-        seed += std::hash<std::string>{}(m.full_name(true));
-
-        return seed;
-    }
-};
-
-template <>
-struct hash<std::vector<clanguml::sequence_diagram::model::message>> {
-    std::size_t operator()(
-        const std::vector<clanguml::sequence_diagram::model::message> &msgs)
-        const
-    {
-        std::size_t seed = clanguml::util::hash_seed(msgs.size());
-        for (const auto &m : msgs) {
-            seed ^= std::hash<clanguml::sequence_diagram::model::message>{}(m);
-        }
-        return seed;
-    }
-};
-
-} // namespace std
