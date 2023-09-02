@@ -9,6 +9,7 @@
   * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
   * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
+* [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
