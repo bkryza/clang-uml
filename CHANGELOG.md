@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.3.9
   * Added `from_to` and `to` location constraints to sequence diagrams (#154)
   * Fixed 'else if' statement generation in sequence diagrams (#81)
   * Implemented removal of redundant dependency relationhips (#28)

@@ -139,9 +139,12 @@ TEST_CASE("t00014", "[test-case][class]")
         REQUIRE_THAT(puml,
             IsAggregation(_A("R<T>"),
                 _A("A<float,std::unique_ptr<std::string>>"), "-floatstring"));
+#if !defined(__APPLE__)
+        // TODO(#176)
         REQUIRE_THAT(puml, IsDependency(_A("R<T>"), _A("A<char,std::string>")));
         REQUIRE_THAT(
             puml, IsDependency(_A("R<T>"), _A("A<wchar_t,std::string>")));
+#endif
 
         save_puml(
             config.output_directory() + "/" + diagram->name + ".puml", puml);

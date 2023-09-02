@@ -285,11 +285,11 @@ common::model::diagram_element::id_t diagram::get_from_activity_id(
     return from_activity;
 }
 
-std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
+std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
     const common::model::diagram_element::id_t from_activity,
     const common::model::diagram_element::id_t to_activity) const
 {
-    std::unordered_set<message_chain_t> message_chains_unique{};
+    std::vector<message_chain_t> message_chains_unique{};
 
     // Message (call) chains matching the specified from_to condition
     std::vector<message_chain_t> message_chains;
@@ -382,15 +382,31 @@ std::unordered_set<message_chain_t> diagram::get_all_from_to_message_chains(
 
     // Reverse the message chains order (they were added starting from
     // the destination activity)
-    for (auto &mc : message_chains)
+    for (auto &mc : message_chains) {
         std::reverse(mc.begin(), mc.end());
 
-    std::copy_if(message_chains.begin(), message_chains.end(),
-        std::inserter(message_chains_unique, message_chains_unique.begin()),
-        [from_activity](const message_chain_t &mc) {
-            return !mc.empty() &&
-                (from_activity == 0 || (mc.front().from() == from_activity));
-        });
+        if (mc.empty())
+            continue;
+
+        if (std::find(message_chains_unique.begin(),
+                message_chains_unique.end(), mc) != message_chains_unique.end())
+            continue;
+
+        if (from_activity == 0 || (mc.front().from() == from_activity)) {
+            message_chains_unique.push_back(mc);
+        }
+    }
+
+    LOG_TRACE("Message chains unique", iter++);
+    int message_chain_index{};
+    for (const auto &mc : message_chains_unique) {
+        LOG_TRACE("\t{}: {}", message_chain_index++,
+            fmt::join(util::map<std::string>(mc,
+                          [](const model::message &m) -> std::string {
+                              return m.message_name();
+                          }),
+                "->"));
+    }
 
     return message_chains_unique;
 }
