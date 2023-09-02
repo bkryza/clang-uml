@@ -41,7 +41,7 @@ types:
         tooltip: string
     git_t:
         branch: string
-        revision: string
+        revision: [string, int]
         commit: string
         toplevel: string
     layout_hint_key: !variant
