@@ -30,16 +30,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.8/clang-uml-0.3.8-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.8-1.fc36.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.9/clang-uml-0.3.9-1.fc36.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.9-1.fc36.x86_64.rpm
 
 # Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.8/clang-uml-0.3.8-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.8-1.fc37.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.9/clang-uml-0.3.9-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.9-1.fc37.x86_64.rpm
 
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.3.8/clang-uml-0.3.8-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.3.8-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.3.9/clang-uml-0.3.9-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.3.9-1.fc38.x86_64.rpm
 ```
 
 #### Conda
@@ -161,7 +161,7 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.3.8
+clang-uml 0.3.9
 Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>
 Built against LLVM/Clang libraries version: 15.0.6
 Using LLVM/Clang libraries version: clang version 15.0.6 (https://github.com/llvm/llvm-project.git 088f33605d8a61ff519c580a71b1dd57d16a03f8)
