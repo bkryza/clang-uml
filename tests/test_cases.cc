@@ -111,6 +111,24 @@ auto generate_diagram_json(
 
     return nlohmann::json::parse(ss.str());
 }
+
+template <typename DiagramConfig, typename DiagramModel>
+auto generate_diagram_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
+{
+    using diagram_config = DiagramConfig;
+    using diagram_model = DiagramModel;
+    using diagram_generator =
+        typename clanguml::common::generators::diagram_generator_t<
+            DiagramConfig,
+            clanguml::common::generators::mermaid_generator_tag>::type;
+
+    std::stringstream ss;
+
+    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
+
+    return ss.str();
+}
 }
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
@@ -209,6 +227,14 @@ nlohmann::json generate_include_json(
         config, model);
 }
 
+std::string generate_class_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::class_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_mermaid<clanguml::config::class_diagram>(
+        config, model);
+}
+
 void save_puml(const std::string &path, const std::string &puml)
 {
     std::filesystem::path p{path};
@@ -228,6 +254,17 @@ void save_json(const std::string &path, const nlohmann::json &j)
     ofs << std::setw(2) << j;
     ofs.close();
 }
+
+void save_mermaid(const std::string &path, const std::string &mmd)
+{
+    std::filesystem::path p{path};
+    std::filesystem::create_directory(p.parent_path());
+    std::ofstream ofs;
+    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
+    ofs << mmd;
+    ofs.close();
+}
+
 
 using namespace clanguml::test::matchers;
 

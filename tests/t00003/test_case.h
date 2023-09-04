@@ -95,4 +95,10 @@ TEST_CASE("t00003", "[test-case][class]")
 
         save_json(config.output_directory() + "/" + diagram->name + ".json", j);
     }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_puml(
+            config.output_directory() + "/" + diagram->name + ".mmd", mmd);
+    }
 }

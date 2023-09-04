@@ -126,6 +126,22 @@ struct plantuml {
 };
 
 /**
+ * @brief MermaidJS diagram config section
+ *
+ * This configuration option can be used to add any MermaidJS directives
+ * before or after the generated diagram, such as diagram name, or custom
+ * notes.
+ */
+struct mermaid {
+    /*! List of directives to add before diagram */
+    std::vector<std::string> before;
+    /*! List of directives to add before diagram */
+    std::vector<std::string> after;
+
+    void append(const mermaid &r);
+};
+
+/**
  * @brief Definition of diagram template
  */
 struct diagram_template {
@@ -430,6 +446,7 @@ struct inheritable_diagram_options {
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};
+    option<struct mermaid> mermaid{"mermaid", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
     option<bool> group_methods{"group_methods", true};
