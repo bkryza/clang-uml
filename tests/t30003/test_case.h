@@ -43,8 +43,7 @@ TEST_CASE("t30003", "[test-case][package]")
         REQUIRE_THAT(puml, IsDeprecated(_A("ns2_v0_9_0")));
         REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -62,6 +61,6 @@ TEST_CASE("t30003", "[test-case][package]")
         REQUIRE(IsDeprecated(j, "ns1::ns2_v0_9_0"));
         REQUIRE(IsDeprecated(j, "ns3"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

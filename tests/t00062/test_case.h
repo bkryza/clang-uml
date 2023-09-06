@@ -83,8 +83,7 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T>>")));
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -92,6 +91,11 @@ TEST_CASE("t00062", "[test-case][class]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

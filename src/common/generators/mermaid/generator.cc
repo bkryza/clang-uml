@@ -24,23 +24,23 @@ std::string to_mermaid(relationship_t r, const std::string &style)
     switch (r) {
     case relationship_t::kOwnership:
     case relationship_t::kComposition:
-        return style.empty() ? "*--" : fmt::format("*-[{}]-", style);
+        return "*--";
     case relationship_t::kAggregation:
-        return style.empty() ? "o--" : fmt::format("o-[{}]-", style);
+        return "o--";
     case relationship_t::kContainment:
-        return style.empty() ? "--" : fmt::format("-[{}]-", style);
+        return "--";
     case relationship_t::kAssociation:
-        return style.empty() ? "-->" : fmt::format("-[{}]->", style);
+        return "-->";
     case relationship_t::kInstantiation:
-        return style.empty() ? "..|>" : fmt::format(".[{}].|>", style);
+        return "..|>";
     case relationship_t::kFriendship:
-        return style.empty() ? "<.." : fmt::format("<.[{}].", style);
+        return "<..";
     case relationship_t::kDependency:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
+        return "..>";
     case relationship_t::kConstraint:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
+        return "..>";
     case relationship_t::kAlias:
-        return style.empty() ? ".." : fmt::format(".[{}].", style);
+        return "..";
     default:
         return "";
     }
@@ -70,6 +70,12 @@ std::string to_mermaid(message_t r)
     default:
         return "";
     }
+}
+
+std::string indent(const unsigned level)
+{
+    const auto kIndentWidth = 4U;
+    return std::string(level * kIndentWidth, ' ');
 }
 
 } // namespace clanguml::common::generators::mermaid

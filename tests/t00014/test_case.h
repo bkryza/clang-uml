@@ -146,8 +146,7 @@ TEST_CASE("t00014", "[test-case][class]")
             puml, IsDependency(_A("R<T>"), _A("A<wchar_t,std::string>")));
 #endif
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -168,6 +167,12 @@ TEST_CASE("t00014", "[test-case][class]")
         REQUIRE(json::IsClass(j, "A<std::string,std::string>"));
         REQUIRE(json::IsClass(j, "A<char,std::string>"));
         REQUIRE(json::IsClass(j, "B"));
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

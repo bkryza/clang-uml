@@ -43,8 +43,7 @@ TEST_CASE("t00011", "[test-case][class]")
         REQUIRE_THAT(puml, IsFriend<Public>(_A("A"), _A("B")));
         // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -56,6 +55,11 @@ TEST_CASE("t00011", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "D<T>"));
         REQUIRE(IsFriend(j, "A", "B"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

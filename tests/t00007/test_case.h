@@ -43,8 +43,7 @@ TEST_CASE("t00007", "[test-case][class]")
         REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
         REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "+c"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -59,6 +58,11 @@ TEST_CASE("t00007", "[test-case][class]")
         REQUIRE(IsAssociation(j, "R", "B", "b"));
         REQUIRE(IsAssociation(j, "R", "C", "c"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

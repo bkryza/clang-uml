@@ -1,5 +1,5 @@
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t00014_class:
     type: class
@@ -13,3 +13,6 @@ diagrams:
     plantuml:
       before:
         - left to right direction
+    mermaid:
+      before:
+        - direction LR

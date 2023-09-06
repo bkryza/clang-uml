@@ -64,8 +64,7 @@ TEST_CASE("t00044", "[test-case][class]")
             IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
                 _A("signal_handler<void(int),bool>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -80,6 +79,11 @@ TEST_CASE("t00044", "[test-case][class]")
             j, "sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"));
         REQUIRE(IsClass(j, "R"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

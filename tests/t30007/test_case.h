@@ -45,8 +45,7 @@ TEST_CASE("t30007", "[test-case][package]")
         REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "up", _A("AA")));
         REQUIRE_THAT(puml, IsLayoutHint(_A("C"), "left", _A("B")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -62,6 +61,6 @@ TEST_CASE("t30007", "[test-case][package]")
         REQUIRE(IsDependency(j, "A::AA", "B"));
         REQUIRE(IsDependency(j, "A::AA", "C"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

@@ -43,8 +43,7 @@ TEST_CASE("t00046", "[test-case][class]")
 
         REQUIRE_THAT(puml, IsField<Public>("i", "std::vector<std::uint8_t>"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -56,6 +55,11 @@ TEST_CASE("t00046", "[test-case][class]")
         REQUIRE(get_element(j, "ns1::A").value()["type"] == "class");
         REQUIRE(get_element(j, "ns1::ns2::D").value()["type"] == "class");
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

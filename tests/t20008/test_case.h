@@ -54,8 +54,7 @@ TEST_CASE("t20008", "[test-case][sequence]")
             HasCall(
                 _A("B<std::string>"), _A("A<std::string>"), "a3(std::string)"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -75,6 +74,6 @@ TEST_CASE("t20008", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

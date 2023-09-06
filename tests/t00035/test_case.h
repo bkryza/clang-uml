@@ -46,8 +46,7 @@ TEST_CASE("t00035", "[test-case][class]")
         REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "right", _A("Right")));
         REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -60,6 +59,11 @@ TEST_CASE("t00035", "[test-case][class]")
         REQUIRE(IsClass(j, "Left"));
         REQUIRE(IsClass(j, "Right"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

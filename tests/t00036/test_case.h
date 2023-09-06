@@ -49,8 +49,7 @@ TEST_CASE("t00036", "[test-case][class]")
 
         REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -67,6 +66,11 @@ TEST_CASE("t00036", "[test-case][class]")
         REQUIRE(IsPackage(j, "ns1::ns11::ns111"));
         REQUIRE(IsPackage(j, "ns2"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

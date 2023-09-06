@@ -56,8 +56,7 @@ TEST_CASE("t00027", "[test-case][class]")
         REQUIRE_THAT(puml,
             IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -75,6 +74,11 @@ TEST_CASE("t00027", "[test-case][class]")
         REQUIRE(IsAggregation(
             j, "Window", "Text<clanguml::t00027::Color>", "description"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

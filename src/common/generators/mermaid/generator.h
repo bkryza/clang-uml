@@ -42,6 +42,8 @@ std::string to_mermaid(relationship_t r, const std::string &style);
 std::string to_mermaid(access_t scope);
 std::string to_mermaid(message_t r);
 
+std::string indent(const unsigned level);
+
 /**
  * @brief Base class for diagram generators
  *
@@ -103,8 +105,9 @@ public:
     /**
      * @brief Generate MermaidJS directives from config file.
      *
-     * This method renders the MermaidJS directives provided in the configuration
-     * file, including resolving any element aliases and Jinja templates.
+     * This method renders the MermaidJS directives provided in the
+     * configuration file, including resolving any element aliases and Jinja
+     * templates.
      *
      * @param ostr Output stream
      * @param directives List of directives from the configuration file
@@ -279,23 +282,21 @@ template <typename C, typename D>
 void generator<C, D>::generate_mermaid_directives(
     std::ostream &ostr, const std::vector<std::string> &directives) const
 {
-
 }
 
 template <typename C, typename D>
 void generator<C, D>::generate_notes(
     std::ostream &ostr, const model::element &e) const
 {
-//    const auto &config = generators::generator<C, D>::config();
-//
-//    for (const auto &decorator : e.decorators()) {
-//        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-//        if (note && note->applies_to_diagram(config.name)) {
-//            ostr << "note " << note->position << " of " << e.alias() << '\n'
-//                 << note->text << '\n'
-//                 << "end note\n";
-//        }
-//    }
+    const auto &config = generators::generator<C, D>::config();
+
+    for (const auto &decorator : e.decorators()) {
+        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+        if (note && note->applies_to_diagram(config.name)) {
+            ostr << indent(1) << "note for " << e.alias() << " \"" << note->text
+                 << "\"" << '\n';
+        }
+    }
 }
 
 template <typename C, typename D>
@@ -305,9 +306,9 @@ void generator<C, D>::generate_metadata(std::ostream &ostr) const
 
     if (config.generate_metadata()) {
         ostr << '\n'
-             << "    %% Generated with clang-uml, version "
+             << "%% Generated with clang-uml, version "
              << clanguml::version::CLANG_UML_VERSION << '\n'
-             << "    %% LLVM version " << clang::getClangFullVersion() << '\n';
+             << "%% LLVM version " << clang::getClangFullVersion() << '\n';
     }
 }
 
@@ -318,7 +319,7 @@ void generator<C, D>::print_debug(
     const auto &config = generators::generator<C, D>::config();
 
     if (config.debug_mode())
-        ostr << "    %% " << e.file() << ":" << e.line() << '\n';
+        ostr << "%% " << e.file() << ":" << e.line() << '\n';
 }
 
 template <typename DiagramModel, typename DiagramConfig>
@@ -393,7 +394,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
     });
 
     //
-    // Add PlantUML specific functions
+    // Add MermaidJS specific functions
     //
 
     // Return the entire element JSON context based on element name
@@ -411,7 +412,7 @@ template <typename C, typename D> void generator<C, D>::init_env()
         return res;
     });
 
-    // Convert C++ entity to PlantUML alias, e.g.
+    // Convert C++ entity to MermaidJS alias, e.g.
     //   "note left of {{ alias("A") }}: This is a note"
     // Shortcut to:
     //   {{ element("A").alias }}

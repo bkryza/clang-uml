@@ -47,8 +47,7 @@ TEST_CASE("t00065", "[test-case][class]")
         REQUIRE_THAT(puml, IsPackage("submodule1a"));
         REQUIRE_THAT(puml, IsPackage("concepts"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -56,6 +55,11 @@ TEST_CASE("t00065", "[test-case][class]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

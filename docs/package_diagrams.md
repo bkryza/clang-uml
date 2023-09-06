@@ -15,7 +15,7 @@ The minimal config required to generate a package diagram is presented below:
 # Path to the directory where `compile_commands.json` can be found
 compilation_database_dir: _build
 # Output directory for the diagrams
-output_directory: puml
+output_directory: diagrams
 # Diagrams definitions
 diagrams:
   # Diagram name

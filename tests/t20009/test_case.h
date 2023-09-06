@@ -47,8 +47,7 @@ TEST_CASE("t20009", "[test-case][sequence]")
 
         REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<float>"), "b(float)"));
         REQUIRE_THAT(puml, HasCall(_A("B<float>"), _A("A<float>"), "a(float)"));
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -67,6 +66,6 @@ TEST_CASE("t20009", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

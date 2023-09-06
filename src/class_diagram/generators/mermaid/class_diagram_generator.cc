@@ -24,9 +24,11 @@
 
 namespace clanguml::class_diagram::generators::mermaid {
 
+using clanguml::common::generators::mermaid::indent;
+
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
-    , together_group_stack_{!config.generate_packages()}
+    , together_group_stack_{true}
 {
 }
 
@@ -37,6 +39,8 @@ std::string generator::render_name(std::string name) const
     util::replace_all(name, "(", "&lpar;");
     util::replace_all(name, ")", "&rpar;");
     util::replace_all(name, "##", "::");
+    util::replace_all(name, "{", "&lbrace;");
+    util::replace_all(name, "}", "&rbrace;");
 
     return name;
 }
@@ -44,11 +48,7 @@ std::string generator::render_name(std::string name) const
 void generator::generate_alias(
     const common::model::element &c, std::ostream &ostr) const
 {
-    std::string full_name;
-    if (config().generate_packages())
-        full_name = c.full_name_no_ns();
-    else
-        full_name = c.full_name(true);
+    const auto full_name = c.full_name(true);
 
     assert(!full_name.empty());
 
@@ -56,7 +56,8 @@ void generator::generate_alias(
 
     auto class_label = config().simplify_template_type(render_name(full_name));
 
-    ostr << "   class " << c.alias() << "[\"" << class_label << "\"]\n";
+    ostr << indent(1) << "class " << c.alias() << "[\"" << class_label
+         << "\"]\n";
 
     // Register the added alias
     m_generated_aliases.emplace(c.alias());
@@ -68,14 +69,14 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     std::string class_type{"class"};
 
-    ostr << "   class " << c.alias();
+    ostr << indent(1) << "class " << c.alias();
 
     ostr << " {" << '\n';
 
     if (c.is_union())
-        ostr << "       <<union>>\n";
+        ostr << indent(2) << "<<union>>\n";
     else if (c.is_abstract())
-        ostr << "       <<abstract>>\n";
+        ostr << indent(2) << "<<abstract>>\n";
 
     //
     // Process methods
@@ -130,7 +131,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         ostr << '\n';
     }
 
-    ostr << "   }" << '\n';
+    ostr << indent(1) << "}" << '\n';
 
     generate_notes(ostr, c);
 
@@ -211,11 +212,9 @@ void generator::generate_method(
 
     print_debug(m, ostr);
 
-    std::string intend = "      ";
-
     std::string type{uns.relative(config().simplify_template_type(m.type()))};
 
-    ostr << intend << mermaid_common::to_mermaid(m.access()) << m.name();
+    ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name();
 
     if (!m.template_params().empty()) {
         m.render_template_params(ostr, config().using_namespace(), false);
@@ -257,7 +256,7 @@ void generator::generate_member(
 
     print_debug(m, ostr);
 
-    ostr << "      " << mermaid_common::to_mermaid(m.access()) << m.name()
+    ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name()
          << " : "
          << render_name(
                 uns.relative(config().simplify_template_type(m.type())));
@@ -265,31 +264,33 @@ void generator::generate_member(
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
 {
-    std::string class_type{"class"};
-
-    ostr << class_type << " " << c.alias() << " <<concept>>";
+    ostr << indent(1) << "class"
+         << " " << c.alias();
 
     if (!c.style().empty())
         ostr << " " << c.style();
 
     ostr << " {" << '\n';
+    ostr << indent(2) << "<<concept>>\n";
 
     // TODO: add option to enable/disable this
     if (c.requires_parameters().size() + c.requires_statements().size() > 0) {
         std::vector<std::string> parameters;
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {
-            parameters.emplace_back(p.to_string(config().using_namespace()));
+            parameters.emplace_back(
+                render_name(p.to_string(config().using_namespace())));
         }
 
-        ostr << fmt::format("({})\n", fmt::join(parameters, ","));
+        ostr << indent(2)
+             << fmt::format("\"({})\"\n", fmt::join(parameters, ","));
 
-        ostr << "..\n";
-
-        ostr << fmt::format("{}\n", fmt::join(c.requires_statements(), "\n"));
+        for (const auto &req : c.requires_statements()) {
+            ostr << indent(2) << fmt::format("\"{}\"\n", render_name(req));
+        }
     }
 
-    ostr << "   }" << '\n';
+    ostr << indent(1) << "}" << '\n';
 }
 
 void generator::generate_member_notes(std::ostream &ostr,
@@ -298,10 +299,8 @@ void generator::generate_member_notes(std::ostream &ostr,
     for (const auto &decorator : member.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
         if (note && note->applies_to_diagram(config().name)) {
-            ostr << "note " << note->position << " of " << alias
-                 << "::" << member.name() << '\n'
-                 << note->text << '\n'
-                 << "end note\n";
+            ostr << indent(1) << "note for " << alias << " \"" << note->text
+                 << "\"" << '\n';
         }
     }
 }
@@ -411,7 +410,8 @@ void generator::generate_relationships(
                 m_generated_aliases.end())
                 continue;
 
-            relstr << c.alias() << " " << puml_relation << " " << target_alias;
+            relstr << indent(1) << c.alias() << " " << puml_relation << " "
+                   << target_alias;
 
             if (!r.label().empty()) {
                 relstr << " : " << mermaid_common::to_mermaid(r.access())
@@ -419,7 +419,7 @@ void generator::generate_relationships(
                 rendered_relations.emplace(r.label());
             }
 
-            if(r.type() == relationship_t::kContainment) {
+            if (r.type() == relationship_t::kContainment) {
                 relstr << " : [nested]\n";
             }
 
@@ -430,7 +430,7 @@ void generator::generate_relationships(
 
                 LOG_DBG("=== Adding relation {}", relstr.str());
 
-                all_relations_str << "      " << relstr.str();
+                all_relations_str << relstr.str();
             }
         }
         catch (error::uml_alias_missing &e) {
@@ -451,8 +451,9 @@ void generator::generate_relationships(
                     m_generated_aliases.end())
                     continue;
 
-                relstr << target_alias << " <|-- " << c.alias() << '\n';
-                all_relations_str << "      " << relstr.str();
+                relstr << indent(1) << target_alias << " <|-- " << c.alias()
+                       << '\n';
+                all_relations_str << relstr.str();
             }
             catch (error::uml_alias_missing &e) {
                 LOG_DBG("=== Skipping inheritance relation from {} to {} due "
@@ -512,7 +513,8 @@ void generator::generate_relationships(
                 m_generated_aliases.end())
                 continue;
 
-            relstr << c.alias() << " " << puml_relation << " " << target_alias;
+            relstr << indent(1) << c.alias() << " " << puml_relation << " "
+                   << target_alias;
 
             if (!r.label().empty()) {
                 relstr << " : " << mermaid_common::to_mermaid(r.access())
@@ -558,7 +560,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
                 m_generated_aliases.end())
                 continue;
 
-            relstr << e.alias() << " "
+            relstr << indent(1) << e.alias() << " "
                    << clanguml::common::generators::mermaid::to_mermaid(
                           r.type(), r.style())
                    << " " << target_alias;
@@ -568,7 +570,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 
             relstr << '\n';
 
-            ostr << "        " << relstr.str();
+            ostr << relstr.str();
         }
         catch (error::uml_alias_missing &ex) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -582,45 +584,23 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 
 void generator::generate(const enum_ &e, std::ostream &ostr) const
 {
-    ostr << "   class " << e.alias();
+    ostr << indent(1) << "class " << e.alias();
 
     ostr << " {" << '\n';
 
-    ostr << "       <<Enumeration>>\n";
+    ostr << indent(2) << "<<Enumeration>>\n";
 
     for (const auto &enum_constant : e.constants()) {
-        ostr << "       " << enum_constant << '\n';
+        ostr << indent(2) << enum_constant << '\n';
     }
 
-    ostr << "   }" << '\n';
+    ostr << indent(1) << "}" << '\n';
 
     generate_notes(ostr, e);
 }
 
 void generator::generate(const package &p, std::ostream &ostr) const
 {
-    const auto &uns = config().using_namespace();
-
-    if (config().generate_packages()) {
-        LOG_DBG("Generating package {}", p.name());
-
-        // Don't generate packages from namespaces filtered out by
-        // using_namespace
-        if (!uns.starts_with({p.full_name(false)})) {
-            print_debug(p, ostr);
-            ostr << "package [" << p.name() << "] ";
-            ostr << "as " << p.alias();
-
-            if (p.is_deprecated())
-                ostr << " <<deprecated>>";
-
-            if (!p.style().empty())
-                ostr << " " << p.style();
-
-            ostr << " {" << '\n';
-        }
-    }
-
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
@@ -674,39 +654,6 @@ void generator::generate(const package &p, std::ostream &ostr) const
                     generate(*cpt, ostr);
                 }
             }
-        }
-    }
-
-    if (config().generate_packages()) {
-        // Now generate any diagram elements which are in together
-        // groups
-        for (const auto &[group_name, group_elements] :
-            together_group_stack_.get_current_groups()) {
-            ostr << "together {\n";
-
-            for (auto *e : group_elements) {
-                if (auto *cls = dynamic_cast<class_ *>(e); cls) {
-                    generate_alias(*cls, ostr);
-                    generate(*cls, ostr);
-                }
-                if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
-                    generate_alias(*enm, ostr);
-                    generate(*enm, ostr);
-                }
-                if (auto *cpt = dynamic_cast<concept_ *>(e); cpt) {
-                    generate_alias(*cpt, ostr);
-                    generate(*cpt, ostr);
-                }
-            }
-
-            ostr << "}\n";
-        }
-
-        // Don't generate packages from namespaces filtered out by
-        // using_namespace
-        if (!uns.starts_with({p.full_name(false)})) {
-            ostr << "}" << '\n';
-            generate_notes(ostr, p);
         }
     }
 }
@@ -817,7 +764,6 @@ void generator::generate_groups(std::ostream &ostr) const
 {
     for (const auto &[group_name, group_elements] :
         together_group_stack_.get_current_groups()) {
-        ostr << "together {\n";
 
         for (auto *e : group_elements) {
             if (auto *cls = dynamic_cast<class_ *>(e); cls) {
@@ -833,9 +779,7 @@ void generator::generate_groups(std::ostream &ostr) const
                 generate(*cpt, ostr);
             }
         }
-
-        ostr << "}\n";
     }
 }
 
-} // namespace clanguml::class_diagram::generators::plantuml
+} // namespace clanguml::class_diagram::generators::mermaid

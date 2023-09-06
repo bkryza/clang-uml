@@ -52,8 +52,7 @@ TEST_CASE("t00053", "[test-case][class]")
         REQUIRE_THAT(puml, IsClass(_A("F")));
         REQUIRE_THAT(puml, IsClass(_A("G")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -77,6 +76,11 @@ TEST_CASE("t00053", "[test-case][class]")
         REQUIRE(IsClass(j, "F"));
         REQUIRE(IsClass(j, "G"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

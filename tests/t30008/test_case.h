@@ -51,8 +51,7 @@ TEST_CASE("t30008", "[test-case][package]")
         REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
         REQUIRE_THAT(puml, IsDependency(_A("F"), _A("E")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -76,6 +75,6 @@ TEST_CASE("t30008", "[test-case][package]")
         REQUIRE(IsDependency(j, "dependencies::E", "dependencies::D"));
         REQUIRE(IsDependency(j, "dependencies::F", "dependencies::E"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

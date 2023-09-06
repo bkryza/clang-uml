@@ -93,10 +93,12 @@ test_release: release
 install: release
 	make -C release install DESTDIR=${DESTDIR}
 
-test_plantuml: test
-	plantuml -tsvg debug/tests/puml/*.puml
+test_diagrams: test
+	plantuml -tsvg debug/tests/diagrams/puml/*.puml
+	python3 util/validate_json.py debug/tests/diagrams/json/*.json
+	python3 util/generate_mermaid.py debug/tests/diagrams/mermaid/*.mmd
 
-document_test_cases: test_plantuml
+document_test_cases: test_diagrams
 	python3 util/generate_test_cases_docs.py
 	python3 util/format_svg.py docs/test_cases/*.svg
 

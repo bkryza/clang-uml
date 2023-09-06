@@ -62,8 +62,7 @@ TEST_CASE("t00032", "[test-case][class]")
         REQUIRE_THAT(
             puml, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("C")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -74,6 +73,11 @@ TEST_CASE("t00032", "[test-case][class]")
             "Overload<clanguml::t00032::TBase,int,clanguml::t00032::A,clanguml:"
             ":t00032::B,clanguml::t00032::C>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

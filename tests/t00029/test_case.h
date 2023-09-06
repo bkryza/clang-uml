@@ -53,8 +53,7 @@ TEST_CASE("t00029", "[test-case][class]")
         REQUIRE_THAT(puml, !IsAggregation(_A("R"), _A("G3"), "+g3"));
         REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G4"), "+g4"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -63,6 +62,11 @@ TEST_CASE("t00029", "[test-case][class]")
 
         REQUIRE(IsAggregation(j, "R", "G1", "g1"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

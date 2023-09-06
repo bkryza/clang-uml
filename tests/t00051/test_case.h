@@ -73,10 +73,8 @@ TEST_CASE("t00051", "[test-case][class]")
                 _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
                    "at ../../tests/t00051/t00051.cc:43:27)>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
-
     {
         auto j = generate_class_json(diagram, *model);
 
@@ -86,6 +84,11 @@ TEST_CASE("t00051", "[test-case][class]")
         REQUIRE(IsInnerClass(j, "A", "A::custom_thread1"));
         REQUIRE(IsInnerClass(j, "A", "A::custom_thread2"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

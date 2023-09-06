@@ -53,8 +53,7 @@ TEST_CASE("t00009", "[test-case][class]")
             IsAssociation(
                 _A("B"), _A("A<std::vector<std::string>>"), "+avector"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -71,6 +70,11 @@ TEST_CASE("t00009", "[test-case][class]")
         REQUIRE(IsField(j, "B", "astring", "A<std::string> *"));
         REQUIRE(IsField(j, "B", "avector", "A<std::vector<std::string>> &"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

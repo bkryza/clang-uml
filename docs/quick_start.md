@@ -17,7 +17,7 @@ To add an initial class diagram to your project, follow these steps:
     # Path to `compile_commands.json` directory
     compilation_database_dir: .
     # Path to diagram output directory
-    output_directory: puml
+    output_directory: diagrams
     diagrams:
       # This is the name of the diagram
       some_class_diagram:

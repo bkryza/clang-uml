@@ -86,8 +86,7 @@ TEST_CASE("t00059", "[test-case][class]")
             IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
                 _A("fruit_factory<empire_apple,lima_orange>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -99,6 +98,11 @@ TEST_CASE("t00059", "[test-case][class]")
         REQUIRE(IsConcept(j, "apple_c<T>"));
         REQUIRE(IsConcept(j, "orange_c<T>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

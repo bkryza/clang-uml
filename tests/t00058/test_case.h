@@ -66,8 +66,7 @@ TEST_CASE("t00058", "[test-case][class]")
             IsDependency(_A("same_as_first_type<T,Args...>"),
                 _A("first_type<T,Args...>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -79,6 +78,11 @@ TEST_CASE("t00058", "[test-case][class]")
         REQUIRE(IsClass(
             j, "B<int,std::string,int,double,clanguml::t00058::A<int,int>>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

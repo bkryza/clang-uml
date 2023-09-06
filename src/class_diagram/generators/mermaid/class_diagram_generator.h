@@ -91,7 +91,7 @@ public:
     void generate_top_level_elements(std::ostream &ostr) const;
 
     /**
-     * @brief Generate PlantUML alias for a class element.
+     * @brief Generate MermaidJS alias for a class element.
      *
      * @param c Class element
      * @param ostr Output stream
@@ -100,7 +100,7 @@ public:
         const common::model::element &e, std::ostream &ostr) const;
 
     /**
-     * @brief Render class element to PlantUML
+     * @brief Render class element to MermaidJS
      *
      * @param c Class element
      * @param ostr Output stream
@@ -108,7 +108,7 @@ public:
     void generate(const class_ &c, std::ostream &ostr) const;
 
     /**
-     * @brief Render class methods to PlantUML
+     * @brief Render class methods to MermaidJS
      *
      * @param methods List of class methods
      * @param ostr Output stream
@@ -117,7 +117,7 @@ public:
         const std::vector<class_method> &methods, std::ostream &ostr) const;
 
     /**
-     * @brief Render class methods to PlantUML in groups
+     * @brief Render class methods to MermaidJS in groups
      *
      * @param methods Methods grouped by method type
      * @param ostr Output stream
@@ -126,7 +126,7 @@ public:
         const method_groups_t &methods, std::ostream &ostr) const;
 
     /**
-     * @brief Render class method to PlantUML
+     * @brief Render class method to MermaidJS
      *
      * @param m Class method
      * @param ostr Output stream
@@ -134,7 +134,7 @@ public:
     void generate_method(const class_method &m, std::ostream &ostr) const;
 
     /**
-     * @brief Render class member to PlantUML
+     * @brief Render class member to MermaidJS
      *
      * @param m Class member
      * @param ostr Output stream
@@ -142,7 +142,7 @@ public:
     void generate_member(const class_member &m, std::ostream &ostr) const;
 
     /**
-     * @brief Render all relationships in the diagram to PlantUML
+     * @brief Render all relationships in the diagram to MermaidJS
      *
      * @param ostr Output stream
      */
@@ -157,7 +157,7 @@ public:
     void generate_relationships(const class_ &c, std::ostream &ostr) const;
 
     /**
-     * @brief Render a specific relationship to PlantUML.
+     * @brief Render a specific relationship to MermaidJS.
      *
      * @param r Relationship model
      * @param rendered_relations Set of already rendered relationships, to
@@ -168,7 +168,7 @@ public:
         const relationship &r, std::set<std::string> &rendered_relations) const;
 
     /**
-     * @brief Render enum element to PlantUML
+     * @brief Render enum element to MermaidJS
      *
      * @param e Enum element
      * @param ostr Output stream
@@ -184,7 +184,7 @@ public:
     void generate_relationships(const enum_ &c, std::ostream &ostr) const;
 
     /**
-     * @brief Render concept element to PlantUML
+     * @brief Render concept element to MermaidJS
      *
      * @param c Concept element
      * @param ostr Output stream
@@ -200,7 +200,7 @@ public:
     void generate_relationships(const concept_ &c, std::ostream &ostr) const;
 
     /**
-     * @brief Render package element to PlantUML
+     * @brief Render package element to MermaidJS
      *
      * @param p Package element
      * @param ostr Output stream
@@ -220,7 +220,7 @@ public:
      *
      * @param ostream Output stream
      * @param member Class element (member or method)
-     * @param alias PlantUML class alias
+     * @param alias MermaidJS class alias
      */
     void generate_member_notes(std::ostream &ostream,
         const class_element &member, const std::string &alias) const;

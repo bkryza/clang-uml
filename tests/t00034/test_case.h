@@ -46,8 +46,7 @@ TEST_CASE("t00034", "[test-case][class]")
         REQUIRE_THAT(
             puml, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -57,6 +56,11 @@ TEST_CASE("t00034", "[test-case][class]")
         REQUIRE(IsClass(j, "A"));
         REQUIRE(IsClassTemplate(j, "lift_void<T>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

@@ -43,8 +43,7 @@ TEST_CASE("t30009", "[test-case][package]")
         REQUIRE_THAT(puml, IsPackage("C"));
         REQUIRE_THAT(puml, IsPackage("D"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -63,6 +62,6 @@ TEST_CASE("t30009", "[test-case][package]")
         REQUIRE(IsPackage(j, "Two::C"));
         REQUIRE(IsPackage(j, "Two::D"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

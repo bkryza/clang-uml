@@ -47,8 +47,7 @@ TEST_CASE("t30011", "[test-case][package]")
         REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib3")));
         REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib4")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -56,6 +55,6 @@ TEST_CASE("t30011", "[test-case][package]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

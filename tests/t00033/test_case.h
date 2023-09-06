@@ -54,8 +54,7 @@ TEST_CASE("t00033", "[test-case][class]")
         REQUIRE_THAT(puml,
             IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -70,6 +69,11 @@ TEST_CASE("t00033", "[test-case][class]")
             "clanguml::t00033::D>>>>",
             "B<std::unique_ptr<clanguml::t00033::C<clanguml::t00033::D>>>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

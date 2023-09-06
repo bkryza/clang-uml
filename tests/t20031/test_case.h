@@ -55,8 +55,7 @@ TEST_CASE("t20031", "[test-case][sequence]")
                         "../../tests/t20031/t20031.cc:47:26)"),
                 _A("zero()"), ""));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -64,6 +63,6 @@ TEST_CASE("t20031", "[test-case][sequence]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

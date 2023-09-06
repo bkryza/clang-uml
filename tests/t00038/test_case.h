@@ -96,8 +96,7 @@ TEST_CASE("t00038", "[test-case][class]")
                 _A("map<std::integral_constant<thirdparty::ns1::color_t,"
                    "thirdparty::ns1::color_t::red>>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -108,6 +107,11 @@ TEST_CASE("t00038", "[test-case][class]")
         REQUIRE(IsClass(j, "B"));
         REQUIRE(IsClass(j, "C"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

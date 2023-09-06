@@ -47,8 +47,7 @@ TEST_CASE("t40003", "[test-case][include]")
         REQUIRE_THAT(puml, IsFile("t5.h"));
         REQUIRE_THAT(puml, !IsFile("t6.h"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -73,6 +72,6 @@ TEST_CASE("t40003", "[test-case][include]")
         REQUIRE(!IsFile(j, "include/dependencies/t4.h"));
         REQUIRE(IsFile(j, "src/dependencies/t2.cc"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

@@ -40,8 +40,7 @@ TEST_CASE("t00015", "[test-case][class]")
         REQUIRE_THAT(puml, IsClass(_A("ns3::ns1::ns2::Anon")));
         REQUIRE_THAT(puml, IsClass(_A("ns3::B")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -54,6 +53,11 @@ TEST_CASE("t00015", "[test-case][class]")
         REQUIRE(IsClass(j, "ns3::ns1::ns2::Anon"));
         REQUIRE(IsClass(j, "ns3::B"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

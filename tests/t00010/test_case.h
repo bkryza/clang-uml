@@ -48,8 +48,7 @@ TEST_CASE("t00010", "[test-case][class]")
             IsAggregation(_A("B<T>"), _A("A<T,std::string>"), "+astring"));
         REQUIRE_THAT(puml, IsAggregation(_A("C"), _A("B<int>"), "+aintstring"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -64,6 +63,11 @@ TEST_CASE("t00010", "[test-case][class]")
 
         REQUIRE(IsField(j, "C", "aintstring", "B<int>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

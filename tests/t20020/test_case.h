@@ -53,8 +53,7 @@ TEST_CASE("t20020", "[test-case][sequence]")
         REQUIRE_THAT(
             puml, HasCallInControlCondition(_A("tmain()"), _A("C"), "c3(int)"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -78,6 +77,6 @@ TEST_CASE("t20020", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

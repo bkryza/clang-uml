@@ -39,8 +39,7 @@ TEST_CASE("t20035", "[test-case][sequence]")
         REQUIRE_THAT(puml, HasCall(_A("a(int)"), _A("b1(int)"), ""));
         REQUIRE_THAT(puml, HasCall(_A("b1(int)"), _A("c(int)"), ""));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -52,6 +51,6 @@ TEST_CASE("t20035", "[test-case][sequence]")
             {{"tmain(int,char **)", "a(int)", "int"},
                 {"a(int)", "b1(int)", "int"}, {"b1(int)", "c(int)", "int"}}));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

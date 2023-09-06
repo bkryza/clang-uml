@@ -235,36 +235,51 @@ std::string generate_class_mermaid(
         config, model);
 }
 
-void save_puml(const std::string &path, const std::string &puml)
+template <typename T>
+void save_diagram(const std::filesystem::path &path, const T &diagram)
 {
-    std::filesystem::path p{path};
-    std::filesystem::create_directory(p.parent_path());
+    static_assert(
+        std::same_as<T, std::string> || std::same_as<T, nlohmann::json>);
+
+    std::filesystem::create_directories(path.parent_path());
     std::ofstream ofs;
-    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
-    ofs << puml;
+    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+    if constexpr (std::same_as<T, nlohmann::json>) {
+        ofs << std::setw(2) << diagram;
+    }
+    else {
+        ofs << diagram;
+    }
+
     ofs.close();
 }
 
-void save_json(const std::string &path, const nlohmann::json &j)
+void save_puml(const std::string &path, const std::string &filename,
+    const std::string &puml)
 {
     std::filesystem::path p{path};
-    std::filesystem::create_directory(p.parent_path());
-    std::ofstream ofs;
-    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
-    ofs << std::setw(2) << j;
-    ofs.close();
+    p /= "puml";
+    p /= filename;
+    save_diagram(p, puml);
 }
 
-void save_mermaid(const std::string &path, const std::string &mmd)
+void save_json(const std::string &path, const std::string &filename,
+    const nlohmann::json &j)
 {
     std::filesystem::path p{path};
-    std::filesystem::create_directory(p.parent_path());
-    std::ofstream ofs;
-    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
-    ofs << mmd;
-    ofs.close();
+    p /= "json";
+    p /= filename;
+    save_diagram(p, j);
 }
 
+void save_mermaid(const std::string &path, const std::string &filename,
+    const std::string &mmd)
+{
+    std::filesystem::path p{path};
+    p /= "mermaid";
+    p /= filename;
+    save_diagram(p, mmd);
+}
 
 using namespace clanguml::test::matchers;
 

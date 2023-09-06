@@ -49,8 +49,7 @@ TEST_CASE("t00048", "[test-case][class]")
         REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("A")));
         REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("B")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -64,6 +63,11 @@ TEST_CASE("t00048", "[test-case][class]")
         REQUIRE(IsBaseClass(j, "Base", "A"));
         REQUIRE(IsBaseClass(j, "Base", "B"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

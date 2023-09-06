@@ -54,8 +54,7 @@ TEST_CASE("t00031", "[test-case][class]")
             IsAssociationWithStyle(
                 _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -65,6 +64,11 @@ TEST_CASE("t00031", "[test-case][class]")
         REQUIRE(IsClass(j, "A"));
         REQUIRE(IsClassTemplate(j, "C<T>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

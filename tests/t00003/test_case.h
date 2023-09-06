@@ -73,8 +73,7 @@ TEST_CASE("t00003", "[test-case][class]")
         REQUIRE_THAT(puml, (IsField<Private>("b_", "int")));
         REQUIRE_THAT(puml, (IsField<Private>("c_", "int")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -93,12 +92,11 @@ TEST_CASE("t00003", "[test-case][class]")
 
         REQUIRE(!IsDependency(j, "A", "A"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
         auto mmd = generate_class_mermaid(diagram, *model);
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".mmd", mmd);
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

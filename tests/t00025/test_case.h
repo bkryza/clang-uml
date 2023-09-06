@@ -52,8 +52,7 @@ TEST_CASE("t00025", "[test-case][class]")
         REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
         REQUIRE_THAT(puml, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -66,6 +65,11 @@ TEST_CASE("t00025", "[test-case][class]")
         REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target1>", "Target1"));
         REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target2>", "Target2"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

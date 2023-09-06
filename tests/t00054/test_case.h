@@ -56,8 +56,7 @@ TEST_CASE("t00054", "[test-case][class]")
         REQUIRE_THAT(puml, IsEnum(_A("h")));
         REQUIRE_THAT(puml, IsEnum(_A("j")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -85,6 +84,11 @@ TEST_CASE("t00054", "[test-case][class]")
         REQUIRE(IsEnum(j, "detail4::h"));
         REQUIRE(IsEnum(j, "detail4::j"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

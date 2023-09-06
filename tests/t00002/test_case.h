@@ -85,8 +85,7 @@ TEST_CASE("t00002", "[test-case][class]")
                     clanguml::util::get_git_commit()),
                 "as"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -105,12 +104,11 @@ TEST_CASE("t00002", "[test-case][class]")
         REQUIRE(IsField(j, "E", "as", "std::vector<A *>"));
         REQUIRE(IsAssociation(j, "D", "A", "as"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
         auto mmd = generate_class_mermaid(diagram, *model);
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".mmd", mmd);
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

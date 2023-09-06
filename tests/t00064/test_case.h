@@ -78,8 +78,7 @@ TEST_CASE("t00064", "[test-case][class]")
                 "find", "unsigned int", "const value_type & v")));
 
 #endif
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -87,6 +86,11 @@ TEST_CASE("t00064", "[test-case][class]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

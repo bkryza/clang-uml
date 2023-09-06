@@ -56,8 +56,7 @@ TEST_CASE("t00008", "[test-case][class]")
             IsInstantiation(
                 _A("E::nested_template<ET>"), _A("E::nested_template<char>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -73,6 +72,11 @@ TEST_CASE("t00008", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "E::nested_template<ET>"));
         REQUIRE(IsClass(j, "E::nested_template<char>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

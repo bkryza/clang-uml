@@ -40,8 +40,7 @@ TEST_CASE("t00042", "[test-case][class]")
         REQUIRE_THAT(puml, IsClassTemplate("B", "T,K"));
         REQUIRE_THAT(puml, !IsClassTemplate("C", "T"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -51,6 +50,11 @@ TEST_CASE("t00042", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "A<T>"));
         REQUIRE(IsClassTemplate(j, "B<T,K>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

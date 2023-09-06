@@ -57,8 +57,7 @@ TEST_CASE("t00049", "[test-case][class]")
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
         REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -69,6 +68,11 @@ TEST_CASE("t00049", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "A<T>"));
         REQUIRE(IsInstantiation(j, "A<T>", "A<string_vector>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

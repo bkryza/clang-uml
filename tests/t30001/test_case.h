@@ -61,8 +61,7 @@ TEST_CASE("t30001", "[test-case][package]")
 
         REQUIRE_THAT(puml, HasComment("t30001 test diagram of type package"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -81,6 +80,6 @@ TEST_CASE("t30001", "[test-case][package]")
         REQUIRE(IsPackage(j, "B::AA::BBB"));
         REQUIRE(IsPackage(j, "B::BB"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

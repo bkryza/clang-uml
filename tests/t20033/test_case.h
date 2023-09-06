@@ -44,8 +44,7 @@ TEST_CASE("t20033", "[test-case][sequence]")
         REQUIRE_THAT(
             puml, HasCallInControlCondition(_A("tmain()"), _A("A"), "a4()"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -53,6 +52,6 @@ TEST_CASE("t20033", "[test-case][sequence]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

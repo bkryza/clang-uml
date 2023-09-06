@@ -150,6 +150,9 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+        mermaid: !optional
+            before: !optional [string]
+            after: !optional [string]
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -183,6 +186,9 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+        mermaid: !optional
+            before: !optional [string]
+            after: !optional [string]
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -214,6 +220,9 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+        mermaid: !optional
+            before: !optional [string]
+            after: !optional [string]
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -237,6 +246,9 @@ types:
         glob: !optional [string]
         include: !optional filter_t
         plantuml: !optional
+            before: !optional [string]
+            after: !optional [string]
+        mermaid: !optional
             before: !optional [string]
             after: !optional [string]
         relative_to: !optional string
@@ -279,6 +291,9 @@ root:
     glob: !optional [string]
     include: !optional filter_t
     plantuml: !optional
+        before: !optional [string]
+        after: !optional [string]
+    mermaid: !optional
         before: !optional [string]
         after: !optional [string]
     relative_to: !optional string

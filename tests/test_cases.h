@@ -19,8 +19,8 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/generators/mermaid/class_diagram_generator.h"
+#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/model/diagram.h"
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "common/clang_utils.h"

@@ -46,8 +46,7 @@ TEST_CASE("t00012", "[test-case][class]")
                    "std::vector<std::vector<std::vector<std::string>>>>,3,3,"
                    "3>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -62,6 +61,11 @@ TEST_CASE("t00012", "[test-case][class]")
             "C<std::map<int,std::vector<std::vector<std::vector<std::string>>>>"
             ",3,3,3>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

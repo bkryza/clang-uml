@@ -52,8 +52,7 @@ TEST_CASE("t20030", "[test-case][sequence]")
         REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "set(int)"));
         REQUIRE_THAT(puml, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -61,6 +60,6 @@ TEST_CASE("t20030", "[test-case][sequence]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

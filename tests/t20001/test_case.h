@@ -43,8 +43,7 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         REQUIRE_THAT(puml, HasComment("t20001 test diagram of type sequence"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_sequence_json(diagram, *model);
@@ -65,6 +64,6 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }

@@ -18,8 +18,8 @@
 #pragma once
 
 #include "class_diagram/generators/json/class_diagram_generator.h"
-#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "class_diagram/generators/mermaid/class_diagram_generator.h"
+#include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
 #include "common/generators/generators.h"
@@ -168,21 +168,21 @@ struct diagram_generator_t<clanguml::config::class_diagram,
     mermaid_generator_tag> {
     using type = clanguml::class_diagram::generators::mermaid::generator;
 };
-//template <>
-//struct diagram_generator_t<clanguml::config::sequence_diagram,
-//    mermaid_generator_tag> {
-//    using type = clanguml::sequence_diagram::generators::mermaid::generator;
-//};
-//template <>
-//struct diagram_generator_t<clanguml::config::package_diagram,
-//    mermaid_generator_tag> {
-//    using type = clanguml::package_diagram::generators::mermaid::generator;
-//};
-//template <>
-//struct diagram_generator_t<clanguml::config::include_diagram,
-//    mermaid_generator_tag> {
-//    using type = clanguml::include_diagram::generators::mermaid::generator;
-//};
+// template <>
+// struct diagram_generator_t<clanguml::config::sequence_diagram,
+//     mermaid_generator_tag> {
+//     using type = clanguml::sequence_diagram::generators::mermaid::generator;
+// };
+// template <>
+// struct diagram_generator_t<clanguml::config::package_diagram,
+//     mermaid_generator_tag> {
+//     using type = clanguml::package_diagram::generators::mermaid::generator;
+// };
+// template <>
+// struct diagram_generator_t<clanguml::config::include_diagram,
+//     mermaid_generator_tag> {
+//     using type = clanguml::include_diagram::generators::mermaid::generator;
+// };
 /** @} */
 
 /**

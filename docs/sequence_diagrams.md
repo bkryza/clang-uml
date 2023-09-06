@@ -17,7 +17,7 @@ The minimal config required to generate a sequence diagram is presented below:
 # Path to the directory where `compile_commands.json` can be found
 compilation_database_dir: _build
 # Output directory for the diagrams
-output_directory: puml
+output_directory: diagrams
 # Diagrams definitions
 diagrams:
   # Diagram name
@@ -259,7 +259,7 @@ possible to override this order in the diagram definition using
 
 ```yaml
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t20029_sequence:
     type: sequence

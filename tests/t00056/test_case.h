@@ -116,8 +116,7 @@ TEST_CASE("t00056", "[test-case][class]")
             IsConstraint(
                 _A("F<T1,T2,T3>"), _A("greater_than_simple<T,L>"), "T1,T3"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -133,6 +132,11 @@ TEST_CASE("t00056", "[test-case][class]")
         REQUIRE(IsConcept(j, "iterable_with_value_type<T>"));
         REQUIRE(IsConcept(j, "iterable_or_small_value_type<T>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

@@ -47,8 +47,7 @@ TEST_CASE("t20036", "[test-case][sequence]")
         REQUIRE_THAT(puml, HasCall(_A("C"), _A("B"), "b1()"));
         REQUIRE_THAT(puml, HasCall(_A("B"), _A("A"), "a2()"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -68,6 +67,6 @@ TEST_CASE("t20036", "[test-case][sequence]")
         REQUIRE(HasMessageChain(j,
             {{"C::c1()", "B::b1()", "void"}, {"B::b1()", "A::a2()", "void"}}));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 }
