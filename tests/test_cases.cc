@@ -235,6 +235,14 @@ std::string generate_class_mermaid(
         config, model);
 }
 
+std::string generate_sequence_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_mermaid<clanguml::config::sequence_diagram>(
+        config, model);
+}
+
 template <typename T>
 void save_diagram(const std::filesystem::path &path, const T &diagram)
 {

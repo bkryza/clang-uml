@@ -246,8 +246,6 @@ private:
     const std::vector<std::string> method_groups_{
         "constructors", "assignment", "operators", "other"};
 
-    std::string render_name(std::string name) const;
-
     template <typename T>
     void sort_class_elements(std::vector<T> &elements) const
     {

@@ -68,4 +68,10 @@ TEST_CASE("t20009", "[test-case][sequence]")
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
+
+    {
+        auto mmd = generate_sequence_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+    }
 }

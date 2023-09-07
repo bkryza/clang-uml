@@ -44,6 +44,8 @@ std::string to_mermaid(message_t r);
 
 std::string indent(const unsigned level);
 
+std::string render_name(std::string name);
+
 /**
  * @brief Base class for diagram generators
  *

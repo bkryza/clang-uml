@@ -64,9 +64,9 @@ std::string to_mermaid(message_t r)
 {
     switch (r) {
     case message_t::kCall:
-        return "->";
+        return "->>";
     case message_t::kReturn:
-        return "-->";
+        return "-->>";
     default:
         return "";
     }
@@ -78,4 +78,16 @@ std::string indent(const unsigned level)
     return std::string(level * kIndentWidth, ' ');
 }
 
+std::string render_name(std::string name)
+{
+    util::replace_all(name, "<", "&lt;");
+    util::replace_all(name, ">", "&gt;");
+    util::replace_all(name, "(", "&lpar;");
+    util::replace_all(name, ")", "&rpar;");
+    util::replace_all(name, "##", "::");
+    util::replace_all(name, "{", "&lbrace;");
+    util::replace_all(name, "}", "&rbrace;");
+
+    return name;
+}
 } // namespace clanguml::common::generators::mermaid

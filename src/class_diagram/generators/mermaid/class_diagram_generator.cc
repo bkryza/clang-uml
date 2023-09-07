@@ -25,24 +25,12 @@
 namespace clanguml::class_diagram::generators::mermaid {
 
 using clanguml::common::generators::mermaid::indent;
+using clanguml::common::generators::mermaid::render_name;
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
     , together_group_stack_{true}
 {
-}
-
-std::string generator::render_name(std::string name) const
-{
-    util::replace_all(name, "<", "&lt;");
-    util::replace_all(name, ">", "&gt;");
-    util::replace_all(name, "(", "&lpar;");
-    util::replace_all(name, ")", "&rpar;");
-    util::replace_all(name, "##", "::");
-    util::replace_all(name, "{", "&lbrace;");
-    util::replace_all(name, "}", "&rbrace;");
-
-    return name;
 }
 
 void generator::generate_alias(
