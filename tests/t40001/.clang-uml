@@ -21,3 +21,7 @@ diagrams:
       after:
         - 'note right of {{ alias("include/lib1") }}: This is a lib1 include dir'
         - 'note right of {{ alias("include/t40001_include1.h") }}: This is a t40001_include1.h include file'
+    mermaid:
+      after:
+        - 'N_00001(This is a lib1 include dir)-.-{{ alias("include/lib1") }}'
+        - 'N_00002(This is a lib1 include dir)-.-{{ alias("include/t40001_include1.h") }}'

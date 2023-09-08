@@ -110,4 +110,10 @@ TEST_CASE("t40002", "[test-case][include]")
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
+
+    {
+        auto mmd = generate_include_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+    }
 }
