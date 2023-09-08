@@ -126,7 +126,7 @@ public:
      * @param ostr Output stream
      * @param element Element to which the note should be attached
      */
-    void generate_notes(
+    virtual void generate_notes(
         std::ostream &ostr, const model::element &element) const;
 
     /**

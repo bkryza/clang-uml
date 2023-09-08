@@ -29,6 +29,7 @@
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "indicators/indicators.hpp"
 #include "package_diagram/generators/json/package_diagram_generator.h"
+#include "package_diagram/generators/mermaid/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/mermaid/sequence_diagram_generator.h"
@@ -174,11 +175,11 @@ struct diagram_generator_t<clanguml::config::sequence_diagram,
     mermaid_generator_tag> {
     using type = clanguml::sequence_diagram::generators::mermaid::generator;
 };
-// template <>
-// struct diagram_generator_t<clanguml::config::package_diagram,
-//     mermaid_generator_tag> {
-//     using type = clanguml::package_diagram::generators::mermaid::generator;
-// };
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    mermaid_generator_tag> {
+    using type = clanguml::package_diagram::generators::mermaid::generator;
+};
 // template <>
 // struct diagram_generator_t<clanguml::config::include_diagram,
 //     mermaid_generator_tag> {

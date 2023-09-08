@@ -82,4 +82,10 @@ TEST_CASE("t30001", "[test-case][package]")
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
+
+    {
+        auto mmd = generate_package_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+    }
 }
