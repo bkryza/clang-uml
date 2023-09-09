@@ -100,6 +100,10 @@ void generator::generate(const package &p, std::ostream &ostr) const
         ostr << indent(1) << "end" << '\n';
     }
 
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, p);
+    }
+
     generate_notes(ostr, p);
 
     together_group_stack_.leave();

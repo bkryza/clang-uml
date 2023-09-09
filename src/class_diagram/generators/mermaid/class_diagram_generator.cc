@@ -121,6 +121,10 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     ostr << indent(1) << "}" << '\n';
 
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
+    }
+
     generate_notes(ostr, c);
 
     for (const auto &member : c.members())
@@ -279,6 +283,10 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
     }
 
     ostr << indent(1) << "}" << '\n';
+
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
+    }
 }
 
 void generator::generate_member_notes(std::ostream &ostr,
@@ -583,6 +591,10 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
     }
 
     ostr << indent(1) << "}" << '\n';
+
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, e);
+    }
 
     generate_notes(ostr, e);
 }

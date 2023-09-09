@@ -89,6 +89,10 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
             m_generated_aliases.emplace(f.alias());
         }
     }
+
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, f);
+    }
 }
 
 void generator::generate_notes(

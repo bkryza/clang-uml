@@ -95,16 +95,6 @@ public:
     virtual void generate_diagram(std::ostream &ostr) const = 0;
 
     /**
-     * @brief Generate diagram layout hints
-     *
-     * This method adds to the diagram any layout hints that were provided
-     * in the configuration file.
-     *
-     * @param ostr Output stream
-     */
-    void generate_config_layout_hints(std::ostream &ostr) const;
-
-    /**
      * @brief Generate MermaidJS directives from config file.
      *
      * This method renders the MermaidJS directives provided in the
@@ -250,34 +240,56 @@ void generator<C, D>::generate(std::ostream &ostr) const
 }
 
 template <typename C, typename D>
-void generator<C, D>::generate_config_layout_hints(std::ostream &ostr) const
+template <typename E>
+void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
-    using namespace clanguml::util;
-
     const auto &config = generators::generator<C, D>::config();
 
-    // Generate layout hints
-    for (const auto &[entity_name, hints] : config.layout()) {
-        for (const auto &hint : hints) {
-            try {
-                if (hint.hint == config::hint_t::together) {
-                    // 'together' layout hint is handled separately
-                }
-                else if (hint.hint == config::hint_t::row ||
-                    hint.hint == config::hint_t::column) {
-                    generate_row_column_hints(ostr, entity_name, hint);
-                }
-                else {
-                    generate_position_hints(ostr, entity_name, hint);
-                }
-            }
-            catch (clanguml::error::uml_alias_missing &e) {
-                LOG_DBG("=== Skipping layout hint '{}' from {} due "
-                        "to: {}",
-                    to_string(hint.hint), entity_name, e.what());
-            }
+    if (e.file().empty())
+        return;
+
+    if (config.generate_links().link.empty() &&
+        config.generate_links().tooltip.empty())
+        return;
+
+    ostr << indent(1) << "click " << e.alias() << " href \"";
+    try {
+        if (!config.generate_links().link.empty()) {
+            ostr << env().render(std::string_view{config.generate_links().link},
+                element_context(e));
         }
     }
+    catch (const inja::json::parse_error &e) {
+        LOG_ERROR(
+            "Failed to parse Jinja template: {}", config.generate_links().link);
+    }
+    catch (const inja::json::exception &e) {
+        LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+            config.generate_links().link, e.what());
+    }
+    ostr << "\"";
+
+    if (!config.generate_links().tooltip.empty()) {
+        ostr << " \"";
+        try {
+            auto tooltip_text =
+                env().render(std::string_view{config.generate_links().tooltip},
+                    element_context(e));
+            util::replace_all(tooltip_text, "\"", "&bdquo;");
+            ostr << tooltip_text;
+        }
+        catch (const inja::json::parse_error &e) {
+            LOG_ERROR("Failed to parse Jinja template: {}",
+                config.generate_links().link);
+        }
+        catch (const inja::json::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                config.generate_links().link, e.what());
+        }
+
+        ostr << "\"";
+    }
+    ostr << "\n";
 }
 
 template <typename C, typename D>
