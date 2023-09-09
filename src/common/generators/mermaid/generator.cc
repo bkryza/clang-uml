@@ -19,7 +19,7 @@
 
 namespace clanguml::common::generators::mermaid {
 
-std::string to_mermaid(relationship_t r, const std::string &style)
+std::string to_mermaid(relationship_t r, const std::string & /*style*/)
 {
     switch (r) {
     case relationship_t::kOwnership:

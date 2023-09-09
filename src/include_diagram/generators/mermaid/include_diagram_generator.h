@@ -78,8 +78,8 @@ public:
      * @param ostr Output stream
      * @param element Element with a note
      */
-    void generate_notes(
-        std::ostream &ostr, const common::model::source_file &element) const;
+    void generate_notes(std::ostream &ostr,
+        const common::model::diagram_element &element) const override;
 
     /**
      * @brief Generate diagram element
@@ -90,7 +90,7 @@ public:
     void generate(const source_file &e, std::ostream &ostr) const;
 
 private:
-    mutable unsigned long note_id_{0UL};
+    mutable uint64_t note_id_{0UL};
 };
 
 } // namespace clanguml::include_diagram::generators::mermaid

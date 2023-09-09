@@ -42,7 +42,7 @@ std::string to_mermaid(relationship_t r, const std::string &style);
 std::string to_mermaid(access_t scope);
 std::string to_mermaid(message_t r);
 
-std::string indent(const unsigned level);
+std::string indent(unsigned level);
 
 std::string render_name(std::string name);
 
@@ -117,7 +117,7 @@ public:
      * @param element Element to which the note should be attached
      */
     virtual void generate_notes(
-        std::ostream &ostr, const model::element &element) const;
+        std::ostream &ostr, const model::diagram_element &element) const;
 
     /**
      * @brief Generate comment with diagram metadata
@@ -300,7 +300,7 @@ void generator<C, D>::generate_mermaid_directives(
 
 template <typename C, typename D>
 void generator<C, D>::generate_notes(
-    std::ostream &ostr, const model::element &e) const
+    std::ostream &ostr, const model::diagram_element &e) const
 {
     const auto &config = generators::generator<C, D>::config();
 

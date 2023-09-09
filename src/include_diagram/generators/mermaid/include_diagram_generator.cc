@@ -37,8 +37,6 @@ void generator::generate_relationships(
 
     LOG_DBG("Generating relationships for file {}", f.full_name(true));
 
-    namespace mermaid_common = clanguml::common::generators::mermaid;
-
     if (f.type() == common::model::source_file_t::kDirectory) {
         util::for_each(f, [this, &ostr](const auto &file) {
             generate_relationships(
@@ -96,7 +94,7 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
 }
 
 void generator::generate_notes(
-    std::ostream &ostr, const common::model::source_file &element) const
+    std::ostream &ostr, const common::model::diagram_element &element) const
 {
     const auto &config =
         common_generator<diagram_config, diagram_model>::config();
@@ -133,4 +131,4 @@ void generator::generate_diagram(std::ostream &ostr) const
         generate_notes(ostr, dynamic_cast<source_file &>(*f));
     });
 }
-} // namespace clanguml::include_diagram::generators::plantuml
+} // namespace clanguml::include_diagram::generators::mermaid

@@ -124,7 +124,7 @@ void generator::generate_groups(std::ostream &ostr) const
 }
 
 void generator::generate_notes(
-    std::ostream &ostr, const common::model::element &element) const
+    std::ostream &ostr, const common::model::diagram_element &element) const
 {
     const auto &config =
         common_generator<diagram_config, diagram_model>::config();

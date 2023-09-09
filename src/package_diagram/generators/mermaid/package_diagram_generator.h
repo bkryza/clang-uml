@@ -96,10 +96,10 @@ public:
      * @param element Element with a note
      */
     void generate_notes(std::ostream &ostr,
-        const common::model::element &element) const override;
+        const common::model::diagram_element &element) const override;
 
 private:
-    mutable unsigned long note_id_{0UL};
+    mutable uint64_t note_id_{0UL};
     mutable common::generators::nested_element_stack<common::model::package>
         together_group_stack_;
 };

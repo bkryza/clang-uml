@@ -27,7 +27,6 @@ using clanguml::sequence_diagram::model::message;
 using namespace clanguml::util;
 
 using clanguml::common::generators::mermaid::indent;
-using clanguml::common::generators::mermaid::render_name;
 
 std::string render_participant_name(std::string name)
 {
@@ -69,9 +68,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     if (to.value().type_name() == "method") {
         const auto &f = dynamic_cast<const model::method &>(to.value());
-        const std::string_view style = f.is_static() ? "" : "";
-        message =
-            fmt::format("{}{}{}", style, f.message_name(render_mode), style);
+        message = f.message_name(render_mode);
     }
     else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
