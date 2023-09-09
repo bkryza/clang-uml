@@ -71,20 +71,21 @@ with open(r'tests/test_cases.yaml') as f:
                 config_dict = yaml.full_load(config)
                 tc.write("## Generated PlantUML diagrams\n")
                 for diagram_name, _ in config_dict['diagrams'].items():
-                    copyfile(f'debug/tests/diagrams/puml/{diagram_name}.svg',
+                    copyfile(f'debug/tests/diagrams/plantuml/{diagram_name}.svg',
                              f'docs/test_cases/{diagram_name}.svg')
                     tc.write(f'![{diagram_name}](./{diagram_name}.svg "{test_case["title"]}")\n')
 
                 tc.write("## Generated Mermaid diagrams\n")
                 for diagram_name, _ in config_dict['diagrams'].items():
                     copyfile(f'debug/tests/diagrams/mermaid/{diagram_name}.svg',
-                             f'docs/test_cases/{diagram_name}_mmd.svg')
-                    tc.write(f'![{diagram_name}](./{diagram_name}_mmd.svg "{test_case["title"]}")\n')
+                             f'docs/test_cases/{diagram_name}_mermaid.svg')
+                    tc.write(f'![{diagram_name}](./{diagram_name}_mermaid.svg "{test_case["title"]}")\n')
 
                 tc.write("## Generated JSON models\n")
                 for diagram_name, _ in config_dict['diagrams'].items():
-                    if os.path.exists(f'debug/tests/puml/{diagram_name}.json'):
-                        with open(f'debug/tests/puml/{diagram_name}.json') as f:
+                    jd = f'debug/tests/diagrams/{diagram_name}.json'
+                    if os.path.exists(jd):
+                        with open(jd) as f:
                             contents = f.read()
                             tc.write("```json\n")
                             tc.write(contents)

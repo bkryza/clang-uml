@@ -103,10 +103,14 @@ document_test_cases: test_diagrams
 	python3 util/format_svg.py docs/test_cases/*.svg
 
 clanguml_diagrams: debug
-	mkdir -p docs/diagrams
-	debug/src/clang-uml -g plantuml -g json -p
-	plantuml -tsvg -nometadata docs/diagrams/*.puml
-	python3 util/format_svg.py docs/diagrams/*.svg
+	mkdir -p docs/diagrams/plantuml
+	mkdir -p docs/diagrams/mermaid
+	debug/src/clang-uml -g plantuml -g json -g mermaid -p
+	# Convert .puml files to svg images
+	plantuml -tsvg -nometadata -o plantuml docs/diagrams/*.puml
+	# Convert .mmd files to svg images
+	python3 util/generate_mermaid.py docs/diagrams/*.mmd
+	python3 util/format_svg.py docs/diagrams/plantuml/*.svg
 
 .PHONY: submodules
 submodules:

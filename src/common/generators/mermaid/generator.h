@@ -254,18 +254,24 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 
     ostr << indent(1) << "click " << e.alias() << " href \"";
     try {
+        std::string link{};
         if (!config.generate_links().link.empty()) {
-            ostr << env().render(std::string_view{config.generate_links().link},
+            link = env().render(std::string_view{config.generate_links().link},
                 element_context(e));
         }
+        if (link.empty())
+            link = " ";
+        ostr << link;
     }
     catch (const inja::json::parse_error &e) {
         LOG_ERROR(
             "Failed to parse Jinja template: {}", config.generate_links().link);
+        ostr << " ";
     }
     catch (const inja::json::exception &e) {
-        LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+        LOG_ERROR("Failed to render comment directive: \n{}\n due to: {}",
             config.generate_links().link, e.what());
+        ostr << " ";
     }
     ostr << "\"";
 
@@ -281,10 +287,12 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
         catch (const inja::json::parse_error &e) {
             LOG_ERROR("Failed to parse Jinja template: {}",
                 config.generate_links().link);
+            ostr << " ";
         }
         catch (const inja::json::exception &e) {
             LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
                 config.generate_links().link, e.what());
+            ostr << " ";
         }
 
         ostr << "\"";

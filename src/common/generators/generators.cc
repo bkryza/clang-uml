@@ -124,6 +124,10 @@ void generate_diagram_impl(const std::string &od, const std::string &name,
             generate_diagram_select_generator<diagram_config,
                 json_generator_tag>(od, name, diagram, model);
         }
+        else if (generator_type == generator_type_t::mermaid) {
+            generate_diagram_select_generator<diagram_config,
+                mermaid_generator_tag>(od, name, diagram, model);
+        }
     }
 }
 } // namespace detail

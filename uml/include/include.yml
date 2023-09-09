@@ -1,6 +1,6 @@
 type: include
 glob:
-  - src/**/*.cc
+  - src/config/*.cc
 relative_to: .
 include:
   paths:

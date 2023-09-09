@@ -38,8 +38,11 @@ ok = 0
 for f in files:
     try:
         print(f'Generating Mermaid diagram from {f}')
-        f_svg = Path(f).with_suffix('.svg')
-        subprocess.check_call(['mmdc',  '-i', f, '-o', f_svg])
+        f_svg = Path(f).with_suffix('.svg').name
+        target = Path(f).parent.absolute()
+        target = target.joinpath('mermaid')
+        target = target.joinpath(f_svg)
+        subprocess.check_call(['mmdc',  '-i', f, '-o', target])
     except subprocess.CalledProcessError:
         ok = 1
         print(f'ERROR: Generating Mermaid diagram from {f} failed')
