@@ -157,7 +157,7 @@ docs:
 doxygen: docs
 	cp CONTRIBUTING.md docs/contributing.md
 	cp CHANGELOG.md docs/changelog.md
-	cp docs/diagrams/*.svg docs/doxygen/html/
+	cp docs/diagrams/plantuml/*.svg docs/doxygen/html/
 	mkdir -p docs/doxygen/html/test_cases
 	cp docs/test_cases/*.svg docs/doxygen/html/test_cases/
 	../doxygen/_build/bin/doxygen

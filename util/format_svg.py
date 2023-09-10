@@ -36,6 +36,10 @@ def main(argv):
         # Parse SVG XML
         tree = etree.fromstring(bytes(xml, encoding='utf8'))
 
+        if not tree.attrib['width'] or tree.attrib['width'].endswith('%'):
+            # Make sure the width is equal to the viewBox width
+            tree.attrib['width'] = tree.attrib['viewBox'].split(' ')[2]
+
         # Add style color for <a> links
         defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})
         if not defs:
