@@ -282,7 +282,6 @@ void save_puml(const std::string &path, const std::string &filename,
     const std::string &puml)
 {
     std::filesystem::path p{path};
-    p /= "puml";
     p /= filename;
     save_diagram(p, puml);
 }
@@ -291,7 +290,6 @@ void save_json(const std::string &path, const std::string &filename,
     const nlohmann::json &j)
 {
     std::filesystem::path p{path};
-    p /= "json";
     p /= filename;
     save_diagram(p, j);
 }
@@ -300,7 +298,6 @@ void save_mermaid(const std::string &path, const std::string &filename,
     const std::string &mmd)
 {
     std::filesystem::path p{path};
-    p /= "mermaid";
     p /= filename;
     save_diagram(p, mmd);
 }

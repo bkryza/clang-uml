@@ -30,6 +30,11 @@ generator::generator(diagram_config &config, diagram_model &model)
 {
 }
 
+void generator::generate_diagram_type(std::ostream &ostr) const
+{
+    ostr << "flowchart\n";
+}
+
 void generator::generate_relationships(
     const package &p, std::ostream &ostr) const
 {
@@ -144,8 +149,6 @@ void generator::generate_notes(
 
 void generator::generate_diagram(std::ostream &ostr) const
 {
-    ostr << "flowchart\n";
-
     for (const auto &p : model()) {
         auto &pkg = dynamic_cast<package &>(*p);
         if (model().should_include(pkg)) {

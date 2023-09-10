@@ -48,6 +48,11 @@ generator::generator(
 {
 }
 
+void generator::generate_diagram_type(std::ostream &ostr) const
+{
+    ostr << "sequenceDiagram\n";
+}
+
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
     const auto &from = model().get_participant<model::participant>(m.from());
@@ -388,8 +393,6 @@ std::string generator::generate_alias(
 void generator::generate_diagram(std::ostream &ostr) const
 {
     model().print();
-
-    ostr << "sequenceDiagram\n";
 
     if (config().participants_order.has_value) {
         for (const auto &p : config().participants_order()) {

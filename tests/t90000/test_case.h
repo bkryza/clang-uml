@@ -26,14 +26,30 @@ TEST_CASE("t90000", "[test-case][config]")
 
     REQUIRE(model->name() == "t90000_class");
 
-    auto puml = generate_class_puml(diagram, *model);
-    AliasMatcher _A(puml);
+    {
+        auto puml = generate_class_puml(diagram, *model);
+        AliasMatcher _A(puml);
 
-    REQUIRE_THAT(puml, StartsWith("@startuml"));
-    REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, StartsWith("@startuml"));
+        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
 
-    REQUIRE_THAT(puml, IsClass(_A("Foo")));
-    REQUIRE_THAT(puml, IsClass(_A("Boo")));
+        REQUIRE_THAT(puml, IsClass(_A("Foo")));
+        REQUIRE_THAT(puml, IsClass(_A("Boo")));
 
-    save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+    }
+
+    {
+        auto j = generate_class_json(diagram, *model);
+
+        using namespace json;
+
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+    }
 }

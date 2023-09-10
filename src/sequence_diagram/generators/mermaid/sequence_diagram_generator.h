@@ -61,6 +61,13 @@ public:
     void generate_diagram(std::ostream &ostr) const override;
 
     /**
+     * @brief Generate the diagram type
+     *
+     * @param ostr Output stream
+     */
+    void generate_diagram_type(std::ostream &ostr) const override;
+
+    /**
      * @brief Generate sequence diagram message.
      *
      * @param m Message model

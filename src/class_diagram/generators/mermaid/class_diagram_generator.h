@@ -80,6 +80,13 @@ public:
     void generate_diagram(std::ostream &ostr) const override;
 
     /**
+     * @brief Generate the diagram type
+     *
+     * @param ostr Output stream
+     */
+    void generate_diagram_type(std::ostream &ostr) const override;
+
+    /**
      * @brief In a nested diagram, generate the top level elements.
      *
      * This method iterates over the top level elements. In case the diagram

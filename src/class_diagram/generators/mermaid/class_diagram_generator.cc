@@ -33,6 +33,11 @@ generator::generator(diagram_config &config, diagram_model &model)
 {
 }
 
+void generator::generate_diagram_type(std::ostream &ostr) const
+{
+    ostr << "classDiagram\n";
+}
+
 void generator::generate_alias(
     const common::model::element &c, std::ostream &ostr) const
 {
@@ -696,8 +701,6 @@ void generator::generate_relationships(
 
 void generator::generate_diagram(std::ostream &ostr) const
 {
-    ostr << "classDiagram\n";
-
     generate_top_level_elements(ostr);
 
     generate_groups(ostr);

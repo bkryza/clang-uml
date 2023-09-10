@@ -108,6 +108,16 @@ public:
         std::ostream &ostr, const std::vector<std::string> &directives) const;
 
     /**
+     * @brief Generate the diagram type
+     *
+     * This method must be overriden for each diagram type (e.g. it renders
+     * a single line `classDiagram` for Mermaid class diagrams.
+     *
+     * @param ostr Output stream
+     */
+    virtual void generate_diagram_type(std::ostream &ostr) const = 0;
+
+    /**
      * @brief Generate diagram notes
      *
      * This method adds any notes in the diagram, which were declared in the
@@ -228,13 +238,13 @@ void generator<C, D>::generate(std::ostream &ostr) const
 
     update_context();
 
-    // generate_mermaid_diagram_type(ostr, config);
+    generate_diagram_type(ostr);
 
-    generate_mermaid_directives(ostr, config.puml().before);
+    generate_mermaid_directives(ostr, config.mermaid().before);
 
     generate_diagram(ostr);
 
-    generate_mermaid_directives(ostr, config.puml().after);
+    generate_mermaid_directives(ostr, config.mermaid().after);
 
     generate_metadata(ostr);
 }
@@ -304,6 +314,61 @@ template <typename C, typename D>
 void generator<C, D>::generate_mermaid_directives(
     std::ostream &ostr, const std::vector<std::string> &directives) const
 {
+
+    const auto &config = generators::generator<C, D>::config();
+    const auto &model = generators::generator<C, D>::model();
+
+    using common::model::namespace_;
+
+    for (const auto &d : directives) {
+        try {
+            // Render the directive with template engine first
+            std::string directive{env().render(std::string_view{d}, context())};
+
+            // Now search for alias `@A()` directives in the text
+            // (this is deprecated)
+            std::tuple<std::string, size_t, size_t> alias_match;
+            while (util::find_element_alias(directive, alias_match)) {
+                const auto full_name =
+                    config.using_namespace() | std::get<0>(alias_match);
+                auto element_opt = model.get(full_name.to_string());
+
+                if (element_opt)
+                    directive.replace(std::get<1>(alias_match),
+                        std::get<2>(alias_match), element_opt.value().alias());
+                else {
+                    LOG_ERROR("Cannot find clang-uml alias for element {}",
+                        full_name.to_string());
+                    directive.replace(std::get<1>(alias_match),
+                        std::get<2>(alias_match), "UNKNOWN_ALIAS");
+                }
+            }
+
+            ostr << indent(1) << directive << '\n';
+        }
+        catch (const clanguml::error::uml_alias_missing &e) {
+            LOG_ERROR(
+                "Failed to render MermaidJS directive due to unresolvable "
+                "alias: {}",
+                e.what());
+        }
+        catch (const inja::json::parse_error &e) {
+            LOG_ERROR("Failed to parse Jinja template: {}", d);
+        }
+        catch (const inja::json::exception &e) {
+            LOG_ERROR("Failed to render MermaidJS directive: \n{}\n due to: {}",
+                d, e.what());
+        }
+        catch (const std::regex_error &e) {
+            LOG_ERROR("Failed to render MermaidJS directive: \n{}\n due to "
+                      "std::regex_error: {}",
+                d, e.what());
+        }
+        catch (const std::exception &e) {
+            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+                d, e.what());
+        }
+    }
 }
 
 template <typename C, typename D>

@@ -29,6 +29,11 @@ generator::generator(diagram_config &config, diagram_model &model)
 {
 }
 
+void generator::generate_diagram_type(std::ostream &ostr) const
+{
+    ostr << "flowchart\n";
+}
+
 void generator::generate_relationships(
     const source_file &f, std::ostream &ostr) const
 {
@@ -114,8 +119,6 @@ void generator::generate_notes(
 
 void generator::generate_diagram(std::ostream &ostr) const
 {
-    ostr << "flowchart\n";
-
     // Generate files and folders
     util::for_each(model(), [this, &ostr](const auto &f) {
         generate(dynamic_cast<source_file &>(*f), ostr);
