@@ -37,8 +37,10 @@ def main(argv):
         tree = etree.fromstring(bytes(xml, encoding='utf8'))
 
         # Add style color for <a> links
-        defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})[0]
-        style = etree.SubElement(defs, 'style')
+        defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})
+        if not defs:
+            continue
+        style = etree.SubElement(defs[0], 'style')
         style.text = 'a:hover { text-decoration: underline; }'
         style.set('type', 'text/css')
 

@@ -94,12 +94,15 @@ install: release
 	make -C release install DESTDIR=${DESTDIR}
 
 test_diagrams: test
-	plantuml -tsvg debug/tests/diagrams/puml/*.puml
-	python3 util/validate_json.py debug/tests/diagrams/json/*.json
-	python3 util/generate_mermaid.py debug/tests/diagrams/mermaid/*.mmd
+	mkdir -p debug/tests/diagrams/plantuml
+	mkdir -p debug/tests/diagrams/mermaid
+	plantuml -tsvg -nometadata -o plantuml debug/tests/diagrams/*.puml
+	python3 util/validate_json.py debug/tests/diagrams/*.json
+	python3 util/generate_mermaid.py debug/tests/diagrams/*.mmd
 
 document_test_cases: test_diagrams
 	python3 util/generate_test_cases_docs.py
+	# Format generated SVG files
 	python3 util/format_svg.py docs/test_cases/*.svg
 
 clanguml_diagrams: debug
@@ -110,7 +113,8 @@ clanguml_diagrams: debug
 	plantuml -tsvg -nometadata -o plantuml docs/diagrams/*.puml
 	# Convert .mmd files to svg images
 	python3 util/generate_mermaid.py docs/diagrams/*.mmd
-	python3 util/format_svg.py docs/diagrams/plantuml/*.svg
+	# Format generated SVG files
+	python3 util/format_svg.py docs/diagrams/*.svg
 
 .PHONY: submodules
 submodules:

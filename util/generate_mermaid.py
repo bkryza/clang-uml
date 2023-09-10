@@ -20,10 +20,26 @@
 import sys
 import subprocess
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 def print_usage():
     print(f'Usage: ./generate_mermaid.py file1.mmd file2.mmd ...')
+
+
+def generate_mermaid_diagram(f):
+    try:
+        print(f'Generating Mermaid diagram from {f}')
+        f_svg = Path(f).with_suffix('.svg').name
+        target = Path(f).parent.absolute()
+        target = target.joinpath('mermaid')
+        target = target.joinpath(f_svg)
+        subprocess.check_call(['mmdc',  '-i', f, '-o', target])
+    except subprocess.CalledProcessError:
+        print(f'ERROR: Generating Mermaid diagram from {f} failed')
+        return False
+
+    return True
 
 
 files = sys.argv[1:]
@@ -35,16 +51,9 @@ if not files:
 
 ok = 0
 
-for f in files:
-    try:
-        print(f'Generating Mermaid diagram from {f}')
-        f_svg = Path(f).with_suffix('.svg').name
-        target = Path(f).parent.absolute()
-        target = target.joinpath('mermaid')
-        target = target.joinpath(f_svg)
-        subprocess.check_call(['mmdc',  '-i', f, '-o', target])
-    except subprocess.CalledProcessError:
-        ok = 1
-        print(f'ERROR: Generating Mermaid diagram from {f} failed')
+
+with ThreadPoolExecutor(max_workers=10) as executor:
+    result = all(executor.map(generate_mermaid_diagram, files))
+
 
 sys.exit(ok)
