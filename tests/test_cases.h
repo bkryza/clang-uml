@@ -302,10 +302,84 @@ struct AliasMatcher {
     const std::vector<std::string> puml;
 };
 
+namespace mermaid {
+struct AliasMatcher {
+    AliasMatcher(const std::string &mmd_)
+        : mmd{split(mmd_, "\n")}
+    {
+    }
+
+    std::string operator()(std::string name)
+    {
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "&lpar;");
+        util::replace_all(name, ")", "&rpar;");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
+        util::replace_all(name, "<", "&lt;");
+        util::replace_all(name, ">", "&gt;");
+
+        patterns.push_back(
+            std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
+        //        patterns.push_back(
+        //            std::regex{"abstract\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"enum\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"package\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"file\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"folder\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+        //        patterns.push_back(
+        //            std::regex{"participant\\s\"" + name + "\"\\sas\\s" +
+        //            alias_regex});
+
+        std::smatch base_match;
+
+        for (const auto &line : mmd) {
+            for (const auto &pattern : patterns) {
+                if (std::regex_search(line, base_match, pattern) &&
+                    base_match.size() == 2) {
+                    std::ssub_match base_sub_match = base_match[1];
+                    std::string alias = base_sub_match.str();
+                    return trim(alias);
+                }
+            }
+        }
+
+        return "__INVALID__ALIAS__";
+    }
+
+    const std::vector<std::string> mmd;
+};
+}
+
 ContainsMatcher IsClass(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString("class " + str, caseSensitivity));
+}
+
+namespace mermaid {
+auto IsClass(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("class " + str, caseSensitivity));
+}
 }
 
 ContainsMatcher IsUnion(std::string const &str,
@@ -313,6 +387,16 @@ ContainsMatcher IsUnion(std::string const &str,
 {
     return ContainsMatcher(
         CasedString("class " + str + " <<union>>", caseSensitivity));
+}
+
+namespace mermaid {
+auto IsUnion(std::string const &alias,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("class ") + alias + " \\{\\n\\s+<<union>>",
+        caseSensitivity);
+}
 }
 
 ContainsMatcher IsClassTemplate(std::string const &str,
@@ -330,16 +414,46 @@ ContainsMatcher IsConcept(std::string const &str,
         CasedString("class " + str + " <<concept>>", caseSensitivity));
 }
 
+namespace mermaid {
+auto IsConcept(std::string const &alias,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("class ") + alias + " \\{\\n\\s+<<concept>>",
+        caseSensitivity);
+}
+}
+
 ContainsMatcher IsEnum(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString("enum " + str, caseSensitivity));
 }
 
+namespace mermaid {
+auto IsEnum(std::string const &alias,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("class ") + alias + " \\{\\n\\s+<<enumeration>>",
+        caseSensitivity);
+}
+}
+
 ContainsMatcher IsAbstractClass(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(CasedString("abstract " + str, caseSensitivity));
+}
+
+namespace mermaid {
+auto IsAbstractClass(std::string const &alias,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("class ") + alias + " \\{\\n\\s+<<abstract>>",
+        caseSensitivity);
+}
 }
 
 ContainsMatcher IsAbstractClassTemplate(std::string const &str,
@@ -356,12 +470,30 @@ ContainsMatcher IsBaseClass(std::string const &base, std::string const &sub,
     return ContainsMatcher(CasedString(base + " <|-- " + sub, caseSensitivity));
 }
 
+namespace mermaid {
+ContainsMatcher IsBaseClass(std::string const &base, std::string const &sub,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(base + " <|-- " + sub, caseSensitivity));
+}
+}
+
 ContainsMatcher IsInnerClass(std::string const &parent,
     std::string const &inner,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
         CasedString(inner + " --+ " + parent, caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher IsInnerClass(std::string const &parent,
+    std::string const &inner,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(parent + " ()-- " + inner + " : ", caseSensitivity));
+}
 }
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
@@ -494,6 +626,43 @@ ContainsMatcher IsConceptRequirement(std::string const &cpt,
     return ContainsMatcher(CasedString(requirement, caseSensitivity));
 }
 
+namespace mermaid {
+ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
+    std::string label = {},
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    util::replace_all(label, "<", "&lt;");
+    util::replace_all(label, ">", "&gt;");
+    util::replace_all(label, "(", "&lpar;");
+    util::replace_all(label, ")", "&rpar;");
+    util::replace_all(label, "##", "::");
+    util::replace_all(label, "{", "&lbrace;");
+    util::replace_all(label, "}", "&rbrace;");
+
+    if (label.empty())
+        return ContainsMatcher(
+            CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+    else
+        return ContainsMatcher(CasedString(
+            fmt::format("{} ..> {} : {}", from, to, label), caseSensitivity));
+}
+
+ContainsMatcher IsConceptRequirement(std::string const &cpt,
+    std::string requirement,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    util::replace_all(requirement, "<", "&lt;");
+    util::replace_all(requirement, ">", "&gt;");
+    util::replace_all(requirement, "(", "&lpar;");
+    util::replace_all(requirement, ")", "&rpar;");
+    util::replace_all(requirement, "##", "::");
+    util::replace_all(requirement, "{", "&lbrace;");
+    util::replace_all(requirement, "}", "&rbrace;");
+
+    return ContainsMatcher(CasedString(requirement, caseSensitivity));
+}
+}
+
 ContainsMatcher IsLayoutHint(std::string const &from, std::string const &hint,
     std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
@@ -532,6 +701,17 @@ ContainsMatcher HasLink(std::string const &alias, std::string const &link,
 {
     return ContainsMatcher(CasedString(
         fmt::format("{} [[{}{{{}}}]]", alias, link, tooltip), caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher HasLink(std::string const &alias, std::string const &link,
+    std::string const &tooltip,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("click {} href \"{}\" \"{}\"", alias, link, tooltip),
+        caseSensitivity));
+}
 }
 
 ContainsMatcher HasMemberLink(std::string const &method,
@@ -589,6 +769,61 @@ ContainsMatcher IsMethod(std::string const &name,
     return ContainsMatcher(CasedString(pattern, caseSensitivity));
 }
 
+namespace mermaid {
+template <typename... Ts>
+ContainsMatcher IsMethod(std::string const &name, std::string type = "void",
+    std::string const &params = "",
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    pattern += "(" + params + ")";
+
+    std::vector<std::string> method_mods;
+    if constexpr (has_type<Default, Ts...>())
+        method_mods.push_back("default");
+    if constexpr (has_type<Const, Ts...>())
+        method_mods.push_back("const");
+    if constexpr (has_type<Constexpr, Ts...>())
+        method_mods.push_back("constexpr");
+    if constexpr (has_type<Consteval, Ts...>())
+        method_mods.push_back("consteval");
+
+    pattern += " : ";
+
+    if (!method_mods.empty()) {
+        pattern += fmt::format("[{}] ", fmt::join(method_mods, ","));
+    }
+
+    util::replace_all(type, "<", "&lt;");
+    util::replace_all(type, ">", "&gt;");
+    util::replace_all(type, "(", "&lpar;");
+    util::replace_all(type, ")", "&rpar;");
+    util::replace_all(type, "##", "::");
+    util::replace_all(type, "{", "&lbrace;");
+    util::replace_all(type, "}", "&rbrace;");
+
+    pattern += type;
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += "*";
+
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "$";
+
+    return ContainsMatcher(CasedString(pattern, caseSensitivity));
+}
+}
+
 template <typename... Ts>
 ContainsMatcher IsField(std::string const &name,
     std::string const &type = "void",
@@ -609,6 +844,37 @@ ContainsMatcher IsField(std::string const &name,
 
     return ContainsMatcher(
         CasedString(pattern + " : " + type, caseSensitivity));
+}
+
+namespace mermaid {
+template <typename... Ts>
+ContainsMatcher IsField(std::string const &name, std::string type = "void",
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    util::replace_all(type, "<", "&lt;");
+    util::replace_all(type, ">", "&gt;");
+    util::replace_all(type, "(", "&lpar;");
+    util::replace_all(type, ")", "&rpar;");
+    util::replace_all(type, "##", "::");
+    util::replace_all(type, "{", "&lbrace;");
+    util::replace_all(type, "}", "&rbrace;");
+
+    return ContainsMatcher(
+        CasedString(pattern + " : " + type, caseSensitivity));
+}
 }
 
 template <typename... Ts>

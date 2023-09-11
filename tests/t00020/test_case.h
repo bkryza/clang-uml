@@ -29,22 +29,22 @@ TEST_CASE("t00020", "[test-case][class]")
     REQUIRE(model->name() == "t00020_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsAbstractClass(_A("ProductA")));
-        REQUIRE_THAT(puml, IsAbstractClass(_A("ProductB")));
-        REQUIRE_THAT(puml, IsClass(_A("ProductA1")));
-        REQUIRE_THAT(puml, IsClass(_A("ProductA2")));
-        REQUIRE_THAT(puml, IsClass(_A("ProductB1")));
-        REQUIRE_THAT(puml, IsClass(_A("ProductB2")));
-        REQUIRE_THAT(puml, IsAbstractClass(_A("AbstractFactory")));
-        REQUIRE_THAT(puml, IsClass(_A("Factory1")));
-        REQUIRE_THAT(puml, IsClass(_A("Factory2")));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsAbstractClass(_A("ProductA")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("ProductB")));
+        REQUIRE_THAT(src, IsClass(_A("ProductA1")));
+        REQUIRE_THAT(src, IsClass(_A("ProductA2")));
+        REQUIRE_THAT(src, IsClass(_A("ProductB1")));
+        REQUIRE_THAT(src, IsClass(_A("ProductB2")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("AbstractFactory")));
+        REQUIRE_THAT(src, IsClass(_A("Factory1")));
+        REQUIRE_THAT(src, IsClass(_A("Factory2")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -60,8 +60,21 @@ TEST_CASE("t00020", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsAbstractClass;
+
+        REQUIRE_THAT(src, IsAbstractClass(_A("ProductA")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("ProductB")));
+        REQUIRE_THAT(src, IsClass(_A("ProductA1")));
+        REQUIRE_THAT(src, IsClass(_A("ProductA2")));
+        REQUIRE_THAT(src, IsClass(_A("ProductB1")));
+        REQUIRE_THAT(src, IsClass(_A("ProductB2")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("AbstractFactory")));
+        REQUIRE_THAT(src, IsClass(_A("Factory1")));
+        REQUIRE_THAT(src, IsClass(_A("Factory2")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

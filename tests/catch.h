@@ -13299,13 +13299,14 @@ RegexMatcher::RegexMatcher(
 
 bool RegexMatcher::match(std::string const &matchee) const
 {
-    auto flags = std::regex::ECMAScript; // ECMAScript is the default syntax
-                                         // option anyway
+    auto flags = std::regex::ECMAScript |
+        std::regex::multiline; // ECMAScript is the default syntax
+                               // option anyway
     if (m_caseSensitivity == CaseSensitive::Choice::No) {
         flags |= std::regex::icase;
     }
     auto reg = std::regex(m_regex, flags);
-    return std::regex_match(matchee, reg);
+    return std::regex_search(matchee, reg);
 }
 
 std::string RegexMatcher::describe() const

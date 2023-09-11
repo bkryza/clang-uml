@@ -92,6 +92,32 @@ TEST_CASE("t00004", "[test-case][class]")
     }
     {
         auto mmd = generate_class_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(mmd);
+
+        REQUIRE_THAT(mmd, IsClass(_A("A")));
+        REQUIRE_THAT(mmd, IsClass(_A("A::AA")));
+        REQUIRE_THAT(mmd, IsClass(_A("A::AA::AAA")));
+        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("B::AA")));
+        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("A::AA::Lights")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("A"), _A("A::AA")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("A::AA"), _A("A::AA::AAA")));
+        REQUIRE_THAT(
+            mmd, mermaid::IsInnerClass(_A("A::AA"), _A("A::AA::Lights")));
+
+        REQUIRE_THAT(mmd, IsClass(_A("C<T>")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::AA")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C::AA"), _A("C::AA::AAA")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::CC")));
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C::AA"), _A("C::AA::CCC")));
+
+        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::B<V>")));
+        REQUIRE_THAT(mmd, IsAggregation(_A("C<T>"), _A("C::B<int>"), "+b_int"));
+        REQUIRE_THAT(mmd, !mermaid::IsInnerClass(_A("C<T>"), _A("C::B")));
+        REQUIRE_THAT(mmd, IsInstantiation(_A("C::B<V>"), _A("C::B<int>")));
+
+        REQUIRE_THAT(mmd, IsClass(_A("detail::D")));
+        REQUIRE_THAT(mmd, IsClass(_A("detail::D::DD")));
+        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("detail::D::AA")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }

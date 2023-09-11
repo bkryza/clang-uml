@@ -29,51 +29,51 @@ TEST_CASE("t00051", "[test-case][class]")
     REQUIRE(model->name() == "t00051_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread1")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::custom_thread2")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread1")));
+        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread2")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
                 "Function && f, Args &&... args")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             (IsMethod<Public>("thread", "void",
                 "(lambda at ../../tests/t00051/t00051.cc:59:27) &&")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             (IsMethod<Private>("start_thread3",
                 "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
                 "../../tests/t00051/t00051.cc:43:27)>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             (IsMethod<Private>("get_function",
                 "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
 
-        REQUIRE_THAT(puml, IsClassTemplate("B", "F,FF=F"));
-        REQUIRE_THAT(puml, (IsMethod<Public>("f", "void")));
-        REQUIRE_THAT(puml, (IsMethod<Public>("ff", "void")));
+        REQUIRE_THAT(src, IsClassTemplate("B", "F,FF=F"));
+        REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
+        REQUIRE_THAT(src, (IsMethod<Public>("ff", "void")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsClassTemplate("B",
                 "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
                 "../../tests/t00051/t00051.cc:43:27)"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("B<F,FF=F>"),
                 _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
                    "at ../../tests/t00051/t00051.cc:43:27)>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(_A("A"),
                 _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
                    "at ../../tests/t00051/t00051.cc:43:27)>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -87,8 +87,50 @@ TEST_CASE("t00051", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsInnerClass;
+        using mermaid::IsMethod;
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread1")));
+        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread2")));
+
+        REQUIRE_THAT(src,
+            (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
+                "Function && f, Args &&... args")));
+        REQUIRE_THAT(src,
+            (IsMethod<Public>("thread", "void",
+                "(lambda at ../../tests/t00051/t00051.cc:59:27) &&")));
+        REQUIRE_THAT(src,
+            (IsMethod<Private>("start_thread3",
+                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+                "../../tests/t00051/t00051.cc:43:27)>")));
+        REQUIRE_THAT(src,
+            (IsMethod<Private>("get_function",
+                "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
+
+        REQUIRE_THAT(src, IsClass(_A("B<F,FF=F>")));
+        REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
+        REQUIRE_THAT(src, (IsMethod<Public>("ff", "void")));
+
+        REQUIRE_THAT(src,
+            IsClass(_A(
+                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
+                "../../tests/t00051/t00051.cc:43:27)>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("B<F,FF=F>"),
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
+                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+
+        REQUIRE_THAT(src,
+            IsDependency(_A("A"),
+                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
+                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

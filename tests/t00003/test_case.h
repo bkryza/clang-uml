@@ -96,6 +96,46 @@ TEST_CASE("t00003", "[test-case][class]")
     }
     {
         auto mmd = generate_class_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(mmd);
+
+        REQUIRE_THAT(mmd, IsClass(_A("A")));
+
+        REQUIRE_THAT(mmd, !IsDependency(_A("A"), _A("A")));
+
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Default>("A")));
+        REQUIRE_THAT(
+            mmd, (mermaid::IsMethod<Public, Default>("A", "void", "A &&")));
+        REQUIRE_THAT(mmd,
+            (mermaid::IsMethod<Public, Deleted>("A", "void", "const A &")));
+
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Default>("~A")));
+
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public>("basic_method")));
+        REQUIRE_THAT(
+            mmd, (mermaid::IsMethod<Public, Static>("static_method", "int")));
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Const>("const_method")));
+        REQUIRE_THAT(mmd,
+            (mermaid::IsMethod<Public>("default_int", "int", "int i = 12")));
+        REQUIRE_THAT(mmd,
+            (mermaid::IsMethod<Public>("default_string", "std::string",
+                "int i, std::string s = \"abc\"")));
+
+        REQUIRE_THAT(mmd,
+            (mermaid::IsMethod<Public, Const, Constexpr>(
+                "size", "std::size_t")));
+
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Protected>("protected_method")));
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Private>("private_method")));
+
+        REQUIRE_THAT(mmd, (IsField<Public>("public_member", "int")));
+        REQUIRE_THAT(mmd, (IsField<Protected>("protected_member", "int")));
+        REQUIRE_THAT(mmd, (IsField<Private>("private_member", "int")));
+        REQUIRE_THAT(mmd,
+            (IsField<Public, Static>("auto_member", "const unsigned long")));
+
+        REQUIRE_THAT(mmd, (IsField<Private>("a_", "int")));
+        REQUIRE_THAT(mmd, (IsField<Private>("b_", "int")));
+        REQUIRE_THAT(mmd, (IsField<Private>("c_", "int")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }

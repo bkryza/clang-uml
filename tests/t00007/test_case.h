@@ -29,21 +29,21 @@ TEST_CASE("t00007", "[test-case][class]")
     REQUIRE(model->name() == "t00007_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
 
-        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("A"), "+a"));
-        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("B"), "+b"));
-        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("C"), "+c"));
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "+c"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -61,8 +61,19 @@ TEST_CASE("t00007", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
+
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "+c"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

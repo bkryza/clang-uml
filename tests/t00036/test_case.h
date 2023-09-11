@@ -30,26 +30,26 @@ TEST_CASE("t00036", "[test-case][class]")
     REQUIRE(model->name() == "t00036_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "int"));
-        REQUIRE_THAT(puml, IsEnum(_A("E")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, !IsClass(_A("DImpl")));
-        REQUIRE_THAT(puml, IsPackage("ns111"));
-        REQUIRE_THAT(puml, IsPackage("ns22"));
-        REQUIRE_THAT(puml, !IsPackage("ns3"));
-        REQUIRE_THAT(puml, !IsPackage("ns33"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "int"));
+        REQUIRE_THAT(src, IsEnum(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, !IsClass(_A("DImpl")));
+        REQUIRE_THAT(src, IsPackage("ns111"));
+        REQUIRE_THAT(src, IsPackage("ns22"));
+        REQUIRE_THAT(src, !IsPackage("ns3"));
+        REQUIRE_THAT(src, !IsPackage("ns33"));
 
-        REQUIRE_THAT(puml, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
+        REQUIRE_THAT(src, IsAggregation(_A("B"), _A("A<int>"), "+a_int"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -69,8 +69,22 @@ TEST_CASE("t00036", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsEnum;
+
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns11::A<T>")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns11::A<int>")));
+        REQUIRE_THAT(src, IsEnum(_A("ns1::E")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns11::ns111::B")));
+        REQUIRE_THAT(src, IsClass(_A("ns2::ns22::C")));
+        REQUIRE_THAT(src, !IsClass(_A("DImpl")));
+
+        REQUIRE_THAT(src,
+            IsAggregation(
+                _A("ns1::ns11::ns111::B"), _A("ns1::ns11::A<int>"), "+a_int"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

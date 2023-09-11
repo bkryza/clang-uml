@@ -29,44 +29,44 @@ TEST_CASE("t00058", "[test-case][class]")
     REQUIRE(model->name() == "t00058_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "int,int,double,std::string"));
-        REQUIRE_THAT(puml,
-            IsClassTemplate("B", "int,std::string,int,double,A<int,int>"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "int,int,double,std::string"));
+        REQUIRE_THAT(
+            src, IsClassTemplate("B", "int,std::string,int,double,A<int,int>"));
 
-        REQUIRE_THAT(puml, IsConcept(_A("same_as_first_type<T,Args...>")));
+        REQUIRE_THAT(src, IsConcept(_A("same_as_first_type<T,Args...>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsConstraint(_A("A<T,Args...>"),
                 _A("same_as_first_type<T,Args...>"), "T,Args..."));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsConstraint(_A("B<T,P,Args...>"),
                 _A("same_as_first_type<T,Args...>"), "T,Args..."));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsAggregation(_A("R"), _A("A<int,int,double,std::string>"), "+aa"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsAggregation(_A("R"),
                 _A("B<int,std::string,int,double,A<int,int>>"), "+bb"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("A<T,Args...>"), _A("A<int,int,double,std::string>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("B<T,P,Args...>"),
                 _A("B<int,std::string,int,double,A<int,int>>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(_A("same_as_first_type<T,Args...>"),
                 _A("first_type<T,Args...>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -81,8 +81,44 @@ TEST_CASE("t00058", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsConcept;
+        using mermaid::IsConstraint;
+
+        REQUIRE_THAT(src, IsClass(_A("A<int,int,double,std::string>")));
+        REQUIRE_THAT(
+            src, IsClass(_A("B<int,std::string,int,double,A<int,int>>")));
+
+        REQUIRE_THAT(src, IsConcept(_A("same_as_first_type<T,Args...>")));
+
+        REQUIRE_THAT(src,
+            IsConstraint(_A("A<T,Args...>"),
+                _A("same_as_first_type<T,Args...>"), "T,Args..."));
+
+        REQUIRE_THAT(src,
+            IsConstraint(_A("B<T,P,Args...>"),
+                _A("same_as_first_type<T,Args...>"), "T,Args..."));
+
+        REQUIRE_THAT(src,
+            IsAggregation(_A("R"), _A("A<int,int,double,std::string>"), "+aa"));
+        REQUIRE_THAT(src,
+            IsAggregation(_A("R"),
+                _A("B<int,std::string,int,double,A<int,int>>"), "+bb"));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("A<T,Args...>"), _A("A<int,int,double,std::string>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("B<T,P,Args...>"),
+                _A("B<int,std::string,int,double,A<int,int>>")));
+
+        // TODO
+        //        REQUIRE_THAT(src,
+        //            IsDependency(_A("same_as_first_type<T,Args...>"),
+        //                _A("first_type<T,Args...>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

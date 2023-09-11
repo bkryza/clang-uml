@@ -28,7 +28,7 @@ std::string to_mermaid(relationship_t r, const std::string & /*style*/)
     case relationship_t::kAggregation:
         return "o--";
     case relationship_t::kContainment:
-        return "--";
+        return "()--";
     case relationship_t::kAssociation:
         return "-->";
     case relationship_t::kInstantiation:

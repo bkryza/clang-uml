@@ -236,7 +236,27 @@ void generator::generate_method(
     }
     ostr << ")";
 
-    ostr << " : " << render_name(type);
+    ostr << " : ";
+
+    std::vector<std::string> method_mods;
+    if (m.is_defaulted()) {
+        method_mods.push_back("default");
+    }
+    if (m.is_const()) {
+        method_mods.push_back("const");
+    }
+    if (m.is_constexpr()) {
+        method_mods.push_back("constexpr");
+    }
+    if (m.is_consteval()) {
+        method_mods.push_back("consteval");
+    }
+
+    if (!method_mods.empty()) {
+        ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));
+    }
+
+    ostr << render_name(type);
 
     if (m.is_pure_virtual())
         ostr << "*";
@@ -389,14 +409,15 @@ void generator::generate_relationships(
         try {
             destination = r.destination();
 
-            std::string puml_relation;
-            if (!r.multiplicity_source().empty())
-                puml_relation += "\"" + r.multiplicity_source() + "\" ";
+            std::string relation_str;
 
-            puml_relation += mermaid_common::to_mermaid(r.type(), r.style());
+            if (!r.multiplicity_source().empty())
+                relation_str += "\"" + r.multiplicity_source() + "\" ";
+
+            relation_str += mermaid_common::to_mermaid(r.type(), r.style());
 
             if (!r.multiplicity_destination().empty())
-                puml_relation += " \"" + r.multiplicity_destination() + "\"";
+                relation_str += " \"" + r.multiplicity_destination() + "\"";
 
             std::string target_alias;
             try {
@@ -411,17 +432,20 @@ void generator::generate_relationships(
                 m_generated_aliases.end())
                 continue;
 
-            relstr << indent(1) << c.alias() << " " << puml_relation << " "
-                   << target_alias;
-
-            if (!r.label().empty()) {
-                relstr << " : " << mermaid_common::to_mermaid(r.access())
-                       << r.label();
-                rendered_relations.emplace(r.label());
+            if (r.type() == relationship_t::kContainment) {
+                relstr << indent(1) << target_alias << " " << relation_str
+                       << " " << c.alias();
+            }
+            else {
+                relstr << indent(1) << c.alias() << " " << relation_str << " "
+                       << target_alias;
             }
 
-            if (r.type() == relationship_t::kContainment) {
-                relstr << " : [nested]\n";
+            relstr << " : ";
+
+            if (!r.label().empty()) {
+                relstr << mermaid_common::to_mermaid(r.access()) << r.label();
+                rendered_relations.emplace(r.label());
             }
 
             if (unique_relations.count(relstr.str()) == 0) {
@@ -514,12 +538,19 @@ void generator::generate_relationships(
                 m_generated_aliases.end())
                 continue;
 
-            relstr << indent(1) << c.alias() << " " << puml_relation << " "
-                   << target_alias;
+            if (r.type() == relationship_t::kContainment) {
+                relstr << indent(1) << target_alias << " " << puml_relation
+                       << " " << c.alias();
+            }
+            else {
+                relstr << indent(1) << c.alias() << " " << puml_relation << " "
+                       << target_alias;
+            }
+
+            relstr << " : ";
 
             if (!r.label().empty()) {
-                relstr << " : " << mermaid_common::to_mermaid(r.access())
-                       << r.label();
+                relstr << mermaid_common::to_mermaid(r.access()) << r.label();
                 rendered_relations.emplace(r.label());
             }
 
@@ -561,13 +592,20 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
                 m_generated_aliases.end())
                 continue;
 
-            relstr << indent(1) << e.alias() << " "
-                   << clanguml::common::generators::mermaid::to_mermaid(
-                          r.type(), r.style())
-                   << " " << target_alias;
+            if (r.type() == relationship_t::kContainment) {
+                relstr << indent(1) << target_alias << " "
+                       << clanguml::common::generators::mermaid::to_mermaid(
+                              r.type(), r.style())
+                       << " " << e.alias();
+            }
+            else {
+                relstr << indent(1) << e.alias() << " "
+                       << clanguml::common::generators::mermaid::to_mermaid(
+                              r.type(), r.style())
+                       << " " << target_alias;
+            }
 
-            if (!r.label().empty())
-                relstr << " : " << r.label();
+            relstr << " : " << r.label();
 
             relstr << '\n';
 
@@ -589,7 +627,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
 
     ostr << " {" << '\n';
 
-    ostr << indent(2) << "<<Enumeration>>\n";
+    ostr << indent(2) << "<<enumeration>>\n";
 
     for (const auto &enum_constant : e.constants()) {
         ostr << indent(2) << enum_constant << '\n';

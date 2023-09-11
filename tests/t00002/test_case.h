@@ -109,6 +109,41 @@ TEST_CASE("t00002", "[test-case][class]")
     {
         auto mmd = generate_class_mermaid(diagram, *model);
 
+        mermaid::AliasMatcher _A(mmd);
+
+        REQUIRE_THAT(mmd, StartsWith("classDiagram"));
+        REQUIRE_THAT(mmd, mermaid::IsAbstractClass(_A("A")));
+        REQUIRE_THAT(mmd, IsClass(_A("B")));
+        REQUIRE_THAT(mmd, IsClass(_A("C")));
+        REQUIRE_THAT(mmd, IsClass(_A("D")));
+        REQUIRE_THAT(mmd, IsBaseClass(_A("A"), _A("B")));
+        REQUIRE_THAT(mmd, IsBaseClass(_A("A"), _A("C")));
+        REQUIRE_THAT(mmd, IsBaseClass(_A("B"), _A("D")));
+        REQUIRE_THAT(mmd, IsBaseClass(_A("C"), _A("D")));
+
+        REQUIRE_THAT(mmd, IsAssociation(_A("D"), _A("A"), "-as"));
+
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Abstract>("foo_a")));
+        REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Abstract>("foo_c")));
+
+        //        REQUIRE_THAT(mmd, HasNote(_A("A"), "left", "This is class
+        //        A")); REQUIRE_THAT(mmd, HasNote(_A("B"), "top", "This is class
+        //        B"));
+
+        REQUIRE_THAT(mmd,
+            mermaid::HasLink(_A("A"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L7",
+                    clanguml::util::get_git_commit()),
+                "This is class A"));
+
+        REQUIRE_THAT(mmd,
+            mermaid::HasLink(_A("B"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t00002/t00002.cc#L16",
+                    clanguml::util::get_git_commit()),
+                "This is class B"));
+
         save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

@@ -30,22 +30,21 @@ TEST_CASE("t00037", "[test-case][class]")
     REQUIRE(model->name() == "t00037_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("ST")));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("ST::(units)")));
-        REQUIRE_THAT(puml, IsClass(_A("ST::(dimensions)")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, IsClass(_A("ST")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("ST::(units)")));
+        REQUIRE_THAT(src, IsClass(_A("ST::(dimensions)")));
+        REQUIRE_THAT(src,
             IsAggregation(_A("ST"), _A("ST::(dimensions)"), "+dimensions"));
-        REQUIRE_THAT(
-            puml, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
+        REQUIRE_THAT(src, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -61,8 +60,18 @@ TEST_CASE("t00037", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("ST")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("ST::(units)")));
+        REQUIRE_THAT(src, IsClass(_A("ST::(dimensions)")));
+        REQUIRE_THAT(src,
+            IsAggregation(_A("ST"), _A("ST::(dimensions)"), "+dimensions"));
+        REQUIRE_THAT(src, IsAggregation(_A("ST"), _A("ST::(units)"), "-units"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

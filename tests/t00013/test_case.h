@@ -29,40 +29,40 @@ TEST_CASE("t00013", "[test-case][class]")
     REQUIRE(model->name() == "t00013_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
-        REQUIRE_THAT(puml, IsClassTemplate("E", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("G", "T,Args..."));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClassTemplate("E", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("G", "T,Args..."));
 
-        REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("R")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("A")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("C")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("D")));
-        REQUIRE_THAT(puml, IsDependency(_A("D"), _A("R")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<T>")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("E<int>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<int>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
+        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("R")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("A")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("C")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("D")));
+        REQUIRE_THAT(src, IsDependency(_A("D"), _A("R")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("E<T>")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("E<int>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("E<T>"), _A("E<int>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
         REQUIRE_THAT(
-            puml, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<T>")));
+            src, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("ABCD::F<T>")));
         REQUIRE_THAT(
-            puml, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
-        REQUIRE_THAT(puml, IsDependency(_A("R"), _A("ABCD::F<int>")));
+            src, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("ABCD::F<int>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("G<T,Args...>"), _A("G<int,float,std::string>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -85,8 +85,38 @@ TEST_CASE("t00013", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("E<T>")));
+        REQUIRE_THAT(src, IsClass(_A("G<T,Args...>")));
+
+        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("R")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("A")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("C")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("D")));
+        REQUIRE_THAT(src, IsDependency(_A("D"), _A("R")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("E<T>")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("E<int>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("E<T>"), _A("E<int>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("E<T>"), _A("E<std::string>")));
+        REQUIRE_THAT(
+            src, IsAggregation(_A("R"), _A("E<std::string>"), "-estring"));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("ABCD::F<T>")));
+        REQUIRE_THAT(
+            src, IsInstantiation(_A("ABCD::F<T>"), _A("ABCD::F<int>")));
+        REQUIRE_THAT(src, IsDependency(_A("R"), _A("ABCD::F<int>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("G<T,Args...>"), _A("G<int,float,std::string>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

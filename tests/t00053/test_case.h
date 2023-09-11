@@ -29,30 +29,30 @@ TEST_CASE("t00053", "[test-case][class]")
     REQUIRE(model->name() == "t00053_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClass(_A("a")));
-        REQUIRE_THAT(puml, IsClass(_A("b")));
-        REQUIRE_THAT(puml, IsClass(_A("c")));
-        REQUIRE_THAT(puml, IsClass(_A("d")));
-        REQUIRE_THAT(puml, IsClass(_A("e")));
-        REQUIRE_THAT(puml, IsClass(_A("f")));
-        REQUIRE_THAT(puml, IsClass(_A("g")));
+        REQUIRE_THAT(src, IsClass(_A("a")));
+        REQUIRE_THAT(src, IsClass(_A("b")));
+        REQUIRE_THAT(src, IsClass(_A("c")));
+        REQUIRE_THAT(src, IsClass(_A("d")));
+        REQUIRE_THAT(src, IsClass(_A("e")));
+        REQUIRE_THAT(src, IsClass(_A("f")));
+        REQUIRE_THAT(src, IsClass(_A("g")));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
-        REQUIRE_THAT(puml, IsClass(_A("E")));
-        REQUIRE_THAT(puml, IsClass(_A("F")));
-        REQUIRE_THAT(puml, IsClass(_A("G")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("F")));
+        REQUIRE_THAT(src, IsClass(_A("G")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -79,8 +79,27 @@ TEST_CASE("t00053", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("a")));
+        REQUIRE_THAT(src, IsClass(_A("b")));
+        REQUIRE_THAT(src, IsClass(_A("c")));
+        REQUIRE_THAT(src, IsClass(_A("d")));
+        REQUIRE_THAT(src, IsClass(_A("e")));
+        REQUIRE_THAT(src, IsClass(_A("f")));
+        REQUIRE_THAT(src, IsClass(_A("g")));
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("F")));
+        REQUIRE_THAT(src, IsClass(_A("G")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

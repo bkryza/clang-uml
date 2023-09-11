@@ -29,26 +29,26 @@ TEST_CASE("t00030", "[test-case][class]")
     REQUIRE(model->name() == "t00030_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
 
-        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("A"), "+aaa"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("A"), "+aaa"));
         REQUIRE_THAT(
-            puml, IsComposition(_A("R"), _A("B"), "+bbb", "0..1", "1..*"));
+            src, IsComposition(_A("R"), _A("B"), "+bbb", "0..1", "1..*"));
         REQUIRE_THAT(
-            puml, IsAggregation(_A("R"), _A("C"), "+ccc", "0..1", "1..5"));
-        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
-        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
+            src, IsAggregation(_A("R"), _A("C"), "+ccc", "0..1", "1..5"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -60,8 +60,23 @@ TEST_CASE("t00030", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("A"), "+aaa"));
+        REQUIRE_THAT(
+            src, IsComposition(_A("R"), _A("B"), "+bbb", "0..1", "1..*"));
+        REQUIRE_THAT(
+            src, IsAggregation(_A("R"), _A("C"), "+ccc", "0..1", "1..5"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "+ddd", "", "1"));
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("E"), "+eee", "", "1"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

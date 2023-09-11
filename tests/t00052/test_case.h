@@ -29,26 +29,25 @@ TEST_CASE("t00052", "[test-case][class]")
     REQUIRE(model->name() == "t00052_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
 
         // Check if class templates exist
-        REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("B", "T"));
 
         // Check if all methods exist
-        REQUIRE_THAT(puml, (IsMethod<Public>("a<T>", "T", "T p")));
-        REQUIRE_THAT(
-            puml, (IsMethod<Public>("aa<F,Q>", "void", "F && f, Q q")));
-        REQUIRE_THAT(puml, (IsMethod<Public>("b", "T", "T t")));
-        REQUIRE_THAT(puml, (IsMethod<Public>("bb<F>", "T", "F && f, T t")));
+        REQUIRE_THAT(src, (IsMethod<Public>("a<T>", "T", "T p")));
+        REQUIRE_THAT(src, (IsMethod<Public>("aa<F,Q>", "void", "F && f, Q q")));
+        REQUIRE_THAT(src, (IsMethod<Public>("b", "T", "T t")));
+        REQUIRE_THAT(src, (IsMethod<Public>("bb<F>", "T", "F && f, T t")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -61,8 +60,23 @@ TEST_CASE("t00052", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsMethod;
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("A")));
+
+        // Check if class templates exist
+        REQUIRE_THAT(src, IsClass(_A("B<T>")));
+
+        // Check if all methods exist
+        REQUIRE_THAT(src, (IsMethod<Public>("a<T>", "T", "T p")));
+        REQUIRE_THAT(src, (IsMethod<Public>("aa<F,Q>", "void", "F && f, Q q")));
+        REQUIRE_THAT(src, (IsMethod<Public>("b", "T", "T t")));
+        REQUIRE_THAT(src, (IsMethod<Public>("bb<F>", "T", "F && f, T t")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

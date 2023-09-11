@@ -29,21 +29,21 @@ TEST_CASE("t00026", "[test-case][class]")
     REQUIRE(model->name() == "t00026_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClassTemplate("Memento", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("Originator", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("Caretaker", "T"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClassTemplate("Memento", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("Originator", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("Caretaker", "T"));
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("Originator<T>"), _A("Originator<std::string>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -57,8 +57,19 @@ TEST_CASE("t00026", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("Memento<T>")));
+        REQUIRE_THAT(src, IsClass(_A("Originator<T>")));
+        REQUIRE_THAT(src, IsClass(_A("Caretaker<T>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("Originator<T>"), _A("Originator<std::string>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("Caretaker<T>"), _A("Caretaker<std::string>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

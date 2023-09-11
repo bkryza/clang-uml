@@ -29,31 +29,31 @@ TEST_CASE("t00029", "[test-case][class]")
     REQUIRE(model->name() == "t00029_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, !IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-        REQUIRE_THAT(puml, !IsClassTemplate("D", "T"));
-        REQUIRE_THAT(puml, IsEnum(_A("E")));
-        REQUIRE_THAT(puml, !IsEnum(_A("F")));
-        REQUIRE_THAT(puml, IsClass(_A("G1")));
-        REQUIRE_THAT(puml, IsClass(_A("G2")));
-        REQUIRE_THAT(puml, IsClass(_A("G3")));
-        REQUIRE_THAT(puml, IsClass(_A("G4")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, !IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClassTemplate("C", "T"));
+        REQUIRE_THAT(src, !IsClassTemplate("D", "T"));
+        REQUIRE_THAT(src, IsEnum(_A("E")));
+        REQUIRE_THAT(src, !IsEnum(_A("F")));
+        REQUIRE_THAT(src, IsClass(_A("G1")));
+        REQUIRE_THAT(src, IsClass(_A("G2")));
+        REQUIRE_THAT(src, IsClass(_A("G3")));
+        REQUIRE_THAT(src, IsClass(_A("G4")));
 
-        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
 
-        REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("G1"), "+g1"));
-        REQUIRE_THAT(puml, !IsAggregation(_A("R"), _A("G2"), "+g2"));
-        REQUIRE_THAT(puml, !IsAggregation(_A("R"), _A("G3"), "+g3"));
-        REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("G4"), "+g4"));
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("G1"), "+g1"));
+        REQUIRE_THAT(src, !IsAggregation(_A("R"), _A("G2"), "+g2"));
+        REQUIRE_THAT(src, !IsAggregation(_A("R"), _A("G3"), "+g3"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G4"), "+g4"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -65,8 +65,29 @@ TEST_CASE("t00029", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsEnum;
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, !IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C<T>")));
+        REQUIRE_THAT(src, !IsClass(_A("D<T>")));
+        REQUIRE_THAT(src, IsEnum(_A("E")));
+        REQUIRE_THAT(src, !IsEnum(_A("F")));
+        REQUIRE_THAT(src, IsClass(_A("G1")));
+        REQUIRE_THAT(src, IsClass(_A("G2")));
+        REQUIRE_THAT(src, IsClass(_A("G3")));
+        REQUIRE_THAT(src, IsClass(_A("G4")));
+
+        REQUIRE_THAT(src, IsClass(_A("R")));
+
+        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("G1"), "+g1"));
+        REQUIRE_THAT(src, !IsAggregation(_A("R"), _A("G2"), "+g2"));
+        REQUIRE_THAT(src, !IsAggregation(_A("R"), _A("G3"), "+g3"));
+        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G4"), "+g4"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

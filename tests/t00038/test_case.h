@@ -30,73 +30,73 @@ TEST_CASE("t00038", "[test-case][class]")
     REQUIRE(model->name() == "t00038_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("thirdparty::ns1::E")));
-        REQUIRE_THAT(puml, IsClass(_A("key_t")));
-        REQUIRE_THAT(puml, IsClassTemplate("map", "T"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("thirdparty::ns1::E")));
+        REQUIRE_THAT(src, IsClass(_A("key_t")));
+        REQUIRE_THAT(src, IsClassTemplate("map", "T"));
+        REQUIRE_THAT(src,
             IsClassTemplate("map",
                 "std::integral_constant<property_t,property_t::property_a>"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsClassTemplate("map",
                 "std::vector<std::integral_constant<property_t,property_t::"
                 "property_b>>"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsClassTemplate("map",
                 "std::map<key_t,std::vector<std::integral_constant<property_t,"
                 "property_t::property_c>>>"));
 
-        REQUIRE_THAT(puml, IsEnum(_A("property_t")));
+        REQUIRE_THAT(src, IsEnum(_A("property_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("map<T>"),
                 _A("map<std::map<key_t,std::vector<std::integral_constant<"
                    "property_"
                    "t,property_t::property_c>>>>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(_A("map<std::integral_constant<property_t,property_t::"
                             "property_a>>"),
                 _A("property_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(_A("map<"
                             "std::vector<std::integral_constant<property_t,"
                             "property_t::property_b>>>"),
                 _A("property_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(
                 _A("map<std::map<key_t,std::vector<std::integral_constant<"
                    "property_t,property_t::property_c>>>>"),
                 _A("property_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(
                 _A("map<std::map<key_t,std::vector<std::integral_constant<"
                    "property_t,property_t::property_c>>>>"),
                 _A("key_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(
                 _A("map<std::integral_constant<thirdparty::ns1::color_t,"
                    "thirdparty::ns1::color_t::red>>"),
                 _A("thirdparty::ns1::color_t")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsBaseClass(_A("thirdparty::ns1::E"),
                 _A("map<std::integral_constant<thirdparty::ns1::color_t,"
                    "thirdparty::ns1::color_t::red>>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -110,8 +110,71 @@ TEST_CASE("t00038", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsEnum;
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("thirdparty::ns1::E")));
+        REQUIRE_THAT(src, IsClass(_A("key_t")));
+        REQUIRE_THAT(src, IsClass(_A("map<T>")));
+        REQUIRE_THAT(src,
+            IsClass(_A("map<std::integral_constant<property_t,property_t::"
+                       "property_a>>")));
+        REQUIRE_THAT(src,
+            IsClass(_A(
+                "map<std::vector<std::integral_constant<property_t,property_t::"
+                "property_b>>>")));
+        REQUIRE_THAT(src,
+            IsClass(_A("map<std::map<key_t,std::vector<std::integral_constant<"
+                       "property_t,"
+                       "property_t::property_c>>>>")));
+
+        REQUIRE_THAT(src, IsEnum(_A("property_t")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("map<T>"),
+                _A("map<std::map<key_t,std::vector<std::integral_constant<"
+                   "property_"
+                   "t,property_t::property_c>>>>")));
+
+        REQUIRE_THAT(src,
+            IsDependency(_A("map<std::integral_constant<property_t,property_t::"
+                            "property_a>>"),
+                _A("property_t")));
+
+        REQUIRE_THAT(src,
+            IsDependency(_A("map<"
+                            "std::vector<std::integral_constant<property_t,"
+                            "property_t::property_b>>>"),
+                _A("property_t")));
+
+        REQUIRE_THAT(src,
+            IsDependency(
+                _A("map<std::map<key_t,std::vector<std::integral_constant<"
+                   "property_t,property_t::property_c>>>>"),
+                _A("property_t")));
+
+        REQUIRE_THAT(src,
+            IsDependency(
+                _A("map<std::map<key_t,std::vector<std::integral_constant<"
+                   "property_t,property_t::property_c>>>>"),
+                _A("key_t")));
+
+        REQUIRE_THAT(src,
+            IsDependency(
+                _A("map<std::integral_constant<thirdparty::ns1::color_t,"
+                   "thirdparty::ns1::color_t::red>>"),
+                _A("thirdparty::ns1::color_t")));
+
+        REQUIRE_THAT(src,
+            IsBaseClass(_A("thirdparty::ns1::E"),
+                _A("map<std::integral_constant<thirdparty::ns1::color_t,"
+                   "thirdparty::ns1::color_t::red>>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

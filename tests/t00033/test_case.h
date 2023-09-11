@@ -29,32 +29,32 @@ TEST_CASE("t00033", "[test-case][class]")
     REQUIRE(model->name() == "t00033_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("B", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
-        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("B", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("C", "T"));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsDependency(_A("A<B<std::unique_ptr<C<D>>>>"),
                 _A("B<std::unique_ptr<C<D>>>")));
         REQUIRE_THAT(
-            puml, IsDependency(_A("B<std::unique_ptr<C<D>>>"), _A("C<D>")));
-        REQUIRE_THAT(puml, IsDependency(_A("C<D>"), _A("D")));
+            src, IsDependency(_A("B<std::unique_ptr<C<D>>>"), _A("C<D>")));
+        REQUIRE_THAT(src, IsDependency(_A("C<D>"), _A("D")));
 
-        REQUIRE_THAT(puml, IsInstantiation(_A("C<T>"), _A("C<D>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("C<T>"), _A("C<D>")));
         REQUIRE_THAT(
-            puml, IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>")));
-        REQUIRE_THAT(puml,
+            src, IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>")));
+        REQUIRE_THAT(src,
             IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -72,8 +72,29 @@ TEST_CASE("t00033", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A<T>")));
+        REQUIRE_THAT(src, IsClass(_A("B<T>")));
+        REQUIRE_THAT(src, IsClass(_A("C<T>")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
+
+        REQUIRE_THAT(src,
+            IsDependency(_A("A<B<std::unique_ptr<C<D>>>>"),
+                _A("B<std::unique_ptr<C<D>>>")));
+        REQUIRE_THAT(
+            src, IsDependency(_A("B<std::unique_ptr<C<D>>>"), _A("C<D>")));
+        REQUIRE_THAT(src, IsDependency(_A("C<D>"), _A("D")));
+
+        REQUIRE_THAT(src, IsInstantiation(_A("C<T>"), _A("C<D>")));
+        REQUIRE_THAT(
+            src, IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -29,40 +29,40 @@ TEST_CASE("t00032", "[test-case][class]")
     REQUIRE(model->name() == "t00032_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("Base")));
-        REQUIRE_THAT(puml, IsClass(_A("TBase")));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(src, IsClass(_A("Base")));
+        REQUIRE_THAT(src, IsClass(_A("TBase")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
 
-        REQUIRE_THAT(puml, IsClassTemplate("Overload", "T,L,Ts..."));
+        REQUIRE_THAT(src, IsClassTemplate("Overload", "T,L,Ts..."));
 
-        REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Overload<T,L,Ts...>")));
+        REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Overload<T,L,Ts...>")));
         REQUIRE_THAT(
-            puml, IsBaseClass(_A("TBase"), _A("Overload<TBase,int,A,B,C>")));
+            src, IsBaseClass(_A("TBase"), _A("Overload<TBase,int,A,B,C>")));
         REQUIRE_THAT(
-            puml, IsBaseClass(_A("A"), _A("Overload<TBase,int,A,B,C>")));
+            src, IsBaseClass(_A("A"), _A("Overload<TBase,int,A,B,C>")));
         REQUIRE_THAT(
-            puml, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
+            src, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
         REQUIRE_THAT(
-            puml, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
+            src, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
         REQUIRE_THAT(
-            puml, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("TBase")));
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("TBase")));
         REQUIRE_THAT(
-            puml, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("A")));
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("A")));
         REQUIRE_THAT(
-            puml, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("B")));
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("B")));
         REQUIRE_THAT(
-            puml, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("C")));
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("C")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -76,8 +76,37 @@ TEST_CASE("t00032", "[test-case][class]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
     {
-        auto mmd = generate_class_mermaid(diagram, *model);
+        auto src = generate_class_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("Base")));
+        REQUIRE_THAT(src, IsClass(_A("TBase")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
+
+        REQUIRE_THAT(src, IsClass(_A("Overload<T,L,Ts...>")));
+
+        REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Overload<T,L,Ts...>")));
+        REQUIRE_THAT(
+            src, IsBaseClass(_A("TBase"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            src, IsBaseClass(_A("A"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            src, IsBaseClass(_A("B"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            src, IsBaseClass(_A("C"), _A("Overload<TBase,int,A,B,C>")));
+        REQUIRE_THAT(
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("TBase")));
+        REQUIRE_THAT(
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("A")));
+        REQUIRE_THAT(
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("B")));
+        REQUIRE_THAT(
+            src, !IsDependency(_A("Overload<TBase,int,A,B,C>"), _A("C")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }
