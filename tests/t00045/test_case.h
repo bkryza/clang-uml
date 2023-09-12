@@ -89,6 +89,7 @@ TEST_CASE("t00045", "[test-case][class]")
         auto src = generate_class_mermaid(diagram, *model);
 
         mermaid::AliasMatcher _A(src);
+        using mermaid::IsFriend;
 
         REQUIRE_THAT(src, IsClass(_A("A")));
         REQUIRE_THAT(src, IsClass(_A("ns1::A")));

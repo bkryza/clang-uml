@@ -59,6 +59,7 @@ TEST_CASE("t00011", "[test-case][class]")
         auto src = generate_class_mermaid(diagram, *model);
 
         mermaid::AliasMatcher _A(src);
+        using mermaid::IsFriend;
 
         REQUIRE_THAT(src, IsClass(_A("A")));
         REQUIRE_THAT(src, IsClass(_A("B")));
@@ -67,7 +68,7 @@ TEST_CASE("t00011", "[test-case][class]")
 
         REQUIRE_THAT(src, IsAssociation(_A("B"), _A("A")));
         REQUIRE_THAT(src, IsFriend<Public>(_A("A"), _A("B")));
-        // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
+        // REQUIRE_THAT(src, IsFriend(_A("A"), _A("D<T>")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

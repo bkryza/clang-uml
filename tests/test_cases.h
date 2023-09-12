@@ -905,6 +905,26 @@ ContainsMatcher IsFriend(std::string const &from, std::string const &to,
             caseSensitivity));
 }
 
+namespace mermaid {
+template <typename... Ts>
+ContainsMatcher IsFriend(std::string const &from, std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    return ContainsMatcher(
+        CasedString(fmt::format("{} <.. {} : {}[friend]", from, to, pattern),
+            caseSensitivity));
+}
+}
+
 ContainsMatcher IsPackage(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {

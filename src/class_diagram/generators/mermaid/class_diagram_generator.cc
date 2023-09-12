@@ -370,17 +370,21 @@ void generator::generate_relationship(
     if (util::starts_with(destination, std::string{"::"}))
         destination = destination.substr(2, destination.size());
 
-    std::string puml_relation;
+    std::string mmd_relation;
     if (!r.multiplicity_source().empty())
-        puml_relation += "\"" + r.multiplicity_source() + "\" ";
+        mmd_relation += "\"" + r.multiplicity_source() + "\" ";
 
-    puml_relation += mermaid_common::to_mermaid(r.type(), r.style());
+    mmd_relation += mermaid_common::to_mermaid(r.type(), r.style());
 
     if (!r.multiplicity_destination().empty())
-        puml_relation += " \"" + r.multiplicity_destination() + "\"";
+        mmd_relation += " \"" + r.multiplicity_destination() + "\"";
 
     if (!r.label().empty()) {
-        rendered_relations.emplace(r.label());
+        if (r.type() == relationship_t::kFriendship)
+            rendered_relations.emplace(fmt::format(
+                "{}[friend]", mermaid_common::to_mermaid(r.access())));
+        else
+            rendered_relations.emplace(r.label());
     }
 }
 
@@ -444,7 +448,10 @@ void generator::generate_relationships(
             relstr << " : ";
 
             if (!r.label().empty()) {
-                relstr << mermaid_common::to_mermaid(r.access()) << r.label();
+                auto lbl = r.label();
+                if (r.type() == relationship_t::kFriendship)
+                    lbl = "[friend]";
+                relstr << mermaid_common::to_mermaid(r.access()) << lbl;
                 rendered_relations.emplace(r.label());
             }
 
@@ -516,14 +523,14 @@ void generator::generate_relationships(
         try {
             destination = r.destination();
 
-            std::string puml_relation;
+            std::string mmd_relation;
             if (!r.multiplicity_source().empty())
-                puml_relation += "\"" + r.multiplicity_source() + "\" ";
+                mmd_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            puml_relation += mermaid_common::to_mermaid(r.type(), r.style());
+            mmd_relation += mermaid_common::to_mermaid(r.type(), r.style());
 
             if (!r.multiplicity_destination().empty())
-                puml_relation += " \"" + r.multiplicity_destination() + "\"";
+                mmd_relation += " \"" + r.multiplicity_destination() + "\"";
 
             std::string target_alias;
             try {
@@ -539,18 +546,21 @@ void generator::generate_relationships(
                 continue;
 
             if (r.type() == relationship_t::kContainment) {
-                relstr << indent(1) << target_alias << " " << puml_relation
+                relstr << indent(1) << target_alias << " " << mmd_relation
                        << " " << c.alias();
             }
             else {
-                relstr << indent(1) << c.alias() << " " << puml_relation << " "
+                relstr << indent(1) << c.alias() << " " << mmd_relation << " "
                        << target_alias;
             }
 
             relstr << " : ";
 
             if (!r.label().empty()) {
-                relstr << mermaid_common::to_mermaid(r.access()) << r.label();
+                auto lbl = r.label();
+                if (r.type() == relationship_t::kFriendship)
+                    lbl = "[friend]";
+                relstr << mermaid_common::to_mermaid(r.access()) << lbl;
                 rendered_relations.emplace(r.label());
             }
 
@@ -604,6 +614,10 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
                               r.type(), r.style())
                        << " " << target_alias;
             }
+
+            auto lbl = r.label();
+            if (r.type() == relationship_t::kFriendship)
+                lbl = "[friend]";
 
             relstr << " : " << r.label();
 
