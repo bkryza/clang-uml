@@ -28,22 +28,22 @@ TEST_CASE("t30003", "[test-case][package]")
 
     REQUIRE(model->name() == "t30003_package");
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("ns1"));
-        REQUIRE_THAT(puml, IsPackage("ns2"));
-        REQUIRE_THAT(puml, IsPackage("ns3"));
-        REQUIRE_THAT(puml, IsPackage("ns2_v1_0_0"));
-        REQUIRE_THAT(puml, IsPackage("ns2_v0_9_0"));
+        REQUIRE_THAT(src, IsPackage("ns1"));
+        REQUIRE_THAT(src, IsPackage("ns2"));
+        REQUIRE_THAT(src, IsPackage("ns3"));
+        REQUIRE_THAT(src, IsPackage("ns2_v1_0_0"));
+        REQUIRE_THAT(src, IsPackage("ns2_v0_9_0"));
 
-        REQUIRE_THAT(puml, IsDeprecated(_A("ns2_v0_9_0")));
-        REQUIRE_THAT(puml, IsDeprecated(_A("ns3")));
+        REQUIRE_THAT(src, IsDeprecated(_A("ns2_v0_9_0")));
+        REQUIRE_THAT(src, IsDeprecated(_A("ns3")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -65,8 +65,19 @@ TEST_CASE("t30003", "[test-case][package]")
     }
 
     {
-        auto mmd = generate_package_mermaid(diagram, *model);
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        REQUIRE_THAT(src, IsPackage(_A("ns1")));
+        REQUIRE_THAT(src, IsPackage(_A("ns2")));
+        REQUIRE_THAT(src, IsPackage(_A("ns3")));
+        REQUIRE_THAT(src, IsPackage(_A("ns2_v1_0_0")));
+        REQUIRE_THAT(src, IsPackage(_A("ns2_v0_9_0")));
+
+        //        REQUIRE_THAT(src, IsDeprecated(_A("ns2_v0_9_0")));
+        //        REQUIRE_THAT(src, IsDeprecated(_A("ns3")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

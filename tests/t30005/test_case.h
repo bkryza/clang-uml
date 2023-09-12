@@ -29,20 +29,20 @@ TEST_CASE("t30005", "[test-case][package]")
     REQUIRE(model->name() == "t30005_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("AAA"));
-        REQUIRE_THAT(puml, IsPackage("BBB"));
-        REQUIRE_THAT(puml, IsPackage("CCC"));
+        REQUIRE_THAT(src, IsPackage("AAA"));
+        REQUIRE_THAT(src, IsPackage("BBB"));
+        REQUIRE_THAT(src, IsPackage("CCC"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("AAA")));
-        REQUIRE_THAT(puml, IsDependency(_A("CCC"), _A("AAA")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("AAA")));
+        REQUIRE_THAT(src, IsDependency(_A("CCC"), _A("AAA")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -67,8 +67,19 @@ TEST_CASE("t30005", "[test-case][package]")
     }
 
     {
-        auto mmd = generate_package_mermaid(diagram, *model);
+        auto src = generate_package_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
+        using mermaid::IsPackageDependency;
+
+        REQUIRE_THAT(src, IsPackage(_A("AAA")));
+        REQUIRE_THAT(src, IsPackage(_A("BBB")));
+        REQUIRE_THAT(src, IsPackage(_A("CCC")));
+
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("AAA")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("CCC"), _A("AAA")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

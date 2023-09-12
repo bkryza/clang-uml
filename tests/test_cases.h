@@ -428,6 +428,8 @@ struct AliasMatcher {
 
         patterns.push_back(
             std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
+        patterns.push_back(
+            std::regex{"subgraph\\s" + alias_regex + "\\[" + name + "\\]"});
 
         std::smatch base_match;
 
@@ -729,6 +731,17 @@ ContainsMatcher IsDependency(std::string const &from, std::string const &to,
         CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
 }
 
+namespace mermaid {
+ContainsMatcher IsPackageDependency(std::string const &from,
+    std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} -.-> {}", from, to), caseSensitivity));
+}
+
+}
+
 ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
     std::string const &label = {},
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
@@ -824,6 +837,13 @@ ContainsMatcher HasNote(std::string const &cls,
 {
     return ContainsMatcher(
         CasedString(fmt::format("note for {}", cls), caseSensitivity));
+}
+ContainsMatcher HasPackageNote(std::string const &cls,
+    std::string const &position = "", std::string const &note = "",
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("-.- {}", cls), caseSensitivity));
 }
 }
 
@@ -1061,6 +1081,14 @@ ContainsMatcher IsPackage(std::string const &str,
 {
     return ContainsMatcher(
         CasedString("package [" + str + "]", caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher IsPackage(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("subgraph " + str, caseSensitivity));
+}
 }
 
 ContainsMatcher IsFolder(std::string const &str,

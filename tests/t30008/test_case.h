@@ -29,29 +29,29 @@ TEST_CASE("t30008", "[test-case][package]")
     REQUIRE(model->name() == "t30008_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("A"));
-        REQUIRE_THAT(puml, IsPackage("B"));
-        REQUIRE_THAT(puml, IsPackage("C"));
-        REQUIRE_THAT(puml, !IsPackage("X"));
+        REQUIRE_THAT(src, IsPackage("A"));
+        REQUIRE_THAT(src, IsPackage("B"));
+        REQUIRE_THAT(src, IsPackage("C"));
+        REQUIRE_THAT(src, !IsPackage("X"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("B"), _A("A")));
-        REQUIRE_THAT(puml, IsDependency(_A("C"), _A("B")));
+        REQUIRE_THAT(src, IsDependency(_A("B"), _A("A")));
+        REQUIRE_THAT(src, IsDependency(_A("C"), _A("B")));
 
-        REQUIRE_THAT(puml, IsPackage("D"));
-        REQUIRE_THAT(puml, IsPackage("E"));
-        REQUIRE_THAT(puml, IsPackage("F"));
-        REQUIRE_THAT(puml, !IsPackage("Y"));
+        REQUIRE_THAT(src, IsPackage("D"));
+        REQUIRE_THAT(src, IsPackage("E"));
+        REQUIRE_THAT(src, IsPackage("F"));
+        REQUIRE_THAT(src, !IsPackage("Y"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("E"), _A("D")));
-        REQUIRE_THAT(puml, IsDependency(_A("F"), _A("E")));
+        REQUIRE_THAT(src, IsDependency(_A("E"), _A("D")));
+        REQUIRE_THAT(src, IsDependency(_A("F"), _A("E")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -79,8 +79,27 @@ TEST_CASE("t30008", "[test-case][package]")
     }
 
     {
-        auto mmd = generate_package_mermaid(diagram, *model);
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
+        using mermaid::IsPackageDependency;
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        REQUIRE_THAT(src, IsPackage(_A("A")));
+        REQUIRE_THAT(src, IsPackage(_A("B")));
+        REQUIRE_THAT(src, IsPackage(_A("C")));
+        REQUIRE_THAT(src, !IsPackage(_A("X")));
+
+        REQUIRE_THAT(src, IsPackageDependency(_A("B"), _A("A")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("C"), _A("B")));
+
+        REQUIRE_THAT(src, IsPackage(_A("D")));
+        REQUIRE_THAT(src, IsPackage(_A("E")));
+        REQUIRE_THAT(src, IsPackage(_A("F")));
+        REQUIRE_THAT(src, !IsPackage(_A("Y")));
+
+        REQUIRE_THAT(src, IsPackageDependency(_A("E"), _A("D")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("F"), _A("E")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -29,21 +29,21 @@ TEST_CASE("t30009", "[test-case][package]")
     REQUIRE(model->name() == "t30009_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all packages exist
-        REQUIRE_THAT(puml, IsPackage("One"));
-        REQUIRE_THAT(puml, IsPackage("Two"));
-        REQUIRE_THAT(puml, IsPackage("A"));
-        REQUIRE_THAT(puml, IsPackage("B"));
-        REQUIRE_THAT(puml, IsPackage("C"));
-        REQUIRE_THAT(puml, IsPackage("D"));
+        REQUIRE_THAT(src, IsPackage("One"));
+        REQUIRE_THAT(src, IsPackage("Two"));
+        REQUIRE_THAT(src, IsPackage("A"));
+        REQUIRE_THAT(src, IsPackage("B"));
+        REQUIRE_THAT(src, IsPackage("C"));
+        REQUIRE_THAT(src, IsPackage("D"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -66,8 +66,17 @@ TEST_CASE("t30009", "[test-case][package]")
     }
 
     {
-        auto mmd = generate_package_mermaid(diagram, *model);
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        REQUIRE_THAT(src, IsPackage(_A("One")));
+        REQUIRE_THAT(src, IsPackage(_A("Two")));
+        REQUIRE_THAT(src, IsPackage(_A("A")));
+        REQUIRE_THAT(src, IsPackage(_A("B")));
+        REQUIRE_THAT(src, IsPackage(_A("C")));
+        REQUIRE_THAT(src, IsPackage(_A("D")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }
