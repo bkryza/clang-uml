@@ -686,6 +686,16 @@ ContainsMatcher HasNote(std::string const &cls, std::string const &position,
         fmt::format("note {} of {}", position, cls), caseSensitivity));
 }
 
+namespace mermaid {
+ContainsMatcher HasNote(std::string const &cls,
+    std::string const &position = "", std::string const &note = "",
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("note for {}", cls), caseSensitivity));
+}
+}
+
 ContainsMatcher HasMemberNote(std::string const &cls, std::string const &member,
     std::string const &position, std::string const &note = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)

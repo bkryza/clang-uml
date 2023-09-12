@@ -110,9 +110,11 @@ TEST_CASE("t00002", "[test-case][class]")
         auto mmd = generate_class_mermaid(diagram, *model);
 
         mermaid::AliasMatcher _A(mmd);
+        using mermaid::HasNote;
+        using mermaid::IsAbstractClass;
 
         REQUIRE_THAT(mmd, StartsWith("classDiagram"));
-        REQUIRE_THAT(mmd, mermaid::IsAbstractClass(_A("A")));
+        REQUIRE_THAT(mmd, IsAbstractClass(_A("A")));
         REQUIRE_THAT(mmd, IsClass(_A("B")));
         REQUIRE_THAT(mmd, IsClass(_A("C")));
         REQUIRE_THAT(mmd, IsClass(_A("D")));
@@ -126,9 +128,8 @@ TEST_CASE("t00002", "[test-case][class]")
         REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Abstract>("foo_a")));
         REQUIRE_THAT(mmd, (mermaid::IsMethod<Public, Abstract>("foo_c")));
 
-        //        REQUIRE_THAT(mmd, HasNote(_A("A"), "left", "This is class
-        //        A")); REQUIRE_THAT(mmd, HasNote(_A("B"), "top", "This is class
-        //        B"));
+        REQUIRE_THAT(mmd, HasNote(_A("A"), "left", "This is class A"));
+        REQUIRE_THAT(mmd, HasNote(_A("B"), "top", "This is class B"));
 
         REQUIRE_THAT(mmd,
             mermaid::HasLink(_A("A"),

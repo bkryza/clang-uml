@@ -76,6 +76,7 @@ note.)";
         auto src = generate_class_mermaid(diagram, *model);
 
         mermaid::AliasMatcher _A(src);
+        using mermaid::HasNote;
         using mermaid::IsEnum;
 
         REQUIRE_THAT(src, IsClass(_A("A")));
@@ -85,10 +86,19 @@ note.)";
         REQUIRE_THAT(src, IsClass(_A("E<T>")));
         REQUIRE_THAT(src, IsEnum(_A("F")));
         REQUIRE_THAT(src, IsClass(_A("R")));
-        //        REQUIRE_THAT(src, HasNote(_A("A"), "top", "A class note."));
-        //        REQUIRE_THAT(src, HasNote(_A("B"), "left", "B class note."));
-        //        REQUIRE_THAT(src, HasNote(_A("C"), "bottom", "C class
-        //        note."));
+        REQUIRE_THAT(src, HasNote(_A("A"), "top", "A class note."));
+        REQUIRE_THAT(src, HasNote(_A("B"), "left", "B class note."));
+        REQUIRE_THAT(src, HasNote(_A("C"), "bottom", "C class note."));
+        const auto d_note = R"(
+D
+class
+note.)";
+        REQUIRE_THAT(src, HasNote(_A("D"), "left", d_note));
+        REQUIRE_THAT(
+            src, HasNote(_A("E<T>"), "left", "E template class note."));
+        REQUIRE_THAT(src, HasNote(_A("F"), "bottom", "F enum note."));
+        REQUIRE_THAT(src, !HasNote(_A("G"), "left", "G class note."));
+        REQUIRE_THAT(src, HasNote(_A("R"), "right", "R class note."));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

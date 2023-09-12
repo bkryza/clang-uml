@@ -19,3 +19,8 @@ diagrams:
           note right of {{ alias("D") }}
               {{ comment("D").text }}
           end note
+    mermaid:
+      after:
+        - '{% set e=element("A") %} note for {{ e.alias }} "{{ trim(e.comment.brief.0) }}"'
+        - '{% set e=element("clanguml::t00002::B") %} note for {{ e.alias }} "{{ trim(e.comment.brief.0) }}"'
+        - 'note for {{ alias("D") }} "{{ comment("D").text }}"'
