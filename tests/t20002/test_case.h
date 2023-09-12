@@ -29,17 +29,17 @@ TEST_CASE("t20002", "[test-case][sequence]")
     REQUIRE(model->name() == "t20002_sequence");
 
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, HasCall(_A("m1()"), _A("m2()"), ""));
-        REQUIRE_THAT(puml, HasCall(_A("m2()"), _A("m3()"), ""));
-        REQUIRE_THAT(puml, HasCall(_A("m3()"), _A("m4()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("m1()"), _A("m2()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("m2()"), _A("m3()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("m3()"), _A("m4()"), ""));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -62,8 +62,15 @@ TEST_CASE("t20002", "[test-case][sequence]")
     }
 
     {
-        auto mmd = generate_sequence_mermaid(diagram, *model);
+        auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("m1()"), _A("m2()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("m2()"), _A("m3()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("m3()"), _A("m4()"), ""));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

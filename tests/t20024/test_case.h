@@ -28,25 +28,25 @@ TEST_CASE("t20024", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20024_sequence");
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "select(enum_a)"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "a0()"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "a1()"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "a2()"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "a3()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "select(enum_a)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a0()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a1()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a2()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a3()"));
 
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B"), "select(colors)"));
-        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "red()"));
-        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "orange()"));
-        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "green()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "select(colors)"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "red()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "orange()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "green()"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -65,8 +65,22 @@ TEST_CASE("t20024", "[test-case][sequence]")
     }
 
     {
-        auto mmd = generate_sequence_mermaid(diagram, *model);
+        auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "select(enum_a)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a0()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a1()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a2()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "a3()"));
+
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "select(colors)"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "red()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "orange()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "green()"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

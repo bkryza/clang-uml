@@ -136,14 +136,19 @@ struct HasCallWithResultMatcher : ContainsMatcher {
 template <typename T> class HasCallMatcher : public Catch::MatcherBase<T> {
     T m_from, m_to, m_message;
     bool m_is_response;
+    std::string m_call_arrow, m_return_arrow;
     std::string call_pattern, response_pattern;
 
 public:
-    HasCallMatcher(T from, T to, T message, bool is_response = false)
+    HasCallMatcher(T from, T to, T message, bool is_response = false,
+        const std::string &call_arrow = "->",
+        const std::string &return_arrow = "-->")
         : m_from(from)
         , m_to{to}
         , m_message{message}
         , m_is_response{is_response}
+        , m_call_arrow{call_arrow}
+        , m_return_arrow{return_arrow}
     {
         util::replace_all(m_message, "(", "\\(");
         util::replace_all(m_message, ")", "\\)");
@@ -152,12 +157,12 @@ public:
         util::replace_all(m_message, "]", "\\]");
         util::replace_all(m_message, "+", "\\+");
 
-        call_pattern = fmt::format("{} -> {} "
+        call_pattern = fmt::format("{} {} {} "
                                    "(\\[\\[.*\\]\\] )?: {}",
-            m_from, m_to, m_message);
+            m_from, m_call_arrow, m_to, m_message);
 
-        response_pattern =
-            fmt::format("{} --> {} : //{}//", m_from, m_to, m_message);
+        response_pattern = fmt::format(
+            "{} {} {} : //{}//", m_from, m_return_arrow, m_to, m_message);
     }
 
     bool match(T const &in) const override
@@ -181,7 +186,8 @@ public:
     {
         std::ostringstream ss;
         ss << "has call "
-           << fmt::format("{} -> {} : {}", m_from, m_to, m_message);
+           << fmt::format(
+                  "{} {} {} : {}", m_from, m_call_arrow, m_to, m_message);
         return ss.str();
     }
 };
@@ -190,7 +196,7 @@ auto HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return HasCallMatcher(from, to, message);
+    return HasCallMatcher(from, to, message, false);
 }
 
 auto HasResponse(std::string const &from, std::string const &to,
@@ -213,13 +219,91 @@ auto HasCall(std::string const &from, std::string const &message,
     return HasCall(from, from, message, caseSensitivity);
 }
 
-auto HasCallWithResponse(std::string const &from, std::string const &to,
+namespace mermaid {
+template <typename T> class HasCallMatcher : public Catch::MatcherBase<T> {
+    T m_from, m_to, m_message;
+    bool m_is_response;
+    std::string m_call_arrow, m_return_arrow;
+    std::string call_pattern, response_pattern;
+
+public:
+    HasCallMatcher(T from, T to, T message, bool is_response = false,
+        const std::string &call_arrow = "->>",
+        const std::string &return_arrow = "-->>")
+        : m_from(from)
+        , m_to{to}
+        , m_message{message}
+        , m_is_response{is_response}
+        , m_call_arrow{call_arrow}
+        , m_return_arrow{return_arrow}
+    {
+        util::replace_all(m_message, "(", "\\(");
+        util::replace_all(m_message, ")", "\\)");
+        util::replace_all(m_message, "*", "\\*");
+        util::replace_all(m_message, "[", "\\[");
+        util::replace_all(m_message, "]", "\\]");
+        util::replace_all(m_message, "+", "\\+");
+
+        call_pattern =
+            fmt::format("{} {} {} : {}", m_from, m_call_arrow, m_to, m_message);
+
+        response_pattern = fmt::format(
+            "{} {} {} : {}", m_from, m_return_arrow, m_to, m_message);
+    }
+
+    bool match(T const &in) const override
+    {
+        std::istringstream fin(in);
+        std::string line;
+
+        std::regex r{m_is_response ? response_pattern : call_pattern};
+
+        while (std::getline(fin, line)) {
+            std::smatch base_match;
+            std::regex_search(in, base_match, r);
+            if (base_match.size() > 0)
+                return true;
+        }
+
+        return false;
+    }
+
+    std::string describe() const override
+    {
+        std::ostringstream ss;
+        ss << "has call "
+           << fmt::format(
+                  "{} {} {} : {}", m_from, m_call_arrow, m_to, m_message);
+        return ss.str();
+    }
+};
+
+auto HasCall(std::string const &from, std::string const &to,
     std::string const &message,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(CasedString(
-               fmt::format("{} --> {}", to, from), caseSensitivity)) &&
-        HasCallMatcher(from, to, message);
+    return mermaid::HasCallMatcher(from, to, message, false);
+}
+
+auto HasCallInControlCondition(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return mermaid::HasCallMatcher(from, to, fmt::format("[{}]", message));
+}
+
+auto HasResponse(std::string const &from, std::string const &to,
+    std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return HasCallMatcher(to, from, message, true, "->>", "-->>");
+}
+
+auto HasCall(std::string const &from, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return mermaid::HasCall(from, from, message, caseSensitivity);
+}
 }
 
 ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,
@@ -229,11 +313,29 @@ ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,
         CasedString(fmt::format("[-> {} : {}", to, message), caseSensitivity));
 }
 
+namespace mermaid {
+ContainsMatcher HasEntrypoint(std::string const &to, std::string const &message,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(
+        fmt::format("* ->> {} : {}", to, message), caseSensitivity));
+}
+}
+
 ContainsMatcher HasExitpoint(std::string const &to,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     return ContainsMatcher(
         CasedString(fmt::format("[<-- {}", to), caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher HasExitpoint(std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} -->> *", to), caseSensitivity));
+}
 }
 
 std::string _NS(std::string_view s)
@@ -326,27 +428,47 @@ struct AliasMatcher {
 
         patterns.push_back(
             std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
-        //        patterns.push_back(
-        //            std::regex{"abstract\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"enum\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"package\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"file\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"folder\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
-        //        patterns.push_back(
-        //            std::regex{"participant\\s\"" + name + "\"\\sas\\s" +
-        //            alias_regex});
+
+        std::smatch base_match;
+
+        for (const auto &line : mmd) {
+            for (const auto &pattern : patterns) {
+                if (std::regex_search(line, base_match, pattern) &&
+                    base_match.size() == 2) {
+                    std::ssub_match base_sub_match = base_match[1];
+                    std::string alias = base_sub_match.str();
+                    return trim(alias);
+                }
+            }
+        }
+
+        return "__INVALID__ALIAS__";
+    }
+
+    const std::vector<std::string> mmd;
+};
+
+struct SequenceDiagramAliasMatcher {
+    SequenceDiagramAliasMatcher(const std::string &mmd_)
+        : mmd{split(mmd_, "\n")}
+    {
+    }
+
+    std::string operator()(std::string name)
+    {
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "\\(");
+        util::replace_all(name, ")", "\\)");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
+
+        patterns.push_back(
+            std::regex{"participant\\s" + alias_regex + "\\sas\\s" + name});
 
         std::smatch base_match;
 
@@ -676,6 +798,15 @@ ContainsMatcher HasComment(std::string const &comment,
 {
     return ContainsMatcher(
         CasedString(fmt::format("' {}", comment), caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher HasComment(std::string const &comment,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("%% {}", comment), caseSensitivity));
+}
 }
 
 ContainsMatcher HasNote(std::string const &cls, std::string const &position,

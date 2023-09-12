@@ -94,7 +94,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     ostr << indent(1) << from_alias << " "
          << common::generators::mermaid::to_mermaid(message_t::kCall) << " ";
 
-    ostr << indent(1) << to_alias;
+    ostr << to_alias;
 
     ostr << " : ";
 

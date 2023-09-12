@@ -29,32 +29,32 @@ TEST_CASE("t20008", "[test-case][sequence]")
     REQUIRE(model->name() == "t20008_sequence");
 
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
-        REQUIRE_THAT(puml, HasCall(_A("B<int>"), _A("A<int>"), "a1(int)"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
+        REQUIRE_THAT(src, HasCall(_A("B<int>"), _A("A<int>"), "a1(int)"));
         //    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"),
         //    "a2(int)")); REQUIRE_THAT(puml, !HasCall(_A("B<int>"),
         //    _A("A<int>"), "a3(int)"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("B<const char *>"), "b(const char *)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("B<const char *>"), _A("A<const char *>"),
                 "a2(const char *)"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(
                 _A("B<std::string>"), _A("A<std::string>"), "a3(std::string)"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -78,8 +78,29 @@ TEST_CASE("t20008", "[test-case][sequence]")
     }
 
     {
-        auto mmd = generate_sequence_mermaid(diagram, *model);
+        auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B<int>"), "b(int)"));
+        REQUIRE_THAT(src, HasCall(_A("B<int>"), _A("A<int>"), "a1(int)"));
+        //    REQUIRE_THAT(puml, !HasCall(_A("B<int>"), _A("A<int>"),
+        //    "a2(int)")); REQUIRE_THAT(puml, !HasCall(_A("B<int>"),
+        //    _A("A<int>"), "a3(int)"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"), _A("B<const char *>"), "b(const char *)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("B<const char *>"), _A("A<const char *>"),
+                "a2(const char *)"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"), _A("B<std::string>"), "b(std::string)"));
+        REQUIRE_THAT(src,
+            HasCall(
+                _A("B<std::string>"), _A("A<std::string>"), "a3(std::string)"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }
