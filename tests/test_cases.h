@@ -430,6 +430,8 @@ struct AliasMatcher {
             std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
         patterns.push_back(
             std::regex{"subgraph\\s" + alias_regex + "\\[" + name + "\\]"});
+        patterns.push_back(
+            std::regex{"\\s\\s" + alias_regex + "\\[" + name + "\\]"}); // file
 
         std::smatch base_match;
 
@@ -739,7 +741,13 @@ ContainsMatcher IsPackageDependency(std::string const &from,
     return ContainsMatcher(
         CasedString(fmt::format("{} -.-> {}", from, to), caseSensitivity));
 }
-
+ContainsMatcher IsIncludeDependency(std::string const &from,
+    std::string const &to,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(
+        CasedString(fmt::format("{} -.-> {}", from, to), caseSensitivity));
+}
 }
 
 ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
@@ -1103,6 +1111,20 @@ ContainsMatcher IsFile(std::string const &str,
 {
     return ContainsMatcher(
         CasedString("file \"" + str + "\"", caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher IsFolder(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("subgraph " + str, caseSensitivity));
+}
+
+ContainsMatcher IsFile(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString(str + "[", caseSensitivity));
+}
 }
 
 ContainsMatcher IsDeprecated(std::string const &str,

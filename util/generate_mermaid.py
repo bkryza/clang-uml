@@ -52,7 +52,7 @@ if not files:
 ok = 0
 
 
-with ThreadPoolExecutor(max_workers=10) as executor:
+with ThreadPoolExecutor(max_workers=16) as executor:
     result = all(executor.map(generate_mermaid_diagram, files))
 
 
