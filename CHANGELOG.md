@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.4.0
  * Added MermaidJS diagram generators (#27)
 
 ### 0.3.9
