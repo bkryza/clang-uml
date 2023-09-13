@@ -29,45 +29,43 @@ TEST_CASE("t00045", "[test-case][class]")
     REQUIRE(model->name() == "t00045_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::A")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::A")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::B")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::C")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::D")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::E")));
-        REQUIRE_THAT(puml, IsClass(_A("ns1::ns2::R")));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::B")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::C")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::D")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::E")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::R")));
 
-        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::B")));
-        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::A"), _A("ns1::ns2::C")));
-        REQUIRE_THAT(puml, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::D")));
-        REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("ns1::ns2::E")));
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::B")));
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::A"), _A("ns1::ns2::C")));
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::D")));
+        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("ns1::ns2::E")));
 
         REQUIRE_THAT(
-            puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+a"));
+            src, IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+a"));
         REQUIRE_THAT(
-            puml, IsAssociation(_A("ns1::ns2::R"), _A("ns1::A"), "+ns1_a"));
-        REQUIRE_THAT(puml,
+            src, IsAssociation(_A("ns1::ns2::R"), _A("ns1::A"), "+ns1_a"));
+        REQUIRE_THAT(src,
             IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+ns1_ns2_a"));
-        REQUIRE_THAT(
-            puml, IsAssociation(_A("ns1::ns2::R"), _A("A"), "+root_a"));
+        REQUIRE_THAT(src, IsAssociation(_A("ns1::ns2::R"), _A("A"), "+root_a"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("ns1::ns2::R"), _A("AA")));
+        REQUIRE_THAT(src, IsDependency(_A("ns1::ns2::R"), _A("AA")));
 
-        REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
+        REQUIRE_THAT(src, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
         REQUIRE_THAT(
-            puml, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
+            src, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
         // TODO:
         // REQUIRE_THAT(puml, IsFriend<Public>(_A("ns1::ns2::R"),
         // _A("AAAA<T>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -85,6 +83,42 @@ TEST_CASE("t00045", "[test-case][class]")
 
         REQUIRE(IsBaseClass(j, "ns1::ns2::A", "ns1::ns2::B"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsFriend;
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::A")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::B")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::C")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::D")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::E")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::R")));
+
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::B")));
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::A"), _A("ns1::ns2::C")));
+        REQUIRE_THAT(src, IsBaseClass(_A("ns1::ns2::A"), _A("ns1::ns2::D")));
+        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("ns1::ns2::E")));
+
+        REQUIRE_THAT(
+            src, IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+a"));
+        REQUIRE_THAT(
+            src, IsAssociation(_A("ns1::ns2::R"), _A("ns1::A"), "+ns1_a"));
+        REQUIRE_THAT(src,
+            IsAssociation(_A("ns1::ns2::R"), _A("ns1::ns2::A"), "+ns1_ns2_a"));
+        REQUIRE_THAT(src, IsAssociation(_A("ns1::ns2::R"), _A("A"), "+root_a"));
+
+        REQUIRE_THAT(src, IsDependency(_A("ns1::ns2::R"), _A("AA")));
+
+        REQUIRE_THAT(src, IsFriend<Public>(_A("ns1::ns2::R"), _A("AAA")));
+        REQUIRE_THAT(
+            src, !IsFriend<Public>(_A("ns1::ns2::R"), _A("ns1::ns2::AAA")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -18,6 +18,7 @@
 #pragma once
 
 #include "class_diagram/generators/json/class_diagram_generator.h"
+#include "class_diagram/generators/mermaid/class_diagram_generator.h"
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
@@ -25,11 +26,14 @@
 #include "common/model/diagram_filter.h"
 #include "config/config.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
+#include "include_diagram/generators/mermaid/include_diagram_generator.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "indicators/indicators.hpp"
 #include "package_diagram/generators/json/package_diagram_generator.h"
+#include "package_diagram/generators/mermaid/package_diagram_generator.h"
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/json/sequence_diagram_generator.h"
+#include "sequence_diagram/generators/mermaid/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "util/util.h"
 #include "version.h"
@@ -105,6 +109,9 @@ struct plantuml_generator_tag {
 struct json_generator_tag {
     inline static const std::string extension = "json";
 };
+struct mermaid_generator_tag {
+    inline static const std::string extension = "mmd";
+};
 /** @} */
 
 /** @defgroup diagram_generator_t Diagram generator selector
@@ -114,6 +121,7 @@ struct json_generator_tag {
  *
  * @{
  */
+// plantuml
 template <typename DiagramConfig, typename GeneratorType>
 struct diagram_generator_t;
 template <>
@@ -136,6 +144,7 @@ struct diagram_generator_t<clanguml::config::include_diagram,
     plantuml_generator_tag> {
     using type = clanguml::include_diagram::generators::plantuml::generator;
 };
+// json
 template <>
 struct diagram_generator_t<clanguml::config::class_diagram,
     json_generator_tag> {
@@ -155,6 +164,27 @@ template <>
 struct diagram_generator_t<clanguml::config::include_diagram,
     json_generator_tag> {
     using type = clanguml::include_diagram::generators::json::generator;
+};
+// mermaid
+template <>
+struct diagram_generator_t<clanguml::config::class_diagram,
+    mermaid_generator_tag> {
+    using type = clanguml::class_diagram::generators::mermaid::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::sequence_diagram,
+    mermaid_generator_tag> {
+    using type = clanguml::sequence_diagram::generators::mermaid::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::package_diagram,
+    mermaid_generator_tag> {
+    using type = clanguml::package_diagram::generators::mermaid::generator;
+};
+template <>
+struct diagram_generator_t<clanguml::config::include_diagram,
+    mermaid_generator_tag> {
+    using type = clanguml::include_diagram::generators::mermaid::generator;
 };
 /** @} */
 

@@ -28,21 +28,20 @@ TEST_CASE("t20025", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20025_sequence");
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
-        REQUIRE_THAT(puml, !HasCall(_A("A"), _A("A"), "a1()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
+        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "a1()"));
         // REQUIRE_THAT(puml, !HasCall(_A("A"), _A("A"), "a2()"));
-        REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("add(int,int)"), ""));
-        REQUIRE_THAT(puml, !HasCall(_A("tmain()"), _A("add2(int,int)"), ""));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("add(int,int)"), ""));
+        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("add2(int,int)"), ""));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -56,6 +55,21 @@ TEST_CASE("t20025", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_sequence_mermaid(diagram, *model);
+
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
+        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "a1()"));
+        // REQUIRE_THAT(puml, !HasCall(_A("A"), _A("A"), "a2()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("add(int,int)"), ""));
+        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("add2(int,int)"), ""));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

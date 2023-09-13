@@ -29,33 +29,32 @@ TEST_CASE("t00050", "[test-case][class]")
     REQUIRE(model->name() == "t00050_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("utils::D")));
-        REQUIRE_THAT(puml, IsEnum(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("utils::D")));
+        REQUIRE_THAT(src, IsEnum(_A("E")));
 
-        REQUIRE_THAT(puml, HasNote(_A("A"), "left"));
-        REQUIRE_THAT(puml, HasNote(_A("A"), "right"));
-        REQUIRE_THAT(puml, HasNote(_A("B"), "top"));
-        REQUIRE_THAT(puml, HasNote(_A("C"), "top"));
-        REQUIRE_THAT(puml, HasNote(_A("utils::D"), "top"));
-        REQUIRE_THAT(puml, !HasNote(_A("E"), "bottom"));
-        REQUIRE_THAT(puml, !HasNote(_A("NoComment"), "top"));
-        REQUIRE_THAT(puml, HasNote(_A("F<T,V,int N>"), "top"));
-        REQUIRE_THAT(puml, HasNote(_A("G"), "top"));
-        REQUIRE_THAT(puml, HasNote(_A("G"), "bottom"));
-        REQUIRE_THAT(puml, HasNote(_A("G"), "right"));
+        REQUIRE_THAT(src, HasNote(_A("A"), "left"));
+        REQUIRE_THAT(src, HasNote(_A("A"), "right"));
+        REQUIRE_THAT(src, HasNote(_A("B"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("C"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("utils::D"), "top"));
+        REQUIRE_THAT(src, !HasNote(_A("E"), "bottom"));
+        REQUIRE_THAT(src, !HasNote(_A("NoComment"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("F<T,V,int N>"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "bottom"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "right"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -68,6 +67,34 @@ TEST_CASE("t00050", "[test-case][class]")
         REQUIRE(IsClass(j, "utils::D"));
         REQUIRE(IsEnum(j, "E"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::HasNote;
+        using mermaid::IsEnum;
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("utils::D")));
+        REQUIRE_THAT(src, IsEnum(_A("E")));
+
+        REQUIRE_THAT(src, HasNote(_A("A"), "left"));
+        REQUIRE_THAT(src, HasNote(_A("A"), "right"));
+        REQUIRE_THAT(src, HasNote(_A("B"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("C"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("utils::D"), "top"));
+        REQUIRE_THAT(src, !HasNote(_A("E"), "bottom"));
+        REQUIRE_THAT(src, !HasNote(_A("NoComment"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("F<T,V,int N>"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "top"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "bottom"));
+        REQUIRE_THAT(src, HasNote(_A("G"), "right"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

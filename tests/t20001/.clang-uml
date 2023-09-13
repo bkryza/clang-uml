@@ -1,5 +1,5 @@
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t20001_sequence:
     type: sequence
@@ -20,3 +20,8 @@ diagrams:
         - "' t20001 test diagram of type {{ diagram.type }}"
       after:
         - '{% set e=element("clanguml::t20001::tmain()") %} note over {{ e.alias) }}: Main test function'
+    mermaid:
+      before:
+        - "%% t20001 test diagram of type {{ diagram.type }}"
+      after:
+        - '{% set e=element("clanguml::t20001::tmain()") %} Note over {{ e.alias) }}: Main test function'

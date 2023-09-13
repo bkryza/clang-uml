@@ -29,26 +29,25 @@ TEST_CASE("t30010", "[test-case][package]")
     REQUIRE(model->name() == "t30010_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("app"));
-        REQUIRE_THAT(puml, IsPackage("libraries"));
-        REQUIRE_THAT(puml, IsPackage("lib1"));
-        REQUIRE_THAT(puml, IsPackage("lib2"));
-        REQUIRE_THAT(puml, !IsPackage("library1"));
-        REQUIRE_THAT(puml, !IsPackage("library2"));
+        REQUIRE_THAT(src, IsPackage("app"));
+        REQUIRE_THAT(src, IsPackage("libraries"));
+        REQUIRE_THAT(src, IsPackage("lib1"));
+        REQUIRE_THAT(src, IsPackage("lib2"));
+        REQUIRE_THAT(src, !IsPackage("library1"));
+        REQUIRE_THAT(src, !IsPackage("library2"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib1")));
-        REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib2")));
-        REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib3")));
-        REQUIRE_THAT(puml, IsDependency(_A("app"), _A("lib4")));
+        REQUIRE_THAT(src, IsDependency(_A("app"), _A("lib1")));
+        REQUIRE_THAT(src, IsDependency(_A("app"), _A("lib2")));
+        REQUIRE_THAT(src, IsDependency(_A("app"), _A("lib3")));
+        REQUIRE_THAT(src, IsDependency(_A("app"), _A("lib4")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -56,6 +55,27 @@ TEST_CASE("t30010", "[test-case][package]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
+        using mermaid::IsPackageDependency;
+
+        REQUIRE_THAT(src, IsPackage(_A("app")));
+        REQUIRE_THAT(src, IsPackage(_A("libraries")));
+        REQUIRE_THAT(src, IsPackage(_A("lib1")));
+        REQUIRE_THAT(src, IsPackage(_A("lib2")));
+        REQUIRE_THAT(src, !IsPackage(_A("library1")));
+        REQUIRE_THAT(src, !IsPackage(_A("library2")));
+
+        REQUIRE_THAT(src, IsPackageDependency(_A("app"), _A("lib1")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("app"), _A("lib2")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("app"), _A("lib3")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("app"), _A("lib4")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

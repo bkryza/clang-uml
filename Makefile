@@ -93,18 +93,29 @@ test_release: release
 install: release
 	make -C release install DESTDIR=${DESTDIR}
 
-test_plantuml: test
-	plantuml -tsvg debug/tests/puml/*.puml
+test_diagrams: test
+	mkdir -p debug/tests/diagrams/plantuml
+	mkdir -p debug/tests/diagrams/mermaid
+	plantuml -tsvg -nometadata -o plantuml debug/tests/diagrams/*.puml
+	python3 util/validate_json.py debug/tests/diagrams/*.json
+	python3 util/generate_mermaid.py debug/tests/diagrams/*.mmd
 
-document_test_cases: test_plantuml
+document_test_cases: test_diagrams
 	python3 util/generate_test_cases_docs.py
+	# Format generated SVG files
 	python3 util/format_svg.py docs/test_cases/*.svg
 
 clanguml_diagrams: debug
-	mkdir -p docs/diagrams
-	debug/src/clang-uml -g plantuml -g json -p
-	plantuml -tsvg -nometadata docs/diagrams/*.puml
-	python3 util/format_svg.py docs/diagrams/*.svg
+	mkdir -p docs/diagrams/plantuml
+	mkdir -p docs/diagrams/mermaid
+	debug/src/clang-uml -g plantuml -g json -g mermaid -p
+	# Convert .puml files to svg images
+	plantuml -tsvg -nometadata -o plantuml docs/diagrams/*.puml
+	# Convert .mmd files to svg images
+	python3 util/generate_mermaid.py docs/diagrams/*.mmd
+	# Format generated SVG files
+	python3 util/format_svg.py docs/diagrams/plantuml/*.svg
+	python3 util/format_svg.py docs/diagrams/mermaid/*.svg
 
 .PHONY: submodules
 submodules:
@@ -147,7 +158,7 @@ docs:
 doxygen: docs
 	cp CONTRIBUTING.md docs/contributing.md
 	cp CHANGELOG.md docs/changelog.md
-	cp docs/diagrams/*.svg docs/doxygen/html/
+	cp docs/diagrams/plantuml/*.svg docs/doxygen/html/
 	mkdir -p docs/doxygen/html/test_cases
 	cp docs/test_cases/*.svg docs/doxygen/html/test_cases/
 	../doxygen/_build/bin/doxygen

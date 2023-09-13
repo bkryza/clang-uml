@@ -28,26 +28,25 @@ TEST_CASE("t20015", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20015_sequence");
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("B"),
                 "setup_a(std::shared_ptr<detail::A> &)"));
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_x(int)"));
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_y(int)"));
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("detail::A"), "set_z(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_x(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_y(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_z(int)"));
 
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_x(int)"));
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_y(int)"));
-        REQUIRE_THAT(puml, !HasCall(_A("B"), _A("B"), "set_z(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_x(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_y(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_z(int)"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -60,6 +59,26 @@ TEST_CASE("t20015", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_sequence_mermaid(diagram, *model);
+
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"), _A("B"),
+                "setup_a(std::shared_ptr<detail::A> &)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_x(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_y(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("detail::A"), "set_z(int)"));
+
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_x(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_y(int)"));
+        REQUIRE_THAT(src, !HasCall(_A("B"), _A("B"), "set_z(int)"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

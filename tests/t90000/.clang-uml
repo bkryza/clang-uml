@@ -1,5 +1,5 @@
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t90000_class:
     type: class
@@ -16,5 +16,17 @@ diagrams:
         - 'C_001 .. N2'
         - 'N2 .. ArrayList'
         - 'class "Boo" as C_002'
+        - 'class C_002 {'
+        - '}'
+    mermaid:
+      before:
+        - 'class C_001["Foo"]'
+        - 'class C_001 {'
+        - ' +int value'
+        - '}'
+        - 'C_001 <|-- ArrayList'
+        - 'note for C_001 "This is a very important class."'
+        - 'note "This is a\nfloating note"'
+        - 'class C_002["Boo"]'
         - 'class C_002 {'
         - '}'

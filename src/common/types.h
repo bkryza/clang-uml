@@ -36,7 +36,8 @@ using id_t = int64_t;
  */
 enum class generator_type_t {
     plantuml, /*!< Diagrams will be gnerated in PlantUML format */
-    json      /*!< Diagrams will be generated in JSON format */
+    json,     /*!< Diagrams will be generated in JSON format */
+    mermaid   /*!< Diagrams will be generated in MermaidJS format */
 };
 
 std::string to_string(const std::string &s);

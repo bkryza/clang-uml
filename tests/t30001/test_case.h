@@ -29,40 +29,39 @@ TEST_CASE("t30001", "[test-case][package]")
     REQUIRE(model->name() == "t30001_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("A"));
-        REQUIRE_THAT(puml, IsPackage("AAA"));
-        REQUIRE_THAT(puml, IsPackage("AAA"));
+        REQUIRE_THAT(src, IsPackage("A"));
+        REQUIRE_THAT(src, IsPackage("AAA"));
+        REQUIRE_THAT(src, IsPackage("AAA"));
 
         // TODO: Fix _A() to handle fully qualified names, right
         //       now it only finds the first element with unqualified
         //       name match
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasLink(_A("AAA"),
                 fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
                             "t30001/t30001.cc#L6",
                     clanguml::util::get_git_commit()),
                 "AAA"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasLink(_A("BBB"),
                 fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
                             "t30001/t30001.cc#L8",
                     clanguml::util::get_git_commit()),
                 "BBB"));
 
-        REQUIRE_THAT(puml, HasComment("t30001 test diagram of type package"));
+        REQUIRE_THAT(src, HasComment("t30001 test diagram of type package"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -81,6 +80,45 @@ TEST_CASE("t30001", "[test-case][package]")
         REQUIRE(IsPackage(j, "B::AA::BBB"));
         REQUIRE(IsPackage(j, "B::BB"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+
+        using mermaid::HasComment;
+        using mermaid::HasLink;
+        using mermaid::HasPackageNote;
+        using mermaid::IsPackage;
+
+        REQUIRE_THAT(src, IsPackage(_A("A")));
+        REQUIRE_THAT(src, IsPackage(_A("AAA")));
+        REQUIRE_THAT(src, IsPackage(_A("AAA")));
+
+        // TODO: Fix _A() to handle fully qualified names, right
+        //       now it only finds the first element with unqualified
+        //       name match
+        REQUIRE_THAT(src,
+            HasPackageNote(
+                _A("AA"), "top", "This is namespace AA in namespace A"));
+
+        REQUIRE_THAT(src,
+            HasLink(_A("AAA"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t30001/t30001.cc#L6",
+                    clanguml::util::get_git_commit()),
+                "AAA"));
+
+        REQUIRE_THAT(src,
+            HasLink(_A("BBB"),
+                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                            "t30001/t30001.cc#L8",
+                    clanguml::util::get_git_commit()),
+                "BBB"));
+
+        REQUIRE_THAT(src, HasComment("t30001 test diagram of type package"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

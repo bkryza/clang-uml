@@ -54,7 +54,10 @@
 * `plantuml` - verbatim PlantUML directives which should be added to a diagram
     * `before` - list of directives which will be added before the generated diagram
     * `after` - list of directives which will be added after the generated diagram
-
+* `mermaid` - verbatim MermaidJS directives which should be added to a diagram
+  * `before` - list of directives which will be added before the generated diagram
+  * `after` - list of directives which will be added after the generated diagram
+  * 
 ## Example complete config
 
 ```yaml
@@ -138,6 +141,10 @@ diagrams:
       # Add this line to the beginning of the resulting puml file
       before:
         - 'title clang-uml class diagram model'
+    mermaid:
+      # Add this line at the end of a Mermaid diagram
+      end:
+        - 'direction LR'
 ```
 
 ## Determining config file location

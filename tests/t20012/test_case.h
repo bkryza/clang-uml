@@ -28,57 +28,56 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20012_sequence");
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()"),
                 _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 "operator()()"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 _A("A"), "a()"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aa()"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "aaa()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aaa()"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 _A("B"), "b()"));
-        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bb()"));
-        REQUIRE_THAT(puml, HasCall(_A("B"), _A("B"), "bbb()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bb()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bbb()"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
                 _A("C"), "c()"));
-        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "cc()"));
-        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "cc()"));
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
                 _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
                 "operator()()"));
 
-        REQUIRE_THAT(puml, HasCall(_A("C"), _A("C"), "ccc()"));
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()"),
                 _A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"), "r()"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"),
                 _A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
                 "operator()()"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
                 _A("C"), "c()"));
 
         // @todo #168
         // REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -120,6 +119,54 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_sequence_mermaid(diagram, *model);
+
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
+                "operator()()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
+                _A("A"), "a()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aaa()"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
+                _A("B"), "b()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bb()"));
+        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bbb()"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
+                _A("C"), "c()"));
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "cc()"));
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:80:20)"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:67:20)"),
+                "operator()()"));
+
+        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"),
+                _A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"), "r()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("R<R::(lambda ../../tests/t20012/t20012.cc:86:9)>"),
+                _A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
+                "operator()()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda ../../tests/t20012/t20012.cc:86:9)"),
+                _A("C"), "c()"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -29,22 +29,21 @@ TEST_CASE("t00046", "[test-case][class]")
     REQUIRE(model->name() == "t00046_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
-        REQUIRE_THAT(puml, IsClass(_A("E")));
-        REQUIRE_THAT(puml, IsClass(_A("R")));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("R")));
 
-        REQUIRE_THAT(puml, IsField<Public>("i", "std::vector<std::uint8_t>"));
+        REQUIRE_THAT(src, IsField<Public>("i", "std::vector<std::uint8_t>"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -56,6 +55,24 @@ TEST_CASE("t00046", "[test-case][class]")
         REQUIRE(get_element(j, "ns1::A").value()["type"] == "class");
         REQUIRE(get_element(j, "ns1::ns2::D").value()["type"] == "class");
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsField;
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("AA")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::B")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::C")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::D")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::E")));
+        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::R")));
+
+        REQUIRE_THAT(src, IsField<Public>("i", "std::vector<std::uint8_t>"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -36,11 +36,16 @@ def main(argv):
         # Parse SVG XML
         tree = etree.fromstring(bytes(xml, encoding='utf8'))
 
+        if not tree.attrib['width'] or tree.attrib['width'].endswith('%'):
+            # Make sure the width is equal to the viewBox width
+            tree.attrib['width'] = tree.attrib['viewBox'].split(' ')[2]
+
         # Add style color for <a> links
-        defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})[0]
-        style = etree.SubElement(defs, 'style')
-        style.text = 'a:hover { text-decoration: underline; }'
-        style.set('type', 'text/css')
+        defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})
+        if defs:
+            style = etree.SubElement(defs[0], 'style')
+            style.text = 'a:hover { text-decoration: underline; }'
+            style.set('type', 'text/css')
 
         # Remove comments from SVG, to minimize diff
         # when updating diagrams in Git

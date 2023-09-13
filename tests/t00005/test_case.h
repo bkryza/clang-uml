@@ -64,8 +64,7 @@ TEST_CASE("t00005", "[test-case][class]")
         REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("J"), "+j"));
         REQUIRE_THAT(puml, IsAssociation(_A("R"), _A("K"), "+k"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -98,6 +97,43 @@ TEST_CASE("t00005", "[test-case][class]")
         REQUIRE(IsAssociation(j, "R", "J", "j"));
         REQUIRE(IsAssociation(j, "R", "K", "k"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto mmd = generate_class_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(mmd);
+
+        REQUIRE_THAT(mmd, StartsWith("classDiagram"));
+        REQUIRE_THAT(mmd, IsClass(_A("A")));
+        REQUIRE_THAT(mmd, IsClass(_A("B")));
+        REQUIRE_THAT(mmd, IsClass(_A("C")));
+        REQUIRE_THAT(mmd, IsClass(_A("D")));
+        REQUIRE_THAT(mmd, IsClass(_A("E")));
+        REQUIRE_THAT(mmd, IsClass(_A("F")));
+        REQUIRE_THAT(mmd, IsClass(_A("G")));
+        REQUIRE_THAT(mmd, IsClass(_A("H")));
+        REQUIRE_THAT(mmd, IsClass(_A("I")));
+        REQUIRE_THAT(mmd, IsClass(_A("J")));
+        REQUIRE_THAT(mmd, IsClass(_A("K")));
+        REQUIRE_THAT(mmd, IsClass(_A("R")));
+
+        REQUIRE_THAT(mmd, (IsField<Public>("some_int", "int")));
+        REQUIRE_THAT(mmd, (IsField<Public>("some_int_pointer", "int *")));
+        REQUIRE_THAT(
+            mmd, (IsField<Public>("some_int_pointer_pointer", "int **")));
+
+        REQUIRE_THAT(mmd, IsAggregation(_A("R"), _A("A"), "+a"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("B"), "+b"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("C"), "+c"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("D"), "+d"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("E"), "+e"));
+        REQUIRE_THAT(mmd, IsAggregation(_A("R"), _A("F"), "+f"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("G"), "+g"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("H"), "+h"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("I"), "+i"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("J"), "+j"));
+        REQUIRE_THAT(mmd, IsAssociation(_A("R"), _A("K"), "+k"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
     }
 }

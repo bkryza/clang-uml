@@ -1,5 +1,5 @@
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t30001_package:
     type: package
@@ -20,3 +20,15 @@ diagrams:
         - 'note right of {{ alias("A::AA::AAA") }}: A AAA note...'
         - '{% set e=element("A::AA") %} note top of {{ alias("A::AA") }} : {{ e.comment.formatted }}'
         - '{% set e=element("B::AA") %} note top of {{ alias("B::AA") }} : {{ e.comment.formatted }}'
+    mermaid:
+      before:
+        - "%% t30001 test diagram of type {{ diagram.type }}"
+      after:
+        - 'N_0001(A AAA note...)'
+        - 'N_0001 -.- {{ alias("A::AA::AAA") }}'
+        - '{% set e=element("A::AA") %}N_0002({{ e.comment.formatted }})'
+        - '{% set e=element("B::AA") %}N_0003({{ e.comment.formatted }})'
+        - 'N_0002 -.- {{ alias("A::AA") }}'
+        - 'N_0003 -.- {{ alias("B::AA") }}'
+
+

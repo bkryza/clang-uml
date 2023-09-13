@@ -1,0 +1,333 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 652.8828125 647" style="max-width: 652.883px; background-color: white;" width="652.8828125" id="my-svg">
+  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <g>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker aggregation classDiagram" id="classDiagram-aggregationStart">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+      <style type="text/css">a:hover { text-decoration: underline; }</style>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker aggregation classDiagram" id="classDiagram-aggregationEnd">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker extension classDiagram" id="classDiagram-extensionStart">
+        <path d="M 1,7 L18,13 V 1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker extension classDiagram" id="classDiagram-extensionEnd">
+        <path d="M 1,1 V 13 L18,7 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker composition classDiagram" id="classDiagram-compositionStart">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker composition classDiagram" id="classDiagram-compositionEnd">
+        <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker dependency classDiagram" id="classDiagram-dependencyStart">
+        <path d="M 5,7 L9,13 L1,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker dependency classDiagram" id="classDiagram-dependencyEnd">
+        <path d="M 18,7 L9,13 L14,7 L9,1 Z"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker lollipop classDiagram" id="classDiagram-lollipopStart">
+        <circle r="6" cy="7" cx="6" fill="white" stroke="black"/>
+      </marker>
+    </defs>
+    <g class="root">
+      <g class="clusters"/>
+      <g class="edgePaths">
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id1" d="M287.2421875,481L287.2421875,488.5C287.2421875,496,287.2421875,511,294.9073660714286,524.1666666666666C302.57254464285717,537.3333333333334,317.9029017857143,548.6666666666666,325.5680803571429,554.3333333333334L333.23325892857144,560"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id2" d="M530.859375,492L530.859375,497.6666666666667C530.859375,503.3333333333333,530.859375,514.6666666666666,519.7422760770975,526C508.625177154195,537.3333333333334,486.39097930839006,548.6666666666666,475.27388038548753,554.3333333333334L464.15678146258506,560"/>
+        <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id3" d="M182.7421875,341L182.7421875,345.1666666666667C182.7421875,349.3333333333333,182.7421875,357.6666666666667,191.04682326158942,367.8333333333333C199.35145902317882,378,215.9607305463576,390,224.26536630794703,396L232.57000206953643,402"/>
+        <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id4" d="M391.7421875,341L391.7421875,345.1666666666667C391.7421875,349.3333333333333,391.7421875,357.6666666666667,383.4375517384106,367.8333333333333C375.13291597682115,378,358.52364445364236,390,350.21900869205297,396L341.91437293046357,402"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id5" d="M438.2010075934579,234L430.4578709112149,238.16666666666666C422.71473422897196,242.33333333333334,407.22846086448595,250.66666666666666,399.48532418224295,259C391.7421875,267.3333333333333,391.7421875,275.6666666666667,391.7421875,279.8333333333333L391.7421875,284"/>
+        <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id6" d="M512.3101635514018,234L515.4016987928348,238.16666666666666C518.4932340342679,242.33333333333334,524.6763045171339,250.66666666666666,527.767839758567,263.75C530.859375,276.8333333333333,530.859375,294.6666666666667,530.859375,312.5C530.859375,330.3333333333333,530.859375,348.1666666666667,530.859375,361.25C530.859375,374.3333333333333,530.859375,382.6666666666667,530.859375,386.8333333333333L530.859375,391"/>
+        <path marker-start="url(#classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id7" d="M264.7935928254438,109L251.1183586045365,114.66666666666667C237.4431243836292,120.33333333333333,210.09265594181457,131.66666666666666,196.4174217209073,147.75C182.7421875,163.83333333333334,182.7421875,184.66666666666666,182.7421875,204C182.7421875,223.33333333333334,182.7421875,241.16666666666666,182.7421875,254.25C182.7421875,267.3333333333333,182.7421875,275.6666666666667,182.7421875,279.8333333333333L182.7421875,284"/>
+        <path marker-start="url(#classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id8" d="M449.1167252218935,109L456.12461476824456,114.66666666666667C463.1325043145957,120.33333333333333,477.1482834072978,131.66666666666666,484.1561729536489,143C491.1640625,154.33333333333334,491.1640625,165.66666666666666,491.1640625,171.33333333333334L491.1640625,177"/>
+      </g>
+      <g class="edgeLabels">
+        <g transform="translate(287.2421875, 526)" class="edgeLabel">
+          <g transform="translate(-29.34375, -9)" class="label">
+            <foreignObject height="18" width="58.6875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel">T,Args...</span>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(530.859375, 526)" class="edgeLabel">
+          <g transform="translate(-29.34375, -9)" class="label">
+            <foreignObject height="18" width="58.6875">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel">T,Args...</span>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(182.7421875, 205.5)" class="edgeLabel">
+          <g transform="translate(-13.5703125, -9)" class="label">
+            <foreignObject height="18" width="27.140625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel">+aa</span>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(491.1640625, 143)" class="edgeLabel">
+          <g transform="translate(-13.5703125, -9)" class="label">
+            <foreignObject height="18" width="27.140625">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel">+bb</span>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+      <g class="nodes">
+        <a transform="translate(91.9765625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L11">
+          <g title="first_type" id="classId-C_0000039461943261269692-0" class="node default clickable">
+            <rect height="57" width="167.953125" y="-28.5" x="-83.9765625" class="outer title-state"/>
+            <line y2="1.5" y1="1.5" x2="83.9765625" x1="-83.9765625" class="divider"/>
+            <line y2="17.5" y1="17.5" x2="83.9765625" x1="-83.9765625" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -76.4765625, -21)" height="18" width="152.953125" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">first_type&lt;T,Args...&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(386.6640625, 599.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L22">
+          <g title="same_as_first_type" id="classId-C_0001725820236573641307-1" class="node default clickable">
+            <rect height="79" width="244.46875" y="-39.5" x="-122.234375" class="outer title-state"/>
+            <line y2="12.5" y1="12.5" x2="122.234375" x1="-122.234375" class="divider"/>
+            <line y2="28.5" y1="28.5" x2="122.234375" x1="-122.234375" class="divider"/>
+            <g class="label">
+              <foreignObject transform="translate( -36.921875, -32)" height="18" width="73.84375">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">«concept»</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -114.734375, -10)" height="18" width="229.46875" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">same_as_first_type&lt;T,Args...&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(287.2421875, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L27">
+          <g title="A" id="classId-C_0000798619347004821702-2" class="node default clickable">
+            <rect height="79" width="148.84375" y="-39.5" x="-74.421875" class="outer title-state"/>
+            <line y2="-9.5" y1="-9.5" x2="74.421875" x1="-74.421875" class="divider"/>
+            <line y2="28.5" y1="28.5" x2="74.421875" x1="-74.421875" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -46.2421875, -32)" height="18" width="92.484375" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">A&lt;T,Args...&gt;</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -66.921875, 2)" height="18" width="133.84375">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">+a : std::vector&lt;T&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(530.859375, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
+          <g title="B" id="classId-C_0000420594889696591405-3" class="node default clickable">
+            <rect height="101" width="148.84375" y="-50.5" x="-74.421875" class="outer title-state"/>
+            <line y2="-20.5" y1="-20.5" x2="74.421875" x1="-74.421875" class="divider"/>
+            <line y2="39.5" y1="39.5" x2="74.421875" x1="-74.421875" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -52.765625, -43)" height="18" width="105.53125" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">B&lt;T,P,Args...&gt;</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -66.921875, -9)" height="18" width="133.84375">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">+b : std::vector&lt;T&gt;</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -66.921875, 13)" height="18" width="51.15625">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">+bb : P</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(182.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L27">
+          <g title="A" id="classId-C_0001724002183455178980-4" class="node default clickable">
+            <rect height="57" width="229.21875" y="-28.5" x="-114.609375" class="outer title-state"/>
+            <line y2="1.5" y1="1.5" x2="114.609375" x1="-114.609375" class="divider"/>
+            <line y2="17.5" y1="17.5" x2="114.609375" x1="-114.609375" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -107.109375, -21)" height="18" width="214.21875" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">A&lt;int,int,double,std::string&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(391.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
+          <g title="A" id="classId-C_0001372381231906520278-5" class="node default clickable">
+            <rect height="57" width="88.78125" y="-28.5" x="-44.390625" class="outer title-state"/>
+            <line y2="1.5" y1="1.5" x2="44.390625" x1="-44.390625" class="divider"/>
+            <line y2="17.5" y1="17.5" x2="44.390625" x1="-44.390625" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -36.890625, -21)" height="18" width="73.78125" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">A&lt;int,int&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(491.1640625, 205.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
+          <g title="B" id="classId-C_0000290383080560130133-6" class="node default clickable">
+            <rect height="57" width="307.4375" y="-28.5" x="-153.71875" class="outer title-state"/>
+            <line y2="1.5" y1="1.5" x2="153.71875" x1="-153.71875" class="divider"/>
+            <line y2="17.5" y1="17.5" x2="153.71875" x1="-153.71875" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -146.21875, -21)" height="18" width="292.4375" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">B&lt;int,std::string,int,double,A&lt;int,int&gt;&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+        <a transform="translate(386.6640625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L38">
+          <g title="R" id="classId-C_0001015108159699260009-7" class="node default clickable">
+            <rect height="101" width="321.421875" y="-50.5" x="-160.7109375" class="outer title-state"/>
+            <line y2="-20.5" y1="-20.5" x2="160.7109375" x1="-160.7109375" class="divider"/>
+            <line y2="39.5" y1="39.5" x2="160.7109375" x1="-160.7109375" class="divider"/>
+            <g class="label">
+              <foreignObject height="0" width="0">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel"/>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -5.78125, -43)" height="18" width="11.5625" class="classTitle">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">R</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -153.2109375, -9)" height="18" width="233.5">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">+aa : A&lt;int,int,double,std::string&gt;</span>
+                </div>
+              </foreignObject>
+              <foreignObject transform="translate( -153.2109375, 13)" height="18" width="306.421875">
+                <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                  <span class="nodeLabel">+bb : B&lt;int,std::string,int,double,A&lt;int,int&gt;&gt;</span>
+                </div>
+              </foreignObject>
+            </g>
+          </g>
+        </a>
+      </g>
+    </g>
+  </g>
+</svg>

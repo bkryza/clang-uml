@@ -38,7 +38,7 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
         {{ examples }}
 
         save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+            config.output_directory(), diagram->name + ".puml", puml);
     }
 
     {
@@ -46,7 +46,7 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
     }
 
 }

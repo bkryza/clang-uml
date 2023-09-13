@@ -30,18 +30,17 @@ TEST_CASE("t00042", "[test-case][class]")
     REQUIRE(model->name() == "t00042_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("B", "T,K"));
-        REQUIRE_THAT(puml, !IsClassTemplate("C", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("B", "T,K"));
+        REQUIRE_THAT(src, !IsClassTemplate("C", "T"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -51,6 +50,17 @@ TEST_CASE("t00042", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "A<T>"));
         REQUIRE(IsClassTemplate(j, "B<T,K>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A<T>")));
+        REQUIRE_THAT(src, IsClass(_A("B<T,K>")));
+        REQUIRE_THAT(src, !IsClass(_A("C<T>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -29,35 +29,34 @@ TEST_CASE("t00008", "[test-case][class]")
     REQUIRE(model->name() == "t00008_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
         // TODO: add option to resolve using declared types
         // REQUIRE_THAT(puml, IsClassTemplate("A", "T, P, bool (*)(int, int),
         // int N"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T,P=T,CMP=nullptr,int N=3"));
-        REQUIRE_THAT(puml, IsClassTemplate("B", "T,C<>"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "T,P=T,CMP=nullptr,int N=3"));
+        REQUIRE_THAT(src, IsClassTemplate("B", "T,C<>"));
 
-        REQUIRE_THAT(puml, (IsField<Public>("value", "T")));
-        REQUIRE_THAT(puml, (IsField<Public>("pointer", "T *")));
-        REQUIRE_THAT(puml, (IsField<Public>("reference", "T &")));
-        REQUIRE_THAT(puml, (IsField<Public>("values", "std::vector<P>")));
-        REQUIRE_THAT(puml, (IsField<Public>("ints", "std::array<int,N>")));
+        REQUIRE_THAT(src, (IsField<Public>("value", "T")));
+        REQUIRE_THAT(src, (IsField<Public>("pointer", "T *")));
+        REQUIRE_THAT(src, (IsField<Public>("reference", "T &")));
+        REQUIRE_THAT(src, (IsField<Public>("values", "std::vector<P>")));
+        REQUIRE_THAT(src, (IsField<Public>("ints", "std::array<int,N>")));
         // TODO: add option to resolve using declared types
         // REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
-        REQUIRE_THAT(puml, (IsField<Public>("comparator", "CMP")));
+        REQUIRE_THAT(src, (IsField<Public>("comparator", "CMP")));
 
-        REQUIRE_THAT(puml, !IsClass(_A("E::nested_template")));
-        REQUIRE_THAT(puml, IsClassTemplate("E::nested_template", "ET"));
-        REQUIRE_THAT(puml, IsClassTemplate("E::nested_template", "char"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, !IsClass(_A("E::nested_template")));
+        REQUIRE_THAT(src, IsClassTemplate("E::nested_template", "ET"));
+        REQUIRE_THAT(src, IsClassTemplate("E::nested_template", "char"));
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("E::nested_template<ET>"), _A("E::nested_template<char>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -73,6 +72,34 @@ TEST_CASE("t00008", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "E::nested_template<ET>"));
         REQUIRE(IsClass(j, "E::nested_template<char>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        using mermaid::IsField;
+
+        REQUIRE_THAT(src, IsClass(_A("A<T,P=T,CMP=nullptr,int N=3>")));
+        REQUIRE_THAT(src, IsClass(_A("B<T,C<>>")));
+
+        REQUIRE_THAT(src, (IsField<Public>("value", "T")));
+        REQUIRE_THAT(src, (IsField<Public>("pointer", "T *")));
+        REQUIRE_THAT(src, (IsField<Public>("reference", "T &")));
+        REQUIRE_THAT(src, (IsField<Public>("values", "std::vector<P>")));
+        REQUIRE_THAT(src, (IsField<Public>("ints", "std::array<int,N>")));
+        // TODO: add option to resolve using declared types
+        // REQUIRE_THAT(puml, IsField(Public("bool (*)(int, int) comparator")));
+        REQUIRE_THAT(src, (IsField<Public>("comparator", "CMP")));
+
+        REQUIRE_THAT(src, !IsClass(_A("E::nested_template")));
+        REQUIRE_THAT(src, IsClass(_A("E::nested_template<ET>")));
+        REQUIRE_THAT(src, IsClass(_A("E::nested_template<char>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("E::nested_template<ET>"), _A("E::nested_template<char>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

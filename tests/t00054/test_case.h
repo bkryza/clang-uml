@@ -29,35 +29,34 @@ TEST_CASE("t00054", "[test-case][class]")
     REQUIRE(model->name() == "t00054_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClass(_A("a")));
-        REQUIRE_THAT(puml, IsClass(_A("b")));
-        REQUIRE_THAT(puml, IsClass(_A("c")));
-        REQUIRE_THAT(puml, IsClass(_A("d")));
-        REQUIRE_THAT(puml, IsClass(_A("e")));
-        REQUIRE_THAT(puml, IsClass(_A("f")));
-        REQUIRE_THAT(puml, IsClass(_A("g")));
+        REQUIRE_THAT(src, IsClass(_A("a")));
+        REQUIRE_THAT(src, IsClass(_A("b")));
+        REQUIRE_THAT(src, IsClass(_A("c")));
+        REQUIRE_THAT(src, IsClass(_A("d")));
+        REQUIRE_THAT(src, IsClass(_A("e")));
+        REQUIRE_THAT(src, IsClass(_A("f")));
+        REQUIRE_THAT(src, IsClass(_A("g")));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("C")));
-        REQUIRE_THAT(puml, IsClass(_A("D")));
-        REQUIRE_THAT(puml, IsClass(_A("E")));
-        REQUIRE_THAT(puml, IsClass(_A("F")));
-        REQUIRE_THAT(puml, IsClass(_A("G")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("D")));
+        REQUIRE_THAT(src, IsClass(_A("E")));
+        REQUIRE_THAT(src, IsClass(_A("F")));
+        REQUIRE_THAT(src, IsClass(_A("G")));
 
-        REQUIRE_THAT(puml, IsEnum(_A("i")));
-        REQUIRE_THAT(puml, IsEnum(_A("h")));
-        REQUIRE_THAT(puml, IsEnum(_A("j")));
+        REQUIRE_THAT(src, IsEnum(_A("i")));
+        REQUIRE_THAT(src, IsEnum(_A("h")));
+        REQUIRE_THAT(src, IsEnum(_A("j")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -85,6 +84,35 @@ TEST_CASE("t00054", "[test-case][class]")
         REQUIRE(IsEnum(j, "detail4::h"));
         REQUIRE(IsEnum(j, "detail4::j"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsEnum;
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("a")));
+        REQUIRE_THAT(src, IsClass(_A("b")));
+        REQUIRE_THAT(src, IsClass(_A("detail::c")));
+        REQUIRE_THAT(src, IsClass(_A("detail::d")));
+        REQUIRE_THAT(src, IsClass(_A("detail::e")));
+        REQUIRE_THAT(src, IsClass(_A("f")));
+        REQUIRE_THAT(src, IsClass(_A("g")));
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("detail2::C")));
+        REQUIRE_THAT(src, IsClass(_A("detail2::detail3::D")));
+        REQUIRE_THAT(src, IsClass(_A("detail2::detail3::E")));
+        REQUIRE_THAT(src, IsClass(_A("detail2::F")));
+        REQUIRE_THAT(src, IsClass(_A("G")));
+
+        REQUIRE_THAT(src, IsEnum(_A("detail4::i")));
+        REQUIRE_THAT(src, IsEnum(_A("detail4::h")));
+        REQUIRE_THAT(src, IsEnum(_A("detail4::j")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

@@ -29,31 +29,30 @@ TEST_CASE("t20030", "[test-case][sequence]")
     REQUIRE(model->name() == "t20030_sequence");
 
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml, HasCall(_A("tmain(int)"), _A("magic()"), ""));
+        REQUIRE_THAT(src, HasCall(_A("tmain(int)"), _A("magic()"), ""));
 
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "create()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "create()"));
         REQUIRE_THAT(
-            puml, HasCall(_A("tmain(int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "add(int)"));
+            src, HasCall(_A("tmain(int)"), _A("A"), "operator+=(int)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "add(int)"));
 
-        REQUIRE_THAT(puml, HasCall(_A("tmain(bool,int)"), _A("A"), "A()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "A()"));
         REQUIRE_THAT(
-            puml, HasCall(_A("tmain(bool,int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "add(int)"));
-        REQUIRE_THAT(puml,
+            src, HasCall(_A("tmain(bool,int)"), _A("A"), "operator+=(int)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "add(int)"));
+        REQUIRE_THAT(src,
             HasCall(_A("tmain(bool,int)"), _A("A"), "operator=(const A &)"));
-        REQUIRE_THAT(puml, HasCall(_A("A"), _A("A"), "set(int)"));
-        REQUIRE_THAT(puml, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "set(int)"));
+        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -61,6 +60,31 @@ TEST_CASE("t20030", "[test-case][sequence]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_sequence_mermaid(diagram, *model);
+
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("tmain(int)"), _A("magic()"), ""));
+
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "create()"));
+        REQUIRE_THAT(
+            src, HasCall(_A("tmain(int)"), _A("A"), "operator+=(int)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "add(int)"));
+
+        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "A()"));
+        REQUIRE_THAT(
+            src, HasCall(_A("tmain(bool,int)"), _A("A"), "operator+=(int)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "add(int)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain(bool,int)"), _A("A"), "operator=(const A &)"));
+        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "set(int)"));
+        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

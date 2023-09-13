@@ -29,31 +29,30 @@ TEST_CASE("t00016", "[test-case][class]")
     REQUIRE(model->name() == "t00016_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "typename"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "int"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "bool"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "char"));
-        REQUIRE_THAT(puml, IsClassTemplate("is_numeric", "float"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsClassTemplate("is_numeric", "typename"));
+        REQUIRE_THAT(src, IsClassTemplate("is_numeric", "int"));
+        REQUIRE_THAT(src, IsClassTemplate("is_numeric", "bool"));
+        REQUIRE_THAT(src, IsClassTemplate("is_numeric", "char"));
+        REQUIRE_THAT(src, IsClassTemplate("is_numeric", "float"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("is_numeric<typename>"), _A("is_numeric<int>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("is_numeric<typename>"), _A("is_numeric<bool>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("is_numeric<typename>"), _A("is_numeric<char>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("is_numeric<typename>"), _A("is_numeric<float>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -66,6 +65,31 @@ TEST_CASE("t00016", "[test-case][class]")
         REQUIRE(IsClass(j, "is_numeric<char>"));
         REQUIRE(IsClass(j, "is_numeric<float>"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("is_numeric<typename>")));
+        REQUIRE_THAT(src, IsClass(_A("is_numeric<int>")));
+        REQUIRE_THAT(src, IsClass(_A("is_numeric<bool>")));
+        REQUIRE_THAT(src, IsClass(_A("is_numeric<char>")));
+        REQUIRE_THAT(src, IsClass(_A("is_numeric<float>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("is_numeric<typename>"), _A("is_numeric<int>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<bool>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<char>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<float>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

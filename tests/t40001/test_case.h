@@ -29,32 +29,30 @@ TEST_CASE("t40001", "[test-case][include]")
     REQUIRE(model->name() == "t40001_include");
 
     {
-        auto puml = generate_include_puml(diagram, *model);
+        auto src = generate_include_puml(diagram, *model);
 
-        AliasMatcher _A(puml);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsFolder("lib1"));
-        REQUIRE_THAT(puml, IsFile("lib1.h"));
-        REQUIRE_THAT(puml, IsFile("t40001.cc"));
-        REQUIRE_THAT(puml, IsFile("t40001_include1.h"));
+        REQUIRE_THAT(src, IsFolder("lib1"));
+        REQUIRE_THAT(src, IsFile("lib1.h"));
+        REQUIRE_THAT(src, IsFile("t40001.cc"));
+        REQUIRE_THAT(src, IsFile("t40001_include1.h"));
 
-        REQUIRE_THAT(puml, IsFile("string"));
-        REQUIRE_THAT(puml, IsFile("yaml-cpp/yaml.h"));
+        REQUIRE_THAT(src, IsFile("string"));
+        REQUIRE_THAT(src, IsFile("yaml-cpp/yaml.h"));
 
         REQUIRE_THAT(
-            puml, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
-        REQUIRE_THAT(
-            puml, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
+            src, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
+        REQUIRE_THAT(src, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
 
-        REQUIRE_THAT(puml, IsDependency(_A("t40001_include1.h"), _A("string")));
+        REQUIRE_THAT(src, IsDependency(_A("t40001_include1.h"), _A("string")));
 
-        REQUIRE_THAT(puml, HasComment("t40001 test diagram of type include"));
+        REQUIRE_THAT(src, HasComment("t40001 test diagram of type include"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -78,6 +76,35 @@ TEST_CASE("t40001", "[test-case][include]")
             j, "include/t40001_include1.h", "include/lib1/lib1.h"));
         REQUIRE(IsDependency(j, "include/t40001_include1.h", "string"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_include_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::HasComment;
+        using mermaid::IsFile;
+        using mermaid::IsFolder;
+        using mermaid::IsIncludeDependency;
+
+        REQUIRE_THAT(src, IsFolder(_A("lib1")));
+        REQUIRE_THAT(src, IsFile(_A("lib1.h")));
+        REQUIRE_THAT(src, IsFile(_A("t40001.cc")));
+        REQUIRE_THAT(src, IsFile(_A("t40001_include1.h")));
+
+        REQUIRE_THAT(src, IsFile(_A("string")));
+        REQUIRE_THAT(src, IsFile(_A("yaml-cpp/yaml.h")));
+
+        REQUIRE_THAT(
+            src, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
+        REQUIRE_THAT(src, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
+
+        REQUIRE_THAT(
+            src, IsIncludeDependency(_A("t40001_include1.h"), _A("string")));
+
+        REQUIRE_THAT(src, HasComment("t40001 test diagram of type include"));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

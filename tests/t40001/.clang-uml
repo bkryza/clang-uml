@@ -1,5 +1,5 @@
 compilation_database_dir: ..
-output_directory: puml
+output_directory: diagrams
 diagrams:
   t40001_include:
     type: include
@@ -21,3 +21,9 @@ diagrams:
       after:
         - 'note right of {{ alias("include/lib1") }}: This is a lib1 include dir'
         - 'note right of {{ alias("include/t40001_include1.h") }}: This is a t40001_include1.h include file'
+    mermaid:
+      before:
+        - "%% t40001 test diagram of type {{ diagram.type }}"
+      after:
+        - 'N_00001(This is a lib1 include dir)-.-{{ alias("include/lib1") }}'
+        - 'N_00002(This is a t40001_include1.h include file)-.-{{ alias("include/t40001_include1.h") }}'

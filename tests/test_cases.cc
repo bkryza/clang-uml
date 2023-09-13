@@ -111,6 +111,24 @@ auto generate_diagram_json(
 
     return nlohmann::json::parse(ss.str());
 }
+
+template <typename DiagramConfig, typename DiagramModel>
+auto generate_diagram_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
+{
+    using diagram_config = DiagramConfig;
+    using diagram_model = DiagramModel;
+    using diagram_generator =
+        typename clanguml::common::generators::diagram_generator_t<
+            DiagramConfig,
+            clanguml::common::generators::mermaid_generator_tag>::type;
+
+    std::stringstream ss;
+
+    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
+
+    return ss.str();
+}
 }
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
@@ -209,24 +227,79 @@ nlohmann::json generate_include_json(
         config, model);
 }
 
-void save_puml(const std::string &path, const std::string &puml)
+std::string generate_class_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::class_diagram::model::diagram &model)
 {
-    std::filesystem::path p{path};
-    std::filesystem::create_directory(p.parent_path());
+    return detail::generate_diagram_mermaid<clanguml::config::class_diagram>(
+        config, model);
+}
+
+std::string generate_sequence_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_mermaid<clanguml::config::sequence_diagram>(
+        config, model);
+}
+
+std::string generate_package_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::package_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_mermaid<clanguml::config::package_diagram>(
+        config, model);
+}
+
+std::string generate_include_mermaid(
+    std::shared_ptr<clanguml::config::diagram> config,
+    clanguml::include_diagram::model::diagram &model)
+{
+    return detail::generate_diagram_mermaid<clanguml::config::include_diagram>(
+        config, model);
+}
+
+template <typename T>
+void save_diagram(const std::filesystem::path &path, const T &diagram)
+{
+    static_assert(
+        std::same_as<T, std::string> || std::same_as<T, nlohmann::json>);
+
+    std::filesystem::create_directories(path.parent_path());
     std::ofstream ofs;
-    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
-    ofs << puml;
+    ofs.open(path, std::ofstream::out | std::ofstream::trunc);
+    if constexpr (std::same_as<T, nlohmann::json>) {
+        ofs << std::setw(2) << diagram;
+    }
+    else {
+        ofs << diagram;
+    }
+
     ofs.close();
 }
 
-void save_json(const std::string &path, const nlohmann::json &j)
+void save_puml(const std::string &path, const std::string &filename,
+    const std::string &puml)
 {
     std::filesystem::path p{path};
-    std::filesystem::create_directory(p.parent_path());
-    std::ofstream ofs;
-    ofs.open(p, std::ofstream::out | std::ofstream::trunc);
-    ofs << std::setw(2) << j;
-    ofs.close();
+    p /= filename;
+    save_diagram(p, puml);
+}
+
+void save_json(const std::string &path, const std::string &filename,
+    const nlohmann::json &j)
+{
+    std::filesystem::path p{path};
+    p /= filename;
+    save_diagram(p, j);
+}
+
+void save_mermaid(const std::string &path, const std::string &filename,
+    const std::string &mmd)
+{
+    std::filesystem::path p{path};
+    p /= filename;
+    save_diagram(p, mmd);
 }
 
 using namespace clanguml::test::matchers;

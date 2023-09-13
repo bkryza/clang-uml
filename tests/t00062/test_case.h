@@ -29,62 +29,61 @@ TEST_CASE("t00062", "[test-case][class]")
     REQUIRE(model->name() == "t00062_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, !Contains("type-parameter-"));
+        REQUIRE_THAT(src, !Contains("type-parameter-"));
 
         // Check if all classes exist
-        REQUIRE_THAT(puml, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "U &"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "U &&"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "U const&"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M C::*"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M C::* &&"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "int (C::*)(bool)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg) &&"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "M (C::*)(Arg1,Arg2,Arg3)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "float (C::*)(int) &&"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "U &"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "U &&"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "U const&"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "M C::*"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "M C::* &&"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "M (C::*)(Arg)"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "int (C::*)(bool)"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "M (C::*)(Arg) &&"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "M (C::*)(Arg1,Arg2,Arg3)"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "float (C::*)(int) &&"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "char[N]"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "char[1000]"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "char[N]"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "char[1000]"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("A", "U(...)"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "C<T>"));
-        REQUIRE_THAT(puml, IsClassTemplate("A", "C<T,Args...>"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "U(...)"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "C<T>"));
+        REQUIRE_THAT(src, IsClassTemplate("A", "C<T,Args...>"));
 
-        REQUIRE_THAT(puml, (IsField<Public>("u", "U &")));
-        REQUIRE_THAT(puml, (IsField<Public>("u", "U **")));
-        REQUIRE_THAT(puml, (IsField<Public>("u", "U ***")));
-        REQUIRE_THAT(puml, (IsField<Public>("u", "U &&")));
-        REQUIRE_THAT(puml, (IsField<Public>("u", "const U &")));
-        REQUIRE_THAT(puml, (IsField<Public>("c", "C &")));
-        REQUIRE_THAT(puml, (IsField<Public>("m", "M C::*")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U &")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U **")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U ***")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U &&")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "const U &")));
+        REQUIRE_THAT(src, (IsField<Public>("c", "C &")));
+        REQUIRE_THAT(src, (IsField<Public>("m", "M C::*")));
 
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<M C::*>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<U &&>"), _A("A<M C::* &&>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U &>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<M C::*>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<U &&>"), _A("A<M C::* &&>")));
 
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<M (C::*)(Arg)>")));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<M (C::*)(Arg)>")));
+        REQUIRE_THAT(src,
             IsInstantiation(_A("A<M (C::*)(Arg)>"), _A("A<int (C::*)(bool)>")));
 
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<char[N]>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<char[N]>")));
         REQUIRE_THAT(
-            puml, IsInstantiation(_A("A<char[N]>"), _A("A<char[1000]>")));
+            src, IsInstantiation(_A("A<char[N]>"), _A("A<char[1000]>")));
 
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T>>")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<C<T>>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -92,6 +91,62 @@ TEST_CASE("t00062", "[test-case][class]")
 
         using namespace json;
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsField;
+
+        REQUIRE_THAT(src, !Contains("type-parameter-"));
+
+        // Check if all classes exist
+        REQUIRE_THAT(src, IsClass(_A("A<T>")));
+        REQUIRE_THAT(src, IsClass(_A("A<U &>")));
+        REQUIRE_THAT(src, IsClass(_A("A<U &&>")));
+        REQUIRE_THAT(src, IsClass(_A("A<U const&>")));
+        REQUIRE_THAT(src, IsClass(_A("A<M C::*>")));
+        REQUIRE_THAT(src, IsClass(_A("A<M C::* &&>")));
+        REQUIRE_THAT(src, IsClass(_A("A<M (C::*)(Arg)>")));
+        REQUIRE_THAT(src, IsClass(_A("A<int (C::*)(bool)>")));
+        REQUIRE_THAT(src, IsClass(_A("A<M (C::*)(Arg) &&>")));
+        REQUIRE_THAT(src, IsClass(_A("A<M (C::*)(Arg1,Arg2,Arg3)>")));
+        REQUIRE_THAT(src, IsClass(_A("A<float (C::*)(int) &&>")));
+
+        REQUIRE_THAT(src, IsClass(_A("A<char[N]>")));
+        REQUIRE_THAT(src, IsClass(_A("A<char[1000]>")));
+
+        REQUIRE_THAT(src, IsClass(_A("A<U(...)>")));
+        REQUIRE_THAT(src, IsClass(_A("A<C<T>>")));
+        REQUIRE_THAT(src, IsClass(_A("A<C<T,Args...>>")));
+
+        REQUIRE_THAT(src, (IsField<Public>("u", "U &")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U **")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U ***")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "U &&")));
+        REQUIRE_THAT(src, (IsField<Public>("u", "const U &")));
+        REQUIRE_THAT(src, (IsField<Public>("c", "C &")));
+        REQUIRE_THAT(src, (IsField<Public>("m", "M C::*")));
+
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U &>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U &&>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<M C::*>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<U &&>"), _A("A<M C::* &&>")));
+
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<M (C::*)(Arg)>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("A<M (C::*)(Arg)>"), _A("A<int (C::*)(bool)>")));
+
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<char[N]>")));
+        REQUIRE_THAT(
+            src, IsInstantiation(_A("A<char[N]>"), _A("A<char[1000]>")));
+
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<U(...)>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<C<T>>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

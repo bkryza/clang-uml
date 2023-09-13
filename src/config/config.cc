@@ -172,6 +172,12 @@ void plantuml::append(const plantuml &r)
     after.insert(after.end(), r.after.begin(), r.after.end());
 }
 
+void mermaid::append(const mermaid &r)
+{
+    before.insert(before.end(), r.before.begin(), r.before.end());
+    after.insert(after.end(), r.after.begin(), r.after.end());
+}
+
 void inheritable_diagram_options::inherit(
     const inheritable_diagram_options &parent)
 {

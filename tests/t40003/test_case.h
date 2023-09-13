@@ -29,26 +29,25 @@ TEST_CASE("t40003", "[test-case][include]")
     REQUIRE(model->name() == "t40003_include");
 
     {
-        auto puml = generate_include_puml(diagram, *model);
+        auto src = generate_include_puml(diagram, *model);
 
-        AliasMatcher _A(puml);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsFolder("dependants"));
-        REQUIRE_THAT(puml, IsFolder("dependencies"));
+        REQUIRE_THAT(src, IsFolder("dependants"));
+        REQUIRE_THAT(src, IsFolder("dependencies"));
 
-        REQUIRE_THAT(puml, IsFile("t1.h"));
-        REQUIRE_THAT(puml, IsFile("t2.h"));
-        REQUIRE_THAT(puml, IsFile("t3.h"));
+        REQUIRE_THAT(src, IsFile("t1.h"));
+        REQUIRE_THAT(src, IsFile("t2.h"));
+        REQUIRE_THAT(src, IsFile("t3.h"));
 
-        REQUIRE_THAT(puml, !IsFile("t4.h"));
-        REQUIRE_THAT(puml, IsFile("t5.h"));
-        REQUIRE_THAT(puml, !IsFile("t6.h"));
+        REQUIRE_THAT(src, !IsFile("t4.h"));
+        REQUIRE_THAT(src, IsFile("t5.h"));
+        REQUIRE_THAT(src, !IsFile("t6.h"));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -73,6 +72,28 @@ TEST_CASE("t40003", "[test-case][include]")
         REQUIRE(!IsFile(j, "include/dependencies/t4.h"));
         REQUIRE(IsFile(j, "src/dependencies/t2.cc"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_include_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::HasLink;
+        using mermaid::IsFile;
+        using mermaid::IsFolder;
+
+        REQUIRE_THAT(src, IsFolder(_A("dependants")));
+        REQUIRE_THAT(src, IsFolder(_A("dependencies")));
+
+        REQUIRE_THAT(src, IsFile(_A("t1.h")));
+        REQUIRE_THAT(src, IsFile(_A("t2.h")));
+        REQUIRE_THAT(src, IsFile(_A("t3.h")));
+
+        REQUIRE_THAT(src, !IsFile(_A("t4.h")));
+        REQUIRE_THAT(src, IsFile(_A("t5.h")));
+        REQUIRE_THAT(src, !IsFile(_A("t6.h")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

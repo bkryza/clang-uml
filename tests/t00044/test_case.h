@@ -30,42 +30,41 @@ TEST_CASE("t00044", "[test-case][class]")
     REQUIRE(model->name() == "t00044_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, !Contains("type-parameter-"));
+        REQUIRE_THAT(src, !Contains("type-parameter-"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("sink", "T"));
-        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
+        REQUIRE_THAT(src, IsClassTemplate("sink", "T"));
+        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "T,A"));
 
-        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "Ret(Args...),A"));
-        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "void(int),bool"));
+        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "Ret(Args...),A"));
+        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "void(int),bool"));
 
         REQUIRE_THAT(
-            puml, IsClassTemplate("sink", "signal_handler<Ret(Args...),A>"));
+            src, IsClassTemplate("sink", "signal_handler<Ret(Args...),A>"));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(
                 _A("sink<T>"), _A("sink<signal_handler<Ret(Args...),A>>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("sink<signal_handler<Ret(Args...),A>>"),
                 _A("sink<signal_handler<void(int),bool>>")));
 
-        REQUIRE_THAT(puml, IsClassTemplate("signal_handler", "T,A"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "T,A"));
+        REQUIRE_THAT(src,
             IsInstantiation(_A("signal_handler<T,A>"),
                 _A("signal_handler<Ret(Args...),A>")));
 
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
                 _A("signal_handler<void(int),bool>")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -80,6 +79,40 @@ TEST_CASE("t00044", "[test-case][class]")
             j, "sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"));
         REQUIRE(IsClass(j, "R"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, !Contains("type-parameter-"));
+
+        REQUIRE_THAT(src, IsClass(_A("sink<T>")));
+        REQUIRE_THAT(src, IsClass(_A("signal_handler<T,A>")));
+
+        REQUIRE_THAT(src, IsClass(_A("signal_handler<Ret(Args...),A>")));
+        REQUIRE_THAT(src, IsClass(_A("signal_handler<void(int),bool>")));
+
+        REQUIRE_THAT(src, IsClass(_A("sink<signal_handler<Ret(Args...),A>>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("sink<T>"), _A("sink<signal_handler<Ret(Args...),A>>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("sink<signal_handler<Ret(Args...),A>>"),
+                _A("sink<signal_handler<void(int),bool>>")));
+
+        REQUIRE_THAT(src, IsClass(_A("signal_handler<T,A>")));
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("signal_handler<T,A>"),
+                _A("signal_handler<Ret(Args...),A>")));
+
+        REQUIRE_THAT(src,
+            IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
+                _A("signal_handler<void(int),bool>")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

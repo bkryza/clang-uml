@@ -29,18 +29,17 @@ TEST_CASE("t00063", "[test-case][class]")
     REQUIRE(model->name() == "t00063_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, !IsEnum(_A("B")));
-        REQUIRE_THAT(puml, !IsEnum(_A("C")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, !IsEnum(_A("B")));
+        REQUIRE_THAT(src, !IsEnum(_A("C")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -52,6 +51,18 @@ TEST_CASE("t00063", "[test-case][class]")
         REQUIRE(!IsEnum(j, "B"));
         REQUIRE(!IsEnum(j, "C"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsEnum;
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, !IsEnum(_A("B")));
+        REQUIRE_THAT(src, !IsEnum(_A("C")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

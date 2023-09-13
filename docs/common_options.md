@@ -4,7 +4,7 @@
 
 * [Overall configuration file structure](#overall-configuration-file-structure)
 * [Translation unit glob patterns](#translation-unit-glob-patterns)
-* [PlantUML custom directives](#plantuml-custom-directives)
+* [Custom directives](#custom-directives)
 * [Adding debug information in the generated diagrams](#adding-debug-information-in-the-generated-diagrams)
 * [Resolving include path and compiler flags issues](#resolving-include-path-and-compiler-flags-issues)
   * [Use '--query-driver' command line option](#use---query-driver-command-line-option)
@@ -63,9 +63,10 @@ For small projects, the `glob` property can be omitted, which will result in `cl
 from `compile_commands.json` for the diagram. However for large projects, constraining the number of translation units
 for each diagram to absolute minimum will significantly decrease the diagram generation times.
 
-## PlantUML custom directives
-In case it's necessary to add some custom PlantUML declarations before or after the generated diagram content,
-it can be achieved simply using the `plantuml` configuration properties, for instance:
+## Custom directives
+In case it's necessary to add some custom PlantUML or MermaidJS declarations
+before or after the generated diagram content, it can be achieved simply using
+the `plantuml` or `mermaid` configuration properties, for instance for PlantUML:
 
 ```yaml
     plantuml:
@@ -75,23 +76,37 @@ it can be achieved simply using the `plantuml` configuration properties, for ins
         - note left of {{ alias("ns1::ns2::MyClass") }} This is my class. 
 ```
 
-These directive are useful for instance for adding notes to elements in the diagrams or customizing diagram layout
-or style.
+or for MermaidJS:
 
-Please note that when referring to diagram elements in the PlantUML directives, they must be added using Jinja 
-templates `alias` command as in the example above.
+```yaml
+    mermaid:
+      before:
+        - direction LR
+      after:
+        - note for {{ alias("ns1::ns2::MyClass") }} "This is my class." 
+```
 
-More options can be found in the official PlantUML [documentation](https://plantuml.com/).
+These directive are useful for instance for adding notes to elements in the
+diagrams or customizing diagram layout or style.
+
+Please note that when referring to diagram elements in the PlantUML directives,
+they must be added using Jinja templates `alias` command as in the example above.
+
+More options can be found in the official docs for each respective generator:
+  * [PlantUML](https://plantuml.com/)
+  * [MermaidJS](https://mermaid.js.org/intro/) 
 
 ## Adding debug information in the generated diagrams
-Sometimes it is useful for debugging issues with the diagrams to have information on the exact source location,
-from which given declaration or call expression was derived. By adding option:
+Sometimes it is useful for debugging issues with the diagrams to have information
+on the exact source location, from which given declaration or call expression was
+derived. By adding option:
 
 ```yaml
 debug_mode: true
 ```
 
-the generated PlantUML diagram will contain comments before each line containing the source location of the
+the generated PlantUML diagram will contain comments before each line containing
+the source location of the
 specific diagram element.
 
 ## Resolving include path and compiler flags issues

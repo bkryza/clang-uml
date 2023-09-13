@@ -42,6 +42,7 @@ using clanguml::config::include_diagram;
 using clanguml::config::layout_hint;
 using clanguml::config::location_t;
 using clanguml::config::member_order_t;
+using clanguml::config::mermaid;
 using clanguml::config::method_arguments;
 using clanguml::config::method_type;
 using clanguml::config::package_diagram;
@@ -389,6 +390,18 @@ template <> struct convert<plantuml> {
     }
 };
 
+template <> struct convert<mermaid> {
+    static bool decode(const Node &node, mermaid &rhs)
+    {
+        if (node["before"])
+            rhs.before = node["before"].as<decltype(rhs.before)>();
+
+        if (node["after"])
+            rhs.after = node["after"].as<decltype(rhs.after)>();
+        return true;
+    }
+};
+
 template <> struct convert<string_or_regex> {
     static bool decode(const Node &node, string_or_regex &rhs)
     {
@@ -531,6 +544,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
+    get_option(node, rhs.mermaid);
     get_option(node, rhs.git);
     get_option(node, rhs.generate_links);
     get_option(node, rhs.type_aliases);
@@ -762,6 +776,7 @@ template <> struct convert<config> {
         get_option(node, rhs.remove_compile_flags);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.puml);
+        get_option(node, rhs.mermaid);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);

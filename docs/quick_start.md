@@ -17,7 +17,7 @@ To add an initial class diagram to your project, follow these steps:
     # Path to `compile_commands.json` directory
     compilation_database_dir: .
     # Path to diagram output directory
-    output_directory: puml
+    output_directory: diagrams
     diagrams:
       # This is the name of the diagram
       some_class_diagram:
@@ -44,8 +44,14 @@ To add an initial class diagram to your project, follow these steps:
     ```
 4. Generate SVG images from the PlantUML diagrams:
     ```bash
-   plantuml -tsvg puml/*.puml
+   plantuml -tsvg diagrams/*.puml
    ```
+   or generate also MermaidJS diagram (requires [mermaid-cli](https://github.com/mermaid-js/mermaid-cli)):
+   ```
+   clang-uml --progress -n some_class_diagram -g mermaid
+   mmdc -i diagrams/some_class_diagram.mmd -o diagrams/some_class_diagram.svg
+   ```
+   
 5. Add another diagram:
    ```bash
    clang-uml --add-sequence-diagram another_diagram

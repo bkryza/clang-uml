@@ -29,51 +29,50 @@ TEST_CASE("t30002", "[test-case][package]")
     REQUIRE(model->name() == "t30002_package");
 
     {
-        auto puml = generate_package_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_package_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsPackage("A1"));
-        REQUIRE_THAT(puml, IsPackage("A2"));
-        REQUIRE_THAT(puml, IsPackage("A3"));
-        REQUIRE_THAT(puml, IsPackage("A4"));
-        REQUIRE_THAT(puml, IsPackage("A5"));
-        REQUIRE_THAT(puml, IsPackage("A6"));
-        REQUIRE_THAT(puml, IsPackage("A7"));
-        REQUIRE_THAT(puml, IsPackage("A8"));
-        REQUIRE_THAT(puml, IsPackage("A9"));
-        REQUIRE_THAT(puml, IsPackage("A11"));
-        REQUIRE_THAT(puml, IsPackage("A12"));
-        REQUIRE_THAT(puml, IsPackage("A13"));
-        REQUIRE_THAT(puml, IsPackage("A14"));
-        REQUIRE_THAT(puml, IsPackage("A15"));
-        REQUIRE_THAT(puml, IsPackage("A16"));
-        REQUIRE_THAT(puml, IsPackage("A17"));
-        REQUIRE_THAT(puml, IsPackage("A18"));
+        REQUIRE_THAT(src, IsPackage("A1"));
+        REQUIRE_THAT(src, IsPackage("A2"));
+        REQUIRE_THAT(src, IsPackage("A3"));
+        REQUIRE_THAT(src, IsPackage("A4"));
+        REQUIRE_THAT(src, IsPackage("A5"));
+        REQUIRE_THAT(src, IsPackage("A6"));
+        REQUIRE_THAT(src, IsPackage("A7"));
+        REQUIRE_THAT(src, IsPackage("A8"));
+        REQUIRE_THAT(src, IsPackage("A9"));
+        REQUIRE_THAT(src, IsPackage("A11"));
+        REQUIRE_THAT(src, IsPackage("A12"));
+        REQUIRE_THAT(src, IsPackage("A13"));
+        REQUIRE_THAT(src, IsPackage("A14"));
+        REQUIRE_THAT(src, IsPackage("A15"));
+        REQUIRE_THAT(src, IsPackage("A16"));
+        REQUIRE_THAT(src, IsPackage("A17"));
+        REQUIRE_THAT(src, IsPackage("A18"));
 
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A1")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A2")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A3")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A4")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A5")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A6")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A7")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A8")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A9")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A10")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A11")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A12")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A13")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A14")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A15")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A16")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A17")));
-        REQUIRE_THAT(puml, IsDependency(_A("BBB"), _A("A18")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A1")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A2")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A3")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A4")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A5")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A6")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A7")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A8")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A9")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A10")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A11")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A12")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A13")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A14")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A15")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A16")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A17")));
+        REQUIRE_THAT(src, IsDependency(_A("BBB"), _A("A18")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -120,6 +119,52 @@ TEST_CASE("t30002", "[test-case][package]")
         REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A16"));
         REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A17"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_package_mermaid(diagram, *model);
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsPackage;
+        using mermaid::IsPackageDependency;
+
+        REQUIRE_THAT(src, IsPackage(_A("A1")));
+        REQUIRE_THAT(src, IsPackage(_A("A2")));
+        REQUIRE_THAT(src, IsPackage(_A("A3")));
+        REQUIRE_THAT(src, IsPackage(_A("A4")));
+        REQUIRE_THAT(src, IsPackage(_A("A5")));
+        REQUIRE_THAT(src, IsPackage(_A("A6")));
+        REQUIRE_THAT(src, IsPackage(_A("A7")));
+        REQUIRE_THAT(src, IsPackage(_A("A8")));
+        REQUIRE_THAT(src, IsPackage(_A("A9")));
+        REQUIRE_THAT(src, IsPackage(_A("A11")));
+        REQUIRE_THAT(src, IsPackage(_A("A12")));
+        REQUIRE_THAT(src, IsPackage(_A("A13")));
+        REQUIRE_THAT(src, IsPackage(_A("A14")));
+        REQUIRE_THAT(src, IsPackage(_A("A15")));
+        REQUIRE_THAT(src, IsPackage(_A("A16")));
+        REQUIRE_THAT(src, IsPackage(_A("A17")));
+        REQUIRE_THAT(src, IsPackage(_A("A18")));
+
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A1")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A2")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A3")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A4")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A5")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A6")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A7")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A8")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A9")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A10")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A11")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A12")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A13")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A14")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A15")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A16")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A17")));
+        REQUIRE_THAT(src, IsPackageDependency(_A("BBB"), _A("A18")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

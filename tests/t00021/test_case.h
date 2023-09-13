@@ -29,21 +29,20 @@ TEST_CASE("t00021", "[test-case][class]")
     REQUIRE(model->name() == "t00021_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsAbstractClass(_A("Item")));
-        REQUIRE_THAT(puml, IsAbstractClass(_A("Visitor")));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("B")));
-        REQUIRE_THAT(puml, IsClass(_A("Visitor1")));
-        REQUIRE_THAT(puml, IsClass(_A("Visitor2")));
-        REQUIRE_THAT(puml, IsClass(_A("Visitor3")));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, IsAbstractClass(_A("Item")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("Visitor")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor1")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor2")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor3")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -54,6 +53,22 @@ TEST_CASE("t00021", "[test-case][class]")
         REQUIRE(IsClass(j, "Visitor2"));
         REQUIRE(IsAbstractClass(j, "Item"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsAbstractClass;
+
+        REQUIRE_THAT(src, IsAbstractClass(_A("Item")));
+        REQUIRE_THAT(src, IsAbstractClass(_A("Visitor")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor1")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor2")));
+        REQUIRE_THAT(src, IsClass(_A("Visitor3")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

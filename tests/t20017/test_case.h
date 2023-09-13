@@ -28,29 +28,28 @@ TEST_CASE("t20017", "[test-case][sequence]")
 
     REQUIRE(model->name() == "t20017_sequence");
     {
-        auto puml = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_sequence_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         // Check if all calls exist
-        REQUIRE_THAT(puml, HasEntrypoint(_A("t20017.cc"), "tmain()"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src, HasEntrypoint(_A("t20017.cc"), "tmain()"));
+        REQUIRE_THAT(src,
             HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a1(int,int)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a3(int,int)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
-        REQUIRE_THAT(puml,
+        REQUIRE_THAT(src,
             HasCall(
                 _A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
-        REQUIRE_THAT(puml, HasExitpoint(_A("t20017.cc")));
+        REQUIRE_THAT(src, HasExitpoint(_A("t20017.cc")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -72,6 +71,31 @@ TEST_CASE("t20017", "[test-case][sequence]")
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+
+    {
+        auto src = generate_sequence_mermaid(diagram, *model);
+
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+        using mermaid::HasEntrypoint;
+        using mermaid::HasExitpoint;
+
+        REQUIRE_THAT(src, HasEntrypoint(_A("t20017.cc"), "tmain()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a1(int,int)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a2(int,int)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("t20017.cc"), _A("include/t20017_a.h"), "a3(int,int)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("t20017.cc"), _A("include/t20017_b.h"), "b1(int,int)"));
+        REQUIRE_THAT(src,
+            HasCall(
+                _A("t20017.cc"), _A("include/t20017_b.h"), "b2<int>(int,int)"));
+        REQUIRE_THAT(src, HasExitpoint(_A("t20017.cc")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

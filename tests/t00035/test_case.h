@@ -29,25 +29,24 @@ TEST_CASE("t00035", "[test-case][class]")
     REQUIRE(model->name() == "t00035_class");
 
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("Top")));
-        REQUIRE_THAT(puml, IsClass(_A("Bottom")));
-        REQUIRE_THAT(puml, IsClass(_A("Center")));
-        REQUIRE_THAT(puml, IsClass(_A("Left")));
-        REQUIRE_THAT(puml, IsClass(_A("Right")));
+        REQUIRE_THAT(src, IsClass(_A("Top")));
+        REQUIRE_THAT(src, IsClass(_A("Bottom")));
+        REQUIRE_THAT(src, IsClass(_A("Center")));
+        REQUIRE_THAT(src, IsClass(_A("Left")));
+        REQUIRE_THAT(src, IsClass(_A("Right")));
 
-        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "up", _A("Top")));
-        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "left", _A("Left")));
-        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "right", _A("Right")));
-        REQUIRE_THAT(puml, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
+        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "up", _A("Top")));
+        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "left", _A("Left")));
+        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "right", _A("Right")));
+        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -60,6 +59,19 @@ TEST_CASE("t00035", "[test-case][class]")
         REQUIRE(IsClass(j, "Left"));
         REQUIRE(IsClass(j, "Right"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("Top")));
+        REQUIRE_THAT(src, IsClass(_A("Bottom")));
+        REQUIRE_THAT(src, IsClass(_A("Center")));
+        REQUIRE_THAT(src, IsClass(_A("Left")));
+        REQUIRE_THAT(src, IsClass(_A("Right")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }

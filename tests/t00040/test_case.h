@@ -29,24 +29,23 @@ TEST_CASE("t00040", "[test-case][class]")
 
     REQUIRE(model->name() == "t00040_class");
     {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_class_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("AA")));
-        REQUIRE_THAT(puml, IsClass(_A("AAA")));
-        REQUIRE_THAT(puml, IsBaseClass(_A("A"), _A("AA")));
-        REQUIRE_THAT(puml, IsBaseClass(_A("AA"), _A("AAA")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("AA")));
+        REQUIRE_THAT(src, IsClass(_A("AAA")));
+        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
+        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
 
-        REQUIRE_THAT(puml, !IsClass(_A("B")));
+        REQUIRE_THAT(src, !IsClass(_A("B")));
 
-        REQUIRE_THAT(puml, !IsDependency(_A("R"), _A("A")));
+        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("A")));
 
-        save_puml(
-            config.output_directory() + "/" + diagram->name + ".puml", puml);
+        save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {
         auto j = generate_class_json(diagram, *model);
@@ -57,6 +56,23 @@ TEST_CASE("t00040", "[test-case][class]")
         REQUIRE(IsClass(j, "AA"));
         REQUIRE(IsClass(j, "AAA"));
 
-        save_json(config.output_directory() + "/" + diagram->name + ".json", j);
+        save_json(config.output_directory(), diagram->name + ".json", j);
+    }
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+
+        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("AA")));
+        REQUIRE_THAT(src, IsClass(_A("AAA")));
+        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
+        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
+
+        REQUIRE_THAT(src, !IsClass(_A("B")));
+
+        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("A")));
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
 }
