@@ -114,7 +114,8 @@ clanguml_diagrams: debug
 	# Convert .mmd files to svg images
 	python3 util/generate_mermaid.py docs/diagrams/*.mmd
 	# Format generated SVG files
-	python3 util/format_svg.py docs/diagrams/*.svg
+	python3 util/format_svg.py docs/diagrams/plantuml/*.svg
+	python3 util/format_svg.py docs/diagrams/mermaid/*.svg
 
 .PHONY: submodules
 submodules:
