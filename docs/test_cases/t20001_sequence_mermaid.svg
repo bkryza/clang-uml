@@ -1,24 +1,24 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 650 669" style="max-width: 650px; background-color: white;" width="100%" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 650 716" style="max-width: 650px; background-color: white;" width="650" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="583" x="400"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="615.5" x="475">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="630" x="400"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="662.5" x="475">
       <tspan dy="0" x="475">B</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="583" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="615.5" x="275">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="630" x="200"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="662.5" x="275">
       <tspan dy="0" x="275">A</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="583" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="615.5" x="75">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="630" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="662.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="583" x2="475" y1="5" x1="475" id="actor2"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="630" x2="475" y1="5" x1="475" id="actor2"/>
     <g id="root-2">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="475">
@@ -27,7 +27,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="583" x2="275" y1="5" x1="275" id="actor1"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="630" x2="275" y1="5" x1="275" id="actor1"/>
     <g id="root-1">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="275">
@@ -36,7 +36,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="583" x2="75" y1="5" x1="75" id="actor0"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="630" x2="75" y1="5" x1="75" id="actor0"/>
     <g id="root-0">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
@@ -108,6 +108,12 @@
   </g>
   <g>
     <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="547" x="270"/>
+  </g>
+  <g>
+    <rect class="note" ry="0" rx="0" height="37" width="150" stroke="#666" fill="#EDF2AE" y="573" x="0"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="578" x="75">
+      <tspan x="75">Main test function</tspan>
+    </text>
   </g>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="178">A()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="275" y1="111" x1="80"/>

@@ -42,11 +42,10 @@ def main(argv):
 
         # Add style color for <a> links
         defs = tree.xpath('//svg:defs', namespaces={'svg':'http://www.w3.org/2000/svg'})
-        if not defs:
-            continue
-        style = etree.SubElement(defs[0], 'style')
-        style.text = 'a:hover { text-decoration: underline; }'
-        style.set('type', 'text/css')
+        if defs:
+            style = etree.SubElement(defs[0], 'style')
+            style.text = 'a:hover { text-decoration: underline; }'
+            style.set('type', 'text/css')
 
         # Remove comments from SVG, to minimize diff
         # when updating diagrams in Git

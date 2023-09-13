@@ -1,4 +1,4 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 652.8828125 647" style="max-width: 652.883px; background-color: white;" width="100%" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 652.8828125 647" style="max-width: 652.883px; background-color: white;" width="652.8828125" id="my-svg">
   <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <defs>
@@ -82,38 +82,46 @@
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
@@ -142,7 +150,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(91.9765625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L11">
+        <a transform="translate(91.9765625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L11">
           <g title="first_type" id="classId-C_0000039461943261269692-0" class="node default clickable">
             <rect height="57" width="167.953125" y="-28.5" x="-83.9765625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="83.9765625" x1="-83.9765625" class="divider"/>
@@ -161,7 +169,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(386.6640625, 599.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L22">
+        <a transform="translate(386.6640625, 599.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L22">
           <g title="same_as_first_type" id="classId-C_0001725820236573641307-1" class="node default clickable">
             <rect height="79" width="244.46875" y="-39.5" x="-122.234375" class="outer title-state"/>
             <line y2="12.5" y1="12.5" x2="122.234375" x1="-122.234375" class="divider"/>
@@ -180,7 +188,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(287.2421875, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L27">
+        <a transform="translate(287.2421875, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L27">
           <g title="A" id="classId-C_0000798619347004821702-2" class="node default clickable">
             <rect height="79" width="148.84375" y="-39.5" x="-74.421875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="74.421875" x1="-74.421875" class="divider"/>
@@ -204,7 +212,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(530.859375, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L33">
+        <a transform="translate(530.859375, 441.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
           <g title="B" id="classId-C_0000420594889696591405-3" class="node default clickable">
             <rect height="101" width="148.84375" y="-50.5" x="-74.421875" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="74.421875" x1="-74.421875" class="divider"/>
@@ -233,7 +241,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(182.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L27">
+        <a transform="translate(182.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L27">
           <g title="A" id="classId-C_0001724002183455178980-4" class="node default clickable">
             <rect height="57" width="229.21875" y="-28.5" x="-114.609375" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="114.609375" x1="-114.609375" class="divider"/>
@@ -252,7 +260,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(391.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L33">
+        <a transform="translate(391.7421875, 312.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
           <g title="A" id="classId-C_0001372381231906520278-5" class="node default clickable">
             <rect height="57" width="88.78125" y="-28.5" x="-44.390625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="44.390625" x1="-44.390625" class="divider"/>
@@ -271,7 +279,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(491.1640625, 205.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L33">
+        <a transform="translate(491.1640625, 205.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L33">
           <g title="B" id="classId-C_0000290383080560130133-6" class="node default clickable">
             <rect height="57" width="307.4375" y="-28.5" x="-153.71875" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="153.71875" x1="-153.71875" class="divider"/>
@@ -290,7 +298,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(386.6640625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4a19c8ba23e5755737ee01c705889152287c82bd/tests/t00058/t00058.cc#L38">
+        <a transform="translate(386.6640625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/7e22b0b6825968b1b4d6787cd3fd6894a88e2fa6/tests/t00058/t00058.cc#L38">
           <g title="R" id="classId-C_0001015108159699260009-7" class="node default clickable">
             <rect height="101" width="321.421875" y="-50.5" x="-160.7109375" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="160.7109375" x1="-160.7109375" class="divider"/>
