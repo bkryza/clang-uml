@@ -7,7 +7,8 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 types and contents of each generated diagram.
-The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON formats.
+The diagrams can be generated in [PlantUML](https://plantuml.com),
+[MermaidJS](https://mermaid.js.org/) and JSON formats.
 
 Example sequence diagram generated using `clang-uml` from [this code](https://github.com/bkryza/clang-uml/blob/master/tests/t20029/t20029.cc):
 ![Sample sequence diagram](test_cases/t20029_sequence.svg)
