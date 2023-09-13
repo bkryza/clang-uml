@@ -134,12 +134,14 @@ Diagram generators convert the `clang-uml`'s internal UML model into actual
 diagram in one of the supported formats:
 
 - PlantUML
+- MermaidJS
 - JSON
 
 Each diagram generator extends a common interface appropriate for the
 selected output format, i.e.:
 
 - [PlantUML](classclanguml_1_1common_1_1generators_1_1plantuml_1_1generator.html)
+- [MermaidJS](classclanguml_1_1common_1_1generators_1_1mermaid_1_1generator.html)
 - [JSON](classclanguml_1_1common_1_1generators_1_1json_1_1generator.html)
 
 and renders the output to a file. For each diagram type there is a separate

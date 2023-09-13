@@ -13,7 +13,8 @@ YAML configuration files. The main idea behind the
 project is to easily maintain up-to-date diagrams within a code-base or document
 legacy code. The configuration file or files for `clang-uml` define the
 types and contents of each generated diagram.
-The diagrams can be generated in [PlantUML](https://plantuml.com) and JSON formats.
+The diagrams can be generated in [PlantUML](https://plantuml.com),
+[MermaidJS](https://mermaid.js.org/) and JSON formats.
 
 `clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
 
@@ -35,8 +36,8 @@ Main features supported so far include:
     * Template specialization and instantiation based on deduced context - [_example_](docs/test_cases/t00062.md)
     * Relationship inference from C++ containers and smart pointers - [_example_](docs/test_cases/t00007.md)
     * Diagram content filtering based on namespaces, elements and relationships - [_example_](docs/test_cases/t00040.md)
-    * Optional package generation from namespaces - [_example_](docs/test_cases/t00036.md)
-    * Optional package generation from subdirectories - [_example_](docs/test_cases/t00065.md)
+    * Optional package generation from namespaces (only PlantUML) - [_example_](docs/test_cases/t00036.md)
+    * Optional package generation from subdirectories (only PlantUML) - [_example_](docs/test_cases/t00065.md)
     * Interactive links to online code to classes, methods and class fields in SVG diagrams - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00002_class.svg)
     * Support for plain C99/C11 code (struct and units relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
@@ -370,17 +371,17 @@ results in the following diagram (via PlantUML) based on include directives in t
 
 ### Default mappings
 
-| UML                                    | PlantUML   |
-| ----                                   | ---        |
-| Inheritance                            | ![extension](docs/img/puml_inheritance.png) |
-| Association                            | ![association](docs/img/puml_association.png) |
-| Dependency                             | ![dependency](docs/img/puml_dependency.png) |
-| Aggregation                            | ![aggregation](docs/img/puml_aggregation.png) |
-| Composition                            | ![composition](docs/img/puml_composition.png) |
-| Template specialization/instantiation  | ![specialization](docs/img/puml_instantiation.png) |
-| Nesting (inner class/enum)             | ![nesting](docs/img/puml_nested.png) |
-| Include (local)                        | ![association](docs/img/puml_association.png) |
-| Include (system)                       | ![dependency](docs/img/puml_dependency.png) |
+| UML                                    | PlantUML   | MermaidJS                                      |
+| ----                                   | ---        |------------------------------------------------|
+| Inheritance                            | ![extension](docs/img/puml_inheritance.png) | ![extension](docs/img/mermaid_inheritance.png) |
+| Association                            | ![association](docs/img/puml_association.png) | ![association](docs/img/mermaid_association.png) |
+| Dependency                             | ![dependency](docs/img/puml_dependency.png) | ![dependency](docs/img/mermaid_dependency.png) |
+| Aggregation                            | ![aggregation](docs/img/puml_aggregation.png) | ![aggregation](docs/img/mermaid_aggregation.png) |
+| Composition                            | ![composition](docs/img/puml_composition.png) | ![composition](docs/img/mermaid_composition.png) |
+| Template specialization/instantiation  | ![specialization](docs/img/puml_instantiation.png) | ![specialization](docs/img/mermaid_instantiation.png) |
+| Nesting (inner class/enum)             | ![nesting](docs/img/puml_nested.png) | ![nesting](docs/img/mermaid_nested.png) |
+| Include (local)                        | ![association](docs/img/puml_association.png) | ![association](docs/img/mermaid_association.png) |
+| Include (system)                       | ![dependency](docs/img/puml_dependency.png) | ![dependency](docs/img/mermaid_dependency.png) |
 
 ### Diagram content filtering
 
@@ -433,6 +434,7 @@ This project relies on the following great tools:
 
 * [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
 * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
+* [MermaidJS](https://mermaid.js.org/) - JavaScript based diagramming and charting tool
 * [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
 * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
 * [indicators](https://github.com/p-ranav/indicators) - Activity indicators for modern C++

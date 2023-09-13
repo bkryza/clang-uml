@@ -3,17 +3,19 @@
 <!-- toc -->
 
 * [PlantUML](#plantuml)
+* [MermaidJS](#mermaidjs)
 * [JSON](#json)
 
 <!-- tocstop -->
 
-Currently, there are 2 types of diagram generators: `plantuml` and `json`.
+Currently, there are 3 types of diagram generators: `plantuml`, `mermaid`
+and `json`.
 
 To specify, which generators should be used on the command line use option `-g`.
 For instance to generate both types of diagrams run `clang-uml` as follows:
 
 ```bash
-clang-uml -g plantuml -g json
+clang-uml -g plantuml -g mermaid -g json
 ```
 
 By default, only `plantuml` diagrams are generated.
@@ -91,6 +93,70 @@ __
 
 The footer at the end is added by default, but can be disabled with
 `--no-metadata` command line option.
+
+## MermaidJS
+
+This generator, creates UML diagrams in textual MermaidJS format, which can then
+be used directly in some Markdown renderers (e.g. GitHub) or converted to
+various image formats using [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
+
+In case there is a need for adding custom MermaidJS directives to generated
+diagrams, they can be included directly in the diagram configuration. For
+example:
+
+```yaml
+  mermaid:
+    before:
+      - direction LR
+    after:
+      - 'note for {{ alias("inheritable_diagram_options") }} "Options common to all diagram types."'
+      - 'note for {{ alias("config") }} "General options not used by diagrams."'
+```
+
+will add before the diagram contents (right after diagram type,
+e.g. `classDiagram`) diagram direction hint, and after each diagram contents
+2 notes attached to elements.
+
+An example MermaidJS diagram is presented below:
+
+```
+classDiagram
+    class C_0001371951663534295727["A"]
+    class C_0001371951663534295727 {
+        +A() : [default] void
+        +A(int i) : void
+        +A(A &&) : [default] void
+        +A(const A &) : void
+        +A<T>(T t) : void
+        +~A() : [default] void
+        +operator=(A && other) : A &
+        +operator=(A & other) : A &
+        +operator++() : A &
+        +auto_method() : int
+        +basic_method() : void
+        +const_method() : [const] void
+        +create_from_int(int i) : A$
+        +default_int(int i = 12) : int
+        +default_string(int i, std::string s = "abc") : std::string
+        +double_int(const int i) : int
+        -private_method() : void
+        #protected_method() : void
+        +size() : [const,constexpr] std::size_t
+        +static_method() : int$
+        +sum(const double a, const double b) : int
+        -a_ : int
+        +auto_member : const unsigned long
+        -b_ : int
+        -c_ : int
+        #compare : std::function&lt;bool &lpar;const int&rpar;&gt;
+        -private_member : int
+        #protected_member : int
+        +public_member : int
+        +static_const_int : const int
+        +static_int : int
+    }
+    click C_0001371951663534295727 href "https://github.com/bkryza/clang-uml/blob/70e70888231938ba5310a8e0e28b9351beba21ef/tests/t00003/t00003.cc#L7" "A"
+```
 
 ## JSON
 
