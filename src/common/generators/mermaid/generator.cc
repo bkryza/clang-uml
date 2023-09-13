@@ -74,8 +74,8 @@ std::string to_mermaid(message_t r)
 
 std::string indent(const unsigned level)
 {
-    const auto kIndentWidth = 4U;
-    return std::string(level * kIndentWidth, ' ');
+    const auto kIndentWidth = 4UL;
+    return std::string(level * kIndentWidth, ' '); // NOLINT
 }
 
 std::string render_name(std::string name)

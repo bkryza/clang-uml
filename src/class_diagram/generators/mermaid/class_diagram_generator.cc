@@ -240,16 +240,16 @@ void generator::generate_method(
 
     std::vector<std::string> method_mods;
     if (m.is_defaulted()) {
-        method_mods.push_back("default");
+        method_mods.emplace_back("default");
     }
     if (m.is_const()) {
-        method_mods.push_back("const");
+        method_mods.emplace_back("const");
     }
     if (m.is_constexpr()) {
-        method_mods.push_back("constexpr");
+        method_mods.emplace_back("constexpr");
     }
     if (m.is_consteval()) {
-        method_mods.push_back("consteval");
+        method_mods.emplace_back("consteval");
     }
 
     if (!method_mods.empty()) {
