@@ -243,6 +243,8 @@ private:
 
     mutable std::vector<std::reference_wrapper<nlohmann::json>>
         block_statements_stack_;
+
+    mutable std::vector<model::message> already_generated_in_static_context_;
 };
 
 } // namespace clanguml::sequence_diagram::generators::json

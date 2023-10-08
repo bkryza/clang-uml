@@ -256,6 +256,13 @@ void generator::process_call_message(const model::message &m,
 {
     visited.push_back(m.from());
 
+    if (m.in_static_declaration_context()) {
+        if (util::contains(already_generated_in_static_context_, m))
+            return;
+
+        already_generated_in_static_context_.push_back(m);
+    }
+
     LOG_DBG("Generating message {} --> {}", m.from(), m.to());
 
     generate_call(m, current_block_statement());

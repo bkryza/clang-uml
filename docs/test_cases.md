@@ -109,6 +109,7 @@
  * [t20034](./test_cases/t20034.md) - Test case for rendering all call chains from one activity to another (from_to)
  * [t20035](./test_cases/t20035.md) - from_to sequence diagram test case with free functions
  * [t20036](./test_cases/t20036.md) - Test case for rendering all call chains leading to an activity (to)
+ * [t20037](./test_cases/t20037.md) - Test case checking if activities in static variable declarations appear only once
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

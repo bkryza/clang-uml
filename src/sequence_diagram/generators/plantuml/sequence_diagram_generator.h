@@ -139,9 +139,16 @@ private:
      */
     std::string render_name(std::string name) const;
 
-    mutable std::set<common::id_t> generated_participants_;
+    /**
+     * @brief Convert config to model message render mode.
+     *
+     * @return Method render mode.
+     */
     model::function::message_render_mode
     select_method_arguments_render_mode() const;
+
+    mutable std::set<common::id_t> generated_participants_;
+    mutable std::vector<model::message> already_generated_in_static_context_;
 };
 
 } // namespace plantuml
