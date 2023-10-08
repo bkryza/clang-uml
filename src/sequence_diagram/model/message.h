@@ -150,6 +150,10 @@ public:
      */
     std::optional<std::string> condition_text() const;
 
+    bool in_static_declaration_context() const;
+
+    void in_static_declaration_context(bool v);
+
 private:
     common::model::message_t type_{common::model::message_t::kNone};
 
@@ -167,6 +171,8 @@ private:
     std::string return_type_{};
 
     std::optional<std::string> condition_text_;
+
+    bool in_static_declaration_context_{false};
 };
 
 } // namespace clanguml::sequence_diagram::model

@@ -78,4 +78,14 @@ std::optional<std::string> message::condition_text() const
     return condition_text_;
 }
 
+bool message::in_static_declaration_context() const
+{
+    return in_static_declaration_context_;
+}
+
+void message::in_static_declaration_context(bool v)
+{
+    in_static_declaration_context_ = v;
+}
+
 } // namespace clanguml::sequence_diagram::model

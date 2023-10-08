@@ -936,6 +936,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     message m{message_t::kCall, context().caller_id()};
 
+    m.in_static_declaration_context(within_static_variable_declaration_ > 0);
+
     set_source_location(*expr, m);
 
     // If we're currently inside a lambda expression, set it's id as
@@ -1031,6 +1033,27 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     return true;
 }
 
+bool translation_unit_visitor::TraverseVarDecl(clang::VarDecl *decl)
+{
+    LOG_TRACE("Traversing cxx variable declaration at {} [caller_id = {}]",
+        decl->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    decl->dump();
+
+    decl->getInit()->dump();
+
+    if (decl->isStaticLocal())
+        within_static_variable_declaration_++;
+
+    RecursiveASTVisitor::TraverseVarDecl(decl);
+
+    if (decl->isStaticLocal())
+        within_static_variable_declaration_--;
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXConstructExpr(
     clang::CXXConstructExpr *expr)
 {
@@ -1051,7 +1074,11 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
         expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
 
+    expr->dump();
+
     message m{message_t::kCall, context().caller_id()};
+
+    m.in_static_declaration_context(within_static_variable_declaration_ > 0);
 
     set_source_location(*expr, m);
 
@@ -2427,6 +2454,7 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
         return false;
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
+
     return diagram().should_include(common::model::source_file{expr_file});
 }
 

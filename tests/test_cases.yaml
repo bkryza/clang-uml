@@ -307,6 +307,9 @@ test_cases:
     - name: t20036
       title: Test case for rendering all call chains leading to an activity (to)
       description:
+    - name: t20037
+      title: Test case checking if activities in static variable declarations appear only once
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

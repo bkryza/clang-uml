@@ -68,6 +68,8 @@ public:
 
     bool TraverseCallExpr(clang::CallExpr *expr);
 
+    bool TraverseVarDecl(clang::VarDecl *VD);
+
     bool TraverseCXXMemberCallExpr(clang::CXXMemberCallExpr *expr);
 
     bool TraverseCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr);
@@ -540,5 +542,9 @@ private:
         std::tuple<std::string /* field name */, common::model::relationship_t,
             common::model::access_t>>
         anonymous_struct_relationships_;
+
+    mutable unsigned within_static_variable_declaration_{0};
+    mutable std::set<const clang::Expr *>
+        already_visited_in_static_declaration_{};
 };
 } // namespace clanguml::sequence_diagram::visitor

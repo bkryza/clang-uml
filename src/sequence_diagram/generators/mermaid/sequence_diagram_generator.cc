@@ -139,6 +139,13 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
     std::vector<common::model::diagram_element::id_t> &visited) const
 {
     for (const auto &m : a.messages()) {
+        if (m.in_static_declaration_context()) {
+            if (util::contains(already_generated_in_static_context_, m))
+                continue;
+
+            already_generated_in_static_context_.push_back(m);
+        }
+
         if (m.type() == message_t::kCall) {
             const auto &to =
                 model().get_participant<model::participant>(m.to());
