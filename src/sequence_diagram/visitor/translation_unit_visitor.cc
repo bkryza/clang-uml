@@ -1039,10 +1039,6 @@ bool translation_unit_visitor::TraverseVarDecl(clang::VarDecl *decl)
         decl->getBeginLoc().printToString(source_manager()),
         context().caller_id());
 
-    decl->dump();
-
-    decl->getInit()->dump();
-
     if (decl->isStaticLocal())
         within_static_variable_declaration_++;
 
@@ -1073,8 +1069,6 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
     LOG_TRACE("Visiting cxx construct expression at {} [caller_id = {}]",
         expr->getBeginLoc().printToString(source_manager()),
         context().caller_id());
-
-    expr->dump();
 
     message m{message_t::kCall, context().caller_id()};
 
