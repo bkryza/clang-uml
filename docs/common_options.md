@@ -43,6 +43,17 @@ Effective configuration, including default values can be printed out in YAML for
 clang-uml --dump-config
 ```
 
+## Diagram titles
+Each type of diagram can have a `title` property, which will be generated in the
+diagram using directives specific to a given diagram generator, for instance:
+
+```yaml
+diagrams:
+  diagram1:
+    type: class
+    title: Some explanatory diagram title
+```
+
 ## Translation unit glob patterns
 One of the key options of the diagram configuration is the list of translation units, which should be parsed to
 get all necessary information for a diagram. 

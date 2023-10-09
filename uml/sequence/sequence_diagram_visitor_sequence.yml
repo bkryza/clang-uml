@@ -1,4 +1,5 @@
 type: sequence
+title: Sequence diagram AST visitor sequence diagram
 # Group free functions into one participant per file
 combine_free_functions_into_file_participants: true
 # Do not generate method or function arguments
@@ -21,8 +22,5 @@ exclude:
     - src/common/model/source_location.h
 using_namespace:
   - clanguml
-plantuml:
-  before:
-    - 'title clang-uml sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl sequence diagram'
 from:
   - function: "clanguml::sequence_diagram::visitor::translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *)"

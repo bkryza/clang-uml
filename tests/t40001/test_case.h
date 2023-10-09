@@ -35,6 +35,7 @@ TEST_CASE("t40001", "[test-case][include]")
 
         REQUIRE_THAT(src, StartsWith("@startuml"));
         REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, HasTitle("Basic include diagram example"));
 
         REQUIRE_THAT(src, IsFolder("lib1"));
         REQUIRE_THAT(src, IsFile("lib1.h"));
@@ -60,6 +61,8 @@ TEST_CASE("t40001", "[test-case][include]")
 
         using namespace json;
 
+        REQUIRE(HasTitle(j, "Basic include diagram example"));
+
         REQUIRE(IsFolder(j, "include"));
         REQUIRE(IsFolder(j, "include/lib1"));
         REQUIRE(IsFolder(j, "src"));
@@ -84,9 +87,12 @@ TEST_CASE("t40001", "[test-case][include]")
 
         mermaid::AliasMatcher _A(src);
         using mermaid::HasComment;
+        using mermaid::HasTitle;
         using mermaid::IsFile;
         using mermaid::IsFolder;
         using mermaid::IsIncludeDependency;
+
+        REQUIRE_THAT(src, HasTitle("Basic include diagram example"));
 
         REQUIRE_THAT(src, IsFolder(_A("lib1")));
         REQUIRE_THAT(src, IsFile(_A("lib1.h")));

@@ -1,4 +1,5 @@
 type: class
+title: Diagram model
 include_relations_also_as_members: false
 generate_method_arguments: none
 glob:
@@ -17,6 +18,3 @@ exclude:
     - dependency
 using_namespace:
   - clanguml
-plantuml:
-  before:
-    - 'title clang-uml diagram model'

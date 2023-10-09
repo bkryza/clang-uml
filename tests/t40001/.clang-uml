@@ -3,6 +3,7 @@ output_directory: diagrams
 diagrams:
   t40001_include:
     type: include
+    title: Basic include diagram example
     # Provide the files to parse in order to look
     # for #include directives
     glob:

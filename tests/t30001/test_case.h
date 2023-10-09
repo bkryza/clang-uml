@@ -35,6 +35,8 @@ TEST_CASE("t30001", "[test-case][package]")
         REQUIRE_THAT(src, StartsWith("@startuml"));
         REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
+        REQUIRE_THAT(src, HasTitle("Basic package diagram example"));
+
         REQUIRE_THAT(src, IsPackage("A"));
         REQUIRE_THAT(src, IsPackage("AAA"));
         REQUIRE_THAT(src, IsPackage("AAA"));
@@ -69,6 +71,8 @@ TEST_CASE("t30001", "[test-case][package]")
 
         using namespace json;
 
+        REQUIRE(HasTitle(j, "Basic package diagram example"));
+
         REQUIRE(IsPackage(j, "A"));
         REQUIRE(IsPackage(j, "A::AA"));
         REQUIRE(IsPackage(j, "A::AA::AAA"));
@@ -90,7 +94,10 @@ TEST_CASE("t30001", "[test-case][package]")
         using mermaid::HasComment;
         using mermaid::HasLink;
         using mermaid::HasPackageNote;
+        using mermaid::HasTitle;
         using mermaid::IsPackage;
+
+        REQUIRE_THAT(src, HasTitle("Basic package diagram example"));
 
         REQUIRE_THAT(src, IsPackage(_A("A")));
         REQUIRE_THAT(src, IsPackage(_A("AAA")));

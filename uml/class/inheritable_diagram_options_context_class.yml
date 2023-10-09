@@ -1,4 +1,5 @@
 type: class
+title: Configuration model inheritable options context
 include_relations_also_as_members: true
 glob:
   - src/config/config.cc
@@ -11,5 +12,4 @@ using_namespace:
   - clanguml::config
 plantuml:
   before:
-    - title clanguml::config::config context diagram
     - left to right direction

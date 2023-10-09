@@ -132,6 +132,16 @@ public:
     void generate_metadata(std::ostream &ostr) const;
 
     /**
+     * @brief Generate diagram title
+     *
+     * Generates a PlantUML diagram title directive if diagram title
+     * is provided in the diagram configuration.
+     *
+     * @param ostr Output stream
+     */
+    void generate_title(std::ostream &ostr) const;
+
+    /**
      * @brief Generate hyper link to element
      *
      * This method renders links to URL's based on templates provided
@@ -240,6 +250,8 @@ void generator<C, D>::generate(std::ostream &ostr) const
     update_context();
 
     ostr << "@startuml" << '\n';
+
+    generate_title(ostr);
 
     generate_plantuml_directives(ostr, config.puml().before);
 
@@ -446,6 +458,16 @@ void generator<C, D>::generate_metadata(std::ostream &ostr) const
              << "'Generated with clang-uml, version "
              << clanguml::version::CLANG_UML_VERSION << '\n'
              << "'LLVM version " << clang::getClangFullVersion() << '\n';
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_title(std::ostream &ostr) const
+{
+    const auto &config = generators::generator<C, D>::config();
+
+    if (config.title) {
+        ostr << "title " << config.title() << '\n';
     }
 }
 

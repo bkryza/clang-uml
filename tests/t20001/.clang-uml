@@ -3,6 +3,7 @@ output_directory: diagrams
 diagrams:
   t20001_sequence:
     type: sequence
+    title: Basic sequence diagram example
     glob:
       - ../../tests/t20001/t20001.cc
     include:

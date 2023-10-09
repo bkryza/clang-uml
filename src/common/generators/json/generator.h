@@ -110,6 +110,9 @@ void generator<C, D>::generate(std::ostream &ostr) const
     nlohmann::json j;
     j["name"] = generators::generator<C, D>::model().name();
     j["diagram_type"] = to_string(generators::generator<C, D>::model().type());
+    if (generators::generator<C, D>::config().title) {
+        j["title"] = generators::generator<C, D>::config().title();
+    }
 
     generate_diagram(j);
 
