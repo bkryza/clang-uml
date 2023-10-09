@@ -156,6 +156,7 @@ types:
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
+        title: !optional string
         #
         # Class diagram specific options
         #
@@ -192,6 +193,7 @@ types:
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
+        title: !optional string
         #
         # Sequence diagram specific options
         #
@@ -226,6 +228,7 @@ types:
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
+        title: !optional string
         #
         # Package diagram specific options
         #
@@ -254,6 +257,7 @@ types:
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
+        title: !optional string
         #
         # Include diagram specific options
         #

@@ -537,6 +537,8 @@ struct diagram : public inheritable_diagram_options {
     void initialize_type_aliases();
 
     std::string name;
+
+    option<std::string> title{"title"};
 };
 
 /**

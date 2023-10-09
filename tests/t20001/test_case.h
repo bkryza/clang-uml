@@ -35,6 +35,8 @@ TEST_CASE("t20001", "[test-case][sequence]")
         REQUIRE_THAT(src, StartsWith("@startuml"));
         REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
+        REQUIRE_THAT(src, HasTitle("Basic sequence diagram example"));
+
         REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
         REQUIRE_THAT(src, HasCall(_A("A"), "add(int,int)"));
         REQUIRE_THAT(src, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
@@ -49,6 +51,8 @@ TEST_CASE("t20001", "[test-case][sequence]")
         auto j = generate_sequence_json(diagram, *model);
 
         using namespace json;
+
+        REQUIRE(HasTitle(j, "Basic sequence diagram example"));
 
         REQUIRE(IsFunctionParticipant(j, "tmain()"));
         REQUIRE(IsClassParticipant(j, "A"));
@@ -71,6 +75,9 @@ TEST_CASE("t20001", "[test-case][sequence]")
         mermaid::SequenceDiagramAliasMatcher _A(src);
         using mermaid::HasCall;
         using mermaid::HasComment;
+        using mermaid::HasTitle;
+
+        REQUIRE_THAT(src, HasTitle("Basic sequence diagram example"));
 
         REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
         REQUIRE_THAT(src, HasCall(_A("A"), "add(int,int)"));

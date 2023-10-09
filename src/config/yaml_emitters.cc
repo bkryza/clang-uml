@@ -297,7 +297,9 @@ YAML::Emitter &operator<<(
     out << c.using_namespace;
     out << c.generate_metadata;
 
-    if (dynamic_cast<const class_diagram *>(&c) != nullptr) {
+    if (const auto *cd = dynamic_cast<const class_diagram *>(&c);
+        cd != nullptr) {
+        out << cd->title;
         out << c.generate_method_arguments;
         out << c.generate_packages;
         out << c.include_relations_also_as_members;
@@ -315,18 +317,24 @@ YAML::Emitter &operator<<(
         out << c.generate_template_argument_dependencies;
         out << c.skip_redundant_dependencies;
     }
-    else if (dynamic_cast<const sequence_diagram *>(&c) != nullptr) {
+    else if (const auto *sd = dynamic_cast<const sequence_diagram *>(&c);
+             sd != nullptr) {
+        out << sd->title;
         out << c.combine_free_functions_into_file_participants;
         out << c.generate_condition_statements;
         out << c.generate_method_arguments;
         out << c.generate_return_types;
         out << c.participants_order;
     }
-    else if (dynamic_cast<const package_diagram *>(&c) != nullptr) {
+    else if (const auto *pd = dynamic_cast<const package_diagram *>(&c);
+             pd != nullptr) {
+        out << pd->title;
         out << c.generate_packages;
         out << c.package_type;
     }
-    else if (dynamic_cast<const include_diagram *>(&c) != nullptr) {
+    else if (const auto *id = dynamic_cast<const include_diagram *>(&c);
+             id != nullptr) {
+        out << id->title;
         out << c.generate_system_headers;
     }
 

@@ -41,6 +41,7 @@ TEST_CASE("t00002", "[test-case][class]")
 
         REQUIRE_THAT(puml, StartsWith("@startuml"));
         REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(puml, HasTitle("Basic class diagram example"));
         REQUIRE_THAT(puml, IsAbstractClass(_A("A")));
         REQUIRE_THAT(puml, IsClass(_A("B")));
         REQUIRE_THAT(puml, IsClass(_A("C")));
@@ -92,6 +93,7 @@ TEST_CASE("t00002", "[test-case][class]")
 
         using namespace json;
 
+        REQUIRE(HasTitle(j, "Basic class diagram example"));
         REQUIRE(IsClass(j, "A"));
         REQUIRE(IsClass(j, "B"));
         REQUIRE(IsClass(j, "C"));
@@ -111,9 +113,11 @@ TEST_CASE("t00002", "[test-case][class]")
 
         mermaid::AliasMatcher _A(mmd);
         using mermaid::HasNote;
+        using mermaid::HasTitle;
         using mermaid::IsAbstractClass;
 
-        REQUIRE_THAT(mmd, StartsWith("classDiagram"));
+        REQUIRE_THAT(mmd, HasTitle("Basic class diagram example"));
+        REQUIRE_THAT(mmd, Contains("classDiagram"));
         REQUIRE_THAT(mmd, IsAbstractClass(_A("A")));
         REQUIRE_THAT(mmd, IsClass(_A("B")));
         REQUIRE_THAT(mmd, IsClass(_A("C")));

@@ -494,6 +494,20 @@ struct SequenceDiagramAliasMatcher {
 };
 }
 
+ContainsMatcher HasTitle(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("title " + str, caseSensitivity));
+}
+
+namespace mermaid {
+ContainsMatcher HasTitle(std::string const &str,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return ContainsMatcher(CasedString("title: " + str, caseSensitivity));
+}
+}
+
 ContainsMatcher IsClass(std::string const &str,
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
@@ -1229,6 +1243,11 @@ std::string expand_name(const nlohmann::json &j, const std::string &name)
         return name;
 
     return fmt::format("{}::{}", j["using_namespace"].get<std::string>(), name);
+}
+
+bool HasTitle(const nlohmann::json &j, const std::string &title)
+{
+    return j.contains("title") && j["title"] == title;
 }
 
 bool IsClass(const nlohmann::json &j, const std::string &name)

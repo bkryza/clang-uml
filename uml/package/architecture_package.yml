@@ -1,4 +1,5 @@
 type: package
+title: High-level namespace dependencies in clang-uml
 glob:
   - src/config/config.cc
   - src/common/model/diagram.cc
@@ -16,6 +17,3 @@ include:
     - r: "clanguml::.+::model"
     - r: "clanguml::.+::visitor"
     - r: "clanguml::.+::generators"
-plantuml:
-  before:
-    - 'title clang-uml top level packages'

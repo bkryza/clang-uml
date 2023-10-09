@@ -1,10 +1,8 @@
 type: include
+title: Include graph
 glob:
   - src/config/*.cc
 relative_to: .
 include:
   paths:
     - src
-plantuml:
-  before:
-    - "title clang-uml include graph diagram"

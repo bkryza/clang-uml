@@ -1,4 +1,5 @@
 type: class
+title: Configuration model class hierarchy
 include_relations_also_as_members: true
 generate_packages: true
 glob:
@@ -14,6 +15,3 @@ exclude:
   access: [public, protected, private]
 using_namespace:
   - clanguml
-plantuml:
-  before:
-    - 'title clanguml::config::diagram class hierarchy'

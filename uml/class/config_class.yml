@@ -1,4 +1,5 @@
 type: class
+title: Configuration model
 include_relations_also_as_members: true
 glob:
   - src/config/config.cc
@@ -15,8 +16,6 @@ exclude:
 using_namespace:
   - clanguml::config
 plantuml:
-  before:
-    - 'title clang-uml configuration model'
   after:
     - 'note left of {{ alias("inheritable_diagram_options") }}: Options common to all diagram types.'
     - 'note right of {{ alias("config") }}: General options not used by diagrams.'

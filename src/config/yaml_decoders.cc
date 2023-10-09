@@ -551,6 +551,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.comment_parser);
     get_option(node, rhs.debug_mode);
     get_option(node, rhs.generate_metadata);
+    get_option(node, rhs.title);
 
     return true;
 }

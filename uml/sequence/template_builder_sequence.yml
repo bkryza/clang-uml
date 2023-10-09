@@ -1,4 +1,5 @@
 type: sequence
+title: Diagram element template builder sequence diagram
 combine_free_functions_into_file_participants: true
 generate_method_arguments: none
 glob:
@@ -14,8 +15,5 @@ exclude:
     - src/common/model/source_location.h
 using_namespace:
   - clanguml
-plantuml:
-  before:
-    - 'title clang-uml class_diagram::visitor::template_builder::build sequence diagram'
 from:
   - function: "clanguml::class_diagram::visitor::template_builder::build(const clang::NamedDecl *,const clang::TemplateSpecializationType &,std::optional<class_diagram::model::class_ *>)"
