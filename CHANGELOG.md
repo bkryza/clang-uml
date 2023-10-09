@@ -1,5 +1,9 @@
 # CHANGELOG
 
+ * Added 'title' diagram property (#184)
+ * Make sure sequence diagram messages generated during static variable
+   initialization are rendered only once (#183)
+
 ### 0.4.0
  * Added MermaidJS diagram generators (#27)
 
