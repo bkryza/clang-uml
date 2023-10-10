@@ -76,12 +76,12 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_name(name);
     p->set_namespace(package_parent);
     p->set_id(common::to_id(*ns));
+    set_source_location(*ns, *p);
 
     assert(p->id() > 0);
 
     if (diagram().should_include(*p) && !diagram().get(p->id())) {
         process_comment(*ns, *p);
-        set_source_location(*ns, *p);
 
         p->set_style(p->style_spec());
 
@@ -232,8 +232,10 @@ void translation_unit_visitor::add_relationships(
 
         pkg->set_name(pkg_name);
         pkg->set_id(get_package_id(cls));
+        set_source_location(*cls, *pkg);
 
-        diagram().add(parent_path, std::move(pkg));
+        if (diagram().should_include(*pkg))
+            diagram().add(parent_path, std::move(pkg));
     }
 
     auto current_package_id = get_package_id(cls);
@@ -246,8 +248,21 @@ void translation_unit_visitor::add_relationships(
     auto current_package = diagram().get(current_package_id);
 
     if (current_package) {
+        std::vector<common::model::diagram_element::id_t> parent_ids =
+            get_parent_package_ids(current_package_id);
+
         for (const auto &dependency : relationships) {
             const auto destination_id = std::get<0>(dependency);
+
+            // Skip dependency relationships to parent packages
+            if (util::contains(parent_ids, destination_id))
+                continue;
+
+            // Skip dependency relationship to child packages
+            if (util::contains(
+                    get_parent_package_ids(destination_id), current_package_id))
+                continue;
+
             relationship r{relationship_t::kDependency, destination_id,
                 common::model::access_t::kNone};
             if (destination_id != current_package_id)
@@ -604,5 +619,24 @@ translation_unit_visitor::config() const
 }
 
 void translation_unit_visitor::finalize() { }
+
+std::vector<common::model::diagram_element::id_t>
+translation_unit_visitor::get_parent_package_ids(
+    common::model::diagram_element::id_t id)
+{
+    std::vector<common::model::diagram_element::id_t> parent_ids;
+    std::optional<common::model::diagram_element::id_t> parent_id = id;
+
+    while (parent_id.has_value()) {
+        parent_ids.push_back(parent_id.value());
+        auto parent = this->diagram().get(parent_id.value());
+        if (parent)
+            parent_id = parent.value().parent_element_id();
+        else
+            break;
+    }
+
+    return parent_ids;
+}
 
 } // namespace clanguml::package_diagram::visitor

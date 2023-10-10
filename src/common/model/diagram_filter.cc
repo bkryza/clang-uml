@@ -248,10 +248,6 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
                     e.full_name(false);
             });
 
-        if (tvl::is_false(result))
-            LOG_DBG("Element {} rejected by namespace_filter 1",
-                e.full_name(false));
-
         return result;
     }
 
@@ -273,10 +269,6 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
                     e.full_name(false);
             });
 
-        if (tvl::is_false(result))
-            LOG_DBG("Element {} rejected by namespace_filter (package diagram)",
-                e.full_name(false));
-
         return result;
     }
 
@@ -289,9 +281,6 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
 
             return std::get<common::regex>(nsit.value()) %= e.full_name(false);
         });
-
-    if (tvl::is_false(result))
-        LOG_DBG("Element {} rejected by namespace_filter", e.full_name(false));
 
     return result;
 }

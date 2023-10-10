@@ -94,9 +94,11 @@ public:
 
         auto parent = get_element(path);
 
-        if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value()))
+        if (parent && dynamic_cast<nested_trait<T, Path> *>(&parent.value())) {
+            p->set_parent_element_id(parent.value().id());
             return dynamic_cast<nested_trait<T, Path> &>(parent.value())
                 .template add_element<V>(std::move(p));
+        }
 
         LOG_INFO("No parent element found at: {}", path.to_string());
 

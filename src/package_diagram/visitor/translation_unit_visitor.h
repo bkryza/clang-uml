@@ -214,6 +214,9 @@ private:
     void add_relationships(
         clang::Decl *cls, found_relationships_t &relationships);
 
+    std::vector<common::model::diagram_element::id_t> get_parent_package_ids(
+        common::model::diagram_element::id_t id);
+
     // Reference to the output diagram model
     clanguml::package_diagram::model::diagram &diagram_;
 
