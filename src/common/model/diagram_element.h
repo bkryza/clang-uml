@@ -65,6 +65,20 @@ public:
     void set_id(id_t id);
 
     /**
+     * Get elements parent package id.
+     *
+     * @return Parent package id if element is nested.
+     */
+    std::optional<id_t> parent_element_id() const;
+
+    /**
+     * Set elements parent package id.
+     *
+     * @param id Id of parent package.
+     */
+    void set_parent_element_id(diagram_element::id_t id);
+
+    /**
      * @brief Return elements' diagram alias.
      *
      * @todo This is a PlantUML specific method - it shouldn't be here.
@@ -174,6 +188,7 @@ public:
 
 private:
     id_t id_{0};
+    std::optional<id_t> parent_element_id_{0};
     std::string name_;
     std::vector<relationship> relationships_;
     bool nested_{false};

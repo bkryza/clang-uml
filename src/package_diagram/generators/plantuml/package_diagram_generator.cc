@@ -62,8 +62,9 @@ void generator::generate_relationships(
 
     // Process it's subpackages relationships
     for (const auto &subpackage : p) {
-        generate_relationships(
-            dynamic_cast<const package &>(*subpackage), ostr);
+        if (model().should_include(dynamic_cast<const package &>(*subpackage)))
+            generate_relationships(
+                dynamic_cast<const package &>(*subpackage), ostr);
     }
 }
 
