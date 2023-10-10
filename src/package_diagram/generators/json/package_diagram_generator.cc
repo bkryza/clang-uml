@@ -36,6 +36,14 @@ void generator::generate_relationships(
     if (model().should_include(relationship_t::kDependency)) {
         for (const auto &r : p.relationships()) {
             nlohmann::json rel = r;
+
+            auto destination_package = model().get(r.destination());
+
+            if (!destination_package ||
+                !model().should_include(
+                    dynamic_cast<const package &>(*destination_package)))
+                continue;
+
             rel["source"] = std::to_string(p.id());
             parent["relationships"].push_back(std::move(rel));
         }

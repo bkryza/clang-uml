@@ -38,9 +38,17 @@ void generator::generate_relationships(
         for (const auto &r : p.relationships()) {
             std::stringstream relstr;
             try {
-                auto destination = model().to_alias(r.destination());
-                if (!destination.empty()) {
-                    relstr << p.alias() << " ..> " << destination << '\n';
+                auto destination_package = model().get(r.destination());
+
+                if (!destination_package ||
+                    !model().should_include(
+                        dynamic_cast<const package &>(*destination_package)))
+                    continue;
+
+                auto destination_alias = model().to_alias(r.destination());
+
+                if (!destination_alias.empty()) {
+                    relstr << p.alias() << " ..> " << destination_alias << '\n';
                     ostr << relstr.str();
                 }
             }
