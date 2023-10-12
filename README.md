@@ -80,6 +80,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
 * For Boost-based projects
   try [commands_to_compilation_database](https://github.com/tee3/commands_to_compilation_database)
 * For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
+* For Bazel, try [bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor)
 * For Microsoft Visual Studio projects try [Clang Power Tools](https://www.clangpowertools.com)
 
 ### Invocation

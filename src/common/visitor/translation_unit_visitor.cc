@@ -123,6 +123,12 @@ void translation_unit_visitor::set_source_location(
         }
     }
 
+    if (std::filesystem::path file_path{file}; !file_path.is_absolute()) {
+        file_path =
+            std::filesystem::canonical(std::filesystem::absolute(file_path));
+        file = file_path.string();
+    }
+
     element.set_file(file);
     element.set_file_relative(util::path_to_url(
         std::filesystem::relative(element.file(), relative_to_path_).string()));
