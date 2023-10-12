@@ -263,12 +263,12 @@ template <typename T>
 void save_diagram(const std::filesystem::path &path, const T &diagram)
 {
     static_assert(
-        std::same_as<T, std::string> || std::same_as<T, nlohmann::json>);
+        std::is_same_v<T, std::string> || std::is_same_v<T, nlohmann::json>);
 
     std::filesystem::create_directories(path.parent_path());
     std::ofstream ofs;
     ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-    if constexpr (std::same_as<T, nlohmann::json>) {
+    if constexpr (std::is_same_v<T, nlohmann::json>) {
         ofs << std::setw(2) << diagram;
     }
     else {
