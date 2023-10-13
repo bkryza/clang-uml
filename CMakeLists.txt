@@ -137,7 +137,9 @@ endif()
 # and environment quirks
 #
 if(LLVM_VERSION_MAJOR GREATER_EQUAL 17)
-    set(CUSTOM_COMPILE_OPTIONS "-Wno-class-memaccess")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(CUSTOM_COMPILE_OPTIONS "-Wno-class-memaccess")
+    endif()
 endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CUSTOM_COMPILE_OPTIONS

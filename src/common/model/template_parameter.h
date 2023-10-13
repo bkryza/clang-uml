@@ -504,8 +504,6 @@ private:
     /*! Whether template argument is ellipsis (...) */
     bool is_ellipsis_{false};
 
-    bool is_noexcept_{false};
-
     /*! Whether the template parameter is variadic */
     bool is_variadic_{false};
 
