@@ -133,6 +133,18 @@ if(APPLE OR (LLVM_VERSION_MAJOR GREATER_EQUAL 16))
 endif()
 
 #
+# Setup custom compile options depending on various compiler
+# and environment quirks
+#
+if(LLVM_VERSION_MAJOR GREATER_EQUAL 17)
+    set(CUSTOM_COMPILE_OPTIONS "-Wno-class-memaccess")
+endif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CUSTOM_COMPILE_OPTIONS
+            "${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field")
+endif()
+
+#
 # Setup threads library
 #
 find_package(Threads REQUIRED)
