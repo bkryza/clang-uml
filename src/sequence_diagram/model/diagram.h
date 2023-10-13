@@ -328,8 +328,6 @@ private:
         return block_end_types.count(mt) > 0;
     };
 
-    bool started_{false};
-
     std::map<common::model::diagram_element::id_t, activity> sequences_;
 
     std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>

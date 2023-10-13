@@ -1,6 +1,8 @@
 compilation_database_dir: debug
 output_directory: docs/diagrams
 comment_parser: clang
+remove_compile_flags:
+  - -Wno-class-memaccess
 generate_links:
   link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"

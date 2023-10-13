@@ -58,8 +58,9 @@ foreach(TEST_NAME ${TEST_CASES})
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<COMPILE_LANGUAGE:CXX>:
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-            -Wno-unused-parameter -Wno-unused-private-field -Wno-unused-variable
-            -Wno-attributes -Wno-nonnull -Wno-deprecated-enum-enum-conversion>
+            -Wno-unused-parameter -Wno-unused-variable
+            -Wno-attributes -Wno-nonnull -Wno-deprecated-enum-enum-conversion
+            ${CUSTOM_COMPILE_OPTIONS}>
             $<$<CXX_COMPILER_ID:MSVC>:/W1 /bigobj /wd4624>>)
     target_link_libraries(${TEST_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
 endforeach()
