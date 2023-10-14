@@ -1,5 +1,9 @@
 # CHANGELOG
 
+ * Added Bash and Zsh autocomplete scripts (#193)
+ * Updated `clang-uml` to work with LLVM 17 (#190)
+ * Fixed handling of compilation databases with relative header paths (#189)
+ * Excluded package diagram dependencies on parent and child packages (186)
  * Excluded package diagram relationships to rejected packages (#185)
  * Added 'title' diagram property (#184)
  * Make sure sequence diagram messages generated during static variable
