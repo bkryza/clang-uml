@@ -1,0 +1,64 @@
+#compdef clang-uml
+
+##
+## packaging/autocomplete/_clang-uml
+##
+## Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+
+local -a diagrams=($(clang-uml -l | tail -n +2 | cut -c5- | awk '{ print $1 }'))
+if [ ${#diagrams[@]} -eq 0 ]; then
+    diagrams=()
+fi
+
+local -a templates=($(clang-uml --list-templates | tail -n +2 | cut -c5- | awk '{ print $1 }'))
+if [ ${#templates[@]} -eq 0 ]; then
+    templates=()
+fi
+
+local -a generators=(plantuml json mermaid)
+
+_arguments \
+  {-h,--help}'[Print this help message and exit]' \
+  {-V,--version}'[Print version and exit]' \
+  {-d,--compile-database}'[Compilation database directory]: :{_files -/}' \
+  {-n,--diagram-name}'[List of diagram names to generate]: :{_values "Diagram name" $diagrams}' \
+  {-g,--generator}'[Name of the generator]: :{_values "Diagram generator" $generators}' \
+  {-o,--output-directory}'[Override output directory specified in config file]: :{_files -/}' \
+  {-t,--thread-count}'[Thread pool size]' \
+  {-v,--verbose}'[Verbose logging]' \
+  {-p,--progress}'[Show progress bars for generated diagrams]' \
+  {-q,--quiet}'[Minimal logging]' \
+  {-l,--list-diagrams}'[Print list of diagrams defined in the config file]' \
+  '--init[Initialize example config file]' \
+  '--add-compile-flag[Add a compilation flag to each entry in the compilation database]' \
+  '--remove-compile-flag[Remove a compilation flag from each entry in the compilation database]' \
+  '--query-driver[Query the specific compiler driver to extract system paths and add to compile commands (e.g. arm-none-eabi-g++)]' \
+  '--add-class-diagram[Add class diagram config]' \
+  '--add-sequence-diagram[Add sequence diagram config]' \
+  '--add-package-diagram[Add package diagram config]' \
+  '--add-include-diagram[Add include diagram config]' \
+  '--add-diagram-from-template[Add diagram config based on diagram template]: :{_values "Template name" $templates}' \
+  '--template-var[Specify a value for a template variable]' \
+  '--list-templates[List all available diagram templates]' \
+  '--show-template[Show specific diagram template definition]: :{_values "Template name" $templates}' \
+  '--dump-config[Print effective config to stdout]' \
+  '--paths-relative-to-pwd[If true, all paths in configuration files are relative to the PWD]' \
+  '--no-metadata[Skip metadata (e.g. clang-uml version) from diagrams]' \
+  "--print-from[Print all possible 'from' values for a given diagram]" \
+  "--print-to[Print all possible 'to' values for a given diagram]" \
+  '--no-validate[Do not perform configuration file schema validation]' \
+  '--validate-only[Perform configuration file schema validation and exit]'
+
