@@ -3,6 +3,7 @@
 <!-- toc -->
 
 * [Overall configuration file structure](#overall-configuration-file-structure)
+* [Diagram titles](#diagram-titles)
 * [Translation unit glob patterns](#translation-unit-glob-patterns)
 * [Custom directives](#custom-directives)
 * [Adding debug information in the generated diagrams](#adding-debug-information-in-the-generated-diagrams)

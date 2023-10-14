@@ -12,6 +12,9 @@
   * [macos](#macos)
   * [Windows](#windows-1)
     * [Visual Studio native build](#visual-studio-native-build)
+* [Shell autocompletion scripts](#shell-autocompletion-scripts)
+  * [Bash](#bash)
+  * [Zsh](#zsh)
 
 <!-- tocstop -->
 
@@ -172,3 +175,59 @@ Finally, remove the temporary build directory:
 ```bash
 rm -r C:\clang-uml-tmp
 ```
+
+### Shell autocompletion scripts
+For `Linux` and `macos`, Bash and Zsh autocomplete scripts are available, and
+if `clang-uml` is installed from a distribution package they should work
+out of the box. When installing `clang-uml` from sources the files need to be
+installed manually. The completion scripts are available in directory:
+* [`packaging/autocomplete`](./packaging/autocomplete)
+
+#### Bash
+The `clang-uml.bash-completion` script can be either directly loaded to the
+current Bash session using:
+
+```shell
+source clang-uml.bash-completion
+```
+
+or the script can be copied to the `/etc/bash_completion.d` on Linux or
+to `/usr/local/etc/bash_completion.d` on `macos` with `Homebrew`.
+
+```shell
+sudo cp clang-uml.bash-completion /etc/bash_completion.d/clang-uml
+```
+
+Make sure autocompletion is enabled in your `~/.bashrc` or `~/.bash_profile`:
+
+```shell
+if [ -f /etc/bash_completion ]; then
+  . /etc/bash_completion
+fi
+```
+
+On OSX you might need to install `bash-completion` using Homebrew:
+```shell
+brew install bash-completion
+```
+Make sure to the following lines are uncommented in the `~/.bashrc`:
+
+```shell
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
+```
+
+#### Zsh
+In Zsh, the `_clang-uml` Zsh completion file must be copied to one of the
+folders under `$FPATH` variable, and the Zsh terminal should be reopened.
+
+For testing, `_clang-uml` completion function can be updated without
+restarting Zsh:
+
+```shell
+# Copy _clang-uml somewhere under $FPATH
+$ unfunction _clang-uml
+$ autoload -U _clang-uml
+```
+
