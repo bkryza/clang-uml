@@ -1,0 +1,125 @@
+# clang-uml completion                               -*- shell-script -*-
+
+##
+## packaging/autocomplete/clang-uml.bash-completion
+##
+## Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+
+#
+# Check if this is OSX, if so defined custom init_completion
+#
+if [[ `uname` =~ "Darwin" ]]; then
+  __osx_init_completion()
+  {
+      COMPREPLY=()
+      _get_comp_words_by_ref cur prev words cword
+  }
+fi
+
+declare -a generators
+generators=(
+"plantuml"
+"json"
+"mermaid"
+)
+
+_clanguml() {
+  local cur
+  local prev
+  local words
+  local cword
+
+  #
+  # Check if the _init_completion function is available, which is
+  # available since bash-completion 1.4
+  #
+  if [[ `uname` =~ "Darwin" ]]; then
+    __osx_init_completion || return
+  else
+    _init_completion -s || return
+  fi
+
+
+  case $prev in
+    -d|--compile-database)
+      _filedir -d
+      return
+      ;;
+    -o|--output-directory)
+      _filedir -d
+      return
+      ;;
+    -n|--diagram-name)
+      COMPREPLY=()
+      local diagrams=`clang-uml -l | tail -n +2 | cut -c5- | awk '{ print $1 }'`
+
+      COMPREPLY=( $(compgen -W "${diagrams}" -- $cur))
+      return
+      ;;
+    --show-template)
+      COMPREPLY=()
+      local templates=`clang-uml --list-templates | tail -n +2 | cut -c5- | awk '{ print $1 }'`
+
+      COMPREPLY=( $(compgen -W "${templates}" -- $cur))
+      return
+      ;;
+    -g|--generator)
+      local generators_list=`echo "${generators[@]}"`
+      COMPREPLY=($(compgen -o nospace -W "${generators_list[@]}" -- "$cur"))
+      return
+      ;;
+  esac
+
+  case $cur in
+    -*)
+    COMPREPLY=( $( compgen -W '-h --help \
+                               -V --version \
+                               -c --config \
+                               -t --thread-count \
+                               -v --verbose \
+                               -p --progress \
+                               -q --quiet \
+                               -l --list-diagrams \
+                               --init \
+                               --add-compile-flag \
+                               --remove-compile-flag \
+                               --query-driver \
+                               --add-class-diagram \
+                               --add-sequence-diagram \
+                               --add-package-diagram \
+                               --add-include-diagram \
+                               --add-diagram-from-template \
+                               --template-var \
+                               --list-templates \
+                               --show-template \
+                               --dump-config \
+                               --paths-relative-to-pwd \
+                               --no-metadata \
+                               --print-from \
+                               --print-to \
+                               --no-validate \
+                               --validate-only' -- $cur ) )
+    return
+    ;;
+  esac
+
+  #
+  # By default do nothing
+  #
+  return 0
+
+} &&
+complete -F _clanguml clang-uml
