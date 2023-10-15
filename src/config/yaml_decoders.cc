@@ -603,6 +603,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.relative_to);
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_message_comments);
 
         // Ensure relative_to has a value
         if (!rhs.relative_to.has_value)
@@ -792,6 +793,7 @@ template <> struct convert<config> {
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.generate_return_types);
         get_option(node, rhs.generate_condition_statements);
+        get_option(node, rhs.generate_message_comments);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.relative_to);

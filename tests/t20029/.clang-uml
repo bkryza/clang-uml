@@ -1,5 +1,7 @@
 compilation_database_dir: ..
 output_directory: diagrams
+add_compile_flags:
+  - -fparse-all-comments
 diagrams:
   t20029_sequence:
     type: sequence
@@ -15,6 +17,7 @@ diagrams:
       - clanguml::t20029
     from:
       - function: clanguml::t20029::tmain()
+    generate_message_comments: true
     participants_order:
       - clanguml::t20029::tmain()
       - clanguml::t20029::Encoder<clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>>

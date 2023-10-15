@@ -147,6 +147,9 @@ private:
     model::function::message_render_mode
     select_method_arguments_render_mode() const;
 
+    void generate_message_comment(
+        std::ostream &ostr, const model::message &m) const;
+
     mutable std::set<common::id_t> generated_participants_;
     mutable std::vector<model::message> already_generated_in_static_context_;
 };

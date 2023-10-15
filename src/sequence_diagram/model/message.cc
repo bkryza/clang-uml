@@ -58,6 +58,16 @@ void message::set_return_type(std::string t) { return_type_ = std::move(t); }
 
 const std::string &message::return_type() const { return return_type_; }
 
+const std::optional<std::string> &message::comment() const { return comment_; }
+
+void message::set_comment(std::string c) { comment_ = std::move(c); }
+
+void message::set_comment(const std::optional<std::string> &c)
+{
+    if (c)
+        set_comment(c.value());
+}
+
 void message::set_message_scope(common::model::message_scope_t scope)
 {
     scope_ = scope;

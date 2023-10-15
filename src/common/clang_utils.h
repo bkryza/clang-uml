@@ -282,4 +282,8 @@ clang::QualType dereference(clang::QualType type);
 std::pair<clang::QualType, std::deque<common::model::context>>
 consume_type_context(clang::QualType type);
 
+std::optional<std::string> get_expression_comment(
+    const clang::SourceManager &sm, const clang::ASTContext &context,
+    const clang::Stmt *stmt);
+
 } // namespace clanguml::common

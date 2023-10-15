@@ -119,6 +119,12 @@ public:
      */
     const std::string &return_type() const;
 
+    const std::optional<std::string> &comment() const;
+
+    void set_comment(std::string c);
+
+    void set_comment(const std::optional<std::string> &c);
+
     /**
      * @brief Set message scope
      *
@@ -171,6 +177,8 @@ private:
     std::string return_type_{};
 
     std::optional<std::string> condition_text_;
+
+    std::optional<std::string> comment_;
 
     bool in_static_declaration_context_{false};
 };

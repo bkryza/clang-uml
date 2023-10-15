@@ -325,6 +325,7 @@ YAML::Emitter &operator<<(
         out << c.generate_method_arguments;
         out << c.generate_return_types;
         out << c.participants_order;
+        out << c.generate_message_comments;
     }
     else if (const auto *pd = dynamic_cast<const package_diagram *>(&c);
              pd != nullptr) {

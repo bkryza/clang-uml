@@ -46,6 +46,11 @@ load_config(const std::string &test_name)
     LOG_DBG("Loading compilation database from {}",
         res.first.compilation_database_dir());
 
+    std::vector<std::string> remove_compile_flags{
+        std::string{"-Wno-class-memaccess"}};
+
+    res.first.remove_compile_flags.set(remove_compile_flags);
+
     res.second =
         clanguml::common::compilation_database::auto_detect_from_directory(
             res.first);
