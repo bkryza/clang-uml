@@ -202,6 +202,7 @@ types:
         generate_return_types: !optional bool
         generate_condition_statements: !optional bool
         generate_message_comments: !optional bool
+        message_comment_width: !optional int
         participants_order: !optional [string]
         start_from: !optional [source_location_t] # deprecated -> 'from'
         from: !optional [source_location_t]
@@ -313,6 +314,7 @@ root:
     generate_return_types: !optional bool
     generate_condition_statements: !optional bool
     generate_message_comments: !optional bool
+    message_comment_width: !optional int
     generate_packages: !optional bool
     group_methods: !optional bool
     package_type: !optional package_type_t

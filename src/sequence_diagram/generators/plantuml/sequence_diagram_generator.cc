@@ -289,7 +289,9 @@ void generator::generate_message_comment(
 
     ostr << "note over " << generate_alias(from.value()) << '\n';
 
-    ostr << util::format_message_comment(m.comment().value()) << '\n';
+    ostr << util::format_message_comment(
+                m.comment().value(), config().message_comment_width())
+         << '\n';
 
     ostr << "end note" << '\n';
 }
