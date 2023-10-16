@@ -12,7 +12,10 @@ template <typename T> class Encoder : public T {
 public:
     bool send(std::string &&msg)
     {
-        return T::send(std::move(encode(std::move(msg))));
+        return T::send(std::move(
+            // Encode the message using Base64 encoding and pass it to the next
+            // layer
+            encode(std::move(msg))));
     }
 
 protected:
@@ -27,6 +30,7 @@ public:
 
         int retryCount = 5;
 
+        // Repeat until send() succeeds or retry count is exceeded
         while (retryCount--) {
             if (T::send(buffer))
                 return true;

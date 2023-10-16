@@ -287,19 +287,10 @@ void generator::generate_message_comment(
     if (!from)
         return;
 
-    if (m.type() == message_t::kCall) {
-        const auto &to = model().get_participant<model::participant>(m.to());
-        if (!to)
-            return;
+    ostr << "note over " << generate_alias(from.value()) << '\n';
 
-        ostr << "note over " << generate_alias(from.value()) << ", "
-             << generate_alias(to.value()) << '\n';
-    }
-    else {
-        ostr << "note over " << generate_alias(from.value()) << '\n';
-    }
+    ostr << util::format_message_comment(m.comment().value()) << '\n';
 
-    ostr << m.comment().value() << '\n';
     ostr << "end note" << '\n';
 }
 

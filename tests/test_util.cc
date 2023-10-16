@@ -396,3 +396,24 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
         CHECK(r[i++] == ")");
     }
 }
+
+TEST_CASE("Test format_message_comment", "[unit-test]")
+{
+    using namespace clanguml::util;
+
+    CHECK(format_message_comment("\n\n   ABCD \n", 0) == "\n\n   ABCD \n");
+    CHECK(format_message_comment("\n\n   ABCD \n") == "ABCD");
+
+    CHECK(format_message_comment(
+              "Repeat until send() succeeds or retry count is exceeded") ==
+        "Repeat until send() succeeds\nor retry count is exceeded");
+
+    CHECK(format_message_comment("12345678", 5) == "12345678");
+
+    CHECK(format_message_comment("") == "");
+
+    CHECK(format_message_comment(" ") == "");
+
+    CHECK(format_message_comment("This is a url: http://example.com/test/12345",
+              15) == "This is a url:\nhttp://example.com/test/12345");
+}

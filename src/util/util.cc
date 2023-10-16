@@ -199,6 +199,28 @@ std::vector<std::string> split(
     return result;
 }
 
+std::vector<std::string> split_isspace(std::string str)
+{
+    std::vector<std::string> result;
+
+    while (static_cast<unsigned int>(!str.empty()) != 0U) {
+        auto index = std::find_if(
+            str.begin(), str.end(), [](auto c) { return std::isspace(c); });
+        if (index != str.end()) {
+            auto tok = str.substr(0, std::distance(str.begin(), index));
+            if (!tok.empty())
+                result.push_back(std::move(tok));
+            str = str.substr(std::distance(str.begin(), index) + 1);
+        }
+        else {
+            if (!str.empty())
+                result.push_back(str);
+            str = "";
+        }
+    }
+    return result;
+}
+
 std::string join(
     const std::vector<std::string> &toks, std::string_view delimiter)
 {
@@ -340,6 +362,42 @@ std::filesystem::path ensure_path_is_absolute(
     auto result = root / p;
     result = result.lexically_normal();
     result.make_preferred();
+
+    return result;
+}
+
+std::string format_message_comment(const std::string &comment, unsigned width)
+{
+    if (width == 0)
+        return comment;
+
+    std::string result;
+
+    if (comment.empty())
+        return result;
+
+    auto tokens = split_isspace(comment);
+
+    if (tokens.empty())
+        return result;
+
+    unsigned current_line_length{0};
+    for (auto it = tokens.begin(); it != tokens.end(); it++) {
+        if (current_line_length < width) {
+            result += *it;
+            result += ' ';
+        }
+        else {
+            result.back() = '\n';
+            current_line_length = 0;
+            result += *it;
+            result += ' ';
+        }
+
+        current_line_length += it->size() + 1;
+    }
+
+    result.pop_back();
 
     return result;
 }
