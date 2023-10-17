@@ -140,15 +140,21 @@ private:
     std::string render_name(std::string name) const;
 
     /**
+     * @brief Generate message call note
+     *
+     * @param ostr Output stream
+     * @param m Message
+     */
+    void generate_message_comment(
+        std::ostream &ostr, const model::message &m) const;
+
+    /**
      * @brief Convert config to model message render mode.
      *
      * @return Method render mode.
      */
     model::function::message_render_mode
     select_method_arguments_render_mode() const;
-
-    void generate_message_comment(
-        std::ostream &ostr, const model::message &m) const;
 
     mutable std::set<common::id_t> generated_participants_;
     mutable std::vector<model::message> already_generated_in_static_context_;

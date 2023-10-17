@@ -138,6 +138,15 @@ private:
     std::string generate_alias(const model::participant &participant) const;
 
     /**
+     * @brief Generate message call note
+     *
+     * @param ostr Output stream
+     * @param m Message
+     */
+    void generate_message_comment(
+        std::ostream &ostr, const model::message &m) const;
+
+    /**
      * @brief Convert config to model message render mode.
      *
      * @return Method render mode.

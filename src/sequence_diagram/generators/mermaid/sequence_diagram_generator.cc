@@ -53,6 +53,27 @@ void generator::generate_diagram_type(std::ostream &ostr) const
     ostr << "sequenceDiagram\n";
 }
 
+void generator::generate_message_comment(
+    std::ostream &ostr, const model::message &m) const
+{
+    if (!config().generate_message_comments() || !m.comment())
+        return;
+
+    const auto &from = model().get_participant<model::participant>(m.from());
+
+    if (!from)
+        return;
+
+    ostr << indent(1) << "note over " << generate_alias(from.value()) << ": ";
+
+    auto formatted_message = util::format_message_comment(
+        m.comment().value(), config().message_comment_width());
+
+    util::replace_all(formatted_message, "\n", "<br/>");
+
+    ostr << formatted_message << '\n';
+}
+
 void generator::generate_call(const message &m, std::ostream &ostr) const
 {
     const auto &from = model().get_participant<model::participant>(m.from());
@@ -90,6 +111,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     const std::string to_alias = generate_alias(to.value());
 
     print_debug(m, ostr);
+
+    generate_message_comment(ostr, m);
 
     ostr << indent(1) << from_alias << " "
          << common::generators::mermaid::to_mermaid(message_t::kCall) << " ";
@@ -182,6 +205,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kIf) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "alt";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << render_message_text(text.value());
@@ -203,6 +227,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kWhile) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << render_message_text(text.value());
@@ -213,6 +238,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kFor) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << render_message_text(text.value());
@@ -223,6 +249,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kDo) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << render_message_text(text.value());
@@ -233,6 +260,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kTry) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "critical\n";
         }
         else if (m.type() == message_t::kCatch) {
@@ -246,6 +274,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kSwitch) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "alt\n";
         }
         else if (m.type() == message_t::kCase) {
@@ -258,6 +287,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kConditional) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << indent(1) << "alt";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << render_message_text(text.value());

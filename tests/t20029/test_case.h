@@ -59,6 +59,27 @@ TEST_CASE("t20029", "[test-case][sequence]")
             !HasCall(
                 _A("ConnectionPool"), _A("ConnectionPool"), "connect_impl()"));
 
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("tmain()"),
+                "Establish connection to the\\n"
+                "remote server synchronously"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("tmain()"),
+                "Repeat for each line in the\\n"
+                "input stream"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("Encoder<Retrier<ConnectionPool>>"),
+                "Encode the message using\\n"
+                "Base64 encoding and pass\\n"
+                "it to the next layer"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("Retrier<ConnectionPool>"),
+                "Repeat until send\\(\\) succeeds\\n"
+                "or retry count is exceeded"));
+
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
@@ -90,6 +111,7 @@ TEST_CASE("t20029", "[test-case][sequence]")
         mermaid::SequenceDiagramAliasMatcher _A(src);
         using mermaid::HasCall;
         using mermaid::HasCallInControlCondition;
+        using mermaid::HasMessageComment;
 
         REQUIRE_THAT(
             src, HasCall(_A("tmain()"), _A("ConnectionPool"), "connect()"));
@@ -114,6 +136,27 @@ TEST_CASE("t20029", "[test-case][sequence]")
         REQUIRE_THAT(src,
             !HasCall(
                 _A("ConnectionPool"), _A("ConnectionPool"), "connect_impl()"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("tmain()"),
+                "Establish connection to the<br/>"
+                "remote server synchronously"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("tmain()"),
+                "Repeat for each line in the<br/>"
+                "input stream"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("Encoder<Retrier<ConnectionPool>>"),
+                "Encode the message using<br/>"
+                "Base64 encoding and pass<br/>"
+                "it to the next layer"));
+
+        REQUIRE_THAT(src,
+            HasMessageComment(_A("Retrier<ConnectionPool>"),
+                "Repeat until send\\(\\) succeeds<br/>"
+                "or retry count is exceeded"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

@@ -852,7 +852,22 @@ ContainsMatcher HasNote(std::string const &cls, std::string const &position,
         fmt::format("note {} of {}", position, cls), caseSensitivity));
 }
 
+auto HasMessageComment(std::string const &alias, std::string const &note,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("note over ") + alias + "\\n" + note + "\\n" + "end note",
+        caseSensitivity);
+}
+
 namespace mermaid {
+auto HasMessageComment(std::string const &alias, std::string const &note,
+    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
+{
+    return Catch::Matchers::Matches(
+        std::string("note over ") + alias + ": " + note, caseSensitivity);
+}
+
 ContainsMatcher HasNote(std::string const &cls,
     std::string const &position = "", std::string const &note = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
