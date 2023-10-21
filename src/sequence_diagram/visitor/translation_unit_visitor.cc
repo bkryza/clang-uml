@@ -947,12 +947,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     using clanguml::sequence_diagram::model::activity;
     using clanguml::sequence_diagram::model::message;
 
-    if (!should_include(expr))
+    if (!context().valid() || context().get_ast_context() == nullptr)
         return true;
-
-    LOG_TRACE("Visiting call expression at {} [caller_id = {}]",
-        expr->getBeginLoc().printToString(source_manager()),
-        context().caller_id());
 
     message m{message_t::kCall, context().caller_id()};
 
@@ -967,6 +963,25 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (m.skip())
         return true;
 
+    auto generated_message_from_comment{false};
+    for (const auto &decorator : m.decorators()) {
+        auto call_decorator =
+            std::dynamic_pointer_cast<decorators::call>(decorator);
+        if (call_decorator &&
+            call_decorator->applies_to_diagram(config().name)) {
+            m.set_to(common::to_id(call_decorator->callee));
+            generated_message_from_comment = true;
+            break;
+        }
+    }
+
+    if (!generated_message_from_comment && !should_include(expr))
+        return true;
+
+    LOG_TRACE("Visiting call expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
     // If we're currently inside a lambda expression, set it's id as
     // message source rather then enclosing context
     // Unless the lambda is declared in a function or method call
@@ -978,17 +993,17 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         m.set_message_scope(common::model::message_scope_t::kCondition);
     }
 
+    if (generated_message_from_comment) { }
     //
     // Call to an overloaded operator
     //
-    if (const auto *operator_call_expr =
-            clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
-        operator_call_expr != nullptr) {
+    else if (const auto *operator_call_expr =
+                 clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr);
+             operator_call_expr != nullptr) {
 
         if (!process_operator_call_expression(m, operator_call_expr))
             return true;
     }
-
     //
     // Call to a class method
     //
@@ -1042,9 +1057,11 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     if (m.from() > 0 && m.to() > 0) {
-        auto expr_comment = get_expression_comment(source_manager(),
-            *context().get_ast_context(), context().caller_id(), expr);
-        m.set_comment(expr_comment);
+        if (!generated_message_from_comment) {
+            auto expr_comment = get_expression_comment(source_manager(),
+                *context().get_ast_context(), context().caller_id(), expr);
+            m.set_comment(expr_comment);
+        }
 
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {

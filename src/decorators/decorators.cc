@@ -47,6 +47,9 @@ std::shared_ptr<decorator> decorator::from_string(std::string_view c)
     if (c.find(association::label) == 0) {
         return association::from_string(c);
     }
+    if (c.find(call::label) == 0) {
+        return call::from_string(c);
+    }
 
     return {};
 }
@@ -169,6 +172,17 @@ std::shared_ptr<decorator> association::from_string(std::string_view c)
 
     res->diagrams = toks.diagrams;
     res->multiplicity = toks.param;
+
+    return res;
+}
+
+std::shared_ptr<decorator> call::from_string(std::string_view c)
+{
+    auto res = std::make_shared<call>();
+    auto toks = res->tokenize(call::label, c);
+
+    res->diagrams = toks.diagrams;
+    res->callee = util::trim(toks.text);
 
     return res;
 }

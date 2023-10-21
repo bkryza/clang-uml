@@ -141,6 +141,17 @@ struct association : public relationship {
 };
 
 /**
+ * @brief Represents a call message in sequence diagram
+ */
+struct call : public decorator {
+    static inline const std::string label{"call"};
+
+    std::string callee;
+
+    static std::shared_ptr<decorator> from_string(std::string_view c);
+};
+
+/**
  * @brief Parse a documentation block and extract all clang-uml decorators
  *
  * @param documentation_block Documentation block extracted from source code

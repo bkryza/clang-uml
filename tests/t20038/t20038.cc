@@ -68,7 +68,7 @@ int tmain()
     // \uml{skip}
     b.bb();
 
-    // TODO: \uml{call B::bbb()}
+    // \uml{call clanguml::t20038::B::bbb()}
     auto bbb_future = std::async(std::launch::deferred, &B::bbb, b);
 
     bbb_future.wait();

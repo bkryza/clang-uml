@@ -39,8 +39,7 @@ TEST_CASE("t20038", "[test-case][sequence]")
 
         REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "bb()"));
 
-        // TODO: REQUIRE_THAT(
-        //     src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
 
         REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbb()"));
 
@@ -90,8 +89,7 @@ TEST_CASE("t20038", "[test-case][sequence]")
 
         REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "bb()"));
 
-        // TODO: REQUIRE_THAT(
-        //     src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
 
         REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbb()"));
 

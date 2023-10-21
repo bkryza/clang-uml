@@ -856,7 +856,8 @@ clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     auto expr_begin = stmt->getSourceRange().getBegin();
     const auto expr_begin_line = sm.getSpellingLineNumber(expr_begin);
 
-    if (!context.Comments.empty())
+    if (!context.Comments.empty() &&
+        context.Comments.getCommentsInFile(sm.getFileID(expr_begin)) != nullptr)
         for (const auto [offset, raw_comment] :
             *context.Comments.getCommentsInFile(sm.getFileID(expr_begin))) {
             const auto comment_end_line = sm.getSpellingLineNumber(

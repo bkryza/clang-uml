@@ -9,6 +9,7 @@
 * [Customizing participants order](#customizing-participants-order)
 * [Generating return types](#generating-return-types)
 * [Generating condition statements](#generating-condition-statements)
+* [Injecting call expressions manually through comments](#injecting-call-expressions-manually-through-comments)
 * [Including comments in sequence diagrams](#including-comments-in-sequence-diagrams)
 
 <!-- tocstop -->
@@ -315,6 +316,34 @@ generate_condition_statements: true
 
 An example of a diagram with this feature enabled is presented below:
 ![extension](test_cases/t20033_sequence.svg)
+
+## Injecting call expressions manually through comments
+In some cases, `clang-uml` is not yet able to discover a call expression target
+in some line of code. This can include passing function or method address to
+some executor (e.g. thread), async calls etc.
+
+However, a call expression can be injected manually through a comment
+directive `\uml{note CALLEE}`, when placed just before such line of code, for 
+example:
+
+```cpp
+    // \uml{call clanguml::t20038::B::bbb()}
+    auto bbb_future = std::async(std::launch::deferred, &B::bbb, b);
+```
+
+also see the [t20038](test_cases/t20038.md) test case.
+
+Please note that the callee must have fully qualified name including complete
+namespace.
+
+In order to enable this, the `.clang-uml` must contain the following option:
+
+```yaml
+add_compile_flags:
+  - -fparse-all-comments
+```
+
+otherwise Clang will skip these comments during AST traversal.
 
 ## Including comments in sequence diagrams
 `clang-uml` can add code comments placed directly before are next to a call
