@@ -1,36 +1,36 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1265 673" style="max-width: 1265px; background-color: white;" width="1265" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-77.5 -10 1292.5 946" style="max-width: 1292.5px; background-color: white;" width="1292.5" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="201" stroke="#666" fill="#eaeaea" y="587" x="964"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="619.5" x="1064.5">
+    <rect class="actor" ry="3" rx="3" height="65" width="201" stroke="#666" fill="#eaeaea" y="860" x="964"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="1064.5">
       <tspan dy="0" x="1064.5">encode_b64(std::string &amp;&amp;)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="587" x="764"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="619.5" x="839">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="764"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="839">
       <tspan dy="0" x="839">ConnectionPool</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="186" stroke="#666" fill="#eaeaea" y="587" x="507"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="619.5" x="600">
+    <rect class="actor" ry="3" rx="3" height="65" width="186" stroke="#666" fill="#eaeaea" y="860" x="507"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="600">
       <tspan dy="0" x="600">Retrier&lt;ConnectionPool&gt;</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="257" stroke="#666" fill="#eaeaea" y="587" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="619.5" x="328.5">
+    <rect class="actor" ry="3" rx="3" height="65" width="257" stroke="#666" fill="#eaeaea" y="860" x="200"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="328.5">
       <tspan dy="0" x="328.5">Encoder&lt;Retrier&lt;ConnectionPool&gt;&gt;</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="587" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="619.5" x="75">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="860" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="892.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="587" x2="1064.5" y1="5" x1="1064.5" id="actor4"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="1064.5" y1="5" x1="1064.5" id="actor4"/>
     <g id="root-4">
       <rect class="actor" ry="3" rx="3" height="65" width="201" stroke="#666" fill="#eaeaea" y="0" x="964"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1064.5">
@@ -39,7 +39,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="587" x2="839" y1="5" x1="839" id="actor3"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="839" y1="5" x1="839" id="actor3"/>
     <g id="root-3">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="764"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="839">
@@ -48,7 +48,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="587" x2="600" y1="5" x1="600" id="actor2"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="600" y1="5" x1="600" id="actor2"/>
     <g id="root-2">
       <rect class="actor" ry="3" rx="3" height="65" width="186" stroke="#666" fill="#eaeaea" y="0" x="507"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="600">
@@ -57,7 +57,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="587" x2="328.5" y1="5" x1="328.5" id="actor1"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="328.5" y1="5" x1="328.5" id="actor1"/>
     <g id="root-1">
       <rect class="actor" ry="3" rx="3" height="65" width="257" stroke="#666" fill="#eaeaea" y="0" x="200"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="328.5">
@@ -66,7 +66,7 @@
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="587" x2="75" y1="5" x1="75" id="actor0"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="860" x2="75" y1="5" x1="75" id="actor0"/>
     <g id="root-0">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
@@ -113,90 +113,129 @@
     </marker>
   </defs>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="502" width="10" stroke="#666" fill="#EDF2AE" y="65" x="70"/>
+    <rect class="activation0" ry="0" rx="0" height="773" width="10" stroke="#666" fill="#EDF2AE" y="67" x="70"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="105" x="834"/>
+    <rect class="note" ry="0" rx="0" height="54" width="205" stroke="#666" fill="#EDF2AE" y="75" x="-27.5"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="75">
+      <tspan x="75">Establish connection to the</tspan>
+    </text>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="97" x="75">
+      <tspan x="75">remote server synchronously</tspan>
+    </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="338" width="10" stroke="#666" fill="#EDF2AE" y="209" x="323.5"/>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="169" x="834"/>
   </g>
   <g>
-    <rect class="activation1" ry="0" rx="0" height="58" width="10" stroke="#666" fill="#EDF2AE" y="285" x="328.5"/>
+    <rect class="note" ry="0" rx="0" height="54" width="188" stroke="#666" fill="#EDF2AE" y="185" x="-19"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="190" x="75">
+      <tspan x="75">Repeat for each line in the</tspan>
+    </text>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="207" x="75">
+      <tspan x="75">input stream</tspan>
+    </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="297" x="1059.5"/>
+    <rect class="activation0" ry="0" rx="0" height="483" width="10" stroke="#666" fill="#EDF2AE" y="337" x="323.5"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="146" width="10" stroke="#666" fill="#EDF2AE" y="391" x="595"/>
+    <rect class="note" ry="0" rx="0" height="71" width="257" stroke="#666" fill="#EDF2AE" y="345" x="200"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="350" x="329">
+      <tspan x="329">Encode the message using</tspan>
+    </text>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="367" x="329">
+      <tspan x="329">Base64 encoding and pass</tspan>
+    </text>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="384" x="329">
+      <tspan x="329">it to the next layer</tspan>
+    </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="489" x="834"/>
+    <rect class="activation1" ry="0" rx="0" height="58" width="10" stroke="#666" fill="#EDF2AE" y="494" x="328.5"/>
   </g>
   <g>
-    <line class="loopLine" y2="424" x2="854" y1="424" x1="585"/>
-    <line class="loopLine" y2="517" x2="854" y1="424" x1="854"/>
-    <line class="loopLine" y2="517" x2="854" y1="517" x1="585"/>
-    <line class="loopLine" y2="517" x2="585" y1="424" x1="585"/>
-    <polygon class="labelBox" points="585,424 635,424 635,437 626.6,444 585,444"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="437" x="610">alt</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="442" x="744.5">
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="506" x="1059.5"/>
+  </g>
+  <g>
+    <rect class="activation0" ry="0" rx="0" height="210" width="10" stroke="#666" fill="#EDF2AE" y="600" x="595"/>
+  </g>
+  <g>
+    <rect class="note" ry="0" rx="0" height="54" width="203" stroke="#666" fill="#EDF2AE" y="608" x="498.5"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="613" x="600">
+      <tspan x="600">Repeat until send() succeeds</tspan>
+    </text>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="630" x="600">
+      <tspan x="600">or retry count is exceeded</tspan>
+    </text>
+  </g>
+  <g>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="762" x="834"/>
+  </g>
+  <g>
+    <line class="loopLine" y2="697" x2="854" y1="697" x1="585"/>
+    <line class="loopLine" y2="790" x2="854" y1="697" x1="854"/>
+    <line class="loopLine" y2="790" x2="854" y1="790" x1="585"/>
+    <line class="loopLine" y2="790" x2="585" y1="697" x1="585"/>
+    <polygon class="labelBox" points="585,697 635,697 635,710 626.6,717 585,717"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="710" x="610">alt</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="715" x="744.5">
       <tspan x="744.5">​</tspan>
     </text>
   </g>
   <g>
-    <line class="loopLine" y2="399" x2="864" y1="399" x1="575"/>
-    <line class="loopLine" y2="527" x2="864" y1="399" x1="864"/>
-    <line class="loopLine" y2="527" x2="864" y1="527" x1="575"/>
-    <line class="loopLine" y2="527" x2="575" y1="399" x1="575"/>
-    <polygon class="labelBox" points="575,399 625,399 625,412 616.6,419 575,419"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="412" x="600">loop</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="417" x="744.5">
+    <line class="loopLine" y2="672" x2="864" y1="672" x1="575"/>
+    <line class="loopLine" y2="800" x2="864" y1="672" x1="864"/>
+    <line class="loopLine" y2="800" x2="864" y1="800" x1="575"/>
+    <line class="loopLine" y2="800" x2="575" y1="672" x1="575"/>
+    <polygon class="labelBox" points="575,672 625,672 625,685 616.6,692 575,692"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="685" x="600">loop</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="690" x="744.5">
       <tspan x="744.5">​</tspan>
     </text>
   </g>
   <g>
-    <line class="loopLine" y2="146" x2="1079.5" y1="146" x1="60"/>
-    <line class="loopLine" y2="557" x2="1079.5" y1="146" x1="1079.5"/>
-    <line class="loopLine" y2="557" x2="1079.5" y1="557" x1="60"/>
-    <line class="loopLine" y2="557" x2="60" y1="146" x1="60"/>
-    <polygon class="labelBox" points="60,146 110,146 110,159 101.6,166 60,166"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="159" x="85">alt</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="164" x="594.75">
+    <line class="loopLine" y2="274" x2="1079.5" y1="274" x1="60"/>
+    <line class="loopLine" y2="830" x2="1079.5" y1="274" x1="1079.5"/>
+    <line class="loopLine" y2="830" x2="1079.5" y1="830" x1="60"/>
+    <line class="loopLine" y2="830" x2="60" y1="274" x1="60"/>
+    <polygon class="labelBox" points="60,274 110,274 110,287 101.6,294 60,294"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="287" x="85">alt</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="292" x="594.75">
       <tspan x="594.75">​</tspan>
     </text>
   </g>
   <g>
-    <line class="loopLine" y2="121" x2="1089.5" y1="121" x1="50"/>
-    <line class="loopLine" y2="567" x2="1089.5" y1="121" x1="1089.5"/>
-    <line class="loopLine" y2="567" x2="1089.5" y1="567" x1="50"/>
-    <line class="loopLine" y2="567" x2="50" y1="121" x1="50"/>
-    <polygon class="labelBox" points="50,121 100,121 100,134 91.6,141 50,141"/>
-    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="134" x="75">loop</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="139" x="594.75">
+    <line class="loopLine" y2="249" x2="1089.5" y1="249" x1="50"/>
+    <line class="loopLine" y2="840" x2="1089.5" y1="249" x1="1089.5"/>
+    <line class="loopLine" y2="840" x2="1089.5" y1="840" x1="50"/>
+    <line class="loopLine" y2="840" x2="50" y1="249" x1="50"/>
+    <polygon class="labelBox" points="50,249 100,249 100,262 91.6,269 50,269"/>
+    <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="262" x="75">loop</text>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="267" x="594.75">
       <tspan x="594.75">​</tspan>
     </text>
   </g>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="460">connect()</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="839" y1="111" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="176" x="204">[send(std::string &amp;&amp;)]</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="207" x2="328.5" y1="207" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="222" x="334">encode(std::string &amp;&amp;)</text>
-  <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 333.5,253 C 393.5,243 393.5,283 333.5,273"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="298" x="702">​</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="293" x2="1064.5" y1="293" x1="338.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="308" x="699">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="303" x2="338.5" y1="303" x1="1059.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="318" x="339">​</text>
-  <path style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" d="M 338.5,313 C 398.5,303 398.5,343 338.5,333"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="358" x="467">send(std::string &amp;&amp;)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="389" x2="600" y1="389" x1="333.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="454" x="722">[send(const std::string &amp;)]</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="485" x2="839" y1="485" x1="605"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="500" x="720">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="495" x2="605" y1="495" x1="834"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="542" x="464">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="537" x2="333.5" y1="537" x1="595"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="552" x="202">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="547" x2="80" y1="547" x1="323.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="144" x="460">connect()</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="175" x2="839" y1="175" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="304" x="204">[send(std::string &amp;&amp;)]</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="335" x2="328.5" y1="335" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="431" x="334">encode(std::string &amp;&amp;)</text>
+  <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 333.5,462 C 393.5,452 393.5,492 333.5,482"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="507" x="702">​</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="502" x2="1064.5" y1="502" x1="338.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="517" x="699">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="512" x2="338.5" y1="512" x1="1059.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="527" x="339">​</text>
+  <path style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" d="M 338.5,522 C 398.5,512 398.5,552 338.5,542"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="567" x="467">send(std::string &amp;&amp;)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="598" x2="600" y1="598" x1="333.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="727" x="722">[send(const std::string &amp;)]</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="758" x2="839" y1="758" x1="605"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="773" x="720">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="768" x2="605" y1="768" x1="834"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="815" x="464">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="810" x2="333.5" y1="810" x1="595"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="825" x="202">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="820" x2="80" y1="820" x1="323.5"/>
 </svg>

@@ -1,4 +1,5 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -8 898.53515625 365" style="max-width: 898.535px; background-color: white;" width="898.53515625" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-labelledby="chart-title-my-svg" aria-roledescription="flowchart-v2" role="graphics-document document" viewBox="-8 -49 898.53515625 406" style="max-width: 898.535px; background-color: white;" width="898.53515625" id="my-svg">
+  <title id="chart-title-my-svg">Basic include diagram example</title>
   <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#my-svg .cluster-label text{fill:#333;}#my-svg .cluster-label span,#my-svg p{color:#333;}#my-svg .label text,#my-svg span,#my-svg p{fill:#333;color:#333;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .flowchart-label text{text-anchor:middle;}#my-svg .node .label{text-align:center;}#my-svg .node.clickable{cursor:pointer;}#my-svg .arrowheadPath{fill:#333333;}#my-svg .edgePath .path{stroke:#333333;stroke-width:2.0px;}#my-svg .flowchart-link{stroke:#333333;fill:none;}#my-svg .edgeLabel{background-color:#e8e8e8;text-align:center;}#my-svg .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#my-svg .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#my-svg .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#my-svg .cluster text{fill:#333;}#my-svg .cluster span,#my-svg p{color:#333;}#my-svg div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#my-svg .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="10" viewBox="0 0 10 10" class="marker flowchart" id="flowchart-pointEnd">
@@ -137,7 +138,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(504.03515625, 174.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t40001/include/t40001_include1.h#L0">
+        <a transform="translate(504.03515625, 174.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t40001/include/t40001_include1.h#L0">
           <g title="t40001_include1.h" id="flowchart-C_0001926692816440595520-3" class="node default clickable flowchart-label">
             <rect height="33" width="145.78125" y="-16.5" x="-72.890625" ry="0" rx="0" style="" class="basic label-container"/>
             <g transform="translate(-65.390625, -9)" style="" class="label">
@@ -150,7 +151,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(412.41015625, 282.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t40001/include/lib1/lib1.h#L0">
+        <a transform="translate(412.41015625, 282.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t40001/include/lib1/lib1.h#L0">
           <g title="lib1.h" id="flowchart-C_0002193549214042244690-4" class="node default clickable flowchart-label">
             <rect height="33" width="53.25" y="-16.5" x="-26.625" ry="0" rx="0" style="" class="basic label-container"/>
             <g transform="translate(-19.125, -9)" style="" class="label">
@@ -163,7 +164,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(589.01171875, 41.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t40001/src/t40001.cc#L0">
+        <a transform="translate(589.01171875, 41.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t40001/src/t40001.cc#L0">
           <g title="t40001.cc" id="flowchart-C_0001755015016680017839-0" class="node default clickable flowchart-label">
             <rect height="33" width="84.390625" y="-16.5" x="-42.1953125" ry="0" rx="0" style="" class="basic label-container"/>
             <g transform="translate(-34.6953125, -9)" style="" class="label">
@@ -234,4 +235,5 @@
       </g>
     </g>
   </g>
+  <text class="flowchartTitleText" y="-25" x="441.267578125">Basic include diagram example</text>
 </svg>

@@ -1,4 +1,5 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 643.00390625 532" style="max-width: 643.004px; background-color: white;" width="643.00390625" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-labelledby="chart-title-my-svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 -49 643.00390625 581" style="max-width: 643.004px; background-color: white;" width="643.00390625" id="my-svg">
+  <title id="chart-title-my-svg">Basic class diagram example</title>
   <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <defs>
@@ -168,7 +169,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(387.6328125, 152.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t00002/t00002.cc#L7">
+        <a transform="translate(387.6328125, 152.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t00002/t00002.cc#L7">
           <g title="This is class A" id="classId-C_0000987634239855407298-0" class="node default clickable">
             <rect height="123" width="117.734375" y="-61.5" x="-58.8671875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="58.8671875" x1="-58.8671875" class="divider"/>
@@ -197,7 +198,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(576.13671875, 307.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t00002/t00002.cc#L16">
+        <a transform="translate(576.13671875, 307.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t00002/t00002.cc#L16">
           <g title="This is class B" id="classId-C_0000594234458687375950-1" class="node default clickable">
             <rect height="79" width="117.734375" y="-39.5" x="-58.8671875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="58.8671875" x1="-58.8671875" class="divider"/>
@@ -221,7 +222,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(335.3671875, 307.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t00002/t00002.cc#L27">
+        <a transform="translate(335.3671875, 307.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t00002/t00002.cc#L27">
           <g title="This is class C - class C has a long comment" id="classId-C_0001142499429598587507-2" class="node default clickable">
             <rect height="79" width="116.828125" y="-39.5" x="-58.4140625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="58.4140625" x1="-58.4140625" class="divider"/>
@@ -245,7 +246,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(186.23828125, 462.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t00002/t00002.cc#L36">
+        <a transform="translate(186.23828125, 462.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t00002/t00002.cc#L36">
           <g title="D" id="classId-C_0000060950494980414724-3" class="node default clickable">
             <rect height="123" width="163.515625" y="-61.5" x="-81.7578125" class="outer title-state"/>
             <line y2="-31.5" y1="-31.5" x2="81.7578125" x1="-81.7578125" class="divider"/>
@@ -279,7 +280,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(513.64453125, 462.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/4ab0d29252ee4b97139af90bd76b7a080df47962/tests/t00002/t00002.cc#L61">
+        <a transform="translate(513.64453125, 462.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/03ac2121bc587d26d4ffd3ddaf7fdf82ed230694/tests/t00002/t00002.cc#L61">
           <g title="E" id="classId-C_0002237886670308966220-4" class="node default clickable">
             <rect height="123" width="163.515625" y="-61.5" x="-81.7578125" class="outer title-state"/>
             <line y2="-31.5" y1="-31.5" x2="81.7578125" x1="-81.7578125" class="divider"/>
@@ -349,4 +350,5 @@
       </g>
     </g>
   </g>
+  <text class="classTitleText" y="-25" x="321.501953125">Basic class diagram example</text>
 </svg>
