@@ -80,17 +80,19 @@ void generator::generate_message_comment(
     if (comment_generated_from_note_decorators)
         return;
 
-    if (!config().generate_message_comments() || !m.comment())
-        return;
+    if (auto &cmt = m.comment();
+        config().generate_message_comments() && cmt.has_value()) {
 
-    ostr << indent(1) << "note over " << generate_alias(from.value()) << ": ";
+        ostr << indent(1) << "note over " << generate_alias(from.value())
+             << ": ";
 
-    auto formatted_message = util::format_message_comment(
-        m.comment().value(), config().message_comment_width());
+        auto formatted_message = util::format_message_comment(
+            cmt.value(), config().message_comment_width());
 
-    util::replace_all(formatted_message, "\n", "<br/>");
+        util::replace_all(formatted_message, "\n", "<br/>");
 
-    ostr << formatted_message << '\n';
+        ostr << formatted_message << '\n';
+    }
 }
 
 void generator::generate_call(const message &m, std::ostream &ostr) const

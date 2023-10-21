@@ -512,7 +512,7 @@ private:
 
     std::optional<std::string> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
-        const int64_t caller_id, const clang::Stmt *stmt);
+        int64_t caller_id, const clang::Stmt *stmt);
 
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;

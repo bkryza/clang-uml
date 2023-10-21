@@ -110,8 +110,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
     msg["from"]["activity_id"] = std::to_string(from.value().id());
     msg["to"]["activity_id"] = std::to_string(to.value().id());
     msg["to"]["activity_name"] = to.value().full_name(false);
-    if (m.comment())
-        msg["comment"] = m.comment().value();
+    if (const auto &cmt = m.comment(); cmt.has_value())
+        msg["comment"] = cmt.value();
 
     if (from.value().type_name() == "method") {
         const auto &class_participant =

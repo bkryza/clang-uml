@@ -57,6 +57,8 @@ namespace clanguml::util {
 #define FILENAME_                                                              \
     (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
+constexpr unsigned kDefaultMessageCommentWidth{25U};
+
 /**
  * @brief Left trim a string
  *
@@ -426,6 +428,7 @@ std::string path_to_url(const std::filesystem::path &p);
 std::filesystem::path ensure_path_is_absolute(const std::filesystem::path &p,
     const std::filesystem::path &root = std::filesystem::current_path());
 
-std::string format_message_comment(const std::string &c, unsigned width = 25);
+std::string format_message_comment(
+    const std::string &c, unsigned width = kDefaultMessageCommentWidth);
 
 } // namespace clanguml::util

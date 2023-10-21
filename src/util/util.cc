@@ -382,19 +382,19 @@ std::string format_message_comment(const std::string &comment, unsigned width)
         return result;
 
     unsigned current_line_length{0};
-    for (auto it = tokens.begin(); it != tokens.end(); it++) {
+    for (const auto &token : tokens) {
         if (current_line_length < width) {
-            result += *it;
+            result += token;
             result += ' ';
         }
         else {
             result.back() = '\n';
             current_line_length = 0;
-            result += *it;
+            result += token;
             result += ' ';
         }
 
-        current_line_length += it->size() + 1;
+        current_line_length += token.size() + 1;
     }
 
     result.pop_back();
