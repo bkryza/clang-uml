@@ -9,6 +9,7 @@
 * [Customizing participants order](#customizing-participants-order)
 * [Generating return types](#generating-return-types)
 * [Generating condition statements](#generating-condition-statements)
+* [Including comments in sequence diagrams](#including-comments-in-sequence-diagrams)
 
 <!-- tocstop -->
 
@@ -315,3 +316,31 @@ generate_condition_statements: true
 An example of a diagram with this feature enabled is presented below:
 ![extension](test_cases/t20033_sequence.svg)
 
+## Including comments in sequence diagrams
+`clang-uml` can add code comments placed directly before are next to a call
+expression as notes in the diagram (see for instance
+[t20038](test_cases/t20038_sequence.svg)).
+
+This however is not enabled by default. In order to enable this feature it is
+necessary to first of all force Clang to parse all comments in the source
+code by adding the following compile flag at the top of `.clang-uml`:
+
+```yaml
+add_compile_flags:
+  - -fparse-all-comments
+```
+
+or adding it to the `compile_commands.json` database somehow directly.
+
+Another option needed to generate these comments in the diagram is to set
+
+```yaml
+   generate_message_comments: true
+```
+
+for each sequence diagram, which should include these comments.
+
+In case only selected messages should have some specific comments, instead
+of enabling the `generate_message_comments` option, it is possible to use
+`\uml{note TEXT}` directive in the comment above the expression, see
+[t20001](test_cases/t20001_sequence.svg).
