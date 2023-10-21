@@ -1,5 +1,7 @@
 # CHANGELOG
-
+ 
+ * Enabled manual call expression injection through comments (#196)
+ * Added support for generating sequence diagram notes from comments (#194)
  * Added Bash and Zsh autocomplete scripts (#193)
  * Updated `clang-uml` to work with LLVM 17 (#190)
  * Fixed handling of compilation databases with relative header paths (#189)
