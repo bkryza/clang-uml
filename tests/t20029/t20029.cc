@@ -12,7 +12,10 @@ template <typename T> class Encoder : public T {
 public:
     bool send(std::string &&msg)
     {
-        return T::send(std::move(encode(std::move(msg))));
+        return T::send(std::move(
+            // Encode the message using Base64 encoding and pass it to the next
+            // layer
+            encode(std::move(msg))));
     }
 
 protected:
@@ -27,6 +30,7 @@ public:
 
         int retryCount = 5;
 
+        // Repeat until send() succeeds or retry count is exceeded
         while (retryCount--) {
             if (T::send(buffer))
                 return true;
@@ -56,8 +60,10 @@ int tmain()
 {
     auto pool = std::make_shared<Encoder<Retrier<ConnectionPool>>>();
 
+    // Establish connection to the remote server synchronously
     pool->connect();
 
+    // Repeat for each line in the input stream
     for (std::string line; std::getline(std::cin, line);) {
         if (!pool->send(std::move(line)))
             break;

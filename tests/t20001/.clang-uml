@@ -1,5 +1,7 @@
 compilation_database_dir: ..
 output_directory: diagrams
+add_compile_flags:
+  - -fparse-all-comments
 diagrams:
   t20001_sequence:
     type: sequence

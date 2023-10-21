@@ -45,6 +45,12 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         REQUIRE_THAT(src, HasComment("t20001 test diagram of type sequence"));
 
+        REQUIRE_THAT(
+            src, HasMessageComment(_A("tmain()"), "Just add 2 numbers"));
+
+        REQUIRE_THAT(
+            src, HasMessageComment(_A("tmain()"), "And now add another 2"));
+
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
     {

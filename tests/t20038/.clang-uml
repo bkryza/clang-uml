@@ -1,0 +1,18 @@
+compilation_database_dir: ..
+output_directory: diagrams
+add_compile_flags:
+  - -fparse-all-comments
+diagrams:
+  t20038_sequence:
+    type: sequence
+    glob:
+      - ../../tests/t20038/t20038.cc
+    include:
+      namespaces:
+        - clanguml::t20038
+    from:
+      - function: clanguml::t20038::tmain()
+    generate_message_comments: true
+    message_comment_width: 35
+    using_namespace:
+      - clanguml::t20038

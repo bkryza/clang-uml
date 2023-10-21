@@ -59,7 +59,6 @@ clang::SourceManager &translation_unit_visitor::source_manager() const
 void translation_unit_visitor::process_comment(
     const clang::NamedDecl &decl, clanguml::common::model::decorated_element &e)
 {
-
     assert(comment_visitor_.get() != nullptr);
 
     comment_visitor_->visit(decl, e);
@@ -67,12 +66,23 @@ void translation_unit_visitor::process_comment(
     const auto *comment =
         decl.getASTContext().getRawCommentForDeclNoCache(&decl);
 
+    process_comment(comment, decl.getASTContext().getDiagnostics(), e);
+}
+
+void translation_unit_visitor::process_comment(const clang::RawComment *comment,
+    clang::DiagnosticsEngine &de, clanguml::common::model::decorated_element &e)
+{
     if (comment != nullptr) {
+        auto [it, inserted] = processed_comments_.emplace(comment);
+
+        if (!inserted)
+            return;
+
         // Process clang-uml decorators in the comments
         // TODO: Refactor to use standard block comments processable by clang
         //       comments
-        e.add_decorators(decorators::parse(comment->getFormattedText(
-            source_manager_, decl.getASTContext().getDiagnostics())));
+        e.add_decorators(
+            decorators::parse(comment->getFormattedText(source_manager_, de)));
     }
 }
 

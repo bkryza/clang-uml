@@ -510,6 +510,10 @@ private:
     void pop_message_to_diagram(clang::CallExpr *expr);
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
 
+    std::optional<std::string> get_expression_comment(
+        const clang::SourceManager &sm, const clang::ASTContext &context,
+        int64_t caller_id, const clang::Stmt *stmt);
+
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
 
@@ -546,5 +550,8 @@ private:
     mutable unsigned within_static_variable_declaration_{0};
     mutable std::set<const clang::Expr *>
         already_visited_in_static_declaration_{};
+
+    mutable std::set<std::pair<int64_t, const clang::RawComment *>>
+        processed_comments_;
 };
 } // namespace clanguml::sequence_diagram::visitor

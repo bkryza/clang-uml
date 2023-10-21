@@ -9,6 +9,8 @@
 * [Customizing participants order](#customizing-participants-order)
 * [Generating return types](#generating-return-types)
 * [Generating condition statements](#generating-condition-statements)
+* [Injecting call expressions manually through comments](#injecting-call-expressions-manually-through-comments)
+* [Including comments in sequence diagrams](#including-comments-in-sequence-diagrams)
 
 <!-- tocstop -->
 
@@ -315,3 +317,59 @@ generate_condition_statements: true
 An example of a diagram with this feature enabled is presented below:
 ![extension](test_cases/t20033_sequence.svg)
 
+## Injecting call expressions manually through comments
+In some cases, `clang-uml` is not yet able to discover a call expression target
+in some line of code. This can include passing function or method address to
+some executor (e.g. thread), async calls etc.
+
+However, a call expression can be injected manually through a comment
+directive `\uml{note CALLEE}`, when placed just before such line of code, for 
+example:
+
+```cpp
+    // \uml{call clanguml::t20038::B::bbb()}
+    auto bbb_future = std::async(std::launch::deferred, &B::bbb, b);
+```
+
+also see the [t20038](test_cases/t20038.md) test case.
+
+Please note that the callee must have fully qualified name including complete
+namespace.
+
+In order to enable this, the `.clang-uml` must contain the following option:
+
+```yaml
+add_compile_flags:
+  - -fparse-all-comments
+```
+
+otherwise Clang will skip these comments during AST traversal.
+
+## Including comments in sequence diagrams
+`clang-uml` can add code comments placed directly before are next to a call
+expression as notes in the diagram (see for instance
+[t20038](test_cases/t20038_sequence.svg)).
+
+This however is not enabled by default. In order to enable this feature it is
+necessary to first of all force Clang to parse all comments in the source
+code by adding the following compile flag at the top of `.clang-uml`:
+
+```yaml
+add_compile_flags:
+  - -fparse-all-comments
+```
+
+or adding it to the `compile_commands.json` database somehow directly.
+
+Another option needed to generate these comments in the diagram is to set
+
+```yaml
+   generate_message_comments: true
+```
+
+for each sequence diagram, which should include these comments.
+
+In case only selected messages should have some specific comments, instead
+of enabling the `generate_message_comments` option, it is possible to use
+`\uml{note TEXT}` directive in the comment above the expression, see
+[t20001](test_cases/t20001_sequence.svg).

@@ -83,6 +83,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     print_debug(m, ostr);
 
+    generate_message_comment(ostr, m);
+
     ostr << from_alias << " "
          << common::generators::plantuml::to_plantuml(message_t::kCall) << " ";
 
@@ -178,6 +180,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kIf) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "alt";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << text.value();
@@ -199,6 +202,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kWhile) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << text.value();
@@ -209,6 +213,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kFor) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << text.value();
@@ -219,6 +224,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kDo) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "loop";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << text.value();
@@ -229,6 +235,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kTry) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "group try\n";
         }
         else if (m.type() == message_t::kCatch) {
@@ -241,6 +248,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kSwitch) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "group switch\n";
         }
         else if (m.type() == message_t::kCase) {
@@ -252,6 +260,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
         }
         else if (m.type() == message_t::kConditional) {
             print_debug(m, ostr);
+            generate_message_comment(ostr, m);
             ostr << "alt";
             if (const auto &text = m.condition_text(); text.has_value())
                 ostr << " " << text.value();
@@ -265,6 +274,44 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
             ostr << "end\n";
         }
     }
+}
+
+void generator::generate_message_comment(
+    std::ostream &ostr, const model::message &m) const
+{
+    const auto &from = model().get_participant<model::participant>(m.from());
+    if (!from)
+        return;
+
+    bool comment_generated_from_note_decorators{false};
+    for (const auto &decorator : m.decorators()) {
+        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+        if (note && note->applies_to_diagram(config().name)) {
+            comment_generated_from_note_decorators = true;
+
+            ostr << "note over " << generate_alias(from.value()) << '\n';
+
+            ostr << util::format_message_comment(
+                        note->text, config().message_comment_width())
+                 << '\n';
+
+            ostr << "end note" << '\n';
+        }
+    }
+
+    if (comment_generated_from_note_decorators)
+        return;
+
+    if (!config().generate_message_comments() || !m.comment())
+        return;
+
+    ostr << "note over " << generate_alias(from.value()) << '\n';
+
+    ostr << util::format_message_comment(
+                m.comment().value(), config().message_comment_width())
+         << '\n';
+
+    ostr << "end note" << '\n';
 }
 
 void generator::generate_participant(
