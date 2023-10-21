@@ -102,12 +102,23 @@ public:
 
 protected:
     /**
-     * @brief Set source location in diagram element
+     * @brief Process comment directives in comment attached to a declaration
      *
      * @param decl Reference to @ref clang::NamedDecl
      * @param element Reference to element to be updated
      */
     void process_comment(const clang::NamedDecl &decl,
+        clanguml::common::model::decorated_element &e);
+
+    /**
+     * @brief Process comment directives in raw comment
+     *
+     * @param comment clang::RawComment pointer
+     * @param de Reference to clang::DiagnosticsEngine
+     * @param element Reference to element to be updated
+     */
+    void process_comment(const clang::RawComment *comment,
+        clang::DiagnosticsEngine &de,
         clanguml::common::model::decorated_element &e);
 
 private:
@@ -118,5 +129,7 @@ private:
     std::filesystem::path relative_to_path_;
 
     std::filesystem::path translation_unit_path_;
+
+    std::set<const clang::RawComment *> processed_comments_;
 };
 } // namespace clanguml::common::visitor

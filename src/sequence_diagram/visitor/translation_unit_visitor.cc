@@ -613,8 +613,8 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
             message m{message_t::kElseIf, current_caller_id};
             set_source_location(*stmt, m);
             m.condition_text(condition_text);
-            m.set_comment(clanguml::common::get_expression_comment(
-                source_manager(), *context().get_ast_context(), stmt));
+            m.set_comment(get_expression_comment(source_manager(),
+                *context().get_ast_context(), current_caller_id, stmt));
             diagram().add_block_message(std::move(m));
         }
         else {
@@ -623,8 +623,8 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
             message m{message_t::kIf, current_caller_id};
             set_source_location(*stmt, m);
             m.condition_text(condition_text);
-            m.set_comment(clanguml::common::get_expression_comment(
-                source_manager(), *context().get_ast_context(), stmt));
+            m.set_comment(get_expression_comment(source_manager(),
+                *context().get_ast_context(), current_caller_id, stmt));
             diagram().add_block_message(std::move(m));
         }
     }
@@ -659,8 +659,8 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
         message m{message_t::kWhile, current_caller_id};
         set_source_location(*stmt, m);
         m.condition_text(condition_text);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
@@ -691,8 +691,8 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
         message m{message_t::kDo, current_caller_id};
         set_source_location(*stmt, m);
         m.condition_text(condition_text);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
 
@@ -725,8 +725,8 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
         set_source_location(*stmt, m);
         m.condition_text(condition_text);
 
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
 
         diagram().add_block_message(std::move(m));
     }
@@ -754,8 +754,8 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
         context().enter_trystmt(stmt);
         message m{message_t::kTry, current_caller_id};
         set_source_location(*stmt, m);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
 
@@ -814,8 +814,8 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
         m.condition_text(condition_text);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
 
@@ -841,8 +841,8 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
         context().enter_switchstmt(stmt);
         model::message m{message_t::kSwitch, current_caller_id};
         set_source_location(*stmt, m);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
 
@@ -909,8 +909,8 @@ bool translation_unit_visitor::TraverseConditionalOperator(
         model::message m{message_t::kConditional, current_caller_id};
         set_source_location(*stmt, m);
         m.condition_text(condition_text);
-        m.set_comment(clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), stmt));
+        m.set_comment(get_expression_comment(source_manager(),
+            *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
 
@@ -959,6 +959,13 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     m.in_static_declaration_context(within_static_variable_declaration_ > 0);
 
     set_source_location(*expr, m);
+
+    process_comment(clanguml::common::get_expression_raw_comment(
+                        source_manager(), *context().get_ast_context(), expr),
+        context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
 
     // If we're currently inside a lambda expression, set it's id as
     // message source rather then enclosing context
@@ -1035,8 +1042,8 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     if (m.from() > 0 && m.to() > 0) {
-        auto expr_comment = clanguml::common::get_expression_comment(
-            source_manager(), *context().get_ast_context(), expr);
+        auto expr_comment = get_expression_comment(source_manager(),
+            *context().get_ast_context(), context().caller_id(), expr);
         m.set_comment(expr_comment);
 
         if (diagram().sequences().find(m.from()) ==
@@ -2518,5 +2525,22 @@ bool translation_unit_visitor::should_include(
     return diagram().should_include(
                namespace_{decl->getQualifiedNameAsString()}) &&
         diagram().should_include(common::model::source_file{decl_file});
+}
+
+std::optional<std::string> translation_unit_visitor::get_expression_comment(
+    const clang::SourceManager &sm, const clang::ASTContext &context,
+    const int64_t caller_id, const clang::Stmt *stmt)
+{
+    const auto *raw_comment =
+        clanguml::common::get_expression_raw_comment(sm, context, stmt);
+
+    if (raw_comment == nullptr)
+        return {};
+
+    if (!processed_comments_.emplace(caller_id, raw_comment).second) {
+        return {};
+    }
+
+    return raw_comment->getFormattedText(sm, sm.getDiagnostics());
 }
 } // namespace clanguml::sequence_diagram::visitor

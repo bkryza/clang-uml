@@ -849,9 +849,8 @@ bool parse_source_location(const std::string &location_str, std::string &file,
     return true;
 }
 
-std::optional<std::string> get_expression_comment(
-    const clang::SourceManager &sm, const clang::ASTContext &context,
-    const clang::Stmt *stmt)
+clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const clang::Stmt *stmt)
 {
     // First get the first line of the expression
     auto expr_begin = stmt->getSourceRange().getBegin();
@@ -859,17 +858,13 @@ std::optional<std::string> get_expression_comment(
 
     if (!context.Comments.empty())
         for (const auto [offset, raw_comment] :
-            *context.Comments.getCommentsInFile(sm.getMainFileID())) {
-
-            auto comment =
-                raw_comment->getFormattedText(sm, sm.getDiagnostics());
-
+            *context.Comments.getCommentsInFile(sm.getFileID(expr_begin))) {
             const auto comment_end_line = sm.getSpellingLineNumber(
                 raw_comment->getSourceRange().getEnd());
 
             if (expr_begin_line == comment_end_line ||
                 expr_begin_line == comment_end_line + 1)
-                return comment;
+                return raw_comment;
         }
 
     return {};

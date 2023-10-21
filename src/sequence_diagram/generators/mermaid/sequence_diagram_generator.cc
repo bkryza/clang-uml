@@ -56,12 +56,31 @@ void generator::generate_diagram_type(std::ostream &ostr) const
 void generator::generate_message_comment(
     std::ostream &ostr, const model::message &m) const
 {
-    if (!config().generate_message_comments() || !m.comment())
+    const auto &from = model().get_participant<model::participant>(m.from());
+    if (!from)
         return;
 
-    const auto &from = model().get_participant<model::participant>(m.from());
+    bool comment_generated_from_note_decorators{false};
+    for (const auto &decorator : m.decorators()) {
+        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+        if (note && note->applies_to_diagram(config().name)) {
+            comment_generated_from_note_decorators = true;
 
-    if (!from)
+            ostr << indent(1) << "note over " << generate_alias(from.value())
+                 << ": ";
+
+            auto formatted_message = util::format_message_comment(
+                note->text, config().message_comment_width());
+
+            util::replace_all(formatted_message, "\n", "<br/>");
+            ostr << formatted_message << '\n';
+        }
+    }
+
+    if (comment_generated_from_note_decorators)
+        return;
+
+    if (!config().generate_message_comments() || !m.comment())
         return;
 
     ostr << indent(1) << "note over " << generate_alias(from.value()) << ": ";

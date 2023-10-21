@@ -42,7 +42,7 @@ Main features supported so far include:
     * Support for plain C99/C11 code (struct and units relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
 * **Sequence diagram generation**
-    * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t00002.md)
+    * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t20001.md)
     * Generation of loop and conditional statements - [_example_](docs/test_cases/t20021.md)
     * Generation of switch statements - [_example_](docs/test_cases/t20024.md)
     * Generation of try/catch blocks - [_example_](docs/test_cases/t20023.md)

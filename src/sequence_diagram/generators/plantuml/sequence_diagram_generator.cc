@@ -279,12 +279,30 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 void generator::generate_message_comment(
     std::ostream &ostr, const model::message &m) const
 {
-    if (!config().generate_message_comments() || !m.comment())
+    const auto &from = model().get_participant<model::participant>(m.from());
+    if (!from)
         return;
 
-    const auto &from = model().get_participant<model::participant>(m.from());
+    bool comment_generated_from_note_decorators{false};
+    for (const auto &decorator : m.decorators()) {
+        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
+        if (note && note->applies_to_diagram(config().name)) {
+            comment_generated_from_note_decorators = true;
 
-    if (!from)
+            ostr << "note over " << generate_alias(from.value()) << '\n';
+
+            ostr << util::format_message_comment(
+                        note->text, config().message_comment_width())
+                 << '\n';
+
+            ostr << "end note" << '\n';
+        }
+    }
+
+    if (comment_generated_from_note_decorators)
+        return;
+
+    if (!config().generate_message_comments() || !m.comment())
         return;
 
     ostr << "note over " << generate_alias(from.value()) << '\n';
