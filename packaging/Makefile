@@ -121,7 +121,7 @@ deb: _BUILD/$(SOURCE_ARCHIVE_DEB)
 		# BUILD SOURCE PACKAGE FOR LAUNCHPAD
 		debuild -S -sa -us -d -k$(GPG_KEY)
 		# BUILD LOCALLY BINARY PACKAGE
-		# debuild -us -uc
+		# DEB_BUILD_OPTIONS='parallel=16' debuild -us -uc
 
 conda:
 		echo "############################"

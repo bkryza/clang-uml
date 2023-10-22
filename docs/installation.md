@@ -184,18 +184,19 @@ installed manually. The completion scripts are available in directory:
 * [`packaging/autocomplete`](./packaging/autocomplete)
 
 #### Bash
-The `clang-uml.bash-completion` script can be either directly loaded to the
+The `clang-uml` script can be either directly loaded to the
 current Bash session using:
 
 ```shell
-source clang-uml.bash-completion
+source clang-uml
 ```
 
-or the script can be copied to the `/etc/bash_completion.d` on Linux or
-to `/usr/local/etc/bash_completion.d` on `macos` with `Homebrew`.
+or the script can be copied to `/usr/share/bash-completion/completions/`
+or `/etc/bash_completion.d` on Linux or to `/usr/local/etc/bash_completion.d` on
+`macos` with `Homebrew`.
 
 ```shell
-sudo cp clang-uml.bash-completion /etc/bash_completion.d/clang-uml
+sudo cp packaging/autocomplete/clang-uml /usr/share/bash-completion/completions/
 ```
 
 Make sure autocompletion is enabled in your `~/.bashrc` or `~/.bash_profile`:

@@ -9,7 +9,7 @@
 cd packaging
 make DIST=focal deb
 make DIST=jammy deb
-make DIST=kinetic deb
+make DIST=lunar deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes
