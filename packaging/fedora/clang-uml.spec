@@ -47,6 +47,10 @@ generated in PlantUML format.
 
 %install
 %cmake_install
+mkdir -p %{buildroot}/%{_datadir}/bash-completion/completions
+mkdir -p %{buildroot}/%{_datadir}/zsh/site-functions
+cp -p packaging/autocomplete/clang-uml %{buildroot}/%{_datadir}/bash-completion/completions/clang-uml
+cp -p packaging/autocomplete/_clang-uml %{buildroot}/%{_datadir}/zsh/site-functions/_clang-uml
 rm -f %{buildroot}/%{_infodir}/dir
 
 %post
@@ -59,7 +63,8 @@ fi
 
 %files
 %{_bindir}/clang-uml
-
+%{_datadir}/bash-completion/completions/clang-uml
+%{_datadir}/zsh/site-functions/_clang-uml
 %doc CHANGELOG.md README.md AUTHORS.md LICENSE.md
 %license LICENSE.md
 
