@@ -111,6 +111,8 @@ std::string to_string(
 
 std::string to_string(const clang::Expr *expr);
 
+std::string to_string(const clang::ValueDecl *val);
+
 std::string to_string(const clang::Stmt *stmt);
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);

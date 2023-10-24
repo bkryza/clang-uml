@@ -76,7 +76,7 @@ clang::ASTContext *call_expression_context::get_ast_context() const
     }
 
     if (current_method_decl_ != nullptr) {
-        return &current_function_decl_->getASTContext();
+        return &current_method_decl_->getASTContext();
     }
 
     return nullptr;

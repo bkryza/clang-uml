@@ -238,6 +238,11 @@ std::string to_string(const clang::Expr *expr)
     return result;
 }
 
+std::string to_string(const clang::ValueDecl *val)
+{
+    return val->getQualifiedNameAsString();
+}
+
 std::string to_string(const clang::Stmt *stmt)
 {
     const clang::LangOptions lang_options;
