@@ -136,14 +136,21 @@ endif()
 # Setup custom compile options depending on various compiler
 # and environment quirks
 #
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.0")
+        # Workaround over Wdangling-reference false positives in libfmt
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-dangling-reference)
+    endif()
+endif()
+
 if(LLVM_VERSION_MAJOR GREATER_EQUAL 17)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(CUSTOM_COMPILE_OPTIONS "-Wno-class-memaccess")
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-class-memaccess)
     endif()
 endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CUSTOM_COMPILE_OPTIONS
-            "${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field")
+            ${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field)
 endif()
 
 #
