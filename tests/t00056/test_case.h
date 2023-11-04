@@ -54,10 +54,10 @@ TEST_CASE("t00056", "[test-case][class]")
         REQUIRE_THAT(
             src, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
 
-#ifdef _MSC_VER
+#if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
         REQUIRE_THAT(src,
             IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string{s}"));
+                _A("convertible_to_string<T>"), "std::string({s})"));
 #else
         REQUIRE_THAT(src,
             IsConceptRequirement(
@@ -161,10 +161,10 @@ TEST_CASE("t00056", "[test-case][class]")
         REQUIRE_THAT(
             src, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
 
-#ifdef _MSC_VER
+#if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
         REQUIRE_THAT(src,
             IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string{s}"));
+                _A("convertible_to_string<T>"), "std::string({s})"));
 #else
         REQUIRE_THAT(src,
             IsConceptRequirement(

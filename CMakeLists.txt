@@ -46,6 +46,7 @@ endif(APPLE)
 #
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries" ON)
 set(LLVM_VERSION CACHE STRING "Major LLVM version to use (e.g. 15)")
+set(LLVM_CONFIG_PATH CACHE STRING "Path to llvm-config binary")
 
 #
 # Setup version string
@@ -58,79 +59,7 @@ message(STATUS "clang-uml version: "
 #
 # Setup LLVM
 #
-message(STATUS "Checking for LLVM and Clang...")
-if(LLVM_PREFIX)
-    message(STATUS "Using llvm-config from ${LLVM_CONFIG_PATH}")
-    set(LIBCLANG_LLVM_CONFIG_EXECUTABLE ${LLVM_CONFIG_PATH})
-    set(LLVM_CONFIG_BINARY ${LLVM_CONFIG_PATH})
-endif(LLVM_PREFIX)
-
-find_package(LLVM ${LLVM_VERSION} CONFIG REQUIRED)
-
-list(APPEND CMAKE_MODULE_PATH ${LLVM_DIR})
-include(AddLLVM)
-
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-message(STATUS "LLVM library dir: ${LLVM_LIBRARY_DIR}")
-
-if(MSVC)
-    # LLVM_BUILD_LLVM_DYLIB is not available on Windows
-    set(LINK_LLVM_SHARED NO)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif(MSVC)
-
-if(LINK_LLVM_SHARED)
-    set(LIBTOOLING_LIBS clang-cpp LLVM)
-else(LINK_LLVM_SHARED)
-    set(LIBTOOLING_LIBS
-        clangLex
-        clangFrontend
-        clangSerialization
-        clangDriver
-        clangParse
-        clangSema
-        clangSupport
-        clangAnalysis
-        clangAST
-        clangBasic
-        clangEdit
-        clangLex
-        clangTooling
-        LLVMipo
-        LLVMScalarOpts
-        LLVMInstCombine
-        LLVMTransformUtils
-        LLVMAnalysis
-        LLVMTarget
-        LLVMOption
-        LLVMMCParser
-        LLVMMC
-        LLVMObject
-        LLVMBitReader
-        LLVMCore
-        LLVMSupport)
-    if(MSVC)
-        if(${LLVM_PACKAGE_VERSION} VERSION_LESS "15.0")
-            list(REMOVE_ITEM LIBTOOLING_LIBS clangSupport)
-        else()
-            list(APPEND LIBTOOLING_LIBS
-                        LLVMWindowsDriver
-                        LLVMWindowsManifest)
-        endif()
-    endif(MSVC)
-endif(LINK_LLVM_SHARED)
-
-if("${LIBTOOLING_LIBS}" STREQUAL "")
-    message(FATAL_ERROR "Failed to find LibTooling libraries!")
-else()
-    message(STATUS "Found LibTooling libraries: ${LIBTOOLING_LIBS}")
-endif()
-
-if(APPLE OR (LLVM_VERSION_MAJOR GREATER_EQUAL 16))
-    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES
-            ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-endif()
+include(LLVMSetup)
 
 #
 # Setup custom compile options depending on various compiler
@@ -163,8 +92,6 @@ find_package(Threads REQUIRED)
 #
 message(STATUS "Checking for yaml-cpp...")
 if(APPLE)
-
-
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(YAML_CPP yaml-cpp)
