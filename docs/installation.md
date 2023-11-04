@@ -33,16 +33,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.0/clang-uml-0.4.0-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.0-1.fc36.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc36.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.1-1.fc36.x86_64.rpm
 
 # Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.0/clang-uml-0.4.0-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.0-1.fc37.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.1-1.fc37.x86_64.rpm
 
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.0/clang-uml-0.4.0-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.0-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.1-1.fc38.x86_64.rpm
 ```
 
 #### Conda
@@ -78,7 +78,9 @@ make release
 release/src/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
-LLVM_VERSION=14 make release
+LLVM_VERSION=16 make release
+# or specify path to a specific llvm-config binary, e.g.:
+LLVM_CONFIG_PATH=/usr/bin/llvm-config-16 make release
 
 # Optionally, to install in default prefix
 make install
@@ -95,7 +97,7 @@ brew install ccache cmake llvm yaml-cpp
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CCX=/usr/local/opt/llvm/bin/clang++
-LLVM_VERSION=14 make release
+LLVM_VERSION=16 make release
 ```
 
 #### Windows
@@ -164,10 +166,12 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.4.0
+clang-uml 0.4.1
 Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>
-Built against LLVM/Clang libraries version: 15.0.6
-Using LLVM/Clang libraries version: clang version 15.0.6 (https://github.com/llvm/llvm-project.git 088f33605d8a61ff519c580a71b1dd57d16a03f8)
+Linux x86_64 6.2.0-36-generic
+Built against LLVM/Clang libraries version: 17.0.3
+Using LLVM/Clang libraries version: Ubuntu clang version 17.0.3 (++20231010073202+37b79e779f44-1~exp1~20231010073304.52)
+
 ```
 
 Finally, remove the temporary build directory:
