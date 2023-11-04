@@ -1014,7 +1014,7 @@ EXAMPLE_RECURSIVE      = NO
 # \image command).
 
 IMAGE_PATH             = docs/img
-IMAGE_PATH             += docs/diagrams
+IMAGE_PATH             += docs/diagrams/plantuml
 IMAGE_PATH             += docs/test_cases
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
