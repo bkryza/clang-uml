@@ -443,18 +443,32 @@ private:
 };
 
 /**
- * Match diagram elements which are in direct relationship to any of the
- * elements specified in context.
+ * Match diagram elements which are in within a 'radius' distance relationship
+ * to any of the elements specified in context.
  */
 struct context_filter : public filter_visitor {
-    context_filter(filter_t type, std::vector<common::string_or_regex> context);
+    context_filter(filter_t type, std::vector<common::string_or_regex> context,
+        unsigned radius = 1);
 
     ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
 private:
+    void initialize(const diagram &d) const;
+
+    const unsigned radius_;
+
     std::vector<common::string_or_regex> context_;
+
+    /*!
+     * Represents all elements which should belong to the diagram based
+     * on this filter. It is populated by the initialize() method.
+     */
+    mutable std::set<clanguml::common::id_t> effective_context_;
+
+    /*! Flag to mark whether the filter context has been computed */
+    mutable bool initialized_{false};
 };
 
 /**
