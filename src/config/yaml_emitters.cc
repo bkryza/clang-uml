@@ -104,6 +104,19 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const package_type_t &r)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const context_config &c)
+{
+    out << YAML::BeginMap;
+    out << YAML::Key << "match";
+    out << YAML::BeginMap;
+    out << YAML::Key << "radius" << YAML::Value << c.radius;
+    out << YAML::Key << "pattern" << YAML::Value << c.pattern;
+    out << YAML::EndMap;
+    out << YAML::EndMap;
+
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
 {
     out << YAML::BeginMap;

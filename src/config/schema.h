@@ -112,6 +112,13 @@ types:
         - function
         - function_template
         - lambda
+    context_filter_match_t:
+        match:
+            radius: int
+            pattern: regex_or_string_t
+    context_filter_t:
+        - regex_or_string_t
+        - context_filter_match_t
     filter_t:
         namespaces: !optional [regex_or_string_t]
         elements: !optional [regex_or_string_t]
@@ -123,7 +130,7 @@ types:
         specializations: !optional [regex_or_string_t]
         dependants: !optional [regex_or_string_t]
         dependencies: !optional [regex_or_string_t]
-        context: !optional [regex_or_string_t]
+        context: !optional [context_filter_t]
         paths: !optional [string]
         method_types: !optional [method_type_filter_t]
         callee_types: !optional [callee_type_filter_t]

@@ -447,7 +447,7 @@ private:
  * to any of the elements specified in context.
  */
 struct context_filter : public filter_visitor {
-    context_filter(filter_t type, std::vector<common::string_or_regex> context,
+    context_filter(filter_t type, std::vector<config::context_config> context,
         unsigned radius = 1);
 
     ~context_filter() override = default;
@@ -457,15 +457,15 @@ struct context_filter : public filter_visitor {
 private:
     void initialize(const diagram &d) const;
 
-    const unsigned radius_;
+    void initialize_effective_context(const diagram &d, unsigned idx) const;
 
-    std::vector<common::string_or_regex> context_;
+    std::vector<config::context_config> context_;
 
     /*!
      * Represents all elements which should belong to the diagram based
      * on this filter. It is populated by the initialize() method.
      */
-    mutable std::set<clanguml::common::id_t> effective_context_;
+    mutable std::vector<std::set<clanguml::common::id_t>> effective_contexts_;
 
     /*! Flag to mark whether the filter context has been computed */
     mutable bool initialized_{false};

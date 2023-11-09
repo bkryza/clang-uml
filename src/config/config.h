@@ -141,6 +141,11 @@ struct mermaid {
     void append(const mermaid &r);
 };
 
+struct context_config {
+    common::string_or_regex pattern;
+    unsigned radius{0};
+};
+
 /**
  * @brief Definition of diagram template
  */
@@ -316,9 +321,13 @@ struct filter {
      *   include:
      *     context:
      *       - ns1::ns2::ClassA
+     *       - r: ns1::ns2::ClassB<.*>
+     *       - match:
+     *           pattern: ns1::ns2::ClassA
+     *           radius: 3
      * ```
      */
-    std::vector<common::string_or_regex> context;
+    std::vector<context_config> context;
 
     /*! @brief Paths filter
      *

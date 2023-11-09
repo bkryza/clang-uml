@@ -534,39 +534,35 @@ tvl::value_t access_filter::match(
         [&a](const auto &access) { return a == access; });
 }
 
-context_filter::context_filter(filter_t type,
-    std::vector<common::string_or_regex> context, unsigned radius)
+context_filter::context_filter(
+    filter_t type, std::vector<config::context_config> context, unsigned radius)
     : filter_visitor{type}
-    , radius_{radius}
     , context_{std::move(context)}
 {
 }
 
-void context_filter::initialize(const diagram &d) const
+void context_filter::initialize_effective_context(
+    const diagram &d, unsigned idx) const
 {
-    if (initialized_)
-        return;
-
-    initialized_ = true;
-
     bool effective_context_extended{true};
 
-    // First add to effective context all elements matching context_
-    for (const auto &c : context_) {
-        const auto &context_matches =
-            static_cast<const class_diagram::model::diagram &>(d)
-                .find<class_diagram::model::class_>(c);
+    auto &effective_context = effective_contexts_[idx];
 
-        for (const auto &maybe_match : context_matches) {
-            if (maybe_match)
-                effective_context_.emplace(maybe_match.value().id());
-        }
+    // First add to effective context all elements matching context_
+    const auto &context = context_.at(idx);
+    const auto &context_matches =
+        static_cast<const class_diagram::model::diagram &>(d)
+            .find<class_diagram::model::class_>(context.pattern);
+
+    for (const auto &maybe_match : context_matches) {
+        if (maybe_match)
+            effective_context.emplace(maybe_match.value().id());
     }
 
     // Now repeat radius times - extend the effective context with elements
     // matching in direct relationship to what is in context
-    auto radius_counter = radius_;
-    decltype(effective_context_) current_iteration_context;
+    auto radius_counter = context.radius;
+    std::set<clanguml::common::id_t> current_iteration_context;
 
     while (radius_counter > 0 && effective_context_extended) {
         // If at any iteration the effective context was not extended - we
@@ -581,13 +577,13 @@ void context_filter::initialize(const diagram &d) const
             // Return a positive match if the element e is in a direct
             // relationship with any of the effective context elements ...
             for (const relationship &rel : c.get().relationships()) {
-                for (const auto &ec : effective_context_) {
+                for (const auto &ec : effective_context) {
                     if (d.should_include(rel.type()) && rel.destination() == ec)
                         current_iteration_context.emplace(c.get().id());
                 }
             }
             // ... or vice-versa
-            for (const auto &ec : effective_context_) {
+            for (const auto &ec : effective_context) {
                 const auto &maybe_class =
                     static_cast<const class_diagram::model::diagram &>(d)
                         .find<class_diagram::model::class_>(ec);
@@ -608,7 +604,7 @@ void context_filter::initialize(const diagram &d) const
             // effective context...
             for (const class_diagram::model::class_parent &p :
                 c.get().parents()) {
-                for (const auto &ec : effective_context_) {
+                for (const auto &ec : effective_context) {
                     const auto &maybe_parent =
                         static_cast<const class_diagram::model::diagram &>(d)
                             .find<class_diagram::model::class_>(ec);
@@ -622,7 +618,7 @@ void context_filter::initialize(const diagram &d) const
             }
 
             // .. or vice-versa
-            for (const auto &ec : effective_context_) {
+            for (const auto &ec : effective_context) {
                 const auto &maybe_child =
                     static_cast<const class_diagram::model::diagram &>(d)
                         .find<class_diagram::model::class_>(ec);
@@ -637,12 +633,26 @@ void context_filter::initialize(const diagram &d) const
         }
 
         for (auto id : current_iteration_context) {
-            if (effective_context_.count(id) == 0) {
+            if (effective_context.count(id) == 0) {
                 // Found new element to add to context
-                effective_context_.emplace(id);
+                effective_context.emplace(id);
                 effective_context_extended = true;
             }
         }
+    }
+}
+
+void context_filter::initialize(const diagram &d) const
+{
+    if (initialized_)
+        return;
+
+    initialized_ = true;
+
+    // Prepare effective_contexts_
+    for (auto i = 0U; i < context_.size(); i++) {
+        effective_contexts_.push_back({});
+        initialize_effective_context(d, i);
     }
 }
 
@@ -658,11 +668,14 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
 
     initialize(d);
 
-    if (effective_context_.empty())
+    if (std::all_of(effective_contexts_.begin(), effective_contexts_.end(),
+            [](const auto &ec) { return ec.empty(); }))
         return {};
 
-    if (effective_context_.count(e.id()) > 0)
-        return true;
+    for (const auto &ec : effective_contexts_) {
+        if (ec.count(e.id()) > 0)
+            return true;
+    }
 
     return false;
 }
