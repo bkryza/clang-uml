@@ -426,7 +426,7 @@ template <> struct convert<context_config> {
         using namespace std::string_literals;
         if (node.IsMap() && has_key(node, "match")) {
             rhs.radius = node["match"]["radius"].as<unsigned>();
-            rhs.pattern = node["match"]["radius"].as<string_or_regex>();
+            rhs.pattern = node["match"]["pattern"].as<string_or_regex>();
         }
         else {
             rhs.radius = 1;

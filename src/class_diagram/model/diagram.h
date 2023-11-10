@@ -176,6 +176,15 @@ public:
     opt_ref<ElementT> find(diagram_element::id_t id) const;
 
     /**
+     * @brief Get reference to vector of elements of specific type
+     *
+     * @tparam ElementT Type of elements view
+     * @return Reference to elements vector
+     */
+    template <typename ElementT>
+    const common::reference_vector<ElementT> &elements() const;
+
+    /**
      * @brief Add element to the diagram at a specified nested path.
      *
      * Adds an element to a diagram, at a specific package (if any exist).
@@ -381,6 +390,12 @@ opt_ref<ElementT> diagram::find(diagram_element::id_t id) const
     }
 
     return {};
+}
+
+template <typename ElementT>
+const common::reference_vector<ElementT> &diagram::elements() const
+{
+    return element_view<ElementT>::view();
 }
 
 //
