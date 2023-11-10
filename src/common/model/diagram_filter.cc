@@ -535,10 +535,144 @@ tvl::value_t access_filter::match(
 }
 
 context_filter::context_filter(
-    filter_t type, std::vector<common::string_or_regex> context)
+    filter_t type, std::vector<config::context_config> context)
     : filter_visitor{type}
     , context_{std::move(context)}
 {
+}
+
+void context_filter::initialize_effective_context(
+    const diagram &d, unsigned idx) const
+{
+    bool effective_context_extended{true};
+
+    auto &effective_context = effective_contexts_[idx];
+
+    // First add to effective context all elements matching context_ patterns
+    const auto &context = context_.at(idx);
+    const auto &context_matches =
+        dynamic_cast<const class_diagram::model::diagram &>(d)
+            .find<class_diagram::model::class_>(context.pattern);
+
+    for (const auto &maybe_match : context_matches) {
+        if (maybe_match)
+            effective_context.emplace(maybe_match.value().id());
+    }
+
+    // Now repeat radius times - extend the effective context with elements
+    // matching in direct relationship to what is in context
+    auto radius_counter = context.radius;
+    std::set<clanguml::common::id_t> current_iteration_context;
+
+    while (radius_counter > 0 && effective_context_extended) {
+        // If at any iteration the effective context was not extended - we
+        // don't to need to continue
+        radius_counter--;
+        effective_context_extended = false;
+        current_iteration_context.clear();
+
+        // For each class in the model
+        find_elements_in_direct_relationship<class_diagram::model::class_>(
+            d, effective_context, current_iteration_context);
+
+        find_elements_inheritance_relationship(
+            d, effective_context, current_iteration_context);
+
+        // For each enum in the model
+        find_elements_in_relationship_with_enum(
+            d, effective_context, current_iteration_context);
+
+        // For each concept in the model
+        find_elements_in_direct_relationship<class_diagram::model::concept_>(
+            d, effective_context, current_iteration_context);
+
+        for (auto id : current_iteration_context) {
+            if (effective_context.count(id) == 0) {
+                // Found new element to add to context
+                effective_context.emplace(id);
+                effective_context_extended = true;
+            }
+        }
+    }
+}
+
+void context_filter::find_elements_in_relationship_with_enum(const diagram &d,
+    std::set<id_t> &effective_context,
+    std::set<clanguml::common::id_t> &current_iteration_context) const
+{
+
+    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+    for (const auto &enm : cd.enums()) {
+
+        for (const auto &ec : effective_context) {
+            const auto &maybe_class = cd.find<class_diagram::model::class_>(ec);
+
+            if (!maybe_class)
+                continue;
+
+            for (const relationship &rel :
+                maybe_class.value().relationships()) {
+
+                if (d.should_include(rel.type()) &&
+                    rel.destination() == enm.get().id())
+                    current_iteration_context.emplace(enm.get().id());
+            }
+        }
+    }
+}
+
+void context_filter::find_elements_inheritance_relationship(const diagram &d,
+    std::set<id_t> &effective_context,
+    std::set<clanguml::common::id_t> &current_iteration_context) const
+{
+    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+    for (const auto &c : cd.classes()) {
+        // Check if any of the elements parents are already in the
+        // effective context...
+        for (const class_diagram::model::class_parent &p : c.get().parents()) {
+            for (const auto &ec : effective_context) {
+                const auto &maybe_parent =
+                    cd.find<class_diagram::model::class_>(ec);
+                if (!maybe_parent)
+                    continue;
+
+                if (d.should_include(relationship_t::kExtension) &&
+                    maybe_parent.value().full_name(false) == p.name())
+                    current_iteration_context.emplace(c.get().id());
+            }
+        }
+
+        // .. or vice-versa
+        for (const auto &ec : effective_context) {
+            const auto &maybe_child = cd.find<class_diagram::model::class_>(ec);
+
+            // The element might not exist because it might have been
+            // something other than a class
+            if (!maybe_child)
+                continue;
+
+            for (const auto &p : maybe_child.value().parents()) {
+                if (p.name() == c.get().full_name(false)) {
+                    current_iteration_context.emplace(c.get().id());
+                }
+            }
+        }
+    }
+}
+
+void context_filter::initialize(const diagram &d) const
+{
+    if (initialized_)
+        return;
+
+    initialized_ = true;
+
+    // Prepare effective_contexts_
+    for (auto i = 0U; i < context_.size(); i++) {
+        effective_contexts_.push_back({});
+        initialize_effective_context(d, i);
+    }
 }
 
 tvl::value_t context_filter::match(const diagram &d, const element &e) const
@@ -551,53 +685,18 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
     if (!d.complete())
         return {};
 
-    return tvl::any_of(context_.begin(), context_.end(),
-        [&e, &d](const auto &context_root_pattern) {
-            const auto &context_roots =
-                static_cast<const class_diagram::model::diagram &>(d)
-                    .find<class_diagram::model::class_>(context_root_pattern);
+    initialize(d);
 
-            for (auto &context_root : context_roots) {
-                if (context_root.has_value()) {
-                    // This is a direct match to the context root
-                    if (context_root.value().id() == e.id())
-                        return true;
+    if (std::all_of(effective_contexts_.begin(), effective_contexts_.end(),
+            [](const auto &ec) { return ec.empty(); }))
+        return {};
 
-                    // Return a positive match if the element e is in a direct
-                    // relationship with any of the context_root's
-                    for (const relationship &rel :
-                        context_root.value().relationships()) {
-                        if (d.should_include(rel.type()) &&
-                            rel.destination() == e.id())
-                            return true;
-                    }
-                    for (const relationship &rel : e.relationships()) {
-                        if (d.should_include(rel.type()) &&
-                            rel.destination() == context_root.value().id())
-                            return true;
-                    }
+    for (const auto &ec : effective_contexts_) {
+        if (ec.count(e.id()) > 0)
+            return true;
+    }
 
-                    // Return a positive match if the context_root is a parent
-                    // of the element
-                    for (const class_diagram::model::class_parent &p :
-                        context_root.value().parents()) {
-                        if (p.name() == e.full_name(false))
-                            return true;
-                    }
-                    if (dynamic_cast<const class_diagram::model::class_ *>(
-                            &e) != nullptr) {
-                        for (const class_diagram::model::class_parent &p :
-                            static_cast<const class_diagram::model::class_ &>(e)
-                                .parents()) {
-                            if (p.name() ==
-                                context_root.value().full_name(false))
-                                return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        });
+    return false;
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
@@ -630,15 +729,17 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
                 match_successful = true;
             }
             catch (std::filesystem::filesystem_error &e) {
-                LOG_WARN("Cannot add non-existent path {} to paths filter",
+                LOG_WARN("Cannot add non-existent path {} to "
+                         "paths filter",
                     absolute_path.string());
                 continue;
             }
         }
 
         if (!match_successful)
-            LOG_WARN(
-                "Paths filter pattern '{}' did not match any files...", path);
+            LOG_WARN("Paths filter pattern '{}' did not match "
+                     "any files...",
+                path);
     }
 }
 

@@ -29,16 +29,16 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
     REQUIRE(model->name() == "{{ name }}_{{ type }}");
 
     {
-        auto puml = generate_{{ type }}_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        auto src = generate_{{ type }}_puml(diagram, *model);
+        AliasMatcher _A(src);
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
+        REQUIRE_THAT(src, StartsWith("@startuml"));
+        REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
         {{ examples }}
 
         save_puml(
-            config.output_directory(), diagram->name + ".puml", puml);
+            config.output_directory(), diagram->name + ".puml", src);
     }
 
     {
@@ -49,4 +49,12 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
 
+    {
+        auto src = generate_class_mermaid(diagram, *model);
+
+        mermaid::AliasMatcher _A(src);
+        using mermaid::IsClass;
+
+        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
+    }
 }

@@ -33,6 +33,7 @@ using clanguml::common::model::relationship_t;
 using clanguml::config::callee_type;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
+using clanguml::config::context_config;
 using clanguml::config::diagram_template;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
@@ -413,6 +414,23 @@ template <> struct convert<string_or_regex> {
         }
         else {
             rhs = string_or_regex{node.as<std::string>()};
+        }
+
+        return true;
+    }
+};
+
+template <> struct convert<context_config> {
+    static bool decode(const Node &node, context_config &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap() && has_key(node, "match")) {
+            rhs.radius = node["match"]["radius"].as<unsigned>();
+            rhs.pattern = node["match"]["pattern"].as<string_or_regex>();
+        }
+        else {
+            rhs.radius = 1;
+            rhs.pattern = node.as<string_or_regex>();
         }
 
         return true;

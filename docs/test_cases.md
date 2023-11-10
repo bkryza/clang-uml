@@ -72,6 +72,7 @@
  * [t00065](./test_cases/t00065.md) - Class diagram with packages from directory structure
  * [t00066](./test_cases/t00066.md) - Class fields and methods without grouping and sorting
  * [t00067](./test_cases/t00067.md) - Class method type filter test case
+ * [t00068](./test_cases/t00068.md) - Context filter radius parameter test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

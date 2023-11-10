@@ -126,8 +126,8 @@ paths to directories can be specified.
 
 ## context
 
-This filter allows to limit the diagram elements only to classes which are in direct relationship (of any kind) with
-the specified class:
+This filter allows to limit the diagram elements only to classes which are in
+direct relationship (of any kind) with the specified class, enum or concept:
 
 ```yaml
   include:
@@ -135,6 +135,23 @@ the specified class:
       - ns1::ns2::MyClass
 ```
 
+By default, the filter will only include or exclude items in direct
+relationship (radius 1). It is however possible to define the context filter
+and provide a custom radius:
+
+```yaml
+  include:
+    context:
+      - match:
+          radius: 3
+          pattern: ns1::ns2::MyClass
+      - match:
+          radius: 2
+          pattern: ns1::ns2::MyOtherClass
+```
+
+Please note that you can specify multiple context filters in a single diagram
+with different radius. Radius set to 0 will match only the given element.
 
 ## relationships
 

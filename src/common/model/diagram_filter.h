@@ -443,18 +443,75 @@ private:
 };
 
 /**
- * Match diagram elements which are in direct relationship to any of the
- * elements specified in context.
+ * Match diagram elements which are in within a 'radius' distance relationship
+ * to any of the elements specified in context.
  */
 struct context_filter : public filter_visitor {
-    context_filter(filter_t type, std::vector<common::string_or_regex> context);
+    context_filter(filter_t type, std::vector<config::context_config> context);
 
     ~context_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
 private:
-    std::vector<common::string_or_regex> context_;
+    void initialize(const diagram &d) const;
+
+    void initialize_effective_context(const diagram &d, unsigned idx) const;
+
+    template <typename ElementT>
+    void find_elements_in_direct_relationship(const diagram &d,
+        std::set<id_t> &effective_context,
+        std::set<clanguml::common::id_t> &current_iteration_context) const
+    {
+        static_assert(std::is_same_v<ElementT, class_diagram::model::class_> ||
+                std::is_same_v<ElementT, class_diagram::model::concept_>,
+            "ElementT must be either class_ or concept_");
+
+        const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+        for (const auto &el : cd.elements<ElementT>()) {
+            for (const relationship &rel : el.get().relationships()) {
+                for (const auto &ec : effective_context) {
+                    if (d.should_include(rel.type()) && rel.destination() == ec)
+                        current_iteration_context.emplace(el.get().id());
+                }
+            }
+
+            for (const auto &ec : effective_context) {
+                const auto &maybe_concept = cd.find<ElementT>(ec);
+
+                if (!maybe_concept)
+                    continue;
+
+                for (const relationship &rel :
+                    maybe_concept.value().relationships()) {
+
+                    if (d.should_include(rel.type()) &&
+                        rel.destination() == el.get().id())
+                        current_iteration_context.emplace(el.get().id());
+                }
+            }
+        }
+    }
+
+    void find_elements_inheritance_relationship(const diagram &d,
+        std::set<id_t> &effective_context,
+        std::set<clanguml::common::id_t> &current_iteration_context) const;
+
+    void find_elements_in_relationship_with_enum(const diagram &d,
+        std::set<id_t> &effective_context,
+        std::set<clanguml::common::id_t> &current_iteration_context) const;
+
+    std::vector<config::context_config> context_;
+
+    /*!
+     * Represents all elements which should belong to the diagram based
+     * on this filter. It is populated by the initialize() method.
+     */
+    mutable std::vector<std::set<clanguml::common::id_t>> effective_contexts_;
+
+    /*! Flag to mark whether the filter context has been computed */
+    mutable bool initialized_{false};
 };
 
 /**
