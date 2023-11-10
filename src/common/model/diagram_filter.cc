@@ -670,7 +670,7 @@ void context_filter::initialize(const diagram &d) const
 
     // Prepare effective_contexts_
     for (auto i = 0U; i < context_.size(); i++) {
-        effective_contexts_.push_back({}); // NOLINT
+        effective_contexts_.push_back({});
         initialize_effective_context(d, i);
     }
 }
