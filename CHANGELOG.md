@@ -1,5 +1,7 @@
 # CHANGELOG
 
+ *  Added radius parameter to context filter (#201)
+
 ### 0.4.1
  * Enabled manual call expression injection through comments (#196)
  * Added support for generating sequence diagram notes from comments (#194)
