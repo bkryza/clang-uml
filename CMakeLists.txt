@@ -47,6 +47,9 @@ endif(APPLE)
 option(LINK_LLVM_SHARED "Should LLVM be linked using shared libraries" ON)
 set(LLVM_VERSION CACHE STRING "Major LLVM version to use (e.g. 15)")
 set(LLVM_CONFIG_PATH CACHE STRING "Path to llvm-config binary")
+set(CMAKE_PREFIX CACHE STRING "Path to custom cmake modules")
+
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_PREFIX}")
 
 #
 # Setup version string
@@ -138,7 +141,7 @@ set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
 #
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
-include_directories(${YAML_CPP_INCLUDE_DIRS})
+include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)

@@ -138,4 +138,4 @@ conda:
 		$(call subst_conda_meta_yaml,PKG_SOURCE,..\/_BUILD\/conda\/clang-uml-$(VERSION).tar.$(TAR_EXT),conda)
 		$(call subst_conda_meta_yaml,GIT_COMMIT,${COMMIT},conda)
 		$(call subst_conda_meta_yaml,GIT_BRANCH,${BRANCH},conda)
-		conda build --user bkryza --token $(CONDA_TOKEN) ./conda
+		conda build --user bkryza --token $(CONDA_TOKEN) --label clang-uml ./conda
