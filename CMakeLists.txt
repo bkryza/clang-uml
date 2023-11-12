@@ -99,8 +99,8 @@ if(APPLE)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(YAML_CPP yaml-cpp)
         find_path(YAML_CPP_INCLUDE_DIR
-            NAMES yaml.h
-	        PATHS ${YAML_CPP_INCLUDE_DIR} ${HOMEBREW_PREFIX}/include/yaml-cpp)
+            NAMES yaml-cpp/yaml.h
+	        PATHS ${YAML_CPP_INCLUDE_DIR} ${HOMEBREW_PREFIX}/include)
         find_library(YAML_CPP_LIBRARY
             NAMES yaml-cpp
             PATHS ${YAML_CPP_LIBRARIES} ${HOMEBREW_PREFIX}/lib)
@@ -141,11 +141,11 @@ set(THIRDPARTY_HEADERS_DIR ${PROJECT_SOURCE_DIR}/thirdparty/)
 #
 include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(${CLANG_UML_INSTALL_INCLUDE_DIR})
-include_directories(${YAML_CPP_INCLUDE_DIR})
 include_directories(${UML_HEADERS_DIR})
 include_directories(${THIRDPARTY_HEADERS_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src/)
 include_directories(${PROJECT_BINARY_DIR}/src/version)
+include_directories(${YAML_CPP_INCLUDE_DIR})
 
 add_subdirectory(src)
 
