@@ -42,6 +42,8 @@ enum class generator_type_t {
 
 std::string to_string(const std::string &s);
 
+std::string to_string(generator_type_t type);
+
 /**
  * @brief Simple optional reference type.
  *

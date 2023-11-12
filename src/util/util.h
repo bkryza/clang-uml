@@ -99,6 +99,13 @@ std::string trim_typename(const std::string &s);
 std::string get_process_output(const std::string &command);
 
 /**
+ * @brief Execute command shell and throw exception if command fails
+ *
+ * @param command Command to execute
+ */
+void check_process_output(const std::string &command);
+
+/**
  * @brief Get value of an environment variable
  *
  * @param name Name of the environment variable

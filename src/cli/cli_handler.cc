@@ -138,6 +138,14 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "Do not perform configuration file schema validation");
     app.add_flag("--validate-only", validate_only,
         "Perform configuration file schema validation and exit");
+    app.add_flag("-r,--render_diagrams", render_diagrams,
+        "Automatically render generated diagrams using appropriate command");
+    app.add_option("--plantuml-cmd", plantuml_cmd,
+        "Command template to render PlantUML diagram, `{}` will be replaced "
+        "with diagram name.");
+    app.add_option("--mermaid-cmd", mermaid_cmd,
+        "Command template to render MermaidJS diagram, `{}` will be replaced "
+        "with diagram name.");
 
     try {
         app.parse(argc, argv);
@@ -183,6 +191,8 @@ cli_flow_t cli_handler::handle_options(int argc, const char **argv)
         return res;
 
     res = handle_post_config_options();
+
+    config.inherit();
 
     return res;
 }
@@ -250,8 +260,8 @@ cli_flow_t cli_handler::handle_pre_config_options()
 cli_flow_t cli_handler::load_config()
 {
     try {
-        config = clanguml::config::load(
-            config_path, paths_relative_to_pwd, no_metadata, !no_validate);
+        config = clanguml::config::load(config_path, false,
+            paths_relative_to_pwd, no_metadata, !no_validate);
         if (validate_only) {
             std::cout << "Configuration file " << config_path << " is valid.\n";
 
@@ -334,6 +344,20 @@ cli_flow_t cli_handler::handle_post_config_options()
         config.remove_compile_flags.has_value = true;
     }
 
+    if (plantuml_cmd) {
+        if (!config.puml)
+            config.puml.set({});
+
+        config.puml().cmd = plantuml_cmd.value();
+    }
+
+    if (mermaid_cmd) {
+        if (!config.mermaid)
+            config.mermaid.set({});
+
+        config.mermaid().cmd = mermaid_cmd.value();
+    }
+
 #if !defined(_WIN32)
     if (query_driver) {
         config.query_driver.set(*query_driver);
@@ -352,6 +376,8 @@ runtime_config cli_handler::get_runtime_config() const
     cfg.print_to = print_to;
     cfg.progress = progress;
     cfg.thread_count = thread_count;
+    cfg.render_diagrams = render_diagrams;
+    cfg.output_directory = effective_output_directory;
 
     return cfg;
 }

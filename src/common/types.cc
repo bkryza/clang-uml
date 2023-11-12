@@ -24,4 +24,17 @@ std::string to_string(const std::string &s) { return s; }
 
 std::string to_string(const string_or_regex &sr) { return sr.to_string(); }
 
-};
+std::string to_string(const generator_type_t type)
+{
+    switch (type) {
+    case generator_type_t::plantuml:
+        return "plantuml";
+    case generator_type_t::mermaid:
+        return "mermaid";
+    case generator_type_t::json:
+        return "json";
+    default:
+        return "<unknown>";
+    }
+}
+} // namespace clanguml::common

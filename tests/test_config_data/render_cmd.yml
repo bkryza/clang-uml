@@ -1,0 +1,13 @@
+compilation_database_dir: debug
+output_directory: output
+plantuml:
+  cmd: "plantuml -tsvg output/{}.puml"
+diagrams:
+  class_main:
+    type: class
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    plantuml:
+      after:
+        - "' test comment"

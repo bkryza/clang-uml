@@ -387,6 +387,10 @@ template <> struct convert<plantuml> {
 
         if (node["after"])
             rhs.after = node["after"].as<decltype(rhs.after)>();
+
+        if (node["cmd"])
+            rhs.cmd = node["cmd"].as<decltype(rhs.cmd)>();
+
         return true;
     }
 };
@@ -399,6 +403,10 @@ template <> struct convert<mermaid> {
 
         if (node["after"])
             rhs.after = node["after"].as<decltype(rhs.after)>();
+
+        if (node["cmd"])
+            rhs.cmd = node["cmd"].as<decltype(rhs.cmd)>();
+
         return true;
     }
 };
@@ -831,7 +839,6 @@ template <> struct convert<config> {
             diagram_config = parse_diagram_config(d.second);
             if (diagram_config) {
                 diagram_config->name = name;
-                diagram_config->inherit(rhs);
                 rhs.diagrams[name] = diagram_config;
             }
             else {
@@ -860,6 +867,13 @@ void config::initialize_diagram_templates()
         predefined_templates.as<std::map<std::string, diagram_template>>());
 }
 
+void config::inherit()
+{
+    for (auto &[name, diagram] : diagrams) {
+        diagram->inherit(*this);
+    }
+}
+
 namespace {
 void resolve_option_path(YAML::Node &doc, const std::string &option)
 {
@@ -881,7 +895,7 @@ void resolve_option_path(YAML::Node &doc, const std::string &option)
 }
 } // namespace
 
-config load(const std::string &config_file,
+config load(const std::string &config_file, bool inherit,
     std::optional<bool> paths_relative_to_pwd, std::optional<bool> no_metadata,
     bool validate)
 {
@@ -996,6 +1010,9 @@ config load(const std::string &config_file,
         }
 
         auto d = doc.as<config>();
+
+        if (inherit)
+            d.inherit();
 
         d.initialize_diagram_templates();
 

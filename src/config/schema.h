@@ -157,9 +157,11 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -194,9 +196,11 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -231,9 +235,11 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -260,9 +266,11 @@ types:
         plantuml: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]
+            cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
@@ -306,9 +314,11 @@ root:
     plantuml: !optional
         before: !optional [string]
         after: !optional [string]
+        cmd: !optional string
     mermaid: !optional
         before: !optional [string]
         after: !optional [string]
+        cmd: !optional string
     relative_to: !optional string
     using_namespace: !optional [string, [string]]
     generate_metadata: !optional bool

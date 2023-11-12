@@ -4,6 +4,10 @@ comment_parser: clang
 remove_compile_flags:
   - -Wno-class-memaccess
   - -Wno-dangling-reference
+plantuml:
+  cmd: "plantuml -tsvg \"docs/diagrams/{}.puml\""
+mermaid:
+  cmd: "mmdc -i \"docs/diagrams/{}.mmd\" -o \"docs/diagrams/{}.svg\""
 generate_links:
   link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
@@ -29,7 +33,7 @@ diagrams:
     include!: uml/class/stylable_element_hierarchy_class.yml
   source_location_hierarchy_class:
     include!: uml/class/source_location_hierarchy_class.yml
-  filter_visitor_hierarchy_class:
+  "filter_visitor_hierarchy_class":
     include!: uml/class/filter_visitor_hierarchy_class.yml
   diagram_filter_context_class:
     include!: uml/class/diagram_filter_context_class.yml

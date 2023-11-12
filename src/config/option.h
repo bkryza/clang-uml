@@ -24,6 +24,7 @@ namespace clanguml {
 namespace config {
 
 template <typename T> void append_value(T &l, const T &r) { l = r; }
+
 /**
  * Possible option inheritance methods from top level to diagram level.
  */

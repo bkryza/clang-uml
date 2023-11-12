@@ -418,7 +418,7 @@ void generate_diagram(const std::string &od, const std::string &name,
  *
  * @param diagram_names List of diagram names to generate
  * @param config Reference to config instance
- * @param od Path to output directory
+ * @param output_directory Path to output directory
  * @param db Reference to compilation database
  * @param verbose Log level
  * @param thread_count Number of diagrams to be generated in parallel
@@ -427,7 +427,7 @@ void generate_diagram(const std::string &od, const std::string &name,
  * @param translation_units_map Map of translation units for each file
  */
 void generate_diagrams(const std::vector<std::string> &diagram_names,
-    clanguml::config::config &config, const std::string &od,
+    clanguml::config::config &config,
     const common::compilation_database_ptr &db,
     const cli::runtime_config &runtime_config,
     const std::map<std::string, std::vector<std::string>>

@@ -121,6 +121,8 @@ struct plantuml {
     std::vector<std::string> before;
     /*! List of directives to add before diagram */
     std::vector<std::string> after;
+    /*! Command template to render diagram using PlantUML */
+    std::string cmd;
 
     void append(const plantuml &r);
 };
@@ -137,6 +139,8 @@ struct mermaid {
     std::vector<std::string> before;
     /*! List of directives to add before diagram */
     std::vector<std::string> after;
+    /*! Command template to render diagram using MermaidJS */
+    std::string cmd;
 
     void append(const mermaid &r);
 };
@@ -448,6 +452,10 @@ struct source_location {
 struct inheritable_diagram_options {
     virtual ~inheritable_diagram_options() = default;
 
+    void inherit(const inheritable_diagram_options &parent);
+
+    std::string simplify_template_type(std::string full_name) const;
+
     option<std::vector<std::string>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<bool> include_relations_also_as_members{
@@ -494,10 +502,6 @@ struct inheritable_diagram_options {
         "message_comment_width", clanguml::util::kDefaultMessageCommentWidth};
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};
-
-    void inherit(const inheritable_diagram_options &parent);
-
-    std::string simplify_template_type(std::string full_name) const;
 };
 
 /**
@@ -648,6 +652,8 @@ struct config : public inheritable_diagram_options {
      * Initialize predefined diagram templates.
      */
     void initialize_diagram_templates();
+
+    void inherit();
 };
 
 /**
@@ -659,6 +665,7 @@ struct config : public inheritable_diagram_options {
  * @embed{load_config_sequence.svg}
  *
  * @param config_file Path to the configuration file
+ * @param inherit If true, common options will be propagated to diagram configs
  * @param paths_relative_to_pwd Whether the paths in the configuration file
  *                              should be relative to the parent directory of
  *                              the configuration file or to the current
@@ -667,7 +674,7 @@ struct config : public inheritable_diagram_options {
  * @param validate If true, perform schema validation
  * @return Configuration instance
  */
-config load(const std::string &config_file,
+config load(const std::string &config_file, bool inherit = true,
     std::optional<bool> paths_relative_to_pwd = {},
     std::optional<bool> no_metadata = {}, bool validate = true);
 

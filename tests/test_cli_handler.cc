@@ -184,3 +184,31 @@ TEST_CASE(
     REQUIRE(contains(cli.config.add_compile_flags(), "-Wno-warning"));
     REQUIRE(contains(cli.config.remove_compile_flags(), "-I/usr/include"));
 }
+
+TEST_CASE(
+    "Test cli handler puml config inheritance with render cmd", "[unit-test]")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+    using clanguml::util::contains;
+
+    std::vector<const char *> argv{"clang-uml", "--config",
+        "./test_config_data/render_cmd.yml", "-r",
+        "--mermaid-cmd=mmdc -i output/{}.mmd -o output/{}.svg"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kContinue);
+
+    REQUIRE(contains(cli.get_runtime_config().output_directory, "output"));
+    REQUIRE(cli.get_runtime_config().render_diagrams);
+    REQUIRE(cli.config.diagrams.at("class_main")->puml().cmd ==
+        "plantuml -tsvg output/{}.puml");
+    REQUIRE(cli.config.diagrams.at("class_main")->mermaid().cmd ==
+        "mmdc -i output/{}.mmd -o output/{}.svg");
+    REQUIRE(cli.config.diagrams.at("class_main")->puml().after.at(0) ==
+        "' test comment");
+}

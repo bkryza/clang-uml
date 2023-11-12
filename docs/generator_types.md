@@ -43,6 +43,14 @@ will add before the diagram contents (right after `@startuml`) the title and
 direction hint, and after each diagram contents (right before `@enduml`)
 2 notes attached to elements.
 
+This generator also accepts a `cmd` parameter to specify a command to execute
+on the generated PlantUML source file to generate actual diagram image, for
+instance:
+```yaml
+  plantuml:
+    cmd: "/usr/bin/plantuml -tsvg \"diagrams/{}.puml\""
+```
+
 An example PlantUML diagram is presented below:
 
 ```plantuml
@@ -116,6 +124,14 @@ example:
 will add before the diagram contents (right after diagram type,
 e.g. `classDiagram`) diagram direction hint, and after each diagram contents
 2 notes attached to elements.
+
+This generator also accepts a `cmd` parameter to specify a command to execute
+on the generated MermaidJS source file to generate actual diagram image, for
+instance:
+```yaml
+    mermaid:
+      cmd: "mmdc -i \"diagrams/{}.mmd\" -o \"diagrams/{}_mermaid.svg\""
+```
 
 An example MermaidJS diagram is presented below:
 

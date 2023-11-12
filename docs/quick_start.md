@@ -52,6 +52,12 @@ To add an initial class diagram to your project, follow these steps:
    mmdc -i diagrams/some_class_diagram.mmd -o diagrams/some_class_diagram.svg
    ```
    
+   Steps 3 and 4 can be combined into one step like follows:
+   ```
+   clang-uml -p -n some_class_diagram -g plantuml -r --plantuml-cmd="plantuml -tsvg diagrams/{}.puml"
+   ```
+   where `-r` enables diagram rendering and `--plantuml-cmd` specifies command
+   to execute on each generated diagram.
 5. Add another diagram:
    ```bash
    clang-uml --add-sequence-diagram another_diagram
