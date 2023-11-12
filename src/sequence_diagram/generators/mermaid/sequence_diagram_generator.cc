@@ -80,7 +80,7 @@ void generator::generate_message_comment(
     if (comment_generated_from_note_decorators)
         return;
 
-    if (auto &cmt = m.comment();
+    if (const auto &cmt = m.comment();
         config().generate_message_comments() && cmt.has_value()) {
 
         ostr << indent(1) << "note over " << generate_alias(from.value())

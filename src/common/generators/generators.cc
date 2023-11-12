@@ -58,7 +58,6 @@ void find_translation_units_for_diagrams(
 }
 
 void render_diagram(const clanguml::common::generator_type_t generator_type,
-    const std::string &output_directory,
     std::shared_ptr<config::diagram> diagram_config)
 {
     std::string cmd;
@@ -162,8 +161,7 @@ void generate_diagram_impl(const std::string &name,
         }
 
         if (runtime_config.render_diagrams) {
-            render_diagram(
-                generator_type, runtime_config.output_directory, diagram);
+            render_diagram(generator_type, diagram);
         }
     }
 }

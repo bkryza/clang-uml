@@ -234,7 +234,7 @@ inja::json generator<C, D>::element_context(const E &e) const
         ctx["element"]["source"]["line"] = e.line();
     }
 
-    const auto maybe_comment = e.comment();
+    const auto &maybe_comment = e.comment();
     if (maybe_comment) {
         ctx["element"]["comment"] = maybe_comment.value();
     }
