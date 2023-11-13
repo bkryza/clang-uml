@@ -37,6 +37,8 @@ struct runtime_config {
     bool print_to{};
     bool progress{};
     unsigned int thread_count{};
+    bool render_diagrams{};
+    std::string output_directory{};
 };
 
 /**
@@ -185,6 +187,9 @@ public:
         clanguml::common::generator_type_t::plantuml};
     bool no_validate{false};
     bool validate_only{false};
+    bool render_diagrams{false};
+    std::optional<std::string> plantuml_cmd;
+    std::optional<std::string> mermaid_cmd;
 
     clanguml::config::config config;
 

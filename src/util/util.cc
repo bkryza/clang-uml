@@ -35,7 +35,7 @@ std::string get_process_output(const std::string &command)
     std::string result;
 
 #if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    const std::unique_ptr<FILE, decltype(&pclose)> pipe(
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(
         popen(command.c_str(), "r"), pclose);
 #elif defined(_WIN32)
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(
@@ -51,6 +51,44 @@ std::string get_process_output(const std::string &command)
     }
 
     return result;
+}
+
+void check_process_output(const std::string &command)
+{
+    constexpr size_t kBufferSize{1024};
+    std::array<char, kBufferSize> buffer{};
+    int result{EXIT_FAILURE};
+    std::string output;
+    auto finalize = [&result](FILE *f) {
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        result = pclose(f);
+#elif defined(_WIN32)
+        result = _pclose(f);
+#endif
+    };
+
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+    std::unique_ptr<FILE, decltype(finalize)> pipe(
+        popen(command.c_str(), "r"), finalize);
+#elif defined(_WIN32)
+    std::unique_ptr<FILE, decltype(finalize)> pipe(
+        _popen(command.c_str(), "r"), finalize);
+#endif
+
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        output += buffer.data();
+    }
+
+    pipe.reset();
+
+    if (result != EXIT_SUCCESS) {
+        throw std::runtime_error(
+            fmt::format("External command '{}' failed: {}", command, output));
+    }
 }
 
 std::string get_env(const std::string &name)

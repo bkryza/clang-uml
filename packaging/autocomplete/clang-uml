@@ -93,6 +93,7 @@ _clanguml() {
                                -p --progress \
                                -q --quiet \
                                -l --list-diagrams \
+                               -r --render_diagrams \
                                --init \
                                --add-compile-flag \
                                --remove-compile-flag \
@@ -111,7 +112,9 @@ _clanguml() {
                                --print-from \
                                --print-to \
                                --no-validate \
-                               --validate-only' -- $cur ) )
+                               --validate-only \
+                               --plantuml-cmd \
+                               --mermaid-cmd' -- $cur ) )
     return
     ;;
   esac

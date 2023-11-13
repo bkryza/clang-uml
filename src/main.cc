@@ -67,7 +67,7 @@ int main(int argc, const char *argv[])
         const auto compilation_database_files = db->getAllFiles();
 
         std::map<std::string /* diagram name */,
-            std::vector<std::string> /*translation units*/>
+            std::vector<std::string> /* translation units */>
             translation_units_map;
 
         // We have to generate the translation units list for each diagram
@@ -77,9 +77,8 @@ int main(int argc, const char *argv[])
             cli.diagram_names, cli.config, compilation_database_files,
             translation_units_map);
 
-        common::generators::generate_diagrams(cli.diagram_names, cli.config,
-            cli.effective_output_directory, db, cli.get_runtime_config(),
-            translation_units_map);
+        common::generators::generate_diagrams(cli.diagram_names, cli.config, db,
+            cli.get_runtime_config(), translation_units_map);
     }
     catch (error::compilation_database_error &e) {
         LOG_ERROR("Failed to load compilation database from {} due to: {}",
@@ -87,7 +86,7 @@ int main(int argc, const char *argv[])
         return 1;
     }
     catch (error::query_driver_no_paths &e) {
-        LOG_ERROR("Quering provided compiler driver {} did not provide any "
+        LOG_ERROR("Querying provided compiler driver {} did not provide any "
                   "paths, please make sure the path is correct and that your "
                   "compiler is GCC-compatible: {}",
             cli.config.query_driver(), e.what());

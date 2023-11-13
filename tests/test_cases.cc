@@ -41,7 +41,7 @@ load_config(const std::string &test_name)
         clanguml::common::compilation_database_ptr>
         res;
 
-    res.first = clanguml::config::load(test_name + "/.clang-uml", true);
+    res.first = clanguml::config::load(test_name + "/.clang-uml", true, true);
 
     LOG_DBG("Loading compilation database from {}",
         res.first.compilation_database_dir());

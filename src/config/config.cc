@@ -170,12 +170,16 @@ void plantuml::append(const plantuml &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());
     after.insert(after.end(), r.after.begin(), r.after.end());
+    if (cmd.empty())
+        cmd = r.cmd;
 }
 
 void mermaid::append(const mermaid &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());
     after.insert(after.end(), r.after.begin(), r.after.end());
+    if (cmd.empty())
+        cmd = r.cmd;
 }
 
 void inheritable_diagram_options::inherit(
@@ -188,6 +192,7 @@ void inheritable_diagram_options::inherit(
     include.override(parent.include);
     exclude.override(parent.exclude);
     puml.override(parent.puml);
+    mermaid.override(parent.mermaid);
     generate_method_arguments.override(parent.generate_method_arguments);
     generate_packages.override(parent.generate_packages);
     generate_template_argument_dependencies.override(

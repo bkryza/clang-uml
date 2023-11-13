@@ -60,5 +60,8 @@ _arguments \
   "--print-from[Print all possible 'from' values for a given diagram]" \
   "--print-to[Print all possible 'to' values for a given diagram]" \
   '--no-validate[Do not perform configuration file schema validation]' \
-  '--validate-only[Perform configuration file schema validation and exit]'
+  '--validate-only[Perform configuration file schema validation and exit]' \
+  {-r,--render_diagrams}'[Automatically render generated diagrams using appropriate command]' \
+  '--plantuml-cmd[Command template to render PlantUML diagram, `{}` will be replaced with diagram name]' \
+  '--mermaid-cmd[Command template to render MermaidJS diagram, `{}` will be replaced with diagram name]'
 
