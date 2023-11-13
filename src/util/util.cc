@@ -59,7 +59,13 @@ void check_process_output(const std::string &command)
     std::array<char, kBufferSize> buffer{};
     int result{EXIT_FAILURE};
     std::string output;
-    auto finalize = [&result](FILE *f) { result = pclose(f); };
+    auto finalize = [&result](FILE *f) {
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        result = pclose(f);
+#elif defined(_WIN32)
+        result = _pclose(f);
+#endif
+    };
 
 #if defined(__linux) || defined(__unix) || defined(__APPLE__)
     std::unique_ptr<FILE, decltype(finalize)> pipe(
