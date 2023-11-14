@@ -13,9 +13,9 @@ function(setup_git_version)
         endif(GIT_EXECUTABLE)
     endif(NOT DEFINED GIT_VERSION)
 
-    if(NOT DEFINED GIT_VERSION)
+    if(NOT DEFINED GIT_VERSION OR "${GIT_VERSION}" STREQUAL "")
         set(GIT_VERSION "0.0.0-unknown")
-    endif(NOT DEFINED GIT_VERSION)
+    endif(NOT DEFINED GIT_VERSION OR "${GIT_VERSION}" STREQUAL "")
 
     string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.+)"
             GIT_VERSION_MATCH ${GIT_VERSION})
