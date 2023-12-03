@@ -1940,7 +1940,7 @@ void translation_unit_visitor::process_template_specialization_argument(
                     .getAsTemplateDecl()
                     ->getQualifiedNameAsString();
 
-            argument.set_name(nested_template_name);
+            argument.set_type(nested_template_name);
 
             auto nested_template_instantiation = build_template_instantiation(
                 *nested_template_type, &template_instantiation);

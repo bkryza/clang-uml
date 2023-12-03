@@ -8,7 +8,6 @@ glob:
 include:
   namespaces:
     - clanguml
-    - YAML
 exclude:
   elements:
     - r: "clanguml::config::option.*"
@@ -17,4 +16,4 @@ exclude:
 using_namespace:
   - clanguml
 from:
-  - function: "clanguml::config::load(const std::string &,std::optional<bool>,std::optional<bool>,bool)"
+  - function: "clanguml::config::load(const std::string &,bool,std::optional<bool>,std::optional<bool>,bool)"
