@@ -397,7 +397,6 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
 /**
  * @brief Generate a single diagram
  *
- * @param od Output directory path
  * @param name Name of the diagram
  * @param diagram Effective diagram configuration
  * @param db Reference to compilation database
@@ -406,7 +405,7 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
  * @param verbose Log level
  * @param progress Function to report translation unit progress
  */
-void generate_diagram(const std::string &od, const std::string &name,
+void generate_diagram(const std::string &name,
     std::shared_ptr<clanguml::config::diagram> diagram,
     const common::compilation_database &db,
     const std::vector<std::string> &translation_units,
