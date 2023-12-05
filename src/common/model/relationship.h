@@ -47,7 +47,7 @@ public:
      * @param multiplicity_source Multiplicity at the source
      * @param multiplicity_destination Multiplicity at the destination
      */
-    relationship(relationship_t type, int64_t destination,
+    relationship(relationship_t type, clanguml::common::id_t destination,
         access_t access = access_t::kPublic, std::string label = "",
         std::string multiplicity_source = "",
         std::string multiplicity_destination = "");
@@ -144,7 +144,7 @@ public:
 
 private:
     relationship_t type_;
-    int64_t destination_;
+    clanguml::common::id_t destination_;
     std::string multiplicity_source_;
     std::string multiplicity_destination_;
     std::string label_;
