@@ -4,7 +4,7 @@ diagrams:
   t30009_package:
     type: package
     glob:
-      - ../../tests/t30009/t30009.cc
+      - tests/t30009/t30009.cc
     include:
       namespaces:
         - clanguml::t30009

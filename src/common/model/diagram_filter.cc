@@ -724,7 +724,10 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
 
                 resolved_absolute_path.make_preferred();
 
-                paths_.emplace_back(resolved_absolute_path);
+                LOG_DBG("Added path {} to paths_filter",
+                    resolved_absolute_path.string());
+
+                paths_.emplace_back(std::move(resolved_absolute_path));
 
                 match_successful = true;
             }
@@ -738,8 +741,8 @@ paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
 
         if (!match_successful)
             LOG_WARN("Paths filter pattern '{}' did not match "
-                     "any files...",
-                path);
+                     "any files relative to '{}'",
+                path, root_.string());
     }
 }
 
@@ -1059,8 +1062,7 @@ void diagram_filter::init_filters(const config::diagram &c)
                 if (auto p = path.get<std::string>(); p.has_value()) {
                     std::filesystem::path dep_path{*p};
                     if (dep_path.is_relative()) {
-                        dep_path = c.base_directory() / *p;
-                        dep_path = relative(dep_path, c.relative_to());
+                        dep_path = relative(*p, c.root_directory());
                     }
 
                     dependants.emplace_back(
@@ -1072,8 +1074,7 @@ void diagram_filter::init_filters(const config::diagram &c)
                 if (auto p = path.get<std::string>(); p.has_value()) {
                     std::filesystem::path dep_path{*p};
                     if (dep_path.is_relative()) {
-                        dep_path = c.base_directory() / *p;
-                        dep_path = relative(dep_path, c.relative_to());
+                        dep_path = relative(*p, c.root_directory());
                     }
 
                     dependencies.emplace_back(

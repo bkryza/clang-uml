@@ -4,7 +4,7 @@ diagrams:
   t30008_package:
     type: package
     glob:
-      - ../../tests/t30008/t30008.cc
+      - tests/t30008/t30008.cc
     include:
       dependants:
         - clanguml::t30008::dependants::A

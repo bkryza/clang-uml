@@ -2311,9 +2311,13 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto location = cls->getLocation();
     const auto file_line = source_manager().getSpellingLineNumber(location);
     const auto file_column = source_manager().getSpellingColumnNumber(location);
-    const std::string file_name = util::path_to_url(std::filesystem::relative(
-        source_manager().getFilename(location).str(), config().relative_to())
-                                                        .string());
+    const std::string file_name = config().make_path_relative(
+        source_manager().getFilename(location).str());
+    //
+    //        util::path_to_url(std::filesystem::relative(
+    //        source_manager().getFilename(location).str(),
+    //        config().relative_to())
+    //                                                        .string());
 
     if (context().caller_id() != 0 &&
         get_participant(context().caller_id()).has_value()) {

@@ -95,12 +95,8 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     LOG_DBG("Processing include directive {} in file {}", include_path.string(),
         current_file.string());
 
-    auto relative_include_path = include_path;
-    if (config().relative_to) {
-        const std::filesystem::path relative_to{config().relative_to()};
-        relative_include_path =
-            std::filesystem::relative(include_path, relative_to);
-    }
+    auto relative_include_path =
+        std::filesystem::relative(include_path, config().root_directory());
 
     if (diagram().should_include(source_file{include_path})) {
         process_internal_header(include_path,
@@ -133,12 +129,8 @@ void translation_unit_visitor::include_visitor::process_internal_header(
     const common::id_t current_file_id)
 {
     // Make the path relative with respect to relative_to config option
-    auto relative_include_path = include_path;
-    if (config().relative_to) {
-        const std::filesystem::path relative_to{config().relative_to()};
-        relative_include_path =
-            std::filesystem::relative(include_path, relative_to);
-    }
+    auto relative_include_path =
+        std::filesystem::relative(include_path, config().root_directory());
 
     // Check if this source file is already registered in the diagram,
     // if not add it
@@ -218,13 +210,9 @@ translation_unit_visitor::include_visitor::process_source_file(
     if (diagram().should_include(source_file{file_path})) {
         LOG_DBG("Processing source file {}", file.string());
 
-        // Relativize the path with respect to relative_to config option
-        auto relative_file_path = file_path;
-        if (config().relative_to) {
-            const std::filesystem::path relative_to{config().relative_to()};
-            relative_file_path =
-                std::filesystem::relative(file_path, relative_to);
-        }
+        // Relativize the path with respect to effective root directory
+        auto relative_file_path =
+            std::filesystem::relative(file_path, config().root_directory());
 
         [[maybe_unused]] const auto relative_file_path_str =
             relative_file_path.string();

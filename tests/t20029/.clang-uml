@@ -6,7 +6,7 @@ diagrams:
   t20029_sequence:
     type: sequence
     glob:
-      - ../../tests/t20029/t20029.cc
+      - tests/t20029/t20029.cc
     include:
       namespaces:
         - clanguml::t20029

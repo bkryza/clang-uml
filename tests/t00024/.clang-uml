@@ -4,7 +4,7 @@ diagrams:
   t00024_class:
     type: class
     glob:
-      - ../../tests/t00024/t00024.cc
+      - tests/t00024/t00024.cc
     using_namespace:
       - clanguml::t00024
     include:

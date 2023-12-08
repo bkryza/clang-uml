@@ -44,7 +44,7 @@ TEST_CASE("Test diagram paths filter", "[unit-test]")
     diagram_filter filter(diagram, config);
 
     auto make_path = [&](std::string_view p) {
-        return source_file{config.relative_to() / p};
+        return source_file{config.root_directory() / p};
     };
 
     CHECK(filter.should_include(

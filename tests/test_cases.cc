@@ -21,8 +21,11 @@
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
 #include "common/generators/generators.h"
+#include "util/util.h"
 
 #include <spdlog/spdlog.h>
+
+#include <vector>
 
 void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -32,6 +35,18 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
         R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})"};
 
     diagram->generate_links.set(links_config);
+
+    using namespace std::literals;
+
+    std::vector<std::string> tests_with_custom_relative_to_paths{
+        "t00061_class"s, "t00065_class"s, "t20017_sequence"s, "t30010_package"s,
+        "t30011_package"s, "t40001_include"s, "t40002_include"s,
+        "t40003_include"s};
+
+    if (!clanguml::util::contains(
+            tests_with_custom_relative_to_paths, diagram->name)) {
+        diagram->get_relative_to().set("../../..");
+    }
 }
 
 std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
@@ -63,6 +78,9 @@ template <typename DiagramConfig>
 auto generate_diagram_impl(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
+    LOG_INFO("All paths will be evaluated relative to {}",
+        diagram->root_directory().string());
+
     using diagram_config = DiagramConfig;
     using diagram_model =
         typename clanguml::common::generators::diagram_model_t<

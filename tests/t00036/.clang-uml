@@ -5,7 +5,7 @@ diagrams:
     type: class
     generate_packages: true
     glob:
-      - ../../tests/t00036/t00036.cc
+      - tests/t00036/t00036.cc
     using_namespace:
       - clanguml::t00036
     include:

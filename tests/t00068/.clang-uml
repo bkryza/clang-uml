@@ -5,7 +5,7 @@ diagrams:
     type: class
     title: AAA context of radius 0
     glob:
-      - ../../tests/t00068/t00068.cc
+      - tests/t00068/t00068.cc
     include:
       namespaces:
         - clanguml::t00068
@@ -19,7 +19,7 @@ diagrams:
     type: class
     title: AAA context of radius 1
     glob:
-      - ../../tests/t00068/t00068.cc
+      - tests/t00068/t00068.cc
     include:
       namespaces:
         - clanguml::t00068
@@ -33,7 +33,7 @@ diagrams:
     type: class
     title: AAA context of radius 2
     glob:
-      - ../../tests/t00068/t00068.cc
+      - tests/t00068/t00068.cc
     include:
       namespaces:
         - clanguml::t00068

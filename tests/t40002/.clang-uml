@@ -6,10 +6,9 @@ diagrams:
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40002/src/t40002.cc
-      - ../../tests/t40002/src/lib1/lib1.cc
-      - ../../tests/t40002/src/lib2/lib2.cc
-    # Render the paths relative to this directory
+      - src/t40002.cc
+      - src/lib1/lib1.cc
+      - src/lib2/lib2.cc
     relative_to: ../../../tests/t40002
     include:
       # Include only files belonging to these paths relative to relative_to

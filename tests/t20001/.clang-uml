@@ -7,7 +7,7 @@ diagrams:
     type: sequence
     title: Basic sequence diagram example
     glob:
-      - ../../tests/t20001/t20001.cc
+      - tests/t20001/t20001.cc
     include:
       namespaces:
         - clanguml::t20001

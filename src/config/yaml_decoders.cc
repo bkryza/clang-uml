@@ -602,7 +602,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.skip_redundant_dependencies);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
-        get_option(node, rhs.relative_to);
+        get_option(node, rhs.get_relative_to());
 
         rhs.initialize_relationship_hints();
         rhs.initialize_type_aliases();
@@ -626,15 +626,15 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.generate_return_types);
         get_option(node, rhs.generate_condition_statements);
-        get_option(node, rhs.relative_to);
+        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
 
         // Ensure relative_to has a value
-        if (!rhs.relative_to.has_value)
-            rhs.relative_to.set(
+        if (!rhs.get_relative_to().has_value)
+            rhs.get_relative_to().set(
                 std::filesystem::current_path().lexically_normal());
 
         rhs.initialize_type_aliases();
@@ -653,12 +653,12 @@ template <> struct convert<package_diagram> {
             return false;
 
         get_option(node, rhs.layout);
-        get_option(node, rhs.relative_to);
+        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.package_type);
 
         // Ensure relative_to has a value
-        if (!rhs.relative_to.has_value)
-            rhs.relative_to.set(
+        if (!rhs.get_relative_to().has_value)
+            rhs.get_relative_to().set(
                 std::filesystem::current_path().lexically_normal());
 
         return true;
@@ -675,21 +675,12 @@ template <> struct convert<include_diagram> {
             return false;
 
         get_option(node, rhs.layout);
-        get_option(node, rhs.relative_to);
+        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.generate_system_headers);
 
-        if (!rhs.relative_to)
-            rhs.relative_to.set(std::filesystem::current_path());
-
-        // Convert the path in relative_to to an absolute path, with respect
-        // to the directory where the `.clang-uml` configuration file is
-        // located
-        if (rhs.relative_to) {
-            auto absolute_relative_to =
-                std::filesystem::path{node["__parent_path"].as<std::string>()} /
-                rhs.relative_to();
-            rhs.relative_to.set(absolute_relative_to.lexically_normal());
-        }
+        if (!rhs.get_relative_to().has_value)
+            rhs.get_relative_to().set(
+                std::filesystem::current_path().lexically_normal());
 
         return true;
     }
@@ -824,7 +815,7 @@ template <> struct convert<config> {
         get_option(node, rhs.message_comment_width);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
-        get_option(node, rhs.relative_to);
+        get_option(node, rhs.get_relative_to());
 
         get_option(node, rhs.diagram_templates);
 

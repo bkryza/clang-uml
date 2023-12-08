@@ -4,7 +4,7 @@ diagrams:
   t00045_class:
     type: class
     glob:
-      - ../../tests/t00045/t00045.cc
+      - tests/t00045/t00045.cc
     exclude:
       namespaces:
         - std

@@ -4,7 +4,7 @@ diagrams:
   t20034_sequence:
     type: sequence
     glob:
-      - ../../tests/t20034/t20034.cc
+      - tests/t20034/t20034.cc
     include:
       namespaces:
         - clanguml::t20034

@@ -417,3 +417,16 @@ TEST_CASE("Test format_message_comment", "[unit-test]")
     CHECK(format_message_comment("This is a url: http://example.com/test/12345",
               15) == "This is a url:\nhttp://example.com/test/12345");
 }
+
+TEST_CASE("Test is_relative_to", "[unit-test]")
+{
+    using std::filesystem::path;
+    using namespace clanguml::util;
+
+    path child{"/a/b/c/d/include.h"};
+    path base1{"/a/b/c"};
+    path base2{"/tmp"};
+
+    CHECK(is_relative_to(child, base1));
+    CHECK_FALSE(is_relative_to(child, base2));
+}

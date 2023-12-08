@@ -45,14 +45,14 @@ TEST_CASE("t00051", "[test-case][class]")
                 "Function && f, Args &&... args")));
         REQUIRE_THAT(src,
             (IsMethod<Public>("thread", "void",
-                "(lambda at ../../tests/t00051/t00051.cc:59:27) &&")));
+                "(lambda at tests/t00051/t00051.cc:59:27) &&")));
         REQUIRE_THAT(src,
             (IsMethod<Private>("start_thread3",
-                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-                "../../tests/t00051/t00051.cc:43:27)>")));
+                "B<(lambda at tests/t00051/t00051.cc:43:18),(lambda at "
+                "tests/t00051/t00051.cc:43:27)>")));
         REQUIRE_THAT(src,
-            (IsMethod<Private>("get_function",
-                "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
+            (IsMethod<Private>(
+                "get_function", "(lambda at tests/t00051/t00051.cc:48:16)")));
 
         REQUIRE_THAT(src, IsClassTemplate("B", "F,FF=F"));
         REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
@@ -60,18 +60,18 @@ TEST_CASE("t00051", "[test-case][class]")
 
         REQUIRE_THAT(src,
             IsClassTemplate("B",
-                "(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-                "../../tests/t00051/t00051.cc:43:27)"));
+                "(lambda at tests/t00051/t00051.cc:43:18),(lambda at "
+                "tests/t00051/t00051.cc:43:27)"));
 
         REQUIRE_THAT(src,
             IsInstantiation(_A("B<F,FF=F>"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at tests/t00051/t00051.cc:43:18),(lambda "
+                   "at tests/t00051/t00051.cc:43:27)>")));
 
         REQUIRE_THAT(src,
             IsDependency(_A("A"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at tests/t00051/t00051.cc:43:18),(lambda "
+                   "at tests/t00051/t00051.cc:43:27)>")));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
@@ -103,33 +103,32 @@ TEST_CASE("t00051", "[test-case][class]")
                 "Function && f, Args &&... args")));
         REQUIRE_THAT(src,
             (IsMethod<Public>("thread", "void",
-                "(lambda at ../../tests/t00051/t00051.cc:59:27) &&")));
+                "(lambda at tests/t00051/t00051.cc:59:27) &&")));
         REQUIRE_THAT(src,
             (IsMethod<Private>("start_thread3",
-                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-                "../../tests/t00051/t00051.cc:43:27)>")));
+                "B<(lambda at tests/t00051/t00051.cc:43:18),(lambda at "
+                "tests/t00051/t00051.cc:43:27)>")));
         REQUIRE_THAT(src,
-            (IsMethod<Private>("get_function",
-                "(lambda at ../../tests/t00051/t00051.cc:48:16)")));
+            (IsMethod<Private>(
+                "get_function", "(lambda at tests/t00051/t00051.cc:48:16)")));
 
         REQUIRE_THAT(src, IsClass(_A("B<F,FF=F>")));
         REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
         REQUIRE_THAT(src, (IsMethod<Public>("ff", "void")));
 
         REQUIRE_THAT(src,
-            IsClass(_A(
-                "B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda at "
-                "../../tests/t00051/t00051.cc:43:27)>")));
+            IsClass(_A("B<(lambda at tests/t00051/t00051.cc:43:18),(lambda at "
+                       "tests/t00051/t00051.cc:43:27)>")));
 
         REQUIRE_THAT(src,
             IsInstantiation(_A("B<F,FF=F>"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at tests/t00051/t00051.cc:43:18),(lambda "
+                   "at tests/t00051/t00051.cc:43:27)>")));
 
         REQUIRE_THAT(src,
             IsDependency(_A("A"),
-                _A("B<(lambda at ../../tests/t00051/t00051.cc:43:18),(lambda "
-                   "at ../../tests/t00051/t00051.cc:43:27)>")));
+                _A("B<(lambda at tests/t00051/t00051.cc:43:18),(lambda "
+                   "at tests/t00051/t00051.cc:43:27)>")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

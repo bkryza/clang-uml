@@ -6,7 +6,7 @@ diagrams:
   t20038_sequence:
     type: sequence
     glob:
-      - ../../tests/t20038/t20038.cc
+      - tests/t20038/t20038.cc
     include:
       namespaces:
         - clanguml::t20038

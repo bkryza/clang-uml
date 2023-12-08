@@ -4,10 +4,10 @@ diagrams:
   t20014_sequence:
     type: sequence
     glob:
-      - ../../tests/t20014/t20014.cc
-      - ../../tests/t20014/t20014_c.cc
-      - ../../tests/t20014/t20014_b.cc
-      - ../../tests/t20014/t20014_a.cc
+      - tests/t20014/t20014.cc
+      - tests/t20014/t20014_c.cc
+      - tests/t20014/t20014_b.cc
+      - tests/t20014/t20014_a.cc
     include:
       namespaces:
         - clanguml::t20014

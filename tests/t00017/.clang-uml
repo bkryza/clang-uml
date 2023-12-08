@@ -5,7 +5,7 @@ diagrams:
     type: class
     include_relations_also_as_members: false
     glob:
-      - ../../tests/t00017/t00017.cc
+      - tests/t00017/t00017.cc
     using_namespace:
       - clanguml::t00017
     include:

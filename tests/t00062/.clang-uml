@@ -4,7 +4,7 @@ diagrams:
   t00062_class:
     type: class
     glob:
-      - ../../tests/t00062/t00062.cc
+      - tests/t00062/t00062.cc
     include:
       namespaces:
         - clanguml::t00062

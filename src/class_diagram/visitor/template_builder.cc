@@ -269,7 +269,10 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     template_instantiation.set_id(
         common::to_id(template_instantiation_ptr->full_name(false)));
 
-    visitor_.set_source_location(*template_decl, *template_instantiation_ptr);
+    visitor_.set_source_location(*template_decl, template_instantiation);
+
+    LOG_DBG("**** {} -> {}", template_instantiation.full_name(false),
+        template_instantiation.file());
 
     return template_instantiation_ptr;
 }

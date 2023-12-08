@@ -4,7 +4,7 @@ diagrams:
   t20010_sequence:
     type: sequence
     glob:
-      - ../../tests/t20010/t20010.cc
+      - tests/t20010/t20010.cc
     include:
       namespaces:
         - clanguml::t20010

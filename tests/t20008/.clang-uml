@@ -4,7 +4,7 @@ diagrams:
   t20008_sequence:
     type: sequence
     glob:
-      - ../../tests/t20008/t20008.cc
+      - tests/t20008/t20008.cc
     include:
       namespaces:
         - clanguml::t20008

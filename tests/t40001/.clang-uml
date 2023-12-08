@@ -7,8 +7,7 @@ diagrams:
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40001/src/t40001.cc
-    # Render the paths relative to this directory
+      - src/t40001.cc
     relative_to: ../../../tests/t40001
     # Include also external system headers
     generate_system_headers: true

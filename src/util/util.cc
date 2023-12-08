@@ -404,6 +404,15 @@ std::filesystem::path ensure_path_is_absolute(
     return result;
 }
 
+bool is_relative_to(
+    const std::filesystem::path &child, const std::filesystem::path &parent)
+{
+    if (child.has_root_directory() != parent.has_root_directory())
+        return false;
+
+    return starts_with(child, parent);
+}
+
 std::string format_message_comment(const std::string &comment, unsigned width)
 {
     if (width == 0)

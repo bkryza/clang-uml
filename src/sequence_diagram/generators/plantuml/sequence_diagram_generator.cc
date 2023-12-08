@@ -400,7 +400,7 @@ void generator::generate_participant(
         if (is_participant_generated(file_id))
             return;
 
-        auto participant_name = util::path_to_url(std::filesystem::relative(
+        auto participant_name = util::path_to_url(relative(
             std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 
