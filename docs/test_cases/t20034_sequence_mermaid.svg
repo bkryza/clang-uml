@@ -1,8 +1,8 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1448 1289" style="max-width: 1448px; background-color: white;" width="1448" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1341 1289" style="max-width: 1341px; background-color: white;" width="1341" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="348" stroke="#666" fill="#eaeaea" y="1203" x="1000"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1235.5" x="1174">
-      <tspan dy="0" x="1174">D::d2()::(lambda ../../tests/t20034/t20034.cc:56:18)</tspan>
+    <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="1203" x="1000"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1235.5" x="1120.5">
+      <tspan dy="0" x="1120.5">D::d2()::(lambda t20034.cc:56:18)</tspan>
     </text>
   </g>
   <g>
@@ -36,11 +36,11 @@
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1203" x2="1174" y1="5" x1="1174" id="actor5"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="1203" x2="1120.5" y1="5" x1="1120.5" id="actor5"/>
     <g id="root-5">
-      <rect class="actor" ry="3" rx="3" height="65" width="348" stroke="#666" fill="#eaeaea" y="0" x="1000"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1174">
-        <tspan dy="0" x="1174">D::d2()::(lambda ../../tests/t20034/t20034.cc:56:18)</tspan>
+      <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="0" x="1000"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1120.5">
+        <tspan dy="0" x="1120.5">D::d2()::(lambda t20034.cc:56:18)</tspan>
       </text>
     </g>
   </g>
@@ -141,10 +141,10 @@
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="341" x2="875" y1="341" x1="275"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="356" x="175">d2()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="387" x2="275" y1="387" x1="75"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="402" x="725">operator()()</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="433" x2="1174" y1="433" x1="275"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="448" x="1025">a2()</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="479" x2="875" y1="479" x1="1174"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="402" x="698">operator()()</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="433" x2="1120.5" y1="433" x1="275"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="448" x="998">a2()</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="479" x2="875" y1="479" x1="1120.5"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="494" x="175">d2()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="525" x2="275" y1="525" x1="75"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="540" x="375">c4()</text>
