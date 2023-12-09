@@ -456,6 +456,18 @@ struct inheritable_diagram_options {
 
     std::string simplify_template_type(std::string full_name) const;
 
+    /**
+     * @brief Get reference to `relative_to` diagram config option
+     *
+     * This method is only to allow access to `relative_to` for loading
+     * and adjusting configuration file and for making test cases work.
+     *
+     * Instead use @see config::diagram::root_directory() method.
+     *
+     * @return Reference to `relative_to` config option.
+     */
+    option<std::filesystem::path> &get_relative_to() { return relative_to; }
+
     option<std::vector<std::string>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<bool> include_relations_also_as_members{
@@ -498,18 +510,6 @@ struct inheritable_diagram_options {
         "message_comment_width", clanguml::util::kDefaultMessageCommentWidth};
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};
-
-    /**
-     * @brief Get reference to `relative_to` diagram config option
-     *
-     * This method is only to allow access to `relative_to` for loading
-     * and adjusting configuration file and for making test cases work.
-     *
-     * Instead use @see config::diagram::root_directory() method.
-     *
-     * @return Reference to `relative_to` config option.
-     */
-    option<std::filesystem::path> &get_relative_to() { return relative_to; }
 
 protected:
     // This is the relative path with respect to the `base_directory`,

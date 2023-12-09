@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t30005_package:
     type: package
     glob:
-      - tests/t30005/t30005.cc
+      - t30005.cc
     include:
       namespaces:
         - clanguml::t30005
-    using_namespace:
-      - clanguml::t30005
+    using_namespace: clanguml::t30005
     plantuml:
       before:
         - "' t30005 test package diagram"

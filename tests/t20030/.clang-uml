@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20030_sequence:
     type: sequence
     glob:
-      - tests/t20030/t20030.cc
+      - t20030.cc
     include:
       namespaces:
         - clanguml::t20030
-    using_namespace:
-      - clanguml::t20030
+    using_namespace: clanguml::t20030
     from:
       - function: "clanguml::t20030::tmain(int)"
       - function: "clanguml::t20030::tmain(bool,int)"

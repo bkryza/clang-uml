@@ -1,12 +1,10 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00048_class:
     type: class
     glob:
-      - tests/t00048/b_t00048.cc
-      - tests/t00048/a_t00048.cc
-      - tests/t00048/t00048.cc
+      - b_t00048.cc
+      - a_t00048.cc
+      - t00048.cc
     using_namespace: clanguml::t00048
     include:
       namespaces:

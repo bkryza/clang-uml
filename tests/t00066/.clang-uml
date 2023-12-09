@@ -1,14 +1,11 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00066_class:
     type: class
     glob:
-      - tests/t00066/t00066.cc
+      - t00066.cc
     include:
       namespaces:
         - clanguml::t00066
     member_order: as_is
     group_methods: false
-    using_namespace:
-      - clanguml::t00066
+    using_namespace: clanguml::t00066

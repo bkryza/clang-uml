@@ -578,6 +578,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.debug_mode);
     get_option(node, rhs.generate_metadata);
     get_option(node, rhs.title);
+    get_option(node, rhs.get_relative_to());
 
     return true;
 }
@@ -602,6 +603,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.skip_redundant_dependencies);
         get_option(node, rhs.relationship_hints);
         get_option(node, rhs.type_aliases);
+
         get_option(node, rhs.get_relative_to());
 
         rhs.initialize_relationship_hints();
@@ -626,16 +628,12 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.combine_free_functions_into_file_participants);
         get_option(node, rhs.generate_return_types);
         get_option(node, rhs.generate_condition_statements);
-        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.participants_order);
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
 
-        // Ensure relative_to has a value
-        if (!rhs.get_relative_to().has_value)
-            rhs.get_relative_to().set(
-                std::filesystem::current_path().lexically_normal());
+        get_option(node, rhs.get_relative_to());
 
         rhs.initialize_type_aliases();
 
@@ -653,13 +651,9 @@ template <> struct convert<package_diagram> {
             return false;
 
         get_option(node, rhs.layout);
-        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.package_type);
 
-        // Ensure relative_to has a value
-        if (!rhs.get_relative_to().has_value)
-            rhs.get_relative_to().set(
-                std::filesystem::current_path().lexically_normal());
+        get_option(node, rhs.get_relative_to());
 
         return true;
     }
@@ -675,12 +669,9 @@ template <> struct convert<include_diagram> {
             return false;
 
         get_option(node, rhs.layout);
-        get_option(node, rhs.get_relative_to());
         get_option(node, rhs.generate_system_headers);
 
-        if (!rhs.get_relative_to().has_value)
-            rhs.get_relative_to().set(
-                std::filesystem::current_path().lexically_normal());
+        get_option(node, rhs.get_relative_to());
 
         return true;
     }
@@ -862,27 +853,29 @@ void config::inherit()
 {
     for (auto &[name, diagram] : diagrams) {
         diagram->inherit(*this);
+
+        assert(diagram->get_relative_to().has_value);
     }
 }
 
 namespace {
-void resolve_option_path(YAML::Node &doc, const std::string &option)
+void resolve_option_path(YAML::Node &doc, const std::string &option_name)
 {
     std::filesystem::path relative_to_path{
         doc["relative_to"].as<std::string>()};
 
     assert(relative_to_path.is_absolute());
 
-    std::filesystem::path option_path{doc[option].as<std::string>()};
+    std::filesystem::path option_path{doc[option_name].as<std::string>()};
 
     if (option_path.is_absolute())
         return;
 
-    option_path = relative_to_path / option_path.string();
+    option_path = relative_to_path / option_path;
     option_path = option_path.lexically_normal();
     option_path.make_preferred();
 
-    doc[option] = option_path.string();
+    doc[option_name] = option_path.string();
 }
 } // namespace
 
@@ -909,7 +902,7 @@ config load(const std::string &config_file, bool inherit,
         }
 
         // Store the parent path of the config_file to properly resolve
-        // the include files paths
+        // relative paths in config file
         if (has_key(doc, "__parent_path"))
             doc.remove("__parent_path");
         if (config_file == "-") {
@@ -918,10 +911,12 @@ config load(const std::string &config_file, bool inherit,
         }
         else {
             config_file_path =
-                std::filesystem::absolute(std::filesystem::path{config_file});
+                canonical(absolute(std::filesystem::path{config_file}));
             doc.force_insert(
                 "__parent_path", config_file_path.parent_path().string());
         }
+
+        LOG_DBG("Effective config file path is {}", config_file_path.string());
 
         //
         // If no relative_to path is specified in the config, make all paths
@@ -931,9 +926,11 @@ config load(const std::string &config_file, bool inherit,
         //
         if (!doc["relative_to"]) {
             bool paths_relative_to_config_file = true;
+
             if (doc["paths_relative_to_config_file"] &&
                 !doc["paths_relative_to_config_file"].as<bool>())
                 paths_relative_to_config_file = false;
+
             if (paths_relative_to_pwd && *paths_relative_to_pwd)
                 paths_relative_to_config_file = false;
 
@@ -950,7 +947,14 @@ config load(const std::string &config_file, bool inherit,
         //
         // Resolve common path-like config options relative to `relative_to`
         //
+        if (!doc["output_directory"]) {
+            doc["output_directory"] = ".";
+        }
         resolve_option_path(doc, "output_directory");
+
+        if (!doc["compilation_database_dir"]) {
+            doc["compilation_database_dir"] = ".";
+        }
         resolve_option_path(doc, "compilation_database_dir");
 
         // If the current directory is also a git repository,

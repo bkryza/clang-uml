@@ -343,6 +343,34 @@ TEST_CASE("Test config sequence inherited", "[unit-test]")
     CHECK(def.generate_return_types() == false);
 }
 
+TEST_CASE("Test config relative paths handling", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/relative_to.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class1"];
+    CHECK(def.get_relative_to()() == "/tmp");
+    CHECK(def.root_directory() == "/tmp");
+
+    def = *cfg.diagrams["class2"];
+    CHECK(def.get_relative_to()() == ".");
+    CHECK(def.root_directory() ==
+        fmt::format(
+            "{}/test_config_data", std::filesystem::current_path().string()));
+
+    auto cfg2 =
+        clanguml::config::load("./test_config_data/relative_to_default.yml");
+
+    CHECK(cfg2.diagrams.size() == 1);
+    def = *cfg2.diagrams["class1"];
+    CHECK(def.get_relative_to()() ==
+        fmt::format(
+            "{}/test_config_data", std::filesystem::current_path().string()));
+    CHECK(def.root_directory() ==
+        fmt::format(
+            "{}/test_config_data", std::filesystem::current_path().string()));
+}
+
 TEST_CASE("Test config full clang uml dump", "[unit-test]")
 {
     auto cfg =

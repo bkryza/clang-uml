@@ -1,13 +1,10 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00019_class:
     type: class
     glob:
-      - tests/t00019/**.cc
+      - "*.cc"
     generate_template_argument_dependencies: false
-    using_namespace:
-      - clanguml::t00019
+    using_namespace: clanguml::t00019
     include:
       namespaces:
         - clanguml::t00019

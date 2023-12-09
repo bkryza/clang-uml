@@ -1,5 +1,3 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00049_class:
     type: class
@@ -11,7 +9,7 @@ diagrams:
       "std::vector<thestring>": string_vector
       "std::map<int,int>": intmap
     glob:
-      - tests/t00049/t00049.cc
+      - t00049.cc
     include:
       namespaces:
         - clanguml::t00049

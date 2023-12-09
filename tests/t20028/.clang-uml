@@ -1,17 +1,14 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20028_sequence:
     type: sequence
     glob:
-      - tests/t20028/t20028.cc
+      - t20028.cc
     include:
       namespaces:
         - clanguml::t20028
     exclude:
       namespaces:
         - clanguml::t20028::detail
-    using_namespace:
-      - clanguml::t20028
+    using_namespace: clanguml::t20028
     from:
       - function: "clanguml::t20028::tmain()"

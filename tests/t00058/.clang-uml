@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00058_class:
     type: class
     glob:
-      - tests/t00058/t00058.cc
+      - t00058.cc
     include:
       namespaces:
         - clanguml::t00058
-    using_namespace:
-      - clanguml::t00058
+    using_namespace: clanguml::t00058
     plantuml:
       after:
         - '{{ alias("same_as_first_type<T,Args...>") }} ..> {{ alias("first_type<T,Args...>") }}'

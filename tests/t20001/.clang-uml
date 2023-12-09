@@ -1,5 +1,3 @@
-compilation_database_dir: ..
-output_directory: diagrams
 add_compile_flags:
   - -fparse-all-comments
 diagrams:
@@ -7,15 +5,14 @@ diagrams:
     type: sequence
     title: Basic sequence diagram example
     glob:
-      - tests/t20001/t20001.cc
+      - t20001.cc
     include:
       namespaces:
         - clanguml::t20001
     exclude:
       namespaces:
         - clanguml::t20001::detail
-    using_namespace:
-      - clanguml::t20001
+    using_namespace: clanguml::t20001
     from:
       - function: "clanguml::t20001::tmain()"
     plantuml:

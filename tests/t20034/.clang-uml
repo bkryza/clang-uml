@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20034_sequence:
     type: sequence
     glob:
-      - tests/t20034/t20034.cc
+      - t20034.cc
     include:
       namespaces:
         - clanguml::t20034
-    using_namespace:
-      - clanguml::t20034
+    using_namespace: clanguml::t20034
     from_to:
       - [function: "clanguml::t20034::D::d2()",
          function: "clanguml::t20034::A::a2()"]

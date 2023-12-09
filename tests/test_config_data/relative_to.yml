@@ -1,0 +1,11 @@
+relative_to: /tmp
+diagrams:
+  class1:
+    type: class
+    glob:
+      - test.cc
+  class2:
+    type: class
+    relative_to: .
+    glob:
+      - test.cc

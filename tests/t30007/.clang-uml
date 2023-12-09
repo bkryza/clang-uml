@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t30007_package:
     type: package
     glob:
-      - tests/t30007/t30007.cc
+      - t30007.cc
     include:
       namespaces:
         - clanguml::t30007
-    using_namespace:
-      - clanguml::t30007
+    using_namespace: clanguml::t30007
     layout:
       C:
         - up: 'A::AA'

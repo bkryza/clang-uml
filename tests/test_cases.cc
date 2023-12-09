@@ -35,18 +35,6 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
         R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})"};
 
     diagram->generate_links.set(links_config);
-
-    using namespace std::literals;
-
-    std::vector<std::string> tests_with_custom_relative_to_paths{
-        "t00061_class"s, "t00065_class"s, "t20017_sequence"s, "t30010_package"s,
-        "t30011_package"s, "t40001_include"s, "t40002_include"s,
-        "t40003_include"s};
-
-    if (!clanguml::util::contains(
-            tests_with_custom_relative_to_paths, diagram->name)) {
-        diagram->get_relative_to().set("../../..");
-    }
 }
 
 std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
@@ -56,7 +44,20 @@ load_config(const std::string &test_name)
         clanguml::common::compilation_database_ptr>
         res;
 
-    res.first = clanguml::config::load(test_name + "/.clang-uml", true, true);
+    // Load configuration file from the project source tree instead of
+    // the test build directory
+    const auto test_config_path =
+        fmt::format("../../tests/{}/.clang-uml", test_name);
+
+    const auto compilation_database_dir = canonical(
+        std::filesystem::current_path() / std::filesystem::path{".."});
+    const auto output_directory =
+        std::filesystem::current_path() / std::filesystem::path{"diagrams"};
+
+    res.first = clanguml::config::load(test_config_path, true, false, true);
+
+    res.first.compilation_database_dir.set(compilation_database_dir.string());
+    res.first.output_directory.set(output_directory.string());
 
     LOG_DBG("Loading compilation database from {}",
         res.first.compilation_database_dir());

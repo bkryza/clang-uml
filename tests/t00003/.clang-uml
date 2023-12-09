@@ -1,10 +1,8 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00003_class:
     type: class
     glob:
-      - tests/t00003/t00003.cc
+      - t00003.cc
     using_namespace: clanguml::t00003
     include:
       namespaces:

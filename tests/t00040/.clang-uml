@@ -1,13 +1,10 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00040_class:
     type: class
     generate_packages: false
     glob:
-      - tests/t00040/t00040.cc
-    using_namespace:
-      - clanguml::t00040
+      - t00040.cc
+    using_namespace: clanguml::t00040
     include:
       namespaces:
         - clanguml::t00040

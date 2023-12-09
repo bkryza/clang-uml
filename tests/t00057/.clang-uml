@@ -1,8 +1,6 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00057_class:
     type: class
     glob:
-      - tests/t00057/t00057.c
-      - tests/t00057/src/t00057_impl.c
+      - t00057.c
+      - src/t00057_impl.c

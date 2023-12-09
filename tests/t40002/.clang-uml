@@ -1,5 +1,3 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t40002_include:
     type: include
@@ -9,7 +7,6 @@ diagrams:
       - src/t40002.cc
       - src/lib1/lib1.cc
       - src/lib2/lib2.cc
-    relative_to: ../../../tests/t40002
     include:
       # Include only files belonging to these paths relative to relative_to
       paths:

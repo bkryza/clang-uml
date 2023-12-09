@@ -1,9 +1,6 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00061_class:
     type: class
-    relative_to: ../../../tests/t00061
     glob:
       - t00061.cc
     include:
@@ -11,5 +8,4 @@ diagrams:
         - clanguml::t00061
       paths:
         - include/*_a.h
-    using_namespace:
-      - clanguml::t00061
+    using_namespace: clanguml::t00061
