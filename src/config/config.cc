@@ -255,7 +255,7 @@ std::vector<std::string> diagram::get_translation_units() const
 
 std::filesystem::path diagram::root_directory() const
 {
-    return canonical(absolute(base_directory() / relative_to()));
+    return weakly_canonical(absolute(base_directory() / relative_to()));
 }
 
 std::filesystem::path diagram::make_path_relative(

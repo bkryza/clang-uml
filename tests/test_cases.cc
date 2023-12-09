@@ -51,8 +51,8 @@ load_config(const std::string &test_name)
 
     const auto compilation_database_dir = canonical(
         std::filesystem::current_path() / std::filesystem::path{".."});
-    const auto output_directory =
-        std::filesystem::current_path() / std::filesystem::path{"diagrams"};
+    const auto output_directory = weakly_canonical(
+        std::filesystem::current_path() / std::filesystem::path{"diagrams"});
 
     res.first = clanguml::config::load(test_config_path, true, false, true);
 

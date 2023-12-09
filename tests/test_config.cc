@@ -350,7 +350,11 @@ TEST_CASE("Test config relative paths handling", "[unit-test]")
     CHECK(cfg.diagrams.size() == 2);
     auto &def = *cfg.diagrams["class1"];
     CHECK(def.get_relative_to()() == "/tmp");
-    CHECK(def.root_directory() == "/tmp");
+#ifdef _MSC_VER
+    CHECK(def.root_directory().string() == "C:\\tmp");
+#else
+    CHECK(def.root_directory().string() == "/tmp");
+#endif
 
     def = *cfg.diagrams["class2"];
     CHECK(def.get_relative_to()() == ".");
