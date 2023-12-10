@@ -1,14 +1,11 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20006_sequence:
     type: sequence
     glob:
-      - ../../tests/t20006/t20006.cc
+      - t20006.cc
     include:
       namespaces:
         - clanguml::t20006
-    using_namespace:
-      - clanguml::t20006
+    using_namespace: clanguml::t20006
     from:
       - function: "clanguml::t20006::tmain()"

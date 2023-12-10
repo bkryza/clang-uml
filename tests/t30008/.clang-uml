@@ -1,17 +1,14 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t30008_package:
     type: package
     glob:
-      - ../../tests/t30008/t30008.cc
+      - t30008.cc
     include:
       dependants:
         - clanguml::t30008::dependants::A
       dependencies:
         - clanguml::t30008::dependencies::F
-    using_namespace:
-      - clanguml::t30008
+    using_namespace: clanguml::t30008
     plantuml:
       before:
         - "' t30008 test package diagram"

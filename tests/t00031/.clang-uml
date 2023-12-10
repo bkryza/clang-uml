@@ -1,13 +1,10 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00031_class:
     type: class
     glob:
-      - ../../tests/t00031/t00031.cc
+      - t00031.cc
     skip_redundant_dependencies: false
-    using_namespace:
-      - clanguml::t00031
+    using_namespace: clanguml::t00031
     include:
       namespaces:
         - clanguml::t00031

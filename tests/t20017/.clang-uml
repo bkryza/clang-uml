@@ -1,10 +1,7 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20017_sequence:
     type: sequence
     combine_free_functions_into_file_participants: true
-    relative_to: ../../../tests/t20017
     glob:
       - t20017.cc
     include:

@@ -1,14 +1,11 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00002_class:
     type: class
     title: Basic class diagram example
     glob:
-      - ../../tests/t00002/t00002.cc
+      - t00002.cc
     comment_parser: clang
-    using_namespace:
-      - clanguml::t00002
+    using_namespace: clanguml::t00002
     include:
       namespaces:
         - clanguml::t00002

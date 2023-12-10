@@ -302,16 +302,18 @@ void generator::generate_message_comment(
     if (comment_generated_from_note_decorators)
         return;
 
-    if (!config().generate_message_comments() || !m.comment())
+    if (!config().generate_message_comments())
         return;
 
-    ostr << "note over " << generate_alias(from.value()) << '\n';
+    if (const auto &comment = m.comment(); comment) {
+        ostr << "note over " << generate_alias(from.value()) << '\n';
 
-    ostr << util::format_message_comment(
-                m.comment().value(), config().message_comment_width())
-         << '\n';
+        ostr << util::format_message_comment(
+                    comment.value(), config().message_comment_width())
+             << '\n';
 
-    ostr << "end note" << '\n';
+        ostr << "end note" << '\n';
+    }
 }
 
 void generator::generate_participant(
@@ -400,7 +402,7 @@ void generator::generate_participant(
         if (is_participant_generated(file_id))
             return;
 
-        auto participant_name = util::path_to_url(std::filesystem::relative(
+        auto participant_name = util::path_to_url(relative(
             std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 

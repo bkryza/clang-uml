@@ -1,13 +1,10 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00044_class:
     type: class
     generate_packages: true
     glob:
-      - ../../tests/t00044/t00044.cc
-    using_namespace:
-      - clanguml::t00044
+      - t00044.cc
+    using_namespace: clanguml::t00044
     include:
       namespaces:
         - clanguml::t00044

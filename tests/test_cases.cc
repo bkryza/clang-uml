@@ -21,8 +21,11 @@
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
 #include "common/generators/generators.h"
+#include "util/util.h"
 
 #include <spdlog/spdlog.h>
+
+#include <vector>
 
 void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
@@ -41,7 +44,20 @@ load_config(const std::string &test_name)
         clanguml::common::compilation_database_ptr>
         res;
 
-    res.first = clanguml::config::load(test_name + "/.clang-uml", true, true);
+    // Load configuration file from the project source tree instead of
+    // the test build directory
+    const auto test_config_path =
+        fmt::format("../../tests/{}/.clang-uml", test_name);
+
+    const auto compilation_database_dir = canonical(
+        std::filesystem::current_path() / std::filesystem::path{".."});
+    const auto output_directory = weakly_canonical(
+        std::filesystem::current_path() / std::filesystem::path{"diagrams"});
+
+    res.first = clanguml::config::load(test_config_path, true, false, true);
+
+    res.first.compilation_database_dir.set(compilation_database_dir.string());
+    res.first.output_directory.set(output_directory.string());
 
     LOG_DBG("Loading compilation database from {}",
         res.first.compilation_database_dir());
@@ -63,6 +79,9 @@ template <typename DiagramConfig>
 auto generate_diagram_impl(clanguml::common::compilation_database &db,
     std::shared_ptr<clanguml::config::diagram> diagram)
 {
+    LOG_INFO("All paths will be evaluated relative to {}",
+        diagram->root_directory().string());
+
     using diagram_config = DiagramConfig;
     using diagram_model =
         typename clanguml::common::generators::diagram_model_t<

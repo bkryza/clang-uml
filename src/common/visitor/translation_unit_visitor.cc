@@ -26,7 +26,7 @@ namespace clanguml::common::visitor {
 translation_unit_visitor::translation_unit_visitor(
     clang::SourceManager &sm, const clanguml::config::diagram &config)
     : source_manager_{sm}
-    , relative_to_path_{config.relative_to()}
+    , relative_to_path_{config.root_directory()}
 {
     if (config.comment_parser() == config::comment_parser_t::plain) {
         comment_visitor_ =
@@ -108,6 +108,8 @@ void translation_unit_visitor::set_source_location(
     const clang::SourceLocation &location,
     clanguml::common::model::source_location &element)
 {
+    namespace fs = std::filesystem;
+
     std::string file;
     unsigned line{};
     unsigned column{};
@@ -133,15 +135,26 @@ void translation_unit_visitor::set_source_location(
         }
     }
 
-    if (std::filesystem::path file_path{file}; !file_path.is_absolute()) {
-        file_path =
-            std::filesystem::canonical(std::filesystem::absolute(file_path));
-        file = file_path.string();
+    // ensure the path is absolute
+    fs::path file_path{file};
+    if (!file_path.is_absolute()) {
+        file_path = fs::absolute(file_path);
     }
 
+    file_path = fs::canonical(file_path);
+
+    file = file_path.string();
+
     element.set_file(file);
-    element.set_file_relative(util::path_to_url(
-        std::filesystem::relative(element.file(), relative_to_path_).string()));
+
+    if (util::is_relative_to(file_path, relative_to_path_)) {
+        element.set_file_relative(util::path_to_url(
+            fs::relative(element.file(), relative_to_path_).string()));
+    }
+    else {
+        element.set_file_relative("");
+    }
+
     element.set_translation_unit(tu_path().string());
     element.set_line(line);
     element.set_column(column);

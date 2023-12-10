@@ -10,6 +10,7 @@ glob:
 include:
   namespaces:
     - clanguml
+    - YAML
 exclude:
   elements:
     - r: "clanguml::config::option.*"

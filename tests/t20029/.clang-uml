@@ -1,20 +1,17 @@
-compilation_database_dir: ..
-output_directory: diagrams
 add_compile_flags:
   - -fparse-all-comments
 diagrams:
   t20029_sequence:
     type: sequence
     glob:
-      - ../../tests/t20029/t20029.cc
+      - t20029.cc
     include:
       namespaces:
         - clanguml::t20029
     exclude:
       access:
         - private
-    using_namespace:
-      - clanguml::t20029
+    using_namespace: clanguml::t20029
     from:
       - function: clanguml::t20029::tmain()
     generate_message_comments: true

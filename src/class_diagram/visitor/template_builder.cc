@@ -62,6 +62,7 @@ bool template_builder::simplify_system_template(
 
     if (simplified != full_name) {
         ct.set_type(simplified);
+        ct.set_id(common::to_id(simplified));
         ct.clear_params();
         return true;
     }
@@ -268,7 +269,7 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     template_instantiation.set_id(
         common::to_id(template_instantiation_ptr->full_name(false)));
 
-    visitor_.set_source_location(*template_decl, *template_instantiation_ptr);
+    visitor_.set_source_location(*cls, template_instantiation);
 
     return template_instantiation_ptr;
 }
@@ -357,6 +358,8 @@ template_builder::build_from_class_template_specialization(
             template_instantiation_ptr->full_name(false), templated_decl_id);
     }
 
+    visitor_.set_source_location(*template_decl, template_instantiation);
+
     return template_instantiation_ptr;
 }
 
@@ -435,6 +438,10 @@ void template_builder::process_template_arguments(
 
         arg_index++;
     }
+
+    // Update id
+    template_instantiation.set_id(
+        common::to_id(template_instantiation.full_name(false)));
 }
 
 void template_builder::argument_process_dispatch(
@@ -1029,6 +1036,9 @@ template_builder::try_as_template_specialization_type(
     simplify_system_template(
         argument, argument.to_string(using_namespace(), false));
 
+    argument.set_id(
+        common::to_id(argument.to_string(using_namespace(), false)));
+
     const auto nested_template_instantiation_full_name =
         nested_template_instantiation->full_name(false);
 
@@ -1053,8 +1063,7 @@ template_builder::try_as_template_specialization_type(
 
     if (diagram().should_include(
             namespace_{nested_template_instantiation_full_name})) {
-        visitor_.set_source_location(
-            *template_decl, *nested_template_instantiation);
+        visitor_.set_source_location(*cls, *nested_template_instantiation);
         visitor_.add_class(std::move(nested_template_instantiation));
     }
 
@@ -1140,10 +1149,12 @@ std::optional<template_parameter> template_builder::try_as_record_type(
     auto argument = template_parameter::make_argument({});
     type = consume_context(type, argument);
 
-    auto type_name = common::to_string(type, template_decl->getASTContext());
+    const auto type_name = config().simplify_template_type(
+        common::to_string(type, template_decl->getASTContext()));
 
     argument.set_type(type_name);
     const auto type_id = common::to_id(type_name);
+
     argument.set_id(type_id);
 
     const auto *class_template_specialization =

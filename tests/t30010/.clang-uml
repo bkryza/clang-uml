@@ -1,5 +1,3 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t30010_package:
     type: package
@@ -7,10 +5,8 @@ diagrams:
     package_type: directory
     glob:
       - t30010.cc
-    relative_to: ../../../tests/t30010
     include:
       paths:
         - app
         - libraries
-    using_namespace:
-      - clanguml::t30010
+    using_namespace: clanguml::t30010

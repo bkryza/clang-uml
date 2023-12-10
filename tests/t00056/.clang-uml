@@ -1,12 +1,9 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00056_class:
     type: class
     glob:
-      - ../../tests/t00056/t00056.cc
+      - t00056.cc
     include:
       namespaces:
         - clanguml::t00056
-    using_namespace:
-      - clanguml::t00056
+    using_namespace: clanguml::t00056

@@ -1,10 +1,8 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20031_sequence:
     type: sequence
     glob:
-      - ../../tests/t20031/t20031.cc
+      - t20031.cc
     include:
       namespaces:
         - clanguml::t20031
@@ -13,8 +11,7 @@ diagrams:
         - constructor
         - operator
         - lambda
-    using_namespace:
-      - clanguml::t20031
+    using_namespace: clanguml::t20031
     from:
       - function: "clanguml::t20031::tmain(int)"
       - function: "clanguml::t20031::tmain(bool,int)"

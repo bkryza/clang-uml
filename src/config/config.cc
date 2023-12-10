@@ -233,8 +233,7 @@ std::vector<std::string> diagram::get_translation_units() const
 {
     std::vector<std::string> translation_units{};
 
-    LOG_DBG("Looking for translation units in {}",
-        std::filesystem::current_path().string());
+    LOG_DBG("Looking for translation units in {}", root_directory().string());
 
     for (const auto &g : glob()) {
         std::string glob_path =
@@ -256,7 +255,7 @@ std::vector<std::string> diagram::get_translation_units() const
 
 std::filesystem::path diagram::root_directory() const
 {
-    return canonical(absolute(base_directory() / relative_to()));
+    return weakly_canonical(absolute(base_directory() / relative_to()));
 }
 
 std::filesystem::path diagram::make_path_relative(

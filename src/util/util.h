@@ -435,6 +435,17 @@ std::string path_to_url(const std::filesystem::path &p);
 std::filesystem::path ensure_path_is_absolute(const std::filesystem::path &p,
     const std::filesystem::path &root = std::filesystem::current_path());
 
+/**
+ * @brief Check if a given path is relative to another path.
+ *
+ * @param parent The path to be checked for relativity.
+ * @param right The base path against which the relativity is checked.
+ * @return True if the child path is relative to the parent path, false
+ * otherwise.
+ */
+bool is_relative_to(
+    const std::filesystem::path &parent, const std::filesystem::path &child);
+
 std::string format_message_comment(
     const std::string &c, unsigned width = kDefaultMessageCommentWidth);
 

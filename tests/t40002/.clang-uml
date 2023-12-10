@@ -1,16 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t40002_include:
     type: include
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40002/src/t40002.cc
-      - ../../tests/t40002/src/lib1/lib1.cc
-      - ../../tests/t40002/src/lib2/lib2.cc
-    # Render the paths relative to this directory
-    relative_to: ../../../tests/t40002
+      - src/t40002.cc
+      - src/lib1/lib1.cc
+      - src/lib2/lib2.cc
     include:
       # Include only files belonging to these paths relative to relative_to
       paths:

@@ -1,11 +1,9 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00068_r0_class:
     type: class
     title: AAA context of radius 0
     glob:
-      - ../../tests/t00068/t00068.cc
+      - t00068.cc
     include:
       namespaces:
         - clanguml::t00068
@@ -13,13 +11,12 @@ diagrams:
         - match:
             radius: 0
             pattern: clanguml::t00068::AAA
-    using_namespace:
-      - clanguml::t00068
+    using_namespace: clanguml::t00068
   t00068_r1_class:
     type: class
     title: AAA context of radius 1
     glob:
-      - ../../tests/t00068/t00068.cc
+      - t00068.cc
     include:
       namespaces:
         - clanguml::t00068
@@ -27,13 +24,12 @@ diagrams:
         - match:
             radius: 1
             pattern: clanguml::t00068::AAA
-    using_namespace:
-      - clanguml::t00068
+    using_namespace: clanguml::t00068
   t00068_r2_class:
     type: class
     title: AAA context of radius 2
     glob:
-      - ../../tests/t00068/t00068.cc
+      - t00068.cc
     include:
       namespaces:
         - clanguml::t00068
@@ -41,5 +37,4 @@ diagrams:
         - match:
             radius: 2
             pattern: clanguml::t00068::AAA
-    using_namespace:
-      - clanguml::t00068
+    using_namespace: clanguml::t00068

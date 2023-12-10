@@ -517,6 +517,9 @@ bool template_parameter::find_nested_relationships(
     // just add it and skip recursion (e.g. this is a user defined type)
     const auto maybe_type = type();
 
+    if (is_function_template())
+        hint = common::model::relationship_t::kDependency;
+
     if (maybe_type && should_include(maybe_type.value())) {
         if (is_association())
             hint = common::model::relationship_t::kAssociation;
@@ -538,7 +541,8 @@ bool template_parameter::find_nested_relationships(
 
             if (maybe_id && maybe_arg_type && should_include(*maybe_arg_type)) {
 
-                if (template_argument.is_association())
+                if (template_argument.is_association() &&
+                    hint == common::model::relationship_t::kAggregation)
                     hint = common::model::relationship_t::kAssociation;
 
                 nested_relationships.emplace_back(maybe_id.value(), hint);
@@ -547,6 +551,9 @@ bool template_parameter::find_nested_relationships(
                     (hint == common::model::relationship_t::kAggregation);
             }
             else {
+                if (template_argument.is_function_template())
+                    hint = common::model::relationship_t::kDependency;
+
                 added_aggregation_relationship =
                     template_argument.find_nested_relationships(
                         nested_relationships, hint, should_include);

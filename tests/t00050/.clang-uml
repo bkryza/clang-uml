@@ -1,10 +1,8 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00050_class:
     type: class
     glob:
-      - ../../tests/t00050/t00050.cc
+      - t00050.cc
     comment_parser: clang
     include:
       namespaces:

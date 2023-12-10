@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t00055_class:
     type: class
     glob:
-      - ../../tests/t00055/t00055.cc
+      - t00055.cc
     include:
       namespaces:
         - clanguml::t00055
-    using_namespace:
-      - clanguml::t00055
+    using_namespace: clanguml::t00055
     layout:
       A:
         - row: [C, E, G, I]

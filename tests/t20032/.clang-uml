@@ -1,15 +1,12 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20032_sequence:
     type: sequence
     glob:
-      - ../../tests/t20032/t20032.cc
+      - t20032.cc
     include:
       namespaces:
         - clanguml::t20032
-    using_namespace:
-      - clanguml::t20032
+    using_namespace: clanguml::t20032
     generate_return_types: true
     from:
       - function: "clanguml::t20032::tmain(int,char **)"

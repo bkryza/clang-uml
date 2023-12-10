@@ -1,5 +1,3 @@
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t40001_include:
     type: include
@@ -7,9 +5,7 @@ diagrams:
     # Provide the files to parse in order to look
     # for #include directives
     glob:
-      - ../../tests/t40001/src/t40001.cc
-    # Render the paths relative to this directory
-    relative_to: ../../../tests/t40001
+      - src/t40001.cc
     # Include also external system headers
     generate_system_headers: true
     include:
