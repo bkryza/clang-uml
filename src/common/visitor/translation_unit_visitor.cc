@@ -143,17 +143,18 @@ void translation_unit_visitor::set_source_location(
 
     file_path = fs::canonical(file_path);
 
-    if (!util::is_relative_to(file_path, relative_to_path_)) {
-        return;
-    }
-
     file = file_path.string();
 
     element.set_file(file);
+
     if (util::is_relative_to(file_path, relative_to_path_)) {
         element.set_file_relative(util::path_to_url(
             fs::relative(element.file(), relative_to_path_).string()));
     }
+    else {
+        element.set_file_relative("");
+    }
+
     element.set_translation_unit(tu_path().string());
     element.set_line(line);
     element.set_column(column);

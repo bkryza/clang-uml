@@ -239,6 +239,16 @@ translation_unit_visitor::include_visitor::process_source_file(
         source_file.set_file(std::filesystem::absolute(file.string())
                                  .lexically_normal()
                                  .string());
+
+        if (util::is_relative_to(file_path, config().root_directory())) {
+            source_file.set_file_relative(util::path_to_url(
+                relative(source_file.file(), config().root_directory())
+                    .string()));
+        }
+        else {
+            source_file.set_file_relative("");
+        }
+
         source_file.set_line(0);
 
         return source_file.id();

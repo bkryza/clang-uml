@@ -410,7 +410,7 @@ bool is_relative_to(
     if (child.has_root_directory() != parent.has_root_directory())
         return false;
 
-    return starts_with(child, parent);
+    return starts_with(weakly_canonical(child), weakly_canonical(parent));
 }
 
 std::string format_message_comment(const std::string &comment, unsigned width)

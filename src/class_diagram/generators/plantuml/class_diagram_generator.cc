@@ -33,7 +33,7 @@ generator::generator(diagram_config &config, diagram_model &model)
 void generator::generate_link(
     std::ostream &ostr, const class_diagram::model::class_element &e) const
 {
-    if (e.file().empty())
+    if (e.file_relative().empty())
         return;
 
     auto context = element_context(e);

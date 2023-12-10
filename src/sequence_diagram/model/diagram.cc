@@ -449,7 +449,7 @@ void diagram::print() const
                     from_participant.full_name(false), from_participant.id(),
                     to_participant.full_name(false), to_participant.id(),
                     message.message_name(), to_string(message.type()),
-                    message.comment() ? message.comment().value() : "None");
+                    message.comment().value_or("None"));
             }
         }
     }

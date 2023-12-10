@@ -269,10 +269,7 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     template_instantiation.set_id(
         common::to_id(template_instantiation_ptr->full_name(false)));
 
-    visitor_.set_source_location(*template_decl, template_instantiation);
-
-    LOG_DBG("**** {} -> {}", template_instantiation.full_name(false),
-        template_instantiation.file());
+    visitor_.set_source_location(*cls, template_instantiation);
 
     return template_instantiation_ptr;
 }
@@ -360,6 +357,8 @@ template_builder::build_from_class_template_specialization(
         LOG_DBG("Skipping instantiation relationship from {} to {}",
             template_instantiation_ptr->full_name(false), templated_decl_id);
     }
+
+    visitor_.set_source_location(*template_decl, template_instantiation);
 
     return template_instantiation_ptr;
 }
@@ -1064,8 +1063,7 @@ template_builder::try_as_template_specialization_type(
 
     if (diagram().should_include(
             namespace_{nested_template_instantiation_full_name})) {
-        visitor_.set_source_location(
-            *template_decl, *nested_template_instantiation);
+        visitor_.set_source_location(*cls, *nested_template_instantiation);
         visitor_.add_class(std::move(nested_template_instantiation));
     }
 

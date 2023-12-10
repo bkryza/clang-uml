@@ -264,6 +264,8 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
         LOG_DBG("Adding class {} with id {}", name, id);
 
+        set_source_location(*cls, *template_specialization_ptr);
+
         add_class(std::move(template_specialization_ptr));
     }
 

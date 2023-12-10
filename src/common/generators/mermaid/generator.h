@@ -217,17 +217,22 @@ inja::json generator<C, D>::element_context(const E &e) const
 
     if (!e.file().empty()) {
         std::filesystem::path file{e.file()};
-        std::string relative_path = file.string();
+        std::string git_relative_path = file.string();
+        if (!e.file_relative().empty()) {
 #if _MSC_VER
-        if (file.is_absolute() && ctx.contains("git"))
+            if (file.is_absolute() && ctx.contains("git"))
 #else
-        if (file.is_absolute() && ctx.template contains("git"))
+            if (file.is_absolute() && ctx.template contains("git"))
 #endif
-            relative_path =
-                std::filesystem::relative(file, ctx["git"]["toplevel"])
-                    .string();
+                git_relative_path =
+                    std::filesystem::relative(file, ctx["git"]["toplevel"])
+                        .string();
+        }
+        else {
+            git_relative_path = "";
+        }
 
-        ctx["element"]["source"]["path"] = util::path_to_url(relative_path);
+        ctx["element"]["source"]["path"] = util::path_to_url(git_relative_path);
         ctx["element"]["source"]["full_path"] = file.string();
         ctx["element"]["source"]["name"] = file.filename().string();
         ctx["element"]["source"]["line"] = e.line();
