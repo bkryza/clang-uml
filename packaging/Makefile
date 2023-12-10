@@ -83,7 +83,7 @@ rpm:
 		echo "############################"
 		#rm -rf $(build_dir)
 		mkdir -p $(build_dir)
-		dnf install -y fedora-packager rpmdevtools gcc cmake git clang-devel clang-tools-extra ccache yaml-cpp llvm-devel wget yaml-cpp-devel
+		dnf install -y fedora-packager rpmdevtools gcc gdb cmake git clang-devel clang-tools-extra ccache yaml-cpp llvm-devel wget yaml-cpp-devel
 		rpmdev-setuptree
 		cp $(build_dir)/$(SOURCE_ARCHIVE_RPM) /root/rpmbuild/SOURCES/
 		cp fedora/clang-uml.spec /root/rpmbuild/SPECS/

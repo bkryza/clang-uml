@@ -22,17 +22,17 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - conda-forge::pkg-config
-    - conda-forge::yaml-cpp 0.7.0
-    - conda-forge::clangdev 15.0.6
-    - conda-forge::libclang 15.0.6
-    - conda-forge::libclang-cpp 15.0.6
+    - conda-forge::yaml-cpp 0.8.0
+    - conda-forge::clangdev 17.0.6
+    - conda-forge::libclang 17.0.6
+    - conda-forge::libclang-cpp 17.0.6
     - conda-forge::cmake
     - conda-forge::git
     - conda-forge::make # [unix]
   run:
-    - conda-forge::yaml-cpp 0.7.0
-    - conda-forge::libclang 15.0.6
-    - conda-forge::libclang-cpp 15.0.6
+    - conda-forge::yaml-cpp 0.8.0
+    - conda-forge::libclang 17.0.6
+    - conda-forge::libclang-cpp 17.0.6
 
 test:
   commands:

@@ -1,5 +1,6 @@
 # CHANGELOG
- 
+
+### 0.4.2
  * Fixed random typos and omissions in docs (#208)
  * Fixed handling of diagram hyperlinks with sources outside of project dir (#213)
  * Fixed test case t00014 on macos (#176)
