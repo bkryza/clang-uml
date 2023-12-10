@@ -41,10 +41,10 @@ Some filters accept either specified exact values, some support regular
 expressions while some except glob patterns.
 
 For filters which accept regular expressions, the regular expression has to
-be provided as a map `r: 'pattern'` due to the fact the pointer (`*`) otherwise
-would have to be escaped in situations such as `mycontainer<char*>`, so for
+be provided as a map ```r: 'pattern'``` due to the fact the pointer (```*```) otherwise
+would have to be escaped in situations such as ```mycontainer<char*>```, so for
 instance to specify that the diagram should exclude all classes containing the
-word `test` simply add the following filter:
+word ```test``` simply add the following filter:
 
 ```yaml
 exclude:
@@ -73,11 +73,20 @@ The following table specifies the values allowed in each filter:
 | `dependencies`    | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
 | `callee_types`    | Callee types in sequence diagrams| ```constructor```, ```assignment```, ```operator```, ```defaulted```, ```static```, ```method```, ```function```, ```function_template```, ```lambda``` |
 
-The following filters are available.
+The following filters are available:
 
 ## namespaces
 
 Allows to include or exclude entities from specific namespaces.
+
+```yaml
+  include:
+    namespaces:
+      - ns1::ns2
+  exclude:
+    namespaces:
+      - ns1::ns2::detail
+```
 
 ## elements
 
@@ -113,10 +122,11 @@ in specific files.
 diagrams:
   t00061_class:
     type: class
-    relative_to: ../../tests/t00061
-    glob: [t00061.cc]
+    glob: 
+      - t00061.cc
     include:
-      paths: [include/t00061_a.h]
+      paths:
+        - include/t00061_a.h
     using_namespace:
       - clanguml::t00061
 ```
@@ -166,14 +176,14 @@ include inheritance and template specialization/instantiation relationships add 
 ```
 
 The following relationships can be used in this filter:
-  * inheritance
-  * composition
-  * aggregation
-  * ownership
-  * association
-  * instantiation
-  * friendship
-  * dependency
+  * `inheritance`
+  * `composition`
+  * `aggregation`
+  * `ownership`
+  * `association`
+  * `instantiation`
+  * `friendship`
+  * `dependency`
 
 ## subclasses
 
@@ -198,13 +208,13 @@ This filter allows to include or exclude class methods and members based on thei
 ## method_types
 
 This filter allows to include or exclude various method types from the class diagram, allowed values ar:
-  * constructor
-  * destructor
-  * assignment
-  * operator
-  * defaulted
-  * deleted
-  * static
+  * `constructor`
+  * `destructor`
+  * `assignment`
+  * `operator`
+  * `defaulted`
+  * `deleted`
+  * `static`
 
 This filter is independent of the `access` filter, which controls which methods
 are included based on access scope (e.g. `public`).
@@ -217,15 +227,15 @@ a `callee` is the receiver of a message, and this filter specifies which types
 of receivers should match.
 
 The following callee types are supported:
-  * constructor
-  * assignment
-  * operator
-  * defaulted
-  * static
-  * method
-  * function
-  * function_template
-  * lambda
+  * `constructor`
+  * `assignment`
+  * `operator`
+  * `defaulted`
+  * `static`
+  * `method`
+  * `function`
+  * `function_template`
+  * `lambda`
 
 ## dependants and dependencies
 

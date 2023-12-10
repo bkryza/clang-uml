@@ -7,7 +7,7 @@
 * [Relationships](#relationships)
   * [Relationships to classes in containers or smart pointers](#relationships-to-classes-in-containers-or-smart-pointers)
 * [Inheritance diagrams](#inheritance-diagrams)
-* [Including packages in the diagram](#including-packages-in-the-diagram)
+* [Generating UML packages in the diagram](#generating-uml-packages-in-the-diagram)
 * [Class context diagram](#class-context-diagram)
 * [Disabling dependency relationships](#disabling-dependency-relationships)
 
@@ -72,18 +72,18 @@ To render only classes without any properties an exclusion filter can be added:
 
 ## Relationships
 
-The following table presents the PlantUML arrows representing each relationship
-in the class diagrams.
+The following table presents the PlantUML and MermaidJS arrows representing each
+type of relationship generated in the class diagrams.
 
-| UML                                    | PlantUML   |
-| ----                                   | ---        |
-| Inheritance                            | ![extension](img/puml_inheritance.png) |
-| Association                            | ![association](img/puml_association.png) |
-| Dependency                             | ![dependency](img/puml_dependency.png) |
-| Aggregation                            | ![aggregation](img/puml_aggregation.png) |
-| Composition                            | ![composition](img/puml_composition.png) |
-| Template specialization/instantiation  | ![specialization](img/puml_instantiation.png) |
-| Nesting (inner class/enum)             | ![nesting](img/puml_nested.png) |
+| UML                                    | PlantUML   | MermaidJS                                  |
+| ----                                   | ---        |--------------------------------------------|
+| Inheritance                            | ![extension](img/puml_inheritance.png) | ![extension](img/mermaid_inheritance.png)  |
+| Association                            | ![association](img/puml_association.png) | ![extension](img/mermaid_association.png)  |
+| Dependency                             | ![dependency](img/puml_dependency.png) | ![extension](img/mermaid_dependency.png)  |
+| Aggregation                            | ![aggregation](img/puml_aggregation.png) | ![extension](img/mermaid_aggregation.png)  |
+| Composition                            | ![composition](img/puml_composition.png) | ![extension](img/mermaid_composition.png)  |
+| Template specialization/instantiation  | ![specialization](img/puml_instantiation.png) | ![extension](img/mermaid_instantiation.png)  |
+| Nesting (inner class/enum)             | ![nesting](img/puml_nested.png) | ![extension](img/mermaid_nested.png)  |
 
 
 By default, a member from which a relationship has been added to the diagram
@@ -131,7 +131,7 @@ rendered. This can be easily achieved in `clang-uml` through inclusion filters:
         - inheritance
 ```
 
-## Including packages in the diagram
+## Generating UML packages in the diagram
 By default, `clang-uml` will render all element names including a namespace
 (relative to `using_namespace` property), e.g. `ns1::ns2::MyClass`.
 In order to generate packages in the diagram for each namespace instead, the
@@ -145,9 +145,10 @@ which results in the following diagram:
 
 ![t00036_class](test_cases/t00036_class.svg)
 
-In case the code base is structured based on subdirectory instead of namespaces,
-packages can be generated based on the location of a given declaration in the
-filesystem tree, by adding also the following option:
+In case the code base is structured based on subdirectory instead of namespaces
+(or this is a C project, where namespaces are not available), packages can be
+generated based on the location of a given declaration in the filesystem tree,
+by adding also the following option:
 
 ```yaml
 package_type: directory
@@ -173,6 +174,19 @@ this can be easily achieved using `context` inclusion filter:
         - ns1::MyClass
 ```
 
+By default, the diagram will include only elements in direct relationship to
+`ns1::MyClass`, but an addition option called `radius` can be added to this
+filter, which will extend the context to elements related to `ns1::MyClass`
+through at most N relationships, e.g:
+
+```yaml
+    include:
+      context:
+        - match:
+            radius: 3
+            pattern: ns1::MyClass
+```
+
 ## Disabling dependency relationships
 Dependency relationships are inferred whenever a class uses another class, thus
 often dependency relationship will be rendered in addition to other
@@ -185,8 +199,8 @@ skip_redundant_dependencies: false
 ```
 
 In many cases, dependency relationships between classes can clutter the diagram
-too much. In such cases it might be useful to disable dependency relationships
-completely for this diagram completely using the following exclusion filter:
+too much. In such cases, it might be useful to disable dependency relationships
+completely for this diagram using the following exclusion filter:
 ```yaml
     exclude:
       relationships:

@@ -55,23 +55,23 @@ C++ code, the following assumptions were made:
    from plain old C code). Functions can also be aggregated into file
    participants, based on their place of declaration
  * Call expressions in conditional expressions in block statements (e.g. `if`
-   or `while`) are rendered inside the PlantUML `alt` or `loop` blocks but
-   wrapped in `[`, `]` brackets
+   or `while`) are rendered inside the PlantUML or MermaidJS `alt` or `loop`
+   blocks but wrapped in `[`, `]` brackets
  * Lambda expressions are generated as standalone participants, whose name
    comprises the parent context where they are defined and the exact source code
    location
 
 ## Specifying diagram location constraints
-Sequence diagrams require a specification of location constraints in order to
+Sequence diagrams require specification of location constraints in order to
 determine, which call chains should be included in the diagram. Currently,
 there are 3 types of constraints:
-* `from` - will include all message call chains which start at the
+* `from` - will include all message call chains, which start at the
            locations specified in this constraint (this was previously named
            `start_from`)
-* `to` - will include all message call chains which end at the specified
+* `to` - will include all message call chains, which end at the specified
          locations
-* `from_to` - will include all call chains which start and end at the specified
-              location constraints
+* `from_to` - will include all call chains, which start and end at the specified
+              locations
 
 Currently, the constraints can be a method or a free function, both specified
 using the full signature of the function, e.g.
@@ -97,7 +97,7 @@ and `to` locations as follows:
          function: "clanguml::t20034::A::a2()"]
 ```
 
-To find the exact function signature which can be used as a `from` location,
+To find the exact function signature which, can be used as a `from` location,
 run `clang-uml` as follows:
 
 ```bash
@@ -255,18 +255,16 @@ results in the following diagram:
 ## Customizing participants order
 The default participant order in the sequence diagram can be suboptimal in the
 sense that consecutive calls can go right, then left, then right again
-depending on the specific call chain in the code. It is however
-possible to override this order in the diagram definition using
-`participants_order` property, for instance like this test case:
+depending on the specific call chain in the code. It is however possible to
+override this order in the diagram definition using `participants_order`
+property, for instance like this test case:
 
 ```yaml
-compilation_database_dir: ..
-output_directory: diagrams
 diagrams:
   t20029_sequence:
     type: sequence
     glob:
-      - ../../tests/t20029/t20029.cc
+      - t20029.cc
     include:
       namespaces:
         - clanguml::t20029
@@ -296,12 +294,11 @@ following configuration option:
 generate_return_types: true
 ```
 
-This option only affects the `plantuml` generation, in `json` generator
-`return_type` property is always present in the message nodes.
+This option only affects the `plantuml` and `mermaid` generators, in `json`
+generator `return_type` property is always present in the message nodes.
 
 The diagram below presents what it looks like in a PlantUML generated diagram:
 ![extension](test_cases/t20032_sequence.svg)
-
 
 ## Generating condition statements
 Sometimes, it is useful to include actual condition statements (for instance
@@ -323,8 +320,12 @@ in some line of code. This can include passing function or method address to
 some executor (e.g. thread), async calls etc.
 
 However, a call expression can be injected manually through a comment
-directive `\uml{note CALLEE}`, when placed just before such line of code, for 
-example:
+directive
+```cpp
+// \uml{note CALLEE}
+```
+
+It should be placed in the comment just before such line of code, for example:
 
 ```cpp
     // \uml{call clanguml::t20038::B::bbb()}
@@ -346,7 +347,7 @@ add_compile_flags:
 otherwise Clang will skip these comments during AST traversal.
 
 ## Including comments in sequence diagrams
-`clang-uml` can add code comments placed directly before are next to a call
+`clang-uml` can add code comments placed directly before or next to a call
 expression as notes in the diagram (see for instance
 [t20038](test_cases/t20038_sequence.svg)).
 

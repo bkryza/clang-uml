@@ -29,7 +29,7 @@ test cases [here](./docs/test_cases.md) or examples in
 Main features supported so far include:
 
 * **Class diagram generation**
-    * Class properties and methods including access - [_example_](docs/test_cases/t00003.md)
+    * Class properties and methods including access scope - [_example_](docs/test_cases/t00003.md)
     * Class inheritance - [_example_](docs/test_cases/t00002.md)
     * Other class relationships including associations, aggregations, dependencies and friendship - [_example_](docs/test_cases/t00006.md)
     * Template instantiation relationships - [_example_](docs/test_cases/t00014.md)
@@ -38,8 +38,8 @@ Main features supported so far include:
     * Diagram content filtering based on namespaces, elements and relationships - [_example_](docs/test_cases/t00040.md)
     * Optional package generation from namespaces (only PlantUML) - [_example_](docs/test_cases/t00036.md)
     * Optional package generation from subdirectories (only PlantUML) - [_example_](docs/test_cases/t00065.md)
-    * Interactive links to online code to classes, methods and class fields in SVG diagrams - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00002_class.svg)
-    * Support for plain C99/C11 code (struct and units relationships) - [_example_](docs/test_cases/t00057.md)
+    * Interactive links to online code or docs for classes, methods and class fields in SVG diagrams - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00002_class.svg)
+    * Support for plain C99/C11 code (struct, units and their relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t20001.md)

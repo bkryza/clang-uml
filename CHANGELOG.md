@@ -1,6 +1,10 @@
 # CHANGELOG
-
- *  Added radius parameter to context filter (#201)
+ 
+ * Fixed random typos and omissions in docs (#208)
+ * Fixed handling of diagram hyperlinks with sources outside of project dir (#213)
+ * Fixed test case t00014 on macos (#176)
+ * Added automatic generation of diagram images using PlantUML and MermaidJS (#204) 
+ * Added radius parameter to context filter (#201)
 
 ### 0.4.1
  * Enabled manual call expression injection through comments (#196)

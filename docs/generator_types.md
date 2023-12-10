@@ -12,7 +12,7 @@ Currently, there are 3 types of diagram generators: `plantuml`, `mermaid`
 and `json`.
 
 To specify, which generators should be used on the command line use option `-g`.
-For instance to generate both types of diagrams run `clang-uml` as follows:
+For instance to generate all types of diagrams run `clang-uml` as follows:
 
 ```bash
 clang-uml -g plantuml -g mermaid -g json

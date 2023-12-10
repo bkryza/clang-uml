@@ -27,7 +27,7 @@ This section presents general architecture and components of `clang-uml`.
 uses [Clang LibTooling API](https://releases.llvm.org/16.0.0/tools/clang/docs/LibTooling.html)
 to traverse
 the AST (Abstract Syntax Tree) of the source code and extract any information
-relevant for a specified diagram.
+relevant for a specific diagram.
 
 The code is divided into several packages (namespaces), the main of them are:
 
@@ -131,11 +131,7 @@ generator.
 ## Diagram generators
 
 Diagram generators convert the `clang-uml`'s internal UML model into actual
-diagram in one of the supported formats:
-
-- PlantUML
-- MermaidJS
-- JSON
+diagram in one of the supported formats: PlantUML, MermaidJS and JSON.
 
 Each diagram generator extends a common interface appropriate for the
 selected output format, i.e.:
