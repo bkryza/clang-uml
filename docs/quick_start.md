@@ -8,7 +8,7 @@
 
 To add an initial class diagram to your project, follow these steps:
 
-1. Enter your projects top level directory and run:
+1. Enter your project's top level directory and run:
     ```bash
     clang-uml --init
     ```
@@ -36,10 +36,10 @@ To add an initial class diagram to your project, follow these steps:
           namespaces:
             - myproject::detail
       ```
-3. Run `clang-uml` in the projects top directory:
+3. Run `clang-uml` in the project's top directory:
     ```bash
     clang-uml
-    # or to see generation progress for each diagram run
+    # or to see generation progress for each diagram
     clang-uml --progress
     ```
 4. Generate SVG images from the PlantUML diagrams:
@@ -62,7 +62,7 @@ To add an initial class diagram to your project, follow these steps:
    ```bash
    clang-uml --add-sequence-diagram another_diagram
    ```
-6. Now list the diagrams defined in the config:
+6. Now list the diagrams defined in the config file:
    ```bash
    clang-uml -l
    The following diagrams are defined in the config file:

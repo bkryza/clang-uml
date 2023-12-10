@@ -15,8 +15,8 @@
 <!-- tocstop -->
 
 ## Overall configuration file structure
-By default, `clang-uml` will look for file `.clang-uml` in the projects directory and read all diagrams definitions
-from it. The file must be specified in YAML and it's overall structure is as follows:
+By default, `clang-uml` will look for file `.clang-uml` in the project's directory and read all diagrams definitions
+configuration from it. The file must be specified in YAML and it's overall structure is as follows:
 
 ```yaml
 # common options for all diagrams
@@ -68,16 +68,16 @@ The syntax is simple and based on glob patterns, which can be added to the confi
 ```
 
 The glob patterns only need to match the translation units, which are also in the `compile_commands.json` file, i.e.
-any files that match the glob patterns but are not in `compile_commands.json` will be ignored. In case the `glob`
+any files that match the glob patterns, but are not in `compile_commands.json` will be ignored. In case the `glob`
 pattern set does not match any translation units an error will be printed on the standard output.
 
 For small projects, the `glob` property can be omitted, which will result in `clang-uml` parsing all translation units
-from `compile_commands.json` for the diagram. However for large projects, constraining the number of translation units
+from `compile_commands.json` for the diagram. However, for large projects, constraining the number of translation units
 for each diagram to absolute minimum will significantly decrease the diagram generation times.
 
 ## Custom directives
 In case it's necessary to add some custom PlantUML or MermaidJS declarations
-before or after the generated diagram content, it can be achieved simply using
+before or after the generated diagram content, it can be achieved using
 the `plantuml` or `mermaid` configuration properties, for instance for PlantUML:
 
 ```yaml
@@ -98,11 +98,12 @@ or for MermaidJS:
         - note for {{ alias("ns1::ns2::MyClass") }} "This is my class." 
 ```
 
-These directive are useful for instance for adding notes to elements in the
-diagrams or customizing diagram layout or style.
+These directives are useful for instance for adding notes to elements in the
+diagrams or customizing diagram layout and style.
 
-Please note that when referring to diagram elements in the PlantUML directives,
-they must be added using Jinja templates `alias` command as in the example above.
+Please note that when referring to diagram elements in PlantUML or MermaidJS
+directives, they must be added using Jinja templates `alias` command as in the
+example above.
 
 More options can be found in the official docs for each respective generator:
   * [PlantUML](https://plantuml.com/)
@@ -118,8 +119,7 @@ debug_mode: true
 ```
 
 the generated PlantUML diagram will contain comments before each line containing
-the source location of the
-specific diagram element.
+the source location of the specific diagram element.
 
 ## Resolving include path and compiler flags issues
 Due to the fact, that your project can be compiled with different compilers
@@ -175,8 +175,8 @@ command:
 ```
 
 If you want to include the system headers reported by the compiler specified
-already as `argv[0]` in your `compile_commands.json`, you can simply invoke
-`clang-uml` as:
+already as first argument of each compile command in your
+`compile_commands.json`, you can simply invoke `clang-uml` as:
 
 ```bash
 clang-uml --query-driver .

@@ -9,7 +9,7 @@
   * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
   * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
-* [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
+  * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
 * [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
@@ -27,7 +27,7 @@
 If `clang-uml` crashes with a segmentation fault, it is possible to trace the
 exact stack trace of the fault using the following steps:
 
-First, build `clang-uml` from source in debug mode, e.g.:
+First, build `clang-uml` from source in debug mode, i.e.:
 
 ```bash
 make debug
@@ -35,15 +35,16 @@ make debug
 
 Then run `clang-uml`, preferably with `-vvv` for verbose log output. If your
 `.clang-uml` configuration file contains more than 1 diagram, specify only
-a single diagram to make it easier to trace the root cause of the crash, e.g.:
+the diagram causing the crash, to make it easier to trace the root cause of
+the crash, e.g.:
 
 ```bash
 debug/src/clang-uml -vvv -n my_diagram
 ```
 
 After `clang-uml` crashes again, detailed backtrace (generated using
-[backward-cpp](https://github.com/bombela/backward-cpp)) should be visible
-on the console.
+[backward-cpp](https://github.com/bombela/backward-cpp) library) should be
+visible on the console.
 
 If possible, [create an issue](https://github.com/bkryza/clang-uml/issues) and
 paste the stack trace and few last logs from the console.
@@ -52,8 +53,7 @@ paste the stack trace and few last logs from the console.
 
 `clang-uml` uses
 Clang's [RecursiveASTVisitor](https://clang.llvm.org/doxygen/classclang_1_1RecursiveASTVisitor.html),
-to
-traverse the source code. By default, this visitor is invoked on every
+to traverse the source code. By default, this visitor is invoked on every
 translation unit (i.e. each entry in your `compile_commands.json`), including
 all of their header dependencies recursively. This means, that for large code
 bases with hundreds or thousands of translation units, traversing all of them
@@ -201,7 +201,7 @@ the configuration file to `clang-uml` using `stdin`, e.g.:
 yq 'explode(.)' .clang-uml | clang-uml --config -
 ```
 
-## Schema validation error is thrown, but the configuration file is correct
+### Schema validation error is thrown, but the configuration file is correct
 Current version of `clang-uml` performs automatic configuration file
 schema validation, and exits if the configuration file is invalid.
 
@@ -325,11 +325,10 @@ Hopefully this will be eventually resolved.
 
 ### Generated diagram is empty
 
-In order to generate sequence diagram the `start_from` configuration option must
-have a valid starting point
+In order to generate sequence diagram the location constraints (`from`, `to`
+or `from_to`) in configuration file must point to valid locations in the code
 for the diagram (e.g. `function`), which must match exactly the function
 or method signature in the `clang-uml` diagram model.
-
 Look for error in the console output such as:
 
 ```bash
@@ -341,16 +340,19 @@ configuration file, or that the function
 was not defined in the translation units you specified in the `glob` patterns
 for this diagram.
 
+Except for simplest methods and functions, it is unlikely to write by hand
+the exact string representation of the function signature as seen by `clang-uml`.
+
 To find the exact function signature run `clang-uml` as follows:
 
 ```bash
 clang-uml -n my_sequence_diagram --print-start-from | grep foo
 ```
 
-Command line flag `--print-start-from` will print on stdout all functions
-and methods available in the diagram model, and each line of this output
-can be directly used as a value of `start_from` option in the config file.
-
+Command line flag `--print-from` will print on stdout all functions
+and methods available in the diagram model which can be used as starting
+points for a sequence diagram (similarly `--print-to` can be used to list
+all valid functions to be used as call chain end constraints).
 
 ### Generated diagram contains several empty control blocks or calls which should not be there
 

@@ -64,8 +64,8 @@ Download and run the latest Windows installer from
 First make sure that you have the following dependencies installed:
 
 ```bash
-# Ubuntu (clang version will vary depending on Ubuntu version)
-apt install ccache cmake libyaml-cpp-dev clang-12 libclang-12-dev libclang-cpp12-dev
+# Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 22.04)
+apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15 
 ```
 
 Then proceed with building the sources:
@@ -81,6 +81,9 @@ release/src/clang-uml --help
 LLVM_VERSION=16 make release
 # or specify path to a specific llvm-config binary, e.g.:
 LLVM_CONFIG_PATH=/usr/bin/llvm-config-16 make release
+# or directly specify the path where LLVMConfig.cmake can be found on your system, e.g.:
+CMAKE_PREFIX=/usr/lib/llvm-16/lib/cmake/llvm make release
+
 
 # Optionally, to install in default prefix
 make install
@@ -96,8 +99,10 @@ export PATH=$PATH:$PWD/release
 brew install ccache cmake llvm yaml-cpp
 
 export CC=/usr/local/opt/llvm/bin/clang
-export CCX=/usr/local/opt/llvm/bin/clang++
+export CXX=/usr/local/opt/llvm/bin/clang++
 LLVM_VERSION=16 make release
+# or, if this fails, try:
+CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm make release
 ```
 
 #### Windows

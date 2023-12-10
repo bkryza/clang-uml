@@ -7,16 +7,11 @@
 <!-- tocstop -->
 
 Package diagrams are simple diagrams, which can be useful to visualize a high
-level structure of a C++ project, by rendering all projects namespaces or
+level structure of a C++ project, by rendering project's namespaces or
 subdirectories as UML packages and their interdependencies.
 
 The minimal config required to generate a package diagram is presented below:
 ```yaml
-# Path to the directory where `compile_commands.json` can be found
-compilation_database_dir: _build
-# Output directory for the diagrams
-output_directory: diagrams
-# Diagrams definitions
 diagrams:
   # Diagram name
   my_class_diagram:
