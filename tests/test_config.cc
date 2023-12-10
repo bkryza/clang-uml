@@ -352,6 +352,8 @@ TEST_CASE("Test config relative paths handling", "[unit-test]")
     CHECK(def.get_relative_to()() == "/tmp");
 #ifdef _MSC_VER
     CHECK(def.root_directory().string() == "C:\\tmp");
+#elif __APPLE__
+    CHECK(def.root_directory().string() == "/private/tmp");
 #else
     CHECK(def.root_directory().string() == "/tmp");
 #endif
