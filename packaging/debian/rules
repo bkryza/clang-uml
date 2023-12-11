@@ -13,8 +13,9 @@ override_dh_auto_configure:
 	                                         -DGIT_VERSION={{VERSION}} \
 	                                         -DBUILD_TESTS=OFF
 
+.PHONY: override_dh_strip
 override_dh_strip:
-	dh_strip --dbgsym-migration='clang-uml-dbg (<<{{VERSION}}-1~)'
+	dh_strip --automatic-dbgsym
 
 %:
 	dh $@ --with bash-completion

@@ -10,6 +10,7 @@ cd packaging
 make DIST=focal deb
 make DIST=jammy deb
 make DIST=lunar deb
+make DIST=mantic deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes
@@ -17,17 +18,20 @@ dput ppa:bkryza/clang-uml *.changes
 cd _BUILD/ubuntu/jammy
 dput ppa:bkryza/clang-uml *.changes
 
-cd _BUILD/ubuntu/kinetic
+cd _BUILD/ubuntu/lunar
 dput ppa:bkryza/clang-uml *.changes
 
+cd _BUILD/ubuntu/mantic
+dput ppa:bkryza/clang-uml *.changes
 ```
 
 ## Fedora
 
 ```bash
 cd clang-uml
-make fedora_36
-make fedora_37
+make fedora/37
+make fedora/38
+make fedora/39
 find packaging/_BUILD/fedora
 ```
 
@@ -37,6 +41,7 @@ find packaging/_BUILD/fedora
 docker run --rm -v $PWD:$PWD -it continuumio/miniconda3 bash
 conda install conda-build make anaconda-client
 cd packaging
+git config --global --add safe.directory /home/bartek/devel/clang-uml
 make CONDA_TOKEN=<TOKEN> conda
 ```
 
