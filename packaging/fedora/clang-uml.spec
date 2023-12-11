@@ -15,6 +15,7 @@ BuildRequires: clang-tools-extra
 BuildRequires: ccache
 BuildRequires: yaml-cpp-devel
 BuildRequires: llvm-devel
+BuildRequires: gdb
 
 Requires: clang
 Requires: yaml-cpp

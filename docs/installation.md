@@ -23,7 +23,7 @@
 #### Ubuntu
 
 ```bash
-# Currently supported Ubuntu versions are Focal, Jammy and Lunar
+# Currently supported Ubuntu versions are Focal, Jammy, Lunar and Mantic
 sudo add-apt-repository ppa:bkryza/clang-uml
 sudo apt update
 sudo apt install clang-uml
@@ -32,17 +32,17 @@ sudo apt install clang-uml
 #### Fedora
 
 ```bash
-# Fedora 36
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc36.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.1-1.fc36.x86_64.rpm
-
 # Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.1-1.fc37.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.2-1.fc37.x86_64.rpm
 
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.1/clang-uml-0.4.1-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.1-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.2-1.fc38.x86_64.rpm
+
+# Fedora 39
+wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.4.2-1.fc39.x86_64.rpm
 ```
 
 #### Conda
@@ -171,7 +171,7 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.4.1
+clang-uml 0.4.2
 Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.2.0-36-generic
 Built against LLVM/Clang libraries version: 17.0.3
