@@ -75,6 +75,9 @@ else(LINK_LLVM_SHARED)
                     LLVMWindowsDriver
                     LLVMWindowsManifest)
         endif()
+        if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "17.0")
+            list(APPEND LIBTOOLING_LIBS clangASTMatchers)
+        endif()
     endif(MSVC)
 endif(LINK_LLVM_SHARED)
 
