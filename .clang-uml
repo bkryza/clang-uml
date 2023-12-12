@@ -1,6 +1,8 @@
 compilation_database_dir: debug
 output_directory: docs/diagrams
 comment_parser: clang
+add_compile_flags:
+  - -Wno-deprecated-declarations
 remove_compile_flags:
   - -Wno-class-memaccess
   - -Wno-dangling-reference

@@ -39,7 +39,11 @@ void progress_indicator::add_progress_bar(
         indicators::option::BarWidth{kBarWidth},
         indicators::option::ForegroundColor{color},
         indicators::option::ShowElapsedTime{true},
+#if _MSC_VER
+        indicators::option::Fill{"="}, indicators::option::Lead{">"},
+#else
         indicators::option::Fill{"█"}, indicators::option::Lead{"█"},
+#endif
         indicators::option::Remainder{"-"},
         indicators::option::PrefixText{
             fmt::format("{:<25}", util::abbreviate(name, kPrefixTextWidth))},
@@ -104,8 +108,12 @@ void progress_indicator::complete(const std::string &name)
 
     bar.set_progress(kCompleteProgressPercent);
 
-    bar.set_option(indicators::option::PostfixText{
-        fmt::format("{}/{} ✔", p.progress, p.max)});
+#if _MSC_VER
+    const auto postfix_text = fmt::format("{}/{} OK", p.progress, p.max);
+#else
+    const auto postfix_text = fmt::format("{}/{} ✔", p.progress, p.max);
+#endif
+    bar.set_option(indicators::option::PostfixText{postfix_text});
     bar.set_option(
         indicators::option::ForegroundColor{indicators::Color::green});
     bar.mark_as_completed();
@@ -118,9 +126,13 @@ void progress_indicator::fail(const std::string &name)
     auto &bar = progress_bars_[p.index];
     progress_bars_mutex_.unlock();
 
+#if _MSC_VER
+    const auto postfix_text = fmt::format("{}/{} FAILED", p.progress, p.max);
+#else
+    const auto postfix_text = fmt::format("{}/{} ✗", p.progress, p.max);
+#endif
     bar.set_option(indicators::option::ForegroundColor{indicators::Color::red});
-    bar.set_option(indicators::option::PostfixText{
-        fmt::format("{}/{} ✗", p.progress, p.max)});
+    bar.set_option(indicators::option::PostfixText{postfix_text});
     bar.mark_as_completed();
 }
 

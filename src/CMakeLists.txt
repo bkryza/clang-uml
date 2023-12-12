@@ -30,7 +30,9 @@ target_compile_options(clang-umllib PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4291 /wd4624 /wd4244>)
 target_compile_definitions(clang-umllib PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:
-        -DLLVM_FORCE_USE_OLD_TOOLCHAIN>)
+        -DLLVM_FORCE_USE_OLD_TOOLCHAIN
+        -DTERMCOLOR_USE_WINDOWS_API=1
+        -DTERMCOLOR_TARGET_WINDOWS=1>)
 
 #
 # Define the target executable clang-uml
