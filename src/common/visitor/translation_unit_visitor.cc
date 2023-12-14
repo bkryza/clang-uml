@@ -141,7 +141,7 @@ void translation_unit_visitor::set_source_location(
         file_path = fs::absolute(file_path);
     }
 
-    file_path = fs::canonical(file_path);
+    file_path = fs::weakly_canonical(file_path);
 
     file = file_path.string();
 
