@@ -251,6 +251,9 @@ void generator::generate_method(
     if (m.is_consteval()) {
         method_mods.emplace_back("consteval");
     }
+    if (m.is_coroutine()) {
+        method_mods.emplace_back("coroutine");
+    }
 
     if (!method_mods.empty()) {
         ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));

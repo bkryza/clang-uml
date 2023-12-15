@@ -295,4 +295,12 @@ consume_type_context(clang::QualType type);
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt);
 
+/**
+ * Check if function or method declaration is a C++20 coroutine.
+ *
+ * @param decl Function declaration
+ * @return True, if the function is a C++20 coroutine.
+ */
+bool is_coroutine(const clang::FunctionDecl &decl);
+
 } // namespace clanguml::common

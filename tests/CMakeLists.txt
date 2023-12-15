@@ -5,7 +5,7 @@ file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
                                    test_compilation_database_data/*.yml
                                    test_compilation_database_data/*.json)
 
-set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065)
+set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069)
 
 set(CLANG_UML_TEST_LIBRARIES
         clang-umllib

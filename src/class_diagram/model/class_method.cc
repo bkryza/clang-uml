@@ -70,6 +70,13 @@ void class_method::is_consteval(bool is_consteval)
     is_consteval_ = is_consteval;
 }
 
+bool class_method::is_coroutine() const { return is_coroutine_; }
+
+void class_method::is_coroutine(bool is_coroutine)
+{
+    is_coroutine_ = is_coroutine;
+}
+
 bool class_method::is_noexcept() const { return is_noexcept_; }
 
 void class_method::is_noexcept(bool is_noexcept) { is_noexcept_ = is_noexcept; }

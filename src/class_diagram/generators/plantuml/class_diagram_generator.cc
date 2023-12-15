@@ -338,6 +338,9 @@ void generator::generate_method(
     else if (m.is_deleted())
         ostr << " = deleted";
 
+    if (m.is_coroutine())
+        ostr << " [coroutine]";
+
     ostr << " : " << type;
 
     if (config().generate_links) {

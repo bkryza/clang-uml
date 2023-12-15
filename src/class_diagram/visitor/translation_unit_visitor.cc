@@ -1369,6 +1369,7 @@ void translation_unit_visitor::process_method_properties(
     method.is_move_assignment(mf.isMoveAssignmentOperator());
     method.is_copy_assignment(mf.isCopyAssignmentOperator());
     method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
+    method.is_coroutine(common::is_coroutine(mf));
 }
 
 void translation_unit_visitor::

@@ -108,6 +108,8 @@ struct Constexpr { };
 
 struct Consteval { };
 
+struct Coroutine { };
+
 struct Noexcept { };
 
 struct Default { };
@@ -962,6 +964,9 @@ ContainsMatcher IsMethod(std::string const &name,
     if constexpr (has_type<Deleted, Ts...>())
         pattern += " = deleted";
 
+    if constexpr (has_type<Coroutine, Ts...>())
+        pattern += " [coroutine]";
+
     pattern += " : " + type;
 
     return ContainsMatcher(CasedString(pattern, caseSensitivity));
@@ -995,6 +1000,8 @@ ContainsMatcher IsMethod(std::string const &name, std::string type = "void",
         method_mods.push_back("constexpr");
     if constexpr (has_type<Consteval, Ts...>())
         method_mods.push_back("consteval");
+    if constexpr (has_type<Coroutine, Ts...>())
+        method_mods.push_back("coroutine");
 
     pattern += " : ";
 

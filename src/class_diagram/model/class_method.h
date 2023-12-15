@@ -153,6 +153,20 @@ public:
     void is_consteval(bool is_consteval);
 
     /**
+     * @brief Whether the method is a C++20 coroutine.
+     *
+     * @return True, if the method is a coroutine
+     */
+    bool is_coroutine() const;
+
+    /**
+     * @brief Set whether the method is a C++20 coroutine.
+     *
+     * @param is_coroutine True, if the method is a coroutine
+     */
+    void is_coroutine(bool is_coroutine);
+
+    /**
      * @brief Whether the method is noexcept.
      *
      * @return True, if the method is noexcept
@@ -262,6 +276,7 @@ private:
     bool is_noexcept_{false};
     bool is_constexpr_{false};
     bool is_consteval_{false};
+    bool is_coroutine_{false};
     bool is_constructor_{false};
     bool is_destructor_{false};
     bool is_move_assignment_{false};

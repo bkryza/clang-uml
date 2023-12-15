@@ -876,4 +876,10 @@ clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     return {};
 }
 
+bool is_coroutine(const clang::FunctionDecl &decl)
+{
+    const auto *body = decl.getBody();
+    return clang::isa_and_nonnull<clang::CoroutineBodyStmt>(body);
+}
+
 } // namespace clanguml::common

@@ -63,6 +63,7 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["is_noexcept"] = c.is_noexcept();
     j["is_constexpr"] = c.is_constexpr();
     j["is_consteval"] = c.is_consteval();
+    j["is_coroutine"] = c.is_coroutine();
     j["is_constructor"] = c.is_constructor();
     j["is_move_assignment"] = c.is_move_assignment();
     j["is_copy_assignment"] = c.is_copy_assignment();
