@@ -836,12 +836,23 @@ bool parse_source_location(const std::string &location_str, std::string &file,
     if (tokens.size() < 3)
         return false;
 
+    if (tokens.size() == 4) {
+        // Handle Windows paths
+        decltype(tokens) tmp_tokens{};
+        tmp_tokens.emplace_back(
+            fmt::format("{}:{}", tokens.at(0), tokens.at(1)));
+        tmp_tokens.emplace_back(tokens.at(2));
+        tmp_tokens.emplace_back(tokens.at(3));
+
+        tokens = std::move(tmp_tokens);
+    }
+
     file = tokens.at(0);
     try {
         line = std::stoi(tokens.at(1));
     }
     catch (std::invalid_argument &e) {
-        line = 0;
+        return false;
     }
 
     try {

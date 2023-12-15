@@ -430,3 +430,47 @@ TEST_CASE("Test is_relative_to", "[unit-test]")
     CHECK(is_relative_to(child, base1));
     CHECK_FALSE(is_relative_to(child, base2));
 }
+
+TEST_CASE("Test parse_source_location", "[unit-test]")
+{
+    using namespace clanguml::common;
+
+    const std::string int_template_str{"ns1::ns2::class1<int>"};
+
+    std::string file;
+    unsigned line{};
+    unsigned column{};
+    bool result = false;
+
+    result = parse_source_location("/a/b/c/d/test.cpp:123", file, line, column);
+
+    CHECK_FALSE(result);
+
+    result = false, file = "", line = 0, column = 0;
+    result =
+        parse_source_location("/a/b/c/d/test.cpp:123:456", file, line, column);
+
+    CHECK(result);
+    CHECK(file == "/a/b/c/d/test.cpp");
+    CHECK(line == 123);
+    CHECK(column == 456);
+
+    result = false, file = "", line = 0, column = 0;
+
+    result = parse_source_location(
+        "E:\\test\\src\\main.cpp:123", file, line, column);
+
+    CHECK_FALSE(result);
+
+    result = false, file = "", line = 0, column = 0;
+
+    result = parse_source_location(
+        "E:\\test\\src\\main.cpp:123:456", file, line, column);
+
+    CHECK(result);
+    CHECK(file == "E:\\test\\src\\main.cpp");
+    CHECK(line == 123);
+    CHECK(column == 456);
+
+    result = false, file = "", line = 0, column = 0;
+}
