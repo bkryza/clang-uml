@@ -285,6 +285,39 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
     return result;
 }
 
+modules_filter::modules_filter(
+    filter_t type, std::vector<common::string_or_regex> modules)
+    : filter_visitor{type}
+    , modules_{std::move(modules)}
+{
+}
+
+tvl::value_t modules_filter::match(const diagram &d, const element &e) const
+{
+    if (modules_.empty())
+        return {};
+
+    if (!e.module().has_value())
+        return {false};
+
+    const auto module_toks = util::split(e.module().value(), ".");
+
+    auto result = tvl::any_of(modules_.begin(), modules_.end(),
+        [&e, &module_toks](const auto &modit) {
+            if (std::holds_alternative<std::string>(modit.value())) {
+                const auto &modit_str = std::get<std::string>(modit.value());
+                const auto modit_toks = util::split(modit_str, ".");
+
+                return e.module() == modit_str ||
+                    util::starts_with(module_toks, modit_toks);
+            }
+
+            return std::get<common::regex>(modit.value()) %= e.module().value();
+        });
+
+    return result;
+}
+
 element_filter::element_filter(
     filter_t type, std::vector<common::string_or_regex> elements)
     : filter_visitor{type}
@@ -887,6 +920,9 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_inclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kInclusive, c.include().namespaces));
 
+        add_inclusive_filter(std::make_unique<modules_filter>(
+            filter_t::kInclusive, c.include().modules));
+
         add_inclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kInclusive, c.include().relationships));
 
@@ -996,6 +1032,9 @@ void diagram_filter::init_filters(const config::diagram &c)
     if (c.exclude) {
         add_exclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kExclusive, c.exclude().namespaces));
+
+        add_exclusive_filter(std::make_unique<modules_filter>(
+            filter_t::kExclusive, c.exclude().modules));
 
         add_exclusive_filter(std::make_unique<paths_filter>(
             filter_t::kExclusive, c.root_directory(), c.exclude().paths));

@@ -35,6 +35,9 @@ LLVM_CONFIG_PATH ?=
 CMAKE_PREFIX ?=
 CMAKE_CXX_FLAGS ?=
 CMAKE_EXE_LINKER_FLAGS ?=
+CMAKE_GENERATOR ?= Unix Makefiles
+
+ENABLE_CXX_MODULES_TEST_CASES ?= OFF
 
 GIT_VERSION	?= $(shell git describe --tags --always --abbrev=7)
 PKG_VERSION	?= $(shell git describe --tags --always --abbrev=7 | tr - .)
@@ -49,6 +52,7 @@ clean:
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
+		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
@@ -56,10 +60,12 @@ debug/CMakeLists.txt:
 		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
 		-DLLVM_VERSION=${LLVM_VERSION} \
 		-DLLVM_CONFIG_PATH=${LLVM_CONFIG_PATH} \
-		-DCMAKE_PREFIX=${CMAKE_PREFIX}
+		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
+		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES)
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
+		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Release \
@@ -67,10 +73,12 @@ release/CMakeLists.txt:
 		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
 		-DLLVM_VERSION=${LLVM_VERSION} \
 		-DLLVM_CONFIG_PATH=${LLVM_CONFIG_PATH} \
-		-DCMAKE_PREFIX=${CMAKE_PREFIX}
+		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
+		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES)
 
 debug_tidy/CMakeLists.txt:
 	cmake -S . -B debug_tidy \
+		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
@@ -79,24 +87,25 @@ debug_tidy/CMakeLists.txt:
 		-DCMAKE_EXE_LINKER_FLAGS="$(CMAKE_EXE_LINKER_FLAGS)" \
 		-DLLVM_VERSION=${LLVM_VERSION} \
 		-DLLVM_CONFIG_PATH=${LLVM_CONFIG_PATH} \
-		-DCMAKE_PREFIX=${CMAKE_PREFIX}
+		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
+		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES)
 
 debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
-	make -C debug -j$(NUMPROC)
+	cmake --build debug -j$(NUMPROC)
 
 debug_tidy: debug_tidy/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
-	make -C debug_tidy -j$(NUMPROC)
+	cmake --build debug_tidy -j$(NUMPROC)
 
 release: release/CMakeLists.txt
-	make -C release -j$(NUMPROC)
+	cmake --build release -j$(NUMPROC)
 
 test: debug
-	CTEST_OUTPUT_ON_FAILURE=1 make -C debug test
+	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir debug
 
 test_release: release
-	CTEST_OUTPUT_ON_FAILURE=1 make -C release test
+	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
 
 install: release
 	make -C release install DESTDIR=${DESTDIR}

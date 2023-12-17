@@ -180,6 +180,19 @@ struct filter {
      */
     std::vector<common::namespace_or_regex> namespaces;
 
+    /*! @brief Modules filter
+     *
+     * Example:
+     *
+     * ```yaml
+     *   include
+     *     modules:
+     *       - app.module1
+     *       - r: ".*internal.*"
+     * ```
+     */
+    std::vector<common::string_or_regex> modules;
+
     /*! @brief Elements filter
      *
      * Example:

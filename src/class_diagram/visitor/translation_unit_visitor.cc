@@ -159,6 +159,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     process_comment(*enm, e);
     set_source_location(*enm, e);
+    set_owning_module(*enm, e);
 
     if (e.skip())
         return true;
@@ -265,6 +266,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         LOG_DBG("Adding class {} with id {}", name, id);
 
         set_source_location(*cls, *template_specialization_ptr);
+        set_owning_module(*cls, *template_specialization_ptr);
 
         add_class(std::move(template_specialization_ptr));
     }
@@ -677,6 +679,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     LOG_DBG(
         "== getQualifiedNameAsString() = {}", cls->getQualifiedNameAsString());
+    if (cls->getOwningModule() != nullptr)
+        LOG_DBG(
+            "== getOwningModule()->Name = {}", cls->getOwningModule()->Name);
     LOG_DBG("== getID() = {}", cls->getID());
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
@@ -762,6 +767,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
 
     process_comment(*cpt, concept_model);
     set_source_location(*cpt, concept_model);
+    set_owning_module(*cpt, concept_model);
 
     if (concept_model.skip())
         return {};
@@ -802,6 +808,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
 
     process_comment(*rec, record);
     set_source_location(*rec, record);
+    set_owning_module(*rec, record);
 
     const auto record_full_name = record_ptr->full_name(false);
 
@@ -841,6 +848,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
     process_comment(*cls, c);
     set_source_location(*cls, c);
+    set_owning_module(*cls, c);
 
     if (c.skip())
         return {};
@@ -1835,6 +1843,7 @@ translation_unit_visitor::process_template_specialization(
 
     process_comment(*cls, template_instantiation);
     set_source_location(*cls, template_instantiation);
+    set_owning_module(*cls, template_instantiation);
 
     if (template_instantiation.skip())
         return {};

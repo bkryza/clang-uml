@@ -155,6 +155,21 @@ private:
 };
 
 /**
+ * Match diagram elements to a set of specified modules or
+ * module regex patterns.
+ */
+struct modules_filter : public filter_visitor {
+    modules_filter(filter_t type, std::vector<common::string_or_regex> modules);
+
+    ~modules_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &e) const override;
+
+private:
+    std::vector<common::string_or_regex> modules_;
+};
+
+/**
  * Match element's name to a set of names or regex patterns.
  */
 struct element_filter : public filter_visitor {

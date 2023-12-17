@@ -122,6 +122,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
     out << YAML::BeginMap;
     if (!f.namespaces.empty())
         out << YAML::Key << "namespaces" << YAML::Value << f.namespaces;
+    if (!f.modules.empty())
+        out << YAML::Key << "modules" << YAML::Value << f.modules;
     if (!f.access.empty())
         out << YAML::Key << "access" << YAML::Value << f.access;
     if (!f.context.empty())

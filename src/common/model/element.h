@@ -88,6 +88,20 @@ public:
     const namespace_ &path() const { return ns_; }
 
     /**
+     * Set elements owning module.
+     *
+     * @param module C++20 module.
+     */
+    void set_module(const std::string &module) { module_ = module; }
+
+    /**
+     * Return elements owning module, if any.
+     *
+     * @return C++20 module.
+     */
+    std::optional<std::string> module() const { return module_; }
+
+    /**
      * Return elements full name.
      *
      * @return Fully qualified elements name.
@@ -120,5 +134,6 @@ public:
 private:
     namespace_ ns_;
     namespace_ using_namespace_;
+    std::optional<std::string> module_;
 };
 } // namespace clanguml::common::model

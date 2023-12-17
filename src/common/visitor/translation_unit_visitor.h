@@ -100,6 +100,9 @@ public:
     void set_source_location(const clang::SourceLocation &location,
         clanguml::common::model::source_location &element);
 
+    void set_owning_module(
+        const clang::Decl &decl, clanguml::common::model::element &element);
+
 protected:
     /**
      * @brief Process comment directives in comment attached to a declaration

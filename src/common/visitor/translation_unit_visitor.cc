@@ -21,6 +21,8 @@
 #include "comment/clang_visitor.h"
 #include "comment/plain_visitor.h"
 
+#include "clang/Basic/Module.h"
+
 namespace clanguml::common::visitor {
 
 translation_unit_visitor::translation_unit_visitor(
@@ -161,4 +163,12 @@ void translation_unit_visitor::set_source_location(
     element.set_location_id(location.getHashValue());
 }
 
+void translation_unit_visitor::set_owning_module(
+    const clang::Decl &decl, clanguml::common::model::element &element)
+{
+    if (const clang::Module *module = decl.getOwningModule();
+        module != nullptr) {
+        element.set_module(module->Name);
+    }
+}
 } // namespace clanguml::common::visitor

@@ -475,6 +475,12 @@ template <> struct convert<filter> {
                 rhs.namespaces.push_back({ns});
         }
 
+        if (node["modules"]) {
+            auto module_list = node["modules"].as<decltype(rhs.modules)>();
+            for (const auto &ns : module_list)
+                rhs.modules.push_back({ns});
+        }
+
         if (node["relationships"])
             rhs.relationships =
                 node["relationships"].as<decltype(rhs.relationships)>();

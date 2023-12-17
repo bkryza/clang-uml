@@ -64,10 +64,6 @@ types:
     regex_t:
         r: string
     regex_or_string_t: [string, regex_t]
-    namespaces_filter_t:
-        namespaces: [regex_or_string_t]
-    elements_filter_t:
-        elements: [regex_or_string_t]
     element_types_filter_t: !variant
         - class
         - enum
@@ -121,6 +117,7 @@ types:
         - context_filter_match_t
     filter_t:
         namespaces: !optional [regex_or_string_t]
+        modules: !optional [regex_or_string_t]
         elements: !optional [regex_or_string_t]
         element_types: !optional [element_types_filter_t]
         relationships: !optional [relationship_filter_t]

@@ -42,6 +42,7 @@ Main features supported so far include:
     * Support for plain C99/C11 code (struct, units and their relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
     * C++20 coroutines - [_example_](docs/test_cases/t00069.md)
+    * Diagram content filtering based on C++20 modules - [_example_](docs/test_cases/t00070.md)
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t20001.md)
     * Generation of loop and conditional statements - [_example_](docs/test_cases/t20021.md)
