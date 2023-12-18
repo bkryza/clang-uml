@@ -204,6 +204,12 @@ test_cases:
     - name: t00069
       title: Coroutine methods in class diagrams
       description:
+    - name: t00070
+      title: Diagram filter based on C++20 modules
+      description:
+    - name: t00071
+      title: Class diagram with C++20 modules generated as packages
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

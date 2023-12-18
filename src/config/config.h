@@ -87,7 +87,8 @@ std::string to_string(callee_type mt);
 /*! How packages in diagrams should be generated */
 enum class package_type_t {
     kNamespace, /*!< From namespaces */
-    kDirectory  /*!< From directories */
+    kDirectory, /*!< From directories */
+    kModule     /*!< From modules */
 };
 
 std::string to_string(package_type_t mt);
@@ -470,6 +471,18 @@ struct inheritable_diagram_options {
     std::string simplify_template_type(std::string full_name) const;
 
     /**
+     * @brief Whether the diagram element should be fully qualified in diagram
+     *
+     * This method determines whether an elements' name should include
+     * fully qualified namespace name (however relative to using_namespace), or
+     * whether it should just contain it's name. This depends on whether the
+     * diagram has packages and if they are based on namespaces or sth else.
+     *
+     * @return True, if element should include it's namespace
+     */
+    bool generate_fully_qualified_name() const;
+
+    /**
      * @brief Get reference to `relative_to` diagram config option
      *
      * This method is only to allow access to `relative_to` for loading
@@ -483,6 +496,7 @@ struct inheritable_diagram_options {
 
     option<std::vector<std::string>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
+    option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
     option<filter> include{"include"};
@@ -565,6 +579,15 @@ struct diagram : public inheritable_diagram_options {
      */
     std::filesystem::path make_path_relative(
         const std::filesystem::path &p) const;
+
+    /**
+     * @brief Make module path relative to `using_module` configuration option
+     *
+     * @param p Input path
+     * @return Relative path
+     */
+    std::vector<std::string> make_module_relative(
+        const std::optional<std::string> &maybe_module) const;
 
     /**
      * @brief Returns absolute path of the `relative_to` option

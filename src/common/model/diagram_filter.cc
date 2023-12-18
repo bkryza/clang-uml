@@ -292,7 +292,8 @@ modules_filter::modules_filter(
 {
 }
 
-tvl::value_t modules_filter::match(const diagram &d, const element &e) const
+tvl::value_t modules_filter::match(
+    const diagram & /*d*/, const element &e) const
 {
     if (modules_.empty())
         return {};
@@ -300,7 +301,7 @@ tvl::value_t modules_filter::match(const diagram &d, const element &e) const
     if (!e.module().has_value())
         return {false};
 
-    const auto module_toks = util::split(e.module().value(), ".");
+    const auto module_toks = util::split(e.module().value(), "."); // NOLINT
 
     auto result = tvl::any_of(modules_.begin(), modules_.end(),
         [&e, &module_toks](const auto &modit) {

@@ -310,6 +310,7 @@ YAML::Emitter &operator<<(
     out << c.puml;
     out << c.relative_to;
     out << c.using_namespace;
+    out << c.using_module;
     out << c.generate_metadata;
 
     if (const auto *cd = dynamic_cast<const class_diagram *>(&c);

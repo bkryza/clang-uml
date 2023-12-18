@@ -58,6 +58,7 @@ types:
     package_type_t: !variant
         - namespace
         - directory
+        - module
     member_order_t: !variant
         - lexical
         - as_is
@@ -161,6 +162,7 @@ types:
             cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
+        using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
         #
@@ -239,6 +241,7 @@ types:
             cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
+        using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
         #
@@ -318,6 +321,7 @@ root:
         cmd: !optional string
     relative_to: !optional string
     using_namespace: !optional [string, [string]]
+    using_module: !optional string
     generate_metadata: !optional bool
     #
     # Inheritable custom options

@@ -409,6 +409,7 @@ using namespace clanguml::test::matchers;
 #endif
 #if defined(ENABLE_CXX_MODULES_TEST_CASES)
 #include "t00070/test_case.h"
+#include "t00071/test_case.h"
 #endif
 
 ///

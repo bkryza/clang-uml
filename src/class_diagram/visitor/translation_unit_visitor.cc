@@ -2150,6 +2150,15 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 
         diagram().add(p, std::move(c));
     }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        diagram().add(p, std::move(c));
+    }
     else {
         diagram().add(c->path(), std::move(c));
     }
@@ -2169,6 +2178,15 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
         diagram().add(p, std::move(e));
     }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(e->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        diagram().add(p, std::move(e));
+    }
     else {
         diagram().add(e->path(), std::move(e));
     }
@@ -2185,6 +2203,15 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
         common::model::path p{
             file.string(), common::model::path_type::kFilesystem};
         p.pop_back();
+
+        diagram().add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
 
         diagram().add(p, std::move(c));
     }

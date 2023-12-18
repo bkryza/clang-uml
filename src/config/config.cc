@@ -187,6 +187,7 @@ void inheritable_diagram_options::inherit(
 {
     glob.override(parent.glob);
     using_namespace.override(parent.using_namespace);
+    using_module.override(parent.using_module);
     include_relations_also_as_members.override(
         parent.include_relations_also_as_members);
     include.override(parent.include);
@@ -229,6 +230,12 @@ std::string inheritable_diagram_options::simplify_template_type(
     return full_name;
 }
 
+bool inheritable_diagram_options::generate_fully_qualified_name() const
+{
+    return generate_packages() &&
+        (package_type() == package_type_t::kNamespace);
+}
+
 std::vector<std::string> diagram::get_translation_units() const
 {
     std::vector<std::string> translation_units{};
@@ -262,6 +269,25 @@ std::filesystem::path diagram::make_path_relative(
     const std::filesystem::path &p) const
 {
     return relative(p, root_directory()).lexically_normal().string();
+}
+
+std::vector<std::string> diagram::make_module_relative(
+    const std::optional<std::string> &maybe_module) const
+{
+    if (!maybe_module)
+        return {};
+
+    auto module_path = util::split(maybe_module.value(), ".");
+
+    if (using_module.has_value) {
+        auto using_module_path = util::split(using_module(), ".");
+
+        if (util::starts_with(module_path, using_module_path)) {
+            util::remove_prefix(module_path, using_module_path);
+        }
+    }
+
+    return module_path;
 }
 
 std::optional<std::string> diagram::get_together_group(

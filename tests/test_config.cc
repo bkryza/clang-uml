@@ -377,6 +377,31 @@ TEST_CASE("Test config relative paths handling", "[unit-test]")
             "{}/test_config_data", std::filesystem::current_path().string()));
 }
 
+TEST_CASE("Test using_module relative to", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/using_module.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class1"];
+    CHECK(def.make_module_relative(std::make_optional<std::string>(
+              "mod1.mod2.mod3")) == std::vector{std::string{"mod3"}});
+    CHECK(def.make_module_relative(std::make_optional<std::string>(
+              "mod1.mod2")) == std::vector<std::string>{});
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("modA.modB.modC")) ==
+        std::vector{
+            std::string{"modA"}, std::string{"modB"}, std::string{"modC"}});
+
+    def = *cfg.diagrams["class2"];
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("mod1.mod2.mod3")) ==
+        std::vector{std::string{"mod2"}, std::string{"mod3"}});
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("modA.modB.modC")) ==
+        std::vector{
+            std::string{"modA"}, std::string{"modB"}, std::string{"modC"}});
+}
+
 TEST_CASE("Test config full clang uml dump", "[unit-test]")
 {
     auto cfg =

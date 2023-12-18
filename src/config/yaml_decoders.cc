@@ -133,6 +133,8 @@ void get_option<package_type_t>(
             option.set(package_type_t::kNamespace);
         else if (val == "directory")
             option.set(package_type_t::kDirectory);
+        else if (val == "module")
+            option.set(package_type_t::kModule);
         else
             throw std::runtime_error(
                 "Invalid generate_method_arguments value: " + val);
@@ -573,6 +575,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     // Decode options common for all diagrams
     get_option(node, rhs.glob);
     get_option(node, rhs.using_namespace);
+    get_option(node, rhs.using_module);
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
@@ -787,6 +790,7 @@ template <> struct convert<config> {
     {
         get_option(node, rhs.glob);
         get_option(node, rhs.using_namespace);
+        get_option(node, rhs.using_module);
         get_option(node, rhs.output_directory);
         get_option(node, rhs.compilation_database_dir);
         get_option(node, rhs.add_compile_flags);

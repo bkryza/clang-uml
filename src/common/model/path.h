@@ -32,8 +32,9 @@ namespace clanguml::common::model {
  * a nested set of namespaces or nested set of directories.
  */
 enum class path_type {
-    kNamespace, /*!< Namespace path */
-    kFilesystem /*!< Filesystem path */
+    kNamespace,  /*!< Namespace path */
+    kFilesystem, /*!< Filesystem path */
+    kModule      /*!< Module path */
 };
 
 /**
@@ -54,6 +55,8 @@ class path {
         switch (path_type_) {
         case path_type::kNamespace:
             return "::";
+        case path_type::kModule:
+            return ".";
         case path_type::kFilesystem:
 #ifdef _WIN32
             return "\\";
