@@ -70,6 +70,19 @@ std::string to_string(access_t a)
     }
 }
 
+std::string to_string(module_access_t a)
+{
+    switch (a) {
+    case module_access_t::kPublic:
+        return "public";
+    case module_access_t::kPrivate:
+        return "private";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 std::string to_string(message_t r)
 {
     switch (r) {

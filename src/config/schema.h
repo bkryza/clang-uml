@@ -91,6 +91,9 @@ types:
         - public
         - protected
         - private
+    module_access_filter_t: !variant
+        - public
+        - private
     method_type_filter_t: !variant
         - constructor
         - destructor
@@ -123,6 +126,7 @@ types:
         element_types: !optional [element_types_filter_t]
         relationships: !optional [relationship_filter_t]
         access: !optional [access_filter_t]
+        module_access: !optional [module_access_filter_t]
         subclasses: !optional [regex_or_string_t]
         parents: !optional [regex_or_string_t]
         specializations: !optional [regex_or_string_t]

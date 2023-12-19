@@ -9,3 +9,8 @@ template <typename T> class BB {
 
 enum class BBB { bbb1, bbb2 };
 }
+
+module :private;
+namespace clanguml::t00070 {
+class BBBB { };
+}

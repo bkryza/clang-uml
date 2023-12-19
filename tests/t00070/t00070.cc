@@ -1,3 +1,4 @@
+import t00070;
 import t00070.lib1;
 import t00070.lib2;
 

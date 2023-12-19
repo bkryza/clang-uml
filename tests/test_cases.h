@@ -1278,6 +1278,22 @@ bool IsClass(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "class";
 }
 
+bool InPublicModule(const nlohmann::json &j, const std::string &element,
+    const std::string &module)
+{
+    auto e = get_element(j, expand_name(j, element));
+    return e && e->contains("module") && e->at("module")["name"] == module &&
+        !e->at("module")["is_private"];
+}
+
+bool InPrivateModule(const nlohmann::json &j, const std::string &element,
+    const std::string &module)
+{
+    auto e = get_element(j, expand_name(j, element));
+    return e && e->contains("module") && e->at("module")["name"] == module &&
+        e->at("module")["is_private"];
+}
+
 bool IsAbstractClass(const nlohmann::json &j, const std::string &name)
 {
     auto e = get_element(j, expand_name(j, name));

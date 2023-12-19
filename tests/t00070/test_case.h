@@ -35,7 +35,7 @@ TEST_CASE("t00070", "[test-case][class]")
         REQUIRE_THAT(src, StartsWith("@startuml"));
         REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(src, !IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
         REQUIRE_THAT(src, IsClass(_A("B")));
         REQUIRE_THAT(src, !IsClass(_A("C")));
 
@@ -43,6 +43,7 @@ TEST_CASE("t00070", "[test-case][class]")
         REQUIRE_THAT(src, !IsClassTemplate("CC", "T"));
 
         REQUIRE_THAT(src, IsEnum(_A("BBB")));
+        REQUIRE_THAT(src, !IsClass(_A("BBBB")));
         REQUIRE_THAT(src, !IsEnum(_A("CCC")));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
@@ -52,6 +53,15 @@ TEST_CASE("t00070", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(!IsClass(j, "C"));
+
+        REQUIRE(InPublicModule(j, "A", "t00070"));
+        REQUIRE(InPublicModule(j, "B", "t00070.lib1"));
+
+        REQUIRE(!IsClass(j, "BBBB"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
@@ -63,7 +73,7 @@ TEST_CASE("t00070", "[test-case][class]")
         using mermaid::IsClass;
         using mermaid::IsEnum;
 
-        REQUIRE_THAT(src, !IsClass(_A("A")));
+        REQUIRE_THAT(src, IsClass(_A("A")));
         REQUIRE_THAT(src, IsClass(_A("B")));
         REQUIRE_THAT(src, !IsClass(_A("C")));
 
@@ -71,6 +81,7 @@ TEST_CASE("t00070", "[test-case][class]")
         REQUIRE_THAT(src, !IsClass(_A("CC<T>")));
 
         REQUIRE_THAT(src, IsEnum(_A("BBB")));
+        REQUIRE_THAT(src, !IsClass(_A("BBBB")));
         REQUIRE_THAT(src, !IsEnum(_A("CCC")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);

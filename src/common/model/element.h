@@ -102,6 +102,23 @@ public:
     std::optional<std::string> module() const { return module_; }
 
     /**
+     * Set whether the element is in a private module
+     *
+     * @param module C++20 module.
+     */
+    void set_module_private(const bool module_private)
+    {
+        module_private_ = module_private;
+    }
+
+    /**
+     * Check whether the element is in a private module.
+     *
+     * @return C++20 module.
+     */
+    bool module_private() const { return module_private_; }
+
+    /**
      * Return elements full name.
      *
      * @return Fully qualified elements name.
@@ -135,5 +152,6 @@ private:
     namespace_ ns_;
     namespace_ using_namespace_;
     std::optional<std::string> module_;
+    bool module_private_{false};
 };
 } // namespace clanguml::common::model

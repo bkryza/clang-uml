@@ -23,6 +23,14 @@
 namespace clanguml::class_diagram::model {
 using nlohmann::json;
 
+void set_module(nlohmann::json &j, const common::model::element &e)
+{
+    if (e.module()) {
+        j["module"]["name"] = e.module().value();
+        j["module"]["is_private"] = e.module_private();
+    }
+}
+
 void to_json(nlohmann::json &j, const class_element &c)
 {
     j["name"] = c.name();
@@ -94,6 +102,8 @@ void to_json(nlohmann::json &j, const class_ &c)
     j["methods"] = c.methods();
     j["bases"] = c.parents();
 
+    set_module(j, c);
+
     j["template_parameters"] = c.template_params();
 }
 
@@ -102,6 +112,8 @@ void to_json(nlohmann::json &j, const enum_ &c)
     j = dynamic_cast<const common::model::element &>(c);
     j["is_nested"] = c.is_nested();
     j["constants"] = c.constants();
+
+    set_module(j, c);
 }
 
 void to_json(nlohmann::json &j, const concept_ &c)
@@ -109,6 +121,8 @@ void to_json(nlohmann::json &j, const concept_ &c)
     j = dynamic_cast<const common::model::element &>(c);
     j["parameters"] = c.requires_parameters();
     j["statements"] = c.requires_statements();
+
+    set_module(j, c);
 }
 
 } // namespace clanguml::class_diagram::model

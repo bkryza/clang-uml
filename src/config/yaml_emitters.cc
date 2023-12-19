@@ -69,6 +69,12 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &a)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const module_access_t &a)
+{
+    out << to_string(a);
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
 {
     out << to_string(d);
@@ -124,6 +130,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
         out << YAML::Key << "namespaces" << YAML::Value << f.namespaces;
     if (!f.modules.empty())
         out << YAML::Key << "modules" << YAML::Value << f.modules;
+    if (!f.module_access.empty())
+        out << YAML::Key << "module_access" << YAML::Value << f.module_access;
     if (!f.access.empty())
         out << YAML::Key << "access" << YAML::Value << f.access;
     if (!f.context.empty())

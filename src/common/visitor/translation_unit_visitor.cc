@@ -168,7 +168,13 @@ void translation_unit_visitor::set_owning_module(
 {
     if (const clang::Module *module = decl.getOwningModule();
         module != nullptr) {
-        element.set_module(module->Name);
+        std::string module_name = module->Name;
+        if (module->isPrivateModule()) {
+            // Clang just maps private modules names to "<private>"
+            module_name = module->getTopLevelModule()->Name;
+        }
+        element.set_module(module_name);
+        element.set_module_private(module->isPrivateModule());
     }
 }
 } // namespace clanguml::common::visitor

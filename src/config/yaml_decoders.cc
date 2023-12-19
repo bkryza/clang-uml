@@ -29,6 +29,7 @@ namespace YAML {
 using clanguml::common::namespace_or_regex;
 using clanguml::common::string_or_regex;
 using clanguml::common::model::access_t;
+using clanguml::common::model::module_access_t;
 using clanguml::common::model::relationship_t;
 using clanguml::config::callee_type;
 using clanguml::config::class_diagram;
@@ -234,6 +235,23 @@ template <> struct convert<access_t> {
             rhs = access_t::kProtected;
         else if (node.as<std::string>() == "private")
             rhs = access_t::kPrivate;
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
+// config module_access_t decoder
+//
+template <> struct convert<module_access_t> {
+    static bool decode(const Node &node, module_access_t &rhs)
+    {
+        if (node.as<std::string>() == "public")
+            rhs = module_access_t::kPublic;
+        else if (node.as<std::string>() == "private")
+            rhs = module_access_t::kPrivate;
         else
             return false;
 
@@ -482,6 +500,10 @@ template <> struct convert<filter> {
             for (const auto &ns : module_list)
                 rhs.modules.push_back({ns});
         }
+
+        if (node["module_access"])
+            rhs.module_access =
+                node["module_access"].as<decltype(rhs.module_access)>();
 
         if (node["relationships"])
             rhs.relationships =

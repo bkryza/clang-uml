@@ -23,6 +23,7 @@ namespace clanguml::common::model {
 
 enum class diagram_t { kClass, kSequence, kPackage, kInclude };
 
+enum class module_access_t { kPublic, kPrivate };
 enum class access_t { kPublic, kProtected, kPrivate, kNone };
 
 enum class relationship_t {
@@ -76,6 +77,8 @@ enum class message_scope_t {
 std::string to_string(relationship_t r);
 
 std::string to_string(access_t r);
+
+std::string to_string(module_access_t r);
 
 std::string to_string(message_t m);
 

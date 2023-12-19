@@ -568,6 +568,31 @@ tvl::value_t access_filter::match(
         [&a](const auto &access) { return a == access; });
 }
 
+module_access_filter::module_access_filter(
+    filter_t type, std::vector<module_access_t> access)
+    : filter_visitor{type}
+    , access_{std::move(access)}
+{
+}
+
+tvl::value_t module_access_filter::match(
+    const diagram & /*d*/, const element &e) const
+{
+    if (!e.module().has_value())
+        return {};
+
+    if (access_.empty())
+        return {};
+
+    return tvl::any_of(
+        access_.begin(), access_.end(), [&e](const auto &access) {
+            if (access == module_access_t::kPublic)
+                return !e.module_private();
+            else
+                return e.module_private();
+        });
+}
+
 context_filter::context_filter(
     filter_t type, std::vector<config::context_config> context)
     : filter_visitor{type}
@@ -924,6 +949,9 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_inclusive_filter(std::make_unique<modules_filter>(
             filter_t::kInclusive, c.include().modules));
 
+        add_inclusive_filter(std::make_unique<module_access_filter>(
+            filter_t::kInclusive, c.include().module_access));
+
         add_inclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kInclusive, c.include().relationships));
 
@@ -1036,6 +1064,9 @@ void diagram_filter::init_filters(const config::diagram &c)
 
         add_exclusive_filter(std::make_unique<modules_filter>(
             filter_t::kExclusive, c.exclude().modules));
+
+        add_exclusive_filter(std::make_unique<module_access_filter>(
+            filter_t::kExclusive, c.exclude().module_access));
 
         add_exclusive_filter(std::make_unique<paths_filter>(
             filter_t::kExclusive, c.root_directory(), c.exclude().paths));

@@ -458,6 +458,20 @@ private:
 };
 
 /**
+ * Match diagram elements based on module access (public or private).
+ */
+struct module_access_filter : public filter_visitor {
+    module_access_filter(filter_t type, std::vector<module_access_t> access);
+
+    ~module_access_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &a) const override;
+
+private:
+    std::vector<module_access_t> access_;
+};
+
+/**
  * Match diagram elements which are in within a 'radius' distance relationship
  * to any of the elements specified in context.
  */

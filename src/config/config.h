@@ -194,6 +194,22 @@ struct filter {
      */
     std::vector<common::string_or_regex> modules;
 
+    /*! @brief Access type filter
+     *
+     * This filter allows to filter class members methods based on their access:
+     *  - public
+     *  - private
+     *
+     * Example:
+     *
+     * ```yaml
+     *   include:
+     *     module_access:
+     *       - public
+     * ```
+     */
+    std::vector<common::model::module_access_t> module_access;
+
     /*! @brief Elements filter
      *
      * Example:
@@ -245,8 +261,8 @@ struct filter {
      *
      * ```yaml
      *   include:
-     *     relationships:
-     *       - inheritance
+     *     access:
+     *       - public
      * ```
      */
     std::vector<common::model::access_t> access;
