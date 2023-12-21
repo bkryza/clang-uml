@@ -386,6 +386,8 @@ public:
      */
     path_type type() const { return path_type_; }
 
+    const container_type &tokens() const { return path_; }
+
 private:
     path_type path_type_;
     container_type path_;

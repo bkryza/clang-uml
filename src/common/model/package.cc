@@ -21,8 +21,8 @@
 #include <sstream>
 
 namespace clanguml::common::model {
-package::package(const common::model::namespace_ &using_namespace)
-    : element{using_namespace}
+package::package(const common::model::namespace_ &using_namespace, path_type pt)
+    : element{using_namespace, pt}
 {
 }
 

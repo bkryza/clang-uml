@@ -50,7 +50,7 @@ TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
     }
 
     {
-        auto src = generate_class_mermaid(diagram, *model);
+        auto src = generate_{{ type }}_mermaid(diagram, *model);
 
         mermaid::AliasMatcher _A(src);
         using mermaid::IsClass;

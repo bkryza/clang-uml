@@ -135,6 +135,9 @@ public:
         if (parent_path.type() == common::model::path_type::kNamespace) {
             return add_with_namespace_path(std::move(e));
         }
+        else if (parent_path.type() == common::model::path_type::kModule) {
+            return add_with_module_path(parent_path, std::move(e));
+        }
 
         return add_with_filesystem_path(parent_path, std::move(e));
     }
@@ -155,6 +158,17 @@ public:
     inja::json context() const override;
 
 private:
+    /**
+     * @brief Add element using module as diagram path
+     *
+     * @tparam ElementT Element type
+     * @param e Element to add
+     * @return True, if the element was added
+     */
+    template <typename ElementT>
+    bool add_with_module_path(
+        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
     /**
      * @brief Add element using namespace as diagram path
      *
@@ -231,6 +245,55 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&p)
     auto p_ref = std::ref(*p);
 
     auto res = add_element(ns, std::move(p));
+    if (res)
+        element_view<ElementT>::add(p_ref);
+
+    return res;
+}
+
+template <typename ElementT>
+bool diagram::add_with_module_path(
+    const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
+{
+    LOG_DBG("Adding package: {}, {}, {}, [{}]", p->name(), p->full_name(false),
+        parent_path.to_string(), p->id());
+
+    // Make sure all parent modules are already packages in the
+    // model
+    std::string module_path = p->using_namespace().to_string();
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg = std::make_unique<common::model::package>(
+            p->using_namespace(), common::model::path_type::kModule);
+        pkg->set_name(*it);
+
+        auto ns = common::model::path(
+            parent_path.begin(), it, common::model::path_type::kModule);
+        pkg->set_module(module_path);
+        pkg->set_namespace(ns);
+
+        std::string package_id_path;
+        if (module_path.empty())
+            package_id_path = pkg->name();
+        else
+            package_id_path = module_path + "." + pkg->name();
+
+        pkg->set_id(common::to_id(package_id_path));
+
+        auto p_ref = std::ref(*pkg);
+
+        auto res = add_element(ns, std::move(pkg));
+        if (res)
+            element_view<ElementT>::add(p_ref);
+
+        if (module_path.empty())
+            module_path = *it;
+        else
+            module_path += fmt::format(".{}", *it);
+    }
+
+    auto p_ref = std::ref(*p);
+
+    auto res = add_element(parent_path, std::move(p));
     if (res)
         element_view<ElementT>::add(p_ref);
 

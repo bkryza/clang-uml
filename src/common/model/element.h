@@ -37,7 +37,9 @@ namespace clanguml::common::model {
  */
 class element : public diagram_element {
 public:
-    element(namespace_ using_namespace);
+    element(namespace_ using_namespace, path_type pt = path_type::kNamespace);
+
+    element(path_type pt);
 
     ~element() override = default;
 

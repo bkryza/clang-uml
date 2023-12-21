@@ -41,7 +41,8 @@ class package : public element,
                 public stylable_element,
                 public nested_trait<element, path> {
 public:
-    package(const common::model::path &using_namespace);
+    package(const common::model::path &using_namespace,
+        path_type pt = path_type::kNamespace);
 
     package(const package &) = delete;
     package(package &&) = default;

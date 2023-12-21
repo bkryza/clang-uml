@@ -25,8 +25,9 @@
 
 namespace clanguml::common::model {
 
-element::element(namespace_ using_namespace)
-    : using_namespace_{std::move(using_namespace)}
+element::element(namespace_ using_namespace, path_type pt)
+    : ns_{pt}
+    , using_namespace_{std::move(using_namespace)}
 {
 }
 

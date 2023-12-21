@@ -21,6 +21,8 @@
 #include "common/clang_utils.h"
 #include "common/model/namespace.h"
 
+#include "clang/Basic/Module.h"
+
 #include <spdlog/spdlog.h>
 
 #include <deque>
@@ -45,7 +47,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
 {
     assert(ns != nullptr);
 
-    if (config().package_type() == config::package_type_t::kDirectory)
+    if (config().package_type() != config::package_type_t::kNamespace)
         return true;
 
     if (ns->isAnonymousNamespace() || ns->isInline())
@@ -237,6 +239,43 @@ void translation_unit_visitor::add_relationships(
         if (diagram().should_include(*pkg))
             diagram().add(parent_path, std::move(pkg));
     }
+    else if (config().package_type() == config::package_type_t::kModule) {
+        const auto *module = cls->getOwningModule();
+
+        if (module == nullptr) {
+            return;
+        }
+
+        std::string module_path_str = module->Name;
+        if (module->isPrivateModule())
+            module_path_str = module->getTopLevelModule()->Name;
+
+        common::model::path module_path{
+            module_path_str, common::model::path_type::kModule};
+        module_path.pop_back();
+
+        auto relative_module =
+            config().make_module_relative(std::optional{module_path_str});
+
+        common::model::path parent_path{
+            relative_module, common::model::path_type::kModule};
+        auto pkg_name = parent_path.name();
+        parent_path.pop_back();
+
+        auto pkg = std::make_unique<common::model::package>(
+            config().using_module(), common::model::path_type::kModule);
+
+        pkg->set_name(pkg_name);
+        pkg->set_id(get_package_id(cls));
+        // This is for diagram filters
+        pkg->set_module(module_path.to_string());
+        // This is for rendering nested package structure
+        pkg->set_namespace(parent_path);
+        set_source_location(*cls, *pkg);
+
+        if (diagram().should_include(*pkg))
+            diagram().add(parent_path, std::move(pkg));
+    }
 
     auto current_package_id = get_package_id(cls);
 
@@ -280,6 +319,18 @@ common::model::diagram_element::id_t translation_unit_visitor::get_package_id(
         if (namespace_context != nullptr && namespace_context->isNamespace()) {
             return common::to_id(
                 *llvm::cast<clang::NamespaceDecl>(namespace_context));
+        }
+
+        return {};
+    }
+    else if (config().package_type() == config::package_type_t::kModule) {
+        const auto *module = cls->getOwningModule();
+        if (module != nullptr) {
+            std::string module_path = module->Name;
+            if (module->isPrivateModule()) {
+                module_path = module->getTopLevelModule()->Name;
+            }
+            return common::to_id(module_path);
         }
 
         return {};
@@ -578,6 +629,15 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                     }
                 }
             }
+            else if (config().package_type() ==
+                config::package_type_t::kModule) {
+                const auto *module = cxxrecord_decl->getOwningModule();
+                if (module != nullptr) {
+                    const auto target_id = get_package_id(cxxrecord_decl);
+                    relationships.emplace_back(target_id, relationship_hint);
+                    result = true;
+                }
+            }
             else {
                 if (diagram().should_include(
                         namespace_{common::get_qualified_name(
@@ -591,8 +651,8 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
         }
         else if (const auto *record_decl = type->getAsRecordDecl();
                  record_decl != nullptr) {
-            // This is only possible for plain C translation unit, so we don't
-            // need to consider namespaces here
+            // This is only possible for plain C translation unit, so we
+            // don't need to consider namespaces or modules here
             if (config().package_type() == config::package_type_t::kDirectory) {
                 if (diagram().should_include(
                         namespace_{common::get_qualified_name(*record_decl)})) {
