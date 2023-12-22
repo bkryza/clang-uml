@@ -50,13 +50,9 @@ public:
 
     std::shared_ptr<CG> cg() { return {}; }
 
-    template <typename T>
-    void ch(std::map<T, std::shared_ptr<CH>> &ch_)
-    {
-    }
+    template <typename T> void ch(std::map<T, std::shared_ptr<CH>> &ch_) { }
 
-    template <typename T>
-    std::map<T, std::shared_ptr<CI>> ci(T * /*t*/)
+    template <typename T> std::map<T, std::shared_ptr<CI>> ci(T * /*t*/)
     {
         return {};
     }
@@ -68,14 +64,8 @@ void cj(std::unique_ptr<CJ> /*cj_*/) { }
 
 std::unique_ptr<CK> ck() { return {}; }
 
-template <typename T>
-void cl(std::map<T, std::shared_ptr<CL>> & /*ch_*/)
-{
-}
+template <typename T> void cl(std::map<T, std::shared_ptr<CL>> & /*ch_*/) { }
 
-template <typename T> std::map<T, std::shared_ptr<CM>> cm()
-{
-    return {};
-}
+template <typename T> std::map<T, std::shared_ptr<CM>> cm() { return {}; }
 
 } // namespace clanguml::t30013
