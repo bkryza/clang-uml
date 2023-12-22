@@ -31,7 +31,8 @@ TEST_CASE("Test split", "[unit-test]")
 
     const C empty{};
 
-    CHECK(split("", " ") == C{""});
+    CHECK(split("", " ") == C{});
+    CHECK(split("", ".") == C{});
     CHECK(split("ABCD", " ") == C{"ABCD"});
     CHECK(split("::A", "::") == C{"A"});
     CHECK(split("::", "::") == C{});

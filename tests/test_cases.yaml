@@ -359,6 +359,12 @@ test_cases:
     - name: t30011
       title: Package diagram with packages from directory structure for plain C
       description:
+    - name: t30012
+      title: C++20 modules package diagram test
+      description:
+    - name: t30013
+      title: C++20 modules package dependencies diagram test
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case

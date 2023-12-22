@@ -301,13 +301,18 @@ tvl::value_t modules_filter::match(
     if (!e.module().has_value())
         return {false};
 
-    const auto module_toks = util::split(e.module().value(), "."); // NOLINT
+    auto module_toks = util::split(e.module().value(), ".", true); // NOLINT
+
+    if (dynamic_cast<const package *>(&e) != nullptr &&
+        e.get_namespace().type() == path_type::kModule) {
+        module_toks.push_back(e.name());
+    }
 
     auto result = tvl::any_of(modules_.begin(), modules_.end(),
         [&e, &module_toks](const auto &modit) {
             if (std::holds_alternative<std::string>(modit.value())) {
                 const auto &modit_str = std::get<std::string>(modit.value());
-                const auto modit_toks = util::split(modit_str, ".");
+                const auto modit_toks = util::split(modit_str, ".", true);
 
                 return e.module() == modit_str ||
                     util::starts_with(module_toks, modit_toks);

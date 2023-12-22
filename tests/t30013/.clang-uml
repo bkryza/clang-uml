@@ -1,0 +1,10 @@
+diagrams:
+  t30013_package:
+    type: package
+    glob:
+      - t30013.cc
+    package_type: module
+    include:
+      modules:
+        - t30013
+    using_module: t30013

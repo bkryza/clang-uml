@@ -474,6 +474,7 @@ using namespace clanguml::test::matchers;
 #include "t30011/test_case.h"
 #if defined(ENABLE_CXX_MODULES_TEST_CASES)
 #include "t30012/test_case.h"
+#include "t30013/test_case.h"
 #endif
 ///
 /// Include diagram tests

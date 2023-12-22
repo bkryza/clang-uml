@@ -216,20 +216,29 @@ std::vector<std::string> split(
 {
     std::vector<std::string> result;
 
-    if (!contains(str, delimiter))
-        result.push_back(str);
+    if (!contains(str, delimiter)) {
+        if (!str.empty())
+            result.push_back(std::move(str));
+        else if (!skip_empty)
+            result.push_back(std::move(str));
+    }
     else
         while (static_cast<unsigned int>(!str.empty()) != 0U) {
             auto index = str.find(delimiter);
             if (index != std::string::npos) {
                 auto tok = str.substr(0, index);
-                if (!tok.empty() || !skip_empty)
+                if (!tok.empty())
                     result.push_back(std::move(tok));
+                else if (!skip_empty)
+                    result.push_back(std::move(tok));
+
                 str = str.substr(index + delimiter.size());
             }
             else {
-                if (!str.empty() || !skip_empty)
-                    result.push_back(str);
+                if (!str.empty())
+                    result.push_back(std::move(str));
+                else if (!skip_empty)
+                    result.push_back(std::move(str));
                 str = "";
             }
         }
