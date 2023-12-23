@@ -365,6 +365,9 @@ test_cases:
     - name: t30013
       title: C++20 modules package dependencies diagram test
       description:
+    - name: t30014
+      title: C++20 modules package diagram test with partitions
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case

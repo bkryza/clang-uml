@@ -277,10 +277,14 @@ std::vector<std::string> diagram::make_module_relative(
     if (!maybe_module)
         return {};
 
-    auto module_path = util::split(maybe_module.value(), ".");
+    auto module_path = common::model::path(
+        maybe_module.value(), common::model::path_type::kModule)
+                           .tokens();
 
     if (using_module.has_value) {
-        auto using_module_path = util::split(using_module(), ".");
+        auto using_module_path = common::model::path(
+            using_module(), common::model::path_type::kModule)
+                                     .tokens();
 
         if (util::starts_with(module_path, using_module_path)) {
             util::remove_prefix(module_path, using_module_path);

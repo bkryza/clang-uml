@@ -301,7 +301,8 @@ tvl::value_t modules_filter::match(
     if (!e.module().has_value())
         return {false};
 
-    auto module_toks = util::split(e.module().value(), ".", true); // NOLINT
+    auto module_toks =
+        path::split(e.module().value(), path_type::kModule); // NOLINT
 
     if (dynamic_cast<const package *>(&e) != nullptr &&
         e.get_namespace().type() == path_type::kModule) {
@@ -312,7 +313,8 @@ tvl::value_t modules_filter::match(
         [&e, &module_toks](const auto &modit) {
             if (std::holds_alternative<std::string>(modit.value())) {
                 const auto &modit_str = std::get<std::string>(modit.value());
-                const auto modit_toks = util::split(modit_str, ".", true);
+                const auto modit_toks =
+                    path::split(modit_str, path_type::kModule);
 
                 return e.module() == modit_str ||
                     util::starts_with(module_toks, modit_toks);
