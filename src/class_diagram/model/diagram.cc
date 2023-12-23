@@ -159,7 +159,7 @@ bool diagram::has_element(
 std::string diagram::to_alias(
     clanguml::common::model::diagram_element::id_t id) const
 {
-    LOG_DBG("Looking for alias for {}", id);
+    LOG_TRACE("Looking for alias for {}", id);
 
     for (const auto &c : classes()) {
         if (c.get().id() == id) {

@@ -47,6 +47,8 @@ enum class filter_t {
     kExclusive  /*!< Filter is exclusve */
 };
 
+std::string to_string(filter_t t);
+
 namespace detail {
 template <typename ElementT, typename DiagramT>
 const clanguml::common::reference_vector<ElementT> &view(const DiagramT &d);
@@ -81,6 +83,8 @@ public:
 
     virtual ~filter_visitor() = default;
 
+    virtual std::string_view name() const = 0;
+
     virtual tvl::value_t match(
         const diagram &d, const common::model::element &e) const;
 
@@ -97,7 +101,7 @@ public:
         const diagram &d, const common::model::source_file &f) const;
 
     virtual tvl::value_t match(
-        const diagram &d, const common::model::source_location &f) const;
+        const diagram &d, const common::model::diagram_element &f) const;
 
     virtual tvl::value_t match(
         const diagram &d, const class_diagram::model::class_method &m) const;
@@ -113,6 +117,15 @@ public:
 
     filter_t type() const;
 
+protected:
+    template<typename T> void log_match(const T& e, tvl::value_t result) const
+    {
+        if (tvl::is_true(result)) {
+            LOG_DBG("Filter '{}:{}' matched '{}'", this->name(), to_string(this->type()),
+                to_string(e));
+        }
+    }
+
 private:
     filter_t type_;
 };
@@ -122,6 +135,11 @@ struct anyof_filter : public filter_visitor {
         filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
 
     ~anyof_filter() override = default;
+
+    std::string_view name() const override
+    {
+        return "anyof()";
+    }
 
     tvl::value_t match(
         const diagram &d, const common::model::element &e) const override;
@@ -146,6 +164,8 @@ struct namespace_filter : public filter_visitor {
 
     ~namespace_filter() override = default;
 
+    std::string_view name() const override { return "namespace"; }
+
     tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
@@ -163,6 +183,8 @@ struct modules_filter : public filter_visitor {
 
     ~modules_filter() override = default;
 
+    std::string_view name() const override { return "modules"; }
+
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
@@ -178,6 +200,8 @@ struct element_filter : public filter_visitor {
 
     ~element_filter() override = default;
 
+    std::string_view name() const override { return "element"; }
+
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
@@ -191,6 +215,8 @@ struct element_type_filter : public filter_visitor {
     element_type_filter(filter_t type, std::vector<std::string> element_types);
 
     ~element_type_filter() override = default;
+
+    std::string_view name() const override { return "element_type"; }
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -207,6 +233,8 @@ struct method_type_filter : public filter_visitor {
 
     ~method_type_filter() override = default;
 
+    std::string_view name() const override { return "method_type"; }
+
     tvl::value_t match(const diagram &d,
         const class_diagram::model::class_method &e) const override;
 
@@ -221,6 +249,8 @@ struct callee_filter : public filter_visitor {
     callee_filter(filter_t type, std::vector<config::callee_type> callee_types);
 
     ~callee_filter() override = default;
+
+    std::string_view name() const override { return "callee"; }
 
     tvl::value_t match(const diagram &d,
         const sequence_diagram::model::participant &p) const override;
@@ -238,6 +268,8 @@ struct subclass_filter : public filter_visitor {
 
     ~subclass_filter() override = default;
 
+    std::string_view name() const override { return "subclass"; }
+
     tvl::value_t match(const diagram &d, const element &e) const override;
 
 private:
@@ -252,6 +284,8 @@ struct parents_filter : public filter_visitor {
     parents_filter(filter_t type, std::vector<common::string_or_regex> roots);
 
     ~parents_filter() override = default;
+
+    std::string_view name() const override { return "parents"; }
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
@@ -278,15 +312,19 @@ template <typename DiagramT, typename ElementT,
     typename MatchOverrideT = common::model::element>
 struct edge_traversal_filter : public filter_visitor {
     edge_traversal_filter(filter_t type, relationship_t relationship,
-        std::vector<ConfigEntryT> roots, bool forward = false)
+        std::vector<ConfigEntryT> roots, const std::string &name,
+        bool forward = false)
         : filter_visitor{type}
         , roots_{std::move(roots)}
         , relationship_{relationship}
         , forward_{forward}
+        , name_{name}
     {
     }
 
     ~edge_traversal_filter() override = default;
+
+    std::string_view name() const override { return name_; }
 
     tvl::value_t match(const diagram &d, const MatchOverrideT &e) const override
     {
@@ -425,6 +463,7 @@ private:
     mutable bool initialized_{false};
     mutable clanguml::common::reference_set<ElementT> matching_elements_;
     bool forward_;
+    std::string name_;
 };
 
 /**
@@ -435,6 +474,8 @@ struct relationship_filter : public filter_visitor {
         filter_t type, std::vector<relationship_t> relationships);
 
     ~relationship_filter() override = default;
+
+    std::string_view name() const override { return "relationship"; }
 
     tvl::value_t match(
         const diagram &d, const relationship_t &r) const override;
@@ -451,6 +492,8 @@ struct access_filter : public filter_visitor {
 
     ~access_filter() override = default;
 
+    std::string_view name() const override { return "access"; }
+
     tvl::value_t match(const diagram &d, const access_t &a) const override;
 
 private:
@@ -464,6 +507,8 @@ struct module_access_filter : public filter_visitor {
     module_access_filter(filter_t type, std::vector<module_access_t> access);
 
     ~module_access_filter() override = default;
+
+    std::string_view name() const override { return "module_access"; }
 
     tvl::value_t match(const diagram &d, const element &a) const override;
 
@@ -479,6 +524,8 @@ struct context_filter : public filter_visitor {
     context_filter(filter_t type, std::vector<config::context_config> context);
 
     ~context_filter() override = default;
+
+    std::string_view name() const override { return "context"; }
 
     tvl::value_t match(const diagram &d, const element &r) const override;
 
@@ -553,11 +600,13 @@ struct paths_filter : public filter_visitor {
 
     ~paths_filter() override = default;
 
+    std::string_view name() const override { return "paths"; }
+
     tvl::value_t match(
         const diagram &d, const common::model::source_file &r) const override;
 
     tvl::value_t match(const diagram &d,
-        const common::model::source_location &sl) const override;
+        const common::model::diagram_element &sl) const override;
 
 private:
     std::vector<std::filesystem::path> paths_;
@@ -572,6 +621,8 @@ struct class_method_filter : public filter_visitor {
         std::unique_ptr<method_type_filter> mtf);
 
     ~class_method_filter() override = default;
+
+    std::string_view name() const override { return "class_method"; }
 
     tvl::value_t match(const diagram &d,
         const class_diagram::model::class_method &m) const override;
@@ -588,6 +639,8 @@ struct class_member_filter : public filter_visitor {
     class_member_filter(filter_t type, std::unique_ptr<access_filter> af);
 
     ~class_member_filter() override = default;
+
+    std::string_view name() const override { return "class_member"; }
 
     tvl::value_t match(const diagram &d,
         const class_diagram::model::class_member &m) const override;
@@ -641,14 +694,31 @@ public:
      */
     template <typename T> bool should_include(const T &e) const
     {
-        auto exc = tvl::any_of(exclusive_.begin(), exclusive_.end(),
-            [this, &e](const auto &ex) { return ex->match(diagram_, e); });
+        auto exc = tvl::any_of(
+            exclusive_.begin(), exclusive_.end(), [this, &e](const auto &ex) {
+                const auto res = ex->match(diagram_, e);
+
+                if (tvl::is_true(res)) {
+                    LOG_DBG("'{}' rejected by exclusive filter '{}'",
+                        to_string(e), ex->name());
+                }
+
+                return res;
+            });
 
         if (tvl::is_true(exc))
             return false;
 
-        auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
-            [this, &e](const auto &in) { return in->match(diagram_, e); });
+        auto inc = tvl::all_of(
+            inclusive_.begin(), inclusive_.end(), [this, &e](const auto &in) {
+                const auto res = in->match(diagram_, e);
+
+                if (tvl::is_false(res))
+                    LOG_DBG("'{}' rejected by inclusive filter '{}'",
+                        to_string(e), in->name());
+
+                return res;
+            });
 
         return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }

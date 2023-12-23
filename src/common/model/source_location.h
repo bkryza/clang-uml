@@ -17,6 +17,8 @@
  */
 #pragma once
 
+#include <spdlog/fmt/fmt.h>
+
 #include <string>
 #include <utility>
 
@@ -137,4 +139,7 @@ private:
     unsigned int column_{0};
     unsigned int hash_{0};
 };
+
+//std::string to_string(const source_location& sl);
+
 } // namespace clanguml::common::model

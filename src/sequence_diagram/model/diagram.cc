@@ -190,7 +190,7 @@ bool diagram::should_include(
 {
     return filter().should_include(p) &&
         filter().should_include(
-            dynamic_cast<const common::model::source_location &>(p));
+            dynamic_cast<const common::model::diagram_element &>(p));
 }
 
 std::vector<std::string> diagram::list_from_values() const

@@ -91,7 +91,7 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 
 std::string diagram::to_alias(const std::string &full_name) const
 {
-    LOG_DBG("Looking for alias for {}", full_name);
+    LOG_TRACE("Looking for alias for {}", full_name);
 
     auto path = common::model::filesystem_path{full_name};
 

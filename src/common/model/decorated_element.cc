@@ -20,6 +20,11 @@
 
 namespace clanguml::common::model {
 
+std::string to_string(const decorated_element &e)
+{
+    return e.full_name(false);
+}
+
 bool decorated_element::skip() const
 {
     return std::any_of(

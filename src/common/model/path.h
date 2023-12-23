@@ -166,6 +166,8 @@ public:
         return fmt::format("{}", fmt::join(path_, std::string{separator()}));
     }
 
+    std::string full_name(bool /*relative*/) const { return to_string(); }
+
     /**
      * Whether the path is empty.
      *
@@ -392,5 +394,7 @@ private:
     path_type path_type_;
     container_type path_;
 };
+
+std::string to_string(const path&p);
 
 } // namespace clanguml::common::model

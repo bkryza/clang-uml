@@ -49,6 +49,18 @@ class decorated_element {
 public:
     virtual ~decorated_element() = default;
 
+    virtual std::string name() const { return ""; }
+
+    /**
+     * @brief Return the elements fully qualified name.
+     *
+     * This method should be implemented in each subclass, and ensure that
+     * for instance it includes fully qualified namespace, template params, etc.
+     *
+     * @return Full elements name.
+     */
+    virtual std::string full_name(bool /*relative*/) const { return name(); }
+
     /**
      * Whether this element should be skipped from the diagram.
      *
@@ -138,5 +150,7 @@ private:
     std::vector<std::shared_ptr<decorators::decorator>> decorators_;
     std::optional<comment_t> comment_;
 };
+
+std::string to_string(const decorated_element &e);
 
 } // namespace clanguml::common::model

@@ -1,5 +1,5 @@
 /**
- * @file src/common/model/source_location.cc
+ * @file src/common/model/path.cc
  *
  * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-#include "source_location.h"
+#include "path.h"
 
 namespace clanguml::common::model {
-//std::string to_string(const source_location& sl) {
-//    sl.to
-//}
-}
+
+std::string to_string(const path &p) { return p.to_string(); }
+
+} // namespace clanguml::common::model

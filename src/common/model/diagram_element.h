@@ -99,7 +99,7 @@ public:
      *
      * @return Diagram's name.
      */
-    std::string name() const { return name_; }
+    std::string name() const override { return name_; }
 
     /**
      * Return the type name of the diagram.
@@ -107,16 +107,6 @@ public:
      * @return Diagrams type name.
      */
     virtual std::string type_name() const { return "__undefined__"; };
-
-    /**
-     * @brief Return the elements fully qualified name.
-     *
-     * This method should be implemented in each subclass, and ensure that
-     * for instance it includes fully qualified namespace, template params, etc.
-     *
-     * @return Full elements name.
-     */
-    virtual std::string full_name(bool /*relative*/) const { return name(); }
 
     /**
      * Return all relationships outgoing from this element.

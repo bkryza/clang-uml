@@ -70,7 +70,7 @@ public:
      *
      * @return Parameters name.
      */
-    std::string name() const;
+    std::string name() const override;
 
     /**
      * @brief Set parameters default value.

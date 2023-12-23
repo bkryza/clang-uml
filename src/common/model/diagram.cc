@@ -67,7 +67,7 @@ bool diagram::should_include(const element &e) const
         return true;
 
     return filter_->should_include(e) &&
-        filter_->should_include(dynamic_cast<const source_location &>(e));
+        filter_->should_include(dynamic_cast<const diagram_element &>(e));
 }
 
 bool diagram::should_include(const namespace_ &ns) const

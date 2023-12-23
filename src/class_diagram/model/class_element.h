@@ -49,7 +49,7 @@ public:
      *
      * @return Elements name.
      */
-    std::string name() const;
+    std::string name() const override;
 
     /**
      * @brief Set elements name.

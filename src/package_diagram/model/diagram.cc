@@ -49,7 +49,7 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 std::string diagram::to_alias(
     const clanguml::common::model::diagram_element::id_t id) const
 {
-    LOG_DBG("Looking for alias for {}", id);
+    LOG_TRACE("Looking for alias for {}", id);
 
     auto p = find<package>(id);
     if (p.has_value() && p.value().id() == id)
