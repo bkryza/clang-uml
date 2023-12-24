@@ -270,7 +270,7 @@ void translation_unit_visitor::add_relationships(
         // This is for diagram filters
         pkg->set_module(module_path.to_string());
         // This is for rendering nested package structure
-        pkg->set_namespace(parent_path);
+        pkg->set_namespace(module_path);
         set_source_location(*cls, *pkg);
 
         if (diagram().should_include(*pkg))

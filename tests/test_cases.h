@@ -1210,7 +1210,8 @@ std::optional<nlohmann::json> get_element(
         if (e["display_name"] == name)
             return {e};
 
-        if (e["type"] == "namespace" || e["type"] == "folder") {
+        if (e["type"] == "namespace" || e["type"] == "folder" ||
+            e["type"] == "module") {
             auto maybe_e = get_element(e, name);
             if (maybe_e)
                 return maybe_e;
@@ -1258,13 +1259,35 @@ auto get_relationship(const nlohmann::json &j, const std::string &from,
 
 std::string expand_name(const nlohmann::json &j, const std::string &name)
 {
-    if (!j.contains("using_namespace"))
-        return name;
+    using clanguml::class_diagram::model::path_type;
+    using clanguml::common::model::path;
+    using config::package_type_t;
 
-    if (name.find("::") == 0)
-        return name;
+    if (!j.contains("package_type") ||
+        j["package_type"] == to_string(package_type_t::kNamespace)) {
+        if (!j.contains("using_namespace"))
+            return name;
 
-    return fmt::format("{}::{}", j["using_namespace"].get<std::string>(), name);
+        auto full_path = path{j["using_namespace"].get<std::string>()};
+        full_path |= path{name};
+
+        return full_path.to_string();
+    }
+
+    if (j["package_type"] == to_string(package_type_t::kModule)) {
+        if (!j.contains("using_module"))
+            return name;
+
+        auto full_path =
+            path{j["using_module"].get<std::string>(), path_type::kModule};
+        full_path |= path{name, path_type::kModule};
+
+        auto res = full_path.to_string();
+
+        return res;
+    }
+
+    return name;
 }
 
 bool HasTitle(const nlohmann::json &j, const std::string &title)
@@ -1318,10 +1341,11 @@ bool IsEnum(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "enum";
 }
 
-bool IsPackage(const nlohmann::json &j, const std::string &name)
+bool IsPackage(const nlohmann::json &j, const std::string &name,
+    const std::string &type = "namespace")
 {
     auto e = get_element(j, expand_name(j, name));
-    return e && e->at("type") == "namespace";
+    return e && e->at("type") == type;
 }
 
 bool IsFolder(const nlohmann::json &j, const std::string &name)

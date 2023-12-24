@@ -83,25 +83,25 @@ TEST_CASE("t30013", "[test-case][package]")
 
         using namespace json;
 
-        REQUIRE(IsPackage(j, "app"));
-        REQUIRE(IsPackage(j, "mod1"));
-        REQUIRE(IsPackage(j, "mod2"));
-        REQUIRE(IsPackage(j, "mod3"));
-        REQUIRE(IsPackage(j, "mod4"));
-        REQUIRE(IsPackage(j, "mod5"));
-        REQUIRE(IsPackage(j, "mod6"));
-        REQUIRE(IsPackage(j, "mod7"));
-        REQUIRE(IsPackage(j, "mod8"));
-        REQUIRE(IsPackage(j, "mod9"));
-        REQUIRE(IsPackage(j, "mod10"));
-        REQUIRE(IsPackage(j, "mod11"));
-        REQUIRE(IsPackage(j, "mod12"));
-        REQUIRE(IsPackage(j, "mod13"));
-        REQUIRE(IsPackage(j, "mod14"));
-        REQUIRE(IsPackage(j, "mod15"));
-        REQUIRE(IsPackage(j, "mod16"));
-        REQUIRE(IsPackage(j, "mod17"));
-        REQUIRE(IsPackage(j, "mod18"));
+        REQUIRE(IsPackage(j, "app", "module"));
+        REQUIRE(IsPackage(j, "mod1", "module"));
+        REQUIRE(IsPackage(j, "mod2", "module"));
+        REQUIRE(IsPackage(j, "mod3", "module"));
+        REQUIRE(IsPackage(j, "mod4", "module"));
+        REQUIRE(IsPackage(j, "mod5", "module"));
+        REQUIRE(IsPackage(j, "mod6", "module"));
+        REQUIRE(IsPackage(j, "mod7", "module"));
+        REQUIRE(IsPackage(j, "mod8", "module"));
+        REQUIRE(IsPackage(j, "mod9", "module"));
+        REQUIRE(IsPackage(j, "mod10", "module"));
+        REQUIRE(IsPackage(j, "mod11", "module"));
+        REQUIRE(IsPackage(j, "mod12", "module"));
+        REQUIRE(IsPackage(j, "mod13", "module"));
+        REQUIRE(IsPackage(j, "mod14", "module"));
+        REQUIRE(IsPackage(j, "mod15", "module"));
+        REQUIRE(IsPackage(j, "mod16", "module"));
+        REQUIRE(IsPackage(j, "mod17", "module"));
+        REQUIRE(IsPackage(j, "mod18", "module"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

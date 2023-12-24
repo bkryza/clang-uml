@@ -184,18 +184,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
         if (!uns.starts_with({p.full_name(false)})) {
             LOG_DBG("Generating package {}", p.name());
 
-            switch (config().package_type()) {
-            case config::package_type_t::kDirectory:
-                package_object["type"] = "directory";
-                break;
-            case config::package_type_t::kModule:
-                package_object["type"] = "module";
-                break;
-            case config::package_type_t::kNamespace:
-                package_object["type"] = "namespace";
-                break;
-            }
-
+            package_object["type"] = to_string(config().package_type());
             package_object["name"] = p.name();
             package_object["display_name"] = p.full_name(false);
         }

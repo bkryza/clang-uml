@@ -147,6 +147,8 @@ std::string to_string(package_type_t pt)
         return "namespace";
     case package_type_t::kDirectory:
         return "directory";
+    case package_type_t::kModule:
+        return "module";
     default:
         assert(false);
         return "";

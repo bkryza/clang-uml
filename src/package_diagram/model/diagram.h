@@ -260,35 +260,29 @@ bool diagram::add_with_module_path(
 
     // Make sure all parent modules are already packages in the
     // model
-    std::string module_path = p->using_namespace().to_string();
+    auto module_relative_to = path{p->using_namespace()};
+
     for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
         auto pkg = std::make_unique<common::model::package>(
             p->using_namespace(), common::model::path_type::kModule);
         pkg->set_name(*it);
 
-        auto ns = common::model::path(
+        auto module_relative_part = common::model::path(
             parent_path.begin(), it, common::model::path_type::kModule);
-        pkg->set_module(module_path);
-        pkg->set_namespace(ns);
 
-        std::string package_id_path;
-        if (module_path.empty())
-            package_id_path = pkg->name();
-        else
-            package_id_path = module_path + "." + pkg->name();
+        auto module_absolute_path = module_relative_to | module_relative_part;
+        pkg->set_module(module_absolute_path.to_string());
+        pkg->set_namespace(module_absolute_path);
 
-        pkg->set_id(common::to_id(package_id_path));
+        auto package_absolute_path = module_absolute_path | pkg->name();
+
+        pkg->set_id(common::to_id(package_absolute_path.to_string()));
 
         auto p_ref = std::ref(*pkg);
 
-        auto res = add_element(ns, std::move(pkg));
+        auto res = add_element(module_relative_part, std::move(pkg));
         if (res)
             element_view<ElementT>::add(p_ref);
-
-        if (module_path.empty())
-            module_path = *it;
-        else
-            module_path += fmt::format(".{}", *it);
     }
 
     auto p_ref = std::ref(*p);

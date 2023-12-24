@@ -58,12 +58,12 @@ void generator::generate_relationships(
 
 void generator::generate(const package &p, nlohmann::json &parent) const
 {
-    LOG_DBG("Generating package {}", p.name());
+    LOG_DBG("Generating package {}", p.full_name(false));
 
     nlohmann::json j;
     j["id"] = std::to_string(p.id());
     j["name"] = p.name();
-    j["type"] = "namespace";
+    j["type"] = to_string(config().package_type());
     j["display_name"] = p.full_name(false);
     j["is_deprecated"] = p.is_deprecated();
     if (!p.file().empty())
@@ -86,10 +86,12 @@ void generator::generate_diagram(nlohmann::json &parent) const
 {
     if (config().using_namespace)
         parent["using_namespace"] = config().using_namespace().to_string();
+    if (config().using_module)
+        parent["using_module"] = config().using_module();
 
     parent["name"] = model().name();
     parent["diagram_type"] = "package";
-
+    parent["package_type"] = to_string(config().package_type());
     parent["elements"] = std::vector<nlohmann::json>{};
     parent["relationships"] = std::vector<nlohmann::json>{};
 

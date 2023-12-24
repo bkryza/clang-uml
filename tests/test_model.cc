@@ -21,6 +21,7 @@
 
 #include "class_diagram/model/class.h"
 #include "common/model/namespace.h"
+#include "common/model/package.h"
 #include "common/model/template_parameter.h"
 
 TEST_CASE("Test namespace_", "[unit-test]")
@@ -405,5 +406,55 @@ TEST_CASE(
 
         CHECK(tp2.calculate_specialization_match(tp1) == 0);
         CHECK(tp1.calculate_specialization_match(tp2) == 0);
+    }
+}
+
+TEST_CASE("Test common::model::package full_name", "[unit-test]")
+{
+    using clanguml::common::model::package;
+    using clanguml::common::model::path;
+    using clanguml::common::model::path_type;
+
+    {
+        auto using_namespace = path{"A::B::C"};
+        auto pkg = package(using_namespace);
+        pkg.set_name("G");
+        pkg.set_namespace(path{"A::B::C::D::E::F"});
+
+        CHECK(pkg.full_name(false) == "A::B::C::D::E::F::G");
+        CHECK(pkg.full_name(true) == "D::E::F::G");
+
+        CHECK(pkg.doxygen_link().value() ==
+            "namespaceA_1_1B_1_1C_1_1D_1_1E_1_1F_1_1G.html");
+    }
+
+    {
+        auto using_namespace = path{"/A/B/C", path_type::kFilesystem};
+        auto pkg = package(using_namespace, path_type::kFilesystem);
+        pkg.set_name("G");
+        pkg.set_namespace(path{"/A/B/C/D/E/F", path_type::kFilesystem});
+
+        CHECK(pkg.full_name(false) == "A/B/C/D/E/F/G");
+        CHECK(pkg.full_name(true) == "D/E/F/G");
+    }
+
+    {
+        auto using_namespace = path{"A.B.C", path_type::kModule};
+        auto pkg = package(using_namespace, path_type::kModule);
+        pkg.set_name("G");
+        pkg.set_namespace(path{"A.B.C.D:E.F", path_type::kModule});
+
+        CHECK(pkg.full_name(false) == "A.B.C.D:E.F.G");
+        CHECK(pkg.full_name(true) == "D:E.F.G");
+    }
+
+    {
+        auto using_namespace = path{"A.B.C", path_type::kModule};
+        auto pkg = package(using_namespace, path_type::kModule);
+        pkg.set_name(":D");
+        pkg.set_namespace(path{"A.B.C", path_type::kModule});
+
+        CHECK(pkg.full_name(false) == "A.B.C:D");
+        CHECK(pkg.full_name(true) == ":D");
     }
 }

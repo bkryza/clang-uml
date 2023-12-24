@@ -37,6 +37,8 @@ enum class path_type {
     kModule      /*!< Module path */
 };
 
+std::string to_string(path_type pt);
+
 /**
  * @brief Diagram path
  *
@@ -135,7 +137,8 @@ public:
             return *this;
 
         if (path_type_ != right.path_type_)
-            throw std::runtime_error("");
+            throw std::runtime_error(
+                "Cannot assign a path to a path with another path type.");
 
         path_type_ = right.path_type_;
         path_ = right.path_;
@@ -225,6 +228,7 @@ public:
     path operator|(const path &right) const
     {
         path res{*this};
+        res.path_type_ = right.path_type_;
         res.append(right);
         return res;
     }
