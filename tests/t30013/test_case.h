@@ -83,25 +83,25 @@ TEST_CASE("t30013", "[test-case][package]")
 
         using namespace json;
 
-        REQUIRE(IsPackage(j, "app", "module"));
-        REQUIRE(IsPackage(j, "mod1", "module"));
-        REQUIRE(IsPackage(j, "mod2", "module"));
-        REQUIRE(IsPackage(j, "mod3", "module"));
-        REQUIRE(IsPackage(j, "mod4", "module"));
-        REQUIRE(IsPackage(j, "mod5", "module"));
-        REQUIRE(IsPackage(j, "mod6", "module"));
-        REQUIRE(IsPackage(j, "mod7", "module"));
-        REQUIRE(IsPackage(j, "mod8", "module"));
-        REQUIRE(IsPackage(j, "mod9", "module"));
-        REQUIRE(IsPackage(j, "mod10", "module"));
-        REQUIRE(IsPackage(j, "mod11", "module"));
-        REQUIRE(IsPackage(j, "mod12", "module"));
-        REQUIRE(IsPackage(j, "mod13", "module"));
-        REQUIRE(IsPackage(j, "mod14", "module"));
-        REQUIRE(IsPackage(j, "mod15", "module"));
-        REQUIRE(IsPackage(j, "mod16", "module"));
-        REQUIRE(IsPackage(j, "mod17", "module"));
-        REQUIRE(IsPackage(j, "mod18", "module"));
+        REQUIRE(IsPackage(j, "t30013.app", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod1", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod2", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod3", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod4", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod5", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod6", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod7", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod8", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod9", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod10", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod11", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod12", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod13", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod14", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod15", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod16", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod17", "module"));
+        REQUIRE(IsPackage(j, "t30013.mod18", "module"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

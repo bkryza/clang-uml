@@ -84,26 +84,26 @@ TEST_CASE("t30015", "[test-case][package]")
 
         using namespace json;
 
-        REQUIRE(IsPackage(j, "app", "module"));
-        REQUIRE(IsPackage(j, "lib1", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod1", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod2", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod3", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod4", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod5", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod6", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod7", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod8", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod9", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod10", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod11", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod12", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod13", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod14", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod15", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod16", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod17", "module"));
-        REQUIRE(IsPackage(j, "lib1:mod18", "module"));
+        REQUIRE(IsPackage(j, "t30015.app", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod1", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod2", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod3", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod4", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod5", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod6", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod7", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod8", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod9", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod10", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod11", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod12", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod13", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod14", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod15", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod16", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod17", "module"));
+        REQUIRE(IsPackage(j, "t30015.lib1:mod18", "module"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

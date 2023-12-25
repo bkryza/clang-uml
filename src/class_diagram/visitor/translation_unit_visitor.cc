@@ -213,7 +213,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     }
 
     if (!template_specialization.template_specialization_found()) {
-        // Only do this if we haven't found a bettern specialization during
+        // Only do this if we haven't found a better specialization during
         // construction of the template specialization
         const auto maybe_id =
             id_mapper().get_global_id(cls->getSpecializedTemplate()->getID());

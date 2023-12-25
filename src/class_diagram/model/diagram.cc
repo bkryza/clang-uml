@@ -116,6 +116,18 @@ bool diagram::add_with_filesystem_path<common::model::package>(
     return add_element(ns, std::move(p));
 }
 
+template <>
+bool diagram::add_with_module_path<common::model::package>(
+    const common::model::path & /*parent_path*/,
+    std::unique_ptr<common::model::package> &&p)
+{
+    LOG_DBG("Adding module package: {}, {}", p->name(), p->full_name(true));
+
+    auto ns = p->get_relative_namespace();
+
+    return add_element(ns, std::move(p));
+}
+
 void diagram::get_parents(
     clanguml::common::reference_set<class_> &parents) const
 {

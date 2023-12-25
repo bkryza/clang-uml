@@ -1,0 +1,12 @@
+diagrams:
+  t00072_class:
+    type: class
+    glob:
+      - t00072.cc
+    generate_packages: true
+    package_type: module
+    include:
+      modules:
+        - t00072
+    using_module: t00072
+    using_namespace: clanguml::t00072

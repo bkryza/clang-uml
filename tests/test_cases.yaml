@@ -210,6 +210,9 @@ test_cases:
     - name: t00071
       title: Class diagram with C++20 modules generated as packages
       description:
+    - name: t00072
+      title: Class diagram with C++20 module partitions generated as packages
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

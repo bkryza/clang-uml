@@ -1211,7 +1211,7 @@ std::optional<nlohmann::json> get_element(
             return {e};
 
         if (e["type"] == "namespace" || e["type"] == "folder" ||
-            e["type"] == "module") {
+            e["type"] == "directory" || e["type"] == "module") {
             auto maybe_e = get_element(e, name);
             if (maybe_e)
                 return maybe_e;
@@ -1275,16 +1275,18 @@ std::string expand_name(const nlohmann::json &j, const std::string &name)
     }
 
     if (j["package_type"] == to_string(package_type_t::kModule)) {
-        if (!j.contains("using_module"))
-            return name;
-
-        auto full_path =
-            path{j["using_module"].get<std::string>(), path_type::kModule};
-        full_path |= path{name, path_type::kModule};
-
-        auto res = full_path.to_string();
-
-        return res;
+        return name;
+        //        if (!j.contains("using_module"))
+        //            return name;
+        //
+        //        auto full_path =
+        //            path{j["using_module"].get<std::string>(),
+        //            path_type::kModule};
+        //        full_path |= path{name, path_type::kModule};
+        //
+        //        auto res = full_path.to_string();
+        //
+        //        return res;
     }
 
     return name;

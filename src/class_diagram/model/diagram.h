@@ -203,6 +203,10 @@ public:
             return add_with_namespace_path(std::move(e));
         }
 
+        if (parent_path.type() == common::model::path_type::kModule) {
+            return add_with_module_path(parent_path, std::move(e));
+        }
+
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
@@ -223,8 +227,6 @@ public:
      * @param parents In and out parameter with the parent classes.
      */
     void get_parents(clanguml::common::reference_set<class_> &parents) const;
-
-    friend void print_diagram_tree(const diagram &d, int level);
 
     /**
      * @brief Check if diagram contains element by id.
@@ -251,6 +253,10 @@ public:
 private:
     template <typename ElementT>
     bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);
+
+    template <typename ElementT>
+    bool add_with_module_path(
+        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
 
     template <typename ElementT>
     bool add_with_filesystem_path(
@@ -318,18 +324,52 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&e)
 }
 
 template <typename ElementT>
+bool diagram::add_with_module_path(
+    const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
+{
+    const auto element_type = e->type_name();
+
+    // Make sure all parent modules are already packages in the
+    // model
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg = std::make_unique<common::model::package>(
+            e->using_namespace(), parent_path.type());
+        pkg->set_name(*it);
+        auto ns =
+            common::model::path(parent_path.begin(), it, parent_path.type());
+        // ns.pop_back();
+        pkg->set_namespace(ns);
+        pkg->set_id(common::to_id(pkg->full_name(false)));
+
+        add(ns, std::move(pkg));
+    }
+
+    const auto base_name = e->name();
+    const auto full_name = e->full_name(false);
+    auto &e_ref = *e;
+
+    if (add_element(parent_path, std::move(e))) {
+        element_view<ElementT>::add(std::ref(e_ref));
+        return true;
+    }
+
+    return false;
+}
+
+template <typename ElementT>
 bool diagram::add_with_filesystem_path(
     const common::model::path &parent_path, std::unique_ptr<ElementT> &&e)
 {
     const auto element_type = e->type_name();
 
-    // Make sure all parent directories are already packages in the
+    // Make sure all parent modules are already packages in the
     // model
     for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
-        auto pkg =
-            std::make_unique<common::model::package>(e->using_namespace());
+        auto pkg = std::make_unique<common::model::package>(
+            e->using_namespace(), parent_path.type());
         pkg->set_name(*it);
-        auto ns = common::model::path(parent_path.begin(), it);
+        auto ns =
+            common::model::path(parent_path.begin(), it, parent_path.type());
         // ns.pop_back();
         pkg->set_namespace(ns);
         pkg->set_id(common::to_id(pkg->full_name(false)));
@@ -403,6 +443,11 @@ const common::reference_vector<ElementT> &diagram::elements() const
 //
 template <>
 bool diagram::add_with_namespace_path<common::model::package>(
+    std::unique_ptr<common::model::package> &&p);
+
+template <>
+bool diagram::add_with_module_path<common::model::package>(
+    const common::model::path &parent_path,
     std::unique_ptr<common::model::package> &&p);
 
 template <>

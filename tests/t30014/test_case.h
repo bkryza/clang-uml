@@ -50,11 +50,11 @@ TEST_CASE("t30014", "[test-case][package]")
 
         using namespace json;
 
-        REQUIRE(IsPackage(j, "app", "module"));
-        REQUIRE(IsPackage(j, "app:lib1", "module"));
-        REQUIRE(IsPackage(j, "app:lib2", "module"));
-        REQUIRE(IsPackage(j, "app:lib1.mod1", "module"));
-        REQUIRE(!IsPackage(j, "app:lib1.mod2", "module"));
+        REQUIRE(IsPackage(j, "t30014.app", "module"));
+        REQUIRE(IsPackage(j, "t30014.app:lib1", "module"));
+        REQUIRE(IsPackage(j, "t30014.app:lib2", "module"));
+        REQUIRE(IsPackage(j, "t30014.app:lib1.mod1", "module"));
+        REQUIRE(!IsPackage(j, "t30014.app:lib1.mod2", "module"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

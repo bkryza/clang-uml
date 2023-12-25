@@ -139,6 +139,11 @@ void generator::generate_diagram(nlohmann::json &parent) const
     if (config().using_namespace)
         parent["using_namespace"] = config().using_namespace().to_string();
 
+    if (config().using_module)
+        parent["using_module"] = config().using_module();
+
+    if (config().generate_packages.has_value)
+        parent["package_type"] = to_string(config().package_type());
     parent["elements"] = std::vector<nlohmann::json>{};
     parent["relationships"] = std::vector<nlohmann::json>{};
 
