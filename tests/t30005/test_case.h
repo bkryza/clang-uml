@@ -49,19 +49,20 @@ TEST_CASE("t30005", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "A"));
-        REQUIRE(IsPackage(j, "A::AA"));
-        REQUIRE(IsPackage(j, "A::AA::AAA"));
-        REQUIRE(IsPackage(j, "B"));
-        REQUIRE(IsPackage(j, "B::BB"));
-        REQUIRE(IsPackage(j, "B::BB::BBB"));
-        REQUIRE(IsPackage(j, "C"));
-        REQUIRE(IsPackage(j, "C::CC"));
-        REQUIRE(IsPackage(j, "C::CC::CCC"));
+        REQUIRE(IsNamespacePackage(j, "A"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(j, "B"s));
+        REQUIRE(IsNamespacePackage(j, "B"s, "BB"s));
+        REQUIRE(IsNamespacePackage(j, "B"s, "BB"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(j, "C"s));
+        REQUIRE(IsNamespacePackage(j, "C"s, "CC"s));
+        REQUIRE(IsNamespacePackage(j, "C"s, "CC"s, "CCC"s));
 
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::AAA"));
-        REQUIRE(IsDependency(j, "C::CC::CCC", "A::AA::AAA"));
+        REQUIRE(IsDependency(j, "BBB", "AAA"));
+        REQUIRE(IsDependency(j, "CCC", "AAA"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

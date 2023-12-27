@@ -93,6 +93,17 @@ TEST_CASE("t00002", "[test-case][class]")
 
         using namespace json;
 
+        const auto &A = get_element(j, "A");
+
+        CHECK(A.has_value());
+
+        CHECK(A.value()["type"] == "class");
+        CHECK(A.value()["name"] == "A");
+        CHECK(A.value()["display_name"] == "A");
+        CHECK(A.value()["namespace"] == "clanguml::t00002");
+        CHECK(A.value()["source_location"]["file"] == "t00002.cc");
+        CHECK(A.value()["source_location"]["line"] == 7);
+
         REQUIRE(HasTitle(j, "Basic class diagram example"));
         REQUIRE(IsClass(j, "A"));
         REQUIRE(IsClass(j, "B"));

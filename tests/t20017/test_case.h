@@ -57,6 +57,14 @@ TEST_CASE("t20017", "[test-case][sequence]")
 
         using namespace json;
 
+        const auto &t20017_cc = get_participant(j, "t20017.cc");
+
+        CHECK(t20017_cc.has_value());
+
+        CHECK(t20017_cc.value()["type"] == "file");
+        CHECK(t20017_cc.value()["name"] == "t20017.cc");
+        CHECK(t20017_cc.value()["display_name"] == "t20017.cc");
+
         std::vector<int> messages = {
             FindMessage(j, File("t20017.cc"), File("include/t20017_a.h"),
                 "a3(int,int)"),

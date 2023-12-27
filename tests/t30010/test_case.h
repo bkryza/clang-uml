@@ -54,6 +54,13 @@ TEST_CASE("t30010", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
+
+        REQUIRE(IsDirectoryPackage(j, "app"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib1"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib2"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib3"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib4"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

@@ -98,10 +98,9 @@ TEST_CASE("t00006", "[test-case][class]")
         REQUIRE(IsClass(j, "NN"));
         REQUIRE(IsClass(j, "NNN"));
 
-        REQUIRE(IsAggregation(
-            j, "R", "custom_container<clanguml::t00006::E>", "e"));
-        REQUIRE(IsInstantiation(
-            j, "custom_container<T>", "custom_container<clanguml::t00006::E>"));
+        REQUIRE(IsAggregation(j, "R", "custom_container<E>", "e"));
+        REQUIRE(
+            IsInstantiation(j, "custom_container<T>", "custom_container<E>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

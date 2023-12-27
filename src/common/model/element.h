@@ -123,8 +123,11 @@ public:
      *
      * @return Fully qualified elements name.
      */
-    std::string full_name(bool /*relative*/) const override
+    std::string full_name(bool relative) const override
     {
+        if (relative)
+            return name();
+
         return name_and_ns();
     }
 

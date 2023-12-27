@@ -75,8 +75,7 @@ TEST_CASE("t00044", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "signal_handler<T,A>"));
         REQUIRE(IsClassTemplate(j, "signal_handler<Ret(Args...),A>"));
         REQUIRE(IsClassTemplate(j, "signal_handler<void(int),bool>"));
-        REQUIRE(IsClassTemplate(
-            j, "sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"));
+        REQUIRE(IsClassTemplate(j, "sink<signal_handler<Ret(Args...),A>>"));
         REQUIRE(IsClass(j, "R"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);

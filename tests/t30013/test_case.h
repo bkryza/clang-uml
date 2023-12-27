@@ -82,26 +82,26 @@ TEST_CASE("t30013", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
-
-        REQUIRE(IsPackage(j, "t30013.app", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod1", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod2", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod3", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod4", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod5", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod6", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod7", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod8", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod9", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod10", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod11", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod12", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod13", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod14", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod15", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod16", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod17", "module"));
-        REQUIRE(IsPackage(j, "t30013.mod18", "module"));
+        using namespace std::string_literals;
+        REQUIRE(IsModulePackage(j, "app"s));
+        REQUIRE(IsModulePackage(j, "mod1"s));
+        REQUIRE(IsModulePackage(j, "mod2"s));
+        REQUIRE(IsModulePackage(j, "mod3"s));
+        REQUIRE(IsModulePackage(j, "mod4"s));
+        REQUIRE(IsModulePackage(j, "mod5"s));
+        REQUIRE(IsModulePackage(j, "mod6"s));
+        REQUIRE(IsModulePackage(j, "mod7"s));
+        REQUIRE(IsModulePackage(j, "mod8"s));
+        REQUIRE(IsModulePackage(j, "mod9"s));
+        REQUIRE(IsModulePackage(j, "mod10"s));
+        REQUIRE(IsModulePackage(j, "mod11"s));
+        REQUIRE(IsModulePackage(j, "mod12"s));
+        REQUIRE(IsModulePackage(j, "mod13"s));
+        REQUIRE(IsModulePackage(j, "mod14"s));
+        REQUIRE(IsModulePackage(j, "mod15"s));
+        REQUIRE(IsModulePackage(j, "mod16"s));
+        REQUIRE(IsModulePackage(j, "mod17"s));
+        REQUIRE(IsModulePackage(j, "mod18"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

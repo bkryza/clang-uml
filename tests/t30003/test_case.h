@@ -50,15 +50,16 @@ TEST_CASE("t30003", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "ns1"));
-        REQUIRE(IsPackage(j, "ns1::ns2_v1_0_0"));
-        REQUIRE(IsPackage(j, "ns1::ns2_v0_9_0"));
-        REQUIRE(IsPackage(j, "ns3"));
-        REQUIRE(IsPackage(j, "ns3::ns1"));
-        REQUIRE(IsPackage(j, "ns3::ns1::ns2"));
+        REQUIRE(IsNamespacePackage(j, "ns1"s));
+        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns2_v1_0_0"s));
+        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns2_v0_9_0"s));
+        REQUIRE(IsNamespacePackage(j, "ns3"s));
+        REQUIRE(IsNamespacePackage(j, "ns3"s, "ns1"s));
+        REQUIRE(IsNamespacePackage(j, "ns3"s, "ns1"s, "ns2"s));
 
-        REQUIRE(IsDeprecated(j, "ns1::ns2_v0_9_0"));
+        REQUIRE(IsDeprecated(j, "ns2_v0_9_0"));
         REQUIRE(IsDeprecated(j, "ns3"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);

@@ -191,7 +191,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 
             package_object["type"] = to_string(config().package_type());
             package_object["name"] = p.name();
-            package_object["display_name"] = p.full_name(false);
+            package_object["display_name"] = p.name();
         }
     }
 

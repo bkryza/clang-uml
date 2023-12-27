@@ -42,7 +42,7 @@ void to_json(nlohmann::json &j, const element &c)
     j = json{{"id", std::to_string(c.id())},
         {"name", detail::render_name(c.name())},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
-        {"display_name", detail::render_name(c.full_name(false))}};
+        {"display_name", detail::render_name(c.full_name(true))}};
 
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();

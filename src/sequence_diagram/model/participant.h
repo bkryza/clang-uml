@@ -88,7 +88,13 @@ public:
      *
      * @return Type name of the diagram element.
      */
-    std::string type_name() const override { return "class"; }
+    std::string type_name() const override
+    {
+        if (is_lambda())
+            return "lambda";
+
+        return "class";
+    }
 
     /**
      * @brief Check if class is a struct.

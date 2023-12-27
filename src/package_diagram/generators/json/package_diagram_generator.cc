@@ -60,26 +60,49 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 {
     LOG_DBG("Generating package {}", p.full_name(false));
 
-    nlohmann::json j;
-    j["id"] = std::to_string(p.id());
-    j["name"] = p.name();
-    j["type"] = to_string(config().package_type());
-    j["display_name"] = p.full_name(false);
-    j["is_deprecated"] = p.is_deprecated();
-    if (!p.file().empty())
-        j["source_location"] =
-            dynamic_cast<const common::model::source_location &>(p);
-    if (const auto &comment = p.comment(); comment)
-        j["comment"] = comment.value();
+    const auto &uns = config().using_namespace();
+    if (!uns.starts_with({p.full_name(false)})) {
+        nlohmann::json j;
+        j["id"] = std::to_string(p.id());
+        j["name"] = p.name();
+        j["type"] = to_string(config().package_type());
+        j["display_name"] = p.name();
+        switch (config().package_type()) {
+        case config::package_type_t::kNamespace:
+            j["namespace"] = p.get_namespace().to_string();
+            break;
+        case config::package_type_t::kModule:
+            j["namespace"] = p.get_namespace().to_string();
+            break;
+        case config::package_type_t::kDirectory:
+            j["path"] = p.get_namespace().to_string();
+            break;
+        }
 
-    for (const auto &subpackage : p) {
-        auto &pkg = dynamic_cast<package &>(*subpackage);
-        if (model().should_include(pkg)) {
-            generate(pkg, j);
+        j["is_deprecated"] = p.is_deprecated();
+        if (!p.file().empty())
+            j["source_location"] =
+                dynamic_cast<const common::model::source_location &>(p);
+        if (const auto &comment = p.comment(); comment)
+            j["comment"] = comment.value();
+
+        for (const auto &subpackage : p) {
+            auto &pkg = dynamic_cast<package &>(*subpackage);
+            if (model().should_include(pkg)) {
+                generate(pkg, j);
+            }
+        }
+
+        parent["elements"].push_back(std::move(j));
+    }
+    else {
+        for (const auto &subpackage : p) {
+            auto &pkg = dynamic_cast<package &>(*subpackage);
+            if (model().should_include(pkg)) {
+                generate(pkg, parent);
+            }
         }
     }
-
-    parent["elements"].push_back(std::move(j));
 }
 
 void generator::generate_diagram(nlohmann::json &parent) const

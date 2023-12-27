@@ -83,27 +83,28 @@ TEST_CASE("t30015", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "t30015.app", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod1", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod2", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod3", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod4", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod5", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod6", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod7", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod8", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod9", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod10", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod11", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod12", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod13", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod14", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod15", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod16", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod17", "module"));
-        REQUIRE(IsPackage(j, "t30015.lib1:mod18", "module"));
+        REQUIRE(IsModulePackage(j, "app"s));
+        REQUIRE(IsModulePackage(j, "lib1"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod1"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod2"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod3"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod4"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod5"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod6"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod7"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod8"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod9"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod10"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod11"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod12"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod13"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod14"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod15"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod16"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod17"s));
+        REQUIRE(IsModulePackage(j, "lib1"s, ":mod18"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

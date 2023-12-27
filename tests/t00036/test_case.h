@@ -55,16 +55,20 @@ TEST_CASE("t00036", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
         REQUIRE(IsClass(j, "ns1::ns11::A<T>"));
         REQUIRE(IsClass(j, "ns1::ns11::A<int>"));
         REQUIRE(IsClass(j, "ns1::ns11::ns111::B"));
         REQUIRE(IsClass(j, "ns2::ns22::C"));
         REQUIRE(IsEnum(j, "ns1::E"));
-        REQUIRE(IsPackage(j, "ns1"));
-        REQUIRE(IsPackage(j, "ns1::ns11"));
-        REQUIRE(IsPackage(j, "ns1::ns11::ns111"));
-        REQUIRE(IsPackage(j, "ns2"));
+        REQUIRE(IsNamespacePackage(j, "ns1"s));
+        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns11"s));
+        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns11"s, "ns111"s));
+        REQUIRE(IsNamespacePackage(j, "ns2"s));
+        REQUIRE(IsNamespacePackage(j, "ns2"s, "ns22"s));
+        REQUIRE(IsNamespacePackage(j, "ns3"s));
+        REQUIRE(IsNamespacePackage(j, "ns3"s, "ns33"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

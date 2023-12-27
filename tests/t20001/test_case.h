@@ -58,6 +58,28 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         using namespace json;
 
+        const auto &A = get_participant(j, "A");
+
+        CHECK(A.has_value());
+
+        CHECK(A.value()["type"] == "class");
+        CHECK(A.value()["name"] == "A");
+        CHECK(A.value()["display_name"] == "A");
+        CHECK(A.value()["namespace"] == "clanguml::t20001");
+        CHECK(A.value()["source_location"]["file"] == "t20001.cc");
+        CHECK(A.value()["source_location"]["line"] == 13);
+
+        const auto &tmain = get_participant(j, "tmain()");
+
+        CHECK(tmain.has_value());
+
+        CHECK(tmain.value()["type"] == "function");
+        CHECK(tmain.value()["name"] == "tmain");
+        CHECK(tmain.value()["display_name"] == "tmain()");
+        CHECK(tmain.value()["namespace"] == "clanguml::t20001");
+        CHECK(tmain.value()["source_location"]["file"] == "t20001.cc");
+        CHECK(tmain.value()["source_location"]["line"] == 61);
+
         REQUIRE(HasTitle(j, "Basic sequence diagram example"));
 
         REQUIRE(IsFunctionParticipant(j, "tmain()"));
@@ -76,6 +98,7 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
+
     {
         auto src = generate_sequence_mermaid(diagram, *model);
         mermaid::SequenceDiagramAliasMatcher _A(src);

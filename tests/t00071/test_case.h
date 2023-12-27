@@ -48,6 +48,12 @@ TEST_CASE("t00071", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
+
+        REQUIRE(IsModulePackage(j, "app"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod1"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod2"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

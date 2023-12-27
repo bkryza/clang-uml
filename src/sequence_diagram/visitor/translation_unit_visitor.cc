@@ -1083,10 +1083,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
 bool translation_unit_visitor::TraverseVarDecl(clang::VarDecl *decl)
 {
-    LOG_TRACE("Traversing cxx variable declaration at {} [caller_id = {}]",
-        decl->getBeginLoc().printToString(source_manager()),
-        context().caller_id());
-
     if (decl->isStaticLocal())
         within_static_variable_declaration_++;
 

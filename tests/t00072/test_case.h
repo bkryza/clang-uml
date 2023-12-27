@@ -61,19 +61,20 @@ TEST_CASE("t00072", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsClass(j, "clanguml::t00072::A"));
-        REQUIRE(IsClass(j, "clanguml::t00072::B"));
-        REQUIRE(IsClass(j, "clanguml::t00072::C"));
-        REQUIRE(IsClass(j, "clanguml::t00072::D"));
-        REQUIRE(IsEnum(j, "clanguml::t00072::detail::CCC"));
-        REQUIRE(IsEnum(j, "clanguml::t00072::detail::BBB"));
+        REQUIRE(IsClass(j, "A"));
+        REQUIRE(IsClass(j, "B"));
+        REQUIRE(IsClass(j, "C"));
+        REQUIRE(IsClass(j, "D"));
+        REQUIRE(IsEnum(j, "detail::CCC"));
+        REQUIRE(IsEnum(j, "detail::BBB"));
 
-        REQUIRE(IsPackage(j, "app", "module"));
-        REQUIRE(IsPackage(j, "app:lib1", "module"));
-        REQUIRE(IsPackage(j, "app:lib2", "module"));
-        REQUIRE(IsPackage(j, "app:lib1.mod1", "module"));
-        REQUIRE(IsPackage(j, "app:lib1.mod2", "module"));
+        REQUIRE(IsModulePackage(j, "app"s));
+        REQUIRE(IsModulePackage(j, "app"s, ":lib1"s));
+        REQUIRE(IsModulePackage(j, "app"s, ":lib1"s, "mod1"s));
+        REQUIRE(IsModulePackage(j, "app"s, ":lib1"s, "mod2"s));
+        REQUIRE(IsModulePackage(j, "app"s, ":lib2"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

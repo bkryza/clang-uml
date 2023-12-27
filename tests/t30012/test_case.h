@@ -49,12 +49,13 @@ TEST_CASE("t30012", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "t30012.app", "module"));
-        REQUIRE(IsPackage(j, "t30012.app.lib1", "module"));
-        REQUIRE(IsPackage(j, "t30012.app.lib2", "module"));
-        REQUIRE(IsPackage(j, "t30012.app.lib1.mod1", "module"));
-        REQUIRE(IsPackage(j, "t30012.app.lib1.mod2", "module"));
+        REQUIRE(IsModulePackage(j, "app"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod1"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod2"s));
+        REQUIRE(IsModulePackage(j, "app"s, "lib2"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

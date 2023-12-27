@@ -1227,8 +1227,8 @@ std::optional<nlohmann::json> get_participant(
     if (!j.contains("participants"))
         return {};
 
-    for (const nlohmann::json &e : j["participants"]) {
-        if (e["name"] == name)
+    for (const nlohmann::json &e : j.at("participants")) {
+        if (e["display_name"] == name)
             return {e};
     }
 
@@ -1259,36 +1259,6 @@ auto get_relationship(const nlohmann::json &j, const std::string &from,
 
 std::string expand_name(const nlohmann::json &j, const std::string &name)
 {
-    using clanguml::class_diagram::model::path_type;
-    using clanguml::common::model::path;
-    using config::package_type_t;
-
-    if (!j.contains("package_type") ||
-        j["package_type"] == to_string(package_type_t::kNamespace)) {
-        if (!j.contains("using_namespace"))
-            return name;
-
-        auto full_path = path{j["using_namespace"].get<std::string>()};
-        full_path |= path{name};
-
-        return full_path.to_string();
-    }
-
-    if (j["package_type"] == to_string(package_type_t::kModule)) {
-        return name;
-        //        if (!j.contains("using_module"))
-        //            return name;
-        //
-        //        auto full_path =
-        //            path{j["using_module"].get<std::string>(),
-        //            path_type::kModule};
-        //        full_path |= path{name, path_type::kModule};
-        //
-        //        auto res = full_path.to_string();
-        //
-        //        return res;
-    }
-
     return name;
 }
 
@@ -1348,6 +1318,65 @@ bool IsPackage(const nlohmann::json &j, const std::string &name,
 {
     auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == type;
+}
+
+struct NamespacePackage { };
+struct ModulePackage { };
+struct DirectoryPackage { };
+
+template <typename PackageT> std::string package_type_name();
+
+template <> std::string package_type_name<NamespacePackage>()
+{
+    return "namespace";
+}
+
+template <> std::string package_type_name<ModulePackage>() { return "module"; }
+
+template <> std::string package_type_name<DirectoryPackage>()
+{
+    return "directory";
+}
+
+template <typename PackageT, typename... Args>
+bool IsPackagePath(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    if constexpr (sizeof...(Args) == 0) {
+        auto e = get_element(j, expand_name(j, head));
+
+        return e && e->at("type") == package_type_name<PackageT>();
+    }
+    else {
+        auto e = get_element(j, head);
+        if (!e.has_value())
+            return false;
+
+        return IsPackagePath<PackageT>(*e, args...);
+    }
+}
+
+template <typename... Args>
+bool IsNamespacePackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<NamespacePackage>(
+        j, head, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<DirectoryPackage>(
+        j, head, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsModulePackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<ModulePackage>(j, head, std::forward<Args>(args)...);
 }
 
 bool IsFolder(const nlohmann::json &j, const std::string &name)
@@ -1624,9 +1653,28 @@ struct message_test_spec_t {
 
 void from_json(const nlohmann::json &j, message_test_spec_t &p)
 {
-    j.at("from").at("activity_name").get_to(p.from);
-    j.at("to").at("activity_name").get_to(p.to);
+    j.at("from").at("activity_id").get_to(p.from);
+    j.at("to").at("activity_id").get_to(p.to);
     j.at("return_type").get_to(p.return_type);
+}
+
+std::string get_activity_id(
+    const nlohmann::json &j, const std::string &display_name)
+{
+    for (const auto &p : j["participants"]) {
+        if (p.contains("activities")) {
+            for (const auto &a : p["activities"]) {
+                if (a["display_name"] == display_name) {
+                    return a["id"];
+                }
+            }
+        }
+        else if (p["display_name"] == display_name) {
+            return p["id"];
+        }
+    }
+
+    return {};
 }
 
 bool HasMessageChain(
@@ -1637,8 +1685,8 @@ bool HasMessageChain(
         std::back_inserter(full_name_messages),
         [&j](const message_test_spec_t &m) {
             auto res = m;
-            res.from = expand_name(j, m.from);
-            res.to = expand_name(j, m.to);
+            res.from = get_activity_id(j, m.from);
+            res.to = get_activity_id(j, m.to);
             return res;
         });
 

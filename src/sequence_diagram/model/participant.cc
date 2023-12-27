@@ -69,7 +69,10 @@ std::string class_::full_name(bool relative) const
 
     std::ostringstream ostr;
 
-    ostr << name_and_ns();
+    if (relative)
+        ostr << name();
+    else
+        ostr << name_and_ns();
     render_template_params(ostr, using_namespace(), relative);
 
     std::string res;
@@ -102,7 +105,7 @@ function::function(const common::model::namespace_ &using_namespace)
 
 std::string function::full_name(bool relative) const
 {
-    return fmt::format("{}({}){}", element::full_name(relative),
+    return fmt::format("{}({}){}", participant::full_name(relative),
         fmt::join(parameters_, ","), is_const() ? " const" : "");
 }
 
@@ -195,8 +198,12 @@ void method::set_class_full_name(const std::string &name)
 
 const auto &method::class_full_name() const { return class_full_name_; }
 
-std::string method::full_name(bool /*relative*/) const
+std::string method::full_name(bool relative) const
 {
+    if (relative)
+        return fmt::format("{}({}){}", method_name(),
+            fmt::join(parameters(), ","), is_const() ? " const" : "");
+
     return fmt::format("{}::{}({}){}", class_full_name(), method_name(),
         fmt::join(parameters(), ","), is_const() ? " const" : "");
 }

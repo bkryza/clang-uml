@@ -69,9 +69,7 @@ TEST_CASE("t00032", "[test-case][class]")
 
         using namespace json;
 
-        REQUIRE(IsBaseClass(j, "A",
-            "Overload<clanguml::t00032::TBase,int,clanguml::t00032::A,clanguml:"
-            ":t00032::B,clanguml::t00032::C>"));
+        REQUIRE(IsBaseClass(j, "A", "Overload<TBase,int,A,B,C>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

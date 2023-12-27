@@ -48,13 +48,14 @@ TEST_CASE("t30004", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "A"));
-        REQUIRE(IsPackage(j, "A::AAA"));
-        REQUIRE(IsPackage(j, "A::BBB"));
-        REQUIRE(IsPackage(j, "A::CCC"));
-        REQUIRE(!IsPackage(j, "A::DDD"));
-        REQUIRE(IsPackage(j, "A::EEE"));
+        REQUIRE(IsNamespacePackage(j, "A"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "CCC"s));
+        REQUIRE(!IsNamespacePackage(j, "A"s, "DDD"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "EEE"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

@@ -239,6 +239,8 @@ private:
 
     mutable std::set<common::id_t> generated_participants_;
 
+    // Needed to add "participants" array in a temporary object accessible from
+    // all methods of the generator
     mutable nlohmann::json json_;
 
     mutable std::vector<std::reference_wrapper<nlohmann::json>>
