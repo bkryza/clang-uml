@@ -1,17 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="69px" preserveAspectRatio="none" style="width:62px;height:69px;background:#FFFFFF;" version="1.1" viewBox="0 0 62 69" width="62px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="66px" preserveAspectRatio="none" style="width:58px;height:66px;" version="1.1" viewBox="0 0 58 66" width="58px" zoomAndPan="magnify">
   <defs>
+    <filter height="300%" id="fcw9fu40qz1dn" width="300%" x="-1" y="-1">
+      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+    </filter>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00061/include/t00061_a.h#L3" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00061/include/t00061_a.h#L3" xlink:show="new" xlink:title="A" xlink:type="simple">
-      <g id="elem_C_0001010204727957329423">
-        <rect codeLine="2" fill="#F1F1F1" height="48" id="C_0001010204727957329423" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="41" x="7" y="7"/>
-        <ellipse cx="22" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
-        <path d="M17,24.1563 C17,26.6563 19.1406,28.4688 22.0625,28.4688 C23.2969,28.4688 24.4688,28.1719 25.2188,27.6563 C25.8281,27.2344 26.1563,26.8125 26.1563,26.4063 C26.1563,25.9375 25.7344,25.5313 25.2344,25.5313 C25,25.5313 24.7813,25.6094 24.5781,25.8125 C24.1406,26.25 24.1406,26.25 23.9688,26.3438 C23.5156,26.5781 22.875,26.7188 22.1094,26.7188 C20.1094,26.7188 18.8281,25.7031 18.8281,24.125 L18.8281,23.0781 C18.8281,21.375 20.0469,20.1719 21.75,20.1719 C22.3281,20.1719 22.9063,20.3125 23.375,20.5625 C23.8438,20.8281 24.0156,21.0156 24.0781,21.375 C24.2031,22.0469 24.4531,22.2969 24.9844,22.2969 C25.2656,22.2969 25.5469,22.1563 25.7344,21.9375 C25.8594,21.7656 25.9063,21.5938 25.9063,21.1563 L25.9063,19.7969 C25.9063,19.375 25.8906,19.2344 25.7656,19.0625 C25.5938,18.8125 25.3125,18.6563 24.9844,18.6563 C24.6719,18.6563 24.4688,18.7656 24.25,19.0313 C23.0781,18.5313 22.6406,18.4219 21.6875,18.4219 C19.0156,18.4219 17,20.4375 17,23.0625 L17,24.1563 Z " fill="#000000"/>
-        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="9" x="36" y="27.606">A</text>
-        <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="47" y1="39" y2="39"/>
-        <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="47" y1="47" y2="47"/>
-      </g>
+    <a href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00061/include/t00061_a.h#L3" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00061/include/t00061_a.h#L3" xlink:show="new" xlink:title="A" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#fcw9fu40qz1dn)" height="48" id="C_0001010204727957329423" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="7" y="7"/>
+      <ellipse cx="22" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M24.9688,28.6406 Q24.3906,28.9375 23.75,29.0781 Q23.1094,29.2344 22.4063,29.2344 Q19.9063,29.2344 18.5781,27.5938 Q17.2656,25.9375 17.2656,22.8125 Q17.2656,19.6875 18.5781,18.0313 Q19.9063,16.375 22.4063,16.375 Q23.1094,16.375 23.75,16.5313 Q24.4063,16.6875 24.9688,16.9844 L24.9688,19.7031 Q24.3438,19.125 23.75,18.8594 Q23.1563,18.5781 22.5313,18.5781 Q21.1875,18.5781 20.5,19.6563 Q19.8125,20.7188 19.8125,22.8125 Q19.8125,24.9063 20.5,25.9844 Q21.1875,27.0469 22.5313,27.0469 Q23.1563,27.0469 23.75,26.7813 Q24.3438,26.5 24.9688,25.9219 L24.9688,28.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="36" y="27.1543">A</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="8" x2="46" y1="39" y2="39"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="8" x2="46" y1="47" y2="47"/>
     </a>
   </g>
 </svg>

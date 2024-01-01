@@ -48,17 +48,17 @@
     </symbol>
   </defs>
   <defs>
-    <marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="7.9" id="arrowhead">
+    <marker orient="auto" markerHeight="12" markerWidth="12" markerUnits="userSpaceOnUse" refY="5" refX="9" id="arrowhead">
       <path d="M 0 0 L 10 5 L 0 10 z"/>
     </marker>
   </defs>
   <defs>
-    <marker refY="4.5" refX="4" orient="auto" markerHeight="8" markerWidth="15" id="crosshead">
+    <marker refY="5" refX="4" orient="auto" markerHeight="8" markerWidth="15" id="crosshead">
       <path style="stroke-dasharray: 0, 0;" d="M 1,2 L 6,7 M 6,2 L 1,7" stroke-width="1pt" stroke="#000000" fill="none"/>
     </marker>
   </defs>
   <defs>
-    <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="15.5" id="filled-head">
+    <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="18" id="filled-head">
       <path d="M 18,7 L9,13 L14,7 L9,1 Z"/>
     </marker>
   </defs>
@@ -104,8 +104,8 @@
     <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="479" x="282.5">rror &amp;]</text>
     <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="637" x="282.5">[...]</text>
   </g>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="176">a()</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="271" y1="111" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="178">a()</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="275" y1="111" x1="80"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="151" x="280">a1()</text>
   <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 280,182 C 340,172 340,212 280,202"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="227" x="285">​</text>
@@ -122,6 +122,6 @@
   <path style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" d="M 280,695 C 340,685 340,725 280,715"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="740" x="285">​</text>
   <path style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" d="M 285,735 C 345,725 345,765 285,755"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="820" x="177">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="815" x2="83" y1="815" x1="270"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="820" x="175">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="815" x2="80" y1="815" x1="270"/>
 </svg>

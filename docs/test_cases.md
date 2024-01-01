@@ -76,6 +76,7 @@
  * [t00069](./test_cases/t00069.md) - Coroutine methods in class diagrams
  * [t00070](./test_cases/t00070.md) - Diagram filter based on C++20 modules
  * [t00071](./test_cases/t00071.md) - Class diagram with C++20 modules generated as packages
+ * [t00072](./test_cases/t00072.md) - Class diagram with C++20 module partitions generated as packages
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -129,6 +130,8 @@
  * [t30011](./test_cases/t30011.md) - Package diagram with packages from directory structure for plain C
  * [t30012](./test_cases/t30012.md) - C++20 modules package diagram test
  * [t30013](./test_cases/t30013.md) - C++20 modules package dependencies diagram test
+ * [t30014](./test_cases/t30014.md) - C++20 modules package diagram test with partitions
+ * [t30015](./test_cases/t30015.md) - C++20 modules package diagram test with partition dependencies
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case

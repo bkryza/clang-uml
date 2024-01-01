@@ -1,71 +1,66 @@
 <svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="classDiagram" role="graphics-document document" viewBox="0 0 796.640625 308" style="max-width: 796.641px; background-color: white;" width="796.640625" id="my-svg">
-  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:transparent!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <style>#my-svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#my-svg .error-icon{fill:#552222;}#my-svg .error-text{fill:#552222;stroke:#552222;}#my-svg .edge-thickness-normal{stroke-width:2px;}#my-svg .edge-thickness-thick{stroke-width:3.5px;}#my-svg .edge-pattern-solid{stroke-dasharray:0;}#my-svg .edge-pattern-dashed{stroke-dasharray:3;}#my-svg .edge-pattern-dotted{stroke-dasharray:2;}#my-svg .marker{fill:#333333;stroke:#333333;}#my-svg .marker.cross{stroke:#333333;}#my-svg svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#my-svg g.classGroup text{fill:#9370DB;fill:#131300;stroke:none;font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:10px;}#my-svg g.classGroup text .title{font-weight:bolder;}#my-svg .nodeLabel,#my-svg .edgeLabel{color:#131300;}#my-svg .edgeLabel .label rect{fill:#ECECFF;}#my-svg .label text{fill:#131300;}#my-svg .edgeLabel .label span{background:#ECECFF;}#my-svg .classTitle{font-weight:bolder;}#my-svg .node rect,#my-svg .node circle,#my-svg .node ellipse,#my-svg .node polygon,#my-svg .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#my-svg .divider{stroke:#9370DB;stroke-width:1;}#my-svg g.clickable{cursor:pointer;}#my-svg g.classGroup rect{fill:#ECECFF;stroke:#9370DB;}#my-svg g.classGroup line{stroke:#9370DB;stroke-width:1;}#my-svg .classLabel .box{stroke:none;stroke-width:0;fill:#ECECFF;opacity:0.5;}#my-svg .classLabel .label{fill:#9370DB;font-size:10px;}#my-svg .relation{stroke:#333333;stroke-width:1;fill:none;}#my-svg .dashed-line{stroke-dasharray:3;}#my-svg .dotted-line{stroke-dasharray:1 2;}#my-svg #compositionStart,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #compositionEnd,#my-svg .composition{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #dependencyStart,#my-svg .dependency{fill:#333333!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionStart,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #extensionEnd,#my-svg .extension{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationStart,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #aggregationEnd,#my-svg .aggregation{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopStart,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg #lollipopEnd,#my-svg .lollipop{fill:#ECECFF!important;stroke:#333333!important;stroke-width:1;}#my-svg .edgeTerminals{font-size:11px;}#my-svg .classTitleText{text-anchor:middle;font-size:18px;fill:#333;}#my-svg :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
   <g>
     <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker aggregation classDiagram" id="my-svg_classDiagram-aggregationStart">
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker aggregation classDiagram" id="classDiagram-aggregationStart">
         <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
       </marker>
       <style type="text/css">a:hover { text-decoration: underline; }</style>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker aggregation classDiagram" id="my-svg_classDiagram-aggregationEnd">
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker aggregation classDiagram" id="classDiagram-aggregationEnd">
         <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker extension classDiagram" id="my-svg_classDiagram-extensionStart">
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker extension classDiagram" id="classDiagram-extensionStart">
         <path d="M 1,7 L18,13 V 1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker extension classDiagram" id="my-svg_classDiagram-extensionEnd">
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker extension classDiagram" id="classDiagram-extensionEnd">
         <path d="M 1,1 V 13 L18,7 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="18" class="marker composition classDiagram" id="my-svg_classDiagram-compositionStart">
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker composition classDiagram" id="classDiagram-compositionStart">
         <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="1" class="marker composition classDiagram" id="my-svg_classDiagram-compositionEnd">
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker composition classDiagram" id="classDiagram-compositionEnd">
         <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="6" class="marker dependency classDiagram" id="my-svg_classDiagram-dependencyStart">
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker dependency classDiagram" id="classDiagram-dependencyStart">
         <path d="M 5,7 L9,13 L1,7 L9,1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="13" class="marker dependency classDiagram" id="my-svg_classDiagram-dependencyEnd">
+      <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" class="marker dependency classDiagram" id="classDiagram-dependencyEnd">
         <path d="M 18,7 L9,13 L14,7 L9,1 Z"/>
       </marker>
     </defs>
     <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="13" class="marker lollipop classDiagram" id="my-svg_classDiagram-lollipopStart">
-        <circle r="6" cy="7" cx="7" fill="transparent" stroke="black"/>
-      </marker>
-    </defs>
-    <defs>
-      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="1" class="marker lollipop classDiagram" id="my-svg_classDiagram-lollipopEnd">
-        <circle r="6" cy="7" cx="7" fill="transparent" stroke="black"/>
+      <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" class="marker lollipop classDiagram" id="classDiagram-lollipopStart">
+        <circle r="6" cy="7" cx="6" fill="white" stroke="black"/>
       </marker>
     </defs>
     <g class="root">
       <g class="clusters"/>
       <g class="edgePaths">
-        <path marker-start="url(#my-svg_classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id1" d="M157.68208786076138,166.93757480878676L134.94861488396782,173.9479790073223C112.21514190717426,180.9583832058578,66.74819595358713,194.97919160292892,44.014722976793564,207.65626246813113C21.28125,220.33333333333334,21.28125,231.66666666666666,21.28125,237.33333333333334L21.28125,243"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id2" d="M185.94534574468085,175L171.2617464539007,180.66666666666666C156.57814716312058,186.33333333333334,127.21094858156027,197.66666666666666,112.52734929078014,208C97.84375,218.33333333333334,97.84375,227.66666666666666,97.84375,232.33333333333334L97.84375,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id3" d="M240.3535904255319,175L229.36236702127658,180.66666666666666C218.3711436170213,186.33333333333334,196.38869680851064,197.66666666666666,185.3974734042553,208C174.40625,218.33333333333334,174.40625,227.66666666666666,174.40625,232.33333333333334L174.40625,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id4" d="M294.761835106383,175L287.4629875886525,180.66666666666666C280.164140070922,186.33333333333334,265.56644503546096,197.66666666666666,258.2675975177305,208C250.96875,218.33333333333334,250.96875,227.66666666666666,250.96875,232.33333333333334L250.96875,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id5" d="M348.85362367021276,175L345.22567597517735,180.66666666666666C341.59772828014184,186.33333333333334,334.3418328900709,197.66666666666666,330.71388519503546,208C327.0859375,218.33333333333334,327.0859375,227.66666666666666,327.0859375,232.33333333333334L327.0859375,237"/>
-        <path marker-start="url(#my-svg_classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id6" d="M402.3125,193L402.3125,195.66666666666666C402.3125,198.33333333333334,402.3125,203.66666666666666,402.3125,212C402.3125,220.33333333333334,402.3125,231.66666666666666,402.3125,237.33333333333334L402.3125,243"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id7" d="M456.40428856382977,175L460.0751883865248,180.66666666666666C463.74608820921986,186.33333333333334,471.08788785460996,197.66666666666666,474.75878767730495,208C478.4296875,218.33333333333334,478.4296875,227.66666666666666,478.4296875,232.33333333333334L478.4296875,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id8" d="M511.1289893617021,175L518.5137411347517,180.66666666666666C525.8984929078014,186.33333333333334,540.6679964539007,197.66666666666666,548.0527482269504,208C555.4375,218.33333333333334,555.4375,227.66666666666666,555.4375,232.33333333333334L555.4375,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id9" d="M563.0111369680851,175L573.916832890071,180.66666666666666C584.8225288120567,186.33333333333334,606.6339206560284,197.66666666666666,617.5396165780143,208C628.4453125,218.33333333333334,628.4453125,227.66666666666666,628.4453125,232.33333333333334L628.4453125,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id10" d="M613.9494680851064,175L628.3120567375887,180.66666666666666C642.674645390071,186.33333333333334,671.3998226950355,197.66666666666666,685.7624113475177,208C700.125,218.33333333333334,700.125,227.66666666666666,700.125,232.33333333333334L700.125,237"/>
-        <path marker-end="url(#my-svg_classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id11" d="M629.7421875,163.13439790575916L654.01171875,170.77866492146597C678.28125,178.42293193717276,726.8203125,193.7114659685864,751.08984375,206.02239965095987C775.359375,218.33333333333334,775.359375,227.66666666666666,775.359375,232.33333333333334L775.359375,237"/>
+        <path marker-start="url(#classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id1" d="M179.328125,160.26250717624868L152.98697916666666,168.38542264687388C126.64583333333333,176.5083381174991,73.96354166666667,192.75416905874954,47.622395833333336,206.54375119604143C21.28125,220.33333333333334,21.28125,231.66666666666666,21.28125,237.33333333333334L21.28125,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id2" d="M185.94534574468085,175L171.2617464539007,180.66666666666666C156.57814716312058,186.33333333333334,127.21094858156027,197.66666666666666,112.52734929078014,209C97.84375,220.33333333333334,97.84375,231.66666666666666,97.84375,237.33333333333334L97.84375,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id3" d="M240.3535904255319,175L229.36236702127658,180.66666666666666C218.3711436170213,186.33333333333334,196.38869680851064,197.66666666666666,185.3974734042553,209C174.40625,220.33333333333334,174.40625,231.66666666666666,174.40625,237.33333333333334L174.40625,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id4" d="M294.761835106383,175L287.4629875886525,180.66666666666666C280.164140070922,186.33333333333334,265.56644503546096,197.66666666666666,258.2675975177305,209C250.96875,220.33333333333334,250.96875,231.66666666666666,250.96875,237.33333333333334L250.96875,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id5" d="M348.85362367021276,175L345.22567597517735,180.66666666666666C341.59772828014184,186.33333333333334,334.3418328900709,197.66666666666666,330.71388519503546,209C327.0859375,220.33333333333334,327.0859375,231.66666666666666,327.0859375,237.33333333333334L327.0859375,243"/>
+        <path marker-start="url(#classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id6" d="M402.3125,175L402.3125,180.66666666666666C402.3125,186.33333333333334,402.3125,197.66666666666666,402.3125,209C402.3125,220.33333333333334,402.3125,231.66666666666666,402.3125,237.33333333333334L402.3125,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id7" d="M456.40428856382977,175L460.0751883865248,180.66666666666666C463.74608820921986,186.33333333333334,471.08788785460996,197.66666666666666,474.75878767730495,209C478.4296875,220.33333333333334,478.4296875,231.66666666666666,478.4296875,237.33333333333334L478.4296875,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id8" d="M511.1289893617021,175L518.5137411347517,180.66666666666666C525.8984929078014,186.33333333333334,540.6679964539007,197.66666666666666,548.0527482269504,209C555.4375,220.33333333333334,555.4375,231.66666666666666,555.4375,237.33333333333334L555.4375,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id9" d="M563.0111369680851,175L573.916832890071,180.66666666666666C584.8225288120567,186.33333333333334,606.6339206560284,197.66666666666666,617.5396165780143,209C628.4453125,220.33333333333334,628.4453125,231.66666666666666,628.4453125,237.33333333333334L628.4453125,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id10" d="M613.9494680851064,175L628.3120567375887,180.66666666666666C642.674645390071,186.33333333333334,671.3998226950355,197.66666666666666,685.7624113475177,209C700.125,220.33333333333334,700.125,231.66666666666666,700.125,237.33333333333334L700.125,243"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id11" d="M625.296875,161.73424083769635L650.3072916666666,169.61186736474696C675.3177083333334,177.48949389179757,725.3385416666666,193.24474694589878,750.3489583333334,206.78904013961605C775.359375,220.33333333333334,775.359375,231.66666666666666,775.359375,237.33333333333334L775.359375,243"/>
       </g>
       <g class="edgeLabels">
         <g transform="translate(21.28125, 209)" class="edgeLabel">
@@ -191,7 +186,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(21.28125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L5">
+        <a transform="translate(21.28125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L5">
           <g title="A" id="classId-C_0000121332093434690887-0" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -210,7 +205,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(97.84375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L7">
+        <a transform="translate(97.84375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L7">
           <g title="B" id="classId-C_0001424864837456200487-1" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -229,7 +224,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(174.40625, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L9">
+        <a transform="translate(174.40625, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L9">
           <g title="C" id="classId-C_0002151170391844743478-2" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -248,7 +243,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(250.96875, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L11">
+        <a transform="translate(250.96875, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L11">
           <g title="D" id="classId-C_0001378112127131766972-3" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -267,7 +262,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(327.0859375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L13">
+        <a transform="translate(327.0859375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L13">
           <g title="E" id="classId-C_0001535300935831802489-4" class="node default clickable">
             <rect height="57" width="25.671875" y="-28.5" x="-12.8359375" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="12.8359375" x1="-12.8359375" class="divider"/>
@@ -286,7 +281,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(402.3125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L15">
+        <a transform="translate(402.3125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L15">
           <g title="F" id="classId-C_0001803800465279710134-5" class="node default clickable">
             <rect height="57" width="24.78125" y="-28.5" x="-12.390625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="12.390625" x1="-12.390625" class="divider"/>
@@ -305,7 +300,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(478.4296875, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L17">
+        <a transform="translate(478.4296875, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L17">
           <g title="G" id="classId-C_0001135797791892670246-6" class="node default clickable">
             <rect height="57" width="27.453125" y="-28.5" x="-13.7265625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.7265625" x1="-13.7265625" class="divider"/>
@@ -324,7 +319,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(555.4375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L19">
+        <a transform="translate(555.4375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L19">
           <g title="H" id="classId-C_0001243547836571712317-7" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -343,7 +338,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(628.4453125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L21">
+        <a transform="translate(628.4453125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L21">
           <g title="I" id="classId-C_0000387733199705628658-8" class="node default clickable">
             <rect height="57" width="19.453125" y="-28.5" x="-9.7265625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="9.7265625" x1="-9.7265625" class="divider"/>
@@ -362,7 +357,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(700.125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L23">
+        <a transform="translate(700.125, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L23">
           <g title="J" id="classId-C_0000747991828672433537-9" class="node default clickable">
             <rect height="57" width="23.90625" y="-28.5" x="-11.953125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="11.953125" x1="-11.953125" class="divider"/>
@@ -381,7 +376,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(775.359375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L25">
+        <a transform="translate(775.359375, 271.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L25">
           <g title="K" id="classId-C_0001783571342994833467-10" class="node default clickable">
             <rect height="57" width="26.5625" y="-28.5" x="-13.28125" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="13.28125" x1="-13.28125" class="divider"/>
@@ -400,11 +395,11 @@
             </g>
           </g>
         </a>
-        <a transform="translate(402.3125, 91.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/427d110b37885e5ce52a6525f175236affea35fa/tests/t00017/t00017.cc#L27">
+        <a transform="translate(402.3125, 91.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9d73c9e3ff3d22cd86e3a77128baf6d1e7ce0716/tests/t00017/t00017.cc#L27">
           <g title="R" id="classId-C_0000287495916564113342-11" class="node default clickable">
-            <rect height="167" width="454.859375" y="-83.5" x="-227.4296875" class="outer title-state"/>
-            <line y2="-53.5" y1="-53.5" x2="227.4296875" x1="-227.4296875" class="divider"/>
-            <line y2="50.5" y1="50.5" x2="227.4296875" x1="-227.4296875" class="divider"/>
+            <rect height="167" width="445.96875" y="-83.5" x="-222.984375" class="outer title-state"/>
+            <line y2="-53.5" y1="-53.5" x2="222.984375" x1="-222.984375" class="divider"/>
+            <line y2="50.5" y1="50.5" x2="222.984375" x1="-222.984375" class="divider"/>
             <g class="label">
               <foreignObject height="0" width="0">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -416,29 +411,29 @@
                   <span class="nodeLabel">R</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -219.9296875, -42)" height="18" width="100.484375">
+              <foreignObject transform="translate( -215.484375, -42)" height="18" width="100.484375">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                   <span class="nodeLabel">-some_int : int</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -219.9296875, -20)" height="18" width="158.3125">
+              <foreignObject transform="translate( -215.484375, -20)" height="18" width="158.3125">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
-                  <span style="font-style:italic;" class="nodeLabel">-some_int_pointer : int</span>
+                  <span style="font-style:italic;" class="nodeLabel">-some_int_pointer : int </span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -219.9296875, 2)" height="18" width="226.796875">
+              <foreignObject transform="translate( -215.484375, 2)" height="18" width="226.796875">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="font-style: italic; display: inline-block; white-space: nowrap;">
                   <span style="font-style:italic;" class="nodeLabel">-some_int_pointer_pointer : int *</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -219.9296875, 24)" height="18" width="192.09375">
+              <foreignObject transform="translate( -215.484375, 24)" height="18" width="192.09375">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                   <span class="nodeLabel">-some_int_reference : int &amp;</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -219.9296875, 58)" height="18" width="439.859375">
+              <foreignObject transform="translate( -215.484375, 58)" height="18" width="430.96875">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">-R(int &amp; some_int, C &amp; cc, const E &amp; ee, F &amp;&amp; ff, I *&amp; ii) : : void</span>
+                  <span class="nodeLabel">-R(int &amp; some_int, C &amp; cc, const E &amp; ee, F &amp;&amp; ff, I *&amp; ii) : void</span>
                 </div>
               </foreignObject>
             </g>
