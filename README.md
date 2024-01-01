@@ -54,6 +54,7 @@ Main features supported so far include:
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
     * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)
+    * Generation of package diagram based on C++20 modules - [_example_](docs/test_cases/t30014.md)
     * Dependencies between packages based on symbols used in the code - [_example_](docs/test_cases/t30002.md)
     * Interactive links to online code to packages - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t30002_package.svg)
 * **Include graph diagram generation**

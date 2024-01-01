@@ -1,4 +1,10 @@
 # CHANGELOG
+ 
+ * Refactored and unified JSON generators output (#223)
+ * Added support for C++20 module based packages in class diagrams (#101)
+ * Added support for class diagram filtering based on C++20 modules (#195)
+ * Added support for C++20 coroutines in class diagrams (#221)
+ * Fixed progress indicator characters on Windows (#218)
 
 ### 0.4.2
  * Fixed random typos and omissions in docs (#208)
