@@ -18,9 +18,12 @@
 #pragma once
 
 #include "comment/comment_visitor.h"
+#include "common/model/element.h"
+#include "common/model/source_location.h"
 #include "config/config.h"
 
 #include <clang/AST/Comment.h>
+#include <clang/AST/RawCommentList.h>
 #include <clang/Basic/SourceManager.h>
 
 #include <deque>
@@ -31,9 +34,8 @@
 
 namespace clanguml::common::visitor {
 
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
 /**
  * @brief Diagram translation unit visitor base class

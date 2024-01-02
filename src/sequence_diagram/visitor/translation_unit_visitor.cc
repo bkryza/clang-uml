@@ -1454,7 +1454,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
-        std::optional<common::model::diagram_element::id_t> id_opt;
+        std::optional<common::id_t> id_opt;
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
@@ -1626,15 +1626,15 @@ bool translation_unit_visitor::process_template_parameters(
 }
 
 void translation_unit_visitor::set_unique_id(
-    int64_t local_id, common::model::diagram_element::id_t global_id)
+    int64_t local_id, common::id_t global_id)
 {
     LOG_TRACE("Setting local element mapping {} --> {}", local_id, global_id);
 
     local_ast_id_map_[local_id] = global_id;
 }
 
-std::optional<common::model::diagram_element::id_t>
-translation_unit_visitor::get_unique_id(int64_t local_id) const
+std::optional<common::id_t> translation_unit_visitor::get_unique_id(
+    int64_t local_id) const
 {
     if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
         return {};
@@ -2228,7 +2228,7 @@ translation_unit_visitor::build_template_instantiation(
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::model::diagram_element::id_t best_match_id{0};
+    common::id_t best_match_id{0};
 
     for (const auto &[id, c] : diagram().participants()) {
         const auto *participant_as_class =
@@ -2378,7 +2378,7 @@ void translation_unit_visitor::pop_message_to_diagram(
 
 void translation_unit_visitor::finalize()
 {
-    std::set<common::model::diagram_element::id_t> active_participants_unique;
+    std::set<common::id_t> active_participants_unique;
 
     // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {

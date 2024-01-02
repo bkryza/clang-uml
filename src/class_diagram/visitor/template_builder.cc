@@ -216,7 +216,7 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::model::diagram_element::id_t best_match_id{0};
+    common::id_t best_match_id{0};
 
     for (const auto templ : diagram().classes()) {
         if (templ.get() == template_instantiation)
@@ -318,7 +318,7 @@ template_builder::build_from_class_template_specialization(
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::model::diagram_element::id_t best_match_id{0};
+    common::id_t best_match_id{0};
 
     for (const auto templ : diagram().classes()) {
         if (templ.get() == template_instantiation)

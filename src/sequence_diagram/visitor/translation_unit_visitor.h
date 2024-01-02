@@ -204,8 +204,7 @@ public:
      * @return Optional reference to participant diagram element
      */
     template <typename T = model::participant>
-    common::optional_ref<T> get_participant(
-        const common::model::diagram_element::id_t id)
+    common::optional_ref<T> get_participant(const common::id_t id)
     {
         if (diagram().participants().find(id) == diagram().participants().end())
             return {};
@@ -222,8 +221,7 @@ public:
      * @return Optional reference to participant diagram element
      */
     template <typename T = model::participant>
-    common::optional_ref<T> get_participant(
-        common::model::diagram_element::id_t id) const
+    common::optional_ref<T> get_participant(common::id_t id) const
     {
         if (diagram().participants().find(id) == diagram().participants().end())
             return {};
@@ -241,8 +239,7 @@ public:
      * @param local_id Local AST element id
      * @param global_id Globa diagram element id
      */
-    void set_unique_id(
-        int64_t local_id, common::model::diagram_element::id_t global_id);
+    void set_unique_id(int64_t local_id, common::id_t global_id);
 
     /**
      * @brief Retrieve the global `clang-uml` entity id based on the Clang
@@ -250,8 +247,7 @@ public:
      * @param local_id AST local element id
      * @return Global diagram element id
      */
-    std::optional<common::model::diagram_element::id_t> get_unique_id(
-        int64_t local_id) const;
+    std::optional<common::id_t> get_unique_id(int64_t local_id) const;
 
     /**
      * @brief Finalize diagram model for this translation unit
@@ -531,7 +527,7 @@ private:
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
 
-    std::map<common::model::diagram_element::id_t,
+    std::map<common::id_t,
         std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
@@ -539,7 +535,7 @@ private:
      * @todo Refactor to @ref ast_id_mapper
      */
     std::map</* local id from ->getID() */ int64_t,
-        /* global ID based on full name */ common::model::diagram_element::id_t>
+        /* global ID based on full name */ common::id_t>
         local_ast_id_map_;
 
     std::map<int64_t /* local anonymous struct id */,

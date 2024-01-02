@@ -17,7 +17,6 @@
  */
 #pragma once
 
-#include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/types.h"
 #include "option.h"

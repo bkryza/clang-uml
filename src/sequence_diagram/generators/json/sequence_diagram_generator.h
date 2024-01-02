@@ -99,7 +99,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const sequence_diagram::model::activity &a,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+        std::vector<common::id_t> &visited) const;
 
     /**
      * @brief Get reference to the current block statement.
@@ -126,8 +126,8 @@ private:
      * @param m Message model
      * @param visited List of already visited participants
      */
-    void process_call_message(const model::message &m,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+    void process_call_message(
+        const model::message &m, std::vector<common::id_t> &visited) const;
 
     /**
      * @brief Process `if` statement message

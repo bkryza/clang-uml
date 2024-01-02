@@ -68,7 +68,7 @@ public:
      * @param id Element id.
      * @return Optional reference to a diagram element.
      */
-    opt_ref<diagram_element> get(diagram_element::id_t id) const override;
+    opt_ref<diagram_element> get(common::id_t id) const override;
 
     /**
      * @brief Add include diagram element, an include file.
@@ -100,8 +100,7 @@ public:
      * @param id Id of the element
      * @return Optional reference to a diagram element
      */
-    template <typename ElementT>
-    opt_ref<ElementT> find(diagram_element::id_t id) const;
+    template <typename ElementT> opt_ref<ElementT> find(common::id_t id) const;
 
     /**
      * @brief Convert element id to PlantUML alias.
@@ -153,7 +152,7 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
 }
 
 template <typename ElementT>
-opt_ref<ElementT> diagram::find(diagram_element::id_t id) const
+opt_ref<ElementT> diagram::find(common::id_t id) const
 {
     for (const auto &element : element_view<ElementT>::view()) {
         if (element.get().id() == id) {

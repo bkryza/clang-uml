@@ -40,7 +40,7 @@ namespace clanguml::common::visitor {
  */
 class ast_id_mapper {
 public:
-    using id_t = common::model::diagram_element::id_t;
+    using id_t = common::id_t;
 
     ast_id_mapper() = default;
 

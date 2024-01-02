@@ -111,8 +111,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
-        std::ostream &ostr,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+        std::ostream &ostr, std::vector<common::id_t> &visited) const;
 
 private:
     /**

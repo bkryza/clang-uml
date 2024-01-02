@@ -170,8 +170,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         m.from(), to, m.to());
 }
 
-void generator::generate_activity(const activity &a,
-    std::vector<common::model::diagram_element::id_t> &visited) const
+void generator::generate_activity(
+    const activity &a, std::vector<common::id_t> &visited) const
 {
     // Generate calls from this activity to other activities
     for (const auto &m : a.messages()) {
@@ -247,8 +247,8 @@ nlohmann::json &generator::current_block_statement() const
     return block_statements_stack_.back().get();
 }
 
-void generator::process_call_message(const model::message &m,
-    std::vector<common::model::diagram_element::id_t> &visited) const
+void generator::process_call_message(
+    const model::message &m, std::vector<common::id_t> &visited) const
 {
     visited.push_back(m.from());
 
@@ -523,7 +523,7 @@ void generator::generate_participant(
 }
 
 common::id_t generator::generate_participant(
-    nlohmann::json &parent, common::id_t id, bool force) const
+    nlohmann::json & /*parent*/, common::id_t id, bool force) const
 {
     common::id_t participant_id{0};
 
@@ -570,14 +570,13 @@ common::id_t generator::generate_participant(
 
             return class_participant_id;
         }
-        else {
-            if (!is_participant_generated(participant_id)) {
-                for (auto &p : json_["participants"]) {
-                    if (p.at("id") == std::to_string(class_participant_id)) {
-                        generated_participants_.emplace(participant_id);
-                        p["activities"].push_back(participant);
-                        return class_participant_id;
-                    }
+
+        if (!is_participant_generated(participant_id)) {
+            for (auto &p : json_["participants"]) {
+                if (p.at("id") == std::to_string(class_participant_id)) {
+                    generated_participants_.emplace(participant_id);
+                    p["activities"].push_back(participant);
+                    return class_participant_id;
                 }
             }
         }
@@ -619,17 +618,17 @@ common::id_t generator::generate_participant(
 
             return file_participant_id;
         }
-        else {
-            if (!is_participant_generated(participant_id)) {
-                for (auto &p : json_["participants"]) {
-                    if (p.at("id") == std::to_string(file_participant_id)) {
-                        generated_participants_.emplace(participant_id);
-                        p["activities"].push_back(participant);
-                    }
+
+        if (!is_participant_generated(participant_id)) {
+            for (auto &p : json_["participants"]) {
+                if (p.at("id") == std::to_string(file_participant_id)) {
+                    generated_participants_.emplace(participant_id);
+                    p["activities"].push_back(participant);
                 }
             }
-            return file_participant_id;
         }
+
+        return file_participant_id;
     }
     else {
         json_["participants"].push_back(participant);
@@ -745,7 +744,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::model::diagram_element::id_t start_from{0};
+            common::id_t start_from{0};
             std::string start_from_str;
             for (const auto &[k, v] : model().sequences()) {
                 const auto &caller = *model().participants().at(v.from());
@@ -765,8 +764,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
             }
 
             // Use this to break out of recurrent loops
-            std::vector<common::model::diagram_element::id_t>
-                visited_participants;
+            std::vector<common::id_t> visited_participants;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);

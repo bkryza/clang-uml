@@ -20,7 +20,7 @@
 
 namespace clanguml::sequence_diagram::model {
 
-activity::activity(common::model::diagram_element::id_t id)
+activity::activity(common::id_t id)
     : from_{id}
 {
 }
@@ -31,6 +31,6 @@ std::vector<message> &activity::messages() { return messages_; }
 
 const std::vector<message> &activity::messages() const { return messages_; }
 
-common::model::diagram_element::id_t activity::from() const { return from_; }
+common::id_t activity::from() const { return from_; }
 
 } // namespace clanguml::sequence_diagram::model

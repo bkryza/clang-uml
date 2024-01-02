@@ -29,6 +29,9 @@ std::string to_string(const path_type pt)
         return "namespace";
     case path_type::kFilesystem:
         return "directory";
+    default:
+        assert(false);
+        return "";
     }
 }
 

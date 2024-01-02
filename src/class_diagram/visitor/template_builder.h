@@ -30,9 +30,8 @@ using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
 
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
 class translation_unit_visitor;
 

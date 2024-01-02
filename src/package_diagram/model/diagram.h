@@ -75,7 +75,7 @@ public:
      * @param id Element id.
      * @return Optional reference to a diagram element.
      */
-    opt_ref<diagram_element> get(diagram_element::id_t id) const override;
+    opt_ref<diagram_element> get(common::id_t id) const override;
 
     /**
      * @brief Find an element in the diagram by name.
@@ -100,8 +100,7 @@ public:
      * @param id Id of the element
      * @return Optional reference to a diagram element
      */
-    template <typename ElementT>
-    opt_ref<ElementT> find(diagram_element::id_t id) const;
+    template <typename ElementT> opt_ref<ElementT> find(common::id_t id) const;
 
     /**
      * @brief Find elements in the diagram by regex pattern.
@@ -135,7 +134,8 @@ public:
         if (parent_path.type() == common::model::path_type::kNamespace) {
             return add_with_namespace_path(std::move(e));
         }
-        else if (parent_path.type() == common::model::path_type::kModule) {
+
+        if (parent_path.type() == common::model::path_type::kModule) {
             return add_with_module_path(parent_path, std::move(e));
         }
 
@@ -148,7 +148,7 @@ public:
      * @param id Id of a package in the diagram
      * @return PlantUML alias of the element
      */
-    std::string to_alias(diagram_element::id_t id) const;
+    std::string to_alias(common::id_t id) const;
 
     /**
      * @brief Return the elements JSON context for inja templates.
@@ -207,7 +207,7 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
 }
 
 template <typename ElementT>
-opt_ref<ElementT> diagram::find(diagram_element::id_t id) const
+opt_ref<ElementT> diagram::find(common::id_t id) const
 {
     for (const auto &element : element_view<ElementT>::view()) {
         if (element.get().id() == id) {

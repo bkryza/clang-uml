@@ -76,8 +76,8 @@ public:
     const std::vector<std::string> &system_include_paths() const;
 
 private:
-    const std::string command_;
-    const std::string language_;
+    std::string command_;
+    std::string language_;
     std::string target_;
     std::vector<std::string> system_include_paths_;
 };

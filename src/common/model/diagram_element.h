@@ -39,8 +39,6 @@ namespace clanguml::common::model {
  */
 class diagram_element : public decorated_element, public source_location {
 public:
-    using id_t = int64_t;
-
     diagram_element();
 
     ~diagram_element() override = default;
@@ -55,14 +53,14 @@ public:
      *
      * @return Elements id.
      */
-    id_t id() const;
+    common::id_t id() const;
 
     /**
      * Set elements id.
      *
      * @param id Elements id.
      */
-    void set_id(id_t id);
+    void set_id(common::id_t id);
 
     /**
      * Get elements parent package id.
@@ -76,7 +74,7 @@ public:
      *
      * @param id Id of parent package.
      */
-    void set_parent_element_id(diagram_element::id_t id);
+    void set_parent_element_id(id_t id);
 
     /**
      * @brief Return elements' diagram alias.

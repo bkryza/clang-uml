@@ -477,7 +477,7 @@ private:
 
     template_builder template_builder_;
 
-    std::map<common::model::diagram_element::id_t,
+    std::map<common::id_t,
         std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
 

@@ -20,8 +20,7 @@
 
 namespace clanguml::sequence_diagram::model {
 
-message::message(
-    common::model::message_t type, common::model::diagram_element::id_t from)
+message::message(common::model::message_t type, common::id_t from)
     : type_{type}
     , from_{from}
 {
@@ -39,13 +38,13 @@ void message::set_type(common::model::message_t t) { type_ = t; }
 
 common::model::message_t message::type() const { return type_; }
 
-void message::set_from(common::model::diagram_element::id_t f) { from_ = f; }
+void message::set_from(common::id_t f) { from_ = f; }
 
-common::model::diagram_element::id_t message::from() const { return from_; }
+common::id_t message::from() const { return from_; }
 
-void message::set_to(common::model::diagram_element::id_t t) { to_ = t; }
+void message::set_to(common::id_t t) { to_ = t; }
 
-common::model::diagram_element::id_t message::to() const { return to_; }
+common::id_t message::to() const { return to_; }
 
 void message::set_message_name(std::string name)
 {

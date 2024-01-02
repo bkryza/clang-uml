@@ -33,9 +33,8 @@
 
 namespace clanguml::package_diagram::visitor {
 
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
 /**
  * @brief Package diagram translation unit visitor
@@ -109,7 +108,7 @@ private:
      * @param cls C++ entity declaration
      * @return Id of the package containing that declaration
      */
-    common::model::diagram_element::id_t get_package_id(const clang::Decl *cls);
+    common::id_t get_package_id(const clang::Decl *cls);
 
     /**
      * @brief Process class declaration
@@ -214,8 +213,7 @@ private:
     void add_relationships(
         clang::Decl *cls, found_relationships_t &relationships);
 
-    std::vector<common::model::diagram_element::id_t> get_parent_package_ids(
-        common::model::diagram_element::id_t id);
+    std::vector<common::id_t> get_parent_package_ids(common::id_t id);
 
     // Reference to the output diagram model
     clanguml::package_diagram::model::diagram &diagram_;

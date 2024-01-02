@@ -287,7 +287,7 @@ void translation_unit_visitor::add_relationships(
     auto current_package = diagram().get(current_package_id);
 
     if (current_package) {
-        std::vector<common::model::diagram_element::id_t> parent_ids =
+        std::vector<common::id_t> parent_ids =
             get_parent_package_ids(current_package_id);
 
         for (const auto &dependency : relationships) {
@@ -310,8 +310,7 @@ void translation_unit_visitor::add_relationships(
     }
 }
 
-common::model::diagram_element::id_t translation_unit_visitor::get_package_id(
-    const clang::Decl *cls)
+common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
 {
     if (config().package_type() == config::package_type_t::kNamespace) {
         const auto *namespace_context =
@@ -680,12 +679,11 @@ translation_unit_visitor::config() const
 
 void translation_unit_visitor::finalize() { }
 
-std::vector<common::model::diagram_element::id_t>
-translation_unit_visitor::get_parent_package_ids(
-    common::model::diagram_element::id_t id)
+std::vector<common::id_t> translation_unit_visitor::get_parent_package_ids(
+    common::id_t id)
 {
-    std::vector<common::model::diagram_element::id_t> parent_ids;
-    std::optional<common::model::diagram_element::id_t> parent_id = id;
+    std::vector<common::id_t> parent_ids;
+    std::optional<common::id_t> parent_id = id;
 
     while (parent_id.has_value()) {
         parent_ids.push_back(parent_id.value());

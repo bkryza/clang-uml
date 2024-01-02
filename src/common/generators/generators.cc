@@ -127,7 +127,7 @@ void generate_diagram_impl(const std::string &name,
             auto from_values = model->list_from_values();
 
             for (const auto &from : from_values) {
-                std::cout << from << std::endl;
+                std::cout << from << '\n';
             }
 
             return;
@@ -136,7 +136,7 @@ void generate_diagram_impl(const std::string &name,
             auto to_values = model->list_to_values();
 
             for (const auto &to : to_values) {
-                std::cout << "|" << to << "|" << std::endl;
+                std::cout << "|" << to << "|" << '\n';
             }
 
             return;

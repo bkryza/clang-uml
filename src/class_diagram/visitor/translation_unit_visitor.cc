@@ -116,7 +116,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     const auto *parent = enm->getParent();
 
-    std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::id_t> id_opt;
 
     if (parent != nullptr) {
         const auto *parent_record_decl =
@@ -863,7 +863,7 @@ void translation_unit_visitor::process_record_parent(
 {
     const auto *parent = cls->getParent();
 
-    std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::id_t> id_opt;
 
     auto parent_ns = ns;
     if (parent != nullptr) {

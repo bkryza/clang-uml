@@ -20,8 +20,10 @@
 
 #include "comment/clang_visitor.h"
 #include "comment/plain_visitor.h"
+#include "common/clang_utils.h"
 
-#include "clang/Basic/Module.h"
+#include <clang/AST/Expr.h>
+#include <clang/Basic/Module.h>
 
 namespace clanguml::common::visitor {
 

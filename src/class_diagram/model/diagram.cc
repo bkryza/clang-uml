@@ -74,7 +74,7 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
-    const clanguml::common::model::diagram_element::id_t id) const
+    const clanguml::common::id_t id) const
 {
     common::optional_ref<clanguml::common::model::diagram_element> res;
 
@@ -149,8 +149,7 @@ void diagram::get_parents(
     }
 }
 
-bool diagram::has_element(
-    clanguml::common::model::diagram_element::id_t id) const
+bool diagram::has_element(clanguml::common::id_t id) const
 {
     const auto has_class = std::any_of(classes().begin(), classes().end(),
         [id](const auto &c) { return c.get().id() == id; });
@@ -168,8 +167,7 @@ bool diagram::has_element(
         [id](const auto &c) { return c.get().id() == id; });
 }
 
-std::string diagram::to_alias(
-    clanguml::common::model::diagram_element::id_t id) const
+std::string diagram::to_alias(clanguml::common::id_t id) const
 {
     LOG_DBG("Looking for alias for {}", id);
 

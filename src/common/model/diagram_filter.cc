@@ -595,8 +595,8 @@ tvl::value_t module_access_filter::match(
         access_.begin(), access_.end(), [&e](const auto &access) {
             if (access == module_access_t::kPublic)
                 return !e.module_private();
-            else
-                return e.module_private();
+
+            return e.module_private();
         });
 }
 

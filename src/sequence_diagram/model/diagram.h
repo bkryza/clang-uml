@@ -67,7 +67,7 @@ public:
      * @return Optional reference to a diagram element.
      */
     common::optional_ref<common::model::diagram_element> get(
-        common::model::diagram_element::id_t id) const override;
+        common::id_t id) const override;
 
     /**
      * @brief Get participant by id
@@ -76,8 +76,7 @@ public:
      * @return Optional reference to a diagram element.
      */
     template <typename T>
-    common::optional_ref<T> get_participant(
-        common::model::diagram_element::id_t id) const
+    common::optional_ref<T> get_participant(common::id_t id) const
     {
         if (participants_.find(id) == participants_.end()) {
             return {};
@@ -99,7 +98,7 @@ public:
      *
      * @param id Id of participant to activate
      */
-    void add_active_participant(common::model::diagram_element::id_t id);
+    void add_active_participant(common::id_t id);
 
     /**
      * @brief Get reference to current activity of a participant
@@ -107,7 +106,7 @@ public:
      * @param id Participant id
      * @return
      */
-    const activity &get_activity(common::model::diagram_element::id_t id) const;
+    const activity &get_activity(common::id_t id) const;
 
     /**
      * @brief Get reference to current activity of a participant
@@ -115,7 +114,7 @@ public:
      * @param id Participant id
      * @return
      */
-    activity &get_activity(common::model::diagram_element::id_t id);
+    activity &get_activity(common::id_t id);
 
     /**
      * @brief Add message to current activity
@@ -156,31 +155,28 @@ public:
      *
      * @return Map of sequences in the diagram
      */
-    std::map<common::model::diagram_element::id_t, activity> &sequences();
+    std::map<common::id_t, activity> &sequences();
 
     /**
      * @brief Get all sequences in the diagram
      *
      * @return Map of sequences in the diagram
      */
-    const std::map<common::model::diagram_element::id_t, activity> &
-    sequences() const;
+    const std::map<common::id_t, activity> &sequences() const;
 
     /**
      * @brief Get map of all participants in the diagram
      *
      * @return Map of participants in the diagram
      */
-    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
-        &participants();
+    std::map<common::id_t, std::unique_ptr<participant>> &participants();
 
     /**
      * @brief Get map of all participants in the diagram
      *
      * @return Map of participants in the diagram
      */
-    const std::map<common::model::diagram_element::id_t,
-        std::unique_ptr<participant>> &
+    const std::map<common::id_t, std::unique_ptr<participant>> &
     participants() const;
 
     /**
@@ -188,15 +184,14 @@ public:
      *
      * @return Set of all active participant ids
      */
-    std::set<common::model::diagram_element::id_t> &active_participants();
+    std::set<common::id_t> &active_participants();
 
     /**
      * @brief Get all active participants in the diagram
      *
      * @return Set of all active participant ids
      */
-    const std::set<common::model::diagram_element::id_t> &
-    active_participants() const;
+    const std::set<common::id_t> &active_participants() const;
 
     /**
      * @brief Convert element full name to PlantUML alias.
@@ -256,8 +251,7 @@ public:
      * @return List of message chains
      */
     std::vector<message_chain_t> get_all_from_to_message_chains(
-        common::model::diagram_element::id_t from_activity,
-        common::model::diagram_element::id_t to_activity) const;
+        common::id_t from_activity, common::id_t to_activity) const;
 
     /**
      * @brief Get id of a 'to' activity
@@ -265,7 +259,7 @@ public:
      * @param to_location Target activity
      * @return Activity id
      */
-    common::model::diagram_element::id_t get_to_activity_id(
+    common::id_t get_to_activity_id(
         const config::source_location &to_location) const;
 
     /**
@@ -274,7 +268,7 @@ public:
      * @param from_location Source activity
      * @return Activity id
      */
-    common::model::diagram_element::id_t get_from_activity_id(
+    common::id_t get_from_activity_id(
         const config::source_location &from_location) const;
 
     /**
@@ -328,12 +322,11 @@ private:
         return block_end_types.count(mt) > 0;
     };
 
-    std::map<common::model::diagram_element::id_t, activity> sequences_;
+    std::map<common::id_t, activity> sequences_;
 
-    std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>>
-        participants_;
+    std::map<common::id_t, std::unique_ptr<participant>> participants_;
 
-    std::set<common::model::diagram_element::id_t> active_participants_;
+    std::set<common::id_t> active_participants_;
 };
 
 } // namespace clanguml::sequence_diagram::model
