@@ -1,7 +1,7 @@
 /**
  * @file src/options/cli_handler.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -385,7 +385,7 @@ runtime_config cli_handler::get_runtime_config() const
 cli_flow_t cli_handler::print_version()
 {
     ostr_ << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
-    ostr_ << "Copyright (C) 2021-2023 Bartek Kryza <bkryza@gmail.com>" << '\n';
+    ostr_ << "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>" << '\n';
     ostr_ << util::get_os_name() << '\n';
     ostr_ << "Built against LLVM/Clang libraries version: "
           << LLVM_VERSION_STRING << '\n';
