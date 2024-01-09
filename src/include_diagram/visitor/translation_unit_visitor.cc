@@ -147,6 +147,7 @@ void translation_unit_visitor::include_visitor::process_internal_header(
     include_file.set_file(
         std::filesystem::absolute(include_path).lexically_normal().string());
     include_file.set_line(0);
+    include_file.set_system_header(is_system);
 
     // Add relationship from the currently parsed source file to this
     // include file
@@ -174,6 +175,7 @@ void translation_unit_visitor::include_visitor::process_external_system_header(
     f->set_name(include_path.string());
     f->set_type(common::model::source_file_t::kHeader);
     f->set_id(common::to_id(include_path));
+    f->set_system_header(true);
 
     const auto f_id = f->id();
 

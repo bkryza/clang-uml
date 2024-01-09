@@ -67,10 +67,10 @@ TEST_CASE("t40001", "[test-case][include]")
         REQUIRE(IsFolder(j, "include/lib1"));
         REQUIRE(IsFolder(j, "src"));
 
-        REQUIRE(IsFile(j, "include/lib1/lib1.h"));
-        REQUIRE(IsFile(j, "include/t40001_include1.h"));
+        REQUIRE(IsHeader(j, "include/lib1/lib1.h"));
+        REQUIRE(IsHeader(j, "include/t40001_include1.h"));
         REQUIRE(IsFile(j, "src/t40001.cc"));
-        REQUIRE(IsFile(j, "yaml-cpp/yaml.h"));
+        REQUIRE(IsSystemHeader(j, "yaml-cpp/yaml.h"));
 
         REQUIRE(IsFile(j, "string"));
 

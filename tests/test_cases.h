@@ -1391,6 +1391,20 @@ bool IsFile(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "file";
 }
 
+bool IsSystemHeader(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file" && e->at("file_kind") == "header" &&
+        e->at("is_system");
+}
+
+bool IsHeader(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file" && e->at("file_kind") == "header" &&
+        !e->at("is_system");
+}
+
 bool IsDeprecated(const nlohmann::json &j, const std::string &name)
 {
     auto e = get_element(j, expand_name(j, name));

@@ -78,6 +78,9 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
 
             j["type"] = "file";
             j["file_kind"] = to_string(f.type());
+            if (f.type() == common::model::source_file_t::kHeader) {
+                j["is_system"] = f.is_system_header();
+            }
 
             parent["elements"].push_back(std::move(j));
         }
