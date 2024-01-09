@@ -247,8 +247,13 @@ void translation_unit_visitor::add_relationships(
         }
 
         std::string module_path_str = module->Name;
-        if (module->isPrivateModule())
+#if LLVM_VERSION_MAJOR < 15
+        if (module->Kind == clang::Module::ModuleKind::PrivateModuleFragment) {
+#else
+        if (module->isPrivateModule()) {
+#endif
             module_path_str = module->getTopLevelModule()->Name;
+        }
 
         common::model::path module_path{
             module_path_str, common::model::path_type::kModule};
@@ -326,7 +331,12 @@ common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
         const auto *module = cls->getOwningModule();
         if (module != nullptr) {
             std::string module_path = module->Name;
+#if LLVM_VERSION_MAJOR < 15
+            if (module->Kind ==
+                clang::Module::ModuleKind::PrivateModuleFragment) {
+#else
             if (module->isPrivateModule()) {
+#endif
                 module_path = module->getTopLevelModule()->Name;
             }
             return common::to_id(module_path);
