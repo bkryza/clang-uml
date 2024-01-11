@@ -39,6 +39,8 @@ endif(MSVC)
 
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 SUPPORTS_CXX_STD_20)
 
+message(STATUS "Enabling C++20 test cases")
+
 # Remove test cases which require C++20 if they are not supported here
 if(SUPPORTS_CXX_STD_20 EQUAL -1
         OR ${LLVM_PACKAGE_VERSION} VERSION_LESS "14.0")
@@ -54,6 +56,13 @@ if(SUPPORTS_CXX_STD_20 EQUAL -1
 else()
     set(ENABLE_CXX_STD_20_TEST_CASES 1)
 endif()
+
+if(APPLE)
+    # On Apple Clang <coroutine> header is not available
+    list(FILTER TEST_CASE_SOURCES
+            EXCLUDE
+            REGEX ".*t00069.*")
+endif(APPLE)
 
 set(TEST_NAMES
         test_util

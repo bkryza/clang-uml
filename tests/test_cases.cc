@@ -405,7 +405,9 @@ using namespace clanguml::test::matchers;
 #include "t00067/test_case.h"
 #include "t00068/test_case.h"
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
+#if __has_include(<coroutine>)
 #include "t00069/test_case.h"
+#endif
 #endif
 #if defined(ENABLE_CXX_MODULES_TEST_CASES)
 #include "t00070/test_case.h"

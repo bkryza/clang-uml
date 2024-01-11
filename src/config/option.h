@@ -17,8 +17,10 @@
  */
 #pragma once
 
+#include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace clanguml {
 namespace config {
