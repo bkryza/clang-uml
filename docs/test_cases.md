@@ -116,6 +116,7 @@
  * [t20036](./test_cases/t20036.md) - Test case for rendering all call chains leading to an activity (to)
  * [t20037](./test_cases/t20037.md) - Test case checking if activities in static variable declarations appear only once
  * [t20038](./test_cases/t20038.md) - Sequence diagram comment decorator test case
+ * [t20039](./test_cases/t20039.md) - Test case for type aliases config option in sequence diagrams
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
