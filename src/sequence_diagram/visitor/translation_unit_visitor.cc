@@ -114,8 +114,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
     forward_declarations_.erase(class_id);
 
     if (diagram().should_include(class_model)) {
-        LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
-            class_model.id());
+        LOG_DBG("Adding class participant {} with id {}",
+            class_model.full_name(false), class_model.id());
 
         assert(class_model.id() == class_id);
 
@@ -166,7 +166,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*class_model_ptr)) {
-        LOG_DBG("Adding class template {} with id {}", class_full_name, id);
+        LOG_DBG("Adding class template participant {} with id {}",
+            class_full_name, id);
 
         context().set_caller_id(id);
         context().update(declaration);
@@ -212,7 +213,8 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*template_specialization_ptr)) {
-        LOG_DBG("Adding class template specialization {} with id {}",
+        LOG_DBG(
+            "Adding class template specialization participant {} with id {}",
             class_full_name, id);
 
         context().set_caller_id(id);
@@ -2047,11 +2049,11 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.set_type(type_name);
         }
 
-        LOG_TRACE("Adding template instantiation argument {}",
-            argument.to_string(config().using_namespace(), false));
-
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
+
+        LOG_TRACE("Adding template instantiation argument {}",
+            argument.to_string(config().using_namespace(), false));
 
         template_instantiation.add_template(std::move(argument));
     }

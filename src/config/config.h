@@ -538,7 +538,8 @@ struct inheritable_diagram_options {
     option<std::filesystem::path> base_directory{"__parent_path"};
     option<bool> generate_system_headers{"generate_system_headers", false};
     option<relationship_hints_t> relationship_hints{"relationship_hints"};
-    option<type_aliases_t> type_aliases{"type_aliases"};
+    option<type_aliases_t> type_aliases{
+        "type_aliases", option_inherit_mode::kAppend};
     option<comment_parser_t> comment_parser{
         "comment_parser", comment_parser_t::plain};
     option<bool> combine_free_functions_into_file_participants{

@@ -328,6 +328,9 @@ test_cases:
     - name: t20038
       title: Sequence diagram comment decorator test case
       description:
+    - name: t20039
+      title: Test case for type aliases config option in sequence diagrams
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

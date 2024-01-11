@@ -410,6 +410,37 @@ TEST_CASE("Test config full clang uml dump", "[unit-test]")
     CHECK(cfg.diagrams.size() == 32);
 }
 
+TEST_CASE("Test config type aliases", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/type_aliases.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class_diagram"];
+    CHECK(
+        def.simplify_template_type(
+            "ns1::ns2::container<ns2::key_t,ns2::value_t>") == "custom_map_t");
+    CHECK(def.simplify_template_type(
+              "ns1::ns2::container<ns1::ns2::key_t,std::string>") ==
+        "string_map_t");
+    CHECK(
+        def.simplify_template_type("std::basic_string<char>") == "std::string");
+    CHECK(def.simplify_template_type("std::basic_string<char32_t>") ==
+        "unicode_t");
+
+    def = *cfg.diagrams["sequence_diagram"];
+    CHECK(
+        def.simplify_template_type(
+            "ns1::ns2::container<ns2::key_t,ns2::value_t>") == "custom_map_t");
+    CHECK(def.simplify_template_type(
+              "ns1::ns2::Object::iterator<std::weak_ptr<Object> "
+              "*,std::vector<std::weak_ptr<Object>,std::allocator<std::weak_"
+              "ptr<Object>>>>") == "ObjectPtrIt");
+    CHECK(
+        def.simplify_template_type("std::basic_string<char>") == "std::string");
+    CHECK(def.simplify_template_type("std::vector<std::basic_string<char>>") ==
+        "std::vector<std::string>");
+}
+
 ///
 /// Main test function
 ///

@@ -663,6 +663,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
+        get_option(node, rhs.type_aliases);
 
         get_option(node, rhs.get_relative_to());
 
@@ -836,6 +837,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
+        get_option(node, rhs.type_aliases);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.get_relative_to());

@@ -1,0 +1,14 @@
+diagrams:
+  t20039_sequence:
+    type: sequence
+    glob:
+      - t20039.cc
+    include:
+      namespaces:
+        - clanguml::t20039
+    using_namespace: clanguml::t20039
+    type_aliases:
+      "std::vector<int>": int_vec_t
+      "std::map<int,int>": int_map_t
+    from:
+      - function: "clanguml::t20039::tmain()"

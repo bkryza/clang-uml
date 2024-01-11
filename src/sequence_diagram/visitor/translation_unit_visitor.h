@@ -312,7 +312,7 @@ private:
     bool should_include(const clang::ClassTemplateDecl *decl) const;
 
     /**
-     * @todo Refactor this group of methods to @ref template_builder
+     * @todo #227 Refactor this group of methods to @ref template_builder
      *
      * @{
      */

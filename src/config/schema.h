@@ -205,6 +205,7 @@ types:
             after: !optional [string]
             cmd: !optional string
         relative_to: !optional string
+        type_aliases: !optional map_t<string;string>
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
         title: !optional string
@@ -342,6 +343,7 @@ root:
     package_type: !optional package_type_t
     generate_template_argument_dependencies: !optional bool
     skip_redundant_dependencies: !optional bool
+    type_aliases: !optional map_t<string;string>
 )";
 
 } // namespace clanguml::config
