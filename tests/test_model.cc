@@ -428,6 +428,7 @@ TEST_CASE("Test common::model::package full_name", "[unit-test]")
             "namespaceA_1_1B_1_1C_1_1D_1_1E_1_1F_1_1G.html");
     }
 
+#if !defined(_MSC_VER)
     {
         auto using_namespace = path{"/A/B/C", path_type::kFilesystem};
         auto pkg = package(using_namespace, path_type::kFilesystem);
@@ -437,6 +438,17 @@ TEST_CASE("Test common::model::package full_name", "[unit-test]")
         CHECK(pkg.full_name(false) == "A/B/C/D/E/F/G");
         CHECK(pkg.full_name(true) == "D/E/F/G");
     }
+#else
+    {
+        auto using_namespace = path{"A\\B\\C", path_type::kFilesystem};
+        auto pkg = package(using_namespace, path_type::kFilesystem);
+        pkg.set_name("G");
+        pkg.set_namespace(path{"A\\B\\C\\D\\E\\F", path_type::kFilesystem});
+
+        CHECK(pkg.full_name(false) == "A\\B\\C\\D\\E\\F\\G");
+        CHECK(pkg.full_name(true) == "D\\E\\F\\G");
+    }
+#endif
 
     {
         auto using_namespace = path{"A.B.C", path_type::kModule};

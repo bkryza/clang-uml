@@ -100,7 +100,7 @@ foreach(TEST_NAME ${TEST_NAMES})
             -Wno-unused-parameter -Wno-unused-variable
             -Wno-attributes -Wno-nonnull -Wno-deprecated-enum-enum-conversion
             ${CUSTOM_COMPILE_OPTIONS}>
-            $<$<CXX_COMPILER_ID:MSVC>:/W1 /bigobj /wd4624>>)
+            $<$<CXX_COMPILER_ID:MSVC>:/MP /MD /W1 /bigobj /wd4624>>)
     target_link_libraries(${TEST_NAME} PRIVATE ${CLANG_UML_TEST_LIBRARIES})
 endforeach()
 
