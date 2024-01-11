@@ -38,9 +38,12 @@ Main features supported so far include:
     * Diagram content filtering based on namespaces, elements and relationships - [_example_](docs/test_cases/t00040.md)
     * Optional package generation from namespaces (only PlantUML) - [_example_](docs/test_cases/t00036.md)
     * Optional package generation from subdirectories (only PlantUML) - [_example_](docs/test_cases/t00065.md)
+    * Optional package generation from C++20 modules (only PlantUML) - [_example_](docs/test_cases/t00071.md)
     * Interactive links to online code or docs for classes, methods and class fields in SVG diagrams - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t00002_class.svg)
     * Support for plain C99/C11 code (struct, units and their relationships) - [_example_](docs/test_cases/t00057.md)
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
+    * C++20 coroutines - [_example_](docs/test_cases/t00069.md)
+    * Diagram content filtering based on C++20 modules - [_example_](docs/test_cases/t00070.md)
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t20001.md)
     * Generation of loop and conditional statements - [_example_](docs/test_cases/t20021.md)
@@ -52,6 +55,7 @@ Main features supported so far include:
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
     * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)
+    * Generation of package diagram based on C++20 modules - [_example_](docs/test_cases/t30014.md)
     * Dependencies between packages based on symbols used in the code - [_example_](docs/test_cases/t30002.md)
     * Interactive links to online code to packages - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t30002_package.svg)
 * **Include graph diagram generation**

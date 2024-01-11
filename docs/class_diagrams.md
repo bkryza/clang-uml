@@ -8,6 +8,9 @@
   * [Relationships to classes in containers or smart pointers](#relationships-to-classes-in-containers-or-smart-pointers)
 * [Inheritance diagrams](#inheritance-diagrams)
 * [Generating UML packages in the diagram](#generating-uml-packages-in-the-diagram)
+  * [Namespace packages](#namespace-packages)
+  * [Directory packages](#directory-packages)
+  * [Module packages](#module-packages)
 * [Class context diagram](#class-context-diagram)
 * [Disabling dependency relationships](#disabling-dependency-relationships)
 
@@ -132,6 +135,15 @@ rendered. This can be easily achieved in `clang-uml` through inclusion filters:
 ```
 
 ## Generating UML packages in the diagram
+`clang-uml` supports 3 sources for generating UML packages in a diagram:
+* `namespace` - default
+* `directory` - based on relative directory paths within the project source tree
+* `module` - based on C++20 modules
+
+Currently, a specific diagram can only contain packages of one of the above
+types.
+
+### Namespace packages
 By default, `clang-uml` will render all element names including a namespace
 (relative to `using_namespace` property), e.g. `ns1::ns2::MyClass`.
 In order to generate packages in the diagram for each namespace instead, the
@@ -145,6 +157,7 @@ which results in the following diagram:
 
 ![t00036_class](test_cases/t00036_class.svg)
 
+### Directory packages
 In case the code base is structured based on subdirectory instead of namespaces
 (or this is a C project, where namespaces are not available), packages can be
 generated based on the location of a given declaration in the filesystem tree,
@@ -162,6 +175,31 @@ which results in the following diagram:
 > properly configured for your project, if necessary add `relative_to` option to
 > denote the root path against which all relative paths in the config file are
 > calculated.
+ 
+### Module packages
+Finally, to generate UML packages in the diagram based on C++20 modules, use
+the following option:
+
+```yaml
+package_type: module
+```
+
+which can produce the following diagram:
+
+![t00071_class](test_cases/t00071_class.svg)
+
+Packages from modules support internal module partitions, which are represented
+by `:` prefix in the name as well as conventional submodules separated by `.`.
+
+Module paths can be rendered relative to a specific parent module, to enable
+this add the following option:
+```yaml
+using_module: mod1.mod2
+```
+which will render modules relative to `mod1.mod2`.
+
+For examples of this feature check out the following test cases documentation:
+[t00071](test_cases/t00072.md) and [t00072](test_cases/t00072.md).
 
 ## Class context diagram
 Sometimes it's helpful to generate a class diagram depicting only direct

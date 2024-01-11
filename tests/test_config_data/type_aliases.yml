@@ -1,0 +1,17 @@
+type_aliases:
+  "ns1::ns2::container<ns2::key_t,ns2::value_t>": custom_map_t
+diagrams:
+  class_diagram:
+    type: class
+    glob:
+      - test.cc
+    type_aliases:
+      "ns1::ns2::container<ns1::ns2::key_t,std::string>": string_map_t
+      "std::basic_string<char32_t>": unicode_t
+  sequence_diagram:
+    type: class
+    relative_to: .
+    glob:
+      - test.cc
+    type_aliases:
+      "ns1::ns2::Object::iterator<std::weak_ptr<Object> *,std::vector<std::weak_ptr<Object>,std::allocator<std::weak_ptr<Object>>>>": "ObjectPtrIt"

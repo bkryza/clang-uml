@@ -17,7 +17,7 @@ struct B {
     A<int> a_int;
 };
 
-}
+} // namespace ns111
 } // namespace ns11
 } // namespace ns1
 
@@ -29,8 +29,8 @@ struct C { };
 
 struct D { };
 
-}
-}
+} // namespace ns22
+} // namespace ns2
 
 namespace ns3 {
 namespace ns33 {

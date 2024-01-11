@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     const auto *parent = enm->getParent();
 
-    std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::id_t> id_opt;
 
     if (parent != nullptr) {
         const auto *parent_record_decl =
@@ -159,6 +159,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     process_comment(*enm, e);
     set_source_location(*enm, e);
+    set_owning_module(*enm, e);
 
     if (e.skip())
         return true;
@@ -212,7 +213,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     }
 
     if (!template_specialization.template_specialization_found()) {
-        // Only do this if we haven't found a bettern specialization during
+        // Only do this if we haven't found a better specialization during
         // construction of the template specialization
         const auto maybe_id =
             id_mapper().get_global_id(cls->getSpecializedTemplate()->getID());
@@ -265,6 +266,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         LOG_DBG("Adding class {} with id {}", name, id);
 
         set_source_location(*cls, *template_specialization_ptr);
+        set_owning_module(*cls, *template_specialization_ptr);
 
         add_class(std::move(template_specialization_ptr));
     }
@@ -677,6 +679,9 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 
     LOG_DBG(
         "== getQualifiedNameAsString() = {}", cls->getQualifiedNameAsString());
+    if (cls->getOwningModule() != nullptr)
+        LOG_DBG(
+            "== getOwningModule()->Name = {}", cls->getOwningModule()->Name);
     LOG_DBG("== getID() = {}", cls->getID());
     LOG_DBG("== isTemplateDecl() = {}", cls->isTemplateDecl());
     LOG_DBG("== isTemplated() = {}", cls->isTemplated());
@@ -762,6 +767,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
 
     process_comment(*cpt, concept_model);
     set_source_location(*cpt, concept_model);
+    set_owning_module(*cpt, concept_model);
 
     if (concept_model.skip())
         return {};
@@ -802,6 +808,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
 
     process_comment(*rec, record);
     set_source_location(*rec, record);
+    set_owning_module(*rec, record);
 
     const auto record_full_name = record_ptr->full_name(false);
 
@@ -841,6 +848,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 
     process_comment(*cls, c);
     set_source_location(*cls, c);
+    set_owning_module(*cls, c);
 
     if (c.skip())
         return {};
@@ -855,7 +863,7 @@ void translation_unit_visitor::process_record_parent(
 {
     const auto *parent = cls->getParent();
 
-    std::optional<common::model::diagram_element::id_t> id_opt;
+    std::optional<common::id_t> id_opt;
 
     auto parent_ns = ns;
     if (parent != nullptr) {
@@ -1369,6 +1377,7 @@ void translation_unit_visitor::process_method_properties(
     method.is_move_assignment(mf.isMoveAssignmentOperator());
     method.is_copy_assignment(mf.isCopyAssignmentOperator());
     method.is_noexcept(isNoexceptExceptionSpec(mf.getExceptionSpecType()));
+    method.is_coroutine(common::is_coroutine(mf));
 }
 
 void translation_unit_visitor::
@@ -1834,6 +1843,7 @@ translation_unit_visitor::process_template_specialization(
 
     process_comment(*cls, template_instantiation);
     set_source_location(*cls, template_instantiation);
+    set_owning_module(*cls, template_instantiation);
 
     if (template_instantiation.skip())
         return {};
@@ -2140,6 +2150,15 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 
         diagram().add(p, std::move(c));
     }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        diagram().add(p, std::move(c));
+    }
     else {
         diagram().add(c->path(), std::move(c));
     }
@@ -2159,6 +2178,15 @@ void translation_unit_visitor::add_enum(std::unique_ptr<enum_> &&e)
 
         diagram().add(p, std::move(e));
     }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(e->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
+
+        diagram().add(p, std::move(e));
+    }
     else {
         diagram().add(e->path(), std::move(e));
     }
@@ -2175,6 +2203,15 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
         common::model::path p{
             file.string(), common::model::path_type::kFilesystem};
         p.pop_back();
+
+        diagram().add(p, std::move(c));
+    }
+    else if ((config().generate_packages() &&
+                 config().package_type() == config::package_type_t::kModule)) {
+
+        const auto module_path = config().make_module_relative(c->module());
+
+        common::model::path p{module_path, common::model::path_type::kModule};
 
         diagram().add(p, std::move(c));
     }

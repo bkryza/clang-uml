@@ -1,7 +1,7 @@
 /**
  * tests/t20029/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,17 +88,12 @@ TEST_CASE("t20029", "[test-case][sequence]")
 
         using namespace json;
 
+        REQUIRE(!j["participants"].is_null());
+
         std::vector<int> messages = {
             FindMessage(j, "tmain()", "ConnectionPool", "connect()"),
-            FindMessage(j, "tmain()",
-                "Encoder<clanguml::t20029::Retrier<clanguml::t20029::ConnectionPool>>",
-                "send(std::string &&)")/*,
-            FindMessage(j,
-                "Encoder<clanguml::t20029::Retrier<clanguml::t20029::"
-                "ConnectionPool>>",
-                "encode_b64(std::string &&)", "encode_b64(std::string &&)"),
-            FindMessage(j, "Retrier<clanguml::t20029::ConnectionPool>",
-                "ConnectionPool", "send(const std::string &)")*/};
+            FindMessage(j, "tmain()", "Encoder<Retrier<ConnectionPool>>",
+                "send(std::string &&)")};
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 

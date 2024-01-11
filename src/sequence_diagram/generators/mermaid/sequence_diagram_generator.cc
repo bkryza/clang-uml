@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/generators/mermaid/sequence_diagram_generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -180,7 +180,7 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 }
 
 void generator::generate_activity(const activity &a, std::ostream &ostr,
-    std::vector<common::model::diagram_element::id_t> &visited) const
+    std::vector<common::id_t> &visited) const
 {
     for (const auto &m : a.messages()) {
         if (m.in_static_declaration_context()) {
@@ -202,7 +202,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
             std::string to_alias = generate_alias(to.value());
 
-            ostr << indent(1) << "activate " << to_alias << std::endl;
+            ostr << indent(1) << "activate " << to_alias << '\n';
 
             if (model().sequences().find(m.to()) != model().sequences().end()) {
                 if (std::find(visited.begin(), visited.end(), m.to()) ==
@@ -220,7 +220,7 @@ void generator::generate_activity(const activity &a, std::ostream &ostr,
 
             generate_return(m, ostr);
 
-            ostr << indent(1) << "deactivate " << to_alias << std::endl;
+            ostr << indent(1) << "deactivate " << to_alias << '\n';
 
             visited.pop_back();
         }
@@ -495,7 +495,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                      << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
-                     << std::endl;
+                     << '\n';
             }
 
             for (const auto &m : mc) {
@@ -528,7 +528,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                      << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
-                     << std::endl;
+                     << '\n';
             }
 
             for (const auto &m : mc) {
@@ -539,7 +539,7 @@ void generator::generate_diagram(std::ostream &ostr) const
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::model::diagram_element::id_t start_from{0};
+            common::id_t start_from{0};
             for (const auto &[k, v] : model().sequences()) {
                 const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
@@ -558,8 +558,7 @@ void generator::generate_diagram(std::ostream &ostr) const
             }
 
             // Use this to break out of recurrent loops
-            std::vector<common::model::diagram_element::id_t>
-                visited_participants;
+            std::vector<common::id_t> visited_participants;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);
@@ -588,10 +587,10 @@ void generator::generate_diagram(std::ostream &ostr) const
                      << common::generators::mermaid::to_mermaid(
                             message_t::kCall)
                      << " " << from_alias << " : "
-                     << from.value().message_name(render_mode) << std::endl;
+                     << from.value().message_name(render_mode) << '\n';
             }
 
-            ostr << indent(1) << "activate " << from_alias << std::endl;
+            ostr << indent(1) << "activate " << from_alias << '\n';
 
             generate_activity(
                 model().get_activity(start_from), ostr, visited_participants);
@@ -613,7 +612,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                 }
             }
 
-            ostr << indent(1) << "deactivate " << from_alias << std::endl;
+            ostr << indent(1) << "deactivate " << from_alias << '\n';
         }
         else {
             // TODO: Add support for other sequence start location types

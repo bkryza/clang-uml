@@ -1,7 +1,7 @@
 /**
  * tests/t30006/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,11 @@ TEST_CASE("t30006", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "A"));
-        REQUIRE(IsPackage(j, "B"));
-        REQUIRE(IsPackage(j, "C"));
+        REQUIRE(IsNamespacePackage(j, "A"s));
+        REQUIRE(IsNamespacePackage(j, "B"s));
+        REQUIRE(IsNamespacePackage(j, "C"s));
 
         REQUIRE(IsDependency(j, "A", "B"));
         REQUIRE(IsDependency(j, "A", "C"));

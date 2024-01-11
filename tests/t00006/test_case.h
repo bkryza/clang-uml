@@ -1,7 +1,7 @@
 /**
  * tests/t00006/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,10 +98,9 @@ TEST_CASE("t00006", "[test-case][class]")
         REQUIRE(IsClass(j, "NN"));
         REQUIRE(IsClass(j, "NNN"));
 
-        REQUIRE(IsAggregation(
-            j, "R", "custom_container<clanguml::t00006::E>", "e"));
-        REQUIRE(IsInstantiation(
-            j, "custom_container<T>", "custom_container<clanguml::t00006::E>"));
+        REQUIRE(IsAggregation(j, "R", "custom_container<E>", "e"));
+        REQUIRE(
+            IsInstantiation(j, "custom_container<T>", "custom_container<E>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

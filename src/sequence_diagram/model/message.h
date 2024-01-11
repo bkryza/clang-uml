@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/model/message.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,7 @@ public:
      * @param type Message type
      * @param from Id of originating sequence
      */
-    message(common::model::message_t type,
-        common::model::diagram_element::id_t from);
+    message(common::model::message_t type, common::id_t from);
 
     /**
      * @brief Equality operator
@@ -68,28 +67,28 @@ public:
      *
      * @param f Id of the participant from which message originates
      */
-    void set_from(common::model::diagram_element::id_t f);
+    void set_from(common::id_t f);
 
     /**
      * @brief Get the id of source of message
      *
      * @return
      */
-    common::model::diagram_element::id_t from() const;
+    common::id_t from() const;
 
     /**
      * @brief Set the id of the message target
      *
      * @param t Id of the message target
      */
-    void set_to(common::model::diagram_element::id_t t);
+    void set_to(common::id_t t);
 
     /**
      * @brief Get the id of the message target
      *
      * @return Id of the message target
      */
-    common::model::diagram_element::id_t to() const;
+    common::id_t to() const;
 
     /**
      * @brief Set the message label
@@ -163,9 +162,9 @@ public:
 private:
     common::model::message_t type_{common::model::message_t::kNone};
 
-    common::model::diagram_element::id_t from_{};
+    common::id_t from_{};
 
-    common::model::diagram_element::id_t to_{};
+    common::id_t to_{};
 
     common::model::message_scope_t scope_{
         common::model::message_scope_t::kNormal};

@@ -201,6 +201,18 @@ test_cases:
     - name: t00068
       title: Context filter radius parameter test case
       description:
+    - name: t00069
+      title: Coroutine methods in class diagrams
+      description:
+    - name: t00070
+      title: Diagram filter based on C++20 modules
+      description:
+    - name: t00071
+      title: Class diagram with C++20 modules generated as packages
+      description:
+    - name: t00072
+      title: Class diagram with C++20 module partitions generated as packages
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -316,6 +328,9 @@ test_cases:
     - name: t20038
       title: Sequence diagram comment decorator test case
       description:
+    - name: t20039
+      title: Test case for type aliases config option in sequence diagrams
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
@@ -349,6 +364,18 @@ test_cases:
       description:
     - name: t30011
       title: Package diagram with packages from directory structure for plain C
+      description:
+    - name: t30012
+      title: C++20 modules package diagram test
+      description:
+    - name: t30013
+      title: C++20 modules package dependencies diagram test
+      description:
+    - name: t30014
+      title: C++20 modules package diagram test with partitions
+      description:
+    - name: t30015
+      title: C++20 modules package diagram test with partition dependencies
       description:
   Include diagrams:
     - name: t40001

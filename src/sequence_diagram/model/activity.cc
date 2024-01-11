@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/model/activity.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 namespace clanguml::sequence_diagram::model {
 
-activity::activity(common::model::diagram_element::id_t id)
+activity::activity(common::id_t id)
     : from_{id}
 {
 }
@@ -31,6 +31,6 @@ std::vector<message> &activity::messages() { return messages_; }
 
 const std::vector<message> &activity::messages() const { return messages_; }
 
-common::model::diagram_element::id_t activity::from() const { return from_; }
+common::id_t activity::from() const { return from_; }
 
 } // namespace clanguml::sequence_diagram::model

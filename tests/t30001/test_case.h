@@ -1,7 +1,7 @@
 /**
  * tests/t30001/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,19 +70,19 @@ TEST_CASE("t30001", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
         REQUIRE(HasTitle(j, "Basic package diagram example"));
 
-        REQUIRE(IsPackage(j, "A"));
-        REQUIRE(IsPackage(j, "A::AA"));
-        REQUIRE(IsPackage(j, "A::AA::AAA"));
-        REQUIRE(IsPackage(j, "A::AA::BBB"));
-        REQUIRE(IsPackage(j, "A::BB"));
-        REQUIRE(IsPackage(j, "B"));
-        REQUIRE(IsPackage(j, "B::AA"));
-        REQUIRE(IsPackage(j, "B::AA::AAA"));
-        REQUIRE(IsPackage(j, "B::AA::BBB"));
-        REQUIRE(IsPackage(j, "B::BB"));
+        REQUIRE(!IsNamespacePackage(j, "clanguml"s));
+        REQUIRE(!IsNamespacePackage(j, "t30001"s));
+        REQUIRE(IsNamespacePackage(j, "A"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(j, "B"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(j, "B"s, "AA"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(j, "B"s, "BB"s));
+        REQUIRE(IsNamespacePackage(j, "B"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

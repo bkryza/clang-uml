@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/package.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ class package : public element,
                 public stylable_element,
                 public nested_trait<element, path> {
 public:
-    package(const common::model::path &using_namespace);
+    package(const common::model::path &using_namespace,
+        path_type pt = path_type::kNamespace);
 
     package(const package &) = delete;
     package(package &&) = default;

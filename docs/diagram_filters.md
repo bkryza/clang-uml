@@ -3,6 +3,7 @@
 <!-- toc -->
 
 * [namespaces](#namespaces)
+* [modules](#modules)
 * [elements](#elements)
 * [element_types](#element_types)
 * [paths](#paths)
@@ -12,6 +13,7 @@
 * [parents](#parents)
 * [specializations](#specializations)
 * [access](#access)
+* [module_access](#module_access)
 * [method_types](#method_types)
 * [callee_types](#callee_types)
 * [dependants and dependencies](#dependants-and-dependencies)
@@ -56,22 +58,24 @@ exclude:
 
 The following table specifies the values allowed in each filter:
 
-| Filter name       | Possible values                  | Example values                                                                                                         |
-|-------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------|
-| `namespaces`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                            |
-| `elements`        | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                            |
-| `element_types`   | Types of diagram elements        | ```class```, ```enum```, ```concept```                                                                                        |
-| `paths`           | File or dir path or glob pattern | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                    |
-| `context`         | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                        |
-| `relationships`   | Type of relationship             | ```inheritance```, ```composition```, ```aggregation```, ```ownership```, ```association```, ```instantiation```, ```friendship```, ```dependency``` |
-| `subclasses`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
-| `parents`         | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
-| `specializations` | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
-| `access`          | Method or member access scope    | ```public```, ```protected```, ```private```                                                                                  |
-| `method_types`    | Type of class method             | ```constructor```, ```destructor```, ```assignment```, ```operator```, ```defaulted```, ```deleted```, ```static```                          |
-| `dependants`      | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
-| `dependencies`    | Qualified name or regex          | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                         |
-| `callee_types`    | Callee types in sequence diagrams| ```constructor```, ```assignment```, ```operator```, ```defaulted```, ```static```, ```method```, ```function```, ```function_template```, ```lambda``` |
+| Filter name       | Possible values                   | Example values                                                                                                                                          |
+|-------------------|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `namespaces`      | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                                                           |
+| `modules`         | Qualified name or regex           | ```mod1.mod2:par1```, ```r: '.*impl.*'```                                                                                                               |
+| `elements`        | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                                                           |
+| `element_types`   | Types of diagram elements         | ```class```, ```enum```, ```concept```                                                                                                                  |
+| `paths`           | File or dir path or glob pattern  | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                                              |
+| `context`         | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `relationships`   | Type of relationship              | ```inheritance```, ```composition```, ```aggregation```, ```ownership```, ```association```, ```instantiation```, ```friendship```, ```dependency```    |
+| `subclasses`      | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `parents`         | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `specializations` | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `access`          | Method or member access scope     | ```public```, ```protected```, ```private```                                                                                                            |
+| `module_access`   | Module access scope               | ```public```, ```private```                                                                                                            |
+| `method_types`    | Type of class method              | ```constructor```, ```destructor```, ```assignment```, ```operator```, ```defaulted```, ```deleted```, ```static```                                     |
+| `dependants`      | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `dependencies`    | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
+| `callee_types`    | Callee types in sequence diagrams | ```constructor```, ```assignment```, ```operator```, ```defaulted```, ```static```, ```method```, ```function```, ```function_template```, ```lambda``` |
 
 The following filters are available:
 
@@ -86,6 +90,19 @@ Allows to include or exclude entities from specific namespaces.
   exclude:
     namespaces:
       - ns1::ns2::detail
+```
+
+## modules
+
+Allows to include or exclude entities from specific C++20 module.
+
+```yaml
+  include:
+    modules:
+      - mod1.mod2
+  exclude:
+    modules:
+      - r: ".*impl.*"
 ```
 
 ## elements
@@ -199,15 +216,22 @@ This filter allows to include or exclude specializations and instantiations of a
 
 ## access
 
-This filter allows to include or exclude class methods and members based on their access scope, allowed values ar:
+This filter allows to include or exclude class methods and members based on their access scope, allowed values are:
 
   * `public`
   * `protected`
   * `private`
 
+## module_access
+
+This filter allows to include or exclude diagram elements based on the module in which they are declared, allowed values are:
+
+* `public`
+* `private`
+
 ## method_types
 
-This filter allows to include or exclude various method types from the class diagram, allowed values ar:
+This filter allows to include or exclude various method types from the class diagram, allowed values are:
   * `constructor`
   * `destructor`
   * `assignment`

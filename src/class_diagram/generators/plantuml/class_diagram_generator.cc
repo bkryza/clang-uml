@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/generators/plantuml/class_diagram_generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
         class_type = "abstract";
 
     std::string full_name;
-    if (config().generate_packages())
+    if (config().generate_fully_qualified_name())
         full_name = c.full_name_no_ns();
     else
         full_name = c.full_name();
@@ -89,7 +89,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
     print_debug(e, ostr);
 
-    if (config().generate_packages())
+    if (config().generate_fully_qualified_name())
         ostr << "enum"
              << " \"" << e.name();
     else
@@ -106,7 +106,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 {
     print_debug(c, ostr);
 
-    if (config().generate_packages())
+    if (config().generate_fully_qualified_name())
         ostr << "class"
              << " \"" << c.name();
     else
@@ -337,6 +337,9 @@ void generator::generate_method(
         ostr << " = default";
     else if (m.is_deleted())
         ostr << " = deleted";
+
+    if (m.is_coroutine())
+        ostr << " [coroutine]";
 
     ostr << " : " << type;
 

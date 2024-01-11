@@ -1,7 +1,7 @@
 /**
  * tests/t00058/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ TEST_CASE("t00058", "[test-case][class]")
         using namespace json;
 
         REQUIRE(IsClass(j, "A<int,int,double,std::string>"));
-        REQUIRE(IsClass(
-            j, "B<int,std::string,int,double,clanguml::t00058::A<int,int>>"));
+        REQUIRE(IsClass(j, "B<int,std::string,int,double,A<int,int>>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

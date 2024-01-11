@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/diagram_element.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,16 @@ namespace clanguml::common::model {
 
 diagram_element::diagram_element() = default;
 
-diagram_element::id_t diagram_element::id() const { return id_; }
+common::id_t diagram_element::id() const { return id_; }
 
-void diagram_element::set_id(diagram_element::id_t id) { id_ = id; }
+void diagram_element::set_id(common::id_t id) { id_ = id; }
 
 std::optional<id_t> diagram_element::parent_element_id() const
 {
     return parent_element_id_;
 }
 
-void diagram_element::set_parent_element_id(diagram_element::id_t id)
+void diagram_element::set_parent_element_id(common::id_t id)
 {
     parent_element_id_ = id;
 }

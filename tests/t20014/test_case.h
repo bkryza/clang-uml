@@ -1,7 +1,7 @@
 /**
  * tests/t20014/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,8 @@ TEST_CASE("t20014", "[test-case][sequence]")
             FindMessage(j, "B", "A", "a1(int,int)"),
             FindMessage(j, "tmain()", "B", "b2(int,int)"),
             FindMessage(j, "B", "A", "a2(int,int)"),
-            FindMessage(
-                j, "tmain()", "C<clanguml::t20014::B,int>", "c1(int,int)"),
-            FindMessage(j, "C<clanguml::t20014::B,int>", "B", "b1(int,int)")};
+            FindMessage(j, "tmain()", "C<B,int>", "c1(int,int)"),
+            FindMessage(j, "C<B,int>", "B", "b1(int,int)")};
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 

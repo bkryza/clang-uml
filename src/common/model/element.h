@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/element.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ namespace clanguml::common::model {
  */
 class element : public diagram_element {
 public:
-    element(namespace_ using_namespace);
+    element(namespace_ using_namespace, path_type pt = path_type::kNamespace);
 
     ~element() override = default;
 
@@ -88,12 +88,46 @@ public:
     const namespace_ &path() const { return ns_; }
 
     /**
+     * Set elements owning module.
+     *
+     * @param module C++20 module.
+     */
+    void set_module(const std::string &module) { module_ = module; }
+
+    /**
+     * Return elements owning module, if any.
+     *
+     * @return C++20 module.
+     */
+    std::optional<std::string> module() const { return module_; }
+
+    /**
+     * Set whether the element is in a private module
+     *
+     * @param module C++20 module.
+     */
+    void set_module_private(const bool module_private)
+    {
+        module_private_ = module_private;
+    }
+
+    /**
+     * Check whether the element is in a private module.
+     *
+     * @return C++20 module.
+     */
+    bool module_private() const { return module_private_; }
+
+    /**
      * Return elements full name.
      *
      * @return Fully qualified elements name.
      */
-    std::string full_name(bool /*relative*/) const override
+    std::string full_name(bool relative) const override
     {
+        if (relative)
+            return name();
+
         return name_and_ns();
     }
 
@@ -120,5 +154,7 @@ public:
 private:
     namespace_ ns_;
     namespace_ using_namespace_;
+    std::optional<std::string> module_;
+    bool module_private_{false};
 };
 } // namespace clanguml::common::model

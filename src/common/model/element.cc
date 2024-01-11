@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/element.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,9 @@
 
 namespace clanguml::common::model {
 
-element::element(namespace_ using_namespace)
-    : using_namespace_{std::move(using_namespace)}
+element::element(namespace_ using_namespace, path_type pt)
+    : ns_{pt}
+    , using_namespace_{std::move(using_namespace)}
 {
 }
 

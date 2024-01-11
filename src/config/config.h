@@ -1,7 +1,7 @@
 /**
  * @file src/config/config.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  */
 #pragma once
 
-#include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/types.h"
 #include "option.h"
@@ -87,7 +86,8 @@ std::string to_string(callee_type mt);
 /*! How packages in diagrams should be generated */
 enum class package_type_t {
     kNamespace, /*!< From namespaces */
-    kDirectory  /*!< From directories */
+    kDirectory, /*!< From directories */
+    kModule     /*!< From modules */
 };
 
 std::string to_string(package_type_t mt);
@@ -180,6 +180,35 @@ struct filter {
      */
     std::vector<common::namespace_or_regex> namespaces;
 
+    /*! @brief Modules filter
+     *
+     * Example:
+     *
+     * ```yaml
+     *   include
+     *     modules:
+     *       - app.module1
+     *       - r: ".*internal.*"
+     * ```
+     */
+    std::vector<common::string_or_regex> modules;
+
+    /*! @brief Access type filter
+     *
+     * This filter allows to filter class members methods based on their access:
+     *  - public
+     *  - private
+     *
+     * Example:
+     *
+     * ```yaml
+     *   include:
+     *     module_access:
+     *       - public
+     * ```
+     */
+    std::vector<common::model::module_access_t> module_access;
+
     /*! @brief Elements filter
      *
      * Example:
@@ -231,8 +260,8 @@ struct filter {
      *
      * ```yaml
      *   include:
-     *     relationships:
-     *       - inheritance
+     *     access:
+     *       - public
      * ```
      */
     std::vector<common::model::access_t> access;
@@ -457,6 +486,18 @@ struct inheritable_diagram_options {
     std::string simplify_template_type(std::string full_name) const;
 
     /**
+     * @brief Whether the diagram element should be fully qualified in diagram
+     *
+     * This method determines whether an elements' name should include
+     * fully qualified namespace name (however relative to using_namespace), or
+     * whether it should just contain it's name. This depends on whether the
+     * diagram has packages and if they are based on namespaces or sth else.
+     *
+     * @return True, if element should include it's namespace
+     */
+    bool generate_fully_qualified_name() const;
+
+    /**
      * @brief Get reference to `relative_to` diagram config option
      *
      * This method is only to allow access to `relative_to` for loading
@@ -470,6 +511,7 @@ struct inheritable_diagram_options {
 
     option<std::vector<std::string>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
+    option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
     option<filter> include{"include"};
@@ -496,7 +538,8 @@ struct inheritable_diagram_options {
     option<std::filesystem::path> base_directory{"__parent_path"};
     option<bool> generate_system_headers{"generate_system_headers", false};
     option<relationship_hints_t> relationship_hints{"relationship_hints"};
-    option<type_aliases_t> type_aliases{"type_aliases"};
+    option<type_aliases_t> type_aliases{
+        "type_aliases", option_inherit_mode::kAppend};
     option<comment_parser_t> comment_parser{
         "comment_parser", comment_parser_t::plain};
     option<bool> combine_free_functions_into_file_participants{
@@ -552,6 +595,15 @@ struct diagram : public inheritable_diagram_options {
      */
     std::filesystem::path make_path_relative(
         const std::filesystem::path &p) const;
+
+    /**
+     * @brief Make module path relative to `using_module` configuration option
+     *
+     * @param p Input path
+     * @return Relative path
+     */
+    std::vector<std::string> make_module_relative(
+        const std::optional<std::string> &maybe_module) const;
 
     /**
      * @brief Returns absolute path of the `relative_to` option

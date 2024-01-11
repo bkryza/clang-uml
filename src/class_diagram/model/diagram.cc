@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/model/diagram.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
-    const clanguml::common::model::diagram_element::id_t id) const
+    const clanguml::common::id_t id) const
 {
     common::optional_ref<clanguml::common::model::diagram_element> res;
 
@@ -116,6 +116,18 @@ bool diagram::add_with_filesystem_path<common::model::package>(
     return add_element(ns, std::move(p));
 }
 
+template <>
+bool diagram::add_with_module_path<common::model::package>(
+    const common::model::path & /*parent_path*/,
+    std::unique_ptr<common::model::package> &&p)
+{
+    LOG_DBG("Adding module package: {}, {}", p->name(), p->full_name(true));
+
+    auto ns = p->get_relative_namespace();
+
+    return add_element(ns, std::move(p));
+}
+
 void diagram::get_parents(
     clanguml::common::reference_set<class_> &parents) const
 {
@@ -137,8 +149,7 @@ void diagram::get_parents(
     }
 }
 
-bool diagram::has_element(
-    clanguml::common::model::diagram_element::id_t id) const
+bool diagram::has_element(clanguml::common::id_t id) const
 {
     const auto has_class = std::any_of(classes().begin(), classes().end(),
         [id](const auto &c) { return c.get().id() == id; });
@@ -156,8 +167,7 @@ bool diagram::has_element(
         [id](const auto &c) { return c.get().id() == id; });
 }
 
-std::string diagram::to_alias(
-    clanguml::common::model::diagram_element::id_t id) const
+std::string diagram::to_alias(clanguml::common::id_t id) const
 {
     LOG_DBG("Looking for alias for {}", id);
 

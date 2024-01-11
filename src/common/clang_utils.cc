@@ -1,7 +1,7 @@
 /**
  * @file src/common/clang_utils.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -885,6 +885,12 @@ clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
         }
 
     return {};
+}
+
+bool is_coroutine(const clang::FunctionDecl &decl)
+{
+    const auto *body = decl.getBody();
+    return clang::isa_and_nonnull<clang::CoroutineBodyStmt>(body);
 }
 
 } // namespace clanguml::common

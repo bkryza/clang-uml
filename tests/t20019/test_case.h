@@ -1,7 +1,7 @@
 /**
  * tests/t20019/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,10 @@ TEST_CASE("t20019", "[test-case][sequence]")
         using namespace json;
 
         std::vector<int> messages = {
-            FindMessage(j, "tmain()", "Base<clanguml::t20019::D1>", "name()"),
-            FindMessage(j, "Base<clanguml::t20019::D1>", "D1", "impl()"),
-            FindMessage(j, "tmain()", "Base<clanguml::t20019::D2>", "name()"),
-            FindMessage(j, "Base<clanguml::t20019::D2>", "D2", "impl()")};
+            FindMessage(j, "tmain()", "Base<D1>", "name()"),
+            FindMessage(j, "Base<D1>", "D1", "impl()"),
+            FindMessage(j, "tmain()", "Base<D2>", "name()"),
+            FindMessage(j, "Base<D2>", "D2", "impl()")};
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 

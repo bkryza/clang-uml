@@ -1,7 +1,7 @@
 /**
  * @file tests/test_util.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ TEST_CASE("Test split", "[unit-test]")
 
     const C empty{};
 
-    CHECK(split("", " ") == C{""});
+    CHECK(split("", " ") == C{});
+    CHECK(split("", ".") == C{});
     CHECK(split("ABCD", " ") == C{"ABCD"});
     CHECK(split("::A", "::") == C{"A"});
     CHECK(split("::", "::") == C{});

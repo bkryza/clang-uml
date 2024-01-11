@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -477,7 +477,7 @@ private:
 
     template_builder template_builder_;
 
-    std::map<common::model::diagram_element::id_t,
+    std::map<common::id_t,
         std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
 

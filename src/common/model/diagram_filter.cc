@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/diagram_filter.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -285,6 +285,47 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
     return result;
 }
 
+modules_filter::modules_filter(
+    filter_t type, std::vector<common::string_or_regex> modules)
+    : filter_visitor{type}
+    , modules_{std::move(modules)}
+{
+}
+
+tvl::value_t modules_filter::match(
+    const diagram & /*d*/, const element &e) const
+{
+    if (modules_.empty())
+        return {};
+
+    if (!e.module().has_value())
+        return {false};
+
+    auto module_toks =
+        path::split(e.module().value(), path_type::kModule); // NOLINT
+
+    if (dynamic_cast<const package *>(&e) != nullptr &&
+        e.get_namespace().type() == path_type::kModule) {
+        module_toks.push_back(e.name());
+    }
+
+    auto result = tvl::any_of(modules_.begin(), modules_.end(),
+        [&e, &module_toks](const auto &modit) {
+            if (std::holds_alternative<std::string>(modit.value())) {
+                const auto &modit_str = std::get<std::string>(modit.value());
+                const auto modit_toks =
+                    path::split(modit_str, path_type::kModule);
+
+                return e.module() == modit_str ||
+                    util::starts_with(module_toks, modit_toks);
+            }
+
+            return std::get<common::regex>(modit.value()) %= e.module().value();
+        });
+
+    return result;
+}
+
 element_filter::element_filter(
     filter_t type, std::vector<common::string_or_regex> elements)
     : filter_visitor{type}
@@ -532,6 +573,31 @@ tvl::value_t access_filter::match(
 {
     return tvl::any_of(access_.begin(), access_.end(),
         [&a](const auto &access) { return a == access; });
+}
+
+module_access_filter::module_access_filter(
+    filter_t type, std::vector<module_access_t> access)
+    : filter_visitor{type}
+    , access_{std::move(access)}
+{
+}
+
+tvl::value_t module_access_filter::match(
+    const diagram & /*d*/, const element &e) const
+{
+    if (!e.module().has_value())
+        return {};
+
+    if (access_.empty())
+        return {};
+
+    return tvl::any_of(
+        access_.begin(), access_.end(), [&e](const auto &access) {
+            if (access == module_access_t::kPublic)
+                return !e.module_private();
+
+            return e.module_private();
+        });
 }
 
 context_filter::context_filter(
@@ -887,6 +953,12 @@ void diagram_filter::init_filters(const config::diagram &c)
         add_inclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kInclusive, c.include().namespaces));
 
+        add_inclusive_filter(std::make_unique<modules_filter>(
+            filter_t::kInclusive, c.include().modules));
+
+        add_inclusive_filter(std::make_unique<module_access_filter>(
+            filter_t::kInclusive, c.include().module_access));
+
         add_inclusive_filter(std::make_unique<relationship_filter>(
             filter_t::kInclusive, c.include().relationships));
 
@@ -996,6 +1068,12 @@ void diagram_filter::init_filters(const config::diagram &c)
     if (c.exclude) {
         add_exclusive_filter(std::make_unique<namespace_filter>(
             filter_t::kExclusive, c.exclude().namespaces));
+
+        add_exclusive_filter(std::make_unique<modules_filter>(
+            filter_t::kExclusive, c.exclude().modules));
+
+        add_exclusive_filter(std::make_unique<module_access_filter>(
+            filter_t::kExclusive, c.exclude().module_access));
 
         add_exclusive_filter(std::make_unique<paths_filter>(
             filter_t::kExclusive, c.root_directory(), c.exclude().paths));

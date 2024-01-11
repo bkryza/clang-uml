@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/model/participant.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,13 @@ public:
      *
      * @return Type name of the diagram element.
      */
-    std::string type_name() const override { return "class"; }
+    std::string type_name() const override
+    {
+        if (is_lambda())
+            return "lambda";
+
+        return "class";
+    }
 
     /**
      * @brief Check if class is a struct.
@@ -378,7 +384,7 @@ struct method : public function {
      *
      * @param id Id of the class to which this method belongs to
      */
-    void set_class_id(diagram_element::id_t id);
+    void set_class_id(common::id_t id);
 
     /**
      * @brief Set full qualified name of the class
@@ -408,7 +414,7 @@ struct method : public function {
      *
      * @return Class id
      */
-    diagram_element::id_t class_id() const;
+    common::id_t class_id() const;
 
     /**
      * @brief Create a string representation of the participant
@@ -460,7 +466,7 @@ struct method : public function {
     void is_assignment(bool a);
 
 private:
-    diagram_element::id_t class_id_{};
+    common::id_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
     bool is_constructor_{false};

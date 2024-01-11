@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/generators/json/sequence_diagram_generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,12 @@ namespace clanguml::sequence_diagram::model {
 
 void to_json(nlohmann::json &j, const participant &c)
 {
-    j["name"] = generators::json::render_name(c.full_name(false));
-    j["id"] = std::to_string(c.id());
+    to_json(j, dynamic_cast<const participant::element &>(c));
     j["type"] = c.type_name();
-    if (!c.file().empty())
-        j["source_location"] =
-            dynamic_cast<const common::model::source_location &>(c);
-    if (const auto &comment = c.comment(); comment)
-        j["comment"] = comment.value();
+
+    if (c.type_name() == "method") {
+        j["name"] = dynamic_cast<const method &>(c).method_name();
+    }
 }
 
 void to_json(nlohmann::json &j, const activity &c)
@@ -105,11 +103,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     msg["name"] = message;
     msg["type"] = "message";
-    msg["from"]["activity_name"] =
-        generators::json::render_name(from.value().full_name(false));
     msg["from"]["activity_id"] = std::to_string(from.value().id());
     msg["to"]["activity_id"] = std::to_string(to.value().id());
-    msg["to"]["activity_name"] = to.value().full_name(false);
     if (const auto &cmt = m.comment(); cmt.has_value())
         msg["comment"] = cmt.value();
 
@@ -132,7 +127,6 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         }
         else {
             msg["from"]["participant_id"] = std::to_string(from.value().id());
-            msg["from"]["participant_name"] = from.value().full_name(false);
         }
     }
     else if (from.value().type_name() == "lambda") {
@@ -176,8 +170,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         m.from(), to, m.to());
 }
 
-void generator::generate_activity(const activity &a,
-    std::vector<common::model::diagram_element::id_t> &visited) const
+void generator::generate_activity(
+    const activity &a, std::vector<common::id_t> &visited) const
 {
     // Generate calls from this activity to other activities
     for (const auto &m : a.messages()) {
@@ -253,8 +247,8 @@ nlohmann::json &generator::current_block_statement() const
     return block_statements_stack_.back().get();
 }
 
-void generator::process_call_message(const model::message &m,
-    std::vector<common::model::diagram_element::id_t> &visited) const
+void generator::process_call_message(
+    const model::message &m, std::vector<common::id_t> &visited) const
 {
     visited.push_back(m.from());
 
@@ -529,7 +523,7 @@ void generator::generate_participant(
 }
 
 common::id_t generator::generate_participant(
-    nlohmann::json &parent, common::id_t id, bool force) const
+    nlohmann::json & /*parent*/, common::id_t id, bool force) const
 {
     common::id_t participant_id{0};
 
@@ -553,43 +547,91 @@ common::id_t generator::generate_participant(
     const auto &participant =
         model().get_participant<model::participant>(participant_id).value();
 
-    if (participant.type_name() == "method") {
-        participant_id = model()
-                             .get_participant<model::method>(participant_id)
-                             .value()
-                             .class_id();
+    const auto participant_type = participant.type_name();
 
-        if (is_participant_generated(participant_id))
-            return participant_id;
+    if (participant_type == "method") {
+        auto class_participant_id =
+            model()
+                .get_participant<model::method>(participant_id)
+                .value()
+                .class_id();
 
-        const auto &class_participant =
-            model().get_participant<model::participant>(participant_id).value();
+        if (!is_participant_generated(class_participant_id)) {
+            const auto &class_participant =
+                model()
+                    .get_participant<model::participant>(class_participant_id)
+                    .value();
 
-        parent["participants"].push_back(class_participant);
+            generated_participants_.emplace(participant_id);
+            generated_participants_.emplace(class_participant_id);
+
+            json_["participants"].push_back(class_participant);
+            json_["participants"].back()["activities"].push_back(participant);
+
+            return class_participant_id;
+        }
+
+        if (!is_participant_generated(participant_id)) {
+            for (auto &p : json_["participants"]) {
+                if (p.at("id") == std::to_string(class_participant_id)) {
+                    generated_participants_.emplace(participant_id);
+                    p["activities"].push_back(participant);
+                    return class_participant_id;
+                }
+            }
+        }
     }
-    else if ((participant.type_name() == "function" ||
-                 participant.type_name() == "function_template") &&
+    else if ((participant_type == "function" ||
+                 participant_type == "function_template") &&
         config().combine_free_functions_into_file_participants()) {
         // Create a single participant for all functions declared in a
         // single file
+        // participant_id will become activity_id within a file participant
         const auto &function_participant =
             model().get_participant<model::function>(participant_id).value();
 
-        nlohmann::json j = function_participant;
-        j["name"] = util::path_to_url(
-            config().make_path_relative(function_participant.file()).string());
+        const auto file_participant_id =
+            common::to_id(function_participant.file_relative());
 
-        participant_id = common::to_id(function_participant.file_relative());
+        if (!is_participant_generated(file_participant_id)) {
+            nlohmann::json p = function_participant;
 
-        if (is_participant_generated(participant_id))
-            return participant_id;
+            const auto file_path =
+                config().make_path_relative(function_participant.file());
 
-        j["id"] = std::to_string(participant_id);
+            p["display_name"] = util::path_to_url(file_path.string());
+            p["name"] = file_path.filename();
 
-        parent["participants"].push_back(j);
+            if (is_participant_generated(file_participant_id))
+                return participant_id;
+
+            p["id"] = std::to_string(file_participant_id);
+            p["type"] = "file";
+            p.erase("source_location");
+
+            generated_participants_.emplace(participant_id);
+
+            p["activities"].push_back(participant);
+            json_["participants"].push_back(p);
+
+            generated_participants_.emplace(file_participant_id);
+
+            return file_participant_id;
+        }
+
+        if (!is_participant_generated(participant_id)) {
+            for (auto &p : json_["participants"]) {
+                if (p.at("id") == std::to_string(file_participant_id)) {
+                    generated_participants_.emplace(participant_id);
+                    p["activities"].push_back(participant);
+                }
+            }
+        }
+
+        return file_participant_id;
     }
     else {
-        parent["participants"].push_back(participant);
+        json_["participants"].push_back(participant);
     }
 
     generated_participants_.emplace(participant_id);
@@ -614,7 +656,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
     if (config().participants_order.has_value) {
         for (const auto &p : config().participants_order()) {
             LOG_DBG("Pregenerating participant {}", p);
-            generate_participant(parent, p);
+            generate_participant(json_, p);
         }
     }
 
@@ -661,7 +703,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
 
         block_statements_stack_.pop_back();
 
-        json_["sequences"].push_back(std::move(sequence));
+        parent["sequences"].push_back(std::move(sequence));
     }
 
     for (const auto &to_location : config().to()) {
@@ -697,12 +739,12 @@ void generator::generate_diagram(nlohmann::json &parent) const
 
         block_statements_stack_.pop_back();
 
-        json_["sequences"].push_back(std::move(sequence));
+        parent["sequences"].push_back(std::move(sequence));
     }
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::model::diagram_element::id_t start_from{0};
+            common::id_t start_from{0};
             std::string start_from_str;
             for (const auto &[k, v] : model().sequences()) {
                 const auto &caller = *model().participants().at(v.from());
@@ -722,8 +764,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
             }
 
             // Use this to break out of recurrent loops
-            std::vector<common::model::diagram_element::id_t>
-                visited_participants;
+            std::vector<common::id_t> visited_participants;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);
@@ -757,7 +798,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
                 sequence["return_type"] = from.value().return_type();
             }
 
-            json_["sequences"].push_back(std::move(sequence));
+            parent["sequences"].push_back(std::move(sequence));
         }
         else {
             // TODO: Add support for other sequence start location types
@@ -765,6 +806,6 @@ void generator::generate_diagram(nlohmann::json &parent) const
         }
     }
 
-    parent.update(json_);
+    parent["participants"] = json_["participants"];
 }
 } // namespace clanguml::sequence_diagram::generators::json

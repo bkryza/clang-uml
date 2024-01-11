@@ -1,7 +1,7 @@
 /**
  * @file src/package_diagram/model/diagram.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,13 +41,12 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
-    const clanguml::common::model::diagram_element::id_t id) const
+    const clanguml::common::id_t id) const
 {
     return find<package>(id);
 }
 
-std::string diagram::to_alias(
-    const clanguml::common::model::diagram_element::id_t id) const
+std::string diagram::to_alias(const clanguml::common::id_t id) const
 {
     LOG_DBG("Looking for alias for {}", id);
 

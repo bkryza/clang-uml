@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/visitor/template_builder.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,8 @@ using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
 
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
 class translation_unit_visitor;
 

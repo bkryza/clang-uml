@@ -1,7 +1,7 @@
 /**
  * tests/t00027/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,12 +67,9 @@ TEST_CASE("t00027", "[test-case][class]")
         REQUIRE(IsAbstractClass(j, "ShapeDecorator"));
 
         REQUIRE(IsClassTemplate(j, "Line<T<>...>"));
-        REQUIRE(IsInstantiation(
-            j, "Line<T<>...>", "Line<clanguml::t00027::Color>"));
-        REQUIRE(IsInstantiation(j, "Line<T<>...>",
-            "Line<clanguml::t00027::Color,clanguml::t00027::Weight>"));
-        REQUIRE(IsAggregation(
-            j, "Window", "Text<clanguml::t00027::Color>", "description"));
+        REQUIRE(IsInstantiation(j, "Line<T<>...>", "Line<Color>"));
+        REQUIRE(IsInstantiation(j, "Line<T<>...>", "Line<Color,Weight>"));
+        REQUIRE(IsAggregation(j, "Window", "Text<Color>", "description"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/diagram.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public:
      * @return Optional reference to a diagram element.
      */
     virtual common::optional_ref<clanguml::common::model::diagram_element> get(
-        diagram_element::id_t id) const = 0;
+        common::id_t id) const = 0;
 
     /**
      * Return optional reference to a diagram_element by name and namespace.
@@ -152,10 +152,7 @@ public:
     // Disallow std::string overload
     bool should_include(const std::string &s) const = delete;
 
-    virtual bool has_element(const diagram_element::id_t /*id*/) const
-    {
-        return false;
-    }
+    virtual bool has_element(const common::id_t /*id*/) const { return false; }
 
     virtual bool should_include(
         const namespace_ &ns, const std::string &name) const;

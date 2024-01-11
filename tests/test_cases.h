@@ -1,7 +1,7 @@
 /**
  * @file tests/test_cases.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,8 @@ struct Const { };
 struct Constexpr { };
 
 struct Consteval { };
+
+struct Coroutine { };
 
 struct Noexcept { };
 
@@ -962,6 +964,9 @@ ContainsMatcher IsMethod(std::string const &name,
     if constexpr (has_type<Deleted, Ts...>())
         pattern += " = deleted";
 
+    if constexpr (has_type<Coroutine, Ts...>())
+        pattern += " [coroutine]";
+
     pattern += " : " + type;
 
     return ContainsMatcher(CasedString(pattern, caseSensitivity));
@@ -995,6 +1000,8 @@ ContainsMatcher IsMethod(std::string const &name, std::string type = "void",
         method_mods.push_back("constexpr");
     if constexpr (has_type<Consteval, Ts...>())
         method_mods.push_back("consteval");
+    if constexpr (has_type<Coroutine, Ts...>())
+        method_mods.push_back("coroutine");
 
     pattern += " : ";
 
@@ -1203,7 +1210,8 @@ std::optional<nlohmann::json> get_element(
         if (e["display_name"] == name)
             return {e};
 
-        if (e["type"] == "namespace" || e["type"] == "folder") {
+        if (e["type"] == "namespace" || e["type"] == "folder" ||
+            e["type"] == "directory" || e["type"] == "module") {
             auto maybe_e = get_element(e, name);
             if (maybe_e)
                 return maybe_e;
@@ -1219,8 +1227,8 @@ std::optional<nlohmann::json> get_participant(
     if (!j.contains("participants"))
         return {};
 
-    for (const nlohmann::json &e : j["participants"]) {
-        if (e["name"] == name)
+    for (const nlohmann::json &e : j.at("participants")) {
+        if (e["display_name"] == name)
             return {e};
     }
 
@@ -1251,13 +1259,7 @@ auto get_relationship(const nlohmann::json &j, const std::string &from,
 
 std::string expand_name(const nlohmann::json &j, const std::string &name)
 {
-    if (!j.contains("using_namespace"))
-        return name;
-
-    if (name.find("::") == 0)
-        return name;
-
-    return fmt::format("{}::{}", j["using_namespace"].get<std::string>(), name);
+    return name;
 }
 
 bool HasTitle(const nlohmann::json &j, const std::string &title)
@@ -1269,6 +1271,22 @@ bool IsClass(const nlohmann::json &j, const std::string &name)
 {
     auto e = get_element(j, expand_name(j, name));
     return e && e->at("type") == "class";
+}
+
+bool InPublicModule(const nlohmann::json &j, const std::string &element,
+    const std::string &module)
+{
+    auto e = get_element(j, expand_name(j, element));
+    return e && e->contains("module") && e->at("module")["name"] == module &&
+        !e->at("module")["is_private"];
+}
+
+bool InPrivateModule(const nlohmann::json &j, const std::string &element,
+    const std::string &module)
+{
+    auto e = get_element(j, expand_name(j, element));
+    return e && e->contains("module") && e->at("module")["name"] == module &&
+        e->at("module")["is_private"];
 }
 
 bool IsAbstractClass(const nlohmann::json &j, const std::string &name)
@@ -1295,10 +1313,70 @@ bool IsEnum(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "enum";
 }
 
-bool IsPackage(const nlohmann::json &j, const std::string &name)
+bool IsPackage(const nlohmann::json &j, const std::string &name,
+    const std::string &type = "namespace")
 {
     auto e = get_element(j, expand_name(j, name));
-    return e && e->at("type") == "namespace";
+    return e && e->at("type") == type;
+}
+
+struct NamespacePackage { };
+struct ModulePackage { };
+struct DirectoryPackage { };
+
+template <typename PackageT> std::string package_type_name();
+
+template <> std::string package_type_name<NamespacePackage>()
+{
+    return "namespace";
+}
+
+template <> std::string package_type_name<ModulePackage>() { return "module"; }
+
+template <> std::string package_type_name<DirectoryPackage>()
+{
+    return "directory";
+}
+
+template <typename PackageT, typename... Args>
+bool IsPackagePath(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    if constexpr (sizeof...(Args) == 0) {
+        auto e = get_element(j, expand_name(j, head));
+
+        return e && e->at("type") == package_type_name<PackageT>();
+    }
+    else {
+        auto e = get_element(j, head);
+        if (!e.has_value())
+            return false;
+
+        return IsPackagePath<PackageT>(*e, args...);
+    }
+}
+
+template <typename... Args>
+bool IsNamespacePackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<NamespacePackage>(
+        j, head, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<DirectoryPackage>(
+        j, head, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsModulePackage(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    return IsPackagePath<ModulePackage>(j, head, std::forward<Args>(args)...);
 }
 
 bool IsFolder(const nlohmann::json &j, const std::string &name)
@@ -1311,6 +1389,20 @@ bool IsFile(const nlohmann::json &j, const std::string &name)
 {
     auto e = get_element(j, name);
     return e && e->at("type") == "file";
+}
+
+bool IsSystemHeader(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file" && e->at("file_kind") == "header" &&
+        e->at("is_system");
+}
+
+bool IsHeader(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, name);
+    return e && e->at("type") == "file" && e->at("file_kind") == "header" &&
+        !e->at("is_system");
 }
 
 bool IsDeprecated(const nlohmann::json &j, const std::string &name)
@@ -1575,9 +1667,28 @@ struct message_test_spec_t {
 
 void from_json(const nlohmann::json &j, message_test_spec_t &p)
 {
-    j.at("from").at("activity_name").get_to(p.from);
-    j.at("to").at("activity_name").get_to(p.to);
+    j.at("from").at("activity_id").get_to(p.from);
+    j.at("to").at("activity_id").get_to(p.to);
     j.at("return_type").get_to(p.return_type);
+}
+
+std::string get_activity_id(
+    const nlohmann::json &j, const std::string &display_name)
+{
+    for (const auto &p : j["participants"]) {
+        if (p.contains("activities")) {
+            for (const auto &a : p["activities"]) {
+                if (a["display_name"] == display_name) {
+                    return a["id"];
+                }
+            }
+        }
+        else if (p["display_name"] == display_name) {
+            return p["id"];
+        }
+    }
+
+    return {};
 }
 
 bool HasMessageChain(
@@ -1588,8 +1699,8 @@ bool HasMessageChain(
         std::back_inserter(full_name_messages),
         [&j](const message_test_spec_t &m) {
             auto res = m;
-            res.from = expand_name(j, m.from);
-            res.to = expand_name(j, m.to);
+            res.from = get_activity_id(j, m.from);
+            res.to = get_activity_id(j, m.to);
             return res;
         });
 

@@ -1,7 +1,7 @@
 /**
  * @file src/common/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@
 
 #include "comment/clang_visitor.h"
 #include "comment/plain_visitor.h"
+#include "common/clang_utils.h"
+
+#include <clang/AST/Expr.h>
+#include <clang/Basic/Module.h>
 
 namespace clanguml::common::visitor {
 
@@ -161,4 +165,25 @@ void translation_unit_visitor::set_source_location(
     element.set_location_id(location.getHashValue());
 }
 
+void translation_unit_visitor::set_owning_module(
+    const clang::Decl &decl, clanguml::common::model::element &element)
+{
+    if (const clang::Module *module = decl.getOwningModule();
+        module != nullptr) {
+        std::string module_name = module->Name;
+        bool is_private{false};
+#if LLVM_VERSION_MAJOR < 15
+        is_private =
+            module->Kind == clang::Module::ModuleKind::PrivateModuleFragment;
+#else
+        is_private = module->isPrivateModule();
+#endif
+        if (is_private) {
+            // Clang just maps private modules names to "<private>"
+            module_name = module->getTopLevelModule()->Name;
+        }
+        element.set_module(module_name);
+        element.set_module_private(is_private);
+    }
+}
 } // namespace clanguml::common::visitor

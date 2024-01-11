@@ -1,7 +1,7 @@
 /**
  * @file rc/class_diagram/generators/json/class_diagram_generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,14 @@
 
 namespace clanguml::class_diagram::model {
 using nlohmann::json;
+
+void set_module(nlohmann::json &j, const common::model::element &e)
+{
+    if (e.module()) {
+        j["module"]["name"] = e.module().value();
+        j["module"]["is_private"] = e.module_private();
+    }
+}
 
 void to_json(nlohmann::json &j, const class_element &c)
 {
@@ -63,6 +71,7 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["is_noexcept"] = c.is_noexcept();
     j["is_constexpr"] = c.is_constexpr();
     j["is_consteval"] = c.is_consteval();
+    j["is_coroutine"] = c.is_coroutine();
     j["is_constructor"] = c.is_constructor();
     j["is_move_assignment"] = c.is_move_assignment();
     j["is_copy_assignment"] = c.is_copy_assignment();
@@ -93,6 +102,8 @@ void to_json(nlohmann::json &j, const class_ &c)
     j["methods"] = c.methods();
     j["bases"] = c.parents();
 
+    set_module(j, c);
+
     j["template_parameters"] = c.template_params();
 }
 
@@ -101,6 +112,8 @@ void to_json(nlohmann::json &j, const enum_ &c)
     j = dynamic_cast<const common::model::element &>(c);
     j["is_nested"] = c.is_nested();
     j["constants"] = c.constants();
+
+    set_module(j, c);
 }
 
 void to_json(nlohmann::json &j, const concept_ &c)
@@ -108,6 +121,8 @@ void to_json(nlohmann::json &j, const concept_ &c)
     j = dynamic_cast<const common::model::element &>(c);
     j["parameters"] = c.requires_parameters();
     j["statements"] = c.requires_statements();
+
+    set_module(j, c);
 }
 
 } // namespace clanguml::class_diagram::model
@@ -124,6 +139,11 @@ void generator::generate_diagram(nlohmann::json &parent) const
     if (config().using_namespace)
         parent["using_namespace"] = config().using_namespace().to_string();
 
+    if (config().using_module)
+        parent["using_module"] = config().using_module();
+
+    if (config().generate_packages.has_value)
+        parent["package_type"] = to_string(config().package_type());
     parent["elements"] = std::vector<nlohmann::json>{};
     parent["relationships"] = std::vector<nlohmann::json>{};
 
@@ -169,13 +189,9 @@ void generator::generate(const package &p, nlohmann::json &parent) const
         if (!uns.starts_with({p.full_name(false)})) {
             LOG_DBG("Generating package {}", p.name());
 
-            if (config().package_type() == config::package_type_t::kDirectory)
-                package_object["type"] = "directory";
-            else
-                package_object["type"] = "namespace";
-
+            package_object["type"] = to_string(config().package_type());
             package_object["name"] = p.name();
-            package_object["display_name"] = p.full_name(false);
+            package_object["display_name"] = p.name();
         }
     }
 

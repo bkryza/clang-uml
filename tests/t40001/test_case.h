@@ -1,7 +1,7 @@
 /**
  * tests/t40001/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,10 +67,10 @@ TEST_CASE("t40001", "[test-case][include]")
         REQUIRE(IsFolder(j, "include/lib1"));
         REQUIRE(IsFolder(j, "src"));
 
-        REQUIRE(IsFile(j, "include/lib1/lib1.h"));
-        REQUIRE(IsFile(j, "include/t40001_include1.h"));
+        REQUIRE(IsHeader(j, "include/lib1/lib1.h"));
+        REQUIRE(IsHeader(j, "include/t40001_include1.h"));
         REQUIRE(IsFile(j, "src/t40001.cc"));
-        REQUIRE(IsFile(j, "yaml-cpp/yaml.h"));
+        REQUIRE(IsSystemHeader(j, "yaml-cpp/yaml.h"));
 
         REQUIRE(IsFile(j, "string"));
 

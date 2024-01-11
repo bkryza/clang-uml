@@ -1,7 +1,7 @@
 /**
  * @file src/common/visitor/translation_unit_visitor.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@
 #pragma once
 
 #include "comment/comment_visitor.h"
+#include "common/model/element.h"
+#include "common/model/source_location.h"
 #include "config/config.h"
 
 #include <clang/AST/Comment.h>
+#include <clang/AST/RawCommentList.h>
 #include <clang/Basic/SourceManager.h>
 
 #include <deque>
@@ -31,9 +34,8 @@
 
 namespace clanguml::common::visitor {
 
-using found_relationships_t =
-    std::vector<std::pair<clanguml::common::model::diagram_element::id_t,
-        common::model::relationship_t>>;
+using found_relationships_t = std::vector<
+    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
 /**
  * @brief Diagram translation unit visitor base class
@@ -99,6 +101,9 @@ public:
      */
     void set_source_location(const clang::SourceLocation &location,
         clanguml::common::model::source_location &element);
+
+    void set_owning_module(
+        const clang::Decl &decl, clanguml::common::model::element &element);
 
 protected:
     /**

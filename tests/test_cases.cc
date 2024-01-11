@@ -1,7 +1,7 @@
 /**
  * @file tests/test_cases.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -404,6 +404,16 @@ using namespace clanguml::test::matchers;
 #include "t00066/test_case.h"
 #include "t00067/test_case.h"
 #include "t00068/test_case.h"
+#if defined(ENABLE_CXX_STD_20_TEST_CASES)
+#if __has_include(<coroutine>)
+#include "t00069/test_case.h"
+#endif
+#endif
+#if defined(ENABLE_CXX_MODULES_TEST_CASES)
+#include "t00070/test_case.h"
+#include "t00071/test_case.h"
+#include "t00072/test_case.h"
+#endif
 
 ///
 /// Sequence diagram tests
@@ -450,6 +460,7 @@ using namespace clanguml::test::matchers;
 #include "t20036/test_case.h"
 #include "t20037/test_case.h"
 #include "t20038/test_case.h"
+#include "t20039/test_case.h"
 
 ///
 /// Package diagram tests
@@ -465,7 +476,12 @@ using namespace clanguml::test::matchers;
 #include "t30009/test_case.h"
 #include "t30010/test_case.h"
 #include "t30011/test_case.h"
-
+#if defined(ENABLE_CXX_MODULES_TEST_CASES)
+#include "t30012/test_case.h"
+#include "t30013/test_case.h"
+#include "t30014/test_case.h"
+#include "t30015/test_case.h"
+#endif
 ///
 /// Include diagram tests
 ///

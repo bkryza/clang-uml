@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 
 #
 # Project name
@@ -153,6 +153,7 @@ add_subdirectory(src)
 # Enable testing via CTest
 #
 option(BUILD_TESTS "" ON)
+option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 if(BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)

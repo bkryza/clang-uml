@@ -1,7 +1,7 @@
 /**
  * tests/t30008/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,22 +58,23 @@ TEST_CASE("t30008", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "dependants::A"));
-        REQUIRE(IsPackage(j, "dependants::B"));
-        REQUIRE(IsPackage(j, "dependants::C"));
-        REQUIRE(!IsPackage(j, "dependants::X"));
+        REQUIRE(IsNamespacePackage(j, "dependants"s, "A"s));
+        REQUIRE(IsNamespacePackage(j, "dependants"s, "B"s));
+        REQUIRE(IsNamespacePackage(j, "dependants"s, "C"s));
+        REQUIRE(!IsNamespacePackage(j, "dependants"s, "X"s));
 
-        REQUIRE(IsDependency(j, "dependants::B", "dependants::A"));
-        REQUIRE(IsDependency(j, "dependants::C", "dependants::B"));
+        REQUIRE(IsDependency(j, "B", "A"));
+        REQUIRE(IsDependency(j, "C", "B"));
 
-        REQUIRE(IsPackage(j, "dependencies::D"));
-        REQUIRE(IsPackage(j, "dependencies::E"));
-        REQUIRE(IsPackage(j, "dependencies::F"));
-        REQUIRE(!IsPackage(j, "dependencies::Y"));
+        REQUIRE(IsNamespacePackage(j, "dependencies"s, "D"s));
+        REQUIRE(IsNamespacePackage(j, "dependencies"s, "E"s));
+        REQUIRE(IsNamespacePackage(j, "dependencies"s, "F"s));
+        REQUIRE(!IsNamespacePackage(j, "dependencies"s, "Y"s));
 
-        REQUIRE(IsDependency(j, "dependencies::E", "dependencies::D"));
-        REQUIRE(IsDependency(j, "dependencies::F", "dependencies::E"));
+        REQUIRE(IsDependency(j, "E", "D"));
+        REQUIRE(IsDependency(j, "F", "E"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

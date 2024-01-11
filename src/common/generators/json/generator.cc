@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/json/generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ void to_json(nlohmann::json &j, const element &c)
     j = json{{"id", std::to_string(c.id())},
         {"name", detail::render_name(c.name())},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
-        {"display_name", detail::render_name(c.full_name(false))}};
+        {"display_name", detail::render_name(c.full_name(true))}};
 
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();

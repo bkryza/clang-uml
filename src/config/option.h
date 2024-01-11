@@ -1,7 +1,7 @@
 /**
  * @file src/config/option.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,27 @@
  */
 #pragma once
 
+#include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace clanguml {
 namespace config {
 
 template <typename T> void append_value(T &l, const T &r) { l = r; }
+
+template <typename T>
+void append_value(std::vector<T> &l, const std::vector<T> &r)
+{
+    l.insert(std::end(l), r.begin(), r.end());
+}
+
+template <typename K, typename V>
+void append_value(std::map<K, V> &l, const std::map<K, V> &r)
+{
+    l.insert(r.begin(), r.end());
+}
 
 /**
  * Possible option inheritance methods from top level to diagram level.
@@ -102,9 +116,7 @@ template <typename T> struct option {
             has_value = true;
         }
         else if (!is_declared && o.is_declared) {
-            value = o.value;
-            is_declared = true;
-            has_value = true;
+            set(o.value);
         }
     }
 

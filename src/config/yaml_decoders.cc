@@ -1,7 +1,7 @@
 /**
  * @file src/config/yaml_decoders.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ namespace YAML {
 using clanguml::common::namespace_or_regex;
 using clanguml::common::string_or_regex;
 using clanguml::common::model::access_t;
+using clanguml::common::model::module_access_t;
 using clanguml::common::model::relationship_t;
 using clanguml::config::callee_type;
 using clanguml::config::class_diagram;
@@ -133,6 +134,8 @@ void get_option<package_type_t>(
             option.set(package_type_t::kNamespace);
         else if (val == "directory")
             option.set(package_type_t::kDirectory);
+        else if (val == "module")
+            option.set(package_type_t::kModule);
         else
             throw std::runtime_error(
                 "Invalid generate_method_arguments value: " + val);
@@ -232,6 +235,23 @@ template <> struct convert<access_t> {
             rhs = access_t::kProtected;
         else if (node.as<std::string>() == "private")
             rhs = access_t::kPrivate;
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
+// config module_access_t decoder
+//
+template <> struct convert<module_access_t> {
+    static bool decode(const Node &node, module_access_t &rhs)
+    {
+        if (node.as<std::string>() == "public")
+            rhs = module_access_t::kPublic;
+        else if (node.as<std::string>() == "private")
+            rhs = module_access_t::kPrivate;
         else
             return false;
 
@@ -475,6 +495,16 @@ template <> struct convert<filter> {
                 rhs.namespaces.push_back({ns});
         }
 
+        if (node["modules"]) {
+            auto module_list = node["modules"].as<decltype(rhs.modules)>();
+            for (const auto &ns : module_list)
+                rhs.modules.push_back({ns});
+        }
+
+        if (node["module_access"])
+            rhs.module_access =
+                node["module_access"].as<decltype(rhs.module_access)>();
+
         if (node["relationships"])
             rhs.relationships =
                 node["relationships"].as<decltype(rhs.relationships)>();
@@ -567,6 +597,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     // Decode options common for all diagrams
     get_option(node, rhs.glob);
     get_option(node, rhs.using_namespace);
+    get_option(node, rhs.using_module);
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
@@ -632,6 +663,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.generate_method_arguments);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
+        get_option(node, rhs.type_aliases);
 
         get_option(node, rhs.get_relative_to());
 
@@ -781,6 +813,7 @@ template <> struct convert<config> {
     {
         get_option(node, rhs.glob);
         get_option(node, rhs.using_namespace);
+        get_option(node, rhs.using_module);
         get_option(node, rhs.output_directory);
         get_option(node, rhs.compilation_database_dir);
         get_option(node, rhs.add_compile_flags);
@@ -804,6 +837,7 @@ template <> struct convert<config> {
         get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.generate_message_comments);
         get_option(node, rhs.message_comment_width);
+        get_option(node, rhs.type_aliases);
 
         rhs.base_directory.set(node["__parent_path"].as<std::string>());
         get_option(node, rhs.get_relative_to());

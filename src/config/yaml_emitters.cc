@@ -1,7 +1,7 @@
 /**
  * @file src/config/yaml_emitters.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,12 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &a)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const module_access_t &a)
+{
+    out << to_string(a);
+    return out;
+}
+
 YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d)
 {
     out << to_string(d);
@@ -122,6 +128,10 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const filter &f)
     out << YAML::BeginMap;
     if (!f.namespaces.empty())
         out << YAML::Key << "namespaces" << YAML::Value << f.namespaces;
+    if (!f.modules.empty())
+        out << YAML::Key << "modules" << YAML::Value << f.modules;
+    if (!f.module_access.empty())
+        out << YAML::Key << "module_access" << YAML::Value << f.module_access;
     if (!f.access.empty())
         out << YAML::Key << "access" << YAML::Value << f.access;
     if (!f.context.empty())
@@ -308,6 +318,7 @@ YAML::Emitter &operator<<(
     out << c.puml;
     out << c.relative_to;
     out << c.using_namespace;
+    out << c.using_module;
     out << c.generate_metadata;
 
     if (const auto *cd = dynamic_cast<const class_diagram *>(&c);

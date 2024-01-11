@@ -1,7 +1,7 @@
 /**
  * @file src/config/schema.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,16 +58,13 @@ types:
     package_type_t: !variant
         - namespace
         - directory
+        - module
     member_order_t: !variant
         - lexical
         - as_is
     regex_t:
         r: string
     regex_or_string_t: [string, regex_t]
-    namespaces_filter_t:
-        namespaces: [regex_or_string_t]
-    elements_filter_t:
-        elements: [regex_or_string_t]
     element_types_filter_t: !variant
         - class
         - enum
@@ -93,6 +90,9 @@ types:
     access_filter_t: !variant
         - public
         - protected
+        - private
+    module_access_filter_t: !variant
+        - public
         - private
     method_type_filter_t: !variant
         - constructor
@@ -121,10 +121,12 @@ types:
         - context_filter_match_t
     filter_t:
         namespaces: !optional [regex_or_string_t]
+        modules: !optional [regex_or_string_t]
         elements: !optional [regex_or_string_t]
         element_types: !optional [element_types_filter_t]
         relationships: !optional [relationship_filter_t]
         access: !optional [access_filter_t]
+        module_access: !optional [module_access_filter_t]
         subclasses: !optional [regex_or_string_t]
         parents: !optional [regex_or_string_t]
         specializations: !optional [regex_or_string_t]
@@ -164,6 +166,7 @@ types:
             cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
+        using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
         #
@@ -202,6 +205,7 @@ types:
             after: !optional [string]
             cmd: !optional string
         relative_to: !optional string
+        type_aliases: !optional map_t<string;string>
         using_namespace: !optional [string, [string]]
         generate_metadata: !optional bool
         title: !optional string
@@ -242,6 +246,7 @@ types:
             cmd: !optional string
         relative_to: !optional string
         using_namespace: !optional [string, [string]]
+        using_module: !optional string
         generate_metadata: !optional bool
         title: !optional string
         #
@@ -321,6 +326,7 @@ root:
         cmd: !optional string
     relative_to: !optional string
     using_namespace: !optional [string, [string]]
+    using_module: !optional string
     generate_metadata: !optional bool
     #
     # Inheritable custom options
@@ -337,6 +343,7 @@ root:
     package_type: !optional package_type_t
     generate_template_argument_dependencies: !optional bool
     skip_redundant_dependencies: !optional bool
+    type_aliases: !optional map_t<string;string>
 )";
 
 } // namespace clanguml::config

@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/generators/json/sequence_diagram_generator.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const sequence_diagram::model::activity &a,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+        std::vector<common::id_t> &visited) const;
 
     /**
      * @brief Get reference to the current block statement.
@@ -126,8 +126,8 @@ private:
      * @param m Message model
      * @param visited List of already visited participants
      */
-    void process_call_message(const model::message &m,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+    void process_call_message(
+        const model::message &m, std::vector<common::id_t> &visited) const;
 
     /**
      * @brief Process `if` statement message
@@ -239,6 +239,8 @@ private:
 
     mutable std::set<common::id_t> generated_participants_;
 
+    // Needed to add "participants" array in a temporary object accessible from
+    // all methods of the generator
     mutable nlohmann::json json_;
 
     mutable std::vector<std::reference_wrapper<nlohmann::json>>

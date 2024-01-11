@@ -1,7 +1,7 @@
 /**
  * tests/t00008/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,12 +63,7 @@ TEST_CASE("t00008", "[test-case][class]")
 
         using namespace json;
 
-#if LLVM_VERSION_MAJOR >= 16
         REQUIRE(IsClassTemplate(j, "A<T,P=T,CMP=nullptr,int N=3>"));
-#else
-        REQUIRE(IsClassTemplate(
-            j, "A<T,P=T,clanguml::t00008::CMP=nullptr,int N=3>"));
-#endif
         REQUIRE(IsClassTemplate(j, "E::nested_template<ET>"));
         REQUIRE(IsClass(j, "E::nested_template<char>"));
 

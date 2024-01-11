@@ -1,6 +1,6 @@
 param ($Prefix="C:\clang-uml", $BuildType="Release")
 
-cmake -S . -B $BuildType -DCMAKE_PREFIX_PATH="$Prefix" -Thost=x64
+cmake -S . -B $BuildType -DCMAKE_PREFIX_PATH="$Prefix" -DENABLE_CXX_MODULES_TEST_CASES=OFF -Thost=x64
 cmake --build $BuildType --config $BuildType
 
 # Create compile commands in Visual Studio

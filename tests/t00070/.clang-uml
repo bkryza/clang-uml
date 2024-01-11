@@ -1,0 +1,14 @@
+diagrams:
+  t00070_class:
+    type: class
+    glob:
+      - t00070.cc
+    include:
+      modules:
+        - t00070
+    exclude:
+      modules:
+        - t00070.lib2
+      module_access:
+        - private
+    using_namespace: clanguml::t00070

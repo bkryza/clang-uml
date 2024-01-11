@@ -1,7 +1,7 @@
 /**
  * @file src/util/query_driver_include_extractor.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ public:
     const std::vector<std::string> &system_include_paths() const;
 
 private:
-    const std::string command_;
-    const std::string language_;
+    std::string command_;
+    std::string language_;
     std::string target_;
     std::vector<std::string> system_include_paths_;
 };

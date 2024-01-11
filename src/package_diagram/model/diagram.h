@@ -1,7 +1,7 @@
 /**
  * @file src/package_diagram/model/diagram.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public:
      * @param id Element id.
      * @return Optional reference to a diagram element.
      */
-    opt_ref<diagram_element> get(diagram_element::id_t id) const override;
+    opt_ref<diagram_element> get(common::id_t id) const override;
 
     /**
      * @brief Find an element in the diagram by name.
@@ -100,8 +100,7 @@ public:
      * @param id Id of the element
      * @return Optional reference to a diagram element
      */
-    template <typename ElementT>
-    opt_ref<ElementT> find(diagram_element::id_t id) const;
+    template <typename ElementT> opt_ref<ElementT> find(common::id_t id) const;
 
     /**
      * @brief Find elements in the diagram by regex pattern.
@@ -136,6 +135,10 @@ public:
             return add_with_namespace_path(std::move(e));
         }
 
+        if (parent_path.type() == common::model::path_type::kModule) {
+            return add_with_module_path(parent_path, std::move(e));
+        }
+
         return add_with_filesystem_path(parent_path, std::move(e));
     }
 
@@ -145,7 +148,7 @@ public:
      * @param id Id of a package in the diagram
      * @return PlantUML alias of the element
      */
-    std::string to_alias(diagram_element::id_t id) const;
+    std::string to_alias(common::id_t id) const;
 
     /**
      * @brief Return the elements JSON context for inja templates.
@@ -155,6 +158,17 @@ public:
     inja::json context() const override;
 
 private:
+    /**
+     * @brief Add element using module as diagram path
+     *
+     * @tparam ElementT Element type
+     * @param e Element to add
+     * @return True, if the element was added
+     */
+    template <typename ElementT>
+    bool add_with_module_path(
+        const common::model::path &parent_path, std::unique_ptr<ElementT> &&e);
+
     /**
      * @brief Add element using namespace as diagram path
      *
@@ -193,7 +207,7 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
 }
 
 template <typename ElementT>
-opt_ref<ElementT> diagram::find(diagram_element::id_t id) const
+opt_ref<ElementT> diagram::find(common::id_t id) const
 {
     for (const auto &element : element_view<ElementT>::view()) {
         if (element.get().id() == id) {
@@ -231,6 +245,49 @@ bool diagram::add_with_namespace_path(std::unique_ptr<ElementT> &&p)
     auto p_ref = std::ref(*p);
 
     auto res = add_element(ns, std::move(p));
+    if (res)
+        element_view<ElementT>::add(p_ref);
+
+    return res;
+}
+
+template <typename ElementT>
+bool diagram::add_with_module_path(
+    const common::model::path &parent_path, std::unique_ptr<ElementT> &&p)
+{
+    LOG_DBG("Adding package: {}, {}, {}, [{}]", p->name(), p->full_name(false),
+        parent_path.to_string(), p->id());
+
+    // Make sure all parent modules are already packages in the
+    // model
+    auto module_relative_to = path{p->using_namespace()};
+
+    for (auto it = parent_path.begin(); it != parent_path.end(); it++) {
+        auto pkg = std::make_unique<common::model::package>(
+            p->using_namespace(), common::model::path_type::kModule);
+        pkg->set_name(*it);
+
+        auto module_relative_part = common::model::path(
+            parent_path.begin(), it, common::model::path_type::kModule);
+
+        auto module_absolute_path = module_relative_to | module_relative_part;
+        pkg->set_module(module_absolute_path.to_string());
+        pkg->set_namespace(module_absolute_path);
+
+        auto package_absolute_path = module_absolute_path | pkg->name();
+
+        pkg->set_id(common::to_id(package_absolute_path.to_string()));
+
+        auto p_ref = std::ref(*pkg);
+
+        auto res = add_element(module_relative_part, std::move(pkg));
+        if (res)
+            element_view<ElementT>::add(p_ref);
+    }
+
+    auto p_ref = std::ref(*p);
+
+    auto res = add_element(parent_path, std::move(p));
     if (res)
         element_view<ElementT>::add(p_ref);
 

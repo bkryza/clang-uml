@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/package.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
 #include <sstream>
 
 namespace clanguml::common::model {
-package::package(const common::model::namespace_ &using_namespace)
-    : element{using_namespace}
+package::package(const common::model::namespace_ &using_namespace, path_type pt)
+    : element{using_namespace, pt}
 {
 }
 

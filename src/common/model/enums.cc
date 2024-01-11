@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/enums.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,19 @@ std::string to_string(access_t a)
     case access_t::kProtected:
         return "protected";
     case access_t::kPrivate:
+        return "private";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
+std::string to_string(module_access_t a)
+{
+    switch (a) {
+    case module_access_t::kPublic:
+        return "public";
+    case module_access_t::kPrivate:
         return "private";
     default:
         assert(false);

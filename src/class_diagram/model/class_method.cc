@@ -1,7 +1,7 @@
 /**
  * @file src/class_diagram/model/class_method.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,13 @@ bool class_method::is_consteval() const { return is_consteval_; }
 void class_method::is_consteval(bool is_consteval)
 {
     is_consteval_ = is_consteval;
+}
+
+bool class_method::is_coroutine() const { return is_coroutine_; }
+
+void class_method::is_coroutine(bool is_coroutine)
+{
+    is_coroutine_ = is_coroutine;
 }
 
 bool class_method::is_noexcept() const { return is_noexcept_; }

@@ -1,7 +1,7 @@
 /**
  * @file tests/test_config.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -377,12 +377,68 @@ TEST_CASE("Test config relative paths handling", "[unit-test]")
             "{}/test_config_data", std::filesystem::current_path().string()));
 }
 
+TEST_CASE("Test using_module relative to", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/using_module.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class1"];
+    CHECK(def.make_module_relative(std::make_optional<std::string>(
+              "mod1.mod2.mod3")) == std::vector{std::string{"mod3"}});
+    CHECK(def.make_module_relative(std::make_optional<std::string>(
+              "mod1.mod2")) == std::vector<std::string>{});
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("modA.modB.modC")) ==
+        std::vector{
+            std::string{"modA"}, std::string{"modB"}, std::string{"modC"}});
+
+    def = *cfg.diagrams["class2"];
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("mod1.mod2.mod3")) ==
+        std::vector{std::string{"mod2"}, std::string{"mod3"}});
+    CHECK(def.make_module_relative(
+              std::make_optional<std::string>("modA.modB.modC")) ==
+        std::vector{
+            std::string{"modA"}, std::string{"modB"}, std::string{"modC"}});
+}
+
 TEST_CASE("Test config full clang uml dump", "[unit-test]")
 {
     auto cfg =
         clanguml::config::load("./test_config_data/clang_uml_config.yml");
 
     CHECK(cfg.diagrams.size() == 32);
+}
+
+TEST_CASE("Test config type aliases", "[unit-test]")
+{
+    auto cfg = clanguml::config::load("./test_config_data/type_aliases.yml");
+
+    CHECK(cfg.diagrams.size() == 2);
+    auto &def = *cfg.diagrams["class_diagram"];
+    CHECK(
+        def.simplify_template_type(
+            "ns1::ns2::container<ns2::key_t,ns2::value_t>") == "custom_map_t");
+    CHECK(def.simplify_template_type(
+              "ns1::ns2::container<ns1::ns2::key_t,std::string>") ==
+        "string_map_t");
+    CHECK(
+        def.simplify_template_type("std::basic_string<char>") == "std::string");
+    CHECK(def.simplify_template_type("std::basic_string<char32_t>") ==
+        "unicode_t");
+
+    def = *cfg.diagrams["sequence_diagram"];
+    CHECK(
+        def.simplify_template_type(
+            "ns1::ns2::container<ns2::key_t,ns2::value_t>") == "custom_map_t");
+    CHECK(def.simplify_template_type(
+              "ns1::ns2::Object::iterator<std::weak_ptr<Object> "
+              "*,std::vector<std::weak_ptr<Object>,std::allocator<std::weak_"
+              "ptr<Object>>>>") == "ObjectPtrIt");
+    CHECK(
+        def.simplify_template_type("std::basic_string<char>") == "std::string");
+    CHECK(def.simplify_template_type("std::vector<std::basic_string<char>>") ==
+        "std::vector<std::string>");
 }
 
 ///

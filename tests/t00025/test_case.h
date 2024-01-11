@@ -1,7 +1,7 @@
 /**
  * tests/t00025/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ TEST_CASE("t00025", "[test-case][class]")
         REQUIRE(IsClass(j, "Target1"));
         REQUIRE(IsClass(j, "Target2"));
         REQUIRE(IsClassTemplate(j, "Proxy<T>"));
-        REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target1>", "Target1"));
-        REQUIRE(IsDependency(j, "Proxy<clanguml::t00025::Target2>", "Target2"));
+        REQUIRE(IsDependency(j, "Proxy<Target1>", "Target1"));
+        REQUIRE(IsDependency(j, "Proxy<Target2>", "Target2"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

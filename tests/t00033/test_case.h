@@ -1,7 +1,7 @@
 /**
  * tests/t00033/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,9 @@ TEST_CASE("t00033", "[test-case][class]")
 
         using namespace json;
 
-        REQUIRE(IsClass(j,
-            "A<clanguml::t00033::B<std::unique_ptr<clanguml::t00033::C<"
-            "clanguml::t00033::D>>>>"));
-        REQUIRE(IsDependency(j,
-            "A<clanguml::t00033::B<std::unique_ptr<clanguml::t00033::C<"
-            "clanguml::t00033::D>>>>",
-            "B<std::unique_ptr<clanguml::t00033::C<clanguml::t00033::D>>>"));
+        REQUIRE(IsClass(j, "A<B<std::unique_ptr<C<D>>>>"));
+        REQUIRE(IsDependency(
+            j, "A<B<std::unique_ptr<C<D>>>>", "B<std::unique_ptr<C<D>>>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

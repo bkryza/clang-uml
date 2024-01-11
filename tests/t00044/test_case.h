@@ -1,7 +1,7 @@
 /**
  * tests/t00044/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ TEST_CASE("t00044", "[test-case][class]")
         REQUIRE(IsClassTemplate(j, "signal_handler<T,A>"));
         REQUIRE(IsClassTemplate(j, "signal_handler<Ret(Args...),A>"));
         REQUIRE(IsClassTemplate(j, "signal_handler<void(int),bool>"));
-        REQUIRE(IsClassTemplate(
-            j, "sink<clanguml::t00044::signal_handler<Ret(Args...),A>>"));
+        REQUIRE(IsClassTemplate(j, "sink<signal_handler<Ret(Args...),A>>"));
         REQUIRE(IsClass(j, "R"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);

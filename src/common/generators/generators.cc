@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/generators.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ void generate_diagram_impl(const std::string &name,
             auto from_values = model->list_from_values();
 
             for (const auto &from : from_values) {
-                std::cout << from << std::endl;
+                std::cout << from << '\n';
             }
 
             return;
@@ -136,7 +136,7 @@ void generate_diagram_impl(const std::string &name,
             auto to_values = model->list_to_values();
 
             for (const auto &to : to_values) {
-                std::cout << "|" << to << "|" << std::endl;
+                std::cout << "|" << to << "|" << '\n';
             }
 
             return;

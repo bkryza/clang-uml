@@ -1,0 +1,12 @@
+diagrams:
+  class1:
+    type: class
+    glob:
+      - test.cc
+    using_module: mod1.mod2
+  class2:
+    type: class
+    relative_to: .
+    glob:
+      - test.cc
+    using_module: mod1

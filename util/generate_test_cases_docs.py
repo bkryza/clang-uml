@@ -58,14 +58,17 @@ with open(r'tests/test_cases.yaml') as f:
                 tc.write(config)
                 tc.write("\n```\n")
                 tc.write("## Source code\n")
-                for source_file in os.listdir(f'tests/{name}/'):
-                    if source_file.endswith(".h") or source_file.endswith(".cc") or source_file.endswith(".c"):
-                        if source_file == "test_case.h":
-                            continue
-                        tc.write(f'File {source_file}\n')
-                        tc.write("```cpp\n")
-                        tc.write(open(f'tests/{name}/{source_file}', 'r').read())
-                        tc.write("\n```\n")
+                for root, dirs, files in os.walk(f'tests/{name}/'):
+                    for source_file in files:
+                        if source_file.endswith((".h", ".cc", ".c", ".cppm")):
+                            if source_file == "test_case.h":
+                                continue
+                            file_path = os.path.join(root, source_file)
+                            tc.write(f'File `{file_path}`\n')
+                            tc.write("```cpp\n")
+                            with open(file_path, 'r') as file:
+                                tc.write(file.read())
+                            tc.write("\n```\n")
 
                 # Copy and link the diagram image
                 config_dict = yaml.full_load(config)

@@ -1,7 +1,7 @@
 /**
  * @file src/common/generators/json/generator.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@
 namespace clanguml::common::model {
 using nlohmann::json;
 
-void to_json(nlohmann::json &j, const source_location &sl);
+void to_json(json &j, const source_location &sl);
 
-void to_json(nlohmann::json &j, const element &c);
+void to_json(json &j, const element &c);
 
-void to_json(nlohmann::json &j, const template_parameter &c);
+void to_json(json &j, const template_parameter &c);
 
-void to_json(nlohmann::json &j, const relationship &c);
+void to_json(json &j, const relationship &c);
 } // namespace clanguml::common::model
 
 namespace clanguml::common::generators::json {

@@ -1,7 +1,7 @@
 /**
  * tests/t30002/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,45 +79,48 @@ TEST_CASE("t30002", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
 
-        REQUIRE(IsPackage(j, "A::AA"));
-        REQUIRE(IsPackage(j, "A::AA::A1"));
-        REQUIRE(IsPackage(j, "A::AA::A2"));
-        REQUIRE(IsPackage(j, "A::AA::A3"));
-        REQUIRE(IsPackage(j, "A::AA::A4"));
-        REQUIRE(IsPackage(j, "A::AA::A5"));
-        REQUIRE(IsPackage(j, "A::AA::A6"));
-        REQUIRE(IsPackage(j, "A::AA::A7"));
-        REQUIRE(IsPackage(j, "A::AA::A8"));
-        REQUIRE(IsPackage(j, "A::AA::A9"));
-        REQUIRE(IsPackage(j, "A::AA::A10"));
-        REQUIRE(IsPackage(j, "A::AA::A11"));
-        REQUIRE(IsPackage(j, "A::AA::A12"));
-        REQUIRE(IsPackage(j, "A::AA::A13"));
-        REQUIRE(IsPackage(j, "A::AA::A14"));
-        REQUIRE(IsPackage(j, "A::AA::A15"));
-        REQUIRE(IsPackage(j, "A::AA::A16"));
-        REQUIRE(IsPackage(j, "A::AA::A17"));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A1"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A2"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A3"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A4"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A5"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A6"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A7"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A8"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A9"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A10"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A11"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A12"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A13"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A14"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A15"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A16"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A17"s));
+        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "A18"s));
 
-        REQUIRE(IsPackage(j, "B::BB::BBB"));
+        REQUIRE(IsNamespacePackage(j, "B"s, "BB"s, "BBB"s));
 
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A1"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A2"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A3"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A4"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A5"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A6"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A7"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A8"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A9"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A10"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A11"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A12"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A13"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A14"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A15"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A16"));
-        REQUIRE(IsDependency(j, "B::BB::BBB", "A::AA::A17"));
+        REQUIRE(IsDependency(j, "BBB", "A1"));
+        REQUIRE(IsDependency(j, "BBB", "A2"));
+        REQUIRE(IsDependency(j, "BBB", "A3"));
+        REQUIRE(IsDependency(j, "BBB", "A4"));
+        REQUIRE(IsDependency(j, "BBB", "A5"));
+        REQUIRE(IsDependency(j, "BBB", "A6"));
+        REQUIRE(IsDependency(j, "BBB", "A7"));
+        REQUIRE(IsDependency(j, "BBB", "A8"));
+        REQUIRE(IsDependency(j, "BBB", "A9"));
+        REQUIRE(IsDependency(j, "BBB", "A10"));
+        REQUIRE(IsDependency(j, "BBB", "A11"));
+        REQUIRE(IsDependency(j, "BBB", "A12"));
+        REQUIRE(IsDependency(j, "BBB", "A13"));
+        REQUIRE(IsDependency(j, "BBB", "A14"));
+        REQUIRE(IsDependency(j, "BBB", "A15"));
+        REQUIRE(IsDependency(j, "BBB", "A16"));
+        REQUIRE(IsDependency(j, "BBB", "A17"));
+        REQUIRE(IsDependency(j, "BBB", "A18"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

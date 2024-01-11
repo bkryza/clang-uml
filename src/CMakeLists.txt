@@ -27,7 +27,7 @@ target_compile_options(clang-umllib PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         -Werror -Wall -Wextra -Wno-unused-parameter
         -Wno-deprecated-declarations ${CUSTOM_COMPILE_OPTIONS}>
-        $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4291 /wd4624 /wd4244>)
+        $<$<CXX_COMPILER_ID:MSVC>:/MP /MD /W1 /bigobj /wd4291 /wd4624 /wd4244>)
 target_compile_definitions(clang-umllib PRIVATE
         $<$<CXX_COMPILER_ID:MSVC>:
         -DLLVM_FORCE_USE_OLD_TOOLCHAIN
@@ -44,7 +44,7 @@ target_compile_options(clang-uml PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
         -Werror -Wall -Wextra -Wno-unused-parameter
         -Wno-deprecated-declarations ${CUSTOM_COMPILE_OPTIONS}>
-        $<$<CXX_COMPILER_ID:MSVC>:/MP /W1 /bigobj /wd4291 /wd4624 /wd4244>)
+        $<$<CXX_COMPILER_ID:MSVC>:/MP /MD /W1 /bigobj /wd4291 /wd4624 /wd4244>)
 target_compile_definitions(clang-uml PRIVATE
         ${ENABLE_BACKWARD_CPP})
 target_link_libraries(clang-uml

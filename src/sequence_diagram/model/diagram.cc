@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/model/diagram.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ common::optional_ref<common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
-    const common::model::diagram_element::id_t id) const
+    const common::id_t id) const
 {
     if (participants_.find(id) != participants_.end())
         return {*participants_.at(id)};
@@ -88,21 +88,17 @@ void diagram::add_participant(std::unique_ptr<participant> p)
     }
 }
 
-void diagram::add_active_participant(common::model::diagram_element::id_t id)
+void diagram::add_active_participant(common::id_t id)
 {
     active_participants_.emplace(id);
 }
 
-const activity &diagram::get_activity(
-    common::model::diagram_element::id_t id) const
+const activity &diagram::get_activity(common::id_t id) const
 {
     return sequences_.at(id);
 }
 
-activity &diagram::get_activity(common::model::diagram_element::id_t id)
-{
-    return sequences_.at(id);
-}
+activity &diagram::get_activity(common::id_t id) { return sequences_.at(id); }
 
 void diagram::add_message(model::message &&message)
 {
@@ -150,37 +146,30 @@ void diagram::add_case_stmt_message(model::message &&m)
     }
 }
 
-std::map<common::model::diagram_element::id_t, activity> &diagram::sequences()
+std::map<common::id_t, activity> &diagram::sequences() { return sequences_; }
+
+const std::map<common::id_t, activity> &diagram::sequences() const
 {
     return sequences_;
 }
 
-const std::map<common::model::diagram_element::id_t, activity> &
-diagram::sequences() const
-{
-    return sequences_;
-}
-
-std::map<common::model::diagram_element::id_t, std::unique_ptr<participant>> &
-diagram::participants()
+std::map<common::id_t, std::unique_ptr<participant>> &diagram::participants()
 {
     return participants_;
 }
 
-const std::map<common::model::diagram_element::id_t,
-    std::unique_ptr<participant>> &
+const std::map<common::id_t, std::unique_ptr<participant>> &
 diagram::participants() const
 {
     return participants_;
 }
 
-std::set<common::model::diagram_element::id_t> &diagram::active_participants()
+std::set<common::id_t> &diagram::active_participants()
 {
     return active_participants_;
 }
 
-const std::set<common::model::diagram_element::id_t> &
-diagram::active_participants() const
+const std::set<common::id_t> &diagram::active_participants() const
 {
     return active_participants_;
 }
@@ -232,10 +221,10 @@ std::vector<std::string> diagram::list_to_values() const
     return result;
 }
 
-common::model::diagram_element::id_t diagram::get_to_activity_id(
+common::id_t diagram::get_to_activity_id(
     const config::source_location &to_location) const
 {
-    common::model::diagram_element::id_t to_activity{0};
+    common::id_t to_activity{0};
 
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
@@ -261,10 +250,10 @@ common::model::diagram_element::id_t diagram::get_to_activity_id(
     return to_activity;
 }
 
-common::model::diagram_element::id_t diagram::get_from_activity_id(
+common::id_t diagram::get_from_activity_id(
     const config::source_location &from_location) const
 {
-    common::model::diagram_element::id_t from_activity{0};
+    common::id_t from_activity{0};
 
     for (const auto &[k, v] : sequences()) {
         const auto &caller = *participants().at(v.from());
@@ -286,8 +275,7 @@ common::model::diagram_element::id_t diagram::get_from_activity_id(
 }
 
 std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
-    const common::model::diagram_element::id_t from_activity,
-    const common::model::diagram_element::id_t to_activity) const
+    const common::id_t from_activity, const common::id_t to_activity) const
 {
     std::vector<message_chain_t> message_chains_unique{};
 

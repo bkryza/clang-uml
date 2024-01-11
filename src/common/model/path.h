@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/path.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,12 @@ namespace clanguml::common::model {
  * a nested set of namespaces or nested set of directories.
  */
 enum class path_type {
-    kNamespace, /*!< Namespace path */
-    kFilesystem /*!< Filesystem path */
+    kNamespace,  /*!< Namespace path */
+    kFilesystem, /*!< Filesystem path */
+    kModule      /*!< Module path */
 };
+
+std::string to_string(path_type pt);
 
 /**
  * @brief Diagram path
@@ -49,11 +52,13 @@ class path {
      *
      * @return Path separator
      */
-    const char *separator() const
+    static const char *separator(path_type pt)
     {
-        switch (path_type_) {
+        switch (pt) {
         case path_type::kNamespace:
             return "::";
+        case path_type::kModule:
+            return ".";
         case path_type::kFilesystem:
 #ifdef _WIN32
             return "\\";
@@ -65,8 +70,37 @@ class path {
         return "::";
     }
 
+    /**
+     * Returns the path separator based on the type of the instance path.
+     *
+     * @return Path separator
+     */
+    const char *separator() const { return separator(path_type_); }
+
 public:
     using container_type = std::vector<std::string>;
+
+    static container_type split(
+        const std::string &ns, path_type pt = path_type::kNamespace)
+    {
+        container_type result;
+        if (pt == path_type::kModule) {
+            auto path_toks = util::split(ns, separator(pt));
+            for (const auto &pt : path_toks) {
+                const auto subtoks = util::split(pt, ":");
+                if (subtoks.size() == 2) {
+                    result.push_back(subtoks.at(0));
+                    result.push_back(fmt::format(":{}", subtoks.at(1)));
+                }
+                else
+                    result.push_back(subtoks.at(0));
+            }
+        }
+        else
+            result = util::split(ns, separator(pt));
+
+        return result;
+    }
 
     path(path_type pt = path_type::kNamespace)
         : path_type_{pt}
@@ -79,7 +113,7 @@ public:
         if (ns.empty())
             return;
 
-        path_ = util::split(ns, separator());
+        path_ = split(ns, pt);
     }
 
     virtual ~path() = default;
@@ -103,7 +137,8 @@ public:
             return *this;
 
         if (path_type_ != right.path_type_)
-            throw std::runtime_error("");
+            throw std::runtime_error(
+                "Cannot assign a path to a path with another path type.");
 
         path_type_ = right.path_type_;
         path_ = right.path_;
@@ -160,7 +195,14 @@ public:
      */
     std::string to_string() const
     {
-        return fmt::format("{}", fmt::join(path_, std::string{separator()}));
+        auto result =
+            fmt::format("{}", fmt::join(path_, std::string{separator()}));
+
+        if (path_type_ == path_type::kModule) {
+            util::replace_all(result, ".:", ":");
+        }
+
+        return result;
     }
 
     /**
@@ -186,6 +228,7 @@ public:
     path operator|(const path &right) const
     {
         path res{*this};
+        res.path_type_ = right.path_type_;
         res.append(right);
         return res;
     }
@@ -382,6 +425,8 @@ public:
      * @return Path type.
      */
     path_type type() const { return path_type_; }
+
+    const container_type &tokens() const { return path_; }
 
 private:
     path_type path_type_;

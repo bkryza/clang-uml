@@ -1,7 +1,7 @@
 /**
  * @file src/common/visitor/ast_id_mapper.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ namespace clanguml::common::visitor {
  */
 class ast_id_mapper {
 public:
-    using id_t = common::model::diagram_element::id_t;
+    using id_t = common::id_t;
 
     ast_id_mapper() = default;
 

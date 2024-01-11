@@ -1,7 +1,7 @@
 /**
  * @file src/config/config.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,6 +147,8 @@ std::string to_string(package_type_t pt)
         return "namespace";
     case package_type_t::kDirectory:
         return "directory";
+    case package_type_t::kModule:
+        return "module";
     default:
         assert(false);
         return "";
@@ -187,6 +189,7 @@ void inheritable_diagram_options::inherit(
 {
     glob.override(parent.glob);
     using_namespace.override(parent.using_namespace);
+    using_module.override(parent.using_module);
     include_relations_also_as_members.override(
         parent.include_relations_also_as_members);
     include.override(parent.include);
@@ -214,6 +217,7 @@ void inheritable_diagram_options::inherit(
         parent.generate_condition_statements);
     debug_mode.override(parent.debug_mode);
     generate_metadata.override(parent.generate_metadata);
+    type_aliases.override(parent.type_aliases);
 }
 
 std::string inheritable_diagram_options::simplify_template_type(
@@ -227,6 +231,12 @@ std::string inheritable_diagram_options::simplify_template_type(
     }
 
     return full_name;
+}
+
+bool inheritable_diagram_options::generate_fully_qualified_name() const
+{
+    return generate_packages() &&
+        (package_type() == package_type_t::kNamespace);
 }
 
 std::vector<std::string> diagram::get_translation_units() const
@@ -262,6 +272,29 @@ std::filesystem::path diagram::make_path_relative(
     const std::filesystem::path &p) const
 {
     return relative(p, root_directory()).lexically_normal().string();
+}
+
+std::vector<std::string> diagram::make_module_relative(
+    const std::optional<std::string> &maybe_module) const
+{
+    if (!maybe_module)
+        return {};
+
+    auto module_path = common::model::path(
+        maybe_module.value(), common::model::path_type::kModule)
+                           .tokens();
+
+    if (using_module.has_value) {
+        auto using_module_path = common::model::path(
+            using_module(), common::model::path_type::kModule)
+                                     .tokens();
+
+        if (util::starts_with(module_path, using_module_path)) {
+            util::remove_prefix(module_path, using_module_path);
+        }
+    }
+
+    return module_path;
 }
 
 std::optional<std::string> diagram::get_together_group(

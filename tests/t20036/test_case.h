@@ -1,7 +1,7 @@
 /**
  * tests/t20036/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,16 +56,16 @@ TEST_CASE("t20036", "[test-case][sequence]")
         using namespace json;
 
         REQUIRE(HasMessageChain(j,
-            {{"C::c3()", "C::c2()", "void"}, {"C::c2()", "B::b2()", "void"},
-                {"B::b2()", "A::a2()", "void"}}));
+            {{"c3()", "c2()", "void"}, {"c2()", "b2()", "void"},
+                {"b2()", "a2()", "void"}}));
+        REQUIRE(HasMessageChain(
+            j, {{"c4()", "b2()", "void"}, {"b2()", "a2()", "void"}}));
+        REQUIRE(HasMessageChain(j, {{"d3()", "a2()", "void"}}));
         REQUIRE(HasMessageChain(j,
-            {{"C::c4()", "B::b2()", "void"}, {"B::b2()", "A::a2()", "void"}}));
-        REQUIRE(HasMessageChain(j, {{"D::d3()", "A::a2()", "void"}}));
-        REQUIRE(HasMessageChain(j,
-            {{"D::d1()", "C::c2()", "void"}, {"C::c2()", "B::b2()", "void"},
-                {"B::b2()", "A::a2()", "void"}}));
-        REQUIRE(HasMessageChain(j,
-            {{"C::c1()", "B::b1()", "void"}, {"B::b1()", "A::a2()", "void"}}));
+            {{"d1()", "c2()", "void"}, {"c2()", "b2()", "void"},
+                {"b2()", "a2()", "void"}}));
+        REQUIRE(HasMessageChain(
+            j, {{"c1()", "b1()", "void"}, {"b1()", "a2()", "void"}}));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

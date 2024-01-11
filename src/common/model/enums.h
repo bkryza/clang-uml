@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/enums.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ namespace clanguml::common::model {
 
 enum class diagram_t { kClass, kSequence, kPackage, kInclude };
 
+enum class module_access_t { kPublic, kPrivate };
 enum class access_t { kPublic, kProtected, kPrivate, kNone };
 
 enum class relationship_t {
@@ -76,6 +77,8 @@ enum class message_scope_t {
 std::string to_string(relationship_t r);
 
 std::string to_string(access_t r);
+
+std::string to_string(module_access_t r);
 
 std::string to_string(message_t m);
 

@@ -1,7 +1,7 @@
 /**
  * tests/t00065/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ TEST_CASE("t00065", "[test-case][class]")
         // Check if all classes exist
         REQUIRE_THAT(src, IsClass(_A("R")));
         REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AImpl")));
+        REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
         REQUIRE_THAT(src, IsEnum(_A("XYZ")));
         REQUIRE_THAT(src, IsEnum(_A("ABC")));
 

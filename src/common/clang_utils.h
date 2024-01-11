@@ -1,7 +1,7 @@
 /**
  * @file src/common/clang_utils.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -294,5 +294,13 @@ consume_type_context(clang::QualType type);
  */
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt);
+
+/**
+ * Check if function or method declaration is a C++20 coroutine.
+ *
+ * @param decl Function declaration
+ * @return True, if the function is a C++20 coroutine.
+ */
+bool is_coroutine(const clang::FunctionDecl &decl);
 
 } // namespace clanguml::common

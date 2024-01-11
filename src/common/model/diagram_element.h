@@ -1,7 +1,7 @@
 /**
  * src/common/model/diagram_element.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ namespace clanguml::common::model {
  */
 class diagram_element : public decorated_element, public source_location {
 public:
-    using id_t = int64_t;
-
     diagram_element();
 
     ~diagram_element() override = default;
@@ -55,14 +53,14 @@ public:
      *
      * @return Elements id.
      */
-    id_t id() const;
+    common::id_t id() const;
 
     /**
      * Set elements id.
      *
      * @param id Elements id.
      */
-    void set_id(id_t id);
+    void set_id(common::id_t id);
 
     /**
      * Get elements parent package id.
@@ -76,7 +74,7 @@ public:
      *
      * @param id Id of parent package.
      */
-    void set_parent_element_id(diagram_element::id_t id);
+    void set_parent_element_id(id_t id);
 
     /**
      * @brief Return elements' diagram alias.

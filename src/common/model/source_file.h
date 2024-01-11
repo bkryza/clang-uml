@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/source_file.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,20 @@ public:
     source_file_t type() const { return type_; }
 
     /**
+     * Set whether the file is a system header
+     *
+     * @param is_system Whether the file is a system header
+     */
+    void set_system_header(bool is_system) { is_system_header_ = is_system; }
+
+    /**
+     * Is the file a system header?
+     *
+     * @return True, if the source file is a system header
+     */
+    bool is_system_header() const { return is_system_header_; }
+
+    /**
      * Get the source file's parent path.
      *
      * @return Source file parent path.
@@ -185,6 +199,7 @@ private:
     filesystem_path path_{path_type::kFilesystem};
     source_file_t type_{source_file_t::kDirectory};
     bool is_absolute_{false};
+    bool is_system_header_{false};
 };
 } // namespace clanguml::common::model
 

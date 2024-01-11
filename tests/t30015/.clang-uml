@@ -1,0 +1,10 @@
+diagrams:
+  t30015_package:
+    type: package
+    glob:
+      - t30015.cc
+    package_type: module
+    include:
+      modules:
+        - t30015
+    using_module: t30015

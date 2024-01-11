@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/generators/mermaid/sequence_diagram_generator.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
-        std::ostream &ostr,
-        std::vector<common::model::diagram_element::id_t> &visited) const;
+        std::ostream &ostr, std::vector<common::id_t> &visited) const;
 
 private:
     /**

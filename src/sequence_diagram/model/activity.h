@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/model/activity.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public:
      *
      * @param id Id of the participant parent for the activity
      */
-    activity(common::model::diagram_element::id_t id);
+    activity(common::id_t id);
 
     /**
      * @brief Add a message call to the activity
@@ -63,10 +63,10 @@ public:
      *
      * @return Id of activity participant
      */
-    common::model::diagram_element::id_t from() const;
+    common::id_t from() const;
 
 private:
-    common::model::diagram_element::id_t from_;
+    common::id_t from_;
     std::vector<message> messages_;
 };
 

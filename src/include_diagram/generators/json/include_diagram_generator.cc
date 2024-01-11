@@ -1,7 +1,7 @@
 /**
  * @file src/include_diagram/generators/json/include_diagram_generator.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,9 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
 
             j["type"] = "file";
             j["file_kind"] = to_string(f.type());
+            if (f.type() == common::model::source_file_t::kHeader) {
+                j["is_system"] = f.is_system_header();
+            }
 
             parent["elements"].push_back(std::move(j));
         }

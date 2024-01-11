@@ -1,7 +1,7 @@
 /**
  * @file src/sequence_diagram/visitor/translation_unit_visitor.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,8 +114,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
     forward_declarations_.erase(class_id);
 
     if (diagram().should_include(class_model)) {
-        LOG_DBG("Adding class {} with id {}", class_model.full_name(false),
-            class_model.id());
+        LOG_DBG("Adding class participant {} with id {}",
+            class_model.full_name(false), class_model.id());
 
         assert(class_model.id() == class_id);
 
@@ -166,7 +166,8 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*class_model_ptr)) {
-        LOG_DBG("Adding class template {} with id {}", class_full_name, id);
+        LOG_DBG("Adding class template participant {} with id {}",
+            class_full_name, id);
 
         context().set_caller_id(id);
         context().update(declaration);
@@ -212,7 +213,8 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     forward_declarations_.erase(id);
 
     if (diagram().should_include(*template_specialization_ptr)) {
-        LOG_DBG("Adding class template specialization {} with id {}",
+        LOG_DBG(
+            "Adding class template specialization participant {} with id {}",
             class_full_name, id);
 
         context().set_caller_id(id);
@@ -1083,10 +1085,6 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
 bool translation_unit_visitor::TraverseVarDecl(clang::VarDecl *decl)
 {
-    LOG_TRACE("Traversing cxx variable declaration at {} [caller_id = {}]",
-        decl->getBeginLoc().printToString(source_manager()),
-        context().caller_id());
-
     if (decl->isStaticLocal())
         within_static_variable_declaration_++;
 
@@ -1458,7 +1456,7 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
-        std::optional<common::model::diagram_element::id_t> id_opt;
+        std::optional<common::id_t> id_opt;
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
@@ -1630,15 +1628,15 @@ bool translation_unit_visitor::process_template_parameters(
 }
 
 void translation_unit_visitor::set_unique_id(
-    int64_t local_id, common::model::diagram_element::id_t global_id)
+    int64_t local_id, common::id_t global_id)
 {
     LOG_TRACE("Setting local element mapping {} --> {}", local_id, global_id);
 
     local_ast_id_map_[local_id] = global_id;
 }
 
-std::optional<common::model::diagram_element::id_t>
-translation_unit_visitor::get_unique_id(int64_t local_id) const
+std::optional<common::id_t> translation_unit_visitor::get_unique_id(
+    int64_t local_id) const
 {
     if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
         return {};
@@ -2051,11 +2049,11 @@ void translation_unit_visitor::process_template_specialization_argument(
                 argument.set_type(type_name);
         }
 
-        LOG_TRACE("Adding template instantiation argument {}",
-            argument.to_string(config().using_namespace(), false));
-
         simplify_system_template(
             argument, argument.to_string(config().using_namespace(), false));
+
+        LOG_TRACE("Adding template instantiation argument {}",
+            argument.to_string(config().using_namespace(), false));
 
         template_instantiation.add_template(std::move(argument));
     }
@@ -2232,7 +2230,7 @@ translation_unit_visitor::build_template_instantiation(
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::model::diagram_element::id_t best_match_id{0};
+    common::id_t best_match_id{0};
 
     for (const auto &[id, c] : diagram().participants()) {
         const auto *participant_as_class =
@@ -2382,7 +2380,7 @@ void translation_unit_visitor::pop_message_to_diagram(
 
 void translation_unit_visitor::finalize()
 {
-    std::set<common::model::diagram_element::id_t> active_participants_unique;
+    std::set<common::id_t> active_participants_unique;
 
     // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {

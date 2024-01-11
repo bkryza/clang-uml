@@ -1,7 +1,7 @@
 /**
  * @file src/common/model/diagram_filter.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,21 @@ struct namespace_filter : public filter_visitor {
 
 private:
     std::vector<common::namespace_or_regex> namespaces_;
+};
+
+/**
+ * Match diagram elements to a set of specified modules or
+ * module regex patterns.
+ */
+struct modules_filter : public filter_visitor {
+    modules_filter(filter_t type, std::vector<common::string_or_regex> modules);
+
+    ~modules_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &e) const override;
+
+private:
+    std::vector<common::string_or_regex> modules_;
 };
 
 /**
@@ -440,6 +455,20 @@ struct access_filter : public filter_visitor {
 
 private:
     std::vector<access_t> access_;
+};
+
+/**
+ * Match diagram elements based on module access (public or private).
+ */
+struct module_access_filter : public filter_visitor {
+    module_access_filter(filter_t type, std::vector<module_access_t> access);
+
+    ~module_access_filter() override = default;
+
+    tvl::value_t match(const diagram &d, const element &a) const override;
+
+private:
+    std::vector<module_access_t> access_;
 };
 
 /**

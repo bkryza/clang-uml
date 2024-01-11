@@ -1,7 +1,7 @@
 /**
  * tests/t30010/test_case.h
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,13 @@ TEST_CASE("t30010", "[test-case][package]")
         auto j = generate_package_json(diagram, *model);
 
         using namespace json;
+        using namespace std::string_literals;
+
+        REQUIRE(IsDirectoryPackage(j, "app"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib1"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib2"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib3"s));
+        REQUIRE(IsDirectoryPackage(j, "libraries"s, "lib4"s));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }

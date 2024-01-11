@@ -1,7 +1,7 @@
 /**
  * tests/t00002/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,17 @@ TEST_CASE("t00002", "[test-case][class]")
         auto j = generate_class_json(diagram, *model);
 
         using namespace json;
+
+        const auto &A = get_element(j, "A");
+
+        CHECK(A.has_value());
+
+        CHECK(A.value()["type"] == "class");
+        CHECK(A.value()["name"] == "A");
+        CHECK(A.value()["display_name"] == "A");
+        CHECK(A.value()["namespace"] == "clanguml::t00002");
+        CHECK(A.value()["source_location"]["file"] == "t00002.cc");
+        CHECK(A.value()["source_location"]["line"] == 7);
 
         REQUIRE(HasTitle(j, "Basic class diagram example"));
         REQUIRE(IsClass(j, "A"));

@@ -1,0 +1,13 @@
+diagrams:
+  t30014_package:
+    type: package
+    glob:
+      - t30014.cc
+    package_type: module
+    include:
+      modules:
+        - t30014
+    exclude:
+      modules:
+        - t30014.app:lib1.mod2
+    using_module: t30014

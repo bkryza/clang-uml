@@ -73,6 +73,10 @@
  * [t00066](./test_cases/t00066.md) - Class fields and methods without grouping and sorting
  * [t00067](./test_cases/t00067.md) - Class method type filter test case
  * [t00068](./test_cases/t00068.md) - Context filter radius parameter test case
+ * [t00069](./test_cases/t00069.md) - Coroutine methods in class diagrams
+ * [t00070](./test_cases/t00070.md) - Diagram filter based on C++20 modules
+ * [t00071](./test_cases/t00071.md) - Class diagram with C++20 modules generated as packages
+ * [t00072](./test_cases/t00072.md) - Class diagram with C++20 module partitions generated as packages
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -112,6 +116,7 @@
  * [t20036](./test_cases/t20036.md) - Test case for rendering all call chains leading to an activity (to)
  * [t20037](./test_cases/t20037.md) - Test case checking if activities in static variable declarations appear only once
  * [t20038](./test_cases/t20038.md) - Sequence diagram comment decorator test case
+ * [t20039](./test_cases/t20039.md) - Test case for type aliases config option in sequence diagrams
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
@@ -124,6 +129,10 @@
  * [t30009](./test_cases/t30009.md) - Together layout hint test
  * [t30010](./test_cases/t30010.md) - Package diagram with packages from directory structure
  * [t30011](./test_cases/t30011.md) - Package diagram with packages from directory structure for plain C
+ * [t30012](./test_cases/t30012.md) - C++20 modules package diagram test
+ * [t30013](./test_cases/t30013.md) - C++20 modules package dependencies diagram test
+ * [t30014](./test_cases/t30014.md) - C++20 modules package diagram test with partitions
+ * [t30015](./test_cases/t30015.md) - C++20 modules package diagram test with partition dependencies
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case

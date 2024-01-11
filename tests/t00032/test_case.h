@@ -1,7 +1,7 @@
 /**
  * tests/t00032/test_case.cc
  *
- * Copyright (c) 2021-2023 Bartek Kryza <bkryza@gmail.com>
+ * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,7 @@ TEST_CASE("t00032", "[test-case][class]")
 
         using namespace json;
 
-        REQUIRE(IsBaseClass(j, "A",
-            "Overload<clanguml::t00032::TBase,int,clanguml::t00032::A,clanguml:"
-            ":t00032::B,clanguml::t00032::C>"));
+        REQUIRE(IsBaseClass(j, "A", "Overload<TBase,int,A,B,C>"));
 
         save_json(config.output_directory(), diagram->name + ".json", j);
     }
