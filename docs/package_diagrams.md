@@ -153,12 +153,31 @@ results the following diagram:
 ![package_deps](./test_cases/t30002_package.svg)
 
 By default, packages are generated from C++ namespaces in the code. However,
-they can also be generated from the subdirectories in the filesystem tree by 
-adding the following option to the configuration file:
+they can also be generated from the subdirectories in the filesystem tree or
+based on C++20 modules
+
+Subdirectory based packages can be enabled by adding the following option to
+the configuration file:
 
 ```yaml
 package_type: directory
 ```
 
-for example checkout this diagram
+for example check out this diagram
 ![t30011_package](./test_cases/t30011_package.svg)
+
+Module based packages can be enabled using the following option:
+
+```yaml
+package_type: module
+```
+
+for example check out this diagram
+![t30014_package](./test_cases/t30011_package.svg)
+
+Diagrams can be rendered relative to a specific module using `using_module`
+option:
+
+```yaml
+using_module: mod1.mod2
+```
