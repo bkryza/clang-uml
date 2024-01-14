@@ -25,17 +25,13 @@
 namespace clanguml::class_diagram::model {
 
 class_::class_(const common::model::namespace_ &using_namespace)
-    : element{using_namespace}
+    : template_element{using_namespace}
 {
 }
 
 bool class_::is_struct() const { return is_struct_; }
 
 void class_::is_struct(bool is_struct) { is_struct_ = is_struct; }
-
-bool class_::is_template() const { return is_template_; }
-
-void class_::is_template(bool is_template) { is_template_ = is_template; }
 
 bool class_::is_union() const { return is_union_; }
 
@@ -113,27 +109,6 @@ bool class_::is_abstract() const
     // with non-abstract methods
     return std::any_of(methods_.begin(), methods_.end(),
         [](const auto &method) { return method.is_pure_virtual(); });
-}
-
-int class_::calculate_template_specialization_match(const class_ &other) const
-{
-    int res{0};
-
-    if (name_and_ns() != other.name_and_ns()) {
-        return res;
-    }
-
-    return template_trait::calculate_template_specialization_match(other);
-}
-
-void class_::template_specialization_found(bool found)
-{
-    template_specialization_found_ = found;
-}
-
-bool class_::template_specialization_found() const
-{
-    return template_specialization_found_;
 }
 
 std::optional<std::string> class_::doxygen_link() const

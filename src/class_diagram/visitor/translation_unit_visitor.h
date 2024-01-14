@@ -20,13 +20,11 @@
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
-#include "class_diagram/visitor/template_builder.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
-#include "common/visitor/ast_id_mapper.h"
+#include "common/visitor/template_builder.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
-#include "template_builder.h"
 
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Basic/SourceManager.h>
@@ -53,6 +51,8 @@ using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
 using clanguml::common::model::template_parameter;
 using clanguml::common::model::template_trait;
+using clanguml::common::visitor::found_relationships_t;
+using clanguml::common::visitor::template_builder;
 
 /**
  * @brief Class diagram translation unit visitor
@@ -137,13 +137,6 @@ public:
     void finalize();
 
     /**
-     * @brief Get reference to Clang AST to clang-uml id mapper
-     *
-     * @return Reference to Clang AST to clang-uml id mapper
-     */
-    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
-
-    /**
      * @brief Add class (or template class) to the diagram.
      *
      * @param c Class model
@@ -163,8 +156,6 @@ public:
      * @param c Concept model
      */
     void add_concept(std::unique_ptr<concept_> &&c);
-
-    void ensure_lambda_type_is_relative(std::string &parameter_type) const;
 
 private:
     /**
@@ -460,6 +451,13 @@ private:
      */
     bool has_processed_template_class(const std::string &qualified_name) const;
 
+    void add_diagram_element(
+        std::unique_ptr<common::model::template_element> element) override;
+
+    void find_instantiation_relationships(
+        common::model::template_element &template_instantiation_base,
+        const std::string &full_name, common::id_t templated_decl_id);
+
     /**
      * @brief Get template builder reference
      *
@@ -472,8 +470,6 @@ private:
 
     // Reference to class diagram config
     const clanguml::config::class_diagram &config_;
-
-    mutable common::visitor::ast_id_mapper id_mapper_;
 
     template_builder template_builder_;
 

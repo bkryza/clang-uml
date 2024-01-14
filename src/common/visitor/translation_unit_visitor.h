@@ -18,8 +18,9 @@
 #pragma once
 
 #include "comment/comment_visitor.h"
-#include "common/model/element.h"
 #include "common/model/source_location.h"
+#include "common/model/template_element.h"
+#include "common/visitor/ast_id_mapper.h"
 #include "config/config.h"
 
 #include <clang/AST/Comment.h>
@@ -66,6 +67,13 @@ public:
     const std::filesystem::path &tu_path() const;
 
     /**
+     * @brief Get reference to Clang AST to clang-uml id mapper
+     *
+     * @return Reference to Clang AST to clang-uml id mapper
+     */
+    common::visitor::ast_id_mapper &id_mapper() const { return id_mapper_; }
+
+    /**
      * @brief Get clang::SourceManager
      * @return Reference to @ref clang::SourceManager used by this translation
      *         unit visitor
@@ -105,6 +113,11 @@ public:
     void set_owning_module(
         const clang::Decl &decl, clanguml::common::model::element &element);
 
+    virtual void add_diagram_element(
+        std::unique_ptr<common::model::template_element> element)
+    {
+    }
+
 protected:
     /**
      * @brief Process comment directives in comment attached to a declaration
@@ -136,5 +149,7 @@ private:
     std::filesystem::path translation_unit_path_;
 
     std::set<const clang::RawComment *> processed_comments_;
+
+    mutable common::visitor::ast_id_mapper id_mapper_;
 };
 } // namespace clanguml::common::visitor

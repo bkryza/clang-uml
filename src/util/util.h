@@ -160,6 +160,17 @@ std::string get_git_toplevel_dir();
  */
 std::string get_os_name();
 
+template <typename T, typename S>
+std::unique_ptr<T> unique_pointer_cast(std::unique_ptr<S> &&p) noexcept
+{
+    if (T *const converted = dynamic_cast<T *>(p.get())) {
+        p.release();
+        return std::unique_ptr<T>{converted};
+    }
+
+    return {};
+}
+
 /**
  * @brief Split a string using delimiter
  *

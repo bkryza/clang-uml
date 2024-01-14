@@ -20,6 +20,7 @@
 
 #include "common/clang_utils.h"
 #include "common/model/namespace.h"
+#include "sequence_diagram/model/participant.h"
 
 namespace clanguml::sequence_diagram::visitor {
 

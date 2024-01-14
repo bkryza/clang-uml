@@ -1273,6 +1273,12 @@ bool IsClass(const nlohmann::json &j, const std::string &name)
     return e && e->at("type") == "class";
 }
 
+bool IsStruct(const nlohmann::json &j, const std::string &name)
+{
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("type") == "class" && e->at("is_struct");
+}
+
 bool InPublicModule(const nlohmann::json &j, const std::string &element,
     const std::string &module)
 {
