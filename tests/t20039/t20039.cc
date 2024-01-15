@@ -12,13 +12,17 @@ template <typename T> struct A {
 struct R {
     A<int> a_int;
     A<std::vector<int>> a_intvec;
+    A<std::vector<std::string>> a_stringvec;
     A<std::map<int, int>> a_intmap;
+    A<std::map<std::string, std::string>> a_stringmap;
 
     void run()
     {
         a_int.a({});
         a_intvec.a({});
+        a_stringvec.a({});
         a_intmap.a({});
+        a_stringmap.a({});
     }
 };
 

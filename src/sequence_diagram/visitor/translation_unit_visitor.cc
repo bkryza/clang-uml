@@ -30,6 +30,10 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
+    , template_builder_{diagram_, config_, *this,
+          [uns = config_.using_namespace()](const clang::NamedDecl * /*decl*/) {
+              return std::make_unique<sequence_diagram::model::class_>(uns);
+          }}
 {
 }
 
@@ -371,6 +375,7 @@ bool translation_unit_visitor::VisitFunctionTemplateDecl(
     process_comment(*declaration, *function_template_model);
 
     set_source_location(*declaration, *function_template_model);
+    set_owning_module(*declaration, *function_template_model);
 
     function_template_model->is_void(
         declaration->getAsFunction()->getReturnType()->isVoidType());
@@ -1882,6 +1887,9 @@ translation_unit_visitor::process_template_specialization(
     clang::ClassTemplateSpecializationDecl *cls)
 {
     auto c_ptr{std::make_unique<model::class_>(config_.using_namespace())};
+
+    tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
+
     auto &template_instantiation = *c_ptr;
 
     // TODO: refactor to method get_qualified_name()
@@ -1898,16 +1906,10 @@ translation_unit_visitor::process_template_specialization(
 
     process_comment(*cls, template_instantiation);
     set_source_location(*cls, template_instantiation);
+    set_owning_module(*cls, template_instantiation);
 
     if (template_instantiation.skip())
         return {};
-
-    const auto template_args_count = cls->getTemplateArgs().size();
-    for (auto arg_it = 0U; arg_it < template_args_count; arg_it++) {
-        const auto arg = cls->getTemplateArgs().get(arg_it);
-        process_template_specialization_argument(
-            cls, template_instantiation, arg, arg_it);
-    }
 
     template_instantiation.set_id(
         common::to_id(template_instantiation.full_name(false)));
@@ -2435,15 +2437,16 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
 
     LOG_DBG("Getting method's class with local id {}", parent_decl->getID());
 
-    if (!get_participant<model::class_>(parent_decl)) {
+    const auto maybe_method_class = get_participant<model::class_>(parent_decl);
+
+    if (!maybe_method_class) {
         LOG_DBG("Cannot find parent class_ for method {} in class {}",
             declaration->getQualifiedNameAsString(),
             declaration->getParent()->getQualifiedNameAsString());
         return {};
     }
 
-    const auto &method_class =
-        get_participant<model::class_>(parent_decl).value();
+    const auto &method_class = maybe_method_class.value();
 
     method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
 
@@ -2459,9 +2462,12 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
         declaration->getReturnType(), declaration->getASTContext()));
 
     for (const auto *param : declaration->parameters()) {
+        auto parameter_type =
+            common::to_string(param->getType(), param->getASTContext());
+        common::ensure_lambda_type_is_relative(config(), parameter_type);
+        parameter_type = simplify_system_template(parameter_type);
         method_model_ptr->add_parameter(config().using_namespace().relative(
-            simplify_system_template(common::to_string(
-                param->getType(), declaration->getASTContext(), false))));
+            simplify_system_template(parameter_type)));
     }
 
     return method_model_ptr;

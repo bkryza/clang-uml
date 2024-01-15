@@ -9,6 +9,8 @@ diagrams:
     using_namespace: clanguml::t20039
     type_aliases:
       "std::vector<int>": int_vec_t
+      "std::vector<std::string>": string_vec_t
       "std::map<int,int>": int_map_t
+      "std::map<std::string,std::string>": string_map_t
     from:
       - function: "clanguml::t20039::tmain()"
