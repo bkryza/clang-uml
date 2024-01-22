@@ -277,9 +277,6 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
     tbuilder().build(
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
-    if (!template_specialization_ptr)
-        return true;
-
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name();
         const auto id = template_specialization_ptr->id();
@@ -1072,21 +1069,27 @@ void translation_unit_visitor::process_class_bases(
 
         cp.set_name(name_and_ns.to_string());
 
-        if (const auto *record_type =
-                base.getType()->getAs<clang::RecordType>();
-            record_type != nullptr) {
-            cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
-            cp.set_id(common::to_id(*record_type->getDecl()));
-        }
-        else if (const auto *tsp =
-                     base.getType()->getAs<clang::TemplateSpecializationType>();
-                 tsp != nullptr) {
+        base.getType().dump();
+
+        if (const auto *tsp =
+                base.getType()->getAs<clang::TemplateSpecializationType>();
+            tsp != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
             tbuilder().build(*template_specialization_ptr, cls, *tsp, {});
-            if (template_specialization_ptr) {
-                cp.set_id(template_specialization_ptr->id());
+
+            cp.set_id(template_specialization_ptr->id());
+            cp.set_name(template_specialization_ptr->full_name(false));
+
+            if (diagram().should_include(*template_specialization_ptr)) {
+                add_class(std::move(template_specialization_ptr));
             }
+        }
+        else if (const auto *record_type =
+                     base.getType()->getAs<clang::RecordType>();
+                 record_type != nullptr) {
+            cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
+            cp.set_id(common::to_id(*record_type->getDecl()));
         }
         else
             // This could be a template parameter - we don't want it here
@@ -1333,8 +1336,7 @@ void translation_unit_visitor::process_method(
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
-            if (diagram().should_include(
-                    template_specialization_ptr->get_namespace())) {
+            if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
@@ -1708,8 +1710,7 @@ void translation_unit_visitor::process_function_parameter(
             tbuilder().build(*template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
-            if (diagram().should_include(
-                    template_specialization_ptr->get_namespace())) {
+            if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 

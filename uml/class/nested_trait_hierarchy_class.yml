@@ -1,8 +1,9 @@
 type: class
 title: Nested trait model class hierarchy
 include_relations_also_as_members: true
+generate_packages: true
 glob:
-  - src/common/model/*.cc
+  - src/common/model/package.cc
 include:
   namespaces:
     - clanguml

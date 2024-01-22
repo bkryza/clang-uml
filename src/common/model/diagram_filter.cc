@@ -498,8 +498,9 @@ tvl::value_t subclass_filter::match(const diagram &d, const element &e) const
     for (const auto &root : roots_) {
         for (const auto &parent : parents) {
             auto full_name = parent.get().full_name(false);
-            if (root == full_name)
+            if (root == full_name) {
                 return true;
+            }
         }
     }
 
