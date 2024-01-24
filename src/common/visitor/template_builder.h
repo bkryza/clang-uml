@@ -25,7 +25,6 @@
 
 namespace clanguml::common::visitor {
 
-// using class_diagram::model::class_;
 using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
@@ -540,4 +539,4 @@ private:
     on_argument_base_found_t on_argument_base_found_;
 };
 
-} // namespace clanguml::class_diagram::visitor
+} // namespace clanguml::common::visitor

@@ -932,14 +932,12 @@ bool is_struct(const clang::NamedDecl *decl)
     if (decl == nullptr)
         return false;
 
-    if (const clang::CXXRecordDecl *record =
-            clang::dyn_cast<clang::CXXRecordDecl>(decl);
+    if (const auto *record = clang::dyn_cast<clang::CXXRecordDecl>(decl);
         record) {
         return record->isStruct();
     }
 
-    if (const clang::TagDecl *tag = clang::dyn_cast<clang::TagDecl>(decl);
-        tag) {
+    if (const auto *tag = clang::dyn_cast<clang::TagDecl>(decl); tag) {
         return tag->isStruct();
     }
 

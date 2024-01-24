@@ -29,7 +29,7 @@ class template_element : public element, public template_trait {
 public:
     using element::element;
 
-    virtual ~template_element() = default;
+    ~template_element() override = default;
 
     /**
      * Whether or not the class is a template.
@@ -76,4 +76,4 @@ private:
     bool is_template_{false};
 };
 
-}
+} // namespace clanguml::common::model

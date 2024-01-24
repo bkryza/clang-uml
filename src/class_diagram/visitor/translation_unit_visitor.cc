@@ -1069,8 +1069,6 @@ void translation_unit_visitor::process_class_bases(
 
         cp.set_name(name_and_ns.to_string());
 
-        base.getType().dump();
-
         if (const auto *tsp =
                 base.getType()->getAs<clang::TemplateSpecializationType>();
             tsp != nullptr) {
@@ -2227,9 +2225,8 @@ void translation_unit_visitor::find_instantiation_relationships(
     common::model::template_element &template_instantiation_base,
     const std::string &full_name, common::id_t templated_decl_id)
 {
-    class_diagram::model::class_ &template_instantiation =
-        dynamic_cast<class_diagram::model::class_ &>(
-            template_instantiation_base);
+    auto &template_instantiation = dynamic_cast<class_diagram::model::class_ &>(
+        template_instantiation_base);
 
     // First try to find the best match for this template in partially
     // specialized templates

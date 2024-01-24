@@ -378,10 +378,13 @@ void generator::generate_participant(
 
         print_debug(class_participant, ostr);
 
+        auto participant_name =
+            config().using_namespace().relative(config().simplify_template_type(
+                class_participant.full_name(false)));
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
         ostr << indent(1) << "participant " << class_participant.alias()
-             << " as "
-             << render_participant_name(config().using_namespace().relative(
-                    class_participant.full_name(false)));
+             << " as " << render_participant_name(participant_name);
 
         ostr << '\n';
 
@@ -418,9 +421,12 @@ void generator::generate_participant(
     else {
         print_debug(participant, ostr);
 
+        auto participant_name = config().using_namespace().relative(
+            config().simplify_template_type(participant.full_name(false)));
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
         ostr << indent(1) << "participant " << participant.alias() << " as "
-             << config().using_namespace().relative(
-                    participant.full_name(false));
+             << render_participant_name(participant_name);
         ostr << '\n';
 
         generated_participants_.emplace(participant_id);

@@ -226,8 +226,15 @@ std::string inheritable_diagram_options::simplify_template_type(
     type_aliases_longer_first_t aliases;
     aliases.insert(type_aliases().begin(), type_aliases().end());
 
-    for (const auto &[pattern, replacement] : aliases) {
-        util::replace_all(full_name, pattern, replacement);
+    bool matched{true};
+    while (matched) {
+        auto matched_in_iteration{false};
+        for (const auto &[pattern, replacement] : aliases) {
+            matched_in_iteration =
+                util::replace_all(full_name, pattern, replacement) ||
+                matched_in_iteration;
+        }
+        matched = matched_in_iteration;
     }
 
     return full_name;
