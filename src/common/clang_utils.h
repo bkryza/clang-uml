@@ -17,7 +17,6 @@
  */
 #pragma once
 
-// #include "class_diagram/model/diagram.h"
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
 #include "common/model/template_parameter.h"
