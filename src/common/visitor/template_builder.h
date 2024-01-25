@@ -17,15 +17,14 @@
  */
 #pragma once
 
-#include "class_diagram/model/class.h"
-#include "class_diagram/model/concept.h"
-#include "class_diagram/model/diagram.h"
+#include "common/model/diagram.h"
+#include "common/model/template_element.h"
 #include "common/visitor/ast_id_mapper.h"
+#include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 
-namespace clanguml::class_diagram::visitor {
+namespace clanguml::common::visitor {
 
-using class_diagram::model::class_;
 using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
@@ -40,27 +39,42 @@ class translation_unit_visitor;
  */
 class template_builder {
 public:
+    using element_factory_t =
+        std::function<std::unique_ptr<common::model::template_element>(
+            const clang::NamedDecl *)>;
+
+    using find_instantiation_relationships_t = std::function<void(
+        common::model::template_element &, const std::string &, common::id_t)>;
+
+    using on_argument_base_found_t =
+        std::function<void(clanguml::common::model::template_element &,
+            clanguml::common::id_t, const std::string &)>;
     /**
      * @brief Constructor.
      *
      * @param visitor Reference to class diagram translation_unit_visitor
      */
-    template_builder(
-        clanguml::class_diagram::visitor::translation_unit_visitor &visitor);
+    template_builder(clanguml::common::model::diagram &diagram_,
+        const clanguml::config::diagram &config_,
+        clanguml::common::visitor::translation_unit_visitor &visitor,
+        element_factory_t element_factory,
+        find_instantiation_relationships_t find_instantiation_relationships =
+            {},
+        on_argument_base_found_t on_argument_base_found = {});
 
     /**
      * @brief Get reference to the current diagram model
      *
      * @return Reference to the current diagram model
      */
-    class_diagram::model::diagram &diagram();
+    common::model::diagram &diagram();
 
     /**
      * @brief Get reference to the current diagram configuration
      *
      * @return Reference to the current diagram configuration
      */
-    const config::class_diagram &config() const;
+    const config::diagram &config() const;
 
     /**
      * @brief Get diagram relative namespace
@@ -94,10 +108,11 @@ public:
      * @param parent Optional class in which this template is contained
      * @return Created template class model
      */
-    std::unique_ptr<clanguml::class_diagram::model::class_> build(
+    void build(
+        clanguml::common::model::template_element &template_instantiation,
         const clang::NamedDecl *cls,
         const clang::TemplateSpecializationType &template_type_decl,
-        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
+        std::optional<clanguml::common::model::template_element *> parent = {});
 
     /**
      * @brief Build template class from class template specialization decl
@@ -106,10 +121,10 @@ public:
      * @param parent Optional class in which this template is contained
      * @return Created template class model
      */
-    std::unique_ptr<clanguml::class_diagram::model::class_>
-    build_from_class_template_specialization(
+    void build_from_class_template_specialization(
+        clanguml::common::model::template_element &template_instantiation,
         const clang::ClassTemplateSpecializationDecl &template_specialization,
-        std::optional<clanguml::class_diagram::model::class_ *> parent = {});
+        std::optional<clanguml::common::model::template_element *> parent = {});
 
     /**
      * @brief Add base classes to the template class, if any.
@@ -125,7 +140,7 @@ public:
      * @param ct Template parameter model
      * @return True, if any base classes were added
      */
-    bool add_base_classes(clanguml::class_diagram::model::class_ &tinst,
+    bool add_base_classes(clanguml::common::model::template_element &tinst,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         int arg_index, bool variadic_params,
         const clanguml::common::model::template_parameter &ct);
@@ -141,11 +156,11 @@ public:
      * @param template_decl Base template declaration
      */
     void process_template_arguments(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         std::deque<std::tuple<std::string, int, bool>> &template_base_params,
         const clang::ArrayRef<clang::TemplateArgument> &template_args,
-        model::class_ &template_instantiation,
+        clanguml::common::model::template_element &template_instantiation,
         const clang::TemplateDecl *template_decl);
 
     /**
@@ -161,8 +176,9 @@ public:
      *                 variadic parameters)
      */
     void argument_process_dispatch(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::NamedDecl *cls, class_ &template_instantiation,
+        std::optional<clanguml::common::model::template_element *> &parent,
+        const clang::NamedDecl *cls,
+        clanguml::common::model::template_element &template_instantiation,
         const clang::TemplateDecl *template_decl,
         const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
@@ -226,8 +242,9 @@ public:
      * @return Return template argument model
      */
     std::vector<template_parameter> process_pack_argument(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
-        const clang::NamedDecl *cls, class_ &template_instantiation,
+        std::optional<clanguml::common::model::template_element *> &parent,
+        const clang::NamedDecl *cls,
+        clanguml::common::model::template_element &template_instantiation,
         const clang::TemplateDecl *base_template_decl,
         const clang::TemplateArgument &arg, size_t argument_index,
         std::vector<template_parameter> &argument);
@@ -241,10 +258,11 @@ public:
      * @return Return template argument model
      */
     template_parameter process_type_argument(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls,
         const clang::TemplateDecl *base_template_decl, clang::QualType type,
-        model::class_ &template_instantiation, size_t argument_index);
+        clanguml::common::model::template_element &template_instantiation,
+        size_t argument_index);
 
     /**
      * @brief Process `clang::TemplateArgument::Template`
@@ -282,9 +300,10 @@ public:
      * @return Function template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_function_prototype(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -299,9 +318,10 @@ public:
      * @return Array template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_array(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -317,9 +337,10 @@ public:
      *         or std::nullopt
      */
     std::optional<template_parameter> try_as_template_specialization_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -357,9 +378,10 @@ public:
      * @return Record type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_record_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -373,9 +395,10 @@ public:
      * @return Enum type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_enum_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation);
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation);
 
     /**
      * @brief Try to process template type argument as builtin type
@@ -386,7 +409,7 @@ public:
      * @return Builtin type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_builtin_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         clang::QualType &type, const clang::TemplateDecl *template_decl);
 
     /**
@@ -402,9 +425,10 @@ public:
      *         or std::nullopt
      */
     std::optional<template_parameter> try_as_member_pointer(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -419,9 +443,10 @@ public:
      * @return `decltype()` type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_decl_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -436,9 +461,10 @@ public:
      * @return Typedef type template argument if succeeds, or std::nullopt
      */
     std::optional<template_parameter> try_as_typedef_type(
-        std::optional<clanguml::class_diagram::model::class_ *> &parent,
+        std::optional<clanguml::common::model::template_element *> &parent,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        clang::QualType &type, class_ &template_instantiation,
+        clang::QualType &type,
+        clanguml::common::model::template_element &template_instantiation,
         size_t argument_index);
 
     /**
@@ -471,8 +497,11 @@ public:
      * @return True, if any relationships were found
      */
     bool find_relationships_in_unexposed_template_params(
-        const template_parameter &ct,
-        class_diagram::visitor::found_relationships_t &relationships);
+        const template_parameter &ct, found_relationships_t &relationships);
+
+    void find_instantiation_relationships(
+        common::model::template_element &template_instantiation,
+        common::id_t id, const std::string &qualified_name) const;
 
     /**
      * @brief Get reference to Clang AST to clang-uml id mapper
@@ -490,16 +519,24 @@ public:
 
 private:
     // Reference to the output diagram model
-    clanguml::class_diagram::model::diagram &diagram_;
+    clanguml::common::model::diagram &diagram_;
 
-    // Reference to class diagram config
-    const clanguml::config::class_diagram &config_;
+    // Reference to diagram config
+    const clanguml::config::diagram &config_;
 
     common::visitor::ast_id_mapper &id_mapper_;
 
     clang::SourceManager &source_manager_;
 
-    clanguml::class_diagram::visitor::translation_unit_visitor &visitor_;
+    clanguml::common::visitor::translation_unit_visitor &visitor_;
+
+    element_factory_t element_factory_;
+
+    find_instantiation_relationships_t find_instantiation_relationships_;
+
+    // Callback to call when a template instantiation has arguments which are
+    // base classes, i.e. when template class inherits from template params
+    on_argument_base_found_t on_argument_base_found_;
 };
 
-} // namespace clanguml::class_diagram::visitor
+} // namespace clanguml::common::visitor

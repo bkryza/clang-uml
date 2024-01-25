@@ -334,6 +334,40 @@ extract_template_parameter_index(const std::string &type_parameter)
     return {std::stoi(toks.at(0)), std::stoi(toks.at(1)), std::move(qualifier)};
 }
 
+void ensure_lambda_type_is_relative(
+    const config::diagram &config, std::string &parameter_type)
+{
+#ifdef _MSC_VER
+    auto root_name =
+        fmt::format("{}", std::filesystem::current_path().root_name().string());
+#else
+    auto root_name = std::string{"/"};
+#endif
+
+    std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
+
+    while (parameter_type.find(lambda_prefix) != std::string::npos) {
+        auto lambda_begin = parameter_type.find(lambda_prefix);
+        auto lambda_prefix_size = lambda_prefix.size();
+#ifdef _MSC_VER
+        // Skip the `\` or `/` after drive letter and semicolon
+        lambda_prefix_size++;
+#endif
+        auto absolute_lambda_path_end =
+            parameter_type.find(':', lambda_begin + lambda_prefix_size);
+        auto absolute_lambda_path = parameter_type.substr(
+            lambda_begin + lambda_prefix_size - 1,
+            absolute_lambda_path_end - (lambda_begin + lambda_prefix_size - 1));
+
+        auto relative_lambda_path = util::path_to_url(
+            config.make_path_relative(absolute_lambda_path).string());
+
+        parameter_type = fmt::format("{}(lambda at {}{}",
+            parameter_type.substr(0, lambda_begin), relative_lambda_path,
+            parameter_type.substr(absolute_lambda_path_end));
+    }
+}
+
 bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
 {
     if (parent_stmt == nullptr || sub_stmt == nullptr)
@@ -891,6 +925,23 @@ bool is_coroutine(const clang::FunctionDecl &decl)
 {
     const auto *body = decl.getBody();
     return clang::isa_and_nonnull<clang::CoroutineBodyStmt>(body);
+}
+
+bool is_struct(const clang::NamedDecl *decl)
+{
+    if (decl == nullptr)
+        return false;
+
+    if (const auto *record = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+        record) {
+        return record->isStruct();
+    }
+
+    if (const auto *tag = clang::dyn_cast<clang::TagDecl>(decl); tag) {
+        return tag->isStruct();
+    }
+
+    return false;
 }
 
 } // namespace clanguml::common

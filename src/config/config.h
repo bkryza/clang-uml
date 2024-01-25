@@ -458,8 +458,18 @@ struct relationship_hint_t {
 using relationship_hints_t = std::map<std::string, relationship_hint_t>;
 
 using type_aliases_t = std::map<std::string, std::string>;
+
+struct type_aliases_longer_first_comparator {
+    bool operator()(const std::string &a, const std::string &b) const
+    {
+        if (a.size() == b.size())
+            return a > b;
+
+        return a.size() > b.size();
+    }
+};
 using type_aliases_longer_first_t =
-    std::map<std::string, std::string, std::greater<>>;
+    std::map<std::string, std::string, type_aliases_longer_first_comparator>;
 
 enum class location_t { marker, fileline, function };
 

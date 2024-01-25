@@ -3,7 +3,7 @@ namespace clanguml::t00044 {
 
 template <typename T> class sink;
 
-template <typename T, typename A> class signal_handler;
+template <typename T, typename A> struct signal_handler;
 
 template <typename Ret, typename... Args, typename A>
 class sink<signal_handler<Ret(Args...), A>> {
@@ -22,7 +22,7 @@ private:
 };
 
 template <typename Ret, typename... Args, typename A>
-class signal_handler<Ret(Args...), A> { };
+struct signal_handler<Ret(Args...), A> { };
 
 template <typename Ret, typename... Args, typename A>
 sink(signal_handler<Ret(Args...), A> &)

@@ -32,7 +32,26 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     : common::visitor::translation_unit_visitor{sm, config}
     , diagram_{diagram}
     , config_{config}
-    , template_builder_{*this}
+    , template_builder_{diagram_, config_, *this,
+          [uns = config_.using_namespace()](const clang::NamedDecl *decl) {
+              auto cls = std::make_unique<class_>(uns);
+              cls->is_struct(common::is_struct(decl));
+              return cls;
+          },
+          [this](common::model::template_element &template_instantiation_base,
+              const std::string &full_name, common::id_t templated_decl_id) {
+              find_instantiation_relationships(
+                  template_instantiation_base, full_name, templated_decl_id);
+          },
+          [](clanguml::common::model::template_element &tinst,
+              clanguml::common::id_t id, const std::string &full_name) {
+              model::class_parent cp;
+              cp.set_access(common::model::access_t::kPublic);
+              cp.set_name(full_name);
+              cp.set_id(id);
+
+              dynamic_cast<class_ &>(tinst).add_parent(std::move(cp));
+          }}
 {
 }
 
@@ -254,10 +273,9 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
         return true;
 
     auto template_specialization_ptr =
-        tbuilder().build(cls, *template_type_specialization_ptr);
-
-    if (!template_specialization_ptr)
-        return true;
+        std::make_unique<class_>(config().using_namespace());
+    tbuilder().build(
+        *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
     if (diagram().should_include(*template_specialization_ptr)) {
         const auto name = template_specialization_ptr->full_name();
@@ -1051,19 +1069,25 @@ void translation_unit_visitor::process_class_bases(
 
         cp.set_name(name_and_ns.to_string());
 
-        if (const auto *record_type =
-                base.getType()->getAs<clang::RecordType>();
-            record_type != nullptr) {
+        if (const auto *tsp =
+                base.getType()->getAs<clang::TemplateSpecializationType>();
+            tsp != nullptr) {
+            auto template_specialization_ptr =
+                std::make_unique<class_>(config().using_namespace());
+            tbuilder().build(*template_specialization_ptr, cls, *tsp, {});
+
+            cp.set_id(template_specialization_ptr->id());
+            cp.set_name(template_specialization_ptr->full_name(false));
+
+            if (diagram().should_include(*template_specialization_ptr)) {
+                add_class(std::move(template_specialization_ptr));
+            }
+        }
+        else if (const auto *record_type =
+                     base.getType()->getAs<clang::RecordType>();
+                 record_type != nullptr) {
             cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
             cp.set_id(common::to_id(*record_type->getDecl()));
-        }
-        else if (const auto *tsp =
-                     base.getType()->getAs<clang::TemplateSpecializationType>();
-                 tsp != nullptr) {
-            auto template_specialization_ptr = tbuilder().build(cls, *tsp, {});
-            if (template_specialization_ptr) {
-                cp.set_id(template_specialization_ptr->id());
-            }
         }
         else
             // This could be a template parameter - we don't want it here
@@ -1261,7 +1285,7 @@ void translation_unit_visitor::process_method(
     auto method_return_type =
         common::to_string(mf.getReturnType(), mf.getASTContext());
 
-    ensure_lambda_type_is_relative(method_return_type);
+    common::ensure_lambda_type_is_relative(config(), method_return_type);
 
     auto method_name = mf.getNameAsString();
     if (mf.isTemplated()) {
@@ -1304,12 +1328,13 @@ void translation_unit_visitor::process_method(
                                  ->getAs<clang::TemplateSpecializationType>();
 
         if (unaliased_type != nullptr) {
-            auto template_specialization_ptr = tbuilder().build(
+            auto template_specialization_ptr =
+                std::make_unique<class_>(config().using_namespace());
+            tbuilder().build(*template_specialization_ptr,
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
-            if (diagram().should_include(
-                    template_specialization_ptr->get_namespace())) {
+            if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
@@ -1652,7 +1677,7 @@ void translation_unit_visitor::process_function_parameter(
     auto parameter_type = common::to_string(p.getType(), p.getASTContext());
 
     // Is there no better way to determine that 'type' is a lambda?
-    ensure_lambda_type_is_relative(parameter_type);
+    common::ensure_lambda_type_is_relative(config(), parameter_type);
 
     parameter.set_type(parameter_type);
 
@@ -1678,11 +1703,12 @@ void translation_unit_visitor::process_function_parameter(
                     .getUnqualifiedType()
                     ->getAs<clang::TemplateSpecializationType>();
             templ != nullptr) {
-            auto template_specialization_ptr = tbuilder().build(
+            auto template_specialization_ptr =
+                std::make_unique<class_>(config().using_namespace());
+            tbuilder().build(*template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
-            if (diagram().should_include(
-                    template_specialization_ptr->get_namespace())) {
+            if (diagram().should_include(*template_specialization_ptr)) {
                 relationships.emplace_back(template_specialization_ptr->id(),
                     relationship_t::kDependency);
 
@@ -1709,40 +1735,6 @@ void translation_unit_visitor::process_function_parameter(
     }
 
     method.add_parameter(std::move(parameter));
-}
-
-void translation_unit_visitor::ensure_lambda_type_is_relative(
-    std::string &parameter_type) const
-{
-#ifdef _MSC_VER
-    auto root_name =
-        fmt::format("{}", std::filesystem::current_path().root_name().string());
-#else
-    auto root_name = std::string{"/"};
-#endif
-
-    std::string lambda_prefix{fmt::format("(lambda at {}", root_name)};
-
-    while (parameter_type.find(lambda_prefix) != std::string::npos) {
-        auto lambda_begin = parameter_type.find(lambda_prefix);
-        auto lambda_prefix_size = lambda_prefix.size();
-#ifdef _MSC_VER
-        // Skip the `\` or `/` after drive letter and semicolon
-        lambda_prefix_size++;
-#endif
-        auto absolute_lambda_path_end =
-            parameter_type.find(':', lambda_begin + lambda_prefix_size);
-        auto absolute_lambda_path = parameter_type.substr(
-            lambda_begin + lambda_prefix_size - 1,
-            absolute_lambda_path_end - (lambda_begin + lambda_prefix_size - 1));
-
-        auto relative_lambda_path = util::path_to_url(
-            config().make_path_relative(absolute_lambda_path).string());
-
-        parameter_type = fmt::format("{}(lambda at {}{}",
-            parameter_type.substr(0, lambda_begin), relative_lambda_path,
-            parameter_type.substr(absolute_lambda_path_end));
-    }
 }
 
 void translation_unit_visitor::add_relationships(class_ &c,
@@ -1816,7 +1808,8 @@ std::unique_ptr<class_>
 translation_unit_visitor::process_template_specialization(
     clang::ClassTemplateSpecializationDecl *cls)
 {
-    auto c_ptr = tbuilder().build_from_class_template_specialization(*cls);
+    auto c_ptr = std::make_unique<class_>(config().using_namespace());
+    tbuilder().build_from_class_template_specialization(*c_ptr, *cls);
 
     auto &template_instantiation = *c_ptr;
     template_instantiation.is_template(true);
@@ -1876,7 +1869,7 @@ void translation_unit_visitor::process_field(
     auto field_type_str =
         common::to_string(field_type, field_declaration.getASTContext(), false);
 
-    ensure_lambda_type_is_relative(field_type_str);
+    common::ensure_lambda_type_is_relative(config(), field_type_str);
 
     class_member field{
         common::access_specifier_to_access_t(field_declaration.getAccess()),
@@ -1938,7 +1931,9 @@ void translation_unit_visitor::process_field(
     if (template_field_type != nullptr &&
         !field_type_is_template_template_parameter) {
         // Build the template instantiation for the field type
-        auto template_specialization_ptr = tbuilder().build(
+        auto template_specialization_ptr =
+            std::make_unique<class_>(config().using_namespace());
+        tbuilder().build(*template_specialization_ptr,
             field_type->getAs<clang::TemplateSpecializationType>()
                 ->getTemplateName()
                 .getAsTemplateDecl(),
@@ -2136,6 +2131,12 @@ bool translation_unit_visitor::has_processed_template_class(
     return util::contains(processed_template_qualified_names_, qualified_name);
 }
 
+void translation_unit_visitor::add_diagram_element(
+    std::unique_ptr<common::model::template_element> element)
+{
+    add_class(util::unique_pointer_cast<class_>(std::move(element)));
+}
+
 void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
 {
     if ((config().generate_packages() &&
@@ -2217,6 +2218,68 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
     }
     else {
         diagram().add(c->path(), std::move(c));
+    }
+}
+
+void translation_unit_visitor::find_instantiation_relationships(
+    common::model::template_element &template_instantiation_base,
+    const std::string &full_name, common::id_t templated_decl_id)
+{
+    auto &template_instantiation = dynamic_cast<class_diagram::model::class_ &>(
+        template_instantiation_base);
+
+    // First try to find the best match for this template in partially
+    // specialized templates
+    std::string destination{};
+    std::string best_match_full_name{};
+    auto full_template_name = template_instantiation.full_name(false);
+    int best_match{};
+    common::id_t best_match_id{0};
+
+    for (const auto templ : diagram().classes()) {
+        if (templ.get() == template_instantiation)
+            continue;
+
+        auto c_full_name = templ.get().full_name(false);
+        auto match =
+            template_instantiation.calculate_template_specialization_match(
+                templ.get());
+
+        if (match > best_match) {
+            best_match = match;
+            best_match_full_name = c_full_name;
+            best_match_id = templ.get().id();
+        }
+    }
+
+    auto templated_decl_global_id =
+        id_mapper().get_global_id(templated_decl_id).value_or(0);
+
+    if (best_match_id > 0) {
+        destination = best_match_full_name;
+        template_instantiation.add_relationship(
+            {common::model::relationship_t::kInstantiation, best_match_id});
+        template_instantiation.template_specialization_found(true);
+    }
+    // If we can't find optimal match for parent template specialization,
+    // just use whatever clang suggests
+    else if (diagram().has_element(templated_decl_global_id)) {
+        template_instantiation.add_relationship(
+            {common::model::relationship_t::kInstantiation,
+                templated_decl_global_id});
+        template_instantiation.template_specialization_found(true);
+    }
+    else if (diagram().should_include(common::model::namespace_{full_name})) {
+        LOG_DBG("Skipping instantiation relationship from {} to {}",
+            template_instantiation.full_name(false), templated_decl_global_id);
+    }
+    else {
+        LOG_DBG("== Cannot determine global id for specialization template {} "
+                "- delaying until the translation unit is complete ",
+            templated_decl_global_id);
+
+        template_instantiation.add_relationship(
+            {common::model::relationship_t::kInstantiation, templated_decl_id});
     }
 }
 

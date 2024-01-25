@@ -18,6 +18,7 @@
 #pragma once
 
 #include "common/model/element.h"
+#include "common/model/template_element.h"
 #include "common/model/template_parameter.h"
 #include "common/model/template_trait.h"
 
@@ -31,9 +32,9 @@ using clanguml::common::model::template_trait;
 /**
  * @brief Base class for various types of sequence diagram participants
  */
-struct participant : public common::model::element,
+struct participant : public common::model::template_element,
                      public common::model::stylable_element {
-    using common::model::element::element;
+    using common::model::template_element::template_element;
 
     /**
      * @brief Enum representing stereotype of a participant
@@ -74,7 +75,7 @@ struct participant : public common::model::element,
 /**
  * @brief Sequence diagram participant representing a class.
  */
-struct class_ : public participant, public template_trait {
+struct class_ : public participant {
 public:
     class_(const common::model::namespace_ &using_namespace);
 
@@ -477,7 +478,7 @@ private:
 /**
  * @brief Participant model representing a function template.
  */
-struct function_template : public function, public template_trait {
+struct function_template : public function {
     function_template(const common::model::namespace_ &using_namespace);
 
     function_template(const function_template &) = delete;

@@ -83,7 +83,7 @@ public:
         }
 
         return common::optional_ref<T>(
-            static_cast<T *>(participants_.at(id).get()));
+            dynamic_cast<T *>(participants_.at(id).get()));
     }
 
     /**

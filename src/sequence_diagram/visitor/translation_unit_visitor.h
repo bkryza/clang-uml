@@ -18,6 +18,7 @@
 #pragma once
 
 #include "call_expression_context.h"
+#include "common/visitor/template_builder.h"
 #include "common/visitor/translation_unit_visitor.h"
 #include "config/config.h"
 #include "sequence_diagram/model/diagram.h"
@@ -510,6 +511,13 @@ private:
         const clang::SourceManager &sm, const clang::ASTContext &context,
         int64_t caller_id, const clang::Stmt *stmt);
 
+    /**
+     * @brief Get template builder reference
+     *
+     * @return Reference to 'template_builder' instance
+     */
+    common::visitor::template_builder &tbuilder() { return template_builder_; }
+
     // Reference to the output diagram model
     clanguml::sequence_diagram::model::diagram &diagram_;
 
@@ -549,5 +557,7 @@ private:
 
     mutable std::set<std::pair<int64_t, const clang::RawComment *>>
         processed_comments_;
+
+    common::visitor::template_builder template_builder_;
 };
 } // namespace clanguml::sequence_diagram::visitor

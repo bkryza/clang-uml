@@ -20,6 +20,7 @@
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
 #include "common/model/template_parameter.h"
+#include "config/config.h"
 #include "types.h"
 #include "util/util.h"
 
@@ -152,6 +153,9 @@ std::string get_source_text(
  */
 std::tuple<unsigned int, unsigned int, std::string>
 extract_template_parameter_index(const std::string &type_parameter);
+
+void ensure_lambda_type_is_relative(
+    const config::diagram &config, std::string &parameter_type);
 
 /**
  * @brief Check if an expression is contained in another expression
@@ -302,5 +306,13 @@ clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
  * @return True, if the function is a C++20 coroutine.
  */
 bool is_coroutine(const clang::FunctionDecl &decl);
+
+/**
+ * Check if named declaration is a C++ struct.
+ *
+ * @param decl Declaration to check
+ * @return True, if declaration represents a struct.
+ */
+bool is_struct(const clang::NamedDecl *decl);
 
 } // namespace clanguml::common

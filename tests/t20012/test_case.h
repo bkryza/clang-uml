@@ -59,9 +59,12 @@ TEST_CASE("t20012", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
 
         REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("R<R::(lambda t20012.cc:86:9)>"), "r()"));
+            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"),
+                "R((lambda at t20012.cc:86:9) &&)"));
         REQUIRE_THAT(src,
-            HasCall(_A("R<R::(lambda t20012.cc:86:9)>"),
+            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
+        REQUIRE_THAT(src,
+            HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
                 _A("tmain()::(lambda t20012.cc:86:9)"), "operator()()"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
@@ -88,8 +91,8 @@ TEST_CASE("t20012", "[test-case][sequence]")
             FindMessage(j, "C", "C", "cc()"), FindMessage(j, "C", "C", "ccc()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:80:20)",
                 "tmain()::(lambda t20012.cc:67:20)", "operator()()"),
-            FindMessage(j, "tmain()", "R<R::(lambda t20012.cc:86:9)>", "r()"),
-            FindMessage(j, "R<R::(lambda t20012.cc:86:9)>",
+            FindMessage(j, "tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"),
+            FindMessage(j, "R<(lambda at t20012.cc:86:9)>",
                 "tmain()::(lambda t20012.cc:86:9)", "operator()()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:86:9)", "C", "c()"),
             // @todo #168
@@ -131,9 +134,9 @@ TEST_CASE("t20012", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
 
         REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("R<R::(lambda t20012.cc:86:9)>"), "r()"));
+            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
         REQUIRE_THAT(src,
-            HasCall(_A("R<R::(lambda t20012.cc:86:9)>"),
+            HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
                 _A("tmain()::(lambda t20012.cc:86:9)"), "operator()()"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));

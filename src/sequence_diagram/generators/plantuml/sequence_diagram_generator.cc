@@ -370,10 +370,13 @@ void generator::generate_participant(
 
         print_debug(class_participant, ostr);
 
-        ostr << "participant \""
-             << render_name(config().using_namespace().relative(
-                    class_participant.full_name(false)))
-             << "\" as " << class_participant.alias();
+        auto participant_name =
+            config().using_namespace().relative(config().simplify_template_type(
+                class_participant.full_name(false)));
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
+        ostr << "participant \"" << render_name(participant_name) << "\" as "
+             << class_participant.alias();
 
         if (config().generate_links) {
             common_generator<diagram_config, diagram_model>::generate_link(
@@ -416,10 +419,12 @@ void generator::generate_participant(
     else {
         print_debug(participant, ostr);
 
-        ostr << "participant \""
-             << config().using_namespace().relative(
-                    participant.full_name(false))
-             << "\" as " << participant.alias();
+        auto participant_name = config().using_namespace().relative(
+            config().simplify_template_type(participant.full_name(false)));
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
+        ostr << "participant \"" << render_name(participant_name) << "\" as "
+             << participant.alias();
 
         if (config().generate_links) {
             common_generator<diagram_config, diagram_model>::generate_link(

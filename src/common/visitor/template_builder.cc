@@ -21,24 +21,29 @@
 #include "translation_unit_visitor.h"
 #include <clang/Lex/Lexer.h>
 
-namespace clanguml::class_diagram::visitor {
+namespace clanguml::common::visitor {
 
-template_builder::template_builder(
-    clanguml::class_diagram::visitor::translation_unit_visitor &visitor)
-    : diagram_{visitor.diagram()}
-    , config_{visitor.config()}
+template_builder::template_builder(clanguml::common::model::diagram &diagram_,
+    const clanguml::config::diagram &config_,
+    clanguml::common::visitor::translation_unit_visitor &visitor,
+    element_factory_t element_factory,
+    find_instantiation_relationships_t find_instantiation_relationships,
+    on_argument_base_found_t on_argument_base_found)
+    : diagram_{diagram_}
+    , config_{config_}
     , id_mapper_{visitor.id_mapper()}
     , source_manager_{visitor.source_manager()}
     , visitor_{visitor}
+    , element_factory_{std::move(element_factory)}
+    , find_instantiation_relationships_{std::move(
+          find_instantiation_relationships)}
+    , on_argument_base_found_{std::move(on_argument_base_found)}
 {
 }
 
-class_diagram::model::diagram &template_builder::diagram() { return diagram_; }
+common::model::diagram &template_builder::diagram() { return diagram_; }
 
-const config::class_diagram &template_builder::config() const
-{
-    return config_;
-}
+const config::diagram &template_builder::config() const { return config_; }
 
 const namespace_ &template_builder::using_namespace() const
 {
@@ -70,9 +75,11 @@ bool template_builder::simplify_system_template(
     return false;
 }
 
-std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
+void template_builder::build(
+    clanguml::common::model::template_element &template_instantiation,
+    const clang::NamedDecl *cls,
     const clang::TemplateSpecializationType &template_type_decl,
-    std::optional<clanguml::class_diagram::model::class_ *> parent)
+    std::optional<clanguml::common::model::template_element *> parent)
 {
     //
     // Here we'll hold the template base class params to replace with the
@@ -94,13 +101,6 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
 
     const auto &template_type = *template_type_ptr;
 
-    //
-    // Create class_ instance to hold the template instantiation
-    //
-    auto template_instantiation_ptr =
-        std::make_unique<class_>(using_namespace());
-
-    auto &template_instantiation = *template_instantiation_ptr;
     template_instantiation.is_template(true);
 
     std::string full_template_specialization_name = common::to_string(
@@ -210,78 +210,21 @@ std::unique_ptr<class_> template_builder::build(const clang::NamedDecl *cls,
         template_type.template_arguments(), template_instantiation,
         template_decl);
 
-    // First try to find the best match for this template in partially
-    // specialized templates
-    std::string destination{};
-    std::string best_match_full_name{};
-    auto full_template_name = template_instantiation.full_name(false);
-    int best_match{};
-    common::id_t best_match_id{0};
-
-    for (const auto templ : diagram().classes()) {
-        if (templ.get() == template_instantiation)
-            continue;
-
-        auto c_full_name = templ.get().full_name(false);
-        auto match =
-            template_instantiation.calculate_template_specialization_match(
-                templ.get());
-
-        if (match > best_match) {
-            best_match = match;
-            best_match_full_name = c_full_name;
-            best_match_id = templ.get().id();
-        }
-    }
-
-    auto templated_decl_id =
-        template_type.getTemplateName().getAsTemplateDecl()->getID();
-    auto templated_decl_global_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(0);
-
-    if (best_match_id > 0) {
-        destination = best_match_full_name;
-        template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, best_match_id});
-        template_instantiation.template_specialization_found(true);
-    }
-    // If we can't find optimal match for parent template specialization,
-    // just use whatever clang suggests
-    else if (diagram().has_element(templated_decl_global_id)) {
-        template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, templated_decl_global_id});
-        template_instantiation.template_specialization_found(true);
-    }
-    else if (diagram().should_include(
-                 namespace_{full_template_specialization_name})) {
-        LOG_DBG("Skipping instantiation relationship from {} to {}",
-            template_instantiation_ptr->full_name(false), templated_decl_id);
-    }
-    else {
-        LOG_DBG("== Cannot determine global id for specialization template {} "
-                "- delaying until the translation unit is complete ",
-            templated_decl_id);
-
-        template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, templated_decl_id});
-    }
+    find_instantiation_relationships(template_instantiation,
+        template_type.getTemplateName().getAsTemplateDecl()->getID(),
+        full_template_specialization_name);
 
     template_instantiation.set_id(
-        common::to_id(template_instantiation_ptr->full_name(false)));
+        common::to_id(template_instantiation.full_name(false)));
 
     visitor_.set_source_location(*cls, template_instantiation);
-
-    return template_instantiation_ptr;
 }
 
-std::unique_ptr<class_>
-template_builder::build_from_class_template_specialization(
+void template_builder::build_from_class_template_specialization(
+    clanguml::common::model::template_element &template_instantiation,
     const clang::ClassTemplateSpecializationDecl &template_specialization,
-    std::optional<clanguml::class_diagram::model::class_ *> parent)
+    std::optional<clanguml::common::model::template_element *> parent)
 {
-    auto template_instantiation_ptr =
-        std::make_unique<class_>(config_.using_namespace());
-
     //
     // Here we'll hold the template base params to replace with the
     // instantiated values
@@ -289,9 +232,6 @@ template_builder::build_from_class_template_specialization(
     std::deque<std::tuple</*parameter name*/ std::string, /* position */ int,
         /*is variadic */ bool>>
         template_base_params{};
-
-    auto &template_instantiation = *template_instantiation_ptr;
-    template_instantiation.is_struct(template_specialization.isStruct());
 
     const clang::ClassTemplateDecl *template_decl =
         template_specialization.getSpecializedTemplate();
@@ -312,63 +252,29 @@ template_builder::build_from_class_template_specialization(
     template_instantiation.set_id(
         common::to_id(template_instantiation.full_name(false)));
 
-    // First try to find the best match for this template in partially
-    // specialized templates
-    std::string destination{};
-    std::string best_match_full_name{};
-    auto full_template_name = template_instantiation.full_name(false);
-    int best_match{};
-    common::id_t best_match_id{0};
-
-    for (const auto templ : diagram().classes()) {
-        if (templ.get() == template_instantiation)
-            continue;
-
-        auto c_full_name = templ.get().full_name(false);
-        auto match =
-            template_instantiation.calculate_template_specialization_match(
-                templ.get());
-
-        if (match > best_match) {
-            best_match = match;
-            best_match_full_name = c_full_name;
-            best_match_id = templ.get().id();
-        }
-    }
-
-    auto templated_decl_id = template_specialization.getID();
-    auto templated_decl_local_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(0);
-
-    if (best_match_id > 0) {
-        destination = best_match_full_name;
-        template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, best_match_id});
-        template_instantiation.template_specialization_found(true);
-    }
-    else if (diagram().has_element(templated_decl_local_id)) {
-        // If we can't find optimal match for parent template specialization,
-        // just use whatever clang suggests
-        template_instantiation.add_relationship(
-            {relationship_t::kInstantiation, templated_decl_local_id});
-        template_instantiation.template_specialization_found(true);
-    }
-    else if (diagram().should_include(namespace_{qualified_name})) {
-        LOG_DBG("Skipping instantiation relationship from {} to {}",
-            template_instantiation_ptr->full_name(false), templated_decl_id);
-    }
+    find_instantiation_relationships(template_instantiation,
+        template_specialization.getID(), qualified_name);
 
     visitor_.set_source_location(*template_decl, template_instantiation);
+}
 
-    return template_instantiation_ptr;
+void template_builder::find_instantiation_relationships(
+    common::model::template_element &template_instantiation, common::id_t id,
+    const std::string &qualified_name) const
+{
+    if (find_instantiation_relationships_) {
+        find_instantiation_relationships_(
+            template_instantiation, qualified_name, id);
+    }
 }
 
 void template_builder::process_template_arguments(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls,
     std::deque<std::tuple<std::string, int, bool>> &template_base_params,
     const clang::ArrayRef<clang::TemplateArgument> &template_args,
-    class_ &template_instantiation, const clang::TemplateDecl *template_decl)
+    clanguml::common::model::template_element &template_instantiation,
+    const clang::TemplateDecl *template_decl)
 {
     auto arg_index{0};
 
@@ -445,8 +351,9 @@ void template_builder::process_template_arguments(
 }
 
 void template_builder::argument_process_dispatch(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, class_ &template_instantiation,
+    std::optional<clanguml::common::model::template_element *> &parent,
+    const clang::NamedDecl *cls,
+    clanguml::common::model::template_element &template_instantiation,
     const clang::TemplateDecl *template_decl,
     const clang::TemplateArgument &arg, size_t argument_index,
     std::vector<template_parameter> &argument)
@@ -529,9 +436,11 @@ clang::QualType template_builder::consume_context(
 }
 
 template_parameter template_builder::process_type_argument(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType type, class_ &template_instantiation, size_t argument_index)
+    clang::QualType type,
+    clanguml::common::model::template_element &template_instantiation,
+    size_t argument_index)
 {
     std::optional<template_parameter> argument;
 
@@ -739,8 +648,9 @@ template_parameter template_builder::process_expression_argument(
 }
 
 std::vector<template_parameter> template_builder::process_pack_argument(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
-    const clang::NamedDecl *cls, class_ &template_instantiation,
+    std::optional<clanguml::common::model::template_element *> &parent,
+    const clang::NamedDecl *cls,
+    clanguml::common::model::template_element &template_instantiation,
     const clang::TemplateDecl *base_template_decl,
     const clang::TemplateArgument &arg, size_t argument_index,
     std::vector<template_parameter> & /*argument*/)
@@ -760,9 +670,10 @@ std::vector<template_parameter> template_builder::process_pack_argument(
 }
 
 std::optional<template_parameter> template_builder::try_as_member_pointer(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation,
     size_t argument_index)
 {
     const auto *mp_type =
@@ -835,9 +746,10 @@ std::optional<template_parameter> template_builder::try_as_member_pointer(
 }
 
 std::optional<template_parameter> template_builder::try_as_array(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation,
     size_t argument_index)
 {
     const auto *array_type = common::dereference(type)->getAsArrayTypeUnsafe();
@@ -877,9 +789,10 @@ std::optional<template_parameter> template_builder::try_as_array(
 }
 
 std::optional<template_parameter> template_builder::try_as_function_prototype(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation,
     size_t argument_index)
 {
     const auto *function_type = type->getAs<clang::FunctionProtoType>();
@@ -926,10 +839,11 @@ std::optional<template_parameter> template_builder::try_as_function_prototype(
 }
 
 std::optional<template_parameter> template_builder::try_as_decl_type(
-    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    std::optional<clanguml::common::model::template_element *> & /*parent*/,
     const clang::NamedDecl * /*cls*/,
     const clang::TemplateDecl * /*template_decl*/, clang::QualType &type,
-    class_ & /*template_instantiation*/, size_t /*argument_index*/)
+    clanguml::common::model::template_element & /*template_instantiation*/,
+    size_t /*argument_index*/)
 {
     const auto *decl_type =
         common::dereference(type)->getAs<clang::DecltypeType>();
@@ -944,10 +858,11 @@ std::optional<template_parameter> template_builder::try_as_decl_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_typedef_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl * /*cls*/,
     const clang::TemplateDecl * /*template_decl*/, clang::QualType &type,
-    class_ & /*template_instantiation*/, size_t /*argument_index*/)
+    clanguml::common::model::template_element & /*template_instantiation*/,
+    size_t /*argument_index*/)
 {
     const auto *typedef_type =
         common::dereference(type)->getAs<clang::TypedefType>();
@@ -978,9 +893,10 @@ std::optional<template_parameter> template_builder::try_as_typedef_type(
 
 std::optional<template_parameter>
 template_builder::try_as_template_specialization_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation,
     size_t argument_index)
 {
     const auto *nested_template_type =
@@ -1019,7 +935,11 @@ template_builder::try_as_template_specialization_type(
 
     argument.set_type(nested_type_name);
 
-    auto nested_template_instantiation = build(cls, *nested_template_type,
+    auto nested_template_instantiation =
+        element_factory_(nested_template_type->getTemplateName()
+                             .getAsTemplateDecl()
+                             ->getTemplatedDecl());
+    build(*nested_template_instantiation, cls, *nested_template_type,
         diagram().should_include(
             namespace_{template_decl->getQualifiedNameAsString()})
             ? std::make_optional(&template_instantiation)
@@ -1064,7 +984,7 @@ template_builder::try_as_template_specialization_type(
     if (diagram().should_include(
             namespace_{nested_template_instantiation_full_name})) {
         visitor_.set_source_location(*cls, *nested_template_instantiation);
-        visitor_.add_class(std::move(nested_template_instantiation));
+        visitor_.add_diagram_element(std::move(nested_template_instantiation));
     }
 
     return argument;
@@ -1108,7 +1028,7 @@ std::optional<template_parameter> template_builder::try_as_template_parm_type(
 
     argument.is_variadic(is_variadic);
 
-    visitor_.ensure_lambda_type_is_relative(type_parameter_name);
+    common::ensure_lambda_type_is_relative(config(), type_parameter_name);
 
     return argument;
 }
@@ -1127,16 +1047,17 @@ std::optional<template_parameter> template_builder::try_as_lambda(
     auto argument = template_parameter::make_argument("");
     type = consume_context(type, argument);
 
-    visitor_.ensure_lambda_type_is_relative(type_name);
+    common::ensure_lambda_type_is_relative(config(), type_name);
     argument.set_type(type_name);
 
     return argument;
 }
 
 std::optional<template_parameter> template_builder::try_as_record_type(
-    std::optional<clanguml::class_diagram::model::class_ *> &parent,
+    std::optional<clanguml::common::model::template_element *> &parent,
     const clang::NamedDecl * /*cls*/, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation,
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation,
     size_t /*argument_index*/)
 {
     const auto *record_type =
@@ -1162,8 +1083,10 @@ std::optional<template_parameter> template_builder::try_as_record_type(
             record_type->getAsRecordDecl());
 
     if (class_template_specialization != nullptr) {
-        auto tag_argument = build_from_class_template_specialization(
-            *class_template_specialization);
+        auto tag_argument = element_factory_(class_template_specialization);
+
+        build_from_class_template_specialization(
+            *tag_argument, *class_template_specialization);
 
         if (tag_argument) {
             argument.set_type(tag_argument->name_and_ns());
@@ -1179,7 +1102,7 @@ std::optional<template_parameter> template_builder::try_as_record_type(
                     parent.value()->add_relationship(
                         {relationship_t::kDependency, tag_argument->id()});
                 visitor_.set_source_location(*template_decl, *tag_argument);
-                visitor_.add_class(std::move(tag_argument));
+                visitor_.add_diagram_element(std::move(tag_argument));
             }
         }
     }
@@ -1198,9 +1121,10 @@ std::optional<template_parameter> template_builder::try_as_record_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_enum_type(
-    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    std::optional<clanguml::common::model::template_element *> & /*parent*/,
     const clang::NamedDecl * /*cls*/, const clang::TemplateDecl *template_decl,
-    clang::QualType &type, class_ &template_instantiation)
+    clang::QualType &type,
+    clanguml::common::model::template_element &template_instantiation)
 {
     const auto *enum_type = type->getAs<clang::EnumType>();
     if (enum_type == nullptr)
@@ -1226,7 +1150,7 @@ std::optional<template_parameter> template_builder::try_as_enum_type(
 }
 
 std::optional<template_parameter> template_builder::try_as_builtin_type(
-    std::optional<clanguml::class_diagram::model::class_ *> & /*parent*/,
+    std::optional<clanguml::common::model::template_element *> & /*parent*/,
     clang::QualType &type, const clang::TemplateDecl *template_decl)
 {
     const auto *builtin_type = type->getAs<clang::BuiltinType>();
@@ -1244,16 +1168,19 @@ std::optional<template_parameter> template_builder::try_as_builtin_type(
     return argument;
 }
 
-bool template_builder::add_base_classes(class_ &tinst,
+bool template_builder::add_base_classes(
+    clanguml::common::model::template_element &tinst,
     std::deque<std::tuple<std::string, int, bool>> &template_base_params,
     int arg_index, bool variadic_params, const template_parameter &ct)
 {
     bool add_template_argument_as_base_class = false;
 
-    auto [arg_name, index, is_variadic] = template_base_params.front();
-    if (variadic_params)
+    if (variadic_params) {
         add_template_argument_as_base_class = true;
+    }
     else {
+        auto [arg_name, index, is_variadic] = template_base_params.front();
+
         variadic_params = is_variadic;
         if ((arg_index == index) || (is_variadic && arg_index >= index)) {
             add_template_argument_as_base_class = true;
@@ -1268,13 +1195,9 @@ bool template_builder::add_base_classes(class_ &tinst,
     if (add_template_argument_as_base_class && maybe_id) {
         LOG_DBG("Adding template argument as base class '{}'",
             ct.to_string({}, false));
-
-        model::class_parent cp;
-        cp.set_access(common::model::access_t::kPublic);
-        cp.set_name(ct.to_string({}, false));
-        cp.set_id(maybe_id.value());
-
-        tinst.add_parent(std::move(cp));
+        if (on_argument_base_found_)
+            on_argument_base_found_(
+                tinst, maybe_id.value(), ct.to_string({}, false));
     }
 
     return variadic_params;

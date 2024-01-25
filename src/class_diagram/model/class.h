@@ -20,9 +20,9 @@
 #include "class_member.h"
 #include "class_method.h"
 #include "class_parent.h"
-#include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/stylable_element.h"
+#include "common/model/template_element.h"
 #include "common/model/template_parameter.h"
 #include "common/model/template_trait.h"
 #include "common/types.h"
@@ -35,9 +35,8 @@ namespace clanguml::class_diagram::model {
 /**
  * @brief Diagram element representing a class or class template.
  */
-class class_ : public common::model::element,
-               public common::model::stylable_element,
-               public template_trait {
+class class_ : public common::model::template_element,
+               public common::model::stylable_element {
 public:
     class_(const common::model::namespace_ &using_namespace);
 
@@ -68,20 +67,6 @@ public:
      * @param is_struct True, if the class was declared as 'struct'
      */
     void is_struct(bool is_struct);
-
-    /**
-     * Whether or not the class is a template.
-     *
-     * @return True, if the class is a template.
-     */
-    bool is_template() const;
-
-    /**
-     * Set, whether the class is a template.
-     *
-     * @param is_struct True, if the class is a template.
-     */
-    void is_template(bool is_template);
 
     /**
      * Whether or not the class is a union.
@@ -172,31 +157,6 @@ public:
     bool is_abstract() const;
 
     /**
-     * @brief Calculate template specialization match with other class.
-     *
-     * This method is a wrapper over
-     * @ref template_trait::calculate_template_specialization_match()
-     *
-     * @param other
-     * @return
-     */
-    int calculate_template_specialization_match(const class_ &other) const;
-
-    /**
-     * Whether, a template specialization has already been found for this class.
-     * @return True, if a template specialization has already been found.
-     */
-    bool template_specialization_found() const;
-
-    /**
-     * Set, whether a template specialization has already been found for this
-     * class.
-     *
-     * @param found True, if a template specialization has already been found.
-     */
-    void template_specialization_found(bool found);
-
-    /**
      * @brief Generate Doxygen style HTML link for the class.
      *
      * This method generates a link, which can be used in SVG diagrams to
@@ -208,15 +168,12 @@ public:
 
 private:
     bool is_struct_{false};
-    bool is_template_{false};
     bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
     std::vector<class_parent> bases_;
     std::string base_template_full_name_;
     std::string full_name_;
-
-    bool template_specialization_found_{false};
 };
 
 } // namespace clanguml::class_diagram::model

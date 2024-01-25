@@ -141,6 +141,10 @@ void diagram::get_parents(
                 if (found)
                     found_new = true;
             }
+            else {
+                LOG_WARN("Couldn't find class representing base class: {} [{}]",
+                    pp.name(), pp.id());
+            }
         }
     }
 
