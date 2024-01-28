@@ -84,6 +84,8 @@ LLVM_CONFIG_PATH=/usr/bin/llvm-config-16 make release
 # or directly specify the path where LLVMConfig.cmake can be found on your system, e.g.:
 CMAKE_PREFIX=/usr/lib/llvm-16/lib/cmake/llvm make release
 
+# By default clang-uml is linked against shared LLVM libraries, this can be changed using:
+LLVM_SHARED=OFF LLVM_VERSION=16 make release
 
 # Optionally, to install in default prefix
 make install

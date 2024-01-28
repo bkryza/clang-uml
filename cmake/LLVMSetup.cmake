@@ -67,18 +67,16 @@ else(LINK_LLVM_SHARED)
             LLVMBitReader
             LLVMCore
             LLVMSupport)
-    if(MSVC)
-        if(${LLVM_PACKAGE_VERSION} VERSION_LESS "15.0")
-            list(REMOVE_ITEM LIBTOOLING_LIBS clangSupport)
-        else()
-            list(APPEND LIBTOOLING_LIBS
-                    LLVMWindowsDriver
-                    LLVMWindowsManifest)
-        endif()
-        if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "17.0")
-            list(APPEND LIBTOOLING_LIBS clangASTMatchers)
-        endif()
-    endif(MSVC)
+    if(${LLVM_PACKAGE_VERSION} VERSION_LESS "15.0")
+        list(REMOVE_ITEM LIBTOOLING_LIBS clangSupport)
+    else()
+        list(APPEND LIBTOOLING_LIBS
+                LLVMWindowsDriver
+                LLVMWindowsManifest)
+    endif()
+    if(${LLVM_PACKAGE_VERSION} VERSION_GREATER_EQUAL "16.0")
+        list(APPEND LIBTOOLING_LIBS clangASTMatchers)
+    endif()
 endif(LINK_LLVM_SHARED)
 
 if("${LIBTOOLING_LIBS}" STREQUAL "")
