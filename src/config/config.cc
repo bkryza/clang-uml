@@ -253,12 +253,14 @@ std::vector<std::string> diagram::get_translation_units() const
     LOG_DBG("Looking for translation units in {}", root_directory().string());
 
     for (const auto &g : glob()) {
-        std::string glob_path =
-            fmt::format("{}/{}", root_directory().string(), g.c_str());
+        std::filesystem::path absolute_glob_path{g};
 
-        LOG_DBG("Searching glob path {}", glob_path);
+        if (!absolute_glob_path.is_absolute())
+            absolute_glob_path = root_directory() / absolute_glob_path;
 
-        auto matches = glob::glob(glob_path, true, false);
+        LOG_DBG("Searching glob path {}", absolute_glob_path.string());
+
+        auto matches = glob::glob(absolute_glob_path, true, false);
 
         for (const auto &match : matches) {
             const auto path =
