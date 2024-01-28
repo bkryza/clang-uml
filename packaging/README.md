@@ -9,16 +9,12 @@
 cd packaging
 make DIST=focal deb
 make DIST=jammy deb
-make DIST=lunar deb
 make DIST=mantic deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes
 
 cd _BUILD/ubuntu/jammy
-dput ppa:bkryza/clang-uml *.changes
-
-cd _BUILD/ubuntu/lunar
 dput ppa:bkryza/clang-uml *.changes
 
 cd _BUILD/ubuntu/mantic

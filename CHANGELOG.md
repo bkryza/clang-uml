@@ -1,5 +1,8 @@
 # CHANGELOG
 
+### 0.5.0
+ * Fixed static linking against LLVM (#225)
+ * Fixed handling of absolute paths in glob patterns (#233)
  * Enabled type_aliases config option for sequence diagrams (#224)
  * Refactored and unified JSON generators output (#223)
  * Added support for C++20 module based packages in class diagrams (#101)
