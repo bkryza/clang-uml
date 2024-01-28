@@ -255,12 +255,16 @@ std::vector<std::string> diagram::get_translation_units() const
     for (const auto &g : glob()) {
         std::filesystem::path absolute_glob_path{g};
 
+#ifdef _MSC_VER
+        if (!absolute_glob_path.has_root_name())
+#else
         if (!absolute_glob_path.is_absolute())
+#endif
             absolute_glob_path = root_directory() / absolute_glob_path;
 
         LOG_DBG("Searching glob path {}", absolute_glob_path.string());
 
-        auto matches = glob::glob(absolute_glob_path, true, false);
+        auto matches = glob::glob(absolute_glob_path.string(), true, false);
 
         for (const auto &match : matches) {
             const auto path =
