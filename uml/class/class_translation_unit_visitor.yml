@@ -1,0 +1,26 @@
+type: class
+title: Class diagram TU visitor
+include_relations_also_as_members: false
+generate_method_arguments: none
+generate_packages: false
+glob:
+  - src/common/visitor/*.cc
+  - src/class_diagram/visitor/*.cc
+include:
+  namespaces:
+    - clanguml
+    - clang
+  context:
+    - clanguml::class_diagram::visitor::translation_unit_visitor
+    - match:
+        radius: 2
+        pattern: "clang::RecursiveASTVisitor<clanguml::class_diagram::visitor::translation_unit_visitor>"
+exclude:
+  access:
+    - public
+    - protected
+    - private
+  relationships:
+    - dependency
+  element_types:
+    - enum
