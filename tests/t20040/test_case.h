@@ -40,6 +40,17 @@ TEST_CASE("t20040", "[test-case][sequence]")
                 _A("print<int,double,std::string>(int,double,std::string)"),
                 ""));
 
+        REQUIRE_THAT(src,
+            HasCall(_A("print<int,double,std::string>(int,double,std::string)"),
+                _A("print<double,std::string>(double,std::string)"), ""));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("print<double,std::string>(double,std::string)"),
+                _A("print<std::string>(std::string)"), ""));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("print<std::string>(std::string)"), _A("print()"), ""));
+
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
 
@@ -54,8 +65,24 @@ TEST_CASE("t20040", "[test-case][sequence]")
     {
         auto src = generate_sequence_mermaid(diagram, *model);
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"),
+                _A("print<int,double,std::string>(int,double,std::string)"),
+                ""));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("print<int,double,std::string>(int,double,std::string)"),
+                _A("print<double,std::string>(double,std::string)"), ""));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("print<double,std::string>(double,std::string)"),
+                _A("print<std::string>(std::string)"), ""));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("print<std::string>(std::string)"), _A("print()"), ""));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

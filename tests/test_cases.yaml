@@ -331,6 +331,12 @@ test_cases:
     - name: t20039
       title: Test case for type aliases config option in sequence diagrams
       description:
+    - name: t20040
+      title: Test case for recursive variadic template function call
+      description:
+    - name: t20041
+      title: Test case for recursive variadic template class call
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
