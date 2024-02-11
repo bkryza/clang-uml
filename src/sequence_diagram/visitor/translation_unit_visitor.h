@@ -36,6 +36,10 @@ using common::model::template_parameter;
 
 std::string to_string(const clang::FunctionTemplateDecl *decl);
 
+using visitor_specialization_t = common::visitor::translation_unit_visitor<
+    clanguml::config::sequence_diagram,
+    clanguml::sequence_diagram::model::diagram>;
+
 /**
  * @brief Sequence diagram translation unit visitor
  *
@@ -44,8 +48,14 @@ std::string to_string(const clang::FunctionTemplateDecl *decl);
  */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
-      public common::visitor::translation_unit_visitor {
+      public visitor_specialization_t {
 public:
+    using visitor_specialization_t::config_t;
+    using visitor_specialization_t::diagram_t;
+
+    using template_builder_t =
+        common::visitor::template_builder<translation_unit_visitor>;
+
     /**
      * @brief Constructor.
      *
@@ -123,27 +133,6 @@ public:
 
     bool TraverseConditionalOperator(clang::ConditionalOperator *stmt);
     /** @} */
-
-    /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    clanguml::sequence_diagram::model::diagram &diagram();
-
-    /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    const clanguml::sequence_diagram::model::diagram &diagram() const;
-
-    /**
-     * @brief Get diagram config instance
-     *
-     * @return Reference to config instance
-     */
-    const clanguml::config::sequence_diagram &config() const;
 
     /**
      * @brief Get current call expression context reference
@@ -255,6 +244,9 @@ public:
      */
     void finalize();
 
+    std::unique_ptr<sequence_diagram::model::class_> create_element(
+        const clang::NamedDecl *decl) const;
+
 private:
     /**
      * @brief Check if the diagram should include a declaration.
@@ -312,20 +304,11 @@ private:
      */
     bool should_include(const clang::ClassTemplateDecl *decl) const;
 
-    /**
-     * @todo #227 Refactor this group of methods to @ref template_builder
-     *
-     * @{
-     */
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
     create_class_model(clang::CXXRecordDecl *cls);
 
     std::unique_ptr<clanguml::sequence_diagram::model::method>
     create_method_model(clang::CXXMethodDecl *cls);
-
-    bool process_template_parameters(
-        const clang::TemplateDecl &template_declaration,
-        common::model::template_trait &c);
 
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
@@ -336,63 +319,10 @@ private:
     std::unique_ptr<model::function_template> build_function_template(
         const clang::FunctionTemplateDecl &declaration);
 
-    void build_template_instantiation_process_template_arguments(
-        model::template_trait *parent,
-        std::deque<std::tuple<std::string, int, bool>> &template_base_params,
-        const clang::ArrayRef<clang::TemplateArgument> &template_args,
-        model::template_trait &template_instantiation,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl);
-
-    common::model::template_parameter
-    build_template_instantiation_process_template_argument(
-        const clang::TemplateArgument &arg) const;
-
-    common::model::template_parameter
-    build_template_instantiation_process_integral_argument(
-        const clang::TemplateArgument &arg) const;
-
-    common::model::template_parameter
-    build_template_instantiation_process_expression_argument(
-        const clang::TemplateArgument &arg) const;
-
-    void build_template_instantiation_process_tag_argument(
-        model::template_trait &template_instantiation,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
-        common::model::template_parameter &argument) const;
-
-    common::model::template_parameter
-    build_template_instantiation_process_type_argument(
-        model::template_trait *parent,
-        const std::string &full_template_specialization_name,
-        const clang::TemplateDecl *template_decl,
-        const clang::TemplateArgument &arg,
-        model::template_trait &template_instantiation);
-
-    std::unique_ptr<model::class_> process_template_specialization(
+    std::unique_ptr<model::class_> process_class_template_specialization(
         clang::ClassTemplateSpecializationDecl *cls);
 
-    void process_template_specialization_argument(
-        const clang::ClassTemplateSpecializationDecl *cls,
-        model::class_ &template_instantiation,
-        const clang::TemplateArgument &arg, size_t argument_index,
-        bool in_parameter_pack = false);
-
-    void process_unexposed_template_specialization_parameters(
-        const std::string &type_name, common::model::template_parameter &tp,
-        model::class_ &c) const;
-
-    std::unique_ptr<model::class_> build_template_instantiation(
-        const clang::TemplateSpecializationType &template_type_decl,
-        model::class_ *parent);
-
-    bool simplify_system_template(common::model::template_parameter &ct,
-        const std::string &full_name) const;
-
     std::string simplify_system_template(const std::string &full_name) const;
-    /** }@ */
 
     /**
      * @brief Assuming `cls` is a lambda, create it's full name.
@@ -516,13 +446,7 @@ private:
      *
      * @return Reference to 'template_builder' instance
      */
-    common::visitor::template_builder &tbuilder() { return template_builder_; }
-
-    // Reference to the output diagram model
-    clanguml::sequence_diagram::model::diagram &diagram_;
-
-    // Reference to class diagram config
-    const clanguml::config::sequence_diagram &config_;
+    template_builder_t &tbuilder() { return template_builder_; }
 
     call_expression_context call_expression_context_;
 
@@ -558,6 +482,6 @@ private:
     mutable std::set<std::pair<int64_t, const clang::RawComment *>>
         processed_comments_;
 
-    common::visitor::template_builder template_builder_;
+    template_builder_t template_builder_;
 };
 } // namespace clanguml::sequence_diagram::visitor

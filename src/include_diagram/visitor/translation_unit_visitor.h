@@ -35,6 +35,10 @@
 
 namespace clanguml::include_diagram::visitor {
 
+using visitor_specialization_t =
+    common::visitor::translation_unit_visitor<clanguml::config::include_diagram,
+        clanguml::include_diagram::model::diagram>;
+
 /**
  * @brief Include diagram translation unit visitor wrapper
  *
@@ -53,7 +57,7 @@ public:
      * include_visitor type from translation_unit_visitor type
      */
     class include_visitor : public clang::PPCallbacks,
-                            public common::visitor::translation_unit_visitor {
+                            public visitor_specialization_t {
     public:
         /**
          * @brief Constructor.
@@ -123,27 +127,6 @@ public:
          */
         std::optional<common::id_t> process_source_file(
             const std::filesystem::path &file);
-
-        /**
-         * @brief Get reference to the include diagram model
-         *
-         * @return Reference to the include diagram model
-         */
-        clanguml::include_diagram::model::diagram &diagram();
-
-        /**
-         * @brief Get reference to the diagram configuration
-         *
-         * @return Reference to the diagram configuration
-         */
-        const clanguml::config::include_diagram &config() const;
-
-    private:
-        // Reference to the output diagram model
-        clanguml::include_diagram::model::diagram &diagram_;
-
-        // Reference to class diagram config
-        const clanguml::config::include_diagram &config_;
     };
 
     /**

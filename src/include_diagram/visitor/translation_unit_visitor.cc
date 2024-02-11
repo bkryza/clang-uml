@@ -37,9 +37,7 @@ translation_unit_visitor::include_visitor::include_visitor(
     clang::SourceManager &sm,
     clanguml::include_diagram::model::diagram &diagram,
     const clanguml::config::include_diagram &config)
-    : common::visitor::translation_unit_visitor{sm, config}
-    , diagram_{diagram}
-    , config_{config}
+    : visitor_specialization_t{sm, diagram, config}
 {
 }
 
@@ -110,18 +108,6 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     else {
         LOG_DBG("Skipping include directive to file {}", include_path.string());
     }
-}
-
-clanguml::include_diagram::model::diagram &
-translation_unit_visitor::include_visitor::diagram()
-{
-    return diagram_;
-}
-
-const clanguml::config::include_diagram &
-translation_unit_visitor::include_visitor::config() const
-{
-    return config_;
 }
 
 void translation_unit_visitor::include_visitor::process_internal_header(
