@@ -463,6 +463,7 @@ using namespace clanguml::test::matchers;
 #include "t20039/test_case.h"
 #include "t20040/test_case.h"
 #include "t20041/test_case.h"
+#include "t20042/test_case.h"
 
 ///
 /// Package diagram tests

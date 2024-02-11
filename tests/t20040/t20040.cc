@@ -23,10 +23,6 @@ void tmain()
     print(1, 3.14, "test"s);
 
     doublePrint("test"s, 2024 / 2);
-
-    // TODO: Add separate test case for variadic class template sequence diagram
-
-    // TODO: Add overload pattern test case
 }
 }
 }
