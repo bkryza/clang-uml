@@ -213,6 +213,9 @@ test_cases:
     - name: t00072
       title: Class diagram with C++20 module partitions generated as packages
       description:
+    - name: t00073
+      title: Class diagram for template overload pattern
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

@@ -414,6 +414,7 @@ using namespace clanguml::test::matchers;
 #include "t00071/test_case.h"
 #include "t00072/test_case.h"
 #endif
+#include "t00073/test_case.h"
 
 ///
 /// Sequence diagram tests
