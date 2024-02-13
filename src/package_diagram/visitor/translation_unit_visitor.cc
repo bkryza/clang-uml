@@ -325,7 +325,8 @@ common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
 
         return {};
     }
-    else if (config().package_type() == config::package_type_t::kModule) {
+
+    if (config().package_type() == config::package_type_t::kModule) {
         const auto *module = cls->getOwningModule();
         if (module != nullptr) {
             std::string module_path = module->Name;

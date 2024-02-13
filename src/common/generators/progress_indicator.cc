@@ -72,12 +72,13 @@ void progress_indicator::increment(const std::string &name)
 
     auto &p = progress_bar_index_.at(name);
     auto &bar = progress_bars_[p.index];
-    progress_bars_mutex_.unlock();
 
     p.progress++;
+
     bar.set_progress((p.progress * kASTTraverseProgressPercent) / p.max);
     bar.set_option(indicators::option::PostfixText{
         fmt::format("{}/{}", p.progress, p.max)});
+    progress_bars_mutex_.unlock();
 }
 
 void progress_indicator::stop()
@@ -104,7 +105,6 @@ void progress_indicator::complete(const std::string &name)
 
     auto &p = progress_bar_index_.at(name);
     auto &bar = progress_bars_[p.index];
-    progress_bars_mutex_.unlock();
 
     bar.set_progress(kCompleteProgressPercent);
 
@@ -117,6 +117,8 @@ void progress_indicator::complete(const std::string &name)
     bar.set_option(
         indicators::option::ForegroundColor{indicators::Color::green});
     bar.mark_as_completed();
+
+    progress_bars_mutex_.unlock();
 }
 
 void progress_indicator::fail(const std::string &name)
@@ -124,7 +126,6 @@ void progress_indicator::fail(const std::string &name)
     progress_bars_mutex_.lock();
     auto &p = progress_bar_index_.at(name);
     auto &bar = progress_bars_[p.index];
-    progress_bars_mutex_.unlock();
 
 #if _MSC_VER
     const auto postfix_text = fmt::format("{}/{} FAILED", p.progress, p.max);
@@ -134,6 +135,8 @@ void progress_indicator::fail(const std::string &name)
     bar.set_option(indicators::option::ForegroundColor{indicators::Color::red});
     bar.set_option(indicators::option::PostfixText{postfix_text});
     bar.mark_as_completed();
+
+    progress_bars_mutex_.unlock();
 }
 
 } // namespace clanguml::common::generators

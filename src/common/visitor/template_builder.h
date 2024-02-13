@@ -119,7 +119,7 @@ public:
     void build(
         clanguml::common::model::template_element &template_instantiation,
         const clang::NamedDecl *cls, const clang::TemplateDecl *template_decl,
-        const clang::ArrayRef<clang::TemplateArgument> template_arguments,
+        clang::ArrayRef<clang::TemplateArgument> template_arguments,
         std::string full_template_specialization_name,
         std::optional<clanguml::common::model::template_element *> parent = {});
 

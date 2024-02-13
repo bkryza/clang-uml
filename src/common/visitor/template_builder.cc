@@ -83,4 +83,4 @@ std::string map_type_parameter_to_template_parameter_name(
     return type_parameter;
 }
 
-} // namespace clanguml::class_diagram::visitor
+} // namespace clanguml::common::visitor

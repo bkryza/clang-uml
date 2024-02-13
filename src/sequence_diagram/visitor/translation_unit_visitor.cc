@@ -33,7 +33,8 @@ translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
 }
 
 std::unique_ptr<sequence_diagram::model::class_>
-translation_unit_visitor::create_element(const clang::NamedDecl *decl) const
+translation_unit_visitor::create_element(
+    const clang::NamedDecl * /*decl*/) const
 {
     return std::make_unique<sequence_diagram::model::class_>(
         config().using_namespace());
