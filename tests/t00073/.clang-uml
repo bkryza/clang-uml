@@ -1,0 +1,9 @@
+diagrams:
+  t00073_class:
+    type: class
+    glob:
+      - t00073.cc
+    include:
+      namespaces:
+        - clanguml::t00073
+    using_namespace: clanguml::t00073

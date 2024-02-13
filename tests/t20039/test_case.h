@@ -59,8 +59,17 @@ TEST_CASE("t20039", "[test-case][sequence]")
     {
         auto src = generate_sequence_mermaid(diagram, *model);
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
+        mermaid::SequenceDiagramAliasMatcher _A(src);
+        using mermaid::HasCall;
+
+        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("R"), "run()"));
+        REQUIRE_THAT(src, HasCall(_A("R"), _A("A<int>"), "a(int)"));
+        REQUIRE_THAT(src, HasCall(_A("R"), _A("A<int_vec_t>"), "a(int_vec_t)"));
+        REQUIRE_THAT(
+            src, HasCall(_A("R"), _A("A<string_vec_t>"), "a(string_vec_t)"));
+        REQUIRE_THAT(src, HasCall(_A("R"), _A("A<int_map_t>"), "a(int_map_t)"));
+        REQUIRE_THAT(
+            src, HasCall(_A("R"), _A("A<string_map_t>"), "a(string_map_t)"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }

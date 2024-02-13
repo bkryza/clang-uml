@@ -1,0 +1,11 @@
+diagrams:
+  t20040_sequence:
+    type: sequence
+    glob:
+      - t20040.cc
+    include:
+      namespaces:
+        - clanguml::t20040
+    using_namespace: clanguml::t20040
+    from:
+      - function: "clanguml::t20040::tmain()"

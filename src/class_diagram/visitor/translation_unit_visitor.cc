@@ -29,30 +29,17 @@ namespace clanguml::class_diagram::visitor {
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::class_diagram::model::diagram &diagram,
     const clanguml::config::class_diagram &config)
-    : common::visitor::translation_unit_visitor{sm, config}
-    , diagram_{diagram}
-    , config_{config}
-    , template_builder_{diagram_, config_, *this,
-          [uns = config_.using_namespace()](const clang::NamedDecl *decl) {
-              auto cls = std::make_unique<class_>(uns);
-              cls->is_struct(common::is_struct(decl));
-              return cls;
-          },
-          [this](common::model::template_element &template_instantiation_base,
-              const std::string &full_name, common::id_t templated_decl_id) {
-              find_instantiation_relationships(
-                  template_instantiation_base, full_name, templated_decl_id);
-          },
-          [](clanguml::common::model::template_element &tinst,
-              clanguml::common::id_t id, const std::string &full_name) {
-              model::class_parent cp;
-              cp.set_access(common::model::access_t::kPublic);
-              cp.set_name(full_name);
-              cp.set_id(id);
-
-              dynamic_cast<class_ &>(tinst).add_parent(std::move(cp));
-          }}
+    : visitor_specialization_t{sm, diagram, config}
+    , template_builder_{diagram, config, *this}
 {
+}
+
+std::unique_ptr<class_> translation_unit_visitor::create_element(
+    const clang::NamedDecl *decl) const
+{
+    auto cls = std::make_unique<class_>(config().using_namespace());
+    cls->is_struct(common::is_struct(decl));
+    return cls;
 }
 
 bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
@@ -126,7 +113,7 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         enm->getQualifiedNameAsString(),
         enm->getLocation().printToString(source_manager()));
 
-    auto e_ptr = std::make_unique<enum_>(config_.using_namespace());
+    auto e_ptr = std::make_unique<enum_>(config().using_namespace());
     auto &e = *e_ptr;
 
     std::string qualified_name = common::get_qualified_name(*enm);
@@ -274,7 +261,7 @@ bool translation_unit_visitor::VisitTypeAliasTemplateDecl(
 
     auto template_specialization_ptr =
         std::make_unique<class_>(config().using_namespace());
-    tbuilder().build(
+    tbuilder().build_from_template_specialization_type(
         *template_specialization_ptr, cls, *template_type_specialization_ptr);
 
     if (diagram().should_include(*template_specialization_ptr)) {
@@ -309,11 +296,10 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
 
     add_processed_template_class(cls->getQualifiedNameAsString());
 
+    tbuilder().build_from_template_declaration(*c_ptr, *cls, *c_ptr);
+
     // Override the id with the template id, for now we don't care about the
     // underlying templated class id
-
-    process_template_parameters(*cls, *c_ptr, *c_ptr);
-
     const auto cls_full_name = c_ptr->full_name(false);
     const auto id = common::to_id(cls_full_name);
 
@@ -420,7 +406,7 @@ bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 
     id_mapper().add(cpt->getID(), concept_id);
 
-    process_template_parameters(*cpt, *concept_model);
+    tbuilder().build_from_template_declaration(*concept_model, *cpt);
 
     constexpr auto kMaxConstraintCount = 24U;
     llvm::SmallVector<const clang::Expr *, kMaxConstraintCount> constraints{};
@@ -774,7 +760,7 @@ translation_unit_visitor::create_concept_declaration(clang::ConceptDecl *cpt)
         return {};
 
     auto concept_ptr{
-        std::make_unique<model::concept_>(config_.using_namespace())};
+        std::make_unique<model::concept_>(config().using_namespace())};
     auto &concept_model = *concept_ptr;
 
     auto ns = common::get_template_namespace(*cpt);
@@ -803,7 +789,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_record_declaration(
     if (!should_include(rec))
         return {};
 
-    auto record_ptr{std::make_unique<class_>(config_.using_namespace())};
+    auto record_ptr{std::make_unique<class_>(config().using_namespace())};
     auto &record = *record_ptr;
 
     process_record_parent(rec, record, namespace_{});
@@ -849,7 +835,7 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     if (!should_include(cls))
         return {};
 
-    auto c_ptr{std::make_unique<class_>(config_.using_namespace())};
+    auto c_ptr{std::make_unique<class_>(config().using_namespace())};
     auto &c = *c_ptr;
 
     auto ns{common::get_tag_namespace(*cls)};
@@ -909,11 +895,11 @@ void translation_unit_visitor::process_record_parent(
         }
     }
 
-    if (id_opt && diagram_.find<class_>(*id_opt)) {
+    if (id_opt && diagram().find<class_>(*id_opt)) {
         // Here we have 2 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
-        auto parent_class = diagram_.find<class_>(*id_opt);
+        auto parent_class = diagram().find<class_>(*id_opt);
 
         c.set_namespace(parent_ns);
         const auto cls_name = cls->getNameAsString();
@@ -963,102 +949,6 @@ void translation_unit_visitor::process_class_declaration(
     c.complete(true);
 }
 
-bool translation_unit_visitor::process_template_parameters(
-    const clang::TemplateDecl &template_declaration,
-    common::model::template_trait &c,
-    common::optional_ref<common::model::element> templated_element)
-{
-    LOG_DBG("Processing {} template parameters...",
-        common::get_qualified_name(template_declaration));
-
-    if (template_declaration.getTemplateParameters() == nullptr)
-        return false;
-
-    for (const auto *parameter :
-        *template_declaration.getTemplateParameters()) {
-        if (clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter) !=
-            nullptr) {
-            const auto *template_type_parameter =
-                clang::dyn_cast_or_null<clang::TemplateTypeParmDecl>(parameter);
-
-            std::optional<std::string> default_arg;
-            if (template_type_parameter->hasDefaultArgument()) {
-                default_arg =
-                    template_type_parameter->getDefaultArgument().getAsString();
-            }
-
-            auto parameter_name = template_type_parameter->getNameAsString();
-            if (parameter_name.empty())
-                parameter_name = "typename";
-
-            auto ct = template_parameter::make_template_type(parameter_name,
-                default_arg, template_type_parameter->isParameterPack());
-
-            if (template_type_parameter->getTypeConstraint() != nullptr) {
-                util::if_not_null(template_type_parameter->getTypeConstraint()
-                                      ->getNamedConcept(),
-                    [this, &ct, &templated_element](
-                        const clang::ConceptDecl *named_concept) mutable {
-                        ct.set_concept_constraint(
-                            named_concept->getQualifiedNameAsString());
-                        if (templated_element &&
-                            should_include(named_concept)) {
-                            templated_element.value().add_relationship(
-                                {relationship_t::kConstraint,
-                                    id_mapper()
-                                        .get_global_id(named_concept->getID())
-                                        .value(),
-                                    access_t::kNone, ct.name().value()});
-                        }
-                    });
-            }
-
-            c.add_template(std::move(ct));
-        }
-        else if (clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
-                     parameter) != nullptr) {
-            const auto *template_nontype_parameter =
-                clang::dyn_cast_or_null<clang::NonTypeTemplateParmDecl>(
-                    parameter);
-
-            std::optional<std::string> default_arg;
-
-            if (template_nontype_parameter->hasDefaultArgument())
-                default_arg = common::to_string(
-                    template_nontype_parameter->getDefaultArgument());
-
-            auto ct = template_parameter::make_non_type_template(
-                template_nontype_parameter->getType().getAsString(),
-                template_nontype_parameter->getNameAsString(), default_arg,
-                template_nontype_parameter->isParameterPack());
-
-            c.add_template(std::move(ct));
-        }
-        else if (clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
-                     parameter) != nullptr) {
-            const auto *template_template_parameter =
-                clang::dyn_cast_or_null<clang::TemplateTemplateParmDecl>(
-                    parameter);
-            std::optional<std::string> default_arg;
-            if (template_template_parameter->hasDefaultArgument()) {
-                default_arg = common::to_string(
-                    template_template_parameter->getDefaultArgument()
-                        .getArgument());
-            }
-            auto ct = template_parameter::make_template_template_type(
-                template_template_parameter->getNameAsString(), default_arg,
-                template_template_parameter->isParameterPack());
-
-            c.add_template(std::move(ct));
-        }
-        else {
-            // pass
-        }
-    }
-
-    return false;
-}
-
 void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl *cls, class_ &c)
 {
@@ -1074,7 +964,8 @@ void translation_unit_visitor::process_class_bases(
             tsp != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
-            tbuilder().build(*template_specialization_ptr, cls, *tsp, {});
+            tbuilder().build_from_template_specialization_type(
+                *template_specialization_ptr, cls, *tsp, {});
 
             cp.set_id(template_specialization_ptr->id());
             cp.set_name(template_specialization_ptr->full_name(false));
@@ -1330,7 +1221,8 @@ void translation_unit_visitor::process_method(
         if (unaliased_type != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
-            tbuilder().build(*template_specialization_ptr,
+            tbuilder().build_from_template_specialization_type(
+                *template_specialization_ptr,
                 unaliased_type->getTemplateName().getAsTemplateDecl(),
                 *unaliased_type, &c);
 
@@ -1476,14 +1368,13 @@ void translation_unit_visitor::process_template_method(
         // Is there a better way to do this?
         method_name = method_name.substr(0, method_name.find('<'));
     }
-
     util::if_not_null(
         clang::dyn_cast<clang::CXXMethodDecl>(mf.getTemplatedDecl()),
         [&](const auto *decl) {
             process_method_properties(*decl, c, method_name, method);
         });
 
-    process_template_parameters(mf, method);
+    tbuilder().build_from_template_declaration(method, mf);
 
     process_comment(mf, method);
 
@@ -1705,7 +1596,8 @@ void translation_unit_visitor::process_function_parameter(
             templ != nullptr) {
             auto template_specialization_ptr =
                 std::make_unique<class_>(config().using_namespace());
-            tbuilder().build(*template_specialization_ptr,
+            tbuilder().build_from_template_specialization_type(
+                *template_specialization_ptr,
                 templ->getTemplateName().getAsTemplateDecl(), *templ, &c);
 
             if (diagram().should_include(*template_specialization_ptr)) {
@@ -1933,7 +1825,8 @@ void translation_unit_visitor::process_field(
         // Build the template instantiation for the field type
         auto template_specialization_ptr =
             std::make_unique<class_>(config().using_namespace());
-        tbuilder().build(*template_specialization_ptr,
+        tbuilder().build_from_template_specialization_type(
+            *template_specialization_ptr,
             field_type->getAs<clang::TemplateSpecializationType>()
                 ->getTemplateName()
                 .getAsTemplateDecl(),
@@ -2098,25 +1991,6 @@ void translation_unit_visitor::extract_constrained_template_param_name(
         }
         constrained_template_params.push_back(type_name);
     }
-}
-
-bool translation_unit_visitor::should_include(const clang::NamedDecl *decl)
-{
-    if (decl == nullptr)
-        return false;
-
-    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
-        return false;
-
-    auto should_include_namespace =
-        diagram().should_include(namespace_{decl->getQualifiedNameAsString()});
-
-    const auto decl_file = decl->getLocation().printToString(source_manager());
-
-    const auto should_include_decl_file =
-        diagram().should_include(common::model::source_file{decl_file});
-
-    return should_include_namespace && should_include_decl_file;
 }
 
 void translation_unit_visitor::add_processed_template_class(

@@ -36,6 +36,10 @@ namespace clanguml::package_diagram::visitor {
 using found_relationships_t = std::vector<
     std::pair<clanguml::common::id_t, common::model::relationship_t>>;
 
+using visitor_specialization_t =
+    common::visitor::translation_unit_visitor<clanguml::config::package_diagram,
+        clanguml::package_diagram::model::diagram>;
+
 /**
  * @brief Package diagram translation unit visitor
  *
@@ -44,7 +48,7 @@ using found_relationships_t = std::vector<
  */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
-      public common::visitor::translation_unit_visitor {
+      public visitor_specialization_t {
 public:
     /**
      * @brief Constructor.
@@ -75,20 +79,6 @@ public:
 
     virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
     /** @} */
-
-    /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    clanguml::package_diagram::model::diagram &diagram();
-
-    /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    const clanguml::config::package_diagram &config() const;
 
     /**
      * @brief Finalize diagram model
@@ -214,11 +204,5 @@ private:
         clang::Decl *cls, found_relationships_t &relationships);
 
     std::vector<common::id_t> get_parent_package_ids(common::id_t id);
-
-    // Reference to the output diagram model
-    clanguml::package_diagram::model::diagram &diagram_;
-
-    // Reference to class diagram config
-    const clanguml::config::package_diagram &config_;
 };
 } // namespace clanguml::package_diagram::visitor

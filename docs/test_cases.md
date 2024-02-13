@@ -77,6 +77,7 @@
  * [t00070](./test_cases/t00070.md) - Diagram filter based on C++20 modules
  * [t00071](./test_cases/t00071.md) - Class diagram with C++20 modules generated as packages
  * [t00072](./test_cases/t00072.md) - Class diagram with C++20 module partitions generated as packages
+ * [t00073](./test_cases/t00073.md) - Class diagram for template overload pattern
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -117,6 +118,9 @@
  * [t20037](./test_cases/t20037.md) - Test case checking if activities in static variable declarations appear only once
  * [t20038](./test_cases/t20038.md) - Sequence diagram comment decorator test case
  * [t20039](./test_cases/t20039.md) - Test case for type aliases config option in sequence diagrams
+ * [t20040](./test_cases/t20040.md) - Test case for recursive variadic template function call
+ * [t20041](./test_cases/t20041.md) - Test case for recursive variadic template class call
+ * [t20042](./test_cases/t20042.md) - Test case for template overload pattern
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

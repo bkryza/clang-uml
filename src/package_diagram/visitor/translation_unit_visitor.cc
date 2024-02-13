@@ -37,9 +37,7 @@ using clanguml::common::model::relationship_t;
 translation_unit_visitor::translation_unit_visitor(clang::SourceManager &sm,
     clanguml::package_diagram::model::diagram &diagram,
     const clanguml::config::package_diagram &config)
-    : common::visitor::translation_unit_visitor{sm, config}
-    , diagram_{diagram}
-    , config_{config}
+    : visitor_specialization_t{sm, diagram, config}
 {
 }
 
@@ -327,7 +325,8 @@ common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
 
         return {};
     }
-    else if (config().package_type() == config::package_type_t::kModule) {
+
+    if (config().package_type() == config::package_type_t::kModule) {
         const auto *module = cls->getOwningModule();
         if (module != nullptr) {
             std::string module_path = module->Name;
@@ -674,17 +673,6 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     }
 
     return result;
-}
-
-clanguml::package_diagram::model::diagram &translation_unit_visitor::diagram()
-{
-    return diagram_;
-}
-
-const clanguml::config::package_diagram &
-translation_unit_visitor::config() const
-{
-    return config_;
 }
 
 void translation_unit_visitor::finalize() { }

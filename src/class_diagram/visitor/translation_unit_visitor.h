@@ -54,6 +54,10 @@ using clanguml::common::model::template_trait;
 using clanguml::common::visitor::found_relationships_t;
 using clanguml::common::visitor::template_builder;
 
+using visitor_specialization_t =
+    common::visitor::translation_unit_visitor<clanguml::config::class_diagram,
+        clanguml::class_diagram::model::diagram>;
+
 /**
  * @brief Class diagram translation unit visitor
  *
@@ -62,8 +66,13 @@ using clanguml::common::visitor::template_builder;
  */
 class translation_unit_visitor
     : public clang::RecursiveASTVisitor<translation_unit_visitor>,
-      public common::visitor::translation_unit_visitor {
+      public visitor_specialization_t {
 public:
+    using visitor_specialization_t::config_t;
+    using visitor_specialization_t::diagram_t;
+
+    using template_builder_t = template_builder<translation_unit_visitor>;
+
     /**
      * @brief Constructor.
      *
@@ -103,30 +112,6 @@ public:
     /** @} */
 
     /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    clanguml::class_diagram::model::diagram &diagram() { return diagram_; }
-
-    /**
-     * @brief Get diagram model reference
-     *
-     * @return Reference to diagram model created by the visitor
-     */
-    const clanguml::class_diagram::model::diagram &diagram() const
-    {
-        return diagram_;
-    }
-
-    /**
-     * @brief Get diagram config instance
-     *
-     * @return Reference to config instance
-     */
-    const clanguml::config::class_diagram &config() const { return config_; }
-
-    /**
      * @brief Finalize diagram model
      *
      * This method is called after the entire AST has been visited by this
@@ -157,15 +142,16 @@ public:
      */
     void add_concept(std::unique_ptr<concept_> &&c);
 
-private:
-    /**
-     * @brief Check if the diagram should include a declaration.
-     *
-     * @param decl Clang declaration.
-     * @return True, if the entity should be included in the diagram.
-     */
-    bool should_include(const clang::NamedDecl *decl);
+    void add_diagram_element(
+        std::unique_ptr<common::model::template_element> element) override;
 
+    std::unique_ptr<class_> create_element(const clang::NamedDecl *decl) const;
+
+    void find_instantiation_relationships(
+        common::model::template_element &template_instantiation_base,
+        const std::string &full_name, common::id_t templated_decl_id);
+
+private:
     /**
      * @brief Create class element model from class declaration
      *
@@ -243,20 +229,6 @@ private:
      */
     void process_template_specialization_children(
         const clang::ClassTemplateSpecializationDecl *cls, class_ &c);
-
-    /**
-     * @brief Process template parameters
-     *
-     * @param template_declaration Template declaration
-     * @param t `template_trait` instance to which the parameters should be
-     *          added
-     * @param templated_element Optional templated diagram element (e.g. class_)
-     * @return Ignored
-     */
-    bool process_template_parameters(
-        const clang::TemplateDecl &template_declaration,
-        clanguml::common::model::template_trait &t,
-        common::optional_ref<common::model::element> templated_element = {});
 
     /**
      * @brief Process class method
@@ -451,27 +423,14 @@ private:
      */
     bool has_processed_template_class(const std::string &qualified_name) const;
 
-    void add_diagram_element(
-        std::unique_ptr<common::model::template_element> element) override;
-
-    void find_instantiation_relationships(
-        common::model::template_element &template_instantiation_base,
-        const std::string &full_name, common::id_t templated_decl_id);
-
     /**
      * @brief Get template builder reference
      *
      * @return Reference to 'template_builder' instance
      */
-    template_builder &tbuilder() { return template_builder_; }
+    template_builder_t &tbuilder() { return template_builder_; }
 
-    // Reference to the output diagram model
-    clanguml::class_diagram::model::diagram &diagram_;
-
-    // Reference to class diagram config
-    const clanguml::config::class_diagram &config_;
-
-    template_builder template_builder_;
+    template_builder_t template_builder_;
 
     std::map<common::id_t,
         std::unique_ptr<clanguml::class_diagram::model::class_>>
