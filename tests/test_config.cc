@@ -32,6 +32,7 @@ TEST_CASE("Test config simple", "[unit-test]")
 
     auto cfg = clanguml::config::load("./test_config_data/simple.yml");
 
+    CHECK(cfg.query_driver() == "g++");
     CHECK(cfg.diagrams.size() == 1);
     auto &diagram = *cfg.diagrams["class_main"];
     CHECK(diagram.type() == clanguml::common::model::diagram_t::kClass);

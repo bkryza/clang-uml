@@ -274,6 +274,7 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const config &c)
 
     out << c.compilation_database_dir;
     out << c.output_directory;
+    out << c.query_driver;
     out << c.add_compile_flags;
     out << c.remove_compile_flags;
 

@@ -2,6 +2,8 @@
 compilation_database_dir: debug
 # The directory where *.puml files will be generated
 output_directory: docs/diagrams
+# Query compiler frontend for compilation flags
+query_driver: .
 # Set this as default for all diagrams
 generate_method_arguments: none
 # Enable generation of hyperlinks to diagram elements

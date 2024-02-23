@@ -1,6 +1,7 @@
 compilation_database_dir: debug
 comment_parser: clang
 output_directory: output
+query_driver: g++
 generate_template_argument_dependencies: false
 diagrams:
   class_main:

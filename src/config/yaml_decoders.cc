@@ -815,6 +815,7 @@ template <> struct convert<config> {
         get_option(node, rhs.using_namespace);
         get_option(node, rhs.using_module);
         get_option(node, rhs.output_directory);
+        get_option(node, rhs.query_driver);
         get_option(node, rhs.compilation_database_dir);
         get_option(node, rhs.add_compile_flags);
         get_option(node, rhs.remove_compile_flags);

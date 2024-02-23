@@ -301,6 +301,7 @@ root:
     #
     compilation_database_dir: !optional string
     output_directory: !optional string
+    query_driver: !optional string
     add_compile_flags: !optional [string]
     remove_compile_flags: !optional [string]
     diagram_templates: !optional diagram_templates_t
