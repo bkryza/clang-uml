@@ -28,29 +28,69 @@ namespace clanguml::util {
 
 static const auto WHITESPACE = " \n\r\t\f\v";
 
+namespace {
+struct pipe_t {
+    explicit pipe_t(const std::string &command, int &result)
+        : result_{result}
+        ,
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        pipe_{popen(command.c_str(), "r")}
+#elif defined(_WIN32)
+        pipe_{_popen(command.c_str(), "r")}
+#endif
+    {
+    }
+
+    ~pipe_t() { reset(); }
+
+    operator bool() const { return pipe_ != nullptr; }
+
+    FILE *get() const { return pipe_; }
+
+    void reset()
+    {
+        if (pipe_ == nullptr)
+            return;
+
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        result_ = pclose(pipe_);
+#elif defined(_WIN32)
+        result_ = _pclose(pipe_);
+#endif
+        pipe_ = nullptr;
+    }
+
+private:
+    int &result_;
+    FILE *pipe_;
+};
+} // namespace
+
 std::string get_process_output(const std::string &command)
 {
     constexpr size_t kBufferSize{1024};
     std::array<char, kBufferSize> buffer{};
-    std::string result;
+    std::string output;
+    int result{EXIT_FAILURE};
 
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(
-        popen(command.c_str(), "r"), pclose);
-#elif defined(_WIN32)
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(
-        _popen(command.c_str(), "r"), _pclose);
-#endif
+    pipe_t pipe{command, result};
 
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
 
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
+        output += buffer.data();
     }
 
-    return result;
+    pipe.reset();
+
+    if (result != EXIT_SUCCESS) {
+        throw std::runtime_error(
+            fmt::format("External command '{}' failed: {}", command, output));
+    }
+
+    return output;
 }
 
 void check_process_output(const std::string &command)
@@ -59,21 +99,7 @@ void check_process_output(const std::string &command)
     std::array<char, kBufferSize> buffer{};
     int result{EXIT_FAILURE};
     std::string output;
-    auto finalize = [&result](FILE *f) {
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-        result = pclose(f);
-#elif defined(_WIN32)
-        result = _pclose(f);
-#endif
-    };
-
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    std::unique_ptr<FILE, decltype(finalize)> pipe(
-        popen(command.c_str(), "r"), finalize);
-#elif defined(_WIN32)
-    std::unique_ptr<FILE, decltype(finalize)> pipe(
-        _popen(command.c_str(), "r"), finalize);
-#endif
+    pipe_t pipe{command, result};
 
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
