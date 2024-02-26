@@ -29,7 +29,8 @@ namespace clanguml::util {
 static const auto WHITESPACE = " \n\r\t\f\v";
 
 namespace {
-struct pipe_t {
+class pipe_t {
+public:
     explicit pipe_t(const std::string &command, int &result)
         : result_{result}
         ,
@@ -147,48 +148,59 @@ bool is_git_repository()
     if (!env.empty())
         return true;
 
-    return contains(
-        trim(get_process_output("git rev-parse --git-dir")), ".git");
+    std::string output;
+
+    try {
+        output = get_process_output("git rev-parse --git-dir");
+    }
+    catch (std::runtime_error &e) {
+        return false;
+    }
+
+    return contains(trim(output), ".git");
+}
+
+std::string run_git_command(
+    const std::string &cmd, const std::string &env_override)
+{
+    auto env = get_env(env_override);
+
+    if (!env.empty())
+        return env;
+
+    std::string output;
+
+    try {
+        output = get_process_output(cmd);
+    }
+    catch (std::runtime_error &e) {
+        return {};
+    }
+
+    return trim(output);
 }
 
 std::string get_git_branch()
 {
-    auto env = get_env("CLANGUML_GIT_BRANCH");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse --abbrev-ref HEAD"));
+    return run_git_command(
+        "git rev-parse --abbrev-ref HEAD", "CLANGUML_GIT_BRANCH");
 }
 
 std::string get_git_revision()
 {
-    auto env = get_env("CLANGUML_GIT_REVISION");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git describe --tags --always"));
+    return run_git_command(
+        "git describe --tags --always", "CLANGUML_GIT_REVISION");
 }
 
 std::string get_git_commit()
 {
-    auto env = get_env("CLANGUML_GIT_COMMIT");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse HEAD"));
+    return run_git_command("git rev-parse HEAD", "CLANGUML_GIT_COMMIT");
 }
 
 std::string get_git_toplevel_dir()
 {
-    auto env = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse --show-toplevel"));
+    return run_git_command(
+        "git rev-parse --show-toplevel", "CLANGUML_GIT_TOPLEVEL_DIR");
 }
 
 std::string get_os_name()
