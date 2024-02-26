@@ -28,29 +28,70 @@ namespace clanguml::util {
 
 static const auto WHITESPACE = " \n\r\t\f\v";
 
+namespace {
+class pipe_t {
+public:
+    explicit pipe_t(const std::string &command, int &result)
+        : result_{result}
+        ,
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        pipe_{popen(command.c_str(), "r")}
+#elif defined(_WIN32)
+        pipe_{_popen(command.c_str(), "r")}
+#endif
+    {
+    }
+
+    ~pipe_t() { reset(); }
+
+    operator bool() const { return pipe_ != nullptr; }
+
+    FILE *get() const { return pipe_; }
+
+    void reset()
+    {
+        if (pipe_ == nullptr)
+            return;
+
+#if defined(__linux) || defined(__unix) || defined(__APPLE__)
+        result_ = pclose(pipe_);
+#elif defined(_WIN32)
+        result_ = _pclose(pipe_);
+#endif
+        pipe_ = nullptr;
+    }
+
+private:
+    int &result_;
+    FILE *pipe_;
+};
+} // namespace
+
 std::string get_process_output(const std::string &command)
 {
     constexpr size_t kBufferSize{1024};
     std::array<char, kBufferSize> buffer{};
-    std::string result;
+    std::string output;
+    int result{EXIT_FAILURE};
 
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(
-        popen(command.c_str(), "r"), pclose);
-#elif defined(_WIN32)
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(
-        _popen(command.c_str(), "r"), _pclose);
-#endif
+    pipe_t pipe{command, result};
 
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
     }
 
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
+        output += buffer.data();
     }
 
-    return result;
+    pipe.reset();
+
+    if (result != EXIT_SUCCESS) {
+        throw std::runtime_error(
+            fmt::format("External command '{}' failed: {}", command, output));
+    }
+
+    return output;
 }
 
 void check_process_output(const std::string &command)
@@ -59,21 +100,7 @@ void check_process_output(const std::string &command)
     std::array<char, kBufferSize> buffer{};
     int result{EXIT_FAILURE};
     std::string output;
-    auto finalize = [&result](FILE *f) {
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-        result = pclose(f);
-#elif defined(_WIN32)
-        result = _pclose(f);
-#endif
-    };
-
-#if defined(__linux) || defined(__unix) || defined(__APPLE__)
-    std::unique_ptr<FILE, decltype(finalize)> pipe(
-        popen(command.c_str(), "r"), finalize);
-#elif defined(_WIN32)
-    std::unique_ptr<FILE, decltype(finalize)> pipe(
-        _popen(command.c_str(), "r"), finalize);
-#endif
+    pipe_t pipe{command, result};
 
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
@@ -121,48 +148,59 @@ bool is_git_repository()
     if (!env.empty())
         return true;
 
-    return contains(
-        trim(get_process_output("git rev-parse --git-dir")), ".git");
+    std::string output;
+
+    try {
+        output = get_process_output("git rev-parse --git-dir");
+    }
+    catch (std::runtime_error &e) {
+        return false;
+    }
+
+    return contains(trim(output), ".git");
+}
+
+std::string run_git_command(
+    const std::string &cmd, const std::string &env_override)
+{
+    auto env = get_env(env_override);
+
+    if (!env.empty())
+        return env;
+
+    std::string output;
+
+    try {
+        output = get_process_output(cmd);
+    }
+    catch (std::runtime_error &e) {
+        return {};
+    }
+
+    return trim(output);
 }
 
 std::string get_git_branch()
 {
-    auto env = get_env("CLANGUML_GIT_BRANCH");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse --abbrev-ref HEAD"));
+    return run_git_command(
+        "git rev-parse --abbrev-ref HEAD", "CLANGUML_GIT_BRANCH");
 }
 
 std::string get_git_revision()
 {
-    auto env = get_env("CLANGUML_GIT_REVISION");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git describe --tags --always"));
+    return run_git_command(
+        "git describe --tags --always", "CLANGUML_GIT_REVISION");
 }
 
 std::string get_git_commit()
 {
-    auto env = get_env("CLANGUML_GIT_COMMIT");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse HEAD"));
+    return run_git_command("git rev-parse HEAD", "CLANGUML_GIT_COMMIT");
 }
 
 std::string get_git_toplevel_dir()
 {
-    auto env = get_env("CLANGUML_GIT_TOPLEVEL_DIR");
-
-    if (!env.empty())
-        return env;
-
-    return trim(get_process_output("git rev-parse --show-toplevel"));
+    return run_git_command(
+        "git rev-parse --show-toplevel", "CLANGUML_GIT_TOPLEVEL_DIR");
 }
 
 std::string get_os_name()
