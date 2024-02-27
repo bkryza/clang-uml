@@ -326,6 +326,7 @@ YAML::Emitter &operator<<(
         cd != nullptr) {
         out << cd->title;
         out << c.generate_method_arguments;
+        out << c.generate_concept_requirements;
         out << c.generate_packages;
         out << c.include_relations_also_as_members;
         if (c.relationship_hints) {

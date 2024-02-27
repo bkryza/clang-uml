@@ -383,8 +383,8 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 
     ostr << " {" << '\n';
 
-    // TODO: add option to enable/disable this
-    if (c.requires_parameters().size() + c.requires_statements().size() > 0) {
+    if (config().generate_concept_requirements() &&
+        (c.requires_parameters().size() + c.requires_statements().size() > 0)) {
         std::vector<std::string> parameters;
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {

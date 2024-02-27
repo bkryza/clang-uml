@@ -197,6 +197,8 @@ void inheritable_diagram_options::inherit(
     puml.override(parent.puml);
     mermaid.override(parent.mermaid);
     generate_method_arguments.override(parent.generate_method_arguments);
+    generate_concept_requirements.override(
+        parent.generate_concept_requirements);
     generate_packages.override(parent.generate_packages);
     generate_template_argument_dependencies.override(
         parent.generate_template_argument_dependencies);

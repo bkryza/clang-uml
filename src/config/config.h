@@ -530,6 +530,8 @@ struct inheritable_diagram_options {
     option<struct mermaid> mermaid{"mermaid", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> generate_concept_requirements{
+        "generate_concept_requirements", true};
     option<bool> group_methods{"group_methods", true};
     option<member_order_t> member_order{
         "member_order", member_order_t::lexical};

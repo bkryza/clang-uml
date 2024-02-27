@@ -1,0 +1,10 @@
+diagrams:
+  t00074_class:
+    type: class
+    glob:
+      - t00074.cc
+    generate_concept_requirements: false
+    include:
+      namespaces:
+        - clanguml::t00074
+    using_namespace: clanguml::t00074
