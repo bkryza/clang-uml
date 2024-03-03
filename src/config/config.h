@@ -132,7 +132,7 @@ struct plantuml {
     std::map<std::string, std::string> style;
 
     std::optional<std::string> get_style(
-        const common::model::relationship_t relationship_type) const;
+        common::model::relationship_t relationship_type) const;
 
     std::optional<std::string> get_style(const std::string &element_type) const;
 

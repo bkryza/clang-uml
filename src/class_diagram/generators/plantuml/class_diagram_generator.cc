@@ -121,8 +121,6 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
-    namespace plantuml_common = clanguml::common::generators::plantuml;
-
     std::string class_type{"class"};
     if (c.is_abstract())
         class_type = "abstract";

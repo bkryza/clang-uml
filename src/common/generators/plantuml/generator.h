@@ -457,8 +457,8 @@ void generator<C, D>::generate_style(std::ostream &ostr,
 {
     const auto &config = generators::generator<C, D>::config();
 
-    if (el.style() && !el.style().value().empty())
-        ostr << " " << *el.style();
+    if (el.style() && !el.style().value().empty()) // NOLINT
+        ostr << " " << *el.style();                // NOLINT
     else if (config.puml) {
         if (const auto config_style = config.puml().get_style(element_type);
             config_style) {

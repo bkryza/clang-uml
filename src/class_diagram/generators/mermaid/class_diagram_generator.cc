@@ -58,8 +58,6 @@ void generator::generate_alias(
 
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
-    namespace mermaid_common = clanguml::common::generators::mermaid;
-
     std::string class_type{"class"};
 
     ostr << indent(1) << "class " << c.alias();
@@ -98,8 +96,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
-                mermaid_common::to_mermaid(r.type(), r.style()), c.full_name(),
-                r.destination(), e.what());
+                to_string(r.type()), c.full_name(), r.destination(), e.what());
         }
     }
 
@@ -287,9 +284,6 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
     ostr << indent(1) << "class"
          << " " << c.alias();
 
-    if (!c.style())
-        ostr << " " << c.style().value();
-
     ostr << " {" << '\n';
     ostr << indent(2) << "<<concept>>\n";
 
@@ -358,8 +352,7 @@ void generator::generate_relationship(
 {
     namespace mermaid_common = clanguml::common::generators::mermaid;
 
-    LOG_DBG("Processing relationship {}",
-        mermaid_common::to_mermaid(r.type(), r.style()));
+    LOG_DBG("Processing relationship {}", to_string(r.type()));
 
     std::string destination;
 
@@ -377,7 +370,7 @@ void generator::generate_relationship(
     if (!r.multiplicity_source().empty())
         mmd_relation += "\"" + r.multiplicity_source() + "\" ";
 
-    mmd_relation += mermaid_common::to_mermaid(r.type(), r.style());
+    mmd_relation += mermaid_common::to_mermaid(r.type());
 
     if (!r.multiplicity_destination().empty())
         mmd_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -408,8 +401,7 @@ void generator::generate_relationships(
         if (!model().should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}",
-            mermaid_common::to_mermaid(r.type(), r.style()));
+        LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
         clanguml::common::id_t destination{0};
@@ -421,7 +413,7 @@ void generator::generate_relationships(
             if (!r.multiplicity_source().empty())
                 relation_str += "\"" + r.multiplicity_source() + "\" ";
 
-            relation_str += mermaid_common::to_mermaid(r.type(), r.style());
+            relation_str += mermaid_common::to_mermaid(r.type());
 
             if (!r.multiplicity_destination().empty())
                 relation_str += " \"" + r.multiplicity_destination() + "\"";
@@ -471,8 +463,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                mermaid_common::to_mermaid(r.type(), r.style()), c.full_name(),
-                destination, e.what());
+                to_string(r.type()), c.full_name(), destination, e.what());
         }
     }
 
@@ -518,8 +509,7 @@ void generator::generate_relationships(
         if (!model().should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}",
-            mermaid_common::to_mermaid(r.type(), r.style()));
+        LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
         clanguml::common::id_t destination{0};
@@ -530,7 +520,7 @@ void generator::generate_relationships(
             if (!r.multiplicity_source().empty())
                 mmd_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            mmd_relation += mermaid_common::to_mermaid(r.type(), r.style());
+            mmd_relation += mermaid_common::to_mermaid(r.type());
 
             if (!r.multiplicity_destination().empty())
                 mmd_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -580,8 +570,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                mermaid_common::to_mermaid(r.type(), r.style()), c.full_name(),
-                destination, e.what());
+                to_string(r.type()), c.full_name(), destination, e.what());
         }
     }
 
@@ -608,13 +597,13 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
             if (r.type() == relationship_t::kContainment) {
                 relstr << indent(1) << target_alias << " "
                        << clanguml::common::generators::mermaid::to_mermaid(
-                              r.type(), r.style())
+                              r.type())
                        << " " << e.alias();
             }
             else {
                 relstr << indent(1) << e.alias() << " "
                        << clanguml::common::generators::mermaid::to_mermaid(
-                              r.type(), r.style())
+                              r.type())
                        << " " << target_alias;
             }
 
@@ -631,8 +620,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         catch (error::uml_alias_missing &ex) {
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
-                clanguml::common::generators::mermaid::to_mermaid(
-                    r.type(), r.style()),
+                clanguml::common::generators::mermaid::to_mermaid(r.type()),
                 e.full_name(), destination, ex.what());
         }
     }
