@@ -411,6 +411,9 @@ template <> struct convert<plantuml> {
         if (node["cmd"])
             rhs.cmd = node["cmd"].as<decltype(rhs.cmd)>();
 
+        if (node["style"])
+            rhs.style = node["style"].as<decltype(rhs.style)>();
+
         return true;
     }
 };

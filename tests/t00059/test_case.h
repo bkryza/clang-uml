@@ -40,9 +40,9 @@ TEST_CASE("t00059", "[test-case][class]")
         REQUIRE_THAT(src, IsConcept(_A("orange_c<T>")));
 
         REQUIRE_THAT(
-            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T"));
+            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T", "up"));
         REQUIRE_THAT(
-            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T"));
+            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T", "up"));
 
         REQUIRE_THAT(
             src, IsConceptRequirement(_A("apple_c<T>"), "t.get_sweetness()"));
@@ -60,31 +60,33 @@ TEST_CASE("t00059", "[test-case][class]")
 
         REQUIRE_THAT(src,
             IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("gala_apple")));
+                _A("gala_apple"), "up"));
         REQUIRE_THAT(src,
             IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("valencia_orange")));
+                _A("valencia_orange"), "up"));
 
         REQUIRE_THAT(src,
             IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("empire_apple")));
+                _A("empire_apple"), "up"));
         REQUIRE_THAT(src,
             IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("lima_orange")));
+                _A("lima_orange"), "up"));
 
         REQUIRE_THAT(src,
             IsAggregation(_A("R"),
-                _A("fruit_factory<gala_apple,valencia_orange>"), "+factory_1"));
+                _A("fruit_factory<gala_apple,valencia_orange>"), "+factory_1",
+                "", "", "up"));
         REQUIRE_THAT(src,
             IsAggregation(_A("R"),
-                _A("fruit_factory<empire_apple,lima_orange>"), "+factory_2"));
+                _A("fruit_factory<empire_apple,lima_orange>"), "+factory_2", "",
+                "", "up"));
 
         REQUIRE_THAT(src,
             IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<gala_apple,valencia_orange>")));
+                _A("fruit_factory<gala_apple,valencia_orange>"), "up"));
         REQUIRE_THAT(src,
             IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<empire_apple,lima_orange>")));
+                _A("fruit_factory<empire_apple,lima_orange>"), "up"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }

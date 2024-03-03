@@ -160,6 +160,7 @@ types:
             before: !optional [string]
             after: !optional [string]
             cmd: !optional string
+            style: !optional map_t<string;string>
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]

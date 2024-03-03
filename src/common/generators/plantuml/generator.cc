@@ -19,28 +19,48 @@
 
 namespace clanguml::common::generators::plantuml {
 
-std::string to_plantuml(relationship_t r, const std::string &style)
+std::string to_plantuml(const relationship &r, const config::diagram &cfg)
 {
-    switch (r) {
+    using common::model::relationship_t;
+
+    std::string style;
+
+    const auto &inline_style = r.style();
+
+    if (inline_style && !inline_style.value().empty()) {
+        if (inline_style && inline_style.value().back() == ']')
+            style = *inline_style;
+        else
+            style = fmt::format("[{}]", inline_style.value());
+    }
+
+    if (style.empty() && cfg.puml) {
+        if (auto config_style = cfg.puml().get_style(r.type());
+            config_style.has_value()) {
+            style = config_style.value();
+        }
+    }
+
+    switch (r.type()) {
     case relationship_t::kOwnership:
     case relationship_t::kComposition:
-        return style.empty() ? "*--" : fmt::format("*-[{}]-", style);
+        return style.empty() ? "*--" : fmt::format("*-{}-", style);
     case relationship_t::kAggregation:
-        return style.empty() ? "o--" : fmt::format("o-[{}]-", style);
+        return style.empty() ? "o--" : fmt::format("o-{}-", style);
     case relationship_t::kContainment:
-        return style.empty() ? "--+" : fmt::format("-[{}]-+", style);
+        return style.empty() ? "--+" : fmt::format("-{}-+", style);
     case relationship_t::kAssociation:
-        return style.empty() ? "-->" : fmt::format("-[{}]->", style);
+        return style.empty() ? "-->" : fmt::format("-{}->", style);
     case relationship_t::kInstantiation:
-        return style.empty() ? "..|>" : fmt::format(".[{}].|>", style);
+        return style.empty() ? "..|>" : fmt::format(".{}.|>", style);
     case relationship_t::kFriendship:
-        return style.empty() ? "<.." : fmt::format("<.[{}].", style);
+        return style.empty() ? "<.." : fmt::format("<.{}.", style);
     case relationship_t::kDependency:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
+        return style.empty() ? "..>" : fmt::format(".{}.>", style);
     case relationship_t::kConstraint:
-        return style.empty() ? "..>" : fmt::format(".[{}].>", style);
+        return style.empty() ? "..>" : fmt::format(".{}.>", style);
     case relationship_t::kAlias:
-        return style.empty() ? ".." : fmt::format(".[{}].", style);
+        return style.empty() ? ".." : fmt::format(".{}.", style);
     default:
         return "";
     }

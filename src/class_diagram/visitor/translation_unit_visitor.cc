@@ -462,12 +462,12 @@ void translation_unit_visitor::process_constraint_requirements(
                 parm_var_decl) {
                 parm_var_decl->getQualifiedNameAsString();
 
-                auto param_name = parm_var_decl->getQualifiedNameAsString();
+                auto param_name = parm_var_decl->getNameAsString();
                 auto param_type = common::to_string(
                     parm_var_decl->getType(), cpt->getASTContext());
 
                 LOG_DBG("=== Processing parameter variable declaration: {}, {}",
-                    param_name, param_type);
+                    param_type, param_name);
 
                 concept_model.add_parameter(
                     {std::move(param_type), std::move(param_name)});

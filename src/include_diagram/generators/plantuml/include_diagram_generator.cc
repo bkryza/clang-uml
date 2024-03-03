@@ -53,7 +53,7 @@ void generator::generate_relationships(
             },
             [&f, &ostr, this](const auto &r) {
                 ostr << f.alias() << " "
-                     << plantuml_common::to_plantuml(r.type(), r.style()) << " "
+                     << plantuml_common::to_plantuml(r, config()) << " "
                      << model().get(r.destination()).value().alias() << '\n';
             });
     }

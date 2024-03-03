@@ -287,8 +287,8 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
     ostr << indent(1) << "class"
          << " " << c.alias();
 
-    if (!c.style().empty())
-        ostr << " " << c.style();
+    if (!c.style())
+        ostr << " " << c.style().value();
 
     ostr << " {" << '\n';
     ostr << indent(2) << "<<concept>>\n";

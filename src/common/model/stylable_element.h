@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include <optional>
 #include <string>
 
 namespace clanguml::common::model {
@@ -40,10 +41,10 @@ public:
      *
      * @return Style specification
      */
-    std::string style() const;
+    std::optional<std::string> style() const;
 
 private:
-    std::string style_;
+    std::optional<std::string> style_;
 };
 
 } // namespace clanguml::common::model

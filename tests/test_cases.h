@@ -640,14 +640,14 @@ ContainsMatcher IsInnerClass(std::string const &parent,
 
 ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
     std::string const &label = "", std::string multiplicity_source = "",
-    std::string multiplicity_dest = "",
+    std::string multiplicity_dest = "", std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     std::string format_string = "{}";
     if (!multiplicity_source.empty())
         format_string += " \"" + multiplicity_source + "\"";
 
-    format_string += " -->";
+    format_string += fmt::format(" -{}->", style);
 
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
@@ -668,14 +668,14 @@ ContainsMatcher IsAssociation(std::string const &from, std::string const &to,
 
 ContainsMatcher IsComposition(std::string const &from, std::string const &to,
     std::string const &label, std::string multiplicity_source = "",
-    std::string multiplicity_dest = "",
+    std::string multiplicity_dest = "", std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     std::string format_string = "{}";
     if (!multiplicity_source.empty())
         format_string += " \"" + multiplicity_source + "\"";
 
-    format_string += " *--";
+    format_string += fmt::format(" *-{}-", style);
 
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
@@ -689,14 +689,14 @@ ContainsMatcher IsComposition(std::string const &from, std::string const &to,
 
 ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
     std::string const &label, std::string multiplicity_source = "",
-    std::string multiplicity_dest = "",
+    std::string multiplicity_dest = "", std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     std::string format_string = "{}";
     if (!multiplicity_source.empty())
         format_string += " \"" + multiplicity_source + "\"";
 
-    format_string += " o--";
+    format_string += fmt::format(" o-{}-", style);
 
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
@@ -708,45 +708,20 @@ ContainsMatcher IsAggregation(std::string const &from, std::string const &to,
             caseSensitivity));
 }
 
-ContainsMatcher IsAggregationWithStyle(std::string const &from,
-    std::string const &to, std::string const &label, std::string style,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(
-        CasedString(fmt::format("{} o-[{}]- {} : {}", from, style, to, label),
-            caseSensitivity));
-}
-
-ContainsMatcher IsAssociationWithStyle(std::string const &from,
-    std::string const &to, std::string const &label, std::string style,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(
-        CasedString(fmt::format("{} -[{}]-> {} : {}", from, style, to, label),
-            caseSensitivity));
-}
-
-ContainsMatcher IsCompositionWithStyle(std::string const &from,
-    std::string const &to, std::string const &label, std::string style,
-    CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
-{
-    return ContainsMatcher(
-        CasedString(fmt::format("{} *-[{}]- {} : {}", from, style, to, label),
-            caseSensitivity));
-}
-
 ContainsMatcher IsInstantiation(std::string const &from, std::string const &to,
+    std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("{} ..|> {}", to, from), caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("{} .{}.|> {}", to, style, from), caseSensitivity));
 }
 
 ContainsMatcher IsDependency(std::string const &from, std::string const &to,
+    std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
-    return ContainsMatcher(
-        CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
+    return ContainsMatcher(CasedString(
+        fmt::format("{} .{}.> {}", from, style, to), caseSensitivity));
 }
 
 namespace mermaid {
@@ -767,15 +742,16 @@ ContainsMatcher IsIncludeDependency(std::string const &from,
 }
 
 ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
-    std::string const &label = {},
+    std::string const &label = {}, std::string style = "",
     CaseSensitive::Choice caseSensitivity = CaseSensitive::Yes)
 {
     if (label.empty())
-        return ContainsMatcher(
-            CasedString(fmt::format("{} ..> {}", from, to), caseSensitivity));
-    else
         return ContainsMatcher(CasedString(
-            fmt::format("{} ..> {} : {}", from, to, label), caseSensitivity));
+            fmt::format("{} .{}.> {}", from, style, to), caseSensitivity));
+    else
+        return ContainsMatcher(
+            CasedString(fmt::format("{} .{}.> {} : {}", from, style, to, label),
+                caseSensitivity));
 }
 
 ContainsMatcher IsConceptRequirement(std::string const &cpt,
