@@ -21,6 +21,7 @@
 #include "common/model/diagram_filter.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
+#include "error.h"
 #include "util/error.h"
 #include "util/util.h"
 #include "version.h"
@@ -265,8 +266,15 @@ template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
     const auto &config = generators::generator<C, D>::config();
+    const auto &model = generators::generator<C, D>::model();
 
     update_context();
+
+    if (!config.allow_empty_diagrams() && model.is_empty() &&
+        config.puml().before.empty() && config.puml().after.empty()) {
+        throw clanguml::error::empty_diagram_error{
+            "Diagram configuration resulted in empty diagram."};
+    }
 
     ostr << "@startuml" << '\n';
 

@@ -249,6 +249,11 @@ void diagram::remove_redundant_dependencies()
     }
 }
 
+bool diagram::is_empty() const
+{
+    return element_view<class_>::is_empty() &&
+        element_view<enum_>::is_empty() && element_view<concept_>::is_empty();
+}
 } // namespace clanguml::class_diagram::model
 
 namespace clanguml::common::model {

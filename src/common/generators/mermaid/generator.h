@@ -250,6 +250,13 @@ template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
     const auto &config = generators::generator<C, D>::config();
+    const auto &model = generators::generator<C, D>::model();
+
+    if (!config.allow_empty_diagrams() && model.is_empty() &&
+        config.mermaid().before.empty() && config.mermaid().after.empty()) {
+        throw clanguml::error::empty_diagram_error{
+            "Diagram configuration resulted in empty diagram."};
+    }
 
     update_context();
 

@@ -1,0 +1,24 @@
+diagrams:
+  t90001_class:
+    type: class
+    include:
+      namespaces:
+        - no_such_namespace
+  t90001_sequence:
+    type: sequence
+    include:
+      namespaces:
+        - no_such_namespace
+    from:
+      - function: "nowhere"
+  t90001_include:
+    type: include
+    include:
+      namespaces:
+        - no_such_namespace
+  t90001_package:
+    type: package
+    include:
+      namespaces:
+        - no_such_namespace
+

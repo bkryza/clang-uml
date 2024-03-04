@@ -280,6 +280,13 @@ public:
      */
     void finalize() override;
 
+    /**
+     * @brief Check whether the diagram is empty
+     *
+     * @return True, if diagram is empty
+     */
+    bool is_empty() const override;
+
 private:
     /**
      * This method checks the last messages in sequence (current_messages),

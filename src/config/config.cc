@@ -237,6 +237,7 @@ void inheritable_diagram_options::inherit(
         parent.generate_condition_statements);
     debug_mode.override(parent.debug_mode);
     generate_metadata.override(parent.generate_metadata);
+    allow_empty_diagrams.override(parent.allow_empty_diagrams);
     type_aliases.override(parent.type_aliases);
 }
 

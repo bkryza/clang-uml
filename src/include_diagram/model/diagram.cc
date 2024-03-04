@@ -151,6 +151,9 @@ inja::json diagram::context() const
 
     return ctx;
 }
+
+bool diagram::is_empty() const { return element_view<source_file>::is_empty(); }
+
 } // namespace clanguml::include_diagram::model
 
 namespace clanguml::common::model {

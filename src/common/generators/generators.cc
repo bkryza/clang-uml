@@ -95,11 +95,17 @@ void generate_diagram_select_generator(const std::string &od,
     using diagram_generator =
         typename diagram_generator_t<DiagramConfig, GeneratorTag>::type;
 
+    std::stringstream buffer;
+    buffer << diagram_generator(
+        dynamic_cast<DiagramConfig &>(*diagram), *model);
+
+    // Only open the file after the diagram has been generated successfully
+    // in order not to overwrite previous diagram in case of failure
     auto path = std::filesystem::path{od} /
         fmt::format("{}.{}", name, GeneratorTag::extension);
     std::ofstream ofs;
     ofs.open(path, std::ofstream::out | std::ofstream::trunc);
-    ofs << diagram_generator(dynamic_cast<DiagramConfig &>(*diagram), *model);
+    ofs << buffer.str();
 
     ofs.close();
 
@@ -258,11 +264,12 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
                 if (indicator)
                     indicator->complete(name);
             }
-            catch (std::exception &e) {
+            catch (const std::exception &e) {
                 if (indicator)
                     indicator->fail(name);
 
-                LOG_ERROR(e.what());
+                LOG_ERROR(
+                    "ERROR: Failed to generate diagram {}: {}", name, e.what());
             }
         };
 

@@ -12,6 +12,3 @@ include:
 exclude:
   access: [ public, protected, private ]
   relationships: [ dependency ]
-plantuml:
-  before:
-    - title clang-uml top level architecture - AST visitors

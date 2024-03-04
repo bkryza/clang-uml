@@ -69,6 +69,13 @@ public:
         return {};
     }
 
+    /**
+     * @brief Check whether the element view is empty
+     *
+     * @return True, if the view does not contain any elements
+     */
+    bool is_empty() const { return elements_.empty(); }
+
 private:
     reference_vector<T> elements_;
 };

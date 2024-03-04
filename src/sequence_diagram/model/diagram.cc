@@ -399,6 +399,11 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
     return message_chains_unique;
 }
 
+bool diagram::is_empty() const
+{
+    return sequences_.empty() || participants_.empty();
+}
+
 void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");

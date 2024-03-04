@@ -107,6 +107,8 @@ cli_flow_t cli_handler::parse(int argc, const char **argv)
         "Query the specific compiler driver to extract system paths and add to "
         "compile commands (e.g. arm-none-eabi-g++)");
 #endif
+    app.add_flag("--allow-empty-diagrams", allow_empty_diagrams,
+        "Do not raise an error when generated diagram model is empty");
     app.add_option(
         "--add-class-diagram", add_class_diagram, "Add class diagram config");
     app.add_option("--add-sequence-diagram", add_sequence_diagram,
@@ -301,6 +303,10 @@ cli_flow_t cli_handler::handle_post_config_options()
     }
 
     LOG_INFO("Loaded clang-uml config from {}", config_path);
+
+    if (allow_empty_diagrams) {
+        config.allow_empty_diagrams.set(true);
+    }
 
     //
     // Override selected config options from command line
