@@ -98,6 +98,7 @@ _clanguml() {
                                --add-compile-flag \
                                --remove-compile-flag \
                                --query-driver \
+                               --allow-empty-diagrams \
                                --add-class-diagram \
                                --add-sequence-diagram \
                                --add-package-diagram \

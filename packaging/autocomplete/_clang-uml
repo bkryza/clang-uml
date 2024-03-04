@@ -46,6 +46,7 @@ _arguments \
   '--add-compile-flag[Add a compilation flag to each entry in the compilation database]' \
   '--remove-compile-flag[Remove a compilation flag from each entry in the compilation database]' \
   '--query-driver[Query the specific compiler driver to extract system paths and add to compile commands (e.g. arm-none-eabi-g++)]' \
+  '--allow-empty-diagrams[Do not raise an error when generated diagram model is empty]' \
   '--add-class-diagram[Add class diagram config]' \
   '--add-sequence-diagram[Add sequence diagram config]' \
   '--add-package-diagram[Add package diagram config]' \
