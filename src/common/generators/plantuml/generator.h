@@ -19,6 +19,7 @@
 
 #include "common/generators/generator.h"
 #include "common/model/diagram_filter.h"
+#include "common/model/relationship.h"
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
@@ -36,9 +37,9 @@ namespace clanguml::common::generators::plantuml {
 using clanguml::common::model::access_t;
 using clanguml::common::model::element;
 using clanguml::common::model::message_t;
-using clanguml::common::model::relationship_t;
+using clanguml::common::model::relationship;
 
-std::string to_plantuml(relationship_t r, const std::string &style);
+std::string to_plantuml(const relationship &r, const config::diagram &cfg);
 std::string to_plantuml(access_t scope);
 std::string to_plantuml(message_t r);
 
@@ -123,6 +124,19 @@ public:
      */
     void generate_notes(
         std::ostream &ostr, const model::element &element) const;
+
+    /**
+     * @brief Generate diagram element PlantUML style
+     *
+     * This method renders a style for a specific `el` element if specified
+     * in the config file or inline comment directive.
+     *
+     * @param ostr Output stream
+     * @param element_type Name of the element type (e.g. "class")
+     * @param el Reference to a stylable diagram element
+     */
+    void generate_style(std::ostream &ostr, const std::string &element_type,
+        const model::stylable_element &el) const;
 
     /**
      * @brief Generate comment with diagram metadata
@@ -433,6 +447,22 @@ void generator<C, D>::generate_plantuml_directives(
         catch (const std::exception &e) {
             LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
                 d, e.what());
+        }
+    }
+}
+
+template <typename C, typename D>
+void generator<C, D>::generate_style(std::ostream &ostr,
+    const std::string &element_type, const model::stylable_element &el) const
+{
+    const auto &config = generators::generator<C, D>::config();
+
+    if (el.style() && !el.style().value().empty()) // NOLINT
+        ostr << " " << *el.style();                // NOLINT
+    else if (config.puml) {
+        if (const auto config_style = config.puml().get_style(element_type);
+            config_style) {
+            ostr << " " << *config_style;
         }
     }
 }

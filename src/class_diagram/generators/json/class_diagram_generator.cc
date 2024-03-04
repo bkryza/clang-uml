@@ -25,8 +25,8 @@ using nlohmann::json;
 
 void set_module(nlohmann::json &j, const common::model::element &e)
 {
-    if (e.module()) {
-        j["module"]["name"] = e.module().value();
+    if (const auto &maybe_module = e.module(); maybe_module) {
+        j["module"]["name"] = *maybe_module;
         j["module"]["is_private"] = e.module_private();
     }
 }

@@ -411,6 +411,9 @@ template <> struct convert<plantuml> {
         if (node["cmd"])
             rhs.cmd = node["cmd"].as<decltype(rhs.cmd)>();
 
+        if (node["style"])
+            rhs.style = node["style"].as<decltype(rhs.style)>();
+
         return true;
     }
 };
@@ -626,6 +629,7 @@ template <> struct convert<class_diagram> {
         get_option(node, rhs.layout);
         get_option(node, rhs.include_relations_also_as_members);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_concept_requirements);
         get_option(node, rhs.group_methods);
         get_option(node, rhs.member_order);
         get_option(node, rhs.generate_packages);
@@ -823,6 +827,7 @@ template <> struct convert<config> {
         get_option(node, rhs.puml);
         get_option(node, rhs.mermaid);
         get_option(node, rhs.generate_method_arguments);
+        get_option(node, rhs.generate_concept_requirements);
         get_option(node, rhs.generate_packages);
         get_option(node, rhs.package_type);
         get_option(node, rhs.generate_template_argument_dependencies);

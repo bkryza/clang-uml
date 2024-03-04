@@ -160,6 +160,7 @@ types:
             before: !optional [string]
             after: !optional [string]
             cmd: !optional string
+            style: !optional map_t<string;string>
         mermaid: !optional
             before: !optional [string]
             after: !optional [string]
@@ -174,6 +175,7 @@ types:
         #
         generate_method_arguments: !optional generate_method_arguments_t
         generate_packages: !optional bool
+        generate_concept_requirements: !optional bool
         package_type: !optional package_type_t
         generate_template_argument_dependencies: !optional bool
         skip_redundant_dependencies: !optional bool
@@ -335,6 +337,7 @@ root:
     include_relations_also_as_members: !optional bool
     generate_method_arguments: !optional generate_method_arguments_t
     combine_free_functions_into_file_participants: !optional bool
+    generate_concept_requirements: !optional bool
     generate_return_types: !optional bool
     generate_condition_statements: !optional bool
     generate_message_comments: !optional bool

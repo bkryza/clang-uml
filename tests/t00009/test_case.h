@@ -43,15 +43,18 @@ TEST_CASE("t00009", "[test-case][class]")
         REQUIRE_THAT(
             src, (IsField<Public>("avector", "A<std::vector<std::string>> &")));
 
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<int>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("B"), _A("A<int>"), "+aint"));
+        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<int>"), "up"));
         REQUIRE_THAT(
-            src, IsAssociation(_A("B"), _A("A<std::string>"), "+astring"));
+            src, IsInstantiation(_A("A<T>"), _A("A<std::string>"), "up"));
+
+        REQUIRE_THAT(
+            src, IsAggregation(_A("B"), _A("A<int>"), "+aint", "", "", "up"));
         REQUIRE_THAT(src,
             IsAssociation(
-                _A("B"), _A("A<std::vector<std::string>>"), "+avector"));
+                _A("B"), _A("A<std::string>"), "+astring", "", "", "up"));
+        REQUIRE_THAT(src,
+            IsAssociation(_A("B"), _A("A<std::vector<std::string>>"),
+                "+avector", "", "", "up"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }

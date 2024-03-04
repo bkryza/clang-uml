@@ -41,16 +41,17 @@ TEST_CASE("t00016", "[test-case][class]")
         REQUIRE_THAT(src, IsClassTemplate("is_numeric", "float"));
 
         REQUIRE_THAT(src,
-            IsInstantiation(_A("is_numeric<typename>"), _A("is_numeric<int>")));
+            IsInstantiation(
+                _A("is_numeric<typename>"), _A("is_numeric<int>"), "up"));
         REQUIRE_THAT(src,
             IsInstantiation(
-                _A("is_numeric<typename>"), _A("is_numeric<bool>")));
+                _A("is_numeric<typename>"), _A("is_numeric<bool>"), "up"));
         REQUIRE_THAT(src,
             IsInstantiation(
-                _A("is_numeric<typename>"), _A("is_numeric<char>")));
+                _A("is_numeric<typename>"), _A("is_numeric<char>"), "up"));
         REQUIRE_THAT(src,
             IsInstantiation(
-                _A("is_numeric<typename>"), _A("is_numeric<float>")));
+                _A("is_numeric<typename>"), _A("is_numeric<float>"), "up"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }

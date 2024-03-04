@@ -1,0 +1,17 @@
+diagrams:
+  t00075_class:
+    type: class
+    glob:
+      - t00075.cc
+    include:
+      namespaces:
+        - clanguml::t00075
+    generate_packages: true
+    using_namespace: clanguml::t00075
+    plantuml:
+      style:
+        concept: "#line:green;back:lightblue"
+        class: "#aliceblue;line:blue;line.dotted;text:blue"
+        package: "#back:grey"
+        enum: "#line.dotted"
+        constraint: "up[#green,dashed,thickness=2]"

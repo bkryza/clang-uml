@@ -4,6 +4,9 @@ diagrams:
     glob:
       - t00033.cc
     using_namespace: clanguml::t00033
+    plantuml:
+      style:
+        instantiation: up
     include:
       namespaces:
         - clanguml::t00033

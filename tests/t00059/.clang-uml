@@ -6,4 +6,11 @@ diagrams:
     include:
       namespaces:
         - clanguml::t00059
+    plantuml:
+      style:
+        instantiation: up
+        association: up
+        aggregation: up
+        dependency: up
+        constraint: up
     using_namespace: clanguml::t00059

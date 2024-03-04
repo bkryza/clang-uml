@@ -93,16 +93,16 @@ public:
     void set_name(const std::string &name) { name_ = name; }
 
     /**
-     * Return diagram's name.
+     * Return diagram element name.
      *
-     * @return Diagram's name.
+     * @return Diagram element name.
      */
     std::string name() const { return name_; }
 
     /**
-     * Return the type name of the diagram.
+     * Return the type name of the diagram element.
      *
-     * @return Diagrams type name.
+     * @return Diagrams element type name.
      */
     virtual std::string type_name() const { return "__undefined__"; };
 

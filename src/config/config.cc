@@ -168,6 +168,24 @@ std::string to_string(member_order_t mo)
     }
 }
 
+std::optional<std::string> plantuml::get_style(
+    const common::model::relationship_t relationship_type) const
+{
+    if (style.count(to_string(relationship_type)) == 0)
+        return {};
+
+    return style.at(to_string(relationship_type));
+}
+
+std::optional<std::string> plantuml::get_style(
+    const std::string &element_type) const
+{
+    if (style.count(element_type) == 0)
+        return {};
+
+    return style.at(element_type);
+}
+
 void plantuml::append(const plantuml &r)
 {
     before.insert(before.end(), r.before.begin(), r.before.end());
@@ -197,6 +215,8 @@ void inheritable_diagram_options::inherit(
     puml.override(parent.puml);
     mermaid.override(parent.mermaid);
     generate_method_arguments.override(parent.generate_method_arguments);
+    generate_concept_requirements.override(
+        parent.generate_concept_requirements);
     generate_packages.override(parent.generate_packages);
     generate_template_argument_dependencies.override(
         parent.generate_template_argument_dependencies);

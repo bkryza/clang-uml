@@ -89,8 +89,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
             generate_link(ostr, p);
         }
 
-        if (!p.style().empty())
-            ostr << " " << p.style();
+        generate_style(ostr, p.type_name(), p);
 
         ostr << " {" << '\n';
     }

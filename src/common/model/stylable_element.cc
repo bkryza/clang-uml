@@ -22,6 +22,6 @@ namespace clanguml::common::model {
 
 void stylable_element::set_style(const std::string &style) { style_ = style; }
 
-std::string stylable_element::style() const { return style_; }
+std::optional<std::string> stylable_element::style() const { return style_; }
 
 }

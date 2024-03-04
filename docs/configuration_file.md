@@ -25,6 +25,7 @@
 * `glob` - list of glob patterns to match source code files for analysis
 * `include_relations_also_as_members` - when set to `false`, class members for relationships are rendered in UML are skipped from class definition (default: `true`)
 * `generate_method_arguments` - determines whether the class diagrams methods contain full arguments (`full`), are abbreviated (`abbreviated`) or skipped (`none`)
+* `generate_concept_requirements` - determines whether concept requirements are rendered in the diagram (default: `true`)
 * `using_namespace` - similar to C++ `using namespace`, a `A::B` value here will render a class `A::B::C::MyClass` in the diagram as `C::MyClass`, at most 1 value is supported
 * `generate_packages` - whether or not the class diagram should contain packages generated from namespaces or subdirectories
 * `package_type` - determines how the packages are inferred: `namespace` - use C++ namespaces, `directory` - use project's directory structure

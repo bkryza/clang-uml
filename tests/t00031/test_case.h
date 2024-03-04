@@ -41,18 +41,18 @@ TEST_CASE("t00031", "[test-case][class]")
         REQUIRE_THAT(src, IsClass(_A("D")));
 
         REQUIRE_THAT(src,
-            IsAssociationWithStyle(
-                _A("R"), _A("A"), "+aaa", "#red,dashed,thickness=2"));
+            IsAssociation(
+                _A("R"), _A("A"), "+aaa", "", "", "[#red,dashed,thickness=2]"));
         REQUIRE_THAT(src,
-            IsCompositionWithStyle(
-                _A("R"), _A("B"), "+bbb", "#green,dashed,thickness=4"));
+            IsComposition(_A("R"), _A("B"), "+bbb", "", "",
+                "[#green,dashed,thickness=4]"));
         REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
         REQUIRE_THAT(src,
-            IsAggregationWithStyle(
-                _A("R"), _A("C<int>"), "+ccc", "#blue,dotted,thickness=8"));
+            IsAggregation(_A("R"), _A("C<int>"), "+ccc", "", "",
+                "[#blue,dotted,thickness=8]"));
         REQUIRE_THAT(src,
-            IsAssociationWithStyle(
-                _A("R"), _A("D"), "+ddd", "#blue,plain,thickness=16"));
+            IsAssociation(_A("R"), _A("D"), "+ddd", "", "",
+                "[#blue,plain,thickness=16]"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }

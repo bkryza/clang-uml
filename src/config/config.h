@@ -109,6 +109,11 @@ enum class comment_parser_t {
 
 std::string to_string(comment_parser_t cp);
 
+struct plantuml_keyword_mapping_t {
+    std::map<common::model::relationship_t, std::pair<std::string, std::string>>
+        relationships;
+};
+
 /**
  * @brief PlantUML diagram config section
  *
@@ -123,6 +128,13 @@ struct plantuml {
     std::vector<std::string> after;
     /*! Command template to render diagram using PlantUML */
     std::string cmd;
+    /*! Provide customized styles for various elements */
+    std::map<std::string, std::string> style;
+
+    std::optional<std::string> get_style(
+        common::model::relationship_t relationship_type) const;
+
+    std::optional<std::string> get_style(const std::string &element_type) const;
 
     void append(const plantuml &r);
 };
@@ -530,6 +542,8 @@ struct inheritable_diagram_options {
     option<struct mermaid> mermaid{"mermaid", option_inherit_mode::kAppend};
     option<method_arguments> generate_method_arguments{
         "generate_method_arguments", method_arguments::full};
+    option<bool> generate_concept_requirements{
+        "generate_concept_requirements", true};
     option<bool> group_methods{"group_methods", true};
     option<member_order_t> member_order{
         "member_order", member_order_t::lexical};

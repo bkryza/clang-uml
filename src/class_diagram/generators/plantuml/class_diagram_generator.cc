@@ -108,7 +108,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 
     if (config().generate_fully_qualified_name())
         ostr << "class"
-             << " \"" << c.name();
+             << " \"" << c.full_name_no_ns();
     else
         ostr << "class"
              << " \"" << render_name(c.full_name());
@@ -121,8 +121,6 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
-    namespace plantuml_common = clanguml::common::generators::plantuml;
-
     std::string class_type{"class"};
     if (c.is_abstract())
         class_type = "abstract";
@@ -137,8 +135,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
     }
 
-    if (!c.style().empty())
-        ostr << " " << c.style();
+    generate_style(ostr, c.type_name(), c);
 
     ostr << " {" << '\n';
 
@@ -169,8 +166,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         catch (error::uml_alias_missing &e) {
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
-                plantuml_common::to_plantuml(r.type(), r.style()),
-                c.full_name(), r.destination(), e.what());
+                to_string(r.type()), c.full_name(), r.destination(), e.what());
         }
     }
 
@@ -378,13 +374,12 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
     }
 
-    if (!c.style().empty())
-        ostr << " " << c.style();
+    generate_style(ostr, c.type_name(), c);
 
     ostr << " {" << '\n';
 
-    // TODO: add option to enable/disable this
-    if (c.requires_parameters().size() + c.requires_statements().size() > 0) {
+    if (config().generate_concept_requirements() &&
+        (c.requires_parameters().size() + c.requires_statements().size() > 0)) {
         std::vector<std::string> parameters;
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {
@@ -444,8 +439,7 @@ void generator::generate_relationship(
 {
     namespace plantuml_common = clanguml::common::generators::plantuml;
 
-    LOG_DBG("Processing relationship {}",
-        plantuml_common::to_plantuml(r.type(), r.style()));
+    LOG_DBG("Processing relationship {}", to_string(r.type()));
 
     std::string destination;
 
@@ -463,7 +457,7 @@ void generator::generate_relationship(
     if (!r.multiplicity_source().empty())
         puml_relation += "\"" + r.multiplicity_source() + "\" ";
 
-    puml_relation += plantuml_common::to_plantuml(r.type(), r.style());
+    puml_relation += plantuml_common::to_plantuml(r, config());
 
     if (!r.multiplicity_destination().empty())
         puml_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -491,7 +485,7 @@ void generator::generate_relationships(
             continue;
 
         LOG_DBG("== Processing relationship {}",
-            plantuml_common::to_plantuml(r.type(), r.style()));
+            plantuml_common::to_plantuml(r, config()));
 
         std::stringstream relstr;
         clanguml::common::id_t destination{0};
@@ -502,7 +496,7 @@ void generator::generate_relationships(
             if (!r.multiplicity_source().empty())
                 puml_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            puml_relation += plantuml_common::to_plantuml(r.type(), r.style());
+            puml_relation += plantuml_common::to_plantuml(r, config());
 
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -541,8 +535,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                plantuml_common::to_plantuml(r.type(), r.style()),
-                c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(), destination, e.what());
         }
     }
 
@@ -587,8 +580,7 @@ void generator::generate_relationships(
         if (!model().should_include(r.type()))
             continue;
 
-        LOG_DBG("== Processing relationship {}",
-            plantuml_common::to_plantuml(r.type(), r.style()));
+        LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
         clanguml::common::id_t destination{0};
@@ -599,7 +591,7 @@ void generator::generate_relationships(
             if (!r.multiplicity_source().empty())
                 puml_relation += "\"" + r.multiplicity_source() + "\" ";
 
-            puml_relation += plantuml_common::to_plantuml(r.type(), r.style());
+            puml_relation += plantuml_common::to_plantuml(r, config());
 
             if (!r.multiplicity_destination().empty())
                 puml_relation += " \"" + r.multiplicity_destination() + "\"";
@@ -638,8 +630,7 @@ void generator::generate_relationships(
         catch (error::uml_alias_missing &e) {
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
-                plantuml_common::to_plantuml(r.type(), r.style()),
-                c.full_name(), destination, e.what());
+                to_string(r.type()), c.full_name(), destination, e.what());
         }
     }
 
@@ -654,8 +645,7 @@ void generator::generate(const enum_ &e, std::ostream &ostr) const
         common_generator<diagram_config, diagram_model>::generate_link(ostr, e);
     }
 
-    if (!e.style().empty())
-        ostr << " " << e.style();
+    generate_style(ostr, e.type_name(), e);
 
     ostr << " {" << '\n';
 
@@ -687,7 +677,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 
             relstr << e.alias() << " "
                    << clanguml::common::generators::plantuml::to_plantuml(
-                          r.type(), r.style())
+                          r, config())
                    << " " << target_alias;
 
             if (!r.label().empty())
@@ -701,7 +691,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
             LOG_DBG("Skipping {} relation from {} to {} due "
                     "to: {}",
                 clanguml::common::generators::plantuml::to_plantuml(
-                    r.type(), r.style()),
+                    r, config()),
                 e.full_name(), destination, ex.what());
         }
     }
@@ -724,8 +714,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
             if (p.is_deprecated())
                 ostr << " <<deprecated>>";
 
-            if (!p.style().empty())
-                ostr << " " << p.style();
+            generate_style(ostr, p.type_name(), p);
 
             ostr << " {" << '\n';
         }

@@ -216,6 +216,12 @@ test_cases:
     - name: t00073
       title: Class diagram for template overload pattern
       description:
+    - name: t00074
+      title: Test case for rendering concepts without requirements
+      description:
+    - name: t00075
+      title: Test case for class diagram styles in config file
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

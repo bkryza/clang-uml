@@ -78,6 +78,8 @@
  * [t00071](./test_cases/t00071.md) - Class diagram with C++20 modules generated as packages
  * [t00072](./test_cases/t00072.md) - Class diagram with C++20 module partitions generated as packages
  * [t00073](./test_cases/t00073.md) - Class diagram for template overload pattern
+ * [t00074](./test_cases/t00074.md) - Test case for rendering concepts without requirements
+ * [t00075](./test_cases/t00075.md) - Test case for class diagram styles in config file
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case

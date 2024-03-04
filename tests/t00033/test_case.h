@@ -48,11 +48,12 @@ TEST_CASE("t00033", "[test-case][class]")
             src, IsDependency(_A("B<std::unique_ptr<C<D>>>"), _A("C<D>")));
         REQUIRE_THAT(src, IsDependency(_A("C<D>"), _A("D")));
 
-        REQUIRE_THAT(src, IsInstantiation(_A("C<T>"), _A("C<D>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>")));
+        REQUIRE_THAT(src, IsInstantiation(_A("C<T>"), _A("C<D>"), "up"));
         REQUIRE_THAT(src,
-            IsInstantiation(_A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>")));
+            IsInstantiation(_A("B<T>"), _A("B<std::unique_ptr<C<D>>>"), "up"));
+        REQUIRE_THAT(src,
+            IsInstantiation(
+                _A("A<T>"), _A("A<B<std::unique_ptr<C<D>>>>"), "up"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
