@@ -246,13 +246,16 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
             continue;
         }
 
+        const auto matching_commands_count =
+            db->count_matching_commands(valid_translation_units);
+
         auto generator = [&name = name, &diagram = diagram, &indicator,
-                             db = std::ref(*db),
+                             db = std::ref(*db), matching_commands_count,
                              translation_units = valid_translation_units,
                              runtime_config]() mutable {
             try {
                 if (indicator)
-                    indicator->add_progress_bar(name, translation_units.size(),
+                    indicator->add_progress_bar(name, matching_commands_count,
                         diagram_type_to_color(diagram->type()));
 
                 generate_diagram(name, diagram, db, translation_units,

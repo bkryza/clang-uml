@@ -88,6 +88,21 @@ std::string compilation_database::guess_language_from_filename(
     return "c++";
 }
 
+long compilation_database::count_matching_commands(
+    const std::vector<std::string> &files) const
+{
+    auto result{0L};
+
+    auto commands = base().getAllCompileCommands();
+
+    for (const auto &command : commands) {
+        result += std::count_if(files.begin(), files.end(),
+            [&command](const auto &file) { return command.Filename == file; });
+    }
+
+    return result;
+}
+
 void compilation_database::adjust_compilation_database(
     std::vector<clang::tooling::CompileCommand> &commands) const
 {

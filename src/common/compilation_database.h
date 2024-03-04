@@ -103,6 +103,8 @@ public:
 
     std::string guess_language_from_filename(const std::string &filename) const;
 
+    long count_matching_commands(const std::vector<std::string> &files) const;
+
 private:
     void adjust_compilation_database(
         std::vector<clang::tooling::CompileCommand> &commands) const;

@@ -31,6 +31,7 @@ Checks: >-
   -google-explicit-constructor,
   -google-build-using-namespace,
   -google-upgrade-*,
+  -google-runtime-int,
   -hicpp-signed-bitwise,
   -hicpp-explicit-conversions,
   -llvmlibc-*,
