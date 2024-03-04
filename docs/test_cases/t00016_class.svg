@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="200px" preserveAspectRatio="none" style="width:847px;height:200px;" version="1.1" viewBox="0 0 847 200" width="847px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1v405gy825qq2" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f52pjxq1vt4n1" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,87 +9,87 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L4" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L4" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.5;" width="165" x="343.5" y="129"/>
-      <ellipse cx="358.5" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M361.4688,150.6406 Q360.8906,150.9375 360.25,151.0781 Q359.6094,151.2344 358.9063,151.2344 Q356.4063,151.2344 355.0781,149.5938 Q353.7656,147.9375 353.7656,144.8125 Q353.7656,141.6875 355.0781,140.0313 Q356.4063,138.375 358.9063,138.375 Q359.6094,138.375 360.25,138.5313 Q360.9063,138.6875 361.4688,138.9844 L361.4688,141.7031 Q360.8438,141.125 360.25,140.8594 Q359.6563,140.5781 359.0313,140.5781 Q357.6875,140.5781 357,141.6563 Q356.3125,142.7188 356.3125,144.8125 Q356.3125,146.9063 357,147.9844 Q357.6875,149.0469 359.0313,149.0469 Q359.6563,149.0469 360.25,148.7813 Q360.8438,148.5 361.4688,147.9219 L361.4688,150.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="372.5" y="149.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="65" x="446.5" y="126"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="63" x="447.5" y="138.1387">typename</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="344.5" x2="507.5" y1="161" y2="161"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="344.5" x2="507.5" y1="169" y2="169"/>
-      <ellipse cx="354.5" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="363.5" y="183.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L4" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L4" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.5;" width="165" x="343.5" y="8"/>
+      <ellipse cx="358.5" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M361.4688,29.6406 Q360.8906,29.9375 360.25,30.0781 Q359.6094,30.2344 358.9063,30.2344 Q356.4063,30.2344 355.0781,28.5938 Q353.7656,26.9375 353.7656,23.8125 Q353.7656,20.6875 355.0781,19.0313 Q356.4063,17.375 358.9063,17.375 Q359.6094,17.375 360.25,17.5313 Q360.9063,17.6875 361.4688,17.9844 L361.4688,20.7031 Q360.8438,20.125 360.25,19.8594 Q359.6563,19.5781 359.0313,19.5781 Q357.6875,19.5781 357,20.6563 Q356.3125,21.7188 356.3125,23.8125 Q356.3125,25.9063 357,26.9844 Q357.6875,28.0469 359.0313,28.0469 Q359.6563,28.0469 360.25,27.7813 Q360.8438,27.5 361.4688,26.9219 L361.4688,29.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="372.5" y="28.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="65" x="446.5" y="5"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="63" x="447.5" y="17.1387">typename</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="344.5" x2="507.5" y1="40" y2="40"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="344.5" x2="507.5" y1="48" y2="48"/>
+      <ellipse cx="354.5" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="363.5" y="62.2104">value : enum</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L8" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L8" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0000095618295648274199" style="stroke: #A80036; stroke-width: 1.5;" width="130" x="6" y="8"/>
-      <ellipse cx="21" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M23.9688,29.6406 Q23.3906,29.9375 22.75,30.0781 Q22.1094,30.2344 21.4063,30.2344 Q18.9063,30.2344 17.5781,28.5938 Q16.2656,26.9375 16.2656,23.8125 Q16.2656,20.6875 17.5781,19.0313 Q18.9063,17.375 21.4063,17.375 Q22.1094,17.375 22.75,17.5313 Q23.4063,17.6875 23.9688,17.9844 L23.9688,20.7031 Q23.3438,20.125 22.75,19.8594 Q22.1563,19.5781 21.5313,19.5781 Q20.1875,19.5781 19.5,20.6563 Q18.8125,21.7188 18.8125,23.8125 Q18.8125,25.9063 19.5,26.9844 Q20.1875,28.0469 21.5313,28.0469 Q22.1563,28.0469 22.75,27.7813 Q23.3438,27.5 23.9688,26.9219 L23.9688,29.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="35" y="28.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="30" x="109" y="5"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="28" x="110" y="17.1387">float</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="135" y1="40" y2="40"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="135" y1="48" y2="48"/>
-      <ellipse cx="17" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="26" y="62.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L8" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L8" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0000095618295648274199" style="stroke: #A80036; stroke-width: 1.5;" width="130" x="6" y="129"/>
+      <ellipse cx="21" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M23.9688,150.6406 Q23.3906,150.9375 22.75,151.0781 Q22.1094,151.2344 21.4063,151.2344 Q18.9063,151.2344 17.5781,149.5938 Q16.2656,147.9375 16.2656,144.8125 Q16.2656,141.6875 17.5781,140.0313 Q18.9063,138.375 21.4063,138.375 Q22.1094,138.375 22.75,138.5313 Q23.4063,138.6875 23.9688,138.9844 L23.9688,141.7031 Q23.3438,141.125 22.75,140.8594 Q22.1563,140.5781 21.5313,140.5781 Q20.1875,140.5781 19.5,141.6563 Q18.8125,142.7188 18.8125,144.8125 Q18.8125,146.9063 19.5,147.9844 Q20.1875,149.0469 21.5313,149.0469 Q22.1563,149.0469 22.75,148.7813 Q23.3438,148.5 23.9688,147.9219 L23.9688,150.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="35" y="149.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="30" x="109" y="126"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="28" x="110" y="138.1387">float</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="135" y1="161" y2="161"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="135" y1="169" y2="169"/>
+      <ellipse cx="17" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="26" y="183.2104">value : enum</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L12" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L12" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0000979129381790761728" style="stroke: #A80036; stroke-width: 1.5;" width="130" x="171" y="8"/>
-      <ellipse cx="186" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M188.9688,29.6406 Q188.3906,29.9375 187.75,30.0781 Q187.1094,30.2344 186.4063,30.2344 Q183.9063,30.2344 182.5781,28.5938 Q181.2656,26.9375 181.2656,23.8125 Q181.2656,20.6875 182.5781,19.0313 Q183.9063,17.375 186.4063,17.375 Q187.1094,17.375 187.75,17.5313 Q188.4063,17.6875 188.9688,17.9844 L188.9688,20.7031 Q188.3438,20.125 187.75,19.8594 Q187.1563,19.5781 186.5313,19.5781 Q185.1875,19.5781 184.5,20.6563 Q183.8125,21.7188 183.8125,23.8125 Q183.8125,25.9063 184.5,26.9844 Q185.1875,28.0469 186.5313,28.0469 Q187.1563,28.0469 187.75,27.7813 Q188.3438,27.5 188.9688,26.9219 L188.9688,29.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="200" y="28.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="30" x="274" y="5"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="28" x="275" y="17.1387">char</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="172" x2="300" y1="40" y2="40"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="172" x2="300" y1="48" y2="48"/>
-      <ellipse cx="182" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="191" y="62.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L12" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L12" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0000979129381790761728" style="stroke: #A80036; stroke-width: 1.5;" width="130" x="171" y="129"/>
+      <ellipse cx="186" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M188.9688,150.6406 Q188.3906,150.9375 187.75,151.0781 Q187.1094,151.2344 186.4063,151.2344 Q183.9063,151.2344 182.5781,149.5938 Q181.2656,147.9375 181.2656,144.8125 Q181.2656,141.6875 182.5781,140.0313 Q183.9063,138.375 186.4063,138.375 Q187.1094,138.375 187.75,138.5313 Q188.4063,138.6875 188.9688,138.9844 L188.9688,141.7031 Q188.3438,141.125 187.75,140.8594 Q187.1563,140.5781 186.5313,140.5781 Q185.1875,140.5781 184.5,141.6563 Q183.8125,142.7188 183.8125,144.8125 Q183.8125,146.9063 184.5,147.9844 Q185.1875,149.0469 186.5313,149.0469 Q187.1563,149.0469 187.75,148.7813 Q188.3438,148.5 188.9688,147.9219 L188.9688,150.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="200" y="149.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="30" x="274" y="126"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="28" x="275" y="138.1387">char</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="172" x2="300" y1="161" y2="161"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="172" x2="300" y1="169" y2="169"/>
+      <ellipse cx="182" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="191" y="183.2104">value : enum</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L16" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L16" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0002090787690027341836" style="stroke: #A80036; stroke-width: 1.5;" width="179" x="336.5" y="8"/>
-      <ellipse cx="351.5" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M354.4688,29.6406 Q353.8906,29.9375 353.25,30.0781 Q352.6094,30.2344 351.9063,30.2344 Q349.4063,30.2344 348.0781,28.5938 Q346.7656,26.9375 346.7656,23.8125 Q346.7656,20.6875 348.0781,19.0313 Q349.4063,17.375 351.9063,17.375 Q352.6094,17.375 353.25,17.5313 Q353.9063,17.6875 354.4688,17.9844 L354.4688,20.7031 Q353.8438,20.125 353.25,19.8594 Q352.6563,19.5781 352.0313,19.5781 Q350.6875,19.5781 350,20.6563 Q349.3125,21.7188 349.3125,23.8125 Q349.3125,25.9063 350,26.9844 Q350.6875,28.0469 352.0313,28.0469 Q352.6563,28.0469 353.25,27.7813 Q353.8438,27.5 354.4688,26.9219 L354.4688,29.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="365.5" y="28.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="79" x="439.5" y="5"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="77" x="440.5" y="17.1387">unsigned int</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="337.5" x2="514.5" y1="40" y2="40"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="337.5" x2="514.5" y1="48" y2="48"/>
-      <ellipse cx="347.5" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="356.5" y="62.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L16" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L16" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0002090787690027341836" style="stroke: #A80036; stroke-width: 1.5;" width="179" x="336.5" y="129"/>
+      <ellipse cx="351.5" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M354.4688,150.6406 Q353.8906,150.9375 353.25,151.0781 Q352.6094,151.2344 351.9063,151.2344 Q349.4063,151.2344 348.0781,149.5938 Q346.7656,147.9375 346.7656,144.8125 Q346.7656,141.6875 348.0781,140.0313 Q349.4063,138.375 351.9063,138.375 Q352.6094,138.375 353.25,138.5313 Q353.9063,138.6875 354.4688,138.9844 L354.4688,141.7031 Q353.8438,141.125 353.25,140.8594 Q352.6563,140.5781 352.0313,140.5781 Q350.6875,140.5781 350,141.6563 Q349.3125,142.7188 349.3125,144.8125 Q349.3125,146.9063 350,147.9844 Q350.6875,149.0469 352.0313,149.0469 Q352.6563,149.0469 353.25,148.7813 Q353.8438,148.5 354.4688,147.9219 L354.4688,150.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="365.5" y="149.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="79" x="439.5" y="126"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="77" x="440.5" y="138.1387">unsigned int</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="337.5" x2="514.5" y1="161" y2="161"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="337.5" x2="514.5" y1="169" y2="169"/>
+      <ellipse cx="347.5" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="356.5" y="183.2104">value : enum</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L20" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L20" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0000500603075237446075" style="stroke: #A80036; stroke-width: 1.5;" width="118" x="551" y="8"/>
-      <ellipse cx="566" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M568.9688,29.6406 Q568.3906,29.9375 567.75,30.0781 Q567.1094,30.2344 566.4063,30.2344 Q563.9063,30.2344 562.5781,28.5938 Q561.2656,26.9375 561.2656,23.8125 Q561.2656,20.6875 562.5781,19.0313 Q563.9063,17.375 566.4063,17.375 Q567.1094,17.375 567.75,17.5313 Q568.4063,17.6875 568.9688,17.9844 L568.9688,20.7031 Q568.3438,20.125 567.75,19.8594 Q567.1563,19.5781 566.5313,19.5781 Q565.1875,19.5781 564.5,20.6563 Q563.8125,21.7188 563.8125,23.8125 Q563.8125,25.9063 564.5,26.9844 Q565.1875,28.0469 566.5313,28.0469 Q567.1563,28.0469 567.75,27.7813 Q568.3438,27.5 568.9688,26.9219 L568.9688,29.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="580" y="28.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="18" x="654" y="5"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="16" x="655" y="17.1387">int</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="552" x2="668" y1="40" y2="40"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="552" x2="668" y1="48" y2="48"/>
-      <ellipse cx="562" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="571" y="62.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L20" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L20" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0000500603075237446075" style="stroke: #A80036; stroke-width: 1.5;" width="118" x="551" y="129"/>
+      <ellipse cx="566" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M568.9688,150.6406 Q568.3906,150.9375 567.75,151.0781 Q567.1094,151.2344 566.4063,151.2344 Q563.9063,151.2344 562.5781,149.5938 Q561.2656,147.9375 561.2656,144.8125 Q561.2656,141.6875 562.5781,140.0313 Q563.9063,138.375 566.4063,138.375 Q567.1094,138.375 567.75,138.5313 Q568.4063,138.6875 568.9688,138.9844 L568.9688,141.7031 Q568.3438,141.125 567.75,140.8594 Q567.1563,140.5781 566.5313,140.5781 Q565.1875,140.5781 564.5,141.6563 Q563.8125,142.7188 563.8125,144.8125 Q563.8125,146.9063 564.5,147.9844 Q565.1875,149.0469 566.5313,149.0469 Q567.1563,149.0469 567.75,148.7813 Q568.3438,148.5 568.9688,147.9219 L568.9688,150.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="580" y="149.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="18" x="654" y="126"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="16" x="655" y="138.1387">int</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="552" x2="668" y1="161" y2="161"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="552" x2="668" y1="169" y2="169"/>
+      <ellipse cx="562" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="571" y="183.2104">value : enum</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L24" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/563014901639bc5a0152a82d6567fd340dc5f5a5/tests/t00016/t00016.cc#L24" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1v405gy825qq2)" height="60.8047" id="C_0002111316837513419920" style="stroke: #A80036; stroke-width: 1.5;" width="129" x="704.5" y="8"/>
-      <ellipse cx="719.5" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-      <path d="M722.4688,29.6406 Q721.8906,29.9375 721.25,30.0781 Q720.6094,30.2344 719.9063,30.2344 Q717.4063,30.2344 716.0781,28.5938 Q714.7656,26.9375 714.7656,23.8125 Q714.7656,20.6875 716.0781,19.0313 Q717.4063,17.375 719.9063,17.375 Q720.6094,17.375 721.25,17.5313 Q721.9063,17.6875 722.4688,17.9844 L722.4688,20.7031 Q721.8438,20.125 721.25,19.8594 Q720.6563,19.5781 720.0313,19.5781 Q718.6875,19.5781 718,20.6563 Q717.3125,21.7188 717.3125,23.8125 Q717.3125,25.9063 718,26.9844 Q718.6875,28.0469 720.0313,28.0469 Q720.6563,28.0469 721.25,27.7813 Q721.8438,27.5 722.4688,26.9219 L722.4688,29.6406 Z "/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="733.5" y="28.1543">is_numeric</text>
-      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="29" x="807.5" y="5"/>
-      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="27" x="808.5" y="17.1387">bool</text>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="705.5" x2="832.5" y1="40" y2="40"/>
-      <line style="stroke: #A80036; stroke-width: 1.5;" x1="705.5" x2="832.5" y1="48" y2="48"/>
-      <ellipse cx="715.5" cy="59" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="724.5" y="62.2104">value : enum</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L24" target="_top" title="is_numeric" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/6cf8c0a995e3658c34861122d12fd78ce8d24b38/tests/t00016/t00016.cc#L24" xlink:show="new" xlink:title="is_numeric" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f52pjxq1vt4n1)" height="60.8047" id="C_0002111316837513419920" style="stroke: #A80036; stroke-width: 1.5;" width="129" x="704.5" y="129"/>
+      <ellipse cx="719.5" cy="145" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
+      <path d="M722.4688,150.6406 Q721.8906,150.9375 721.25,151.0781 Q720.6094,151.2344 719.9063,151.2344 Q717.4063,151.2344 716.0781,149.5938 Q714.7656,147.9375 714.7656,144.8125 Q714.7656,141.6875 716.0781,140.0313 Q717.4063,138.375 719.9063,138.375 Q720.6094,138.375 721.25,138.5313 Q721.9063,138.6875 722.4688,138.9844 L722.4688,141.7031 Q721.8438,141.125 721.25,140.8594 Q720.6563,140.5781 720.0313,140.5781 Q718.6875,140.5781 718,141.6563 Q717.3125,142.7188 717.3125,144.8125 Q717.3125,146.9063 718,147.9844 Q718.6875,149.0469 720.0313,149.0469 Q720.6563,149.0469 721.25,148.7813 Q721.8438,148.5 722.4688,147.9219 L722.4688,150.6406 Z "/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="66" x="733.5" y="149.1543">is_numeric</text>
+      <rect fill="#FFFFFF" height="15.9688" style="stroke: #000000; stroke-width: 1.0; stroke-dasharray: 2.0,2.0;" width="29" x="807.5" y="126"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="27" x="808.5" y="138.1387">bool</text>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="705.5" x2="832.5" y1="161" y2="161"/>
+      <line style="stroke: #A80036; stroke-width: 1.5;" x1="705.5" x2="832.5" y1="169" y2="169"/>
+      <ellipse cx="715.5" cy="180" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="74" x="724.5" y="183.2104">value : enum</text>
     </a>
-    <path d="M136.29,63.18 C141.93,65.17 147.56,67.13 153,69 C209.46,88.41 272.82,109.24 324.27,125.91 " fill="none" id="C_0000095618295648274199-&gt;C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="none" points="326.49,119.27,343.36,132.09,322.18,132.59,326.49,119.27" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M283.45,69.22 C307.12,84.04 336.09,102.19 361.72,118.24 " fill="none" id="C_0000979129381790761728-&gt;C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="none" points="365.59,112.4,378.82,128.95,358.16,124.27,365.59,112.4" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M426,69.22 C426,81.15 426,95.23 426,108.63 " fill="none" id="C_0002090787690027341836-&gt;C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="none" points="433,108.74,426,128.74,419,108.74,433,108.74" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M564.04,69.22 C541.24,83.97 513.34,102.01 488.61,118.01 " fill="none" id="C_0000500603075237446075-&gt;C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="none" points="492.28,123.97,471.69,128.95,484.68,112.21,492.28,123.97" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M704.13,62.94 C698.34,65 692.57,67.04 687,69 C634.55,87.43 576.02,107.54 527.69,124.02 " fill="none" id="C_0002111316837513419920-&gt;C_0000932856332558460389" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="none" points="529.88,130.67,508.69,130.5,525.36,117.42,529.88,130.67" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M324.27,72.09 C272.82,88.76 209.46,109.59 153,129 C147.56,130.87 141.93,132.83 136.29,134.82 " fill="none" id="C_0000932856332558460389&lt;-C_0000095618295648274199" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="322.18,65.41,343.36,65.91,326.49,78.73,322.18,65.41" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M361.42,79.95 C335.77,96.01 306.8,114.15 283.18,128.95 " fill="none" id="C_0000932856332558460389&lt;-C_0000979129381790761728" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="357.88,73.91,378.55,69.22,365.31,85.77,357.88,73.91" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M426,89.33 C426,102.73 426,116.81 426,128.74 " fill="none" id="C_0000932856332558460389&lt;-C_0002090787690027341836" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="419,89.22,426,69.22,433,89.22,419,89.22" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M488.9,80.18 C513.65,96.19 541.54,114.23 564.31,128.95 " fill="none" id="C_0000932856332558460389&lt;-C_0000500603075237446075" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="484.95,85.96,471.96,69.22,492.55,74.21,484.95,85.96" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M527.69,73.98 C576.02,90.46 634.55,110.57 687,129 C692.57,130.96 698.34,133 704.13,135.06 " fill="none" id="C_0000932856332558460389&lt;-C_0002111316837513419920" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <polygon fill="none" points="525.36,80.58,508.69,67.5,529.88,67.33,525.36,80.58" style="stroke: #A80036; stroke-width: 1.0;"/>
   </g>
 </svg>
