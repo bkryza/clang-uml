@@ -23,7 +23,7 @@
 #### Ubuntu
 
 ```bash
-# Currently supported Ubuntu versions are Focal, Jammy, Lunar and Mantic
+# Currently supported Ubuntu versions are Focal, Jammy and Mantic
 sudo add-apt-repository ppa:bkryza/clang-uml
 sudo apt update
 sudo apt install clang-uml
@@ -33,16 +33,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.2-1.fc37.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc37.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.1-1.fc37.x86_64.rpm
 
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.2-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.1-1.fc38.x86_64.rpm
 
 # Fedora 39
-wget https://github.com/bkryza/clang-uml/releases/download/0.4.2/clang-uml-0.4.2-1.fc39.x86_64.rpm
-sudo dnf install ./clang-uml-0.4.2-1.fc39.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.1-1.fc39.x86_64.rpm
 ```
 
 #### Conda
@@ -79,7 +79,7 @@ release/src/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
 LLVM_VERSION=16 make release
-# or specify path to a specific llvm-config binary, e.g.:
+# or specify a path to a specific llvm-config binary, e.g.:
 LLVM_CONFIG_PATH=/usr/bin/llvm-config-16 make release
 # or directly specify the path where LLVMConfig.cmake can be found on your system, e.g.:
 CMAKE_PREFIX=/usr/lib/llvm-16/lib/cmake/llvm make release
@@ -111,7 +111,7 @@ CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm make release
 
 ##### Visual Studio native build
 
-These steps present how to build and use `clang-uml` natively using Visual Studio only.
+These steps present how to build and use `clang-uml` natively using Microsoft Visual Studio only.
 
 First, install the following dependencies manually:
 

@@ -51,6 +51,20 @@ instance:
     cmd: "/usr/bin/plantuml -tsvg \"diagrams/{}.puml\""
 ```
 
+Furthermore, `plantuml` generator accepts basic styling options for customizing
+diagram look and layout, e.g.:
+```yaml
+  plantuml:
+    style:
+      # Apply this style to all classes in the diagram
+      class: "#aliceblue;line:blue;line.dotted;text:blue"
+      # Apply this style to all packages in the diagram
+      package: "#back:grey"
+      # Make all template instantiation relations point upwards and draw them
+      # as green and dotted lines
+      instantiation: "up[#green,dotted]"
+```
+
 An example PlantUML diagram is presented below:
 
 ```plantuml
@@ -121,9 +135,9 @@ example:
       - 'note for {{ alias("config") }} "General options not used by diagrams."'
 ```
 
-will add before the diagram contents (right after diagram type,
-e.g. `classDiagram`) diagram direction hint, and after each diagram contents
-2 notes attached to elements.
+will add a diagram direction hint before the diagram contents (right after
+diagram type, e.g. `classDiagram`), and after each diagram contents
+2 notes attached to classes `inheritable_diagram_options` and `config`.
 
 This generator also accepts a `cmd` parameter to specify a command to execute
 on the generated MermaidJS source file to generate actual diagram image, for

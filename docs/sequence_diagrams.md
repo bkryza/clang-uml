@@ -74,7 +74,7 @@ there are 3 types of constraints:
               locations
 
 Currently, the constraints can be a method or a free function, both specified
-using the full signature of the function, e.g.
+using the full signature of the function, e.g.:
 
 ```yaml
     from:
@@ -97,8 +97,8 @@ and `to` locations as follows:
          function: "clanguml::t20034::A::a2()"]
 ```
 
-To find the exact function signature which, can be used as a `from` location,
-run `clang-uml` as follows:
+To find the exact function signature, which can be used as a `from` location,
+run `clang-uml` as follows (assuming the function of interest is called `main`):
 
 ```bash
 clang-uml --print-from -n main_sequence | grep main
@@ -112,7 +112,7 @@ clang-uml --print-to -n main_sequence | grep main
 
 Command line flags `--print-from` and `--print-to` will print on stdout all
 functions and methods available in the diagram model, and each line of this
-output can be directly used as a value of `start_from`, `from_to` or `to`
+output can be directly used as a value of `from`, `from_to` or `to`
 properties in the config file.
 
 Since that list can be quite large, it's best to filter the output to limit
@@ -141,7 +141,7 @@ tentative support, which follows the following rules:
   * If lambda expression is passed to some function or method, which is outside
     the scope of the diagram (e.g. used in `std::transform` call) the call will
     not be generated
-  * If the lambda is passed as template parameter in instantiation it will not
+  * If the lambda is passed as template argument in instantiation it will not
     be generated
 
 Another issue is the naming of lambda participants. Currently, each lambda is
@@ -257,7 +257,7 @@ The default participant order in the sequence diagram can be suboptimal in the
 sense that consecutive calls can go right, then left, then right again
 depending on the specific call chain in the code. It is however possible to
 override this order in the diagram definition using `participants_order`
-property, for instance like this test case:
+property, for instance like this:
 
 ```yaml
 diagrams:
@@ -372,5 +372,5 @@ for each sequence diagram, which should include these comments.
 
 In case only selected messages should have some specific comments, instead
 of enabling the `generate_message_comments` option, it is possible to use
-`\uml{note TEXT}` directive in the comment above the expression, see
+`\\uml{note TEXT}` directive in the comment above the expression, see
 [t20001](test_cases/t20001_sequence.svg).

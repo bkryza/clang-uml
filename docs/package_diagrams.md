@@ -7,8 +7,8 @@
 <!-- tocstop -->
 
 Package diagrams are simple diagrams, which can be useful to visualize a high
-level structure of a C++ project, by rendering project's namespaces or
-subdirectories as UML packages and their interdependencies.
+level structure of a C++ project, by rendering project's namespaces,
+subdirectories or modules as UML packages and their interdependencies.
 
 The minimal config required to generate a package diagram is presented below:
 ```yaml
@@ -163,7 +163,8 @@ the configuration file:
 package_type: directory
 ```
 
-for example check out this diagram
+for example check out this diagram (you can click on package names to see the 
+corresponding source directory):
 ![t30011_package](./test_cases/t30011_package.svg)
 
 Module based packages can be enabled using the following option:
@@ -172,8 +173,9 @@ Module based packages can be enabled using the following option:
 package_type: module
 ```
 
-for example check out this diagram
-![t30014_package](./test_cases/t30011_package.svg)
+for example check out this diagram (you can click on package names to see the
+corresponding module source):
+![t30014_package](./test_cases/t30012_package.svg)
 
 Diagrams can be rendered relative to a specific module using `using_module`
 option:
