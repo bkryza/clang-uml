@@ -12,3 +12,8 @@ include:
 exclude:
   access: [ public, protected, private ]
   relationships: [ dependency ]
+plantuml:
+  style:
+    inheritance: up
+  before:
+    - left to right direction

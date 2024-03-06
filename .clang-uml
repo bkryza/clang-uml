@@ -2,6 +2,7 @@ compilation_database_dir: debug
 output_directory: docs/diagrams
 comment_parser: clang
 add_compile_flags:
+  - -fparse-all-comments
   - -Wno-deprecated-declarations
 remove_compile_flags:
   - -Wno-class-memaccess
@@ -37,7 +38,7 @@ diagrams:
     include!: uml/class/stylable_element_hierarchy_class.yml
   source_location_hierarchy_class:
     include!: uml/class/source_location_hierarchy_class.yml
-  "filter_visitor_hierarchy_class":
+  filter_visitor_hierarchy_class:
     include!: uml/class/filter_visitor_hierarchy_class.yml
   diagram_filter_context_class:
     include!: uml/class/diagram_filter_context_class.yml
@@ -76,6 +77,8 @@ diagrams:
     include!: uml/sequence/diagram_generate_generic_sequence.yml
   class_diagram_generator_sequence:
     include!: uml/sequence/class_diagram_generator_sequence.yml
+  plantuml_sequence_diagram_generator_sequence:
+    include!: uml/sequence/plantuml_sequence_diagram_generator_sequence.yml
   template_builder_sequence:
     include!: uml/sequence/template_builder_sequence.yml
   # Package diagrams

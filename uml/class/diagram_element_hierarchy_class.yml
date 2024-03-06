@@ -24,3 +24,6 @@ exclude:
     - protected
 using_namespace:
   - clanguml
+plantuml:
+  before:
+    - left to right direction
