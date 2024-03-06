@@ -280,10 +280,12 @@ void generator<C, D>::generate(std::ostream &ostr) const
 
     generate_title(ostr);
 
+    // Generate PlantUML directives before auto generated content
     generate_plantuml_directives(ostr, config.puml().before);
 
     generate_diagram(ostr);
 
+    // Generate PlantUML directives after auto generated content
     generate_plantuml_directives(ostr, config.puml().after);
 
     generate_metadata(ostr);

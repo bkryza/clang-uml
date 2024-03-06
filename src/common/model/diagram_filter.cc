@@ -346,6 +346,35 @@ tvl::value_t element_filter::match(const diagram &d, const element &e) const
         });
 }
 
+tvl::value_t element_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    using sequence_diagram::model::method;
+    using sequence_diagram::model::participant;
+
+    if (d.type() != diagram_t::kSequence)
+        return {};
+
+    const auto &sequence_model =
+        dynamic_cast<const sequence_diagram::model::diagram &>(d);
+    return tvl::any_of(elements_.begin(), elements_.end(),
+        [&sequence_model, &p](const auto &el) {
+            if (p.type_name() == "method") {
+
+                const auto &m = dynamic_cast<const method &>(p);
+                const auto class_id = m.class_id();
+                const auto &class_participant =
+                    sequence_model.get_participant<participant>(class_id)
+                        .value();
+
+                return el == p.full_name(false) ||
+                    el == class_participant.full_name(false);
+            }
+
+            return el == p.full_name(false);
+        });
+}
+
 element_type_filter::element_type_filter(
     filter_t type, std::vector<std::string> element_types)
     : filter_visitor{type}

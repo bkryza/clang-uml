@@ -413,6 +413,8 @@ void diagram::print() const
 
     LOG_TRACE(" --- Activities ---");
     for (const auto &[from_id, act] : sequences_) {
+        if (participants_.count(from_id) == 0)
+            continue;
 
         LOG_TRACE("Sequence id={}:", from_id);
 

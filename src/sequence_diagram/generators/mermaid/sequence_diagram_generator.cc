@@ -37,7 +37,7 @@ std::string render_participant_name(std::string name)
 
 std::string render_message_text(std::string text)
 {
-    util::replace_all(text, ";", "#59;");
+    util::replace_all(text, ";", "&#59;");
 
     return text;
 }
@@ -481,6 +481,12 @@ void generator::generate_diagram(std::ostream &ostr) const
         if (from_activity_id == 0 || to_activity_id == 0)
             continue;
 
+        if (model().participants().count(from_activity_id) == 0)
+            continue;
+
+        if (model().participants().count(to_activity_id) == 0)
+            continue;
+
         auto message_chains_unique = model().get_all_from_to_message_chains(
             from_activity_id, to_activity_id);
 
@@ -522,6 +528,9 @@ void generator::generate_diagram(std::ostream &ostr) const
         for (const auto &mc : message_chains_unique) {
             const auto from_activity_id = mc.front().from();
 
+            if (model().participants().count(from_activity_id) == 0)
+                continue;
+
             const auto &from =
                 model().get_participant<model::function>(from_activity_id);
 
@@ -547,6 +556,9 @@ void generator::generate_diagram(std::ostream &ostr) const
         if (sf.location_type == location_t::function) {
             common::id_t start_from{0};
             for (const auto &[k, v] : model().sequences()) {
+                if (model().participants().count(v.from()) == 0)
+                    continue;
+
                 const auto &caller = *model().participants().at(v.from());
                 std::string vfrom = caller.full_name(false);
                 if (vfrom == sf.location) {
@@ -565,6 +577,9 @@ void generator::generate_diagram(std::ostream &ostr) const
 
             // Use this to break out of recurrent loops
             std::vector<common::id_t> visited_participants;
+
+            if (model().participants().count(start_from) == 0)
+                continue;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);
