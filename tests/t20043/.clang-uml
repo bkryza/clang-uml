@@ -1,0 +1,17 @@
+diagrams:
+  t20043_sequence:
+    type: sequence
+    glob:
+      - t20043.cc
+    include:
+      namespaces:
+        - clanguml::t20043
+    exclude:
+      elements:
+        - clanguml::t20043::B
+        - clanguml::t20043::F
+      namespaces:
+        - clanguml::t20043::detail
+    using_namespace: clanguml::t20043
+    from:
+      - function: "clanguml::t20043::tmain()"
