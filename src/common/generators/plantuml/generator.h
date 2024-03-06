@@ -21,7 +21,6 @@
 #include "common/model/diagram_filter.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
-#include "error.h"
 #include "util/error.h"
 #include "util/util.h"
 #include "version.h"
