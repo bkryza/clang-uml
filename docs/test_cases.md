@@ -123,6 +123,7 @@
  * [t20040](./test_cases/t20040.md) - Test case for recursive variadic template function call
  * [t20041](./test_cases/t20041.md) - Test case for recursive variadic template class call
  * [t20042](./test_cases/t20042.md) - Test case for template overload pattern
+ * [t20043](./test_cases/t20043.md) - Test case for elements diagram filter in sequence diagrams
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

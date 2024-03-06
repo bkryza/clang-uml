@@ -1,57 +1,42 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 850 563" style="max-width: 850px; background-color: white;" width="850" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 650 283" style="max-width: 650px; background-color: white;" width="650" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="477" x="600"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="509.5" x="675">
-      <tspan dy="0" x="675">C&lt;B,int&gt;</tspan>
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="197" x="400"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="229.5" x="475">
+      <tspan dy="0" x="475">C</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="477" x="400"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="509.5" x="475">
-      <tspan dy="0" x="475">A</tspan>
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="197" x="200"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="229.5" x="275">
+      <tspan dy="0" x="275">D</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="477" x="200"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="509.5" x="275">
-      <tspan dy="0" x="275">B</tspan>
-    </text>
-  </g>
-  <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="477" x="0"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="509.5" x="75">
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="197" x="0"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="229.5" x="75">
       <tspan dy="0" x="75">tmain()</tspan>
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="477" x2="675" y1="5" x1="675" id="actor3"/>
-    <g id="root-3">
-      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="600"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="675">
-        <tspan dy="0" x="675">C&lt;B,int&gt;</tspan>
-      </text>
-    </g>
-  </g>
-  <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="477" x2="475" y1="5" x1="475" id="actor2"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="197" x2="475" y1="5" x1="475" id="actor2"/>
     <g id="root-2">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="400"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="475">
-        <tspan dy="0" x="475">A</tspan>
+        <tspan dy="0" x="475">C</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="477" x2="275" y1="5" x1="275" id="actor1"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="197" x2="275" y1="5" x1="275" id="actor1"/>
     <g id="root-1">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="200"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="275">
-        <tspan dy="0" x="275">B</tspan>
+        <tspan dy="0" x="275">D</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="477" x2="75" y1="5" x1="75" id="actor0"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="197" x2="75" y1="5" x1="75" id="actor0"/>
     <g id="root-0">
       <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="0"/>
       <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="75">
@@ -98,7 +83,7 @@
     </marker>
   </defs>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="392" width="10" stroke="#666" fill="#EDF2AE" y="65" x="70"/>
+    <rect class="activation0" ry="0" rx="0" height="112" width="10" stroke="#666" fill="#EDF2AE" y="65" x="70"/>
   </g>
   <g>
     <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="113" x="270"/>
@@ -106,47 +91,12 @@
   <g>
     <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="161" x="470"/>
   </g>
-  <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="225" x="270"/>
-  </g>
-  <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="273" x="470"/>
-  </g>
-  <g>
-    <rect class="activation0" ry="0" rx="0" height="120" width="10" stroke="#666" fill="#EDF2AE" y="337" x="670"/>
-  </g>
-  <g>
-    <rect class="activation0" ry="0" rx="0" height="64" width="10" stroke="#666" fill="#EDF2AE" y="383" x="270"/>
-  </g>
-  <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="431" x="470"/>
-  </g>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="178">b1(int,int)</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="178">d()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="275" y1="111" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="126" x="378">a1(int,int)</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="126" x="378">c()</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="157" x2="475" y1="157" x1="280"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="172" x="375">â€‹</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="172" x="375">​</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="167" x2="280" y1="167" x1="470"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="182" x="175">â€‹</text>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="182" x="175">​</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="177" x2="80" y1="177" x1="270"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="192" x="178">b2(int,int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="223" x2="275" y1="223" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="238" x="378">a2(int,int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="269" x2="475" y1="269" x1="280"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="284" x="375">â€‹</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="279" x2="280" y1="279" x1="470"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="294" x="175">â€‹</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="289" x2="80" y1="289" x1="270"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="304" x="378">c1(int,int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="335" x2="675" y1="335" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="350" x="473">b1(int,int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="381" x2="275" y1="381" x1="670"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="396" x="378">a1(int,int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="427" x2="475" y1="427" x1="280"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="442" x="375">â€‹</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="437" x2="280" y1="437" x1="470"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="452" x="475">â€‹</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="447" x2="670" y1="447" x1="280"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="462" x="375">â€‹</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="457" x2="80" y1="457" x1="670"/>
 </svg>
