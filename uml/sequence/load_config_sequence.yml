@@ -2,6 +2,8 @@ type: sequence
 title: Configuration file loading sequence diagram
 combine_free_functions_into_file_participants: true
 generate_method_arguments: none
+generate_condition_statements: true
+generate_message_comments: true
 glob:
   - src/config/config.cc
   - src/config/yaml_decoders.cc

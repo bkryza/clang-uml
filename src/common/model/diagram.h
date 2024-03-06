@@ -164,6 +164,13 @@ public:
      */
     virtual inja::json context() const = 0;
 
+    /**
+     * @brief Check whether the diagram is empty
+     *
+     * @return True, if diagram is empty
+     */
+    virtual bool is_empty() const = 0;
+
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;

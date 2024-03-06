@@ -56,5 +56,5 @@ source files (matched by `glob`) and not their dependencies, for example:
 ![t40001_include](./test_cases/t40001_include.svg)
 
 Please note that generating include diagram, which contains third party and
-system library headers will result in a huge diagram that will be unlikely to
+system library headers will result in a huge diagram that is unlikely to
 be useful.

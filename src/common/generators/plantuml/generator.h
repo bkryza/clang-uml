@@ -265,17 +265,26 @@ template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
     const auto &config = generators::generator<C, D>::config();
+    const auto &model = generators::generator<C, D>::model();
 
     update_context();
+
+    if (!config.allow_empty_diagrams() && model.is_empty() &&
+        config.puml().before.empty() && config.puml().after.empty()) {
+        throw clanguml::error::empty_diagram_error{
+            "Diagram configuration resulted in empty diagram."};
+    }
 
     ostr << "@startuml" << '\n';
 
     generate_title(ostr);
 
+    // Generate PlantUML directives before auto generated content
     generate_plantuml_directives(ostr, config.puml().before);
 
     generate_diagram(ostr);
 
+    // Generate PlantUML directives after auto generated content
     generate_plantuml_directives(ostr, config.puml().after);
 
     generate_metadata(ostr);

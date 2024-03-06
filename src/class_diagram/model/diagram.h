@@ -249,6 +249,13 @@ public:
      */
     inja::json context() const override;
 
+    /**
+     * @brief Check whether the diagram is empty
+     *
+     * @return True, if diagram is empty
+     */
+    bool is_empty() const override;
+
 private:
     template <typename ElementT>
     bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);

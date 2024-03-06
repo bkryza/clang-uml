@@ -15,30 +15,34 @@
 <!-- tocstop -->
 
 ## Overall configuration file structure
-By default, `clang-uml` will look for file `.clang-uml` in the project's directory and read all diagrams definitions
-configuration from it. The file must be specified in YAML and it's overall structure is as follows:
+By default, `clang-uml` will look for file `.clang-uml` in the project's
+directory and read all diagram definitions configuration from it. The file must
+be specified in YAML and it's overall structure is as follows:
 
 ```yaml
-# common options for all diagrams
-...
+# Common options for all diagrams
+# ...
+# Diagram definitions
 diagrams:
   first_diagram_name:
     type: class|sequence|package|include
-    # diagram specific options
-    ...
+    # Diagram specific options
+    # ...
   second_diagram_name:
     type: class|sequence|package|include
-    # diagram specific options
-    ...
-  ...
+    # Diagram specific options
+    # ...
+  # More diagrams
+  # ...
 ```
 
-The top level common options are inherited by specific diagrams, if the option is applicable to them and they themselves
-do not override this option.
+The top level common options are inherited by specific diagrams, if the option
+is applicable to them and they themselves do not override this option.
 
 For detailed reference of all configuration options see [here](./configuration_file.md).
 
-Effective configuration, including default values can be printed out in YAML format using the following option:
+Effective configuration, including default values can be printed out in YAML
+format using the following option:
 
 ```bash
 clang-uml --dump-config
@@ -56,10 +60,11 @@ diagrams:
 ```
 
 ## Translation unit glob patterns
-One of the key options of the diagram configuration is the list of translation units, which should be parsed to
-get all necessary information for a diagram. 
+One of the key options of the diagram configuration is the list of translation
+units, which should be parsed to get all necessary information for a diagram. 
 
-The syntax is simple and based on glob patterns, which can be added to the configuration file as follows:
+The syntax is simple and based on glob patterns, which can be added to the
+configuration file as follows:
 
 ```yaml
    glob:
@@ -67,13 +72,17 @@ The syntax is simple and based on glob patterns, which can be added to the confi
      - src/dir3/*.cc
 ```
 
-The glob patterns only need to match the translation units, which are also in the `compile_commands.json` file, i.e.
-any files that match the glob patterns, but are not in `compile_commands.json` will be ignored. In case the `glob`
-pattern set does not match any translation units an error will be printed on the standard output.
+The glob patterns only need to match the translation units, which are also in
+the `compile_commands.json` file, i.e. any files that match the glob patterns,
+but are not in `compile_commands.json` will be ignored. In case the `glob`
+pattern set does not match any translation units an error will be printed on
+the standard output.
 
-For small projects, the `glob` property can be omitted, which will result in `clang-uml` parsing all translation units
-from `compile_commands.json` for the diagram. However, for large projects, constraining the number of translation units
-for each diagram to absolute minimum will significantly decrease the diagram generation times.
+For small projects, the `glob` property can be omitted, which will result in
+`clang-uml` parsing all translation units from `compile_commands.json` for
+the diagram. However, for large projects, constraining the number of translation
+units for each diagram to minimum necessary to discover all necessary diagram
+elements will significantly decrease the diagram generation times.
 
 ## Custom directives
 In case it's necessary to add some custom PlantUML or MermaidJS declarations
@@ -122,13 +131,13 @@ the generated PlantUML diagram will contain comments before each line containing
 the source location of the specific diagram element.
 
 ## Resolving include path and compiler flags issues
-Due to the fact, that your project can be compiled with different compilers
+Due to the fact, that a project can be compiled with different compilers
 and toolchains, the system paths and compilation flags detected by the Clang
 version linked to your `clang-uml` installation might differ from the ones
 actually used to compile your project.
 
 > This is often an issue on macOS, when `clang-uml` uses Homebrew version of LLVM
-> and your project was built using system Apple Clang
+> and a project was built using system Apple Clang.
 
 Typically, this results in error messages on the console during diagram
 generation, such as:

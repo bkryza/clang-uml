@@ -131,6 +131,13 @@ public:
         const common::model::namespace_ &ns) const override;
 
     inja::json context() const override;
+
+    /**
+     * @brief Check whether the diagram is empty
+     *
+     * @return True, if diagram is empty
+     */
+    bool is_empty() const override;
 };
 
 template <typename ElementT>

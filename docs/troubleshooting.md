@@ -3,7 +3,7 @@
 <!-- toc -->
 
 * [General issues](#general-issues)
-  * [clang-uml crashes when generating diagram](#clang-uml-crashes-when-generating-diagram)
+  * [clang-uml crashes when generating a diagram](#clang-uml-crashes-when-generating-a-diagram)
   * [Diagram generation is very slow](#diagram-generation-is-very-slow)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
   * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
@@ -22,7 +22,7 @@
 
 ## General issues
 
-### clang-uml crashes when generating diagram
+### clang-uml crashes when generating a diagram
 
 If `clang-uml` crashes with a segmentation fault, it is possible to trace the
 exact stack trace of the fault using the following steps:
@@ -346,7 +346,7 @@ the exact string representation of the function signature as seen by `clang-uml`
 To find the exact function signature run `clang-uml` as follows:
 
 ```bash
-clang-uml -n my_sequence_diagram --print-start-from | grep foo
+clang-uml -n my_sequence_diagram --print-from | grep foo
 ```
 
 Command line flag `--print-from` will print on stdout all functions

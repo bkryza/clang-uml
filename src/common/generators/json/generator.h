@@ -107,11 +107,19 @@ std::ostream &operator<<(
 template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
 {
+    const auto &config = generators::generator<C, D>::config();
+    const auto &model = generators::generator<C, D>::model();
+
+    if (!config.allow_empty_diagrams() && model.is_empty()) {
+        throw clanguml::error::empty_diagram_error{
+            "Diagram configuration resulted in empty diagram."};
+    }
+
     nlohmann::json j;
-    j["name"] = generators::generator<C, D>::model().name();
-    j["diagram_type"] = to_string(generators::generator<C, D>::model().type());
-    if (generators::generator<C, D>::config().title) {
-        j["title"] = generators::generator<C, D>::config().title();
+    j["name"] = model.name();
+    j["diagram_type"] = to_string(model.type());
+    if (config.title) {
+        j["title"] = config.title();
     }
 
     generate_diagram(j);

@@ -165,6 +165,7 @@ public:
     bool list_diagrams{false};
     bool quiet{false};
     bool initialize{false};
+    bool allow_empty_diagrams{false};
     std::optional<std::vector<std::string>> add_compile_flag;
     std::optional<std::vector<std::string>> remove_compile_flag;
 #if !defined(_WIN32)

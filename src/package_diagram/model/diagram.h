@@ -157,6 +157,13 @@ public:
      */
     inja::json context() const override;
 
+    /**
+     * @brief Check whether the diagram is empty
+     *
+     * @return True, if diagram is empty
+     */
+    bool is_empty() const override;
+
 private:
     /**
      * @brief Add element using module as diagram path

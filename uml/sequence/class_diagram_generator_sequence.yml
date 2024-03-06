@@ -2,10 +2,18 @@ type: sequence
 title: PlantUML diagram generator sequence diagram
 glob:
   - src/class_diagram/generators/plantuml/*.cc
+generate_condition_statements: true
+generate_message_comments: true
 include:
   namespaces:
     - clanguml
 using_namespace:
   - clanguml::class_diagram::generators::plantuml
+exclude:
+  elements:
+    - r: "clanguml::config::option.*"
+    - r: "clanguml::common::optional_ref.*"
+  namespaces:
+    - clanguml::util
 from:
   - function: "clanguml::common::generators::plantuml::generator<clanguml::config::class_diagram,clanguml::class_diagram::model::diagram>::generate(std::ostream &) const"

@@ -1,5 +1,16 @@
 # CHANGELOG
 
+### 0.5.1
+
+ * Fixed elements filter in sequence diagrams (#248)
+ * Fixed progress indicators ranges with multiple commands per TU (#240)
+ * Added default diagram generation error for empty diagrams (#246)
+ * Added style option to plantuml config section (#238)
+ * Added generate_concept_requirements config option (#237)
+ * Refactored util pipe handling (#244)
+ * Fixed handling of variadic template parameters in sequence diagrams (#241)
+ * Fixed handling of query_driver option in config file (#243)
+
 ### 0.5.0
  * Fixed static linking against LLVM (#225)
  * Fixed handling of absolute paths in glob patterns (#233)

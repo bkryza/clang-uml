@@ -13,5 +13,9 @@ include:
 exclude:
   relationships:
     - dependency
+  access:
+    - public
+    - protected
+    - private
 using_namespace:
   - clanguml

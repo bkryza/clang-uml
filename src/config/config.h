@@ -577,6 +577,7 @@ struct inheritable_diagram_options {
         "message_comment_width", clanguml::util::kDefaultMessageCommentWidth};
     option<bool> debug_mode{"debug_mode", false};
     option<bool> generate_metadata{"generate_metadata", true};
+    option<bool> allow_empty_diagrams{"allow_empty_diagrams", false};
 
 protected:
     // This is the relative path with respect to the `base_directory`,

@@ -13,5 +13,7 @@ exclude:
   access: [ public, protected, private ]
   relationships: [ dependency ]
 plantuml:
+  style:
+    inheritance: up
   before:
-    - title clang-uml top level architecture - AST visitors
+    - left to right direction

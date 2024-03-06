@@ -90,8 +90,10 @@ type of relationship generated in the class diagrams.
 
 
 By default, a member from which a relationship has been added to the diagram
-between 2 classes will also be rendered inside the class. This behaviour can be
-however disabled by adding the following option to the diagram definition:
+between 2 classes will also be rendered inside as a property inside the class
+box. This behaviour can be however disabled by adding the following option to
+the diagram definition:
+
 ```yaml
 include_relations_also_as_members: false
 ```
@@ -158,7 +160,7 @@ which results in the following diagram:
 ![t00036_class](test_cases/t00036_class.svg)
 
 ### Directory packages
-In case the code base is structured based on subdirectory instead of namespaces
+In case the code base is structured based on subdirectories instead of namespaces
 (or this is a C project, where namespaces are not available), packages can be
 generated based on the location of a given declaration in the filesystem tree,
 by adding also the following option:
@@ -175,8 +177,10 @@ which results in the following diagram:
 > properly configured for your project, if necessary add `relative_to` option to
 > denote the root path against which all relative paths in the config file are
 > calculated.
+
  
 ### Module packages
+
 Finally, to generate UML packages in the diagram based on C++20 modules, use
 the following option:
 
@@ -213,7 +217,7 @@ this can be easily achieved using `context` inclusion filter:
 ```
 
 By default, the diagram will include only elements in direct relationship to
-`ns1::MyClass`, but an addition option called `radius` can be added to this
+`ns1::MyClass`, but an additional option called `radius` can be added to this
 filter, which will extend the context to elements related to `ns1::MyClass`
 through at most N relationships, e.g:
 

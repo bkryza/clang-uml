@@ -40,7 +40,7 @@ to your diagram configuration:
 ```
 
 Some filters accept either specified exact values, some support regular
-expressions while some except glob patterns.
+expressions while some accept glob patterns.
 
 For filters which accept regular expressions, the regular expression has to
 be provided as a map ```r: 'pattern'``` due to the fact the pointer (```*```) otherwise
@@ -54,8 +54,6 @@ exclude:
     - r: '.*test.*'
 ```
 
-`paths` filter is currently the only filter which accepts `glob` like patterns.
-
 The following table specifies the values allowed in each filter:
 
 | Filter name       | Possible values                   | Example values                                                                                                                                          |
@@ -64,7 +62,7 @@ The following table specifies the values allowed in each filter:
 | `modules`         | Qualified name or regex           | ```mod1.mod2:par1```, ```r: '.*impl.*'```                                                                                                               |
 | `elements`        | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: '.*detail.*'```                                                                                                           |
 | `element_types`   | Types of diagram elements         | ```class```, ```enum```, ```concept```                                                                                                                  |
-| `paths`           | File or dir path or glob pattern  | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                                              |
+| `paths`           | File or dir path                  | ```src/dir1```, ```src/dir2/a.cpp```, ```src/dir3/*.cpp```                                                                                              |
 | `context`         | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
 | `relationships`   | Type of relationship              | ```inheritance```, ```composition```, ```aggregation```, ```ownership```, ```association```, ```instantiation```, ```friendship```, ```dependency```    |
 | `subclasses`      | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |

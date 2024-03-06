@@ -1,0 +1,28 @@
+type: sequence
+title: PlantUML sequence diagram generator sequence diagram
+combine_free_functions_into_file_participants: true
+generate_method_arguments: none
+generate_condition_statements: true
+generate_message_comments: true
+glob:
+  - src/sequence_diagram/generators/plantuml/sequence_diagram_generator.cc
+using_namespace:
+  - clanguml
+include:
+  namespaces:
+    - clanguml
+  elements:
+    - r: ".*generators.*"
+exclude:
+  elements:
+    - r: ".*json.*"
+    - r: ".*mermaid.*"
+    - r: ".*class_diagram.*"
+    - r: ".*package_diagram.*"
+    - r: ".*include_diagram.*"
+    - r: "clanguml::config::option.*"
+    - r: "clanguml::common::optional_ref.*"
+  paths:
+    - src/common/model/source_location.h
+from:
+  - function: "clanguml::sequence_diagram::generators::plantuml::generator::generate_diagram(std::ostream &) const"

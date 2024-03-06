@@ -73,6 +73,8 @@ inja::json diagram::context() const
 
     return ctx;
 }
+
+bool diagram::is_empty() const { return element_view<package>::is_empty(); }
 } // namespace clanguml::package_diagram::model
 
 namespace clanguml::common::model {

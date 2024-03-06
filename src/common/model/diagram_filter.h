@@ -180,6 +180,9 @@ struct element_filter : public filter_visitor {
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
+
 private:
     std::vector<common::string_or_regex> elements_;
 };
