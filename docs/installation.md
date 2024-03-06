@@ -173,12 +173,11 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.5.0
+clang-uml 0.5.1
 Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>
-Linux x86_64 6.2.0-36-generic
-Built against LLVM/Clang libraries version: 17.0.3
-Using LLVM/Clang libraries version: Ubuntu clang version 17.0.3 (++20231010073202+37b79e779f44-1~exp1~20231010073304.52)
-
+Linux x86_64 6.5.0-21-generic
+Built against LLVM/Clang libraries version: 17.0.6
+Using LLVM/Clang libraries version: Ubuntu clang version 17.0.6
 ```
 
 Finally, remove the temporary build directory:

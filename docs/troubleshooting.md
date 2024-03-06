@@ -3,7 +3,7 @@
 <!-- toc -->
 
 * [General issues](#general-issues)
-  * [clang-uml crashes when generating diagram](#clang-uml-crashes-when-generating-diagram)
+  * [clang-uml crashes when generating a diagram](#clang-uml-crashes-when-generating-a-diagram)
   * [Diagram generation is very slow](#diagram-generation-is-very-slow)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
   * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
