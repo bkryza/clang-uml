@@ -1,5 +1,6 @@
 # CHANGELOG
  
+ * Fixed elements filter in sequence diagrams (#248)
  * Fixed progress indicators ranges with multiple commands per TU (#240)
  * Added default diagram generation error for empty diagrams (#246)
  * Added style option to plantuml config section (#238)
