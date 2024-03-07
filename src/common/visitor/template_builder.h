@@ -217,6 +217,21 @@ public:
     template_parameter process_integral_argument(
         const clang::TemplateArgument &arg);
 
+#if LLVM_VERSION_MAJOR > 17
+    /**
+     * @brief Process `clang::TemplateArgument::StructuralValue`
+     *
+     * @note The template argument is a non-type template argument that can't be
+     *       represented by the special-case Declaration, NullPtr, or Integral
+     *       forms.
+     *
+     * @param arg Template argument
+     * @return Return template argument model
+     */
+    template_parameter process_structural_argument(
+        const clang::TemplateArgument &arg);
+#endif
+
     /**
      * @brief Process `clang::TemplateArgument::NullPtr`
      *
@@ -1041,6 +1056,10 @@ void template_builder<VisitorT>::argument_process_dispatch(
             argument.push_back(a);
         }
         break;
+#if LLVM_VERSION_MAJOR > 17
+    case clang::TemplateArgument::StructuralValue:
+        break;
+#endif
     }
 }
 
@@ -1212,6 +1231,21 @@ template_parameter template_builder<VisitorT>::process_integral_argument(
 
     return template_parameter::make_argument(result);
 }
+
+#if LLVM_VERSION_MAJOR > 17
+template <typename VisitorT>
+template_parameter template_builder<VisitorT>::process_structural_argument(
+    const clang::TemplateArgument &arg)
+{
+    assert(arg.getKind() == clang::TemplateArgument::StructuralValue);
+
+    std::string result;
+    llvm::raw_string_ostream ostream(result);
+    arg.dump(ostream);
+
+    return template_parameter::make_argument(result);
+}
+#endif
 
 template <typename VisitorT>
 template_parameter template_builder<VisitorT>::process_null_argument(

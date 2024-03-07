@@ -18,6 +18,14 @@
 
 #include "clang_visitor.h"
 
+#if LLVM_VERSION_MAJOR > 17
+#define CLANG_UML_LLVM_COMMENT_KIND(COMMENT_KIND)                              \
+    clang::comments::CommentKind::COMMENT_KIND
+#else
+#define CLANG_UML_LLVM_COMMENT_KIND(COMMENT_KIND)                              \
+    clang::comments::Comment::COMMENT_KIND##Kind
+#endif
+
 namespace clanguml::common::visitor::comment {
 
 clang_visitor::clang_visitor(clang::SourceManager &source_manager)
@@ -45,7 +53,6 @@ void clang_visitor::visit(
     cmt["formatted"] = formatted_comment;
 
     using clang::comments::BlockCommandComment;
-    using clang::comments::Comment;
     using clang::comments::FullComment;
     using clang::comments::ParagraphComment;
     using clang::comments::ParamCommandComment;
@@ -59,7 +66,7 @@ void clang_visitor::visit(
 
     for (const auto *block : full_comment->getBlocks()) {
         const auto block_kind = block->getCommentKind();
-        if (block_kind == Comment::ParagraphCommentKind) {
+        if (block_kind == CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
             std::string paragraph_text;
 
             visit_paragraph(clang::dyn_cast<ParagraphComment>(block), traits,
@@ -75,18 +82,21 @@ void clang_visitor::visit(
 
             cmt["paragraph"].push_back(paragraph_text);
         }
-        else if (block_kind == Comment::TextCommentKind) {
+        else if (block_kind == CLANG_UML_LLVM_COMMENT_KIND(TextComment)) {
             // TODO
         }
-        else if (block_kind == Comment::ParamCommandCommentKind) {
+        else if (block_kind ==
+            CLANG_UML_LLVM_COMMENT_KIND(ParamCommandComment)) {
             visit_param_command(
                 clang::dyn_cast<ParamCommandComment>(block), traits, cmt);
         }
-        else if (block_kind == Comment::TParamCommandCommentKind) {
+        else if (block_kind ==
+            CLANG_UML_LLVM_COMMENT_KIND(TParamCommandComment)) {
             visit_tparam_command(
                 clang::dyn_cast<TParamCommandComment>(block), traits, cmt);
         }
-        else if (block_kind == Comment::BlockCommandCommentKind) {
+        else if (block_kind ==
+            CLANG_UML_LLVM_COMMENT_KIND(BlockCommandComment)) {
             if (const auto *command =
                     clang::dyn_cast<BlockCommandComment>(block);
                 command != nullptr) {
@@ -135,7 +145,7 @@ void clang_visitor::visit_block_command(
          paragraph_it != command->child_end(); ++paragraph_it) {
 
         if ((*paragraph_it)->getCommentKind() ==
-            Comment::ParagraphCommentKind) {
+            CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
             visit_paragraph(clang::dyn_cast<ParagraphComment>(*paragraph_it),
                 traits, command_text);
         }
@@ -168,7 +178,8 @@ void clang_visitor::visit_param_command(
     for (const auto *it = command->child_begin(); it != command->child_end();
          ++it) {
 
-        if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
+        if ((*it)->getCommentKind() ==
+            CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
             visit_paragraph(
                 clang::dyn_cast<ParagraphComment>(*it), traits, description);
         }
@@ -202,7 +213,8 @@ void clang_visitor::visit_tparam_command(
 
     for (const auto *it = command->child_begin(); it != command->child_end();
          ++it) {
-        if ((*it)->getCommentKind() == Comment::ParagraphCommentKind) {
+        if ((*it)->getCommentKind() ==
+            CLANG_UML_LLVM_COMMENT_KIND(ParagraphComment)) {
             visit_paragraph(
                 clang::dyn_cast<ParagraphComment>(*it), traits, description);
         }
@@ -232,7 +244,8 @@ void clang_visitor::visit_paragraph(
     for (const auto *text_it = paragraph->child_begin();
          text_it != paragraph->child_end(); ++text_it) {
 
-        if ((*text_it)->getCommentKind() == Comment::TextCommentKind &&
+        if ((*text_it)->getCommentKind() ==
+                CLANG_UML_LLVM_COMMENT_KIND(TextComment) &&
             clang::dyn_cast<TextComment>(*text_it) != nullptr) {
             // Merge paragraph lines into a single string
             text += clang::dyn_cast<TextComment>(*text_it)->getText();

@@ -1,5 +1,9 @@
 message(STATUS "Checking for LLVM and Clang...")
 
+if(LLVM_VERSION STREQUAL "18")
+    set(LLVM_VERSION "18.1")
+endif()
+
 # If user provided a path to llvm-config executable use it to detect
 # LLVM Version and appropriate CMake module path
 if(NOT "${LLVM_CONFIG_PATH}" STREQUAL "")

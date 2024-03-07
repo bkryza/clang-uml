@@ -7,6 +7,7 @@
   * [Diagram generation is very slow](#diagram-generation-is-very-slow)
   * [Diagram generated with PlantUML is cropped](#diagram-generated-with-plantuml-is-cropped)
   * [Clang produces several warnings during diagram generation](#clang-produces-several-warnings-during-diagram-generation)
+  * [Errors with C++20 modules and LLVM 18](#errors-with-c20-modules-and-llvm-18)
   * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
   * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
@@ -142,6 +143,21 @@ add_compile_flags:
 remove_compile_flags:
   - -Wshadow
 ```
+
+### Errors with C++20 modules and LLVM 18
+
+When running `clang-uml` on code using C++20 modules, the LLVM version used to
+build the project must be compatible with the LLVM version linked to
+`clang-uml`, otherwise you'll get error like this:
+```
+fatal error: malformed or corrupted AST file: 'malformed block record in AST file'
+```
+or like this:
+```
+error: PCH file uses an older PCH format that is no longer supported
+```
+
+In particular versions 17 and 18 of LLVM are not compatible in this regard.
 
 ### Cannot generate diagrams from header-only projects
 
