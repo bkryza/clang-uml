@@ -1280,7 +1280,11 @@ void translation_unit_visitor::process_method_properties(
     const bool is_constructor = c.name() == method_name;
     const bool is_destructor = fmt::format("~{}", c.name()) == method_name;
 
+#if LLVM_VERSION_MAJOR > 17
+    method.is_pure_virtual(mf.isPureVirtual());
+#else
     method.is_pure_virtual(mf.isPure());
+#endif
     method.is_virtual(mf.isVirtual());
     method.is_const(mf.isConst());
     method.is_defaulted(mf.isDefaulted());

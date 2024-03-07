@@ -1,5 +1,7 @@
 # CHANGELOG
 
+ * Fixed building with LLVM 18 (#251)
+
 ### 0.5.1
 
  * Fixed elements filter in sequence diagrams (#248)
