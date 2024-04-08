@@ -33,6 +33,9 @@ coverage*.info
 packaging/_BUILD
 packaging/conda/meta.yaml
 
+#nix
+.direnv/
+
 # CLion
 
 .idea/

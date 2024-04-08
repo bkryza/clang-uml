@@ -53,6 +53,17 @@ conda config --set channel_priority strict
 conda install -c bkryza/label/clang-uml clang-uml
 ```
 
+#### nix
+
+```bash
+nix build
+```
+
+Or if you have flake enabled, you can also run
+```bash
+nix run github:/bkryza/clang-uml
+```
+
 #### Windows
 
 Download and run the latest Windows installer from
