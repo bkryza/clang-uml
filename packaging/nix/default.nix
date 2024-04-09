@@ -1,34 +1,30 @@
-{ pkgs ? import <nixpkgs> {} }:
-
-
-# Nix derivation for basic C++ project using clang
-with pkgs; stdenv.mkDerivation {
+{
+  stdenv,
+  cmake,
+  pkg-config,
+  installShellFiles,
+  libclang,
+  libllvm,
+  yaml-cpp,
+}:
+stdenv.mkDerivation {
   name = "clang-uml";
   src = ../..;
 
-  buildInputs = [
-    clang
-    libclang
+  nativeBuildInputs = [
     cmake
-    llvmPackages_latest.libllvm
-    yaml-cpp
-    ccache
-    elfutils
     pkg-config
+    installShellFiles
   ];
 
-  dontUseCmakeConfigure = true;
+  buildInputs = [
+    libclang
+    libllvm
+    yaml-cpp
+  ];
 
-  buildPhase = "CCACHE_DIR=/build/.ccache make release";
-
-  installPhase = ''
-    mkdir -p $out/bin
-    cp release/src/clang-uml $out/bin/clang-uml
+  postInstall = ''
+    installShellCompletion --bash $src/packaging/autocomplete/clang-uml
+    installShellCompletion --zsh $src/packaging/autocomplete/_clang-uml
   '';
-
-  postInstall = "
-    installShellCompletion --cmd clang-uml \
-      --zsh packaging/autocomplete/_clang-uml
-      --bach packaging/autocomplete/clang-uml
-  ";
 }
