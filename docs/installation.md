@@ -61,7 +61,7 @@ nix build
 
 Or if you have flake enabled, you can also run
 ```bash
-nix run github:/bkryza/clang-uml
+nix run github:bkryza/clang-uml
 ```
 
 #### Windows
