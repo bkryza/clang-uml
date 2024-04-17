@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Update package database
       run: sudo apt -y update
     - name: Install deps
@@ -48,8 +48,9 @@ jobs:
         lcov -e coverage.info "$PWD/src/*" -o coverage-src.info
         lcov -l coverage-src.info
     - name: Upload coverage
-      uses: codecov/codecov-action@v4.2.0
+      uses: codecov/codecov-action@v4
       with:
         files: coverage-src.info
         name: clang-uml
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
