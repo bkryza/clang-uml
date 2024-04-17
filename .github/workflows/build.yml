@@ -48,8 +48,8 @@ jobs:
         lcov -e coverage.info "$PWD/src/*" -o coverage-src.info
         lcov -l coverage-src.info
     - name: Upload coverage
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4.2.0
       with:
         files: coverage-src.info
         name: clang-uml
-        fail_ci_if_error: true
+        fail_ci_if_error: false
