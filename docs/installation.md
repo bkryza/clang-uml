@@ -57,10 +57,15 @@ conda install -c bkryza/label/clang-uml clang-uml
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
+
+# To build using nix flakes
+nix --extra-experimental-features 'nix-command flakes' build
+
+# or without nix flakes
 nix-build -E 'with import <nixpkgs> { }; callPackage ./packaging/nix { }'
 ```
 
-Or if you have flake enabled, you can also run
+Or if you have flake enabled, you can also directly run
 ```bash
 nix run github:bkryza/clang-uml
 ```
