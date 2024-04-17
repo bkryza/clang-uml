@@ -48,9 +48,10 @@ jobs:
         lcov -e coverage.info "$PWD/src/*" -o coverage-src.info
         lcov -l coverage-src.info
     - name: Upload coverage
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v3
       with:
         files: coverage-src.info
+        disable_search: true
         name: clang-uml
         token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: false
