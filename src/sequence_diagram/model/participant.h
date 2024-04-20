@@ -190,12 +190,17 @@ public:
      */
     void is_lambda(bool is_lambda);
 
+    void set_lambda_operator_id(common::id_t id) { lambda_operator_id_ = id; }
+
+    common::id_t lambda_operator_id() const { return lambda_operator_id_; }
+
 private:
     bool is_struct_{false};
     bool is_template_{false};
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_lambda_{false};
+    common::id_t lambda_operator_id_{0};
 
     std::string full_name_;
 };
@@ -406,7 +411,7 @@ struct method : public function {
      *
      * @return Fully qualified elements name.
      */
-    std::string full_name(bool /*relative*/) const override;
+    std::string full_name(bool relative) const override;
 
     std::string message_name(message_render_mode mode) const override;
 

@@ -112,11 +112,15 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
+
     // Add return activity only for messages between different actors and
     // only if the return type is different than void
+    if (m.from() == m.to())
+        return;
+
     const auto &from = model().get_participant<model::participant>(m.from());
     const auto &to = model().get_participant<model::function>(m.to());
-    if ((m.from() != m.to()) && !to.value().is_void()) {
+    if (to.has_value() && !to.value().is_void()) {
         const std::string from_alias = generate_alias(from.value());
 
         const std::string to_alias = generate_alias(to.value());

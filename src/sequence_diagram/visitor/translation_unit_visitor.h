@@ -95,6 +95,8 @@ public:
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
+    bool TraverseCXXMethodDecl(clang::CXXMethodDecl *declaration);
+
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
@@ -103,6 +105,8 @@ public:
 
     bool VisitClassTemplateSpecializationDecl(
         clang::ClassTemplateSpecializationDecl *declaration);
+
+    bool TraverseFunctionDecl(clang::FunctionDecl *declaration);
 
     bool VisitFunctionDecl(clang::FunctionDecl *declaration);
 
@@ -337,6 +341,21 @@ private:
     std::string make_lambda_name(const clang::CXXRecordDecl *cls) const;
 
     /**
+     * @brief Render lambda source location to string
+     *
+     * Returns exact source code location of the lambda expression in the form
+     * <filepath>:<line>:<column>.
+     *
+     * The filepath is relative to the `relative_to` config option.
+     *
+     * @param source_location Clang SourceLocation instance associated with
+     *                        lambda expression
+     * @return String representation of the location
+     */
+    std::string lambda_source_location(
+        const clang::SourceLocation &source_location) const;
+
+    /**
      * @brief Check if template is a smart pointer
      *
      * @param primary_template Template declaration
@@ -440,6 +459,15 @@ private:
     std::optional<std::string> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
         int64_t caller_id, const clang::Stmt *stmt);
+
+    /**
+     * @brief Initializes model message from comment call directive
+     *
+     * @param m Message instance
+     * @return True, if the comment associated with the call expression
+     *         contained a call directive and it was parsed correctly.
+     */
+    bool generate_message_from_comment(model::message &m) const;
 
     /**
      * @brief Get template builder reference
