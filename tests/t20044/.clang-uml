@@ -5,6 +5,8 @@ diagrams:
     type: sequence
     glob:
       - t20044.cc
+    type_aliases:
+      "detail::expected<int,error>": result_t
     generate_message_comments: true
     include:
       namespaces:

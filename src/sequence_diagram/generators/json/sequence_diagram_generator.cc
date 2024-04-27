@@ -99,6 +99,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         }
     }
 
+    message = config().simplify_template_type(message);
+
     nlohmann::json msg;
 
     msg["name"] = message;

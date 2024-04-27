@@ -128,6 +128,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         }
     }
 
+    message = config().simplify_template_type(message);
+
     const std::string from_alias = generate_alias(from.value());
     const std::string to_alias = generate_alias(to.value());
 
