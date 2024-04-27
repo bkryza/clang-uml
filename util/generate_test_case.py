@@ -26,62 +26,63 @@ TEST_CASE_MULTIPLIER = 10000
 
 CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if all classes exist
-    //REQUIRE_THAT(puml, IsClass(_A("A")));
+    //REQUIRE_THAT(src, IsClass(_A("A")));
     
     // Check if class templates exist
-    //REQUIRE_THAT(puml, IsClassTemplate("A", "T,P,CMP,int N"));
+    //REQUIRE_THAT(src, IsClassTemplate("A", "T,P,CMP,int N"));
     
     // Check concepts
-    //REQUIRE_THAT(puml, IsConcept(_A("AConcept<T>")));
-    //REQUIRE_THAT(puml,
+    //REQUIRE_THAT(src, IsConcept(_A("AConcept<T>")));
+    //REQUIRE_THAT(src,
     //    IsConceptRequirement(
     //        _A("AConcept<T,P>"), "sizeof (T) > sizeof (P)"));
 
     // Check if all enums exist
-    //REQUIRE_THAT(puml, IsEnum(_A("Lights")));
+    //REQUIRE_THAT(src, IsEnum(_A("Lights")));
     
     // Check if all inner classes exist
-    //REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("AA")));
+    //REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("AA")));
 
     // Check if all inheritance relationships exist
-    //REQUIRE_THAT(puml, IsBaseClass(_A("Base"), _A("Child")));
+    //REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Child")));
     
     // Check if all methods exist
-    //REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
+    //REQUIRE_THAT(src, (IsMethod<Public, Const>("foo")));
     
     // Check if all fields exist
-    //REQUIRE_THAT(puml, (IsField<Private>("private_member", "int")));
+    //REQUIRE_THAT(src, (IsField<Private>("private_member", "int")));
     
     // Check if all relationships exist
-    //REQUIRE_THAT(puml, IsAssociation(_A("D"), _A("A"), "-as"));
-    //REQUIRE_THAT(puml, IsDependency(_A("R"), _A("B")));
-    //REQUIRE_THAT(puml, IsAggregation(_A("R"), _A("D"), "-ag"));
-    //REQUIRE_THAT(puml, IsComposition(_A("R"), _A("D"), "-ac"));
-    //REQUIRE_THAT(puml, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
+    //REQUIRE_THAT(src, IsAssociation(_A("D"), _A("A"), "-as"));
+    //REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
+    //REQUIRE_THAT(src, IsAggregation(_A("R"), _A("D"), "-ag"));
+    //REQUIRE_THAT(src, IsComposition(_A("R"), _A("D"), "-ac"));
+    //REQUIRE_THAT(src, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
 """
 
 SEQUENCE_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if all calls exist
-    //REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("A"), "a()"));
-    //REQUIRE_THAT(puml, HasCall(_A("A"), "a()"));
+    //REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
+    //REQUIRE_THAT(src, HasCall(_A("A"), "a()"));
 """
 
 PACKAGE_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check if all packages exist
-    //REQUIRE_THAT(puml, IsPackage("ns1"));
+    //REQUIRE_THAT(src, IsPackage("ns1"));
 """
 
 INCLUDE_DIAGRAM_TEST_CASE_EXAMPLES = """
     // Check all folders exist
-    //REQUIRE_THAT(puml, IsFolder("lib1"));
+    //REQUIRE_THAT(src, IsFolder("lib1"));
     
     // Check if all files exist
-    //REQUIRE_THAT(puml, IsFile("lib1.h"));
+    //REQUIRE_THAT(src, IsFile("lib1.h"));
     
     // Check if all includes exists
-    //REQUIRE_THAT(puml, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
-    //REQUIRE_THAT(puml, IsDependency(_A("t40001_include1.h"), _A("string")));
+    //REQUIRE_THAT(src, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
+    //REQUIRE_THAT(src, IsDependency(_A("t40001_include1.h"), _A("string")));
 """
+
 
 def test_case_already_exists(name):
     return os.path.isdir(os.path.join(os.path.dirname(__file__), '..', name))

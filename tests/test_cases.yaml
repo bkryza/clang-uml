@@ -352,6 +352,15 @@ test_cases:
     - name: t20043
       title: Test case for elements diagram filter in sequence diagrams
       description:
+    - name: t20044
+      title: Test case for template method call expressions with callables
+      description:
+    - name: t20045
+      title: Test case for template function call expressions with callables
+      description:
+    - name: t20046
+      title: Test case for call expressions in nested lambdas
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

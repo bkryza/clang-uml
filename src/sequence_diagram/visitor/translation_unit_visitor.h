@@ -436,6 +436,9 @@ private:
     bool process_unresolved_lookup_call_expression(
         model::message &m, const clang::CallExpr *expr) const;
 
+    bool process_lambda_call_expression(
+        model::message &m, const clang::CallExpr *expr) const;
+
     /**
      * @brief Register a message model `m` with a call expression
      *

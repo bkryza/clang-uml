@@ -400,7 +400,7 @@ struct AliasMatcher {
             }
         }
 
-        return "__INVALID__ALIAS__";
+        return fmt::format("__INVALID__ALIAS__({})", name);
     }
 
     const std::vector<std::string> puml;

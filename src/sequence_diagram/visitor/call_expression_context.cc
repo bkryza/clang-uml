@@ -132,6 +132,9 @@ void call_expression_context::update(
 
 std::int64_t call_expression_context::caller_id() const
 {
+    if (lambda_caller_id() != 0)
+        return lambda_caller_id();
+
     return current_caller_id_;
 }
 
