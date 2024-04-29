@@ -361,6 +361,9 @@ test_cases:
     - name: t20046
       title: Test case for call expressions in nested lambdas
       description:
+    - name: t20047
+      title: Test case for 'call' comment directive
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
