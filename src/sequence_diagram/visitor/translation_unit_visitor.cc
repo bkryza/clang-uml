@@ -1047,24 +1047,28 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     set_source_location(*expr, m);
 
-    process_comment(clanguml::common::get_expression_raw_comment(
-                        source_manager(), *context().get_ast_context(), expr),
-        context().get_ast_context()->getDiagnostics(), m);
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
 
     if (m.skip())
         return true;
 
     auto generated_message_from_comment = generate_message_from_comment(m);
 
-    if (!generated_message_from_comment && !should_include(expr))
+    if (!generated_message_from_comment && !should_include(expr)) {
+        processed_comments().erase(raw_expr_comment);
         return true;
+    }
 
     if (context().is_expr_in_current_control_statement_condition(expr)) {
         m.set_message_scope(common::model::message_scope_t::kCondition);
     }
 
     if (generated_message_from_comment) {
-        // Do nothing
+        LOG_DBG(
+            "Message for this call expression is taken from comment directive");
     }
     //
     // Call to an overloaded operator
@@ -1148,11 +1152,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     // Add message to diagram
     if (m.from() > 0 && m.to() > 0) {
-        if (!generated_message_from_comment) {
-            auto expr_comment = get_expression_comment(source_manager(),
-                *context().get_ast_context(), context().caller_id(), expr);
-            m.set_comment(expr_comment);
-        }
+        m.set_comment(stripped_comment);
 
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {
@@ -2167,10 +2167,17 @@ std::optional<std::string> translation_unit_visitor::get_expression_comment(
     if (raw_comment == nullptr)
         return {};
 
-    if (!processed_comments_.emplace(caller_id, raw_comment).second) {
+    if (!processed_comments_by_caller_id_.emplace(caller_id, raw_comment)
+             .second) {
         return {};
     }
 
-    return raw_comment->getFormattedText(sm, sm.getDiagnostics());
+    const auto &[decorators, stripped_comment] = decorators::parse(
+        raw_comment->getFormattedText(sm, sm.getDiagnostics()));
+
+    if (stripped_comment.empty())
+        return {};
+
+    return stripped_comment;
 }
 } // namespace clanguml::sequence_diagram::visitor

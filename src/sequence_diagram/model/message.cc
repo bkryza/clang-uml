@@ -59,7 +59,11 @@ const std::string &message::return_type() const { return return_type_; }
 
 const std::optional<std::string> &message::comment() const { return comment_; }
 
-void message::set_comment(std::string c) { comment_ = std::move(c); }
+void message::set_comment(std::string c)
+{
+    if (!c.empty())
+        comment_ = std::move(c);
+}
 
 void message::set_comment(const std::optional<std::string> &c)
 {

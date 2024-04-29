@@ -156,9 +156,10 @@ struct call : public decorator {
  *
  * @param documentation_block Documentation block extracted from source code
  * @param clanguml_tag Name of the clanguml tag (default `uml`)
- * @return List of clang-uml decorators extracted from comment
+ * @return Pair of: a list of clang-uml decorators extracted from comment and
+ *                  a comment stripped of any uml directives
  */
-std::vector<std::shared_ptr<decorator>> parse(
+std::pair<std::vector<std::shared_ptr<decorator>>, std::string> parse(
     std::string documentation_block, const std::string &clanguml_tag = "uml");
 
 } // namespace decorators

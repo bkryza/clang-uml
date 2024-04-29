@@ -511,7 +511,7 @@ private:
         already_visited_in_static_declaration_{};
 
     mutable std::set<std::pair<int64_t, const clang::RawComment *>>
-        processed_comments_;
+        processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
 };
