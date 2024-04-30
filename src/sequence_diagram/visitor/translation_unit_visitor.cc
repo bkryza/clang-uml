@@ -446,13 +446,8 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
     set_unique_id(cls->getID(), cls_id);
 
-    // Create lambda class operator() participant
     auto lambda_method_model_ptr =
-        std::make_unique<sequence_diagram::model::method>(
-            config().using_namespace());
-
-    const auto *method_name = "operator()";
-    lambda_method_model_ptr->set_method_name(method_name);
+        create_lambda_method_model(expr->getCallOperator());
 
     lambda_method_model_ptr->set_class_id(cls_id);
 
@@ -462,8 +457,9 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
     diagram().add_participant(std::move(lambda_class_model_ptr));
 
-    lambda_method_model_ptr->set_id(common::to_id(
-        get_participant(cls_id).value().full_name(false) + "::" + method_name));
+    lambda_method_model_ptr->set_id(
+        common::to_id(get_participant(cls_id).value().full_name(false) +
+            "::" + lambda_method_model_ptr->full_name_no_ns()));
 
     get_participant<model::class_>(cls_id).value().set_lambda_operator_id(
         lambda_method_model_ptr->id());
@@ -1992,7 +1988,8 @@ void translation_unit_visitor::finalize()
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::method>
-translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
+translation_unit_visitor::create_lambda_method_model(
+    clang::CXXMethodDecl *declaration)
 {
     auto method_model_ptr = std::make_unique<sequence_diagram::model::method>(
         config().using_namespace());
@@ -2009,6 +2006,44 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
         declaration->isMoveAssignmentOperator());
     method_model_ptr->is_const(declaration->isConst());
     method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_operator(declaration->isOverloadedOperator());
+    method_model_ptr->is_constructor(
+        clang::dyn_cast<clang::CXXConstructorDecl>(declaration) != nullptr);
+
+    method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
+
+    method_model_ptr->return_type(common::to_string(
+        declaration->getReturnType(), declaration->getASTContext()));
+
+    for (const auto *param : declaration->parameters()) {
+        auto parameter_type =
+            common::to_string(param->getType(), param->getASTContext());
+        common::ensure_lambda_type_is_relative(config(), parameter_type);
+        parameter_type = simplify_system_template(parameter_type);
+        method_model_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(parameter_type)));
+    }
+
+    return method_model_ptr;
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::method>
+translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
+{
+    auto method_model_ptr = std::make_unique<sequence_diagram::model::method>(
+        config().using_namespace());
+
+    common::model::namespace_ ns{declaration->getQualifiedNameAsString()};
+    auto method_name = ns.name();
+    method_model_ptr->set_method_name(method_name);
+    ns.pop_back();
+    method_model_ptr->set_name(ns.name());
+    ns.pop_back();
+
+    method_model_ptr->is_defaulted(declaration->isDefaulted());
+    method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
+        declaration->isMoveAssignmentOperator());
+    method_model_ptr->is_const(declaration->isConst());
     method_model_ptr->is_static(declaration->isStatic());
     method_model_ptr->is_operator(declaration->isOverloadedOperator());
     method_model_ptr->is_constructor(
@@ -2040,7 +2075,6 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
                                    .value()
                                    .full_name_no_ns() +
         "::" + declaration->getNameAsString());
-    method_model_ptr->is_static(declaration->isStatic());
 
     method_model_ptr->return_type(common::to_string(
         declaration->getReturnType(), declaration->getASTContext()));

@@ -45,7 +45,7 @@ TEST_CASE("t20048", "[test-case][sequence]")
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("tmain()::(lambda t20048.cc:26:11)"),
-                "operator()()"));
+                "operator()(auto &&) const"));
         REQUIRE_THAT(src,
             HasCall(
                 _A("tmain()::(lambda t20048.cc:26:11)"), _A("a4(int)"), ""));

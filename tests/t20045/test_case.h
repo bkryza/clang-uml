@@ -46,7 +46,8 @@ TEST_CASE("t20045", "[test-case][sequence]")
         REQUIRE_THAT(src,
             HasCall(_A("a1<(lambda at t20045.cc:35:18)>((lambda at "
                        "t20045.cc:35:18) &&)"),
-                _A("tmain()::(lambda t20045.cc:35:18)"), "operator()()"));
+                _A("tmain()::(lambda t20045.cc:35:18)"),
+                "operator()(auto &&) const"));
 
         REQUIRE_THAT(src,
             HasCall(

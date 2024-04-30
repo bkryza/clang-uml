@@ -314,6 +314,9 @@ private:
     std::unique_ptr<clanguml::sequence_diagram::model::method>
     create_method_model(clang::CXXMethodDecl *cls);
 
+    std::unique_ptr<clanguml::sequence_diagram::model::method>
+    create_lambda_method_model(clang::CXXMethodDecl *cls);
+
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
 

@@ -37,12 +37,12 @@ TEST_CASE("t20046", "[test-case][sequence]")
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("tmain()::(lambda t20046.cc:13:15)"),
-                "operator()()"));
+                "operator()(auto &&) const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20046.cc:13:15)"),
                 _A("tmain()::(lambda t20046.cc:13:15)::(lambda "
                    "t20046.cc:14:16)"),
-                "operator()()"));
+                "operator()(auto &&) const"));
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20046.cc:13:15)::(lambda "
@@ -59,13 +59,14 @@ TEST_CASE("t20046", "[test-case][sequence]")
             HasCall(
                 _A("a1<(lambda at t20046.cc:19:9)>((lambda at t20046.cc:19:9) "
                    "&&)"),
-                _A("tmain()::(lambda t20046.cc:19:9)"), "operator()()"));
+                _A("tmain()::(lambda t20046.cc:19:9)"),
+                "operator()(auto &&) const"));
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20046.cc:19:9)"),
                 _A("tmain()::(lambda t20046.cc:19:9)::(lambda "
                    "t20046.cc:19:34)"),
-                "operator()()"));
+                "operator()(auto &&) const"));
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20046.cc:19:9)::(lambda "

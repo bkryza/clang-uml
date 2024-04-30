@@ -37,7 +37,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
         // Check if all calls exist
         REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:67:20)"),
-                "operator()()"));
+                "operator()() const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("A"), "a()"));
         REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
@@ -54,7 +54,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:80:20)"),
-                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()()"));
+                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()() const"));
 
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
 
@@ -65,7 +65,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
             HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
         REQUIRE_THAT(src,
             HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
-                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()()"));
+                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()() const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
 
@@ -82,7 +82,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         std::vector<int> messages = {
             FindMessage(j, "tmain()", "tmain()::(lambda t20012.cc:67:20)",
-                "operator()()"),
+                "operator()() const"),
             FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "A", "a()"),
             FindMessage(j, "A", "A", "aa()"), FindMessage(j, "A", "A", "aaa()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "B", "b()"),
@@ -90,10 +90,10 @@ TEST_CASE("t20012", "[test-case][sequence]")
             FindMessage(j, "tmain()::(lambda t20012.cc:80:20)", "C", "c()"),
             FindMessage(j, "C", "C", "cc()"), FindMessage(j, "C", "C", "ccc()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:80:20)",
-                "tmain()::(lambda t20012.cc:67:20)", "operator()()"),
+                "tmain()::(lambda t20012.cc:67:20)", "operator()() const"),
             FindMessage(j, "tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"),
             FindMessage(j, "R<(lambda at t20012.cc:86:9)>",
-                "tmain()::(lambda t20012.cc:86:9)", "operator()()"),
+                "tmain()::(lambda t20012.cc:86:9)", "operator()() const"),
             FindMessage(j, "tmain()::(lambda t20012.cc:86:9)", "C", "c()"),
             // @todo #168
             // FindMessage(j, "tmain()", "D", "add5(int)")
@@ -112,7 +112,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         REQUIRE_THAT(src,
             HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:67:20)"),
-                "operator()()"));
+                "operator()() const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("A"), "a()"));
         REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
@@ -129,7 +129,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:80:20)"),
-                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()()"));
+                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()() const"));
 
         REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
 
@@ -137,7 +137,7 @@ TEST_CASE("t20012", "[test-case][sequence]")
             HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
         REQUIRE_THAT(src,
             HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
-                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()()"));
+                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()() const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
 
