@@ -514,14 +514,14 @@ bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
     if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
         return true;
 
-    LOG_DBG("Entering call expression at {}",
+    LOG_TRACE("Entering call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().enter_callexpr(expr);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
 
-    LOG_DBG("Leaving call expression at {}",
+    LOG_TRACE("Leaving call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
@@ -537,7 +537,7 @@ bool translation_unit_visitor::TraverseCXXMemberCallExpr(
     if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
         return true;
 
-    LOG_DBG("Entering member call expression at {}",
+    LOG_TRACE("Entering member call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().enter_callexpr(expr);
@@ -545,7 +545,7 @@ bool translation_unit_visitor::TraverseCXXMemberCallExpr(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXMemberCallExpr(
         expr);
 
-    LOG_DBG("Leaving member call expression at {}",
+    LOG_TRACE("Leaving member call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
@@ -591,7 +591,7 @@ bool translation_unit_visitor::TraverseCXXTemporaryObjectExpr(
 bool translation_unit_visitor::TraverseCXXConstructExpr(
     clang::CXXConstructExpr *expr)
 {
-    LOG_DBG("Entering cxx construct call expression at {}",
+    LOG_TRACE("Entering cxx construct call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().enter_callexpr(expr);
@@ -601,7 +601,7 @@ bool translation_unit_visitor::TraverseCXXConstructExpr(
 
     translation_unit_visitor::VisitCXXConstructExpr(expr);
 
-    LOG_DBG("Leaving member call expression at {}",
+    LOG_TRACE("Leaving member call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
@@ -1918,7 +1918,12 @@ void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
     auto msg = std::move(call_expr_message_map_.at(expr));
 
     auto caller_id = msg.from();
-    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    if (caller_id == 0)
+        return;
+
+    if (diagram().has_activity(caller_id))
+        diagram().get_activity(caller_id).add_message(std::move(msg));
 
     call_expr_message_map_.erase(expr);
 }

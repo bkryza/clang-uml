@@ -69,8 +69,12 @@ TEST_CASE("t20012", "[test-case][sequence]")
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
 
-        // @todo #168
-        // REQUIRE_THAT(puml, HasCall(_A("tmain()"), _A("D"), "add5(int)"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:94:9)"),
+                "operator()(auto) const"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda t20012.cc:94:9)"), _A("D"),
+                "add5(int) const"));
 
         save_puml(config.output_directory(), diagram->name + ".puml", src);
     }
@@ -84,19 +88,20 @@ TEST_CASE("t20012", "[test-case][sequence]")
             FindMessage(j, "tmain()", "tmain()::(lambda t20012.cc:67:20)",
                 "operator()() const"),
             FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "A", "a()"),
-            FindMessage(j, "A", "A", "aa()"), FindMessage(j, "A", "A", "aaa()"),
+            FindMessage(j, "A", "A", "aa()"),
+            FindMessage(j, "A", "A", "aaa()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "B", "b()"),
-            FindMessage(j, "B", "B", "bb()"), FindMessage(j, "B", "B", "bbb()"),
+            FindMessage(j, "B", "B", "bb()"),
+            FindMessage(j, "B", "B", "bbb()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:80:20)", "C", "c()"),
-            FindMessage(j, "C", "C", "cc()"), FindMessage(j, "C", "C", "ccc()"),
+            FindMessage(j, "C", "C", "cc()"),
+            FindMessage(j, "C", "C", "ccc()"),
             FindMessage(j, "tmain()::(lambda t20012.cc:80:20)",
                 "tmain()::(lambda t20012.cc:67:20)", "operator()() const"),
             FindMessage(j, "tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"),
             FindMessage(j, "R<(lambda at t20012.cc:86:9)>",
                 "tmain()::(lambda t20012.cc:86:9)", "operator()() const"),
             FindMessage(j, "tmain()::(lambda t20012.cc:86:9)", "C", "c()"),
-            // @todo #168
-            // FindMessage(j, "tmain()", "D", "add5(int)")
         };
 
         REQUIRE(std::is_sorted(messages.begin(), messages.end()));
@@ -140,6 +145,13 @@ TEST_CASE("t20012", "[test-case][sequence]")
                 _A("tmain()::(lambda t20012.cc:86:9)"), "operator()() const"));
         REQUIRE_THAT(src,
             HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
+
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:94:9)"),
+                "operator()(auto) const"));
+        REQUIRE_THAT(src,
+            HasCall(_A("tmain()::(lambda t20012.cc:94:9)"), _A("D"),
+                "add5(int) const"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
