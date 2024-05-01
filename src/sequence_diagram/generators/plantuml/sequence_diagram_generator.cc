@@ -69,12 +69,22 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     }
     else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
-            message = dynamic_cast<const model::function &>(to.value())
-                          .message_name(render_mode);
+            const auto &f = dynamic_cast<const model::function &>(to.value());
+            message = f.message_name(render_mode);
+
+            if (f.is_cuda_kernel())
+                message = fmt::format("<< CUDA Kernel >>\\n{}", message);
+            else if (f.is_cuda_device())
+                message = fmt::format("<< CUDA Device >>\\n{}", message);
         }
         else if (to.value().type_name() == "function_template") {
-            message = dynamic_cast<const model::function_template &>(to.value())
-                          .message_name(render_mode);
+            const auto &f = dynamic_cast<const model::function &>(to.value());
+            message = f.message_name(render_mode);
+
+            if (f.is_cuda_kernel())
+                message = fmt::format("<< CUDA Kernel >>\\n{}", message);
+            else if (f.is_cuda_device())
+                message = fmt::format("<< CUDA Device >>\\n{}", message);
         }
     }
 
@@ -431,6 +441,15 @@ void generator::generate_participant(
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "
              << participant.alias();
+
+        if (const auto *function_ptr =
+                dynamic_cast<const model::function *>(&participant);
+            function_ptr) {
+            if (function_ptr->is_cuda_kernel())
+                ostr << " << CUDA Kernel >>";
+            else if (function_ptr->is_cuda_device())
+                ostr << " << CUDA Device >>";
+        }
 
         if (config().generate_links) {
             common_generator<diagram_config, diagram_model>::generate_link(

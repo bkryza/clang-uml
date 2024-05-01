@@ -360,6 +360,12 @@ bool translation_unit_visitor::VisitFunctionDecl(
 
     function_model_ptr->is_operator(declaration->isOverloadedOperator());
 
+    function_model_ptr->is_cuda_kernel(
+        common::has_attr(declaration, clang::attr::CUDAGlobal));
+
+    function_model_ptr->is_cuda_device(
+        common::has_attr(declaration, clang::attr::CUDADevice));
+
     context().update(declaration);
 
     context().set_caller_id(function_model_ptr->id());
@@ -522,6 +528,29 @@ bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
 
     LOG_TRACE("Leaving call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCUDAKernelCallExpr(
+    clang::CUDAKernelCallExpr *expr)
+{
+    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering CUDA kernel call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_TRACE("Leaving CUDA kernel call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
@@ -1067,6 +1096,15 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             "Message for this call expression is taken from comment directive");
     }
     //
+    // Call to a CUDA kernel function
+    //
+    else if (const auto *cuda_call_expr =
+                 clang::dyn_cast_or_null<clang::CUDAKernelCallExpr>(expr);
+             cuda_call_expr != nullptr) {
+        if (!process_cuda_kernel_call_expression(m, cuda_call_expr))
+            return true;
+    }
+    //
     // Call to an overloaded operator
     //
     else if (const auto *operator_call_expr =
@@ -1246,6 +1284,43 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
 
         push_message(expr, std::move(m));
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::process_cuda_kernel_call_expression(
+    model::message &m, const clang::CUDAKernelCallExpr *expr)
+{
+    const auto *callee_decl = expr->getCalleeDecl();
+
+    if (callee_decl == nullptr)
+        return false;
+
+    const auto *callee_function = callee_decl->getAsFunction();
+
+    if (callee_function == nullptr)
+        return false;
+
+    if (!should_include(callee_function))
+        return false;
+
+    // Skip free functions declared in files outside of included paths
+    if (config().combine_free_functions_into_file_participants() &&
+        !diagram().should_include(common::model::source_file{m.file()}))
+        return false;
+
+    auto callee_name = callee_function->getQualifiedNameAsString() + "()";
+
+    const auto maybe_id = get_unique_id(callee_function->getID());
+    if (!maybe_id.has_value()) {
+        // This is hopefully not an interesting call...
+        m.set_to(callee_function->getID());
+    }
+    else {
+        m.set_to(maybe_id.value());
+    }
+
+    m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
 
     return true;
 }
@@ -1469,8 +1544,6 @@ bool translation_unit_visitor::process_function_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    std::unique_ptr<model::function_template> f_ptr;
-
     const auto maybe_id = get_unique_id(callee_function->getID());
     if (!maybe_id.has_value()) {
         // This is hopefully not an interesting call...
@@ -1481,9 +1554,6 @@ bool translation_unit_visitor::process_function_call_expression(
     }
 
     m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
-
-    if (f_ptr)
-        diagram().add_participant(std::move(f_ptr));
 
     return true;
 }

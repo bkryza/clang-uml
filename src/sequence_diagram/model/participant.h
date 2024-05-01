@@ -304,6 +304,34 @@ struct function : public participant {
     void is_operator(bool o);
 
     /**
+     * @brief Check, if a functions is a call to CUDA Kernel
+     *
+     * @return True, if the method is a CUDA kernel call
+     */
+    bool is_cuda_kernel() const;
+
+    /**
+     * @brief Set whether the method is a CUDA kernel call
+     *
+     * @param v True, if the method is a CUDA kernel call
+     */
+    void is_cuda_kernel(bool c);
+
+    /**
+     * @brief Check, if a functions is a call to CUDA device
+     *
+     * @return True, if the method is a CUDA device call
+     */
+    bool is_cuda_device() const;
+
+    /**
+     * @brief Set whether the method is a CUDA device call
+     *
+     * @param v True, if the method is a CUDA device call
+     */
+    void is_cuda_device(bool c);
+
+    /**
      * @brief Set functions return type
      *
      * @param rt Return type
@@ -339,6 +367,8 @@ private:
     bool is_void_{false};
     bool is_static_{false};
     bool is_operator_{false};
+    bool is_cuda_kernel_{false};
+    bool is_cuda_device_{false};
     std::string return_type_;
     std::vector<std::string> parameters_;
 };

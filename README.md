@@ -52,6 +52,7 @@ Main features supported so far include:
     * Handling of template code including constexpr conditionals - [_example_](docs/test_cases/t20018.md)
     * Handling of lambda expressions - [_example_](docs/test_cases/t20012.md)
     * Interactive links to online code to classes and call expressions - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t20021_sequence.svg)
+    * Support for CUDA Kernel and CUDA Device function calls - [_example_](docs/test_cases/t20050.md)
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
     * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)

@@ -364,6 +364,15 @@ test_cases:
     - name: t20047
       title: Test case for 'call' comment directive
       description:
+    - name: t20048
+      title: Test case for message comments
+      description:
+    - name: t20049
+      title: Test case for CUDA kernel calls
+      description:
+    - name: t20050
+      title: Test case for CUDA kernel calls with participants combined to file
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

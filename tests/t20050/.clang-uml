@@ -1,0 +1,12 @@
+diagrams:
+  t20050_sequence:
+    type: sequence
+    glob:
+      - t20050.cu
+    include:
+      namespaces:
+        - clanguml::t20050
+    using_namespace: clanguml::t20050
+    combine_free_functions_into_file_participants: true
+    from:
+      - function: "clanguml::t20050::tmain()"

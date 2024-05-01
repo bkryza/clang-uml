@@ -315,4 +315,13 @@ bool is_coroutine(const clang::FunctionDecl &decl);
  */
 bool is_struct(const clang::NamedDecl *decl);
 
+/**
+ * Check if function declaration contains specified attributed
+ *
+ * @param decl Function declaration
+ * @param function_attr Clang function attribute
+ * @return True, if decl contains specified function attribute
+ */
+bool has_attr(const clang::FunctionDecl *decl, clang::attr::Kind function_attr);
+
 } // namespace clanguml::common

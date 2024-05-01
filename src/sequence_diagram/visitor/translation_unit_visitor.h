@@ -77,9 +77,11 @@ public:
 
     bool VisitCallExpr(clang::CallExpr *expr);
 
+    bool TraverseVarDecl(clang::VarDecl *VD);
+
     bool TraverseCallExpr(clang::CallExpr *expr);
 
-    bool TraverseVarDecl(clang::VarDecl *VD);
+    bool TraverseCUDAKernelCallExpr(clang::CUDAKernelCallExpr *expr);
 
     bool TraverseCXXMemberCallExpr(clang::CXXMemberCallExpr *expr);
 
@@ -394,6 +396,9 @@ private:
      */
     bool process_operator_call_expression(model::message &m,
         const clang::CXXOperatorCallExpr *operator_call_expr);
+
+    bool process_cuda_kernel_call_expression(
+        model::message &m, const clang::CUDAKernelCallExpr *cuda_call_expr);
 
     /**
      * @brief Handle a class method call expresion

@@ -169,17 +169,11 @@ public:
 
     bool match(T const &in) const override
     {
-        std::istringstream fin(in);
-        std::string line;
-
         std::regex r{m_is_response ? response_pattern : call_pattern};
-
-        while (std::getline(fin, line)) {
-            std::smatch base_match;
-            std::regex_search(in, base_match, r);
-            if (base_match.size() > 0)
-                return true;
-        }
+        std::smatch base_match;
+        std::regex_search(in, base_match, r);
+        if (base_match.size() > 0)
+            return true;
 
         return false;
     }
@@ -255,17 +249,11 @@ public:
 
     bool match(T const &in) const override
     {
-        std::istringstream fin(in);
-        std::string line;
-
         std::regex r{m_is_response ? response_pattern : call_pattern};
-
-        while (std::getline(fin, line)) {
-            std::smatch base_match;
-            std::regex_search(in, base_match, r);
-            if (base_match.size() > 0)
-                return true;
-        }
+        std::smatch base_match;
+        std::regex_search(in, base_match, r);
+        if (base_match.size() > 0)
+            return true;
 
         return false;
     }
