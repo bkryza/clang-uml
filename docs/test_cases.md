@@ -124,6 +124,14 @@
  * [t20041](./test_cases/t20041.md) - Test case for recursive variadic template class call
  * [t20042](./test_cases/t20042.md) - Test case for template overload pattern
  * [t20043](./test_cases/t20043.md) - Test case for elements diagram filter in sequence diagrams
+ * [t20044](./test_cases/t20044.md) - Test case for template method call expressions with callables
+ * [t20045](./test_cases/t20045.md) - Test case for template function call expressions with callables
+ * [t20046](./test_cases/t20046.md) - Test case for call expressions in nested lambdas
+ * [t20047](./test_cases/t20047.md) - Test case for 'call' comment directive
+ * [t20048](./test_cases/t20048.md) - Test case for message comments
+ * [t20049](./test_cases/t20049.md) - Test case for CUDA kernel calls
+ * [t20050](./test_cases/t20050.md) - Test case for CUDA kernel calls with participants combined to file
+ * [t20051](./test_cases/t20051.md) - Test case for CUDA calls callee_type filter
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

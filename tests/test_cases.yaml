@@ -373,6 +373,9 @@ test_cases:
     - name: t20050
       title: Test case for CUDA kernel calls with participants combined to file
       description:
+    - name: t20051
+      title: Test case for CUDA calls callee_type filter
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
