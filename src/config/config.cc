@@ -106,6 +106,10 @@ std::string to_string(callee_type mt)
         return "function_template";
     case callee_type::lambda:
         return "lambda";
+    case callee_type::cuda_kernel:
+        return "cuda_kernel";
+    case callee_type::cuda_device:
+        return "cuda_device";
     }
 
     assert(false);

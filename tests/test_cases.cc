@@ -477,6 +477,7 @@ using namespace clanguml::test::matchers;
 #include "t20048/test_case.h"
 #include "t20049/test_case.h"
 #include "t20050/test_case.h"
+#include "t20051/test_case.h"
 
 ///
 /// Package diagram tests

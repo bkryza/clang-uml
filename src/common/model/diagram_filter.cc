@@ -455,6 +455,16 @@ tvl::value_t callee_filter::match(
                 return dynamic_cast<const function *>(p) != nullptr;
             };
 
+            auto is_cuda_kernel = [](const participant *p) {
+                const auto *f = dynamic_cast<const function *>(p);
+                return (f != nullptr) && (f->is_cuda_kernel());
+            };
+
+            auto is_cuda_device = [](const participant *p) {
+                const auto *f = dynamic_cast<const function *>(p);
+                return (f != nullptr) && (f->is_cuda_device());
+            };
+
             switch (ct) {
             case config::callee_type::method:
                 return p.type_name() == "method";
@@ -477,6 +487,10 @@ tvl::value_t callee_filter::match(
                 return p.type_name() == "function_template";
             case config::callee_type::lambda:
                 return p.type_name() == "method" && is_lambda((method &)p);
+            case config::callee_type::cuda_kernel:
+                return is_cuda_kernel(&p);
+            case config::callee_type::cuda_device:
+                return is_cuda_device(&p);
             }
 
             return false;
