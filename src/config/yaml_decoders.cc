@@ -312,6 +312,10 @@ template <> struct convert<callee_type> {
             rhs = callee_type::method;
         else if (val == to_string(callee_type::lambda))
             rhs = callee_type::lambda;
+        else if (val == to_string(callee_type::cuda_kernel))
+            rhs = callee_type::cuda_kernel;
+        else if (val == to_string(callee_type::cuda_device))
+            rhs = callee_type::cuda_device;
         else
             return false;
 

@@ -1,5 +1,12 @@
 # CHANGELOG
 
+ * Added support for CUDA calls in sequence diagrams (#263)
+ * Improved handling of message call comments (#264)
+ * Fixed handling of nested lambda expressions in sequence diagrams
+ * Fixed type aliases handling in sequence diagram message names (#260)
+ * Added support for call expressions tracking through lambdas in function
+   arguments (#168)
+ * Added Nix build files (Thanks @hatch01, @uku3lig, @thomaslepoix)
  * Fixed building with LLVM 18 (#251)
 
 ### 0.5.1

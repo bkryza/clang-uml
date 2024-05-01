@@ -77,9 +77,11 @@ public:
 
     bool VisitCallExpr(clang::CallExpr *expr);
 
+    bool TraverseVarDecl(clang::VarDecl *VD);
+
     bool TraverseCallExpr(clang::CallExpr *expr);
 
-    bool TraverseVarDecl(clang::VarDecl *VD);
+    bool TraverseCUDAKernelCallExpr(clang::CUDAKernelCallExpr *expr);
 
     bool TraverseCXXMemberCallExpr(clang::CXXMemberCallExpr *expr);
 
@@ -95,6 +97,8 @@ public:
 
     bool TraverseLambdaExpr(clang::LambdaExpr *expr);
 
+    bool TraverseCXXMethodDecl(clang::CXXMethodDecl *declaration);
+
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
@@ -103,6 +107,8 @@ public:
 
     bool VisitClassTemplateSpecializationDecl(
         clang::ClassTemplateSpecializationDecl *declaration);
+
+    bool TraverseFunctionDecl(clang::FunctionDecl *declaration);
 
     bool VisitFunctionDecl(clang::FunctionDecl *declaration);
 
@@ -310,6 +316,9 @@ private:
     std::unique_ptr<clanguml::sequence_diagram::model::method>
     create_method_model(clang::CXXMethodDecl *cls);
 
+    std::unique_ptr<clanguml::sequence_diagram::model::method>
+    create_lambda_method_model(clang::CXXMethodDecl *cls);
+
     std::unique_ptr<model::function_template>
     build_function_template_instantiation(const clang::FunctionDecl &pDecl);
 
@@ -335,6 +344,21 @@ private:
      * @return Full lambda unique name
      */
     std::string make_lambda_name(const clang::CXXRecordDecl *cls) const;
+
+    /**
+     * @brief Render lambda source location to string
+     *
+     * Returns exact source code location of the lambda expression in the form
+     * <filepath>:<line>:<column>.
+     *
+     * The filepath is relative to the `relative_to` config option.
+     *
+     * @param source_location Clang SourceLocation instance associated with
+     *                        lambda expression
+     * @return String representation of the location
+     */
+    std::string lambda_source_location(
+        const clang::SourceLocation &source_location) const;
 
     /**
      * @brief Check if template is a smart pointer
@@ -372,6 +396,9 @@ private:
      */
     bool process_operator_call_expression(model::message &m,
         const clang::CXXOperatorCallExpr *operator_call_expr);
+
+    bool process_cuda_kernel_call_expression(
+        model::message &m, const clang::CUDAKernelCallExpr *cuda_call_expr);
 
     /**
      * @brief Handle a class method call expresion
@@ -417,6 +444,9 @@ private:
     bool process_unresolved_lookup_call_expression(
         model::message &m, const clang::CallExpr *expr) const;
 
+    bool process_lambda_call_expression(
+        model::message &m, const clang::CallExpr *expr) const;
+
     /**
      * @brief Register a message model `m` with a call expression
      *
@@ -440,6 +470,15 @@ private:
     std::optional<std::string> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
         int64_t caller_id, const clang::Stmt *stmt);
+
+    /**
+     * @brief Initializes model message from comment call directive
+     *
+     * @param m Message instance
+     * @return True, if the comment associated with the call expression
+     *         contained a call directive and it was parsed correctly.
+     */
+    bool generate_message_from_comment(model::message &m) const;
 
     /**
      * @brief Get template builder reference
@@ -480,7 +519,7 @@ private:
         already_visited_in_static_declaration_{};
 
     mutable std::set<std::pair<int64_t, const clang::RawComment *>>
-        processed_comments_;
+        processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
 };

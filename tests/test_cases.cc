@@ -470,6 +470,16 @@ using namespace clanguml::test::matchers;
 #include "t20041/test_case.h"
 #include "t20042/test_case.h"
 #include "t20043/test_case.h"
+#include "t20044/test_case.h"
+#include "t20045/test_case.h"
+#include "t20046/test_case.h"
+#include "t20047/test_case.h"
+#include "t20048/test_case.h"
+#if defined(ENABLE_CUDA_TEST_CASES)
+#include "t20049/test_case.h"
+#include "t20050/test_case.h"
+#include "t20051/test_case.h"
+#endif
 
 ///
 /// Package diagram tests

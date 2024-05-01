@@ -119,14 +119,27 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
     }
     else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
-            message = dynamic_cast<const model::function &>(to.value())
-                          .message_name(render_mode);
+            const auto &f = dynamic_cast<const model::function &>(to.value());
+
+            message = f.message_name(render_mode);
+
+            if (f.is_cuda_kernel())
+                message = fmt::format("<< CUDA Kernel >><br>{}", message);
+            else if (f.is_cuda_device())
+                message = fmt::format("<< CUDA Device >><br>{}", message);
         }
         else if (to.value().type_name() == "function_template") {
-            message = dynamic_cast<const model::function_template &>(to.value())
-                          .message_name(render_mode);
+            const auto &f = dynamic_cast<const model::function &>(to.value());
+            message = f.message_name(render_mode);
+
+            if (f.is_cuda_kernel())
+                message = fmt::format("<< CUDA Kernel >><br>{}", message);
+            else if (f.is_cuda_device())
+                message = fmt::format("<< CUDA Device >><br>{}", message);
         }
     }
+
+    message = config().simplify_template_type(message);
 
     const std::string from_alias = generate_alias(from.value());
     const std::string to_alias = generate_alias(to.value());
@@ -395,11 +408,10 @@ void generator::generate_participant(
         config().combine_free_functions_into_file_participants()) {
         // Create a single participant for all functions declared in a
         // single file
-        const auto &file_path =
-            model()
-                .get_participant<model::function>(participant_id)
-                .value()
-                .file();
+        const auto &f =
+            model().get_participant<model::function>(participant_id).value();
+
+        const auto &file_path = f.file();
 
         assert(!file_path.empty());
 
@@ -425,8 +437,22 @@ void generator::generate_participant(
             config().simplify_template_type(participant.full_name(false)));
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
-        ostr << indent(1) << "participant " << participant.alias() << " as "
-             << render_participant_name(participant_name);
+        ostr << indent(1) << "participant " << participant.alias() << " as ";
+
+        if (participant.type_name() == "function" ||
+            participant.type_name() == "function_template") {
+            const auto &f =
+                model()
+                    .get_participant<model::function>(participant_id)
+                    .value();
+
+            if (f.is_cuda_kernel())
+                ostr << "<< CUDA Kernel >><br>";
+            else if (f.is_cuda_device())
+                ostr << "<< CUDA Device >><br>";
+        }
+
+        ostr << render_participant_name(participant_name);
         ostr << '\n';
 
         generated_participants_.emplace(participant_id);

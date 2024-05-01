@@ -1,0 +1,19 @@
+add_compile_flags:
+  - -fparse-all-comments
+diagrams:
+  t20044_sequence:
+    type: sequence
+    glob:
+      - t20044.cc
+    type_aliases:
+      "detail::expected<int,error>": result_t
+    generate_message_comments: true
+    include:
+      namespaces:
+        - clanguml::t20044
+    exclude:
+      namespaces:
+        - clanguml::t20044::detail2
+    using_namespace: clanguml::t20044
+    from:
+      - function: "clanguml::t20044::tmain()"

@@ -258,6 +258,8 @@ The following callee types are supported:
   * `function`
   * `function_template`
   * `lambda`
+  * `cuda_kernel`
+  * `cuda_device`
 
 ## dependants and dependencies
 

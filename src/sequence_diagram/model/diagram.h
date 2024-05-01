@@ -101,6 +101,14 @@ public:
     void add_active_participant(common::id_t id);
 
     /**
+     * @brief Check if diagram has activity identified by caller id
+     *
+     * @param id Caller id representing the activity
+     * @return True, if an activity already exists
+     */
+    bool has_activity(common::id_t id) const;
+
+    /**
      * @brief Get reference to current activity of a participant
      *
      * @param id Participant id

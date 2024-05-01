@@ -150,6 +150,14 @@ bool function::is_operator() const { return is_operator_; }
 
 void function::is_operator(bool o) { is_operator_ = o; }
 
+bool function::is_cuda_kernel() const { return is_cuda_kernel_; }
+
+void function::is_cuda_kernel(bool c) { is_cuda_kernel_ = c; }
+
+bool function::is_cuda_device() const { return is_cuda_device_; }
+
+void function::is_cuda_device(bool c) { is_cuda_device_ = c; }
+
 void function::return_type(const std::string &rt) { return_type_ = rt; }
 
 const std::string &function::return_type() const { return return_type_; }

@@ -217,6 +217,22 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     return true;
 }
 
+bool translation_unit_visitor::TraverseCXXMethodDecl(
+    clang::CXXMethodDecl *declaration)
+{
+    // We need to backup the context, since other methods or functions can
+    // be traversed during this traversal (e.g. template function/method
+    // specializations)
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXMethodDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXMethodDecl(
     clang::CXXMethodDecl *declaration)
 {
@@ -229,6 +245,9 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
             if (auto *method_definition = clang::dyn_cast<clang::CXXMethodDecl>(
                     declaration_definition);
                 method_definition != nullptr) {
+                LOG_DBG("Calling VisitCXXMethodDecl recursively for forward "
+                        "declaration");
+
                 return VisitCXXMethodDecl(method_definition);
             }
         }
@@ -255,7 +274,7 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
     method_model_ptr->set_id(common::to_id(method_full_name));
 
     // Callee methods in call expressions are referred to by first declaration
-    // id
+    // id, so they should both be mapped to method_model
     if (declaration->isThisDeclarationADefinition()) {
         set_unique_id(
             declaration->getFirstDecl()->getID(), method_model_ptr->id());
@@ -272,6 +291,22 @@ bool translation_unit_visitor::VisitCXXMethodDecl(
     context().set_caller_id(method_model_ptr->id());
 
     diagram().add_participant(std::move(method_model_ptr));
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseFunctionDecl(
+    clang::FunctionDecl *declaration)
+{
+    // We need to backup the context, since other methods or functions can
+    // be traversed during this traversal (e.g. template function/method
+    // specializations)
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseFunctionDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
 
     return true;
 }
@@ -324,6 +359,12 @@ bool translation_unit_visitor::VisitFunctionDecl(
     function_model_ptr->is_void(declaration->getReturnType()->isVoidType());
 
     function_model_ptr->is_operator(declaration->isOverloadedOperator());
+
+    function_model_ptr->is_cuda_kernel(
+        common::has_attr(declaration, clang::attr::CUDAGlobal));
+
+    function_model_ptr->is_cuda_device(
+        common::has_attr(declaration, clang::attr::CUDADevice));
 
     context().update(declaration);
 
@@ -391,8 +432,9 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     const auto lambda_full_name =
         expr->getLambdaClass()->getCanonicalDecl()->getNameAsString();
 
-    LOG_TRACE("Visiting lambda expression {} at {}", lambda_full_name,
-        expr->getBeginLoc().printToString(source_manager()));
+    LOG_TRACE("Visiting lambda expression {} at {} [caller_id = {}]",
+        lambda_full_name, expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
 
     LOG_TRACE("Lambda call operator ID {} - lambda class ID {}, class call "
               "operator ID {}",
@@ -410,22 +452,46 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
     set_unique_id(cls->getID(), cls_id);
 
-    // Create lambda class operator() participant
     auto lambda_method_model_ptr =
-        std::make_unique<sequence_diagram::model::method>(
-            config().using_namespace());
-
-    const auto *method_name = "operator()";
-    lambda_method_model_ptr->set_method_name(method_name);
+        create_lambda_method_model(expr->getCallOperator());
 
     lambda_method_model_ptr->set_class_id(cls_id);
-    lambda_method_model_ptr->set_class_full_name(
-        lambda_class_model_ptr->full_name(false));
+
+    // If this is a nested lambda, prepend the parent lambda name to this lambda
+    auto lambda_class_full_name = lambda_class_model_ptr->full_name(false);
+    lambda_method_model_ptr->set_class_full_name(lambda_class_full_name);
 
     diagram().add_participant(std::move(lambda_class_model_ptr));
 
-    lambda_method_model_ptr->set_id(common::to_id(
-        get_participant(cls_id).value().full_name(false) + "::" + method_name));
+    lambda_method_model_ptr->set_id(
+        common::to_id(get_participant(cls_id).value().full_name(false) +
+            "::" + lambda_method_model_ptr->full_name_no_ns()));
+
+    get_participant<model::class_>(cls_id).value().set_lambda_operator_id(
+        lambda_method_model_ptr->id());
+
+    // If lambda expression is in an argument to a method/function, and that
+    // method function would be excluded by filters
+    if (std::holds_alternative<clang::CallExpr *>(
+            context().current_callexpr()) &&
+        (context().lambda_caller_id() == 0)) {
+        using clanguml::common::model::message_t;
+        using clanguml::sequence_diagram::model::message;
+
+        message m{message_t::kCall, context().caller_id()};
+        set_source_location(*expr, m);
+        m.set_from(context().caller_id());
+        m.set_to(lambda_method_model_ptr->id());
+
+        diagram().add_active_participant(m.from());
+        diagram().add_active_participant(m.to());
+
+        LOG_DBG("Found call {} from {} [{}] to {} [{}]", m.message_name(),
+            m.from(), m.from(), m.to(), m.to());
+
+        push_message(std::get<clang::CallExpr *>(context().current_callexpr()),
+            std::move(m));
+    }
 
     context().enter_lambda_expression(lambda_method_model_ptr->id());
 
@@ -441,9 +507,6 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 {
-    const auto lambda_full_name =
-        expr->getLambdaClass()->getCanonicalDecl()->getNameAsString();
-
     RecursiveASTVisitor<translation_unit_visitor>::TraverseLambdaExpr(expr);
 
     // lambda context is entered inside the visitor
@@ -454,9 +517,41 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
+    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
     context().enter_callexpr(expr);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_TRACE("Leaving call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseCUDAKernelCallExpr(
+    clang::CUDAKernelCallExpr *expr)
+{
+    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering CUDA kernel call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseCallExpr(expr);
+
+    LOG_TRACE("Leaving CUDA kernel call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
 
@@ -468,8 +563,21 @@ bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 bool translation_unit_visitor::TraverseCXXMemberCallExpr(
     clang::CXXMemberCallExpr *expr)
 {
+    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering member call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXMemberCallExpr(
         expr);
+
+    LOG_TRACE("Leaving member call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
 
     pop_message_to_diagram(expr);
 
@@ -479,8 +587,12 @@ bool translation_unit_visitor::TraverseCXXMemberCallExpr(
 bool translation_unit_visitor::TraverseCXXOperatorCallExpr(
     clang::CXXOperatorCallExpr *expr)
 {
+    context().enter_callexpr(expr);
+
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXOperatorCallExpr(
         expr);
+
+    context().leave_callexpr();
 
     pop_message_to_diagram(expr);
 
@@ -508,12 +620,18 @@ bool translation_unit_visitor::TraverseCXXTemporaryObjectExpr(
 bool translation_unit_visitor::TraverseCXXConstructExpr(
     clang::CXXConstructExpr *expr)
 {
+    LOG_TRACE("Entering cxx construct call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
     context().enter_callexpr(expr);
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXConstructExpr(
         expr);
 
     translation_unit_visitor::VisitCXXConstructExpr(expr);
+
+    LOG_TRACE("Leaving member call expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
 
@@ -944,50 +1062,48 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     if (!context().valid() || context().get_ast_context() == nullptr)
         return true;
 
+    LOG_TRACE("Visiting call expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
     message m{message_t::kCall, context().caller_id()};
 
     m.in_static_declaration_context(within_static_variable_declaration_ > 0);
 
     set_source_location(*expr, m);
 
-    process_comment(clanguml::common::get_expression_raw_comment(
-                        source_manager(), *context().get_ast_context(), expr),
-        context().get_ast_context()->getDiagnostics(), m);
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
 
     if (m.skip())
         return true;
 
-    auto generated_message_from_comment{false};
-    for (const auto &decorator : m.decorators()) {
-        auto call_decorator =
-            std::dynamic_pointer_cast<decorators::call>(decorator);
-        if (call_decorator &&
-            call_decorator->applies_to_diagram(config().name)) {
-            m.set_to(common::to_id(call_decorator->callee));
-            generated_message_from_comment = true;
-            break;
-        }
-    }
+    auto generated_message_from_comment = generate_message_from_comment(m);
 
-    if (!generated_message_from_comment && !should_include(expr))
+    if (!generated_message_from_comment && !should_include(expr)) {
+        processed_comments().erase(raw_expr_comment);
         return true;
-
-    LOG_TRACE("Visiting call expression at {} [caller_id = {}]",
-        expr->getBeginLoc().printToString(source_manager()),
-        context().caller_id());
-
-    // If we're currently inside a lambda expression, set it's id as
-    // message source rather then enclosing context
-    // Unless the lambda is declared in a function or method call
-    if (context().lambda_caller_id() != 0) {
-        m.set_from(context().lambda_caller_id());
     }
 
     if (context().is_expr_in_current_control_statement_condition(expr)) {
         m.set_message_scope(common::model::message_scope_t::kCondition);
     }
 
-    if (generated_message_from_comment) { }
+    if (generated_message_from_comment) {
+        LOG_DBG(
+            "Message for this call expression is taken from comment directive");
+    }
+    //
+    // Call to a CUDA kernel function
+    //
+    else if (const auto *cuda_call_expr =
+                 clang::dyn_cast_or_null<clang::CUDAKernelCallExpr>(expr);
+             cuda_call_expr != nullptr) {
+        if (!process_cuda_kernel_call_expression(m, cuda_call_expr))
+            return true;
+    }
     //
     // Call to an overloaded operator
     //
@@ -1015,8 +1131,14 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         auto *callee_decl = expr->getCalleeDecl();
 
         if (callee_decl == nullptr) {
-            LOG_DBG("Cannot get callee declaration - trying direct callee...");
+            LOG_DBG("Cannot get callee declaration - trying direct function "
+                    "callee...");
+
             callee_decl = expr->getDirectCallee();
+
+            if (callee_decl != nullptr)
+                LOG_DBG("Found function/method callee in: {}",
+                    common::to_string(expr));
         }
 
         if (callee_decl == nullptr) {
@@ -1038,11 +1160,23 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
                 if (!process_unresolved_lookup_call_expression(m, expr))
                     return true;
             }
+            else if (clang::dyn_cast_or_null<clang::LambdaExpr>(
+                         expr->getCallee()) != nullptr) {
+                LOG_DBG("Processing lambda expression callee");
+                if (!process_lambda_call_expression(m, expr))
+                    return true;
+            }
+            else {
+                LOG_DBG("Found unsupported callee decl type for: {} at {}",
+                    common::to_string(expr),
+                    expr->getBeginLoc().printToString(source_manager()));
+            }
         }
         else {
-            if (!process_function_call_expression(m, expr)) {
-                LOG_DBG("Skipping call to unsupported type of call expression "
-                        "at: {}",
+            auto success = process_function_call_expression(m, expr);
+
+            if (!success) {
+                LOG_DBG("Skipping call to call expression at: {}",
                     expr->getBeginLoc().printToString(source_manager()));
 
                 return true;
@@ -1050,12 +1184,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
         }
     }
 
+    // Add message to diagram
     if (m.from() > 0 && m.to() > 0) {
-        if (!generated_message_from_comment) {
-            auto expr_comment = get_expression_comment(source_manager(),
-                *context().get_ast_context(), context().caller_id(), expr);
-            m.set_comment(expr_comment);
-        }
+        m.set_comment(stripped_comment);
 
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {
@@ -1073,6 +1204,23 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     return true;
+}
+
+bool translation_unit_visitor::generate_message_from_comment(
+    model::message &m) const
+{
+    auto generated_message_from_comment{false};
+    for (const auto &decorator : m.decorators()) {
+        auto call_decorator =
+            std::dynamic_pointer_cast<decorators::call>(decorator);
+        if (call_decorator &&
+            call_decorator->applies_to_diagram(config().name)) {
+            m.set_to(common::to_id(call_decorator->callee));
+            generated_message_from_comment = true;
+            break;
+        }
+    }
+    return generated_message_from_comment;
 }
 
 bool translation_unit_visitor::TraverseVarDecl(clang::VarDecl *decl)
@@ -1114,10 +1262,6 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
 
     set_source_location(*expr, m);
 
-    if (context().lambda_caller_id() != 0) {
-        m.set_from(context().lambda_caller_id());
-    }
-
     if (context().is_expr_in_current_control_statement_condition(expr)) {
         m.set_message_scope(common::model::message_scope_t::kCondition);
     }
@@ -1144,6 +1288,43 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
     return true;
 }
 
+bool translation_unit_visitor::process_cuda_kernel_call_expression(
+    model::message &m, const clang::CUDAKernelCallExpr *expr)
+{
+    const auto *callee_decl = expr->getCalleeDecl();
+
+    if (callee_decl == nullptr)
+        return false;
+
+    const auto *callee_function = callee_decl->getAsFunction();
+
+    if (callee_function == nullptr)
+        return false;
+
+    if (!should_include(callee_function))
+        return false;
+
+    // Skip free functions declared in files outside of included paths
+    if (config().combine_free_functions_into_file_participants() &&
+        !diagram().should_include(common::model::source_file{m.file()}))
+        return false;
+
+    auto callee_name = callee_function->getQualifiedNameAsString() + "()";
+
+    const auto maybe_id = get_unique_id(callee_function->getID());
+    if (!maybe_id.has_value()) {
+        // This is hopefully not an interesting call...
+        m.set_to(callee_function->getID());
+    }
+    else {
+        m.set_to(maybe_id.value());
+    }
+
+    m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
+
+    return true;
+}
+
 bool translation_unit_visitor::process_operator_call_expression(
     model::message &m, const clang::CXXOperatorCallExpr *operator_call_expr)
 {
@@ -1155,12 +1336,30 @@ bool translation_unit_visitor::process_operator_call_expression(
         operator_call_expr->getCalleeDecl()->getID(),
         operator_call_expr->getBeginLoc().printToString(source_manager()));
 
-    auto maybe_id = get_unique_id(operator_call_expr->getCalleeDecl()->getID());
-    if (maybe_id.has_value()) {
-        m.set_to(maybe_id.value());
+    // Handle the case if the callee is a lambda
+    if (const auto *lambda_method = clang::dyn_cast<clang::CXXMethodDecl>(
+            operator_call_expr->getCalleeDecl());
+        lambda_method != nullptr && lambda_method->getParent()->isLambda()) {
+
+        LOG_DBG("Operator callee is a lambda: {}",
+            common::to_string(lambda_method));
+
+        const auto source_location{
+            lambda_source_location(lambda_method->getParent()->getLocation())};
+
+        auto lambda_name = make_lambda_name(lambda_method->getParent());
+
+        m.set_to(lambda_method->getParent()->getID());
     }
     else {
-        m.set_to(operator_call_expr->getCalleeDecl()->getID());
+        auto maybe_id =
+            get_unique_id(operator_call_expr->getCalleeDecl()->getID());
+        if (maybe_id.has_value()) {
+            m.set_to(maybe_id.value());
+        }
+        else {
+            m.set_to(operator_call_expr->getCalleeDecl()->getID());
+        }
     }
 
     m.set_message_name(fmt::format(
@@ -1345,8 +1544,6 @@ bool translation_unit_visitor::process_function_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    std::unique_ptr<model::function_template> f_ptr;
-
     const auto maybe_id = get_unique_id(callee_function->getID());
     if (!maybe_id.has_value()) {
         // This is hopefully not an interesting call...
@@ -1358,8 +1555,25 @@ bool translation_unit_visitor::process_function_call_expression(
 
     m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
 
-    if (f_ptr)
-        diagram().add_participant(std::move(f_ptr));
+    return true;
+}
+
+bool translation_unit_visitor::process_lambda_call_expression(
+    model::message &m, const clang::CallExpr *expr) const
+{
+    const auto *lambda_expr =
+        clang::dyn_cast_or_null<clang::LambdaExpr>(expr->getCallee());
+
+    if (lambda_expr == nullptr)
+        return true;
+
+    const auto lambda_class_id = lambda_expr->getLambdaClass()->getID();
+    const auto maybe_id = get_unique_id(lambda_class_id);
+    if (!maybe_id.has_value())
+        m.set_to(lambda_class_id);
+    else {
+        m.set_to(maybe_id.value());
+    }
 
     return true;
 }
@@ -1375,7 +1589,6 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
         for (const auto *decl : unresolved_expr->decls()) {
             if (clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl) !=
                 nullptr) {
-                // Yes, it's a template
                 const auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
 
@@ -1387,6 +1600,23 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                 }
 
                 break;
+            }
+            else if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) !=
+                nullptr) {
+                const auto *fd =
+                    clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
+
+                const auto maybe_id = get_unique_id(fd->getID());
+                if (!maybe_id.has_value())
+                    m.set_to(fd->getID());
+                else {
+                    m.set_to(maybe_id.value());
+                }
+
+                break;
+            }
+            else {
+                LOG_DBG("Unknown unresolved lookup expression");
             }
         }
     }
@@ -1445,9 +1675,10 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
     const auto *parent = cls->getParent();
 
     if ((parent != nullptr) && parent->isRecord()) {
-        // Here we have 2 options, either:
+        // Here we have 3 options, either:
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
+        //  - the parent is a lambda (i.e. this is a nested lambda expression)
         std::optional<common::id_t> id_opt;
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
@@ -1513,9 +1744,6 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
             c.set_name(type_name);
             c.set_namespace(ns);
             c.set_id(common::to_id(c.full_name(false)));
-
-            // TODO: Check if lambda is declared as an argument passed to a
-            //       function/method call
         }
         else {
             LOG_WARN("Cannot find parent declaration for lambda {}",
@@ -1675,29 +1903,62 @@ std::string translation_unit_visitor::simplify_system_template(
     return config().simplify_template_type(full_name);
 }
 
+std::string translation_unit_visitor::lambda_source_location(
+    const clang::SourceLocation &source_location) const
+{
+    const auto file_line =
+        source_manager().getSpellingLineNumber(source_location);
+    const auto file_column =
+        source_manager().getSpellingColumnNumber(source_location);
+    const std::string file_name =
+        config()
+            .make_path_relative(
+                source_manager().getFilename(source_location).str())
+            .string();
+    return fmt::format("{}:{}:{}", file_name, file_line, file_column);
+}
+
 std::string translation_unit_visitor::make_lambda_name(
     const clang::CXXRecordDecl *cls) const
 {
     std::string result;
     const auto location = cls->getLocation();
-    const auto file_line = source_manager().getSpellingLineNumber(location);
-    const auto file_column = source_manager().getSpellingColumnNumber(location);
-    const std::string file_name =
-        config()
-            .make_path_relative(source_manager().getFilename(location).str())
-            .string();
+    const std::string source_location{lambda_source_location(location)};
 
-    if (context().caller_id() != 0 &&
+    if (context().lambda_caller_id() != 0) {
+        // Parent is also a lambda (this id points to a lambda operator())
+        std::string parent_lambda_class_name{"()"};
+        if (diagram().get_participant<model::method>(
+                context().lambda_caller_id())) {
+            auto parent_lambda_class_id = diagram()
+                                              .get_participant<model::method>(
+                                                  context().lambda_caller_id())
+                                              .value()
+                                              .class_id();
+
+            if (diagram().get_participant<model::class_>(
+                    parent_lambda_class_id)) {
+                parent_lambda_class_name =
+                    diagram()
+                        .get_participant<model::class_>(parent_lambda_class_id)
+                        .value()
+                        .full_name(false);
+            }
+        }
+
+        result = fmt::format(
+            "{}##(lambda {})", parent_lambda_class_name, source_location);
+    }
+    else if (context().caller_id() != 0 &&
         get_participant(context().caller_id()).has_value()) {
         auto parent_full_name =
             get_participant(context().caller_id()).value().full_name_no_ns();
 
-        result = fmt::format("{}##(lambda {}:{}:{})", parent_full_name,
-            file_name, file_line, file_column);
+        result =
+            fmt::format("{}##(lambda {})", parent_full_name, source_location);
     }
     else {
-        result =
-            fmt::format("(lambda {}:{}:{})", file_name, file_line, file_column);
+        result = fmt::format("(lambda {})", source_location);
     }
 
     return result;
@@ -1727,7 +1988,12 @@ void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
     auto msg = std::move(call_expr_message_map_.at(expr));
 
     auto caller_id = msg.from();
-    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    if (caller_id == 0)
+        return;
+
+    if (diagram().has_activity(caller_id))
+        diagram().get_activity(caller_id).add_message(std::move(msg));
 
     call_expr_message_map_.erase(expr);
 }
@@ -1775,6 +2041,65 @@ void translation_unit_visitor::finalize()
             }
         }
     }
+
+    // Change all messages with target set to an id of a lambda expression to
+    // to the ID of their operator() - this is necessary, as some calls to
+    // lambda expressions are visited before the actual lambda expressions
+    // are visited...
+    for (auto &[id, activity] : diagram().sequences()) {
+        for (auto &m : activity.messages()) {
+            auto participant = diagram().get_participant<model::class_>(m.to());
+
+            if (participant && participant.value().is_lambda() &&
+                participant.value().lambda_operator_id() != 0) {
+                LOG_DBG("Changing lambda expression target id from {} to {}",
+                    m.to(), participant.value().lambda_operator_id());
+
+                m.set_to(participant.value().lambda_operator_id());
+                m.set_message_name("operator()");
+            }
+        }
+    }
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::method>
+translation_unit_visitor::create_lambda_method_model(
+    clang::CXXMethodDecl *declaration)
+{
+    auto method_model_ptr = std::make_unique<sequence_diagram::model::method>(
+        config().using_namespace());
+
+    common::model::namespace_ ns{declaration->getQualifiedNameAsString()};
+    auto method_name = ns.name();
+    method_model_ptr->set_method_name(method_name);
+    ns.pop_back();
+    method_model_ptr->set_name(ns.name());
+    ns.pop_back();
+
+    method_model_ptr->is_defaulted(declaration->isDefaulted());
+    method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
+        declaration->isMoveAssignmentOperator());
+    method_model_ptr->is_const(declaration->isConst());
+    method_model_ptr->is_static(declaration->isStatic());
+    method_model_ptr->is_operator(declaration->isOverloadedOperator());
+    method_model_ptr->is_constructor(
+        clang::dyn_cast<clang::CXXConstructorDecl>(declaration) != nullptr);
+
+    method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
+
+    method_model_ptr->return_type(common::to_string(
+        declaration->getReturnType(), declaration->getASTContext()));
+
+    for (const auto *param : declaration->parameters()) {
+        auto parameter_type =
+            common::to_string(param->getType(), param->getASTContext());
+        common::ensure_lambda_type_is_relative(config(), parameter_type);
+        parameter_type = simplify_system_template(parameter_type);
+        method_model_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(parameter_type)));
+    }
+
+    return method_model_ptr;
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::method>
@@ -1794,7 +2119,6 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
         declaration->isMoveAssignmentOperator());
     method_model_ptr->is_const(declaration->isConst());
-    method_model_ptr->is_static(declaration->isStatic());
     method_model_ptr->is_static(declaration->isStatic());
     method_model_ptr->is_operator(declaration->isOverloadedOperator());
     method_model_ptr->is_constructor(
@@ -1826,7 +2150,6 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
                                    .value()
                                    .full_name_no_ns() +
         "::" + declaration->getNameAsString());
-    method_model_ptr->is_static(declaration->isStatic());
 
     method_model_ptr->return_type(common::to_string(
         declaration->getReturnType(), declaration->getASTContext()));
@@ -1882,7 +2205,21 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
 
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
 
-    return diagram().should_include(common::model::source_file{expr_file});
+    if (!diagram().should_include(common::model::source_file{expr_file}))
+        return false;
+
+    const auto *callee_decl = expr->getCalleeDecl();
+
+    if (callee_decl != nullptr) {
+        const auto *callee_function = callee_decl->getAsFunction();
+
+        if ((callee_function == nullptr) || !should_include(callee_function))
+            return false;
+
+        return should_include(callee_function);
+    }
+
+    return true;
 }
 
 bool translation_unit_visitor::should_include(
@@ -1939,10 +2276,17 @@ std::optional<std::string> translation_unit_visitor::get_expression_comment(
     if (raw_comment == nullptr)
         return {};
 
-    if (!processed_comments_.emplace(caller_id, raw_comment).second) {
+    if (!processed_comments_by_caller_id_.emplace(caller_id, raw_comment)
+             .second) {
         return {};
     }
 
-    return raw_comment->getFormattedText(sm, sm.getDiagnostics());
+    const auto &[decorators, stripped_comment] = decorators::parse(
+        raw_comment->getFormattedText(sm, sm.getDiagnostics()));
+
+    if (stripped_comment.empty())
+        return {};
+
+    return stripped_comment;
 }
 } // namespace clanguml::sequence_diagram::visitor

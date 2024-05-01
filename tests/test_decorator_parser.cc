@@ -20,6 +20,7 @@
 #include "decorators/decorators.h"
 
 #include "catch.h"
+#include "util/util.h"
 
 TEST_CASE("Test decorator parser on regular comment", "[unit-test]")
 {
@@ -35,9 +36,10 @@ TEST_CASE("Test decorator parser on regular comment", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.empty());
+    CHECK(clanguml::util::trim(comment) == stripped);
 }
 
 TEST_CASE("Test decorator parser on note", "[unit-test]")
@@ -62,7 +64,7 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 4);
 
@@ -86,6 +88,15 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     CHECK(n4);
     CHECK(n4->position == "left");
     CHECK(n4->text == "This is a comment");
+
+    CHECK(stripped == R"(\brief This is a comment.
+
+    This is a longer comment.
+
+    \
+
+    \param a int an int
+    \param b float a float)");
 }
 
 TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
@@ -110,7 +121,7 @@ TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment, "clanguml");
+    auto [decorators, stripped] = parse(comment, "clanguml");
 
     CHECK(decorators.size() == 4);
 
@@ -134,6 +145,15 @@ TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
     CHECK(n4);
     CHECK(n4->position == "left");
     CHECK(n4->text == "This is a comment");
+
+    CHECK(stripped == R"(\brief This is a comment.
+
+    This is a longer comment.
+
+    \
+
+    \param a int an int
+    \param b float a float)");
 }
 
 TEST_CASE("Test decorator parser on style", "[unit-test]")
@@ -144,7 +164,7 @@ TEST_CASE("Test decorator parser on style", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 1);
 
@@ -152,6 +172,7 @@ TEST_CASE("Test decorator parser on style", "[unit-test]")
 
     CHECK(n1);
     CHECK(n1->spec == "#green,dashed,thickness=4");
+    CHECK(stripped.empty());
 }
 
 TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
@@ -162,7 +183,7 @@ TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 1);
 
@@ -170,6 +191,7 @@ TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
 
     CHECK(n1);
     CHECK(n1->multiplicity == "0..1:0..*");
+    CHECK(stripped.empty());
 }
 
 TEST_CASE("Test decorator parser on skip", "[unit-test]")
@@ -180,13 +202,14 @@ TEST_CASE("Test decorator parser on skip", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 1);
 
     auto n1 = std::dynamic_pointer_cast<skip>(decorators.at(0));
 
     CHECK(n1);
+    CHECK(stripped.empty());
 }
 
 TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
@@ -197,13 +220,14 @@ TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 1);
 
     auto n1 = std::dynamic_pointer_cast<skip_relationship>(decorators.at(0));
 
     CHECK(n1);
+    CHECK(stripped.empty());
 }
 
 TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
@@ -215,7 +239,7 @@ TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
 
     using namespace clanguml::decorators;
 
-    auto decorators = parse(comment);
+    auto [decorators, stripped] = parse(comment);
 
     CHECK(decorators.size() == 1);
 
@@ -232,4 +256,21 @@ TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
 
     CHECK(n1->applies_to_diagram("diagram2"));
     CHECK(!n1->applies_to_diagram("diagram4"));
+    CHECK(stripped.empty());
+}
+
+TEST_CASE("Test invalid comment - unterminated curly brace", "[unit-test]")
+{
+    std::string comment = R"(
+    Test test test
+    \uml{call clanguml::test:aa()
+    )";
+
+    using namespace clanguml::decorators;
+
+    auto [decorators, stripped] = parse(comment);
+
+    CHECK(decorators.size() == 0);
+
+    CHECK(stripped.empty());
 }

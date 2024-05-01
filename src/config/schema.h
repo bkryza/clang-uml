@@ -112,6 +112,8 @@ types:
         - function
         - function_template
         - lambda
+        - cuda_kernel
+        - cuda_device
     context_filter_match_t:
         match:
             radius: int

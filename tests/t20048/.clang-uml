@@ -1,0 +1,14 @@
+add_compile_flags:
+  - -fparse-all-comments
+diagrams:
+  t20048_sequence:
+    type: sequence
+    glob:
+      - t20048.cc
+    generate_message_comments: true
+    include:
+      namespaces:
+        - clanguml::t20048
+    using_namespace: clanguml::t20048
+    from:
+      - function: "clanguml::t20048::tmain()"

@@ -1,0 +1,13 @@
+add_compile_flags:
+  - -fparse-all-comments
+diagrams:
+  t20047_sequence:
+    type: sequence
+    glob:
+      - t20047.cc
+    include:
+      namespaces:
+        - clanguml::t20047
+    using_namespace: clanguml::t20047
+    from:
+      - function: "clanguml::t20047::tmain()"

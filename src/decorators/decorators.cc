@@ -187,10 +187,12 @@ std::shared_ptr<decorator> call::from_string(std::string_view c)
     return res;
 }
 
-std::vector<std::shared_ptr<decorator>> parse(
+std::pair<std::vector<std::shared_ptr<decorator>>, std::string> parse(
     std::string documentation_block, const std::string &clanguml_tag)
 {
     std::vector<std::shared_ptr<decorator>> res;
+    std::string stripped_comment;
+
     const std::string begin_tag{"@" + clanguml_tag};
     const auto begin_tag_size = begin_tag.size();
 
@@ -202,12 +204,20 @@ std::vector<std::shared_ptr<decorator>> parse(
     const std::string_view block_view{documentation_block};
 
     auto pos = block_view.find("@" + clanguml_tag + "{");
+
+    if (pos == std::string::npos) {
+        // This comment had no uml directives
+        return {{}, util::trim(documentation_block)};
+    }
+
+    size_t last_end_pos{0};
     while (pos < documentation_block.size()) {
         auto c_begin = pos + begin_tag_size;
-        auto c_end = documentation_block.find('}', c_begin);
+        auto c_end = block_view.find('}', c_begin);
 
-        if (c_end == std::string::npos)
-            return res;
+        if (c_end == std::string::npos) {
+            return {res, util::trim(stripped_comment)};
+        }
 
         auto com =
             decorator::from_string(block_view.substr(c_begin + 1, c_end - 2));
@@ -215,10 +225,15 @@ std::vector<std::shared_ptr<decorator>> parse(
         if (com)
             res.emplace_back(std::move(com));
 
+        const auto in_between_length = pos - last_end_pos;
+        stripped_comment += block_view.substr(last_end_pos, in_between_length);
+
+        last_end_pos = pos + (c_end - c_begin + begin_tag_size + 1);
+
         pos = block_view.find("@" + clanguml_tag + "{", c_end);
     }
 
-    return res;
+    return {res, util::trim(stripped_comment)};
 };
 
 } // namespace clanguml::decorators

@@ -265,23 +265,29 @@ public:
      * @param comment clang::RawComment pointer
      * @param de Reference to clang::DiagnosticsEngine
      * @param element Reference to element to be updated
+     * @return Comment with uml directives stripped from it
      */
-    void process_comment(const clang::RawComment *comment,
-        clang::DiagnosticsEngine &de,
+    [[maybe_unused]] std::string process_comment(
+        const clang::RawComment *comment, clang::DiagnosticsEngine &de,
         clanguml::common::model::decorated_element &e)
     {
-        if (comment != nullptr) {
-            auto [it, inserted] = processed_comments_.emplace(comment);
+        if (comment == nullptr)
+            return {};
 
-            if (!inserted)
-                return;
+        auto [it, inserted] = processed_comments_.emplace(comment);
 
-            // Process clang-uml decorators in the comments
-            // TODO: Refactor to use standard block comments processable by
-            //       clang comments
-            e.add_decorators(decorators::parse(
-                comment->getFormattedText(source_manager_, de)));
-        }
+        if (!inserted)
+            return {};
+
+        // Process clang-uml decorators in the comments
+        // TODO: Refactor to use standard block comments processable by
+        //       clang comments
+        const auto &[decorators, stripped_comment] =
+            decorators::parse(comment->getFormattedText(source_manager_, de));
+
+        e.add_decorators(decorators);
+
+        return stripped_comment;
     }
 
     /**
@@ -331,6 +337,12 @@ public:
      * @return Reference to config instance
      */
     const ConfigT &config() const { return config_; }
+
+protected:
+    std::set<const clang::RawComment *> &processed_comments()
+    {
+        return processed_comments_;
+    }
 
 private:
     // Reference to the output diagram model

@@ -155,7 +155,17 @@ add_subdirectory(src)
 #
 option(BUILD_TESTS "" ON)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
+option(ENABLE_CUDA_TEST_CASES "" OFF)
+
+#
+# Setup CUDA if available
+#
+if(ENABLE_CUDA_TEST_CASES)
+    include(CheckLanguage)
+    check_language(CUDA)
+endif(ENABLE_CUDA_TEST_CASES)
+
 if(BUILD_TESTS)
-  enable_testing()
-  add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif(BUILD_TESTS)

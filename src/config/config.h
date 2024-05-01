@@ -78,7 +78,9 @@ enum class callee_type {
     method,
     function,
     function_template,
-    lambda
+    lambda,
+    cuda_kernel,
+    cuda_device
 };
 
 std::string to_string(callee_type mt);

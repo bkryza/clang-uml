@@ -98,6 +98,11 @@ const activity &diagram::get_activity(common::id_t id) const
     return sequences_.at(id);
 }
 
+bool diagram::has_activity(common::id_t id) const
+{
+    return sequences_.count(id) > 0;
+}
+
 activity &diagram::get_activity(common::id_t id) { return sequences_.at(id); }
 
 void diagram::add_message(model::message &&message)

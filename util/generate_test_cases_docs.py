@@ -60,7 +60,8 @@ with open(r'tests/test_cases.yaml') as f:
                 tc.write("## Source code\n")
                 for root, dirs, files in os.walk(f'tests/{name}/'):
                     for source_file in files:
-                        if source_file.endswith((".h", ".cc", ".c", ".cppm")):
+                        if source_file.endswith((
+                                ".h", ".cc", ".c", ".cppm", ".cu", ".cuh")):
                             if source_file == "test_case.h":
                                 continue
                             file_path = os.path.join(root, source_file)

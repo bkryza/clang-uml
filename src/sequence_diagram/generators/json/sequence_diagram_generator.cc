@@ -39,6 +39,14 @@ void to_json(nlohmann::json &j, const participant &c)
     if (c.type_name() == "method") {
         j["name"] = dynamic_cast<const method &>(c).method_name();
     }
+
+    if (c.type_name() == "function" || c.type_name() == "function_template") {
+        const auto &f = dynamic_cast<const function &>(c);
+        if (f.is_cuda_kernel())
+            j["is_cuda_kernel"] = true;
+        if (f.is_cuda_device())
+            j["is_cuda_device"] = true;
+    }
 }
 
 void to_json(nlohmann::json &j, const activity &c)
@@ -98,6 +106,8 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
                           .message_name(render_mode);
         }
     }
+
+    message = config().simplify_template_type(message);
 
     nlohmann::json msg;
 

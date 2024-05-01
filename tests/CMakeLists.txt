@@ -9,13 +9,18 @@ file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
 set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069)
 set(TEST_CASES_REQUIRING_CXX20_MODULES t00070 t00071 t00072
                                        t30012 t30013 t30014 t30015)
+set(TEST_CASES_REQUIRING_CUDA t20049 t20050 t20051)
 
 if(ENABLE_CXX_MODULES_TEST_CASES)
+    message(STATUS "Enabling C++ modules test cases")
+
     foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
         list(APPEND TEST_CASES_REQUIRING_CXX20 ${CXX20_MOD_TC})
     endforeach()
     set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 else()
+    message(STATUS "Disabling C++ modules test cases")
+
     foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
         list(FILTER TEST_CASE_SOURCES
                 EXCLUDE
@@ -23,9 +28,22 @@ else()
         list(FILTER TEST_CASE_CONFIGS
                 EXCLUDE
                 REGEX ".*${CXX20_MOD_TC}.*")
-
     endforeach()
 endif(ENABLE_CXX_MODULES_TEST_CASES)
+
+if(NOT ENABLE_CUDA_TEST_CASES)
+    message(STATUS "Disabling CUDA test cases")
+    foreach(CUDA_TC ${TEST_CASES_REQUIRING_CUDA})
+        list(FILTER TEST_CASE_SOURCES
+                EXCLUDE
+                REGEX ".*${CUDA_TC}.*")
+        list(FILTER TEST_CASE_CONFIGS
+                EXCLUDE
+                REGEX ".*${CUDA_TC}.*")
+    endforeach()
+else()
+    message(STATUS "Enabling CUDA test cases")
+endif(NOT ENABLE_CUDA_TEST_CASES)
 
 set(CLANG_UML_TEST_LIBRARIES
         clang-umllib
@@ -39,7 +57,6 @@ endif(MSVC)
 
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_std_20 SUPPORTS_CXX_STD_20)
 
-message(STATUS "Enabling C++20 test cases")
 
 # Remove test cases which require C++20 if they are not supported here
 if(SUPPORTS_CXX_STD_20 EQUAL -1
@@ -53,8 +70,10 @@ if(SUPPORTS_CXX_STD_20 EQUAL -1
                 EXCLUDE
                 REGEX ".*${CXX20_TC}.*")
     endforeach()
+    message(STATUS "Disabling C++20 test cases")
 else()
     set(ENABLE_CXX_STD_20_TEST_CASES 1)
+    message(STATUS "Enabling C++20 test cases")
 endif()
 
 if(APPLE)
@@ -93,7 +112,8 @@ foreach(TEST_NAME ${TEST_NAMES})
             $<IF:${ENABLE_CXX_STD_20_TEST_CASES},cxx_std_20,cxx_std_17>)
     target_compile_definitions(${TEST_NAME} PRIVATE
             $<$<EQUAL:${ENABLE_CXX_STD_20_TEST_CASES},1>:ENABLE_CXX_STD_20_TEST_CASES>
-            $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>)
+            $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>
+            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>)
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<COMPILE_LANGUAGE:CXX>:
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
