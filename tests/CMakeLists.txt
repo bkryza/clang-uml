@@ -32,7 +32,7 @@ else()
 endif(ENABLE_CXX_MODULES_TEST_CASES)
 
 if(NOT ENABLE_CUDA_TEST_CASES)
-    message(STATUS "Enabling CUDA test cases")
+    message(STATUS "Disabling CUDA test cases")
     foreach(CUDA_TC ${TEST_CASES_REQUIRING_CUDA})
         list(FILTER TEST_CASE_SOURCES
                 EXCLUDE
@@ -112,7 +112,8 @@ foreach(TEST_NAME ${TEST_NAMES})
             $<IF:${ENABLE_CXX_STD_20_TEST_CASES},cxx_std_20,cxx_std_17>)
     target_compile_definitions(${TEST_NAME} PRIVATE
             $<$<EQUAL:${ENABLE_CXX_STD_20_TEST_CASES},1>:ENABLE_CXX_STD_20_TEST_CASES>
-            $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>)
+            $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>
+            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>)
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<COMPILE_LANGUAGE:CXX>:
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
