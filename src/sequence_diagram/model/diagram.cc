@@ -409,6 +409,116 @@ bool diagram::is_empty() const
     return activities_.empty() || participants_.empty();
 }
 
+void diagram::inline_lambda_operator_calls()
+{
+    std::map<common::id_t, activity> activities;
+    std::map<common::id_t, std::unique_ptr<participant>> participants;
+    std::set<common::id_t> active_participants;
+
+    for (auto &[id, act] : sequences()) {
+        model::activity new_activity{id};
+
+        // If activity is a lambda operator() - skip it
+        auto maybe_lambda_activity = get_participant<model::method>(id);
+
+        if (maybe_lambda_activity) {
+            const auto parent_class_id =
+                maybe_lambda_activity.value().class_id();
+            auto maybe_parent_class =
+                get_participant<model::class_>(parent_class_id);
+
+            if (maybe_parent_class && maybe_parent_class.value().is_lambda()) {
+                continue;
+            }
+        }
+
+        // For other activities, check each message - if it calls lambda
+        // operator() - reattach the message to the next activity in the chain
+        // (assuming it's not lambda)
+        for (auto &m : act.messages()) {
+
+            auto message_call_to_lambda{false};
+
+            message_call_to_lambda =
+                inline_lambda_operator_call(id, new_activity, m);
+
+            if (!message_call_to_lambda)
+                new_activity.add_message(m);
+        }
+
+        // Add activity
+        activities.insert({id, std::move(new_activity)});
+    }
+
+    for (auto &&[id, p] : this->participants()) {
+        // Skip participants which are lambda classes
+        if (const auto *maybe_class =
+                dynamic_cast<const model::class_ *>(p.get());
+            maybe_class && maybe_class->is_lambda()) {
+            continue;
+        }
+
+        // Skip participants which are lambda operator methods
+        if (const auto *maybe_method =
+                dynamic_cast<const model::method *>(p.get());
+            maybe_method) {
+            auto maybe_class =
+                get_participant<model::class_>(maybe_method->class_id());
+            if (maybe_class && maybe_class.value().is_lambda())
+                continue;
+        }
+
+        // Otherwise move the participant to the new diagram model
+        auto participant_id = p->id();
+        participants.emplace(participant_id, std::move(p));
+    }
+
+    // Skip active participants which are not in lambdaless_diagram participants
+    for (auto id : this->active_participants()) {
+        if (participants.count(id)) {
+            active_participants.emplace(id);
+        }
+    }
+
+    activities_ = std::move(activities);
+    participants_ = std::move(participants);
+    active_participants_ = std::move(active_participants);
+}
+
+bool diagram::inline_lambda_operator_call(
+    const long id, model::activity &new_activity, const model::message &m)
+{
+    bool message_call_to_lambda{false};
+    auto maybe_lambda_operator = get_participant<model::method>(m.to());
+
+    if (maybe_lambda_operator) {
+        const auto parent_class_id = maybe_lambda_operator.value().class_id();
+        auto maybe_parent_class =
+            get_participant<model::class_>(parent_class_id);
+
+        if (maybe_parent_class && maybe_parent_class.value().is_lambda()) {
+            // auto new_message{m};
+            // new_message.set_
+            auto lambda_operator_activity = get_activity(m.to());
+
+            // For each call in that lambda activity - reattach this
+            // call to the current activity
+            for (auto &mm : lambda_operator_activity.messages()) {
+                if (!inline_lambda_operator_call(id, new_activity, mm)) {
+                    auto new_message{mm};
+
+                    new_message.set_from(id);
+                    new_activity.add_message(new_message);
+                }
+            }
+
+            message_call_to_lambda = true;
+        }
+    }
+
+    return message_call_to_lambda;
+}
+
 void diagram::print() const
 {
     LOG_TRACE(" --- Participants ---");

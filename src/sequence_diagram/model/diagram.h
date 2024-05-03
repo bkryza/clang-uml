@@ -295,12 +295,12 @@ public:
      */
     bool is_empty() const override;
 
-    void update_sequences_from_diagram(diagram &other)
-    {
-        activities_ = std::move(other.activities_);
-        participants_ = std::move(other.participants_);
-        active_participants_ = std::move(other.active_participants_);
-    }
+    /**
+     * If option to inline lambda calls is enabled, we need to modify the
+     * sequences to skip the lambda calls. In case lambda call does not lead
+     * to a non-lambda call, omit it entirely
+     */
+    void inline_lambda_operator_calls();
 
 private:
     /**
@@ -343,6 +343,9 @@ private:
 
         return block_end_types.count(mt) > 0;
     };
+
+    bool inline_lambda_operator_call(
+        const long id, model::activity &new_activity, const model::message &m);
 
     std::map<common::id_t, activity> activities_;
 

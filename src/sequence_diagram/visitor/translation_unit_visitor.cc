@@ -2028,7 +2028,7 @@ void translation_unit_visitor::finalize()
     ensure_lambda_messages_have_operator_as_target();
 
     if (config().inline_lambda_messages())
-        inline_lambda_operator_calls();
+        diagram().inline_lambda_operator_calls();
 }
 
 void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
@@ -2073,116 +2073,6 @@ void translation_unit_visitor::resolve_ids_to_global()
             }
         }
     }
-}
-
-void translation_unit_visitor::inline_lambda_operator_calls()
-{ // If option to inline lambda calls is enabled, we need to modify the
-    // sequences to skip the lambda calls. In case lambda call does not lead
-    // to a non-lambda call, omit it entirely
-
-    model::diagram lambdaless_diagram;
-
-    for (auto &[id, act] : diagram().sequences()) {
-        model::activity new_activity{id};
-
-        // If activity is a lambda operator() - skip it
-        auto maybe_lambda_activity =
-            diagram().get_participant<model::method>(id);
-
-        if (maybe_lambda_activity) {
-            const auto parent_class_id =
-                maybe_lambda_activity.value().class_id();
-            auto maybe_parent_class =
-                diagram().get_participant<model::class_>(parent_class_id);
-
-            if (maybe_parent_class && maybe_parent_class.value().is_lambda()) {
-                continue;
-            }
-        }
-
-        // For other activities, check each message - if it calls lambda
-        // operator() - reattach the message to the next activity in the chain
-        // (assuming it's not lambda)
-        for (auto &m : act.messages()) {
-
-            auto message_call_to_lambda{false};
-
-            message_call_to_lambda =
-                inline_lambda_operator_call(id, new_activity, m);
-
-            if (!message_call_to_lambda)
-                new_activity.add_message(m);
-        }
-
-        // Add activity
-        lambdaless_diagram.sequences().insert({id, std::move(new_activity)});
-    }
-
-    for (auto &&[id, p] : diagram().participants()) {
-        // Skip participants which are lambda classes
-        if (const auto *maybe_class =
-                dynamic_cast<const model::class_ *>(p.get());
-            maybe_class && maybe_class->is_lambda()) {
-            continue;
-        }
-
-        // Skip participants which are lambda operator methods
-        if (const auto *maybe_method =
-                dynamic_cast<const model::method *>(p.get());
-            maybe_method) {
-            auto maybe_class = diagram().get_participant<model::class_>(
-                maybe_method->class_id());
-            if (maybe_class && maybe_class.value().is_lambda())
-                continue;
-        }
-
-        // Otherwise move the participant to the new diagram model
-        lambdaless_diagram.add_participant(std::move(p));
-    }
-
-    // Skip active participants which are not in lambdaless_diagram participants
-    for (auto id : diagram().active_participants()) {
-        if (lambdaless_diagram.participants().count(id)) {
-            lambdaless_diagram.add_active_participant(id);
-        }
-    }
-
-    diagram().update_sequences_from_diagram(lambdaless_diagram);
-}
-
-bool translation_unit_visitor::inline_lambda_operator_call(
-    const long id, model::activity &new_activity, const model::message &m)
-{
-    bool message_call_to_lambda{false};
-    auto maybe_lambda_operator =
-        diagram().get_participant<model::method>(m.to());
-
-    if (maybe_lambda_operator) {
-        const auto parent_class_id = maybe_lambda_operator.value().class_id();
-        auto maybe_parent_class =
-            diagram().get_participant<model::class_>(parent_class_id);
-
-        if (maybe_parent_class && maybe_parent_class.value().is_lambda()) {
-            // auto new_message{m};
-            // new_message.set_
-            auto lambda_operator_activity = diagram().get_activity(m.to());
-
-            // For each call in that lambda activity - reattach this
-            // call to the current activity
-            for (auto &mm : lambda_operator_activity.messages()) {
-                if (!inline_lambda_operator_call(id, new_activity, mm)) {
-                    auto new_message{mm};
-
-                    new_message.set_from(id);
-                    new_activity.add_message(new_message);
-                }
-            }
-
-            message_call_to_lambda = true;
-        }
-    }
-
-    return message_call_to_lambda;
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::method>
