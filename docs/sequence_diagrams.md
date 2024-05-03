@@ -252,6 +252,17 @@ results in the following diagram:
 
 ![extension](test_cases/t20012_sequence.svg)
 
+In case lambda expressions are redundant and we are only interested in the calls
+generate from the lambda expressions, it is possible to inline lambda
+expressions in the generated diagrams by specifying the following option:
+
+```yaml
+inline_lambda_messages: true
+```
+
+For example compare the test cases [t20012](test_cases/t20012.md) and
+[t20052](test_cases/t20052.md).
+
 ## Customizing participants order
 The default participant order in the sequence diagram can be suboptimal in the
 sense that consecutive calls can go right, then left, then right again

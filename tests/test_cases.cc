@@ -480,6 +480,8 @@ using namespace clanguml::test::matchers;
 #include "t20050/test_case.h"
 #include "t20051/test_case.h"
 #endif
+#include "t20052/test_case.h"
+#include "t20053/test_case.h"
 
 ///
 /// Package diagram tests

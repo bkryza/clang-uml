@@ -347,6 +347,7 @@ YAML::Emitter &operator<<(
              sd != nullptr) {
         out << sd->title;
         out << c.combine_free_functions_into_file_participants;
+        out << c.inline_lambda_messages;
         out << c.generate_condition_statements;
         out << c.generate_method_arguments;
         out << c.generate_return_types;

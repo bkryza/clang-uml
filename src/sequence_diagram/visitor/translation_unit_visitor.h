@@ -487,6 +487,10 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
+    void resolve_ids_to_global();
+
+    void ensure_lambda_messages_have_operator_as_target();
+
     call_expression_context call_expression_context_;
 
     /**

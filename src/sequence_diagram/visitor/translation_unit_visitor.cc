@@ -630,7 +630,7 @@ bool translation_unit_visitor::TraverseCXXConstructExpr(
 
     translation_unit_visitor::VisitCXXConstructExpr(expr);
 
-    LOG_TRACE("Leaving member call expression at {}",
+    LOG_TRACE("Leaving cxx construct call expression at {}",
         expr->getBeginLoc().printToString(source_manager()));
 
     context().leave_callexpr();
@@ -1601,8 +1601,8 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 
                 break;
             }
-            else if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) !=
-                nullptr) {
+
+            if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) != nullptr) {
                 const auto *fd =
                     clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
 
@@ -1615,9 +1615,8 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 
                 break;
             }
-            else {
-                LOG_DBG("Unknown unresolved lookup expression");
-            }
+
+            LOG_DBG("Unknown unresolved lookup expression");
         }
     }
 
@@ -2019,6 +2018,38 @@ void translation_unit_visitor::pop_message_to_diagram(
 
 void translation_unit_visitor::finalize()
 {
+    resolve_ids_to_global();
+
+    // Change all messages with target set to an id of a lambda expression to
+    // to the ID of their operator() - this is necessary, as some calls to
+    // lambda expressions are visited before the actual lambda expressions
+    // are visited...
+    ensure_lambda_messages_have_operator_as_target();
+
+    if (config().inline_lambda_messages())
+        diagram().inline_lambda_operator_calls();
+}
+
+void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
+{
+    for (auto &[id, activity] : diagram().sequences()) {
+        for (auto &m : activity.messages()) {
+            auto participant = diagram().get_participant<model::class_>(m.to());
+
+            if (participant && participant.value().is_lambda() &&
+                participant.value().lambda_operator_id() != 0) {
+                LOG_DBG("Changing lambda expression target id from {} to {}",
+                    m.to(), participant.value().lambda_operator_id());
+
+                m.set_to(participant.value().lambda_operator_id());
+                m.set_message_name("operator()");
+            }
+        }
+    }
+}
+
+void translation_unit_visitor::resolve_ids_to_global()
+{
     std::set<common::id_t> active_participants_unique;
 
     // Change all active participants AST local ids to diagram global ids
@@ -2038,25 +2069,6 @@ void translation_unit_visitor::finalize()
         for (auto &m : activity.messages()) {
             if (local_ast_id_map_.find(m.to()) != local_ast_id_map_.end()) {
                 m.set_to(local_ast_id_map_.at(m.to()));
-            }
-        }
-    }
-
-    // Change all messages with target set to an id of a lambda expression to
-    // to the ID of their operator() - this is necessary, as some calls to
-    // lambda expressions are visited before the actual lambda expressions
-    // are visited...
-    for (auto &[id, activity] : diagram().sequences()) {
-        for (auto &m : activity.messages()) {
-            auto participant = diagram().get_participant<model::class_>(m.to());
-
-            if (participant && participant.value().is_lambda() &&
-                participant.value().lambda_operator_id() != 0) {
-                LOG_DBG("Changing lambda expression target id from {} to {}",
-                    m.to(), participant.value().lambda_operator_id());
-
-                m.set_to(participant.value().lambda_operator_id());
-                m.set_message_name("operator()");
             }
         }
     }

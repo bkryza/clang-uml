@@ -1,0 +1,12 @@
+diagrams:
+  t20052_sequence:
+    type: sequence
+    glob:
+      - t20052.cc
+    include:
+      namespaces:
+        - clanguml::t20052
+    using_namespace: clanguml::t20052
+    inline_lambda_messages: true
+    from:
+      - function: "clanguml::t20052::tmain()"

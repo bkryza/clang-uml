@@ -561,6 +561,9 @@ cli_flow_t cli_handler::add_config_diagram(
         doc["diagrams"][name]["glob"] = std::vector<std::string>{{"src/*.cpp"}};
         doc["diagrams"][name]["combine_free_functions_into_file_participants"] =
             true;
+        doc["diagrams"][name]["inline_lambda_messages"] = false;
+        doc["diagrams"][name]["generate_message_comments"] = false;
+        doc["diagrams"][name]["generate_condition_statements"] = false;
         doc["diagrams"][name]["using_namespace"] =
             std::vector<std::string>{{"myproject"}};
         doc["diagrams"][name]["include"]["paths"] =

@@ -295,6 +295,13 @@ public:
      */
     bool is_empty() const override;
 
+    /**
+     * If option to inline lambda calls is enabled, we need to modify the
+     * sequences to skip the lambda calls. In case lambda call does not lead
+     * to a non-lambda call, omit it entirely
+     */
+    void inline_lambda_operator_calls();
+
 private:
     /**
      * This method checks the last messages in sequence (current_messages),
@@ -337,7 +344,10 @@ private:
         return block_end_types.count(mt) > 0;
     };
 
-    std::map<common::id_t, activity> sequences_;
+    bool inline_lambda_operator_call(common::id_t id,
+        model::activity &new_activity, const model::message &m);
+
+    std::map<common::id_t, activity> activities_;
 
     std::map<common::id_t, std::unique_ptr<participant>> participants_;
 

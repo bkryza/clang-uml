@@ -236,6 +236,7 @@ void inheritable_diagram_options::inherit(
     comment_parser.override(parent.comment_parser);
     combine_free_functions_into_file_participants.override(
         parent.combine_free_functions_into_file_participants);
+    inline_lambda_messages.override(parent.inline_lambda_messages);
     generate_return_types.override(parent.generate_return_types);
     generate_condition_statements.override(
         parent.generate_condition_statements);

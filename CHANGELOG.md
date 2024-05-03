@@ -1,5 +1,7 @@
 # CHANGELOG
 
+ * Added option inline_lambda_messages to omit lambda expressions from sequence
+   diagrams (#261)
  * Added support for CUDA calls in sequence diagrams (#263)
  * Improved handling of message call comments (#264)
  * Fixed handling of nested lambda expressions in sequence diagrams

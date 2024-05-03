@@ -132,6 +132,8 @@
  * [t20049](./test_cases/t20049.md) - Test case for CUDA kernel calls
  * [t20050](./test_cases/t20050.md) - Test case for CUDA kernel calls with participants combined to file
  * [t20051](./test_cases/t20051.md) - Test case for CUDA calls callee_type filter
+ * [t20052](./test_cases/t20052.md) - Test case for inlining lambda operator calls
+ * [t20053](./test_cases/t20053.md) - Test case for inlining nested lambda operator calls
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

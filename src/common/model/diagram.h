@@ -40,6 +40,11 @@ class diagram {
 public:
     diagram();
 
+    diagram(const diagram &) = delete;
+    diagram(diagram && /*unused*/) noexcept;
+    diagram &operator=(const diagram &) = delete;
+    diagram &operator=(diagram && /*unused*/) noexcept;
+
     virtual ~diagram();
 
     /**
@@ -76,11 +81,6 @@ public:
      */
     virtual common::optional_ref<clanguml::common::model::diagram_element>
     get_with_namespace(const std::string &name, const namespace_ &ns) const;
-
-    diagram(const diagram &) = delete;
-    diagram(diagram && /*unused*/) noexcept;
-    diagram &operator=(const diagram &) = delete;
-    diagram &operator=(diagram && /*unused*/) noexcept;
 
     /**
      * Set diagram name.

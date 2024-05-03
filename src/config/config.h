@@ -570,6 +570,7 @@ struct inheritable_diagram_options {
         "comment_parser", comment_parser_t::plain};
     option<bool> combine_free_functions_into_file_participants{
         "combine_free_functions_into_file_participants", false};
+    option<bool> inline_lambda_messages{"inline_lambda_messages", false};
     option<bool> generate_return_types{"generate_return_types", false};
     option<bool> generate_condition_statements{
         "generate_condition_statements", false};
