@@ -344,8 +344,8 @@ private:
         return block_end_types.count(mt) > 0;
     };
 
-    bool inline_lambda_operator_call(
-        const long id, model::activity &new_activity, const model::message &m);
+    bool inline_lambda_operator_call(common::id_t id,
+        model::activity &new_activity, const model::message &m);
 
     std::map<common::id_t, activity> activities_;
 

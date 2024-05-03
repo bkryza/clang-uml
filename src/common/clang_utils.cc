@@ -946,11 +946,8 @@ bool is_struct(const clang::NamedDecl *decl)
 
 bool has_attr(const clang::FunctionDecl *decl, clang::attr::Kind function_attr)
 {
-    for (const auto &attr : decl->attrs()) {
-        if (attr->getKind() == function_attr)
-            return true;
-    }
-
-    return false;
+    return std::any_of(decl->attrs().begin(), decl->attrs().end(),
+        [function_attr](
+            auto &&attr) { return attr->getKind() == function_attr; });
 }
 } // namespace clanguml::common

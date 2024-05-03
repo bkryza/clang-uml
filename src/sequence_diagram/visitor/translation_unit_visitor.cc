@@ -1601,8 +1601,8 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 
                 break;
             }
-            else if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) !=
-                nullptr) {
+
+            if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) != nullptr) {
                 const auto *fd =
                     clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
 
@@ -1615,9 +1615,8 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
 
                 break;
             }
-            else {
-                LOG_DBG("Unknown unresolved lookup expression");
-            }
+
+            LOG_DBG("Unknown unresolved lookup expression");
         }
     }
 

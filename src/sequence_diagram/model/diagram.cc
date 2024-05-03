@@ -454,14 +454,14 @@ void diagram::inline_lambda_operator_calls()
         // Skip participants which are lambda classes
         if (const auto *maybe_class =
                 dynamic_cast<const model::class_ *>(p.get());
-            maybe_class && maybe_class->is_lambda()) {
+            maybe_class != nullptr && maybe_class->is_lambda()) {
             continue;
         }
 
         // Skip participants which are lambda operator methods
         if (const auto *maybe_method =
                 dynamic_cast<const model::method *>(p.get());
-            maybe_method) {
+            maybe_method != nullptr) {
             auto maybe_class =
                 get_participant<model::class_>(maybe_method->class_id());
             if (maybe_class && maybe_class.value().is_lambda())
@@ -475,7 +475,7 @@ void diagram::inline_lambda_operator_calls()
 
     // Skip active participants which are not in lambdaless_diagram participants
     for (auto id : this->active_participants()) {
-        if (participants.count(id)) {
+        if (participants.count(id) > 0) {
             active_participants.emplace(id);
         }
     }
@@ -485,8 +485,8 @@ void diagram::inline_lambda_operator_calls()
     active_participants_ = std::move(active_participants);
 }
 
-bool diagram::inline_lambda_operator_call(
-    const long id, model::activity &new_activity, const model::message &m)
+bool diagram::inline_lambda_operator_call(const common::id_t id,
+    model::activity &new_activity, const model::message &m)
 {
     bool message_call_to_lambda{false};
     auto maybe_lambda_operator = get_participant<model::method>(m.to());
