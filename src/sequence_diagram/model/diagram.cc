@@ -95,22 +95,22 @@ void diagram::add_active_participant(common::id_t id)
 
 const activity &diagram::get_activity(common::id_t id) const
 {
-    return sequences_.at(id);
+    return activities_.at(id);
 }
 
 bool diagram::has_activity(common::id_t id) const
 {
-    return sequences_.count(id) > 0;
+    return activities_.count(id) > 0;
 }
 
-activity &diagram::get_activity(common::id_t id) { return sequences_.at(id); }
+activity &diagram::get_activity(common::id_t id) { return activities_.at(id); }
 
 void diagram::add_message(model::message &&message)
 {
     const auto caller_id = message.from();
-    if (sequences_.find(caller_id) == sequences_.end()) {
+    if (activities_.find(caller_id) == activities_.end()) {
         activity a{caller_id};
-        sequences_.insert({caller_id, std::move(a)});
+        activities_.insert({caller_id, std::move(a)});
     }
 
     get_activity(caller_id).add_message(std::move(message));
@@ -126,7 +126,7 @@ void diagram::end_block_message(
 {
     const auto caller_id = message.from();
 
-    if (sequences_.find(caller_id) != sequences_.end()) {
+    if (activities_.find(caller_id) != activities_.end()) {
         auto &current_messages = get_activity(caller_id).messages();
 
         fold_or_end_block_statement(
@@ -139,7 +139,7 @@ void diagram::add_case_stmt_message(model::message &&m)
     using clanguml::common::model::message_t;
     const auto caller_id = m.from();
 
-    if (sequences_.find(caller_id) != sequences_.end()) {
+    if (activities_.find(caller_id) != activities_.end()) {
         auto &current_messages = get_activity(caller_id).messages();
 
         if (current_messages.back().type() == message_t::kCase) {
@@ -151,11 +151,11 @@ void diagram::add_case_stmt_message(model::message &&m)
     }
 }
 
-std::map<common::id_t, activity> &diagram::sequences() { return sequences_; }
+std::map<common::id_t, activity> &diagram::sequences() { return activities_; }
 
 const std::map<common::id_t, activity> &diagram::sequences() const
 {
-    return sequences_;
+    return activities_;
 }
 
 std::map<common::id_t, std::unique_ptr<participant>> &diagram::participants()
@@ -191,7 +191,7 @@ std::vector<std::string> diagram::list_from_values() const
 {
     std::vector<std::string> result;
 
-    for (const auto &[from_id, act] : sequences_) {
+    for (const auto &[from_id, act] : activities_) {
 
         const auto &from_activity = *(participants_.at(from_id));
         const auto &full_name = from_activity.full_name(false);
@@ -209,7 +209,7 @@ std::vector<std::string> diagram::list_to_values() const
 {
     std::vector<std::string> result;
 
-    for (const auto &[from_id, act] : sequences_) {
+    for (const auto &[from_id, act] : activities_) {
         for (const auto &m : act.messages()) {
             if (participants_.count(m.to()) > 0) {
                 const auto &to_activity = *(participants_.at(m.to()));
@@ -406,7 +406,7 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
 
 bool diagram::is_empty() const
 {
-    return sequences_.empty() || participants_.empty();
+    return activities_.empty() || participants_.empty();
 }
 
 void diagram::print() const
@@ -417,7 +417,7 @@ void diagram::print() const
     }
 
     LOG_TRACE(" --- Activities ---");
-    for (const auto &[from_id, act] : sequences_) {
+    for (const auto &[from_id, act] : activities_) {
         if (participants_.count(from_id) == 0)
             continue;
 
@@ -487,7 +487,7 @@ void diagram::finalize()
 
     // First in each sequence (activity) filter out any remaining
     // uninteresting calls
-    for (auto &[id, act] : sequences_) {
+    for (auto &[id, act] : activities_) {
         util::erase_if(act.messages(), [this](auto &m) {
             if (m.type() != message_t::kCall)
                 return false;
@@ -507,7 +507,7 @@ void diagram::finalize()
     }
 
     // Now remove any empty block statements, e.g. if/endif
-    for (auto &[id, act] : sequences_) {
+    for (auto &[id, act] : activities_) {
         int64_t block_nest_level{0};
         std::vector<std::vector<message>> block_message_stack;
         // Add first stack level - this level will contain the filtered

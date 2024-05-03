@@ -295,6 +295,13 @@ public:
      */
     bool is_empty() const override;
 
+    void update_sequences_from_diagram(diagram &other)
+    {
+        activities_ = std::move(other.activities_);
+        participants_ = std::move(other.participants_);
+        active_participants_ = std::move(other.active_participants_);
+    }
+
 private:
     /**
      * This method checks the last messages in sequence (current_messages),
@@ -337,7 +344,7 @@ private:
         return block_end_types.count(mt) > 0;
     };
 
-    std::map<common::id_t, activity> sequences_;
+    std::map<common::id_t, activity> activities_;
 
     std::map<common::id_t, std::unique_ptr<participant>> participants_;
 

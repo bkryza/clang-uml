@@ -125,8 +125,8 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 void generator::generate_return(const message &m, std::ostream &ostr) const
 {
 
-    // Add return activity only for messages between different actors and
-    // only if the return type is different than void
+    // Add return activity only for messages between different actors
+    // and only if the return type is different than void
     if (m.from() == m.to())
         return;
 
@@ -338,7 +338,8 @@ void generator::generate_participant(
     auto p = model().get(name);
 
     if (!p.has_value()) {
-        LOG_WARN("Cannot find participant {} from `participants_order` option",
+        LOG_WARN("Cannot find participant {} from `participants_order` "
+                 "option",
             name);
         return;
     }
@@ -629,10 +630,10 @@ void generator::generate_diagram(std::ostream &ostr) const
             model::function::message_render_mode render_mode =
                 select_method_arguments_render_mode();
 
-            // For methods or functions in diagrams where they are combined into
-            // file participants, we need to add an 'entry' point call to know
-            // which method relates to the first activity for this 'start_from'
-            // condition
+            // For methods or functions in diagrams where they are
+            // combined into file participants, we need to add an
+            // 'entry' point call to know which method relates to the
+            // first activity for this 'start_from' condition
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
                 ostr << "[->"

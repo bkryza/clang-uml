@@ -665,6 +665,7 @@ template <> struct convert<sequence_diagram> {
         get_option(node, rhs.from_to);
         get_option(node, rhs.to);
         get_option(node, rhs.combine_free_functions_into_file_participants);
+        get_option(node, rhs.inline_lambda_messages);
         get_option(node, rhs.generate_return_types);
         get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.participants_order);
@@ -844,6 +845,7 @@ template <> struct convert<config> {
         get_option(node, rhs.debug_mode);
         get_option(node, rhs.generate_metadata);
         get_option(node, rhs.combine_free_functions_into_file_participants);
+        get_option(node, rhs.inline_lambda_messages);
         get_option(node, rhs.generate_return_types);
         get_option(node, rhs.generate_condition_statements);
         get_option(node, rhs.generate_message_comments);

@@ -487,6 +487,11 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
+    void inline_lambda_operator_calls();
+
+    bool inline_lambda_operator_call(
+        const long id, model::activity &new_activity, const model::message &m);
+
     call_expression_context call_expression_context_;
 
     /**
@@ -522,5 +527,7 @@ private:
         processed_comments_by_caller_id_;
 
     template_builder_t template_builder_;
+    void resolve_ids_to_global();
+    void ensure_lambda_messages_have_operator_as_target();
 };
 } // namespace clanguml::sequence_diagram::visitor
