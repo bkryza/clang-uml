@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="397px" preserveAspectRatio="none" style="width:676px;height:397px;" version="1.1" viewBox="0 0 676 397" width="676px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1inb3uj1gqiub" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f1mwtw77zaoomr" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -10,41 +10,41 @@
   </defs>
   <g>
     <text fill="#000000" font-family="sans-serif" font-size="18" lengthAdjust="spacingAndGlyphs" textLength="273" x="204.5" y="16.708">Basic include diagram example</text>
-    <polygon fill="#FFFFFF" filter="url(#f1inb3uj1gqiub)" points="187,44.9531,218,44.9531,225,67.25,309,67.25,309,131.9531,187,131.9531,187,44.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FFFFFF" filter="url(#f1mwtw77zaoomr)" points="187,44.9531,218,44.9531,225,67.25,309,67.25,309,131.9531,187,131.9531,187,44.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <line style="stroke: #000000; stroke-width: 1.5;" x1="187" x2="225" y1="67.25" y2="67.25"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="25" x="191" y="59.9482">src</text>
-    <polygon fill="#FFFFFF" filter="url(#f1inb3uj1gqiub)" points="22,155.9531,85,155.9531,92,178.25,211,178.25,211,385.9531,22,385.9531,22,155.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FFFFFF" filter="url(#f1mwtw77zaoomr)" points="22,155.9531,85,155.9531,92,178.25,211,178.25,211,385.9531,22,385.9531,22,155.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="92" y1="178.25" y2="178.25"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="57" x="26" y="170.9482">include</text>
-    <polygon fill="#FFFFFF" filter="url(#f1inb3uj1gqiub)" points="54,250.9531,88,250.9531,95,273.25,179,273.25,179,353.9531,54,353.9531,54,250.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FFFFFF" filter="url(#f1mwtw77zaoomr)" points="54,250.9531,88,250.9531,95,273.25,179,273.25,179,353.9531,54,353.9531,54,250.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <line style="stroke: #000000; stroke-width: 1.5;" x1="54" x2="95" y1="273.25" y2="273.25"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="58" y="265.9482">lib1</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/b574a41a64fbb977766b58638986a9f4347216b1/tests/t40001/src/t40001.cc#L0" target="_top" title="t40001.cc" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b574a41a64fbb977766b58638986a9f4347216b1/tests/t40001/src/t40001.cc#L0" xlink:show="new" xlink:title="t40001.cc" xlink:type="simple">
-      <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="203,79.9531,203,116.25,293,116.25,293,89.9531,283,79.9531,203,79.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t40001/src/t40001.cc#L0" target="_top" title="t40001.cc" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t40001/src/t40001.cc#L0" xlink:show="new" xlink:title="t40001.cc" xlink:type="simple">
+      <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="203,79.9531,203,116.25,293,116.25,293,89.9531,283,79.9531,203,79.9531" style="stroke: #000000; stroke-width: 1.5;"/>
       <path d="M283,79.9531 L283,89.9531 L293,89.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="70" x="213" y="102.9482">t40001.cc</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/b574a41a64fbb977766b58638986a9f4347216b1/tests/t40001/include/t40001_include1.h#L0" target="_top" title="t40001_include1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b574a41a64fbb977766b58638986a9f4347216b1/tests/t40001/include/t40001_include1.h#L0" xlink:show="new" xlink:title="t40001_include1.h" xlink:type="simple">
-      <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="46.5,190.9531,46.5,227.25,195.5,227.25,195.5,200.9531,185.5,190.9531,46.5,190.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t40001/include/t40001_include1.h#L0" target="_top" title="t40001_include1.h" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t40001/include/t40001_include1.h#L0" xlink:show="new" xlink:title="t40001_include1.h" xlink:type="simple">
+      <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="46.5,190.9531,46.5,227.25,195.5,227.25,195.5,200.9531,185.5,190.9531,46.5,190.9531" style="stroke: #000000; stroke-width: 1.5;"/>
       <path d="M185.5,190.9531 L185.5,200.9531 L195.5,200.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="129" x="56.5" y="213.9482">t40001_include1.h</text>
     </a>
-    <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="97.5,293.9531,97.5,330.25,154.5,330.25,154.5,303.9531,144.5,293.9531,97.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="97.5,293.9531,97.5,330.25,154.5,330.25,154.5,303.9531,144.5,293.9531,97.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <path d="M144.5,293.9531 L144.5,303.9531 L154.5,303.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="37" x="107.5" y="316.9482">lib1.h</text>
-    <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="393.5,293.9531,393.5,330.25,452.5,330.25,452.5,303.9531,442.5,293.9531,393.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="393.5,293.9531,393.5,330.25,452.5,330.25,452.5,303.9531,442.5,293.9531,393.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <path d="M442.5,293.9531 L442.5,303.9531 L452.5,303.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="39" x="403.5" y="316.9482">string</text>
-    <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="301.5,190.9531,301.5,227.25,364.5,227.25,364.5,200.9531,354.5,190.9531,301.5,190.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="301.5,190.9531,301.5,227.25,364.5,227.25,364.5,200.9531,354.5,190.9531,301.5,190.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <path d="M354.5,190.9531 L354.5,200.9531 L364.5,200.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="43" x="311.5" y="213.9482">vector</text>
-    <polygon fill="#FEFECE" filter="url(#f1inb3uj1gqiub)" points="227.5,293.9531,227.5,330.25,358.5,330.25,358.5,303.9531,348.5,293.9531,227.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
+    <polygon fill="#FEFECE" filter="url(#f1mwtw77zaoomr)" points="227.5,293.9531,227.5,330.25,358.5,330.25,358.5,303.9531,348.5,293.9531,227.5,293.9531" style="stroke: #000000; stroke-width: 1.5;"/>
     <path d="M348.5,293.9531 L348.5,303.9531 L358.5,303.9531 " fill="#FEFECE" style="stroke: #000000; stroke-width: 1.5;"/>
     <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="111" x="237.5" y="316.9482">yaml-cpp/yaml.h</text>
-    <path d="M487.5,299.4531 L487.5,324.5859 L654.5,324.5859 L654.5,309.4531 L644.5,299.4531 L487.5,299.4531 " fill="#FBFB77" filter="url(#f1inb3uj1gqiub)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M487.5,299.4531 L487.5,324.5859 L654.5,324.5859 L654.5,309.4531 L644.5,299.4531 L487.5,299.4531 " fill="#FBFB77" filter="url(#f1mwtw77zaoomr)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M644.5,299.4531 L644.5,309.4531 L654.5,309.4531 L644.5,299.4531 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="146" x="493.5" y="316.52">This is a lib1 include dir</text>
-    <path d="M400,196.4531 L400,221.5859 L664,221.5859 L664,206.4531 L654,196.4531 L400,196.4531 " fill="#FBFB77" filter="url(#f1inb3uj1gqiub)" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <path d="M400,196.4531 L400,221.5859 L664,221.5859 L664,206.4531 L654,196.4531 L400,196.4531 " fill="#FBFB77" filter="url(#f1mwtw77zaoomr)" style="stroke: #A80036; stroke-width: 1.0;"/>
     <path d="M654,196.4531 L654,206.4531 L664,206.4531 L654,196.4531 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
     <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="243" x="406" y="213.52">This is a t40001_include1.h include file</text>
     <path d="M247.19,116.2831 C246.91,144.4031 250.93,199.5631 284,226.9531 C299.81,240.0431 358.52,224.1931 376,234.9531 C395.8,247.1431 408.53,271.1231 415.68,288.8931 " fill="none" id="C_0001755015016680017839-&gt;C_0001687197357150905926" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
