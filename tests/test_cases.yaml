@@ -377,7 +377,10 @@ test_cases:
       title: Test case for CUDA calls callee_type filter
       description:
     - name: t20052
-      title: Test case for CUDA calls callee_type filter
+      title: Test case for inlining lambda operator calls
+      description:
+    - name: t20053
+      title: Test case for inlining nested lambda operator calls
       description:
   Package diagrams:
     - name: t30001

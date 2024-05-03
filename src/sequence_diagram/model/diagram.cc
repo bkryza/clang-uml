@@ -497,18 +497,18 @@ bool diagram::inline_lambda_operator_call(const common::id_t id,
             get_participant<model::class_>(parent_class_id);
 
         if (maybe_parent_class && maybe_parent_class.value().is_lambda()) {
-            // auto new_message{m};
-            // new_message.set_
-            auto lambda_operator_activity = get_activity(m.to());
+            if (has_activity(m.to())) {
+                auto lambda_operator_activity = get_activity(m.to());
 
-            // For each call in that lambda activity - reattach this
-            // call to the current activity
-            for (auto &mm : lambda_operator_activity.messages()) {
-                if (!inline_lambda_operator_call(id, new_activity, mm)) {
-                    auto new_message{mm};
+                // For each call in that lambda activity - reattach this
+                // call to the current activity
+                for (auto &mm : lambda_operator_activity.messages()) {
+                    if (!inline_lambda_operator_call(id, new_activity, mm)) {
+                        auto new_message{mm};
 
-                    new_message.set_from(id);
-                    new_activity.add_message(new_message);
+                        new_message.set_from(id);
+                        new_activity.add_message(new_message);
+                    }
                 }
             }
 
