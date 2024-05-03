@@ -1,5 +1,6 @@
 # CHANGELOG
 
+ * Fixed generation of empty packages in class diagrams (#253)
  * Added option inline_lambda_messages to omit lambda expressions from sequence
    diagrams (#261)
  * Added support for CUDA calls in sequence diagrams (#263)

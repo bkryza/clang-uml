@@ -724,7 +724,10 @@ void generator::generate(const package &p, std::ostream &ostr) const
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             // TODO: add option - generate_empty_packages
             const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty()) {
+            if (!sp.is_empty() &&
+                !sp.all_of([this](const common::model::element &e) {
+                    return !model().should_include(e);
+                })) {
                 together_group_stack_.enter();
 
                 generate(sp, ostr);
