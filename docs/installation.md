@@ -6,6 +6,7 @@
   * [Ubuntu](#ubuntu)
   * [Fedora](#fedora)
   * [Conda](#conda)
+  * [Nix](#nix)
   * [Windows](#windows)
 * [Building from source](#building-from-source)
   * [Linux](#linux)
