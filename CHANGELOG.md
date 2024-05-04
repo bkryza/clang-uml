@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.5.2
  * Fixed generation of empty packages in class diagrams (#253)
  * Added option inline_lambda_messages to omit lambda expressions from sequence
    diagrams (#261)
@@ -13,7 +14,6 @@
  * Fixed building with LLVM 18 (#251)
 
 ### 0.5.1
-
  * Fixed elements filter in sequence diagrams (#248)
  * Fixed progress indicators ranges with multiple commands per TU (#240)
  * Added default diagram generation error for empty diagrams (#246)
