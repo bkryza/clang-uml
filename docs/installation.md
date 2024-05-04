@@ -53,7 +53,7 @@ conda config --set channel_priority strict
 conda install -c bkryza/label/clang-uml clang-uml
 ```
 
-#### nix
+#### Nix
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
