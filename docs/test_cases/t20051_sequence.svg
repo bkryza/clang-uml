@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="175px" preserveAspectRatio="none" style="width:399px;height:175px;" version="1.1" viewBox="0 0 399 175" width="399px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1nlv6olxrdkc6" width="300%" x="-1" y="-1">
+    <filter height="300%" id="f1imcvcqpnxcw" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,27 +9,27 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <rect fill="#FFFFFF" filter="url(#f1nlv6olxrdkc6)" height="36" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="64.5938"/>
-    <rect fill="#FFFFFF" filter="url(#f1nlv6olxrdkc6)" height="30" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="233" y="70.5938"/>
+    <rect fill="#FFFFFF" filter="url(#f1imcvcqpnxcw)" height="36" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="64.5938"/>
+    <rect fill="#FFFFFF" filter="url(#f1imcvcqpnxcw)" height="30" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="233" y="70.5938"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="41" x2="41" y1="54.5938" y2="118.5938"/>
     <line style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 5.0,5.0;" x1="238" x2="238" y1="54.5938" y2="118.5938"/>
-    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L19" target="_top" title="tmain" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L19" xlink:show="new" xlink:title="tmain" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1nlv6olxrdkc6)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="19.2969"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L19" target="_top" title="tmain" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L19" xlink:show="new" xlink:title="tmain" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f1imcvcqpnxcw)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="19.2969"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="39.292">tmain()</text>
-      <rect fill="#FEFECE" filter="url(#f1nlv6olxrdkc6)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="117.5938"/>
+      <rect fill="#FEFECE" filter="url(#f1imcvcqpnxcw)" height="30.2969" style="stroke: #A80036; stroke-width: 1.5;" width="62" x="8" y="117.5938"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="15" y="137.5889">tmain()</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L12" target="_top" title="vector_square_add" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L12" xlink:show="new" xlink:title="vector_square_add" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1nlv6olxrdkc6)" height="46.5938" style="stroke: #A80036; stroke-width: 1.5;" width="304" x="84" y="3"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L12" target="_top" title="vector_square_add" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L12" xlink:show="new" xlink:title="vector_square_add" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#f1imcvcqpnxcw)" height="46.5938" style="stroke: #A80036; stroke-width: 1.5;" width="304" x="84" y="3"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="107" x="182.5" y="22.9951">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="290" x="91" y="39.292">vector_square_add(float *,float *,float *,int)</text>
-      <rect fill="#FEFECE" filter="url(#f1nlv6olxrdkc6)" height="46.5938" style="stroke: #A80036; stroke-width: 1.5;" width="304" x="84" y="117.5938"/>
+      <rect fill="#FEFECE" filter="url(#f1imcvcqpnxcw)" height="46.5938" style="stroke: #A80036; stroke-width: 1.5;" width="304" x="84" y="117.5938"/>
       <text fill="#000000" font-family="sans-serif" font-size="14" font-style="italic" lengthAdjust="spacingAndGlyphs" textLength="107" x="182.5" y="137.5889">«CUDA Kernel»</text>
       <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="290" x="91" y="153.8857">vector_square_add(float *,float *,float *,int)</text>
     </a>
-    <rect fill="#FFFFFF" filter="url(#f1nlv6olxrdkc6)" height="36" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="64.5938"/>
-    <rect fill="#FFFFFF" filter="url(#f1nlv6olxrdkc6)" height="30" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="233" y="70.5938"/>
-    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L32" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t20051/t20051.cu#L32" xlink:show="new" xlink:title="" xlink:type="simple">
+    <rect fill="#FFFFFF" filter="url(#f1imcvcqpnxcw)" height="36" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="36" y="64.5938"/>
+    <rect fill="#FFFFFF" filter="url(#f1imcvcqpnxcw)" height="30" style="stroke: #A80036; stroke-width: 1.0;" width="10" x="233" y="70.5938"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L32" target="_top" title="" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t20051/t20051.cu#L32" xlink:show="new" xlink:title="" xlink:type="simple">
       <polygon fill="#A80036" points="221,66.5938,231,70.5938,221,74.5938,225,70.5938" style="stroke: #A80036; stroke-width: 1.0;"/>
       <line style="stroke: #A80036; stroke-width: 1.0;" x1="46" x2="227" y1="70.5938" y2="70.5938"/>
     </a>

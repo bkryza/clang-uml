@@ -37,7 +37,7 @@ generated in PlantUML format.
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-       -DCMAKE_CXX_FLAGS="-Wno-nonnull -Wno-stringop-overflow -Wno-dangling-reference" \
+       -DCMAKE_CXX_FLAGS="-Wno-nonnull -Wno-stringop-overflow -Wno-dangling-reference -Wno-array-bounds" \
        -DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON \
        -DCMAKE_INSTALL_PREFIX=%{_exec_prefix} \
        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \

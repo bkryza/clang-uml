@@ -6,6 +6,7 @@
   * [Ubuntu](#ubuntu)
   * [Fedora](#fedora)
   * [Conda](#conda)
+  * [Nix](#nix)
   * [Windows](#windows)
 * [Building from source](#building-from-source)
   * [Linux](#linux)
@@ -53,7 +54,7 @@ conda config --set channel_priority strict
 conda install -c bkryza/label/clang-uml clang-uml
 ```
 
-#### nix
+#### Nix
 
 ```bash
 git clone https://github.com/bkryza/clang-uml
@@ -190,7 +191,7 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.5.1
+clang-uml 0.5.2
 Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
 Built against LLVM/Clang libraries version: 17.0.6

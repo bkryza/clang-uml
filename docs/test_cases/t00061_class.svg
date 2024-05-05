@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="66px" preserveAspectRatio="none" style="width:58px;height:66px;" version="1.1" viewBox="0 0 58 66" width="58px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="f1q2lpjsc9su1b" width="300%" x="-1" y="-1">
+    <filter height="300%" id="fhw5nes5fwtfr" width="300%" x="-1" y="-1">
       <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
       <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
       <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
@@ -9,8 +9,8 @@
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <a href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t00061/include/t00061_a.h#L3" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/f05267997b6fb3287a342e0c920f4407c0a82a50/tests/t00061/include/t00061_a.h#L3" xlink:show="new" xlink:title="A" xlink:type="simple">
-      <rect fill="#FEFECE" filter="url(#f1q2lpjsc9su1b)" height="48" id="C_0001010204727957329423" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="7" y="7"/>
+    <a href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t00061/include/t00061_a.h#L3" target="_top" title="A" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/7fcd0dc0ddf47cf95d771d246b3fec780ea144c7/tests/t00061/include/t00061_a.h#L3" xlink:show="new" xlink:title="A" xlink:type="simple">
+      <rect fill="#FEFECE" filter="url(#fhw5nes5fwtfr)" height="48" id="C_0001010204727957329423" style="stroke: #A80036; stroke-width: 1.5;" width="40" x="7" y="7"/>
       <ellipse cx="22" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
       <path d="M24.9688,28.6406 Q24.3906,28.9375 23.75,29.0781 Q23.1094,29.2344 22.4063,29.2344 Q19.9063,29.2344 18.5781,27.5938 Q17.2656,25.9375 17.2656,22.8125 Q17.2656,19.6875 18.5781,18.0313 Q19.9063,16.375 22.4063,16.375 Q23.1094,16.375 23.75,16.5313 Q24.4063,16.6875 24.9688,16.9844 L24.9688,19.7031 Q24.3438,19.125 23.75,18.8594 Q23.1563,18.5781 22.5313,18.5781 Q21.1875,18.5781 20.5,19.6563 Q19.8125,20.7188 19.8125,22.8125 Q19.8125,24.9063 20.5,25.9844 Q21.1875,27.0469 22.5313,27.0469 Q23.1563,27.0469 23.75,26.7813 Q24.3438,26.5 24.9688,25.9219 L24.9688,28.6406 Z "/>
       <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="8" x="36" y="27.1543">A</text>
