@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "catch.h"
+#include "doctest/doctest.h"
 
 #include "util/thread_pool_executor.h"
 
-TEST_CASE("Test thread_pool_executor", "[unit-test]")
+TEST_CASE("Test thread_pool_executor")
 {
     using clanguml::util::thread_pool_executor;
 

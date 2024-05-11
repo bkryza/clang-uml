@@ -1,5 +1,5 @@
 /**
- * tests/t30004/test_case.cc
+ * tests/t30004/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30004", "[test-case][package]")
+TEST_CASE("t30004")
 {
+    using namespace clanguml::test;
+    using namespace std::string_literals;
+
     auto [config, db] = load_config("t30004");
 
     auto diagram = config.diagrams["t30004_package"];
@@ -28,7 +31,15 @@ TEST_CASE("t30004", "[test-case][package]")
 
     REQUIRE(model->name() == "t30004_package");
 
-    {
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "A"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "CCC"s));
+        REQUIRE(!IsNamespacePackage(src, "A"s, "DDD"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "EEE"s));
+    });
+    /*{
         auto src = generate_package_puml(diagram, *model);
         AliasMatcher _A(src);
 
@@ -72,5 +83,5 @@ TEST_CASE("t30004", "[test-case][package]")
         REQUIRE_THAT(src, IsPackage(_A("EEE")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t00011/test_case.cc
+ * tests/t00011/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00011", "[test-case][class]")
+TEST_CASE("t00011")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00011");
 
     auto diagram = config.diagrams["t00011_class"];
@@ -28,48 +30,13 @@ TEST_CASE("t00011", "[test-case][class]")
 
     REQUIRE(model->name() == "t00011_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(!IsClass(src, "external::C"));
+        REQUIRE(IsClassTemplate(src, "D<T>"));
 
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("external::C")));
-        REQUIRE_THAT(src, IsClass(_A("D<T>")));
-
-        REQUIRE_THAT(src, IsAssociation(_A("B"), _A("A")));
-        REQUIRE_THAT(src, IsFriend<Public>(_A("A"), _A("B")));
-        // REQUIRE_THAT(puml, IsFriend(_A("A"), _A("D<T>")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "B"));
-        REQUIRE(IsClassTemplate(j, "D<T>"));
-        REQUIRE(IsFriend(j, "A", "B"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsFriend;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("external::C")));
-        REQUIRE_THAT(src, IsClass(_A("D<T>")));
-
-        REQUIRE_THAT(src, IsAssociation(_A("B"), _A("A")));
-        REQUIRE_THAT(src, IsFriend<Public>(_A("A"), _A("B")));
-        // REQUIRE_THAT(src, IsFriend(_A("A"), _A("D<T>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsAssociation<Public>(src, "B", "A"));
+        REQUIRE(IsFriend<Public>(src, "A", "B"));
+    });
 }

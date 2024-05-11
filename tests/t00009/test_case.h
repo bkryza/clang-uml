@@ -1,5 +1,5 @@
 /**
- * tests/t00009/test_case.cc
+ * tests/t00009/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00009", "[test-case][class]")
+TEST_CASE("t00009")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00009");
 
     auto diagram = config.diagrams["t00009_class"];
@@ -28,78 +30,24 @@ TEST_CASE("t00009", "[test-case][class]")
 
     REQUIRE(model->name() == "t00009_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClassTemplate(src, "A<T>"));
+        REQUIRE(IsClass(src, "B"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(src, IsClass(_A("B")));
+        REQUIRE(IsField<Public>(src, "A<T>", "value", "T"));
+        REQUIRE(IsField<Public>(src, "B", "aint", "A<int>"));
+        REQUIRE(IsField<Public>(src, "B", "astring", "A<std::string> *"));
+        REQUIRE(IsField<Public>(
+            src, "B", "avector", "A<std::vector<std::string>> &"));
 
-        REQUIRE_THAT(src, (IsField<Public>("value", "T")));
-        REQUIRE_THAT(src, (IsField<Public>("aint", "A<int>")));
-        REQUIRE_THAT(src, (IsField<Public>("astring", "A<std::string> *")));
-        REQUIRE_THAT(
-            src, (IsField<Public>("avector", "A<std::vector<std::string>> &")));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<int>", "up"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<std::string>", "up"));
 
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<int>"), "up"));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("A<T>"), _A("A<std::string>"), "up"));
-
-        REQUIRE_THAT(
-            src, IsAggregation(_A("B"), _A("A<int>"), "+aint", "", "", "up"));
-        REQUIRE_THAT(src,
-            IsAssociation(
-                _A("B"), _A("A<std::string>"), "+astring", "", "", "up"));
-        REQUIRE_THAT(src,
-            IsAssociation(_A("B"), _A("A<std::vector<std::string>>"),
-                "+avector", "", "", "up"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClassTemplate(j, "A<T>"));
-        REQUIRE(IsClass(j, "A<int>"));
-        REQUIRE(IsClass(j, "A<std::string>"));
-        REQUIRE(IsClass(j, "A<std::vector<std::string>>"));
-
-        REQUIRE(IsField(j, "A<T>", "value", "T"));
-        REQUIRE(IsField(j, "B", "aint", "A<int>"));
-        REQUIRE(IsField(j, "B", "astring", "A<std::string> *"));
-        REQUIRE(IsField(j, "B", "avector", "A<std::vector<std::string>> &"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsField;
-
-        REQUIRE_THAT(src, IsClass(_A("A<T>")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-
-        REQUIRE_THAT(src, (IsField<Public>("value", "T")));
-        REQUIRE_THAT(src, (IsField<Public>("aint", "A<int>")));
-        REQUIRE_THAT(src, (IsField<Public>("astring", "A<std::string> *")));
-        REQUIRE_THAT(
-            src, (IsField<Public>("avector", "A<std::vector<std::string>> &")));
-
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<int>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<std::string>")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("B"), _A("A<int>"), "+aint"));
-        REQUIRE_THAT(
-            src, IsAssociation(_A("B"), _A("A<std::string>"), "+astring"));
-        REQUIRE_THAT(src,
-            IsAssociation(
-                _A("B"), _A("A<std::vector<std::string>>"), "+avector"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(
+            IsAggregation<Public>(src, "B", "A<int>", "aint", "", "", "up"));
+        REQUIRE(IsAssociation<Public>(
+            src, "B", "A<std::string>", "astring", "", "", "up"));
+        REQUIRE(IsAssociation<Public>(
+            src, "B", "A<std::vector<std::string>>", "avector", "", "", "up"));
+    });
 }

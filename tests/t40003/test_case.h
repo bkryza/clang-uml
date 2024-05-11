@@ -1,5 +1,5 @@
 /**
- * tests/t40003/test_case.cc
+ * tests/t40003/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t40003", "[test-case][include]")
+TEST_CASE("t40003")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t40003");
 
     auto diagram = config.diagrams["t40003_include"];
@@ -28,72 +30,22 @@ TEST_CASE("t40003", "[test-case][include]")
 
     REQUIRE(model->name() == "t40003_include");
 
-    {
-        auto src = generate_include_puml(diagram, *model);
+    CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsFolder(src, "include/dependants"));
+        REQUIRE(IsFolder(src, "include/dependencies"));
+        REQUIRE(IsFolder(src, "src/dependants"));
+        REQUIRE(IsFolder(src, "src/dependencies"));
 
-        AliasMatcher _A(src);
+        REQUIRE(IsFile(src, "include/dependants/t1.h"));
+        REQUIRE(IsFile(src, "include/dependants/t2.h"));
+        REQUIRE(IsFile(src, "include/dependants/t3.h"));
+        REQUIRE(!IsFile(src, "include/dependants/t4.h"));
+        REQUIRE(IsFile(src, "src/dependants/t1.cc"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsFolder("dependants"));
-        REQUIRE_THAT(src, IsFolder("dependencies"));
-
-        REQUIRE_THAT(src, IsFile("t1.h"));
-        REQUIRE_THAT(src, IsFile("t2.h"));
-        REQUIRE_THAT(src, IsFile("t3.h"));
-
-        REQUIRE_THAT(src, !IsFile("t4.h"));
-        REQUIRE_THAT(src, IsFile("t5.h"));
-        REQUIRE_THAT(src, !IsFile("t6.h"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_include_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsFolder(j, "include/dependants"));
-        REQUIRE(IsFolder(j, "include/dependencies"));
-        REQUIRE(IsFolder(j, "src/dependants"));
-        REQUIRE(IsFolder(j, "src/dependencies"));
-
-        REQUIRE(IsFile(j, "include/dependants/t1.h"));
-        REQUIRE(IsFile(j, "include/dependants/t2.h"));
-        REQUIRE(IsFile(j, "include/dependants/t3.h"));
-        REQUIRE(!IsFile(j, "include/dependants/t4.h"));
-        REQUIRE(IsFile(j, "src/dependants/t1.cc"));
-
-        REQUIRE(IsFile(j, "include/dependencies/t1.h"));
-        REQUIRE(IsFile(j, "include/dependencies/t2.h"));
-        REQUIRE(IsFile(j, "include/dependencies/t3.h"));
-        REQUIRE(!IsFile(j, "include/dependencies/t4.h"));
-        REQUIRE(IsFile(j, "src/dependencies/t2.cc"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_include_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::HasLink;
-        using mermaid::IsFile;
-        using mermaid::IsFolder;
-
-        REQUIRE_THAT(src, IsFolder(_A("dependants")));
-        REQUIRE_THAT(src, IsFolder(_A("dependencies")));
-
-        REQUIRE_THAT(src, IsFile(_A("t1.h")));
-        REQUIRE_THAT(src, IsFile(_A("t2.h")));
-        REQUIRE_THAT(src, IsFile(_A("t3.h")));
-
-        REQUIRE_THAT(src, !IsFile(_A("t4.h")));
-        REQUIRE_THAT(src, IsFile(_A("t5.h")));
-        REQUIRE_THAT(src, !IsFile(_A("t6.h")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsFile(src, "include/dependencies/t1.h"));
+        REQUIRE(IsFile(src, "include/dependencies/t2.h"));
+        REQUIRE(IsFile(src, "include/dependencies/t3.h"));
+        REQUIRE(!IsFile(src, "include/dependencies/t4.h"));
+        REQUIRE(IsFile(src, "src/dependencies/t2.cc"));
+    });
 }

@@ -25,6 +25,7 @@
 #include "class_diagram/visitor/translation_unit_visitor.h"
 #include "common/clang_utils.h"
 #include "common/compilation_database.h"
+#include "common/generators/generators.h"
 #include "config/config.h"
 #include "include_diagram/generators/plantuml/include_diagram_generator.h"
 #include "include_diagram/visitor/translation_unit_visitor.h"
@@ -34,10 +35,8 @@
 #include "sequence_diagram/visitor/translation_unit_visitor.h"
 #include "util/util.h"
 
-#define CATCH_CONFIG_RUNNER
-#define CATCH_CONFIG_CONSOLE_WIDTH 512
-
-#include "catch.h"
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "doctest/doctest.h"
 
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
@@ -47,28 +46,1802 @@
 #include <filesystem>
 #include <string>
 
-using Catch::Matchers::Contains;
-using Catch::Matchers::EndsWith;
-using Catch::Matchers::Equals;
-using Catch::Matchers::Matches;
-using Catch::Matchers::StartsWith;
-using Catch::Matchers::VectorContains;
-
 using namespace clanguml::util;
 
 std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name);
 
-std::string generate_sequence_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::sequence_diagram::model::diagram &model);
-
-std::string generate_class_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::class_diagram::model::diagram &model);
+// std::string generate_sequence_puml(
+//     std::shared_ptr<clanguml::config::diagram> config,
+//     clanguml::sequence_diagram::model::diagram &model);
+//
+// std::string generate_class_puml(
+//     std::shared_ptr<clanguml::config::diagram> config,
+//     clanguml::class_diagram::model::diagram &model);
 
 void save_puml(const std::string &path, const std::string &puml);
 
+namespace clanguml::test {
+
+template <typename T, typename... Ts> constexpr bool has_type() noexcept
+{
+    return (std::is_same_v<T, Ts> || ... || false);
+}
+
+struct Public { };
+
+struct Protected { };
+
+struct Private { };
+
+struct Abstract { };
+
+struct Static { };
+
+struct Const { };
+
+struct Constexpr { };
+
+struct Consteval { };
+
+struct Coroutine { };
+
+struct Noexcept { };
+
+struct Default { };
+
+struct Deleted { };
+
+struct NamespacePackage { };
+struct ModulePackage { };
+struct DirectoryPackage { };
+
+template <typename PackageT> std::string package_type_name();
+
+template <> std::string package_type_name<NamespacePackage>()
+{
+    return "namespace";
+}
+
+template <> std::string package_type_name<ModulePackage>() { return "module"; }
+
+template <> std::string package_type_name<DirectoryPackage>()
+{
+    return "directory";
+}
+
+template <typename T> struct diagram_source_t {
+    diagram_source_t(clanguml::common::model::diagram_t dt, T &&s)
+    {
+        diagram_type = dt;
+        src = std::move(s);
+    }
+
+    bool contains(std::string name) const;
+
+    virtual std::string get_alias(std::string name) const
+    {
+        return "__INVALID_ALIAS__";
+    }
+
+    bool search(const std::string &pattern) const;
+
+    std::string to_string() const;
+
+    T src;
+    clanguml::common::model::diagram_t diagram_type;
+};
+
+struct plantuml_t : public diagram_source_t<std::string> {
+    using diagram_source_t::diagram_source_t;
+    using source_type = std::string;
+    using generator_tag = clanguml::common::generators::plantuml_generator_tag;
+
+    inline static const std::string diagram_type_name{"PlantUML"};
+
+    std::string get_alias(std::string name) const override
+    {
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "\\(");
+        util::replace_all(name, ")", "\\)");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
+
+        patterns.push_back(
+            std::regex{"class\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"abstract\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"enum\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"package\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"package\\s\\[" + name + "\\]\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"file\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
+
+        std::smatch base_match;
+
+        for (const auto &pattern : patterns) {
+            if (std::regex_search(src, base_match, pattern) &&
+                base_match.size() == 2) {
+                std::ssub_match base_sub_match = base_match[1];
+                std::string alias = base_sub_match.str();
+                return trim(alias);
+            }
+        }
+
+        return fmt::format("__INVALID__ALIAS__({})", name);
+    }
+};
+
+struct mermaid_t : public diagram_source_t<std::string> {
+    using diagram_source_t::diagram_source_t;
+    using source_type = std::string;
+    using generator_tag = clanguml::common::generators::mermaid_generator_tag;
+
+    inline static const std::string diagram_type_name{"MermaidJS"};
+
+    std::string get_alias(std::string name) const override
+    {
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "&lpar;");
+        util::replace_all(name, ")", "&rpar;");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
+        util::replace_all(name, "<", "&lt;");
+        util::replace_all(name, ">", "&gt;");
+
+        patterns.push_back(
+            std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
+        patterns.push_back(
+            std::regex{"subgraph\\s" + alias_regex + "\\[" + name + "\\]"});
+        patterns.push_back(
+            std::regex{"\\s\\s" + alias_regex + "\\[" + name + "\\]"}); // file
+
+        std::smatch base_match;
+
+        for (const auto &pattern : patterns) {
+            if (std::regex_search(src, base_match, pattern) &&
+                base_match.size() == 2) {
+                std::ssub_match base_sub_match = base_match[1];
+                std::string alias = base_sub_match.str();
+                return trim(alias);
+            }
+        }
+
+        return fmt::format("__INVALID__ALIAS__({})", name);
+    }
+};
+
+struct json_t : public diagram_source_t<nlohmann::json> {
+    using diagram_source_t::diagram_source_t;
+    using source_type = nlohmann::json;
+    using generator_tag = clanguml::common::generators::json_generator_tag;
+
+    inline static const std::string diagram_type_name{"JSON"};
+};
+
+std::optional<nlohmann::json> get_element_by_id(
+    const nlohmann::json &j, const std::string &id)
+{
+    if (!j.contains("elements"))
+        return {};
+
+    for (const nlohmann::json &e : j["elements"]) {
+        if (e["id"] == id)
+            return {e};
+
+        if (e["type"] == "namespace" || e["type"] == "folder") {
+            auto maybe_e = get_element_by_id(e, id);
+            if (maybe_e)
+                return maybe_e;
+        }
+    }
+
+    return {};
+}
+
+std::optional<nlohmann::json> get_element(
+    const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("elements"))
+        return {};
+
+    for (const nlohmann::json &e : j["elements"]) {
+        if (e["display_name"] == name)
+            return {e};
+
+        if (e["type"] == "namespace" || e["type"] == "folder" ||
+            e["type"] == "directory" || e["type"] == "module") {
+            auto maybe_e = get_element(e, name);
+            if (maybe_e)
+                return maybe_e;
+        }
+    }
+
+    return {};
+}
+
+std::optional<nlohmann::json> get_element(
+    const json_t &src, const std::string &name)
+{
+    return get_element(src.src, name);
+}
+
+std::optional<nlohmann::json> get_participant(
+    const nlohmann::json &j, const std::string &name)
+{
+    if (!j.contains("participants"))
+        return {};
+
+    for (const nlohmann::json &e : j.at("participants")) {
+        if (e["display_name"] == name)
+            return {e};
+    }
+
+    return {};
+}
+
+auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
+    const nlohmann::json &to, const std::string &type, const std::string &label)
+{
+    return std::find_if(j["relationships"].begin(), j["relationships"].end(),
+        [&](const auto &it) {
+            auto match = (it["source"] == from) && (it["destination"] == to) &&
+                (it["type"] == type);
+
+            if (match && label.empty())
+                return true;
+
+            if (match && (label == it["label"]))
+                return true;
+
+            return false;
+        });
+}
+
+auto get_relationship(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &type,
+    const std::string &label = {})
+{
+    auto source = get_element(j, from);
+    auto destination = get_element(j, to);
+
+    if (!(source && destination))
+        return j["relationships"].end();
+
+    return get_relationship(
+        j, source->at("id"), destination->at("id"), type, label);
+}
+
+std::string expand_name(const nlohmann::json &j, const std::string &name)
+{
+    return name;
+}
+
+template <> bool diagram_source_t<std::string>::contains(std::string name) const
+{
+    return util::contains(src, name);
+}
+
+template <>
+bool diagram_source_t<std::string>::search(const std::string &pattern) const
+{
+    std::regex pattern_regex{pattern};
+
+    std::smatch base_match;
+    return std::regex_search(src, base_match, pattern_regex);
+}
+
+template <>
+bool diagram_source_t<nlohmann::json>::contains(std::string name) const
+{
+    return false;
+}
+
+template <> std::string diagram_source_t<std::string>::to_string() const
+{
+    return src;
+}
+
+template <> std::string diagram_source_t<nlohmann::json>::to_string() const
+{
+    return src.dump(2);
+}
+
+///
+/// The following functions declarations define various checks on generated
+/// diagrams.
+/// They must be specialized for each diagram format (DiagramType) separately.
+///
+/// @defgroup Test Cases diagram checks
+/// @{
+///
+
+// Check if generated diagram source starts with pattern
+template <typename DiagramType>
+bool StartsWith(const DiagramType &d, std::string pattern);
+
+// Check if generated diagram source ends with pattern
+template <typename DiagramType>
+bool EndsWith(const DiagramType &d, std::string pattern);
+
+template <typename DiagramType>
+bool HasTitle(const DiagramType &d, std::string const &str);
+
+// Check if generated diagram contains a specified enum
+template <typename DiagramType>
+bool IsEnum(const DiagramType &d, std::string name);
+
+// Check if generated diagram contains a specified class
+template <typename DiagramType>
+bool IsClass(const DiagramType &d, std::string name);
+
+// Check if generated diagram contains a specified class template
+template <typename DiagramType>
+bool IsClassTemplate(const DiagramType &d, std::string name);
+
+// Check if generated diagram contains a specified abstract class
+template <typename DiagramType>
+bool IsAbstractClass(const DiagramType &d, std::string name);
+
+// Check if generated diagram contains a specified class
+template <typename DiagramType>
+bool IsBaseClass(const DiagramType &d, std::string base, std::string subclass);
+
+template <typename DiagramType>
+bool IsInnerClass(
+    const DiagramType &d, std::string const &parent, std::string const &inner);
+
+template <typename DiagramType, typename... Ts>
+bool IsMethod(const DiagramType &d, const std::string &cls,
+    const std::string &name, const std::string &type = "void",
+    const std::string &params = "");
+
+template <typename DiagramType, typename... Ts>
+bool IsField(const DiagramType &d, std::string const &cls,
+    std::string const &name, std::string type = "void");
+
+template <typename DiagramType, typename... Ts>
+bool IsAssociation(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "");
+
+template <typename DiagramType, typename... Ts>
+bool IsComposition(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "");
+
+template <typename DiagramType, typename... Ts>
+bool IsAggregation(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "");
+
+template <typename DiagramType>
+bool IsInstantiation(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string style = "");
+
+template <typename DiagramType>
+bool IsDependency(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string style = "");
+
+template <typename DiagramType, typename... Ts>
+bool IsFriend(
+    const DiagramType &d, std::string const &from, std::string const &to);
+
+template <typename DiagramType>
+bool IsPackageDependency(
+    const DiagramType &d, std::string const &from, std::string const &to);
+
+template <typename DiagramType>
+bool IsIncludeDependency(
+    const DiagramType &d, std::string const &from, std::string const &to);
+
+template <typename DiagramType>
+bool IsConstraint(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string label = {}, std::string style = "");
+
+template <typename DiagramType>
+bool IsConceptRequirement(
+    const DiagramType &d, std::string const &cpt, std::string requirement);
+
+template <typename DiagramType>
+bool IsLayoutHint(const DiagramType &d, std::string const &from,
+    std::string const &hint, std::string const &to);
+
+template <typename DiagramType>
+bool HasComment(const DiagramType &d, std::string const &comment);
+
+template <typename DiagramType>
+bool HasNote(const DiagramType &d, std::string const &cls,
+    std::string const &position, std::string const &note = "");
+
+template <typename DiagramType>
+bool HasPackageNote(const DiagramType &d, std::string const &cls,
+    std::string const &position, std::string const &note = "");
+
+template <typename DiagramType>
+bool HasMessageComment(
+    const DiagramType &d, std::string const &alias, std::string const &note);
+
+template <typename DiagramType>
+bool HasMemberNote(const DiagramType &d, std::string const &cls,
+    std::string const &member, std::string const &position,
+    std::string const &note = "");
+
+template <typename DiagramType>
+bool HasLink(const DiagramType &d, std::string const &alias,
+    std::string const &link, std::string const &tooltip);
+
+template <typename DiagramType>
+bool HasMemberLink(const DiagramType &d, std::string const &method,
+    std::string const &link, std::string const &tooltip);
+
+template <typename DiagramType>
+bool IsFolder(const DiagramType &d, std::string const &path);
+
+template <typename DiagramType>
+bool IsFile(const DiagramType &d, std::string const &str);
+
+template <typename DiagramType>
+bool IsSystemHeader(const DiagramType &d, std::string const &str);
+
+template <typename DiagramType>
+bool IsHeaderDependency(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string style = "");
+
+template <typename DiagramType>
+bool IsSystemHeaderDependency(const DiagramType &d, std::string const &from,
+    std::string const &to, std::string style = "");
+
+template <typename DiagramType, typename... Args>
+bool IsNamespacePackage(const DiagramType &d, Args... args);
+
+template <typename DiagramType, typename... Args>
+bool IsDirectoryPackage(const DiagramType &d, Args... args);
+
+template <typename DiagramType, typename... Args>
+bool IsModulePackage(const DiagramType &d, Args... args);
+
+template <typename DiagramType>
+bool IsDeprecated(const DiagramType &d, std::string const &str);
+
+///
+/// @}
+///
+
+template <> bool StartsWith(const plantuml_t &d, std::string pattern)
+{
+    return util::starts_with(d.src, pattern);
+}
+
+template <> bool EndsWith(const plantuml_t &d, std::string pattern)
+{
+    return util::ends_with(d.src, pattern);
+}
+
+template <> bool HasTitle(const plantuml_t &d, std::string const &str)
+{
+    return d.contains("title " + str);
+}
+
+template <> bool IsEnum(const plantuml_t &d, std::string name)
+{
+    return d.contains(fmt::format("enum {}", d.get_alias(name)));
+}
+
+template <> bool IsClass(const plantuml_t &d, std::string name)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(name)));
+}
+
+template <> bool IsClassTemplate(const plantuml_t &d, std::string name)
+{
+    return d.contains(fmt::format("class \"{}\"", name));
+}
+
+template <> bool IsAbstractClass(const plantuml_t &d, std::string name)
+{
+    return d.contains(fmt::format("abstract {}", d.get_alias(name)));
+}
+
+template <>
+bool IsBaseClass(const plantuml_t &d, std::string base, std::string subclass)
+{
+    return d.contains(
+        fmt::format("{} <|-- {}", d.get_alias(base), d.get_alias(subclass)));
+}
+
+template <>
+bool IsInnerClass(
+    const plantuml_t &d, std::string const &parent, std::string const &inner)
+{
+    return d.contains(d.get_alias(inner) + " --+ " + d.get_alias(parent));
+}
+
+template <typename... Ts>
+bool IsMethod(const plantuml_t &d, std::string const &cls,
+    std::string const &name, std::string const &type = "void",
+    std::string const &params = "")
+{
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += "{abstract} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    pattern += "(" + params + ")";
+
+    if constexpr (has_type<Constexpr, Ts...>())
+        pattern += " constexpr";
+
+    if constexpr (has_type<Consteval, Ts...>())
+        pattern += " consteval";
+
+    if constexpr (has_type<Const, Ts...>())
+        pattern += " const";
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += " = 0";
+
+    if constexpr (has_type<Default, Ts...>())
+        pattern += " = default";
+
+    if constexpr (has_type<Deleted, Ts...>())
+        pattern += " = deleted";
+
+    if constexpr (has_type<Coroutine, Ts...>())
+        pattern += " [coroutine]";
+
+    pattern += " : " + type;
+
+    return d.contains(pattern);
+}
+
+template <typename... Ts>
+bool IsField(const plantuml_t &d, std::string const &cls,
+    std::string const &name, std::string type)
+{
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    return d.contains(pattern + " : " + type);
+}
+
+template <typename... Ts>
+bool IsAssociation(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    auto from_id = d.get_alias(from);
+    auto to_id = d.get_alias(to);
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += fmt::format(" -{}->", style);
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {}";
+
+    if (!label.empty()) {
+        std::string label_prefix;
+        if constexpr (has_type<Public, Ts...>())
+            label_prefix = "+";
+        else if constexpr (has_type<Protected, Ts...>())
+            label_prefix = "#";
+        else
+            label_prefix = "-";
+
+        format_string += " : {}{}";
+        return d.contains(fmt::format(
+            fmt::runtime(format_string), from_id, to_id, label_prefix, label));
+    }
+
+    return d.contains(fmt::format(fmt::runtime(format_string), from_id, to_id));
+}
+
+template <typename... Ts>
+bool IsComposition(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string label_prefix;
+    if constexpr (has_type<Public, Ts...>())
+        label_prefix = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        label_prefix = "#";
+    else
+        label_prefix = "-";
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += fmt::format(" *-{}-", style);
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}{}";
+
+    return d.contains(fmt::format(fmt::runtime(format_string),
+        d.get_alias(from), d.get_alias(to), label_prefix, label));
+}
+
+template <typename... Ts>
+bool IsAggregation(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string label_prefix;
+    if constexpr (has_type<Public, Ts...>())
+        label_prefix = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        label_prefix = "#";
+    else
+        label_prefix = "-";
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += fmt::format(" o-{}-", style);
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}{}";
+
+    return d.contains(fmt::format(fmt::runtime(format_string),
+        d.get_alias(from), d.get_alias(to), label_prefix, label));
+}
+
+template <>
+bool IsInstantiation(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    return d.contains(
+        fmt::format("{} .{}.|> {}", d.get_alias(to), style, d.get_alias(from)));
+}
+
+template <>
+bool IsDependency(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    return d.contains(
+        fmt::format("{} .{}.> {}", d.get_alias(from), style, d.get_alias(to)));
+}
+
+template <typename... Ts>
+bool IsFriend(
+    const plantuml_t &d, std::string const &from, std::string const &to)
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    return d.contains(fmt::format("{} <.. {} : {}<<friend>>", d.get_alias(from),
+        d.get_alias(to), pattern));
+}
+
+template <>
+bool IsPackageDependency(
+    const plantuml_t &d, std::string const &from, std::string const &to)
+{
+    return d.contains(
+        fmt::format("{} .{}.> {}", d.get_alias(from), "", d.get_alias(to)));
+}
+
+template <>
+bool IsIncludeDependency(
+    const plantuml_t &d, std::string const &from, std::string const &to)
+{
+    return d.contains(
+        fmt::format("{} .{}.> {}", d.get_alias(from), "", d.get_alias(to)));
+}
+
+template <>
+bool IsConstraint(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string label, std::string style)
+{
+    if (label.empty())
+        return d.contains(fmt::format(
+            "{} .{}.> {}", d.get_alias(from), style, d.get_alias(to)));
+
+    return d.contains(fmt::format(
+        "{} .{}.> {} : {}", d.get_alias(from), style, d.get_alias(to), label));
+}
+
+template <>
+bool IsConceptRequirement(
+    const plantuml_t &d, std::string const &cpt, std::string requirement)
+{
+    return d.contains(requirement);
+}
+
+template <>
+bool IsLayoutHint(const plantuml_t &d, std::string const &from,
+    std::string const &hint, std::string const &to)
+{
+    return d.contains(fmt::format(
+        "{} -[hidden]{}- {}", d.get_alias(from), hint, d.get_alias(to)));
+}
+
+template <> bool HasComment(const plantuml_t &d, std::string const &comment)
+{
+    return d.contains(fmt::format("' {}", comment));
+}
+
+template <>
+bool HasNote(const plantuml_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    return d.contains(fmt::format("note {} of {}", position, d.get_alias(cls)));
+}
+
+template <>
+bool HasMessageComment(const plantuml_t &d, std::string const &participant,
+    std::string const &note)
+{
+    return d.contains(std::string("note over ") + d.get_alias(participant) +
+        "\\n" + note + "\\n" + "end note");
+}
+
+template <>
+bool HasMemberNote(const plantuml_t &d, std::string const &cls,
+    std::string const &member, std::string const &position,
+    std::string const &note)
+{
+    return d.contains(
+        fmt::format("note {} of {}::{}", position, d.get_alias(cls), member));
+}
+
+template <>
+bool HasPackageNote(const plantuml_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    return d.contains(fmt::format("note {} of {}", position, d.get_alias(cls)));
+}
+
+template <>
+bool HasLink(const plantuml_t &d, std::string const &element,
+    std::string const &link, std::string const &tooltip)
+{
+    return d.contains(
+        fmt::format("{} [[{}{{{}}}]]", d.get_alias(element), link, tooltip));
+}
+
+template <>
+bool HasMemberLink(const plantuml_t &d, std::string const &method,
+    std::string const &link, std::string const &tooltip)
+{
+    return d.contains(fmt::format("{} [[[{}{{{}}}]]]", method, link, tooltip));
+}
+
+template <> bool IsFolder(const plantuml_t &d, std::string const &path)
+{
+    return d.contains("folder \"" + util::split(path, "/").back() + "\"");
+}
+
+template <> bool IsFile(const plantuml_t &d, std::string const &path)
+{
+    return d.contains("file \"" + util::split(path, "/").back() + "\"");
+}
+
+template <> bool IsSystemHeader(const plantuml_t &d, std::string const &path)
+{
+    return d.contains("file \"" + path + "\"");
+}
+
+template <>
+bool IsHeaderDependency(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    return d.contains(
+        fmt::format("{} --> {}", d.get_alias(util::split(from, "/").back()),
+            d.get_alias(util::split(to, "/").back())));
+}
+
+template <>
+bool IsSystemHeaderDependency(const plantuml_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    return d.contains(
+        fmt::format("{} ..> {}", d.get_alias(util::split(from, "/").back()),
+            d.get_alias(util::split(to, "/").back())));
+}
+
+template <typename... Args> auto get_last(Args &&...args)
+{
+    return std::get<sizeof...(Args) - 1>(std::forward_as_tuple(args...));
+}
+
+template <typename... Args>
+bool IsNamespacePackage(const plantuml_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("package [" + name + "]");
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(const plantuml_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("package [" + name + "]");
+}
+
+template <typename... Args>
+bool IsModulePackage(const plantuml_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("package [" + name + "]");
+}
+
+template <> bool IsDeprecated(const plantuml_t &d, const std::string &name)
+{
+    return d.contains(d.get_alias(name) + " <<deprecated>> ");
+}
+
+//
+// MermaidJS test helpers
+//
+
+template <> bool HasTitle(const mermaid_t &d, std::string const &str)
+{
+    return d.contains("title: " + str);
+}
+
+template <> bool IsEnum(const mermaid_t &d, std::string name)
+{
+    return d.search(std::string("class ") + d.get_alias(name) +
+        " \\{\\n\\s+<<enumeration>>");
+}
+
+template <> bool IsClass(const mermaid_t &d, std::string name)
+{
+    return d.contains(fmt::format("class {}[\"{}\"]", d.get_alias(name), name));
+}
+
+template <> bool IsClassTemplate(const mermaid_t &d, std::string name)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(name)));
+}
+
+template <> bool IsAbstractClass(const mermaid_t &d, std::string name)
+{
+    return d.search(
+        std::string("class ") + d.get_alias(name) + " \\{\\n\\s+<<abstract>>");
+}
+
+template <>
+bool IsBaseClass(const mermaid_t &d, std::string base, std::string subclass)
+{
+    return d.contains(
+        fmt::format("{} <|-- {}", d.get_alias(base), d.get_alias(subclass)));
+}
+
+template <>
+bool IsInnerClass(
+    const mermaid_t &d, std::string const &parent, std::string const &inner)
+{
+    return d.contains(d.get_alias(parent) + " ()-- " + d.get_alias(inner));
+}
+
+template <typename... Ts>
+bool IsMethod(const mermaid_t &d, std::string const &cls,
+    std::string const &name, std::string type = "void",
+    std::string const &params = "")
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    pattern += "(" + params + ")";
+
+    std::vector<std::string> method_mods;
+    if constexpr (has_type<Default, Ts...>())
+        method_mods.push_back("default");
+    if constexpr (has_type<Const, Ts...>())
+        method_mods.push_back("const");
+    if constexpr (has_type<Constexpr, Ts...>())
+        method_mods.push_back("constexpr");
+    if constexpr (has_type<Consteval, Ts...>())
+        method_mods.push_back("consteval");
+    if constexpr (has_type<Coroutine, Ts...>())
+        method_mods.push_back("coroutine");
+
+    pattern += " : ";
+
+    if (!method_mods.empty()) {
+        pattern += fmt::format("[{}] ", fmt::join(method_mods, ","));
+    }
+
+    util::replace_all(type, "<", "&lt;");
+    util::replace_all(type, ">", "&gt;");
+    util::replace_all(type, "(", "&lpar;");
+    util::replace_all(type, ")", "&rpar;");
+    util::replace_all(type, "##", "::");
+    util::replace_all(type, "{", "&lbrace;");
+    util::replace_all(type, "}", "&rbrace;");
+
+    pattern += type;
+
+    if constexpr (has_type<Abstract, Ts...>())
+        pattern += "*";
+
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "$";
+
+    return d.contains(pattern);
+}
+
+template <typename... Ts>
+bool IsField(const mermaid_t &d, std::string const &cls,
+    std::string const &name, std::string type)
+{
+    std::string pattern;
+    if constexpr (has_type<Static, Ts...>())
+        pattern += "{static} ";
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    pattern += name;
+
+    util::replace_all(type, "<", "&lt;");
+    util::replace_all(type, ">", "&gt;");
+    util::replace_all(type, "(", "&lpar;");
+    util::replace_all(type, ")", "&rpar;");
+    util::replace_all(type, "##", "::");
+    util::replace_all(type, "{", "&lbrace;");
+    util::replace_all(type, "}", "&rbrace;");
+
+    return d.contains(pattern + " : " + type);
+}
+
+template <typename... Ts>
+bool IsAssociation(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    auto from_id = d.get_alias(from);
+    auto to_id = d.get_alias(to);
+
+    std::string label_prefix;
+    if constexpr (has_type<Public, Ts...>())
+        label_prefix = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        label_prefix = "#";
+    else
+        label_prefix = "-";
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += " -->";
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {}";
+
+    if (!label.empty()) {
+        format_string += " : {}{}";
+        return d.contains(fmt::format(
+            fmt::runtime(format_string), from_id, to_id, label_prefix, label));
+    }
+
+    return d.contains(fmt::format(fmt::runtime(format_string), from_id, to_id));
+}
+
+template <typename... Ts>
+bool IsComposition(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string label_prefix;
+    if constexpr (has_type<Public, Ts...>())
+        label_prefix = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        label_prefix = "#";
+    else
+        label_prefix = "-";
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += fmt::format(" *-{}-", style);
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}{}";
+
+    return d.contains(fmt::format(fmt::runtime(format_string),
+        d.get_alias(from), d.get_alias(to), label_prefix, label));
+}
+
+template <typename... Ts>
+bool IsAggregation(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    std::string label_prefix;
+    if constexpr (has_type<Public, Ts...>())
+        label_prefix = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        label_prefix = "#";
+    else
+        label_prefix = "-";
+
+    std::string format_string = "{}";
+    if (!multiplicity_source.empty())
+        format_string += " \"" + multiplicity_source + "\"";
+
+    format_string += " o--";
+
+    if (!multiplicity_dest.empty())
+        format_string += " \"" + multiplicity_dest + "\"";
+
+    format_string += " {} : {}{}";
+
+    return d.contains(fmt::format(fmt::runtime(format_string),
+        d.get_alias(from), d.get_alias(to), label_prefix, label));
+}
+
+template <>
+bool IsInstantiation(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    return d.contains(
+        fmt::format("{} ..|> {}", d.get_alias(to), d.get_alias(from)));
+}
+
+template <>
+bool IsDependency(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    if (d.diagram_type == common::model::diagram_t::kClass) {
+        return d.contains(
+            fmt::format("{} ..> {}", d.get_alias(from), d.get_alias(to)));
+    }
+
+    return d.contains(
+        fmt::format("{} -.-> {}", d.get_alias(from), d.get_alias(to)));
+}
+
+template <>
+bool IsHeaderDependency(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    return d.contains(
+        fmt::format("{} --> {}", d.get_alias(util::split(from, "/").back()),
+            d.get_alias(util::split(to, "/").back())));
+}
+
+template <>
+bool IsSystemHeaderDependency(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+
+    return d.contains(
+        fmt::format("{} -.-> {}", d.get_alias(util::split(from, "/").back()),
+            d.get_alias(util::split(to, "/").back())));
+}
+
+template <typename... Ts>
+bool IsFriend(
+    const mermaid_t &d, std::string const &from, std::string const &to)
+{
+    std::string pattern;
+
+    if constexpr (has_type<Public, Ts...>())
+        pattern = "+";
+    else if constexpr (has_type<Protected, Ts...>())
+        pattern = "#";
+    else
+        pattern = "-";
+
+    return d.contains(fmt::format(
+        "{} <.. {} : {}[friend]", d.get_alias(from), d.get_alias(to), pattern));
+}
+
+template <>
+bool IsPackageDependency(
+    const mermaid_t &d, std::string const &from, std::string const &to)
+{
+    return d.contains(
+        fmt::format("{} -.-> {}", d.get_alias(from), "", d.get_alias(to)));
+}
+
+template <>
+bool IsIncludeDependency(
+    const mermaid_t &d, std::string const &from, std::string const &to)
+{
+    return d.contains(
+        fmt::format("{} -.-> {}", d.get_alias(from), "", d.get_alias(to)));
+}
+
+template <>
+bool IsConstraint(const mermaid_t &d, std::string const &from,
+    std::string const &to, std::string label, std::string style)
+{
+    auto from_id = d.get_alias(from);
+    auto to_id = d.get_alias(to);
+
+    if (label.empty())
+        return d.contains(fmt::format("{} ..> {}", from_id, "", to_id));
+
+    util::replace_all(label, "<", "&lt;");
+    util::replace_all(label, ">", "&gt;");
+    util::replace_all(label, "(", "&lpar;");
+    util::replace_all(label, ")", "&rpar;");
+    util::replace_all(label, "##", "::");
+    util::replace_all(label, "{", "&lbrace;");
+    util::replace_all(label, "}", "&rbrace;");
+
+    if (label.empty())
+        return d.contains(fmt::format("{} ..> {}", from_id, to_id));
+
+    return d.contains(fmt::format("{} ..> {} : {}", from_id, to_id, label));
+}
+
+template <>
+bool IsConceptRequirement(
+    const mermaid_t &d, std::string const &cpt, std::string requirement)
+{
+    util::replace_all(requirement, "<", "&lt;");
+    util::replace_all(requirement, ">", "&gt;");
+    util::replace_all(requirement, "(", "&lpar;");
+    util::replace_all(requirement, ")", "&rpar;");
+    util::replace_all(requirement, "##", "::");
+    util::replace_all(requirement, "{", "&lbrace;");
+    util::replace_all(requirement, "}", "&rbrace;");
+
+    return d.contains(requirement);
+}
+
+template <>
+bool IsLayoutHint(const mermaid_t &d, std::string const &from,
+    std::string const &hint, std::string const &to)
+{
+    return true;
+}
+
+template <> bool HasComment(const mermaid_t &d, std::string const &comment)
+{
+    return d.contains(fmt::format("%% {}", comment));
+}
+
+template <>
+bool HasNote(const mermaid_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    if (d.diagram_type == common::model::diagram_t::kPackage) {
+        return d.contains(fmt::format("-.- {}", d.get_alias(cls)));
+    }
+
+    return d.contains(fmt::format("note for {}", d.get_alias(cls)));
+}
+
+template <>
+bool HasMessageComment(
+    const mermaid_t &d, std::string const &participant, std::string const &note)
+{
+    return d.contains(
+        std::string("note over ") + d.get_alias(participant) + ": " + note);
+}
+
+template <>
+bool HasMemberNote(const mermaid_t &d, std::string const &cls,
+    std::string const &member, std::string const &position,
+    std::string const &note)
+{
+    return d.contains(
+        fmt::format("note for {} \"{}\"", d.get_alias(cls), note));
+}
+
+template <>
+bool HasPackageNote(const mermaid_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    return d.contains(fmt::format("-.- {}", d.get_alias(cls)));
+}
+
+template <>
+bool HasLink(const mermaid_t &d, std::string const &element,
+    std::string const &link, std::string const &tooltip)
+{
+    return d.contains(fmt::format(
+        "click {} href \"{}\" \"{}\"", d.get_alias(element), link, tooltip));
+}
+
+template <>
+bool HasMemberLink(const mermaid_t &d, std::string const &method,
+    std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <> bool IsFolder(const mermaid_t &d, std::string const &path)
+{
+    return d.contains("subgraph " + d.get_alias(util::split(path, "/").back()));
+}
+
+template <> bool IsFile(const mermaid_t &d, std::string const &path)
+{
+    return d.contains(d.get_alias(util::split(path, "/").back()) + "[");
+}
+
+template <> bool IsSystemHeader(const mermaid_t &d, std::string const &path)
+{
+    return d.contains(d.get_alias(path) + "[");
+}
+
+template <typename... Args>
+bool IsNamespacePackage(const mermaid_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("subgraph " + d.get_alias(name));
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(const mermaid_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("subgraph " + d.get_alias(name));
+}
+
+template <typename... Args>
+bool IsModulePackage(const mermaid_t &d, Args... args)
+{
+    const auto &name = get_last(args...);
+    return d.contains("subgraph " + d.get_alias(name));
+}
+
+template <> bool IsDeprecated(const mermaid_t &d, const std::string &name)
+{
+    return d.contains(d.get_alias(name) + " <<deprecated>> ");
+}
+
+//
+// JSON test helpers
+//
+struct File {
+    explicit File(const std::string &f)
+        : file{f}
+    {
+    }
+
+    const std::string file;
+};
+
+template <> bool HasTitle(const json_t &d, std::string const &str)
+{
+    return d.src.contains("title") && d.src["title"] == str;
+}
+
+template <> bool IsAbstractClass(const json_t &d, std::string name)
+{
+    auto e = get_element(d.src, expand_name(d.src, name));
+    return e && e->at("type") == "class" && e->at("is_abstract");
+}
+
+template <> bool IsEnum(const json_t &d, std::string name)
+{
+    auto e = get_element(d.src, expand_name(d.src, name));
+    return e && e->at("type") == "enum";
+}
+
+template <> bool IsClass(const json_t &d, std::string name)
+{
+    auto e = get_element(d.src, expand_name(d.src, name));
+    return e && e->at("type") == "class" && !e->at("is_abstract");
+}
+
+template <> bool IsClassTemplate(const json_t &d, std::string name)
+{
+    auto e = get_element(d.src, expand_name(d.src, name));
+    return e && e->at("type") == "class";
+}
+
+template <>
+bool IsBaseClass(const json_t &d, std::string base, std::string subclass)
+{
+    const auto &j = d.src;
+    auto base_el = get_element(j, expand_name(j, base));
+    auto subclass_el = get_element(j, expand_name(j, subclass));
+
+    if (!base_el || !subclass_el)
+        return false;
+
+    const nlohmann::json &bases = (*subclass_el)["bases"];
+
+    return std::find_if(bases.begin(), bases.end(), [&](const auto &it) {
+        return it["id"] == base_el.value()["id"];
+    }) != bases.end();
+}
+
+template <>
+bool IsInnerClass(
+    const json_t &d, std::string const &parent, std::string const &inner)
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, inner), expand_name(j, parent), "containment");
+
+    return rel != j["relationships"].end();
+}
+
+template <typename... Ts>
+bool IsMethod(const json_t &d, const std::string &cls, std::string const &name,
+    std::string type = "void", std::string const &params = "")
+{
+    const auto &j = d.src;
+    auto sc = get_element(j, expand_name(j, cls));
+
+    if (!sc)
+        return false;
+
+    const nlohmann::json &methods = (*sc)["methods"];
+
+    return std::find_if(methods.begin(), methods.end(), [&](const auto &it) {
+        return it["name"] == name;
+    }) != methods.end();
+}
+
+template <typename... Ts>
+bool IsField(const json_t &d, std::string const &cls, std::string const &name,
+    std::string type)
+{
+    const auto &j = d.src;
+
+    auto sc = get_element(j, expand_name(j, cls));
+
+    if (!sc)
+        return false;
+
+    const nlohmann::json &members = (*sc)["members"];
+
+    return std::find_if(members.begin(), members.end(), [&](const auto &it) {
+        return it["name"] == name && it["type"] == type;
+    }) != members.end();
+}
+
+template <typename... Ts>
+bool IsAssociation(const json_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "association", label);
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && (label != rel->at("label")))
+        return false;
+
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    if (access != rel->at("access"))
+        return false;
+
+    return true;
+}
+
+template <typename... Ts>
+bool IsComposition(const json_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "composition", label);
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && label != rel->at("label"))
+        return false;
+
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    if (access != rel->at("access"))
+        return false;
+
+    return true;
+}
+
+template <typename... Ts>
+bool IsAggregation(const json_t &d, std::string const &from,
+    std::string const &to, std::string const &label = "",
+    std::string multiplicity_source = "", std::string multiplicity_dest = "",
+    std::string style = "")
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "aggregation", label);
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if (!label.empty() && label != rel->at("label"))
+        return false;
+
+    std::string access;
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    if (access != rel->at("access"))
+        return false;
+
+    return true;
+}
+
+template <>
+bool IsInstantiation(const json_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, to), expand_name(j, from), "instantiation");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <>
+bool IsDependency(const json_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "dependency");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <typename... Ts>
+bool IsFriend(const json_t &d, std::string const &from, std::string const &to)
+{
+    std::string access;
+
+    if constexpr (has_type<Public, Ts...>())
+        access = "public";
+    else if constexpr (has_type<Protected, Ts...>())
+        access = "protected";
+    else
+        access = "private";
+
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "friendship");
+
+    return rel != j["relationships"].end() && rel->at("access") == access;
+}
+
+template <>
+bool IsPackageDependency(
+    const json_t &d, std::string const &from, std::string const &to)
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "dependency");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <>
+bool IsIncludeDependency(
+    const json_t &d, std::string const &from, std::string const &to)
+{
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "dependency");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <>
+bool IsConstraint(const json_t &d, std::string const &from,
+    std::string const &to, std::string label, std::string style)
+{
+    return false;
+}
+
+template <>
+bool IsConceptRequirement(
+    const json_t &d, std::string const &cpt, std::string requirement)
+{
+    return false;
+}
+
+template <>
+bool IsLayoutHint(const json_t &d, std::string const &from,
+    std::string const &hint, std::string const &to)
+{
+    return true;
+}
+
+template <> bool HasComment(const json_t &d, std::string const &comment)
+{
+    // Comments are not included in JSON
+    return true;
+}
+
+template <>
+bool HasNote(const json_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    const auto &j = d.src;
+
+    auto sc = get_element(j, expand_name(j, cls));
+
+    if (!sc)
+        return false;
+
+    std::string formatted = (*sc)["comment"]["formatted"];
+
+    return util::contains(formatted, note);
+}
+
+template <>
+bool HasPackageNote(const json_t &d, std::string const &cls,
+    std::string const &position, std::string const &note)
+{
+    return true;
+}
+
+template <>
+bool HasMessageComment(
+    const json_t &d, std::string const &alias, std::string const &note)
+{
+    return true;
+}
+
+template <>
+bool HasMemberNote(const json_t &d, std::string const &cls,
+    std::string const &member, std::string const &position,
+    std::string const &note)
+{
+    return true;
+}
+
+template <>
+bool HasLink(const json_t &d, std::string const &alias, std::string const &link,
+    std::string const &tooltip)
+{
+    return true;
+}
+
+template <>
+bool HasMemberLink(const json_t &d, std::string const &method,
+    std::string const &link, std::string const &tooltip)
+{
+    return true;
+}
+
+template <> bool IsFolder(const json_t &d, std::string const &path)
+{
+    const auto &j = d.src;
+
+    auto e = get_element(j, path);
+    return e && e->at("type") == "folder";
+}
+
+template <> bool IsFile(const json_t &d, std::string const &path)
+{
+    const auto &j = d.src;
+
+    auto e = get_element(j, path);
+    return e && e->at("type") == "file";
+}
+
+template <> bool IsSystemHeader(const json_t &d, std::string const &path)
+{
+    const auto &j = d.src;
+
+    auto e = get_element(j, path);
+    return e && e->at("type") == "file" && e->at("file_kind") == "header" &&
+        e->at("is_system");
+}
+
+template <>
+bool IsHeaderDependency(const json_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "association");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <>
+bool IsSystemHeaderDependency(const json_t &d, std::string const &from,
+    std::string const &to, std::string style)
+{
+    assert(d.diagram_type == common::model::diagram_t::kInclude);
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "dependency");
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    return true;
+}
+
+template <typename PackageT, typename... Args>
+bool IsPackagePath(
+    const nlohmann::json &j, const std::string &head, Args... args)
+{
+    if constexpr (sizeof...(Args) == 0) {
+        auto e = get_element(j, expand_name(j, head));
+
+        return e && e->at("type") == package_type_name<PackageT>();
+    }
+    else {
+        auto e = get_element(j, head);
+        if (!e.has_value())
+            return false;
+
+        return IsPackagePath<PackageT>(*e, args...);
+    }
+}
+
+template <typename... Args>
+bool IsNamespacePackage(const json_t &d, Args... args)
+{
+    const auto &j = d.src;
+
+    return IsPackagePath<NamespacePackage>(j, std::forward<Args>(args)...);
+}
+
+template <typename... Args>
+bool IsDirectoryPackage(const json_t &d, Args... args)
+{
+    const auto &j = d.src;
+
+    return IsPackagePath<DirectoryPackage>(j, std::forward<Args>(args)...);
+}
+
+template <typename... Args> bool IsModulePackage(const json_t &d, Args... args)
+{
+    const auto &j = d.src;
+
+    return IsPackagePath<ModulePackage>(j, std::forward<Args>(args)...);
+}
+
+template <> bool IsDeprecated(const json_t &d, const std::string &name)
+{
+    const auto &j = d.src;
+
+    auto e = get_element(j, expand_name(j, name));
+    return e && e->at("is_deprecated") == true;
+}
+}
+
+/*
 namespace clanguml {
 namespace test {
 namespace matchers {
@@ -77,6 +1850,13 @@ using Catch::CaseSensitive;
 using Catch::Matchers::StdString::CasedString;
 using Catch::Matchers::StdString::ContainsMatcher;
 using Catch::Matchers::StdString::RegexMatcher;
+
+using Catch::Matchers::Contains;
+using Catch::Matchers::EndsWith;
+using Catch::Matchers::Equals;
+using Catch::Matchers::Matches;
+using Catch::Matchers::StartsWith;
+using Catch::Matchers::VectorContains;
 
 struct JsonMatcherBase : Catch::MatcherBase<nlohmann::json> {
     JsonMatcherBase(
@@ -757,7 +2537,7 @@ ContainsMatcher IsConstraint(std::string const &from, std::string const &to,
     util::replace_all(label, "<", "&lt;");
     util::replace_all(label, ">", "&gt;");
     util::replace_all(label, "(", "&lpar;");
-    util::replace_all(label, ")", "&rpar;");
+    util::replace_all(label, ")", "&rpar;
     util::replace_all(label, "##", "::");
     util::replace_all(label, "{", "&lbrace;");
     util::replace_all(label, "}", "&rbrace;");
@@ -1690,3 +3470,4 @@ bool HasMessageChain(
 }
 }
 }
+*/

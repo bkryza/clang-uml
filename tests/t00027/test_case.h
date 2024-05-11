@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00027", "[test-case][class]")
+TEST_CASE("t00027")
 {
+    using namespace clanguml::test;
+    
     auto [config, db] = load_config("t00027");
 
     auto diagram = config.diagrams["t00027_class"];
@@ -28,6 +30,29 @@ TEST_CASE("t00027", "[test-case][class]")
 
     REQUIRE(model->name() == "t00027_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsAbstractClass(src, "Shape"));
+        REQUIRE(IsAbstractClass(src, "ShapeDecorator"));
+
+        REQUIRE(IsClassTemplate(src, "Line<T<>...>"));
+        REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color>"));
+        REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color,Weight>"));
+        REQUIRE(IsAggregation<Public>(src, "Window", "Text<Color>", "description"));
+
+        REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color>"));
+        REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color,Weight>"));
+        REQUIRE(IsInstantiation(src, "Text<T<>...>", "Text<Color>"));
+        REQUIRE(IsInstantiation(src, "Text<T<>...>", "Text<Color,Weight>"));
+
+        REQUIRE(IsAggregation<Public>(
+            src, "Window", "Line<Color,Weight>", "border"));
+        REQUIRE(IsAggregation<Public>(src, "Window", "Line<Color>", "divider"));
+        REQUIRE(IsAggregation<Public>(
+            src, "Window", "Text<Color,Weight>", "title"));
+        REQUIRE(
+            IsAggregation<Public>(src, "Window", "Text<Color>", "description"));
+    });
+/*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -102,5 +127,5 @@ TEST_CASE("t00027", "[test-case][class]")
             IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t00017/test_case.cc
+ * tests/t00017/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00017", "[test-case][class]")
+TEST_CASE("t00017")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00017");
 
     auto diagram = config.diagrams["t00017_class"];
@@ -28,107 +30,47 @@ TEST_CASE("t00017", "[test-case][class]")
 
     REQUIRE(model->name() == "t00017_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(IsClass(src, "A"));
+            REQUIRE(IsClass(src, "B"));
+            REQUIRE(IsClass(src, "C"));
+            REQUIRE(IsClass(src, "D"));
+            REQUIRE(IsClass(src, "E"));
+            REQUIRE(IsClass(src, "F"));
+            REQUIRE(IsClass(src, "G"));
+            REQUIRE(IsClass(src, "H"));
+            REQUIRE(IsClass(src, "I"));
+            REQUIRE(IsClass(src, "J"));
+            REQUIRE(IsClass(src, "K"));
+            REQUIRE(IsClass(src, "R"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-        REQUIRE_THAT(src, IsClass(_A("K")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
+            REQUIRE(IsField<Private>(src, "R", "some_int", "int"));
+            REQUIRE((IsField<Private>(src, "R", "some_int_pointer", "int *")));
+            REQUIRE((IsField<Private>(
+                src, "R", "some_int_pointer_pointer", "int **")));
 
-        REQUIRE_THAT(src, (IsField<Private>("some_int", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("some_int_pointer", "int *")));
-        REQUIRE_THAT(
-            src, (IsField<Private>("some_int_pointer_pointer", "int **")));
-
-        // Relationship members should not be rendered as part of this testcase
-        REQUIRE_THAT(src, !(IsField<Private>("a", _A("A"))));
-        REQUIRE_THAT(src, !(IsField<Private>("b", _A("B"))));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "-a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "-b"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "-c"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "-d"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("E"), "-e"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("F"), "-f"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G"), "-g"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("H"), "-h"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("I"), "-i"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("J"), "-j"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("K"), "-k"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "B"));
-        REQUIRE(IsClass(j, "C"));
-        REQUIRE(IsClass(j, "D"));
-        REQUIRE(IsClass(j, "E"));
-        REQUIRE(IsClass(j, "F"));
-        REQUIRE(IsClass(j, "G"));
-        REQUIRE(IsClass(j, "H"));
-        REQUIRE(IsClass(j, "I"));
-        REQUIRE(IsClass(j, "J"));
-        REQUIRE(IsClass(j, "K"));
-        REQUIRE(IsClass(j, "R"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsField;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-        REQUIRE_THAT(src, IsClass(_A("K")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, (IsField<Private>("some_int", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("some_int_pointer", "int *")));
-        REQUIRE_THAT(
-            src, (IsField<Private>("some_int_pointer_pointer", "int **")));
-
-        // Relationship members should not be rendered as part of this testcase
-        REQUIRE_THAT(src, !(IsField<Private>("a", _A("A"))));
-        REQUIRE_THAT(src, !(IsField<Private>("b", _A("B"))));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "-a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "-b"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "-c"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "-d"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("E"), "-e"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("F"), "-f"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G"), "-g"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("H"), "-h"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("I"), "-i"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("J"), "-j"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("K"), "-k"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            REQUIRE(IsAggregation<Private>(src, "R", "A", "a"));
+            REQUIRE(IsAssociation<Private>(src, "R", "B", "b"));
+            REQUIRE(IsAssociation<Private>(src, "R", "C", "c"));
+            REQUIRE(IsAssociation<Private>(src, "R", "D", "d"));
+            REQUIRE(IsAssociation<Private>(src, "R", "E", "e"));
+            REQUIRE(IsAggregation<Private>(src, "R", "F", "f"));
+            REQUIRE(IsAssociation<Private>(src, "R", "G", "g"));
+            REQUIRE(IsAssociation<Private>(src, "R", "H", "h"));
+            REQUIRE(IsAssociation<Private>(src, "R", "I", "i"));
+            REQUIRE(IsAssociation<Private>(src, "R", "J", "j"));
+            REQUIRE(IsAssociation<Private>(src, "R", "K", "k"));
+        },
+        [](const plantuml_t &src) {
+            // Relationship members should not be rendered as part of this
+            // testcase
+            REQUIRE(!IsField<Private>(src, "R", "a", "A"));
+            REQUIRE(!IsField<Private>(src, "R", "b", "B"));
+        },
+        [](const mermaid_t &src) {
+            REQUIRE(!IsField<Private>(src, "R", "a", "A"));
+            REQUIRE(!IsField<Private>(src, "R", "b", "B"));
+        });
 }

@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30006", "[test-case][package]")
+TEST_CASE("t30006")
 {
+    using namespace clanguml::test;
+    using namespace std::string_literals;
+
     auto [config, db] = load_config("t30006");
 
     auto diagram = config.diagrams["t30006_package"];
@@ -28,6 +31,16 @@ TEST_CASE("t30006", "[test-case][package]")
 
     REQUIRE(model->name() == "t30006_package");
 
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "A"s));
+        REQUIRE(IsNamespacePackage(src, "B"s));
+        REQUIRE(IsNamespacePackage(src, "C"s));
+
+        REQUIRE(IsDependency(src, "A", "B"));
+        REQUIRE(IsDependency(src, "A", "C"));
+    });
+
+    /*
     {
         auto src = generate_package_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -75,5 +88,5 @@ TEST_CASE("t30006", "[test-case][package]")
         REQUIRE_THAT(src, IsPackageDependency(_A("A"), _A("C")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

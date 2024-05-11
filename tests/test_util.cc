@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "util/util.h"
 #include <common/clang_utils.h>
 
+
 #include <filesystem>
 
-#include "catch.h"
+#include "doctest/doctest.h"
 
-TEST_CASE("Test split", "[unit-test]")
+TEST_CASE("Test split")
 {
     using C = std::vector<std::string>;
     using namespace clanguml::util;
@@ -45,7 +46,7 @@ TEST_CASE("Test split", "[unit-test]")
     CHECK(split("std::vector::detail::", "::") == C{"std", "vector", "detail"});
 }
 
-TEST_CASE("Test abbreviate", "[unit-test]")
+TEST_CASE("Test abbreviate")
 {
     using namespace clanguml::util;
 
@@ -55,7 +56,7 @@ TEST_CASE("Test abbreviate", "[unit-test]")
     CHECK(abbreviate("abcdefg", 5) == "ab...");
 }
 
-TEST_CASE("Test starts_with", "[unit-test]")
+TEST_CASE("Test starts_with")
 {
     using clanguml::util::starts_with;
     using std::filesystem::path;
@@ -73,7 +74,7 @@ TEST_CASE("Test starts_with", "[unit-test]")
     CHECK_FALSE(starts_with(path{"c/file1.h"}, path{"c/file2.h"}));
 }
 
-TEST_CASE("Test replace_all", "[unit-test]")
+TEST_CASE("Test replace_all")
 {
     using namespace clanguml::util;
 
@@ -95,7 +96,7 @@ TEST_CASE("Test replace_all", "[unit-test]")
     CHECK(text == orig);
 }
 
-TEST_CASE("Test extract_template_parameter_index", "[unit-test]")
+TEST_CASE("Test extract_template_parameter_index")
 {
     using namespace clanguml::common;
 
@@ -124,7 +125,7 @@ TEST_CASE("Test extract_template_parameter_index", "[unit-test]")
     }
 }
 
-TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
+TEST_CASE("Test parse_unexposed_template_params")
 {
     using namespace clanguml::common;
 
@@ -200,7 +201,7 @@ TEST_CASE("Test parse_unexposed_template_params", "[unit-test]")
     CHECK(declaration_template[2].type().value() == "Tail");
 }
 
-TEST_CASE("Test remove_prefix", "[unit-test]")
+TEST_CASE("Test remove_prefix")
 {
     using namespace clanguml::util;
 
@@ -224,7 +225,7 @@ TEST_CASE("Test remove_prefix", "[unit-test]")
     CHECK(collection.empty());
 }
 
-TEST_CASE("Test path_to_url", "[unit-test]")
+TEST_CASE("Test path_to_url")
 {
     namespace fs = std::filesystem;
     using namespace clanguml::util;
@@ -258,7 +259,7 @@ TEST_CASE("Test path_to_url", "[unit-test]")
 #endif
 }
 
-TEST_CASE("Test ensure_path_is_absolute", "[unit-test]")
+TEST_CASE("Test ensure_path_is_absolute")
 {
     using namespace clanguml::util;
 
@@ -278,7 +279,7 @@ TEST_CASE("Test ensure_path_is_absolute", "[unit-test]")
         path{"/"}.make_preferred());
 }
 
-TEST_CASE("Test hash_seed", "[unit-test]")
+TEST_CASE("Test hash_seed")
 {
     using namespace clanguml::util;
 
@@ -287,7 +288,7 @@ TEST_CASE("Test hash_seed", "[unit-test]")
     CHECK(hash_seed(1) != hash_seed(2));
 }
 
-TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
+TEST_CASE("Test tokenize_unexposed_template_parameter")
 {
     using namespace clanguml::common;
 
@@ -398,7 +399,7 @@ TEST_CASE("Test tokenize_unexposed_template_parameter", "[unit-test]")
     }
 }
 
-TEST_CASE("Test format_message_comment", "[unit-test]")
+TEST_CASE("Test format_message_comment")
 {
     using namespace clanguml::util;
 
@@ -419,7 +420,7 @@ TEST_CASE("Test format_message_comment", "[unit-test]")
               15) == "This is a url:\nhttp://example.com/test/12345");
 }
 
-TEST_CASE("Test is_relative_to", "[unit-test]")
+TEST_CASE("Test is_relative_to")
 {
     using std::filesystem::path;
     using namespace clanguml::util;
@@ -432,7 +433,7 @@ TEST_CASE("Test is_relative_to", "[unit-test]")
     CHECK_FALSE(is_relative_to(child, base2));
 }
 
-TEST_CASE("Test parse_source_location", "[unit-test]")
+TEST_CASE("Test parse_source_location")
 {
     using namespace clanguml::common;
 

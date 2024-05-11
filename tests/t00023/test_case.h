@@ -1,5 +1,5 @@
 /**
- * tests/t00023/test_case.cc
+ * tests/t00023/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00023", "[test-case][class]")
+TEST_CASE("t00023")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00023");
 
     auto diagram = config.diagrams["t00023_class"];
@@ -28,39 +30,9 @@ TEST_CASE("t00023", "[test-case][class]")
 
     REQUIRE(model->name() == "t00023_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsAbstractClass(_A("Strategy")));
-        REQUIRE_THAT(src, IsClass(_A("StrategyA")));
-        REQUIRE_THAT(src, IsClass(_A("StrategyB")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "StrategyA"));
-        REQUIRE(IsClass(j, "StrategyB"));
-        REQUIRE(IsAbstractClass(j, "Strategy"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsAbstractClass;
-
-        REQUIRE_THAT(src, IsAbstractClass(_A("Strategy")));
-        REQUIRE_THAT(src, IsClass(_A("StrategyA")));
-        REQUIRE_THAT(src, IsClass(_A("StrategyB")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsAbstractClass(src, "Strategy"));
+        REQUIRE(IsClass(src, "StrategyA"));
+        REQUIRE(IsClass(src, "StrategyB"));
+    });
 }

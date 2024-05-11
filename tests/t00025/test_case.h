@@ -1,5 +1,5 @@
 /**
- * tests/t00025/test_case.cc
+ * tests/t00025/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00025", "[test-case][class]")
+TEST_CASE("t00025")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00025");
 
     auto diagram = config.diagrams["t00025_class"];
@@ -28,68 +30,22 @@ TEST_CASE("t00025", "[test-case][class]")
 
     REQUIRE(model->name() == "t00025_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "Target1"));
+        REQUIRE(IsClass(src, "Target2"));
+        REQUIRE(IsClassTemplate(src, "Proxy<T>"));
+        REQUIRE(IsDependency(src, "Proxy<Target1>", "Target1"));
+        REQUIRE(IsDependency(src, "Proxy<Target2>", "Target2"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("Target1")));
-        REQUIRE_THAT(src, IsClass(_A("Target2")));
-        REQUIRE_THAT(src, IsClassTemplate("Proxy", "T"));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target1>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target2>")));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
-        REQUIRE_THAT(src, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
-        REQUIRE_THAT(src, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "Target1"));
-        REQUIRE(IsClass(j, "Target2"));
-        REQUIRE(IsClassTemplate(j, "Proxy<T>"));
-        REQUIRE(IsDependency(j, "Proxy<Target1>", "Target1"));
-        REQUIRE(IsDependency(j, "Proxy<Target2>", "Target2"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("Target1")));
-        REQUIRE_THAT(src, IsClass(_A("Target2")));
-        REQUIRE_THAT(src, IsClass(_A("Proxy<T>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target1>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Proxy<T>"), _A("Proxy<Target2>")));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target1>"), "+proxy1"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("ProxyHolder"), _A("Proxy<Target2>"), "+proxy2"));
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("ProxyHolder"), _A("Target1"), "+proxy1"));
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("ProxyHolder"), _A("Target2"), "+proxy2"));
-        REQUIRE_THAT(src, IsDependency(_A("Proxy<Target1>"), _A("Target1")));
-        REQUIRE_THAT(src, IsDependency(_A("Proxy<Target2>"), _A("Target2")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsInstantiation(src, "Proxy<T>", "Proxy<Target1>"));
+        REQUIRE(IsInstantiation(src, "Proxy<T>", "Proxy<Target2>"));
+        REQUIRE(IsAggregation<Public>(
+            src, "ProxyHolder", "Proxy<Target1>", "proxy1"));
+        REQUIRE(IsAggregation<Public>(
+            src, "ProxyHolder", "Proxy<Target2>", "proxy2"));
+        REQUIRE(
+            !IsAggregation<Public>(src, "ProxyHolder", "Target1", "proxy1"));
+        REQUIRE(
+            !IsAggregation<Public>(src, "ProxyHolder", "Target2", "proxy2"));
+    });
 }

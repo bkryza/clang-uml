@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30014", "[test-case][package]")
+TEST_CASE("t30014")
 {
+    using namespace clanguml::test;
+    using namespace std::string_literals;
+
     auto [config, db] = load_config("t30014");
 
     auto diagram = config.diagrams["t30014_package"];
@@ -28,6 +31,14 @@ TEST_CASE("t30014", "[test-case][package]")
 
     REQUIRE(model->name() == "t30014_package");
 
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsModulePackage(src, "app"s));
+        REQUIRE(IsModulePackage(src, "app"s, ":lib1"s));
+        REQUIRE(IsModulePackage(src, "app"s, ":lib2"s));
+        REQUIRE(IsModulePackage(src, "app"s, ":lib1"s, "mod1"s));
+        REQUIRE(!IsModulePackage(src, "app"s, ":lib1"s, "mod2"s));
+    });
+/*
     {
         auto src = generate_package_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -72,5 +83,5 @@ TEST_CASE("t30014", "[test-case][package]")
         REQUIRE_THAT(src, IsPackage(_A("mod1")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

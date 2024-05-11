@@ -1,5 +1,5 @@
 /**
- * tests/t30005/test_case.cc
+ * tests/t30005/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30005", "[test-case][package]")
+TEST_CASE("t30005")
 {
+    using namespace clanguml::test;
+    using namespace std::string_literals;
+
     auto [config, db] = load_config("t30005");
 
     auto diagram = config.diagrams["t30005_package"];
@@ -28,6 +31,21 @@ TEST_CASE("t30005", "[test-case][package]")
 
     REQUIRE(model->name() == "t30005_package");
 
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "A"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "AA"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(src, "B"s));
+        REQUIRE(IsNamespacePackage(src, "B"s, "BB"s));
+        REQUIRE(IsNamespacePackage(src, "B"s, "BB"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(src, "C"s));
+        REQUIRE(IsNamespacePackage(src, "C"s, "CC"s));
+        REQUIRE(IsNamespacePackage(src, "C"s, "CC"s, "CCC"s));
+
+        REQUIRE(IsDependency(src, "BBB", "AAA"));
+        REQUIRE(IsDependency(src, "CCC", "AAA"));
+    });
+/*
     {
         auto src = generate_package_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -82,5 +100,5 @@ TEST_CASE("t30005", "[test-case][package]")
         REQUIRE_THAT(src, IsPackageDependency(_A("CCC"), _A("AAA")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }
