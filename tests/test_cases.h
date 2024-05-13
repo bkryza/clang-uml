@@ -124,6 +124,11 @@ template <typename T> struct diagram_source_t {
         return "__INVALID_ALIAS__";
     }
 
+    virtual std::string get_alias(std::string ns, std::string name) const
+    {
+        return get_alias(fmt::format("{}::{}", ns, name));
+    }
+
     bool search(const std::string &pattern) const;
 
     std::string to_string() const;
@@ -364,6 +369,43 @@ template <> std::string diagram_source_t<nlohmann::json>::to_string() const
     return src.dump(2);
 }
 
+struct QualifiedName {
+    QualifiedName(const char *n)
+        : name{n}
+    {
+    }
+
+    QualifiedName(std::string_view n)
+        : name{n}
+    {
+    }
+
+    QualifiedName(std::string_view ns_, std::string_view n)
+        : ns{ns_}
+        , name{n}
+    {
+    }
+
+    QualifiedName(const char *ns_, const char *n)
+        : ns{ns_}
+        , name{n}
+    {
+    }
+
+    operator std::string() const { return str(); }
+
+    std::string str() const
+    {
+        if (ns)
+            return fmt::format("{}::{}", ns.value(), name);
+
+        return name;
+    }
+
+    std::optional<std::string> ns;
+    std::string name;
+};
+
 ///
 /// The following functions declarations define various checks on generated
 /// diagrams.
@@ -386,23 +428,31 @@ bool HasTitle(const DiagramType &d, std::string const &str);
 
 // Check if generated diagram contains a specified enum
 template <typename DiagramType>
-bool IsEnum(const DiagramType &d, std::string name);
+bool IsEnum(const DiagramType &d, QualifiedName name);
+
+// Check if generated diagram contains a specified union
+template <typename DiagramType>
+bool IsUnion(const DiagramType &d, QualifiedName name);
 
 // Check if generated diagram contains a specified class
 template <typename DiagramType>
-bool IsClass(const DiagramType &d, std::string name);
+bool IsClass(const DiagramType &d, QualifiedName name);
 
 // Check if generated diagram contains a specified class template
 template <typename DiagramType>
-bool IsClassTemplate(const DiagramType &d, std::string name);
+bool IsClassTemplate(const DiagramType &d, QualifiedName name);
+
+template <typename DiagramType>
+bool IsAbstractClassTemplate(const DiagramType &d, QualifiedName name);
 
 // Check if generated diagram contains a specified abstract class
 template <typename DiagramType>
-bool IsAbstractClass(const DiagramType &d, std::string name);
+bool IsAbstractClass(const DiagramType &d, QualifiedName name);
 
 // Check if generated diagram contains a specified class
 template <typename DiagramType>
-bool IsBaseClass(const DiagramType &d, std::string base, std::string subclass);
+bool IsBaseClass(
+    const DiagramType &d, QualifiedName base, QualifiedName subclass);
 
 template <typename DiagramType>
 bool IsInnerClass(
@@ -440,8 +490,8 @@ bool IsInstantiation(const DiagramType &d, std::string const &from,
     std::string const &to, std::string style = "");
 
 template <typename DiagramType>
-bool IsDependency(const DiagramType &d, std::string const &from,
-    std::string const &to, std::string style = "");
+bool IsDependency(const DiagramType &d, QualifiedName from, QualifiedName to,
+    std::string style = "");
 
 template <typename DiagramType, typename... Ts>
 bool IsFriend(
@@ -458,6 +508,9 @@ bool IsIncludeDependency(
 template <typename DiagramType>
 bool IsConstraint(const DiagramType &d, std::string const &from,
     std::string const &to, std::string label = {}, std::string style = "");
+
+template <typename DiagramType>
+bool IsConcept(const DiagramType &d, std::string const &cpt);
 
 template <typename DiagramType>
 bool IsConceptRequirement(
@@ -543,28 +596,40 @@ template <> bool HasTitle(const plantuml_t &d, std::string const &str)
     return d.contains("title " + str);
 }
 
-template <> bool IsEnum(const plantuml_t &d, std::string name)
+template <> bool IsEnum(const plantuml_t &d, QualifiedName enm)
 {
-    return d.contains(fmt::format("enum {}", d.get_alias(name)));
+    return d.contains(fmt::format("enum {}", d.get_alias(enm.name)));
 }
 
-template <> bool IsClass(const plantuml_t &d, std::string name)
+template <> bool IsUnion(const plantuml_t &d, QualifiedName cls)
 {
-    return d.contains(fmt::format("class {}", d.get_alias(name)));
+    return d.contains(fmt::format("class {} <<union>>", d.get_alias(cls)));
 }
 
-template <> bool IsClassTemplate(const plantuml_t &d, std::string name)
+template <> bool IsClass(const plantuml_t &d, QualifiedName cls)
 {
-    return d.contains(fmt::format("class \"{}\"", name));
+    return d.contains(fmt::format("class {}", d.get_alias(cls.name))) ||
+        d.contains(fmt::format("class {}", d.get_alias(cls.str())));
 }
 
-template <> bool IsAbstractClass(const plantuml_t &d, std::string name)
+template <> bool IsClassTemplate(const plantuml_t &d, QualifiedName cls)
 {
-    return d.contains(fmt::format("abstract {}", d.get_alias(name)));
+    return d.contains(fmt::format("class \"{}\"", cls.name));
+}
+
+template <> bool IsAbstractClassTemplate(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("abstract \"{}\"", cls.name));
+}
+
+template <> bool IsAbstractClass(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("abstract {}", d.get_alias(cls.name)));
 }
 
 template <>
-bool IsBaseClass(const plantuml_t &d, std::string base, std::string subclass)
+bool IsBaseClass(
+    const plantuml_t &d, QualifiedName base, QualifiedName subclass)
 {
     return d.contains(
         fmt::format("{} <|-- {}", d.get_alias(base), d.get_alias(subclass)));
@@ -750,11 +815,13 @@ bool IsInstantiation(const plantuml_t &d, std::string const &from,
 }
 
 template <>
-bool IsDependency(const plantuml_t &d, std::string const &from,
-    std::string const &to, std::string style)
+bool IsDependency(const plantuml_t &d, QualifiedName from, QualifiedName to,
+    std::string style)
 {
-    return d.contains(
-        fmt::format("{} .{}.> {}", d.get_alias(from), style, d.get_alias(to)));
+    return d.contains(fmt::format(
+               "{} .{}.> {}", d.get_alias(from), style, d.get_alias(to))) ||
+        d.contains(fmt::format("{} .{}.> {}", d.get_alias(from.name), style,
+            d.get_alias(to.name)));
 }
 
 template <typename... Ts>
@@ -800,6 +867,11 @@ bool IsConstraint(const plantuml_t &d, std::string const &from,
 
     return d.contains(fmt::format(
         "{} .{}.> {} : {}", d.get_alias(from), style, d.get_alias(to), label));
+}
+
+template <> bool IsConcept(const plantuml_t &d, std::string const &cpt)
+{
+    return d.contains("class " + d.get_alias(cpt) + " <<concept>>");
 }
 
 template <>
@@ -945,30 +1017,43 @@ template <> bool HasTitle(const mermaid_t &d, std::string const &str)
     return d.contains("title: " + str);
 }
 
-template <> bool IsEnum(const mermaid_t &d, std::string name)
+template <> bool IsEnum(const mermaid_t &d, QualifiedName enm)
 {
-    return d.search(std::string("class ") + d.get_alias(name) +
+    return d.search(std::string("class ") + d.get_alias(enm) +
         " \\{\\n\\s+<<enumeration>>");
 }
 
-template <> bool IsClass(const mermaid_t &d, std::string name)
+template <> bool IsUnion(const mermaid_t &d, QualifiedName cls)
 {
-    return d.contains(fmt::format("class {}[\"{}\"]", d.get_alias(name), name));
+    return d.search(
+        std::string("class ") + d.get_alias(cls) + " \\{\\n\\s+<<union>>");
 }
 
-template <> bool IsClassTemplate(const mermaid_t &d, std::string name)
+template <> bool IsClass(const mermaid_t &d, QualifiedName cls)
 {
-    return d.contains(fmt::format("class {}", d.get_alias(name)));
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
 }
 
-template <> bool IsAbstractClass(const mermaid_t &d, std::string name)
+template <> bool IsClassTemplate(const mermaid_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsAbstractClassTemplate(const mermaid_t &d, QualifiedName cls)
+{
+    //    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+    return d.search(
+        std::string("class ") + d.get_alias(cls) + " \\{\\n\\s+<<abstract>>");
+}
+
+template <> bool IsAbstractClass(const mermaid_t &d, QualifiedName name)
 {
     return d.search(
         std::string("class ") + d.get_alias(name) + " \\{\\n\\s+<<abstract>>");
 }
 
 template <>
-bool IsBaseClass(const mermaid_t &d, std::string base, std::string subclass)
+bool IsBaseClass(const mermaid_t &d, QualifiedName base, QualifiedName subclass)
 {
     return d.contains(
         fmt::format("{} <|-- {}", d.get_alias(base), d.get_alias(subclass)));
@@ -1119,7 +1204,7 @@ bool IsComposition(const mermaid_t &d, std::string const &from,
     if (!multiplicity_source.empty())
         format_string += " \"" + multiplicity_source + "\"";
 
-    format_string += fmt::format(" *-{}-", style);
+    format_string += fmt::format(" *--", style);
 
     if (!multiplicity_dest.empty())
         format_string += " \"" + multiplicity_dest + "\"";
@@ -1168,8 +1253,8 @@ bool IsInstantiation(const mermaid_t &d, std::string const &from,
 }
 
 template <>
-bool IsDependency(const mermaid_t &d, std::string const &from,
-    std::string const &to, std::string style)
+bool IsDependency(
+    const mermaid_t &d, QualifiedName from, QualifiedName to, std::string style)
 {
     if (d.diagram_type == common::model::diagram_t::kClass) {
         return d.contains(
@@ -1257,6 +1342,12 @@ bool IsConstraint(const mermaid_t &d, std::string const &from,
         return d.contains(fmt::format("{} ..> {}", from_id, to_id));
 
     return d.contains(fmt::format("{} ..> {} : {}", from_id, to_id, label));
+}
+
+template <> bool IsConcept(const mermaid_t &d, std::string const &cpt)
+{
+    return d.search(
+        std::string("class ") + d.get_alias(cpt) + " \\{\\n\\s+<<concept>>");
 }
 
 template <>
@@ -1354,8 +1445,13 @@ template <> bool IsSystemHeader(const mermaid_t &d, std::string const &path)
 template <typename... Args>
 bool IsNamespacePackage(const mermaid_t &d, Args... args)
 {
+    if (d.diagram_type == class_diagram::model::diagram_t::kClass) {
+        std::vector<std::string> toks{{args...}};
+        return d.contains(fmt::format("[\"{}", fmt::join(toks, "::")));
+    }
+
     const auto &name = get_last(args...);
-    return d.contains("subgraph " + d.get_alias(name));
+    return d.contains(fmt::format("subgraph {}", d.get_alias(name)));
 }
 
 template <typename... Args>
@@ -1394,32 +1490,44 @@ template <> bool HasTitle(const json_t &d, std::string const &str)
     return d.src.contains("title") && d.src["title"] == str;
 }
 
-template <> bool IsAbstractClass(const json_t &d, std::string name)
+template <> bool IsAbstractClass(const json_t &d, QualifiedName cls)
 {
-    auto e = get_element(d.src, expand_name(d.src, name));
+    auto e = get_element(d.src, expand_name(d.src, cls));
     return e && e->at("type") == "class" && e->at("is_abstract");
 }
 
-template <> bool IsEnum(const json_t &d, std::string name)
+template <> bool IsEnum(const json_t &d, QualifiedName enm)
 {
-    auto e = get_element(d.src, expand_name(d.src, name));
+    auto e = get_element(d.src, expand_name(d.src, enm));
     return e && e->at("type") == "enum";
 }
 
-template <> bool IsClass(const json_t &d, std::string name)
+template <> bool IsUnion(const json_t &d, QualifiedName enm)
 {
-    auto e = get_element(d.src, expand_name(d.src, name));
+    auto e = get_element(d.src, expand_name(d.src, enm));
+    return e && e->at("type") == "class" && e->at("is_union");
+}
+
+template <> bool IsClass(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src, expand_name(d.src, cls));
     return e && e->at("type") == "class" && !e->at("is_abstract");
 }
 
-template <> bool IsClassTemplate(const json_t &d, std::string name)
+template <> bool IsClassTemplate(const json_t &d, QualifiedName cls)
 {
-    auto e = get_element(d.src, expand_name(d.src, name));
+    auto e = get_element(d.src, expand_name(d.src, cls));
     return e && e->at("type") == "class";
 }
 
+template <> bool IsAbstractClassTemplate(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src, expand_name(d.src, cls));
+    return e && e->at("type") == "class" && e->at("is_abstract");
+}
+
 template <>
-bool IsBaseClass(const json_t &d, std::string base, std::string subclass)
+bool IsBaseClass(const json_t &d, QualifiedName base, QualifiedName subclass)
 {
     const auto &j = d.src;
     auto base_el = get_element(j, expand_name(j, base));
@@ -1459,8 +1567,8 @@ bool IsMethod(const json_t &d, const std::string &cls, std::string const &name,
 
     const nlohmann::json &methods = (*sc)["methods"];
 
-    return std::find_if(methods.begin(), methods.end(), [&](const auto &it) {
-        return it["name"] == name;
+    return std::find_if(methods.begin(), methods.end(), [name](const auto &it) {
+        return it["display_name"] == name;
     }) != methods.end();
 }
 
@@ -1522,7 +1630,7 @@ bool IsComposition(const json_t &d, std::string const &from,
     const auto &j = d.src;
 
     auto rel = get_relationship(
-        j, expand_name(j, to), expand_name(j, from), "composition", label);
+        j, expand_name(j, from), expand_name(j, to), "composition", label);
 
     if (rel == j["relationships"].end())
         return false;
@@ -1591,8 +1699,8 @@ bool IsInstantiation(const json_t &d, std::string const &from,
 }
 
 template <>
-bool IsDependency(const json_t &d, std::string const &from,
-    std::string const &to, std::string style)
+bool IsDependency(
+    const json_t &d, QualifiedName from, QualifiedName to, std::string style)
 {
     const auto &j = d.src;
 
@@ -1655,18 +1763,48 @@ bool IsIncludeDependency(
     return true;
 }
 
+template <> bool IsConcept(const json_t &d, std::string const &cpt)
+{
+    const auto &j = d.src;
+
+    auto e = get_element(j, expand_name(j, cpt));
+    return e && e->at("type") == "concept";
+}
+
 template <>
 bool IsConstraint(const json_t &d, std::string const &from,
     std::string const &to, std::string label, std::string style)
 {
-    return false;
+    const auto &j = d.src;
+
+    auto rel = get_relationship(
+        j, expand_name(j, from), expand_name(j, to), "constraint", label);
+
+    if (rel == j["relationships"].end())
+        return false;
+
+    if ((*rel)["label"] != label)
+        return false;
+
+    return true;
 }
 
 template <>
 bool IsConceptRequirement(
     const json_t &d, std::string const &cpt, std::string requirement)
 {
-    return false;
+    const auto &j = d.src;
+
+    auto e = get_element(j, expand_name(j, cpt));
+
+    if (!e)
+        return false;
+
+    const nlohmann::json &statements = (*e)["statements"];
+
+    return std::find_if(statements.begin(), statements.end(),
+               [requirement](const auto &it) { return it == requirement; }) !=
+        statements.end();
 }
 
 template <>

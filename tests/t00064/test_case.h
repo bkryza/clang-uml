@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00064", "[test-case][class]")
+TEST_CASE("t00064")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00064");
 
     auto diagram = config.diagrams["t00064_class"];
@@ -28,6 +30,45 @@ TEST_CASE("t00064", "[test-case][class]")
 
     REQUIRE(model->name() == "t00064_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!src.contains("type-parameter-"));
+
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "R"));
+
+        REQUIRE(IsClassTemplate(src, "type_list<Ts...>"));
+        REQUIRE(IsClassTemplate(src, "type_list<Ret(Arg &&),Ts...>"));
+        REQUIRE(IsClassTemplate(src, "type_list<T const,Ts...>"));
+
+        REQUIRE(IsClassTemplate(src, "head<typename>"));
+        REQUIRE(IsClassTemplate(src, "head<type_list<Head,Tail...>>"));
+        REQUIRE(IsClassTemplate(src, "type_group_pair<typename,typename>"));
+        REQUIRE(IsClassTemplate(
+            src, "type_group_pair<type_list<First...>,type_list<Second...>>"));
+        REQUIRE(IsClassTemplate(
+            src, "type_group_pair<type_list<float,double>,type_list<A,B,C>>"));
+
+        REQUIRE(IsClassTemplate(src, "optional_ref<T>"));
+
+        REQUIRE(IsClassTemplate(src,
+            "type_group_pair_it<It,type_list<First...>,type_list<Second...>>"));
+        REQUIRE(IsMethod<Public>(src, "get", "ref_t", "unsigned int i"));
+#if LLVM_VERSION_MAJOR < 16
+        REQUIRE(IsMethod<Public>(
+            src, "getp", "value_type const*", "unsigned int i"));
+        REQUIRE(IsMethod<Public, Constexpr>(
+            src, "find", "unsigned int", "value_type const& v"));
+#else
+        REQUIRE(
+            IsMethod<Public>(src,   "getp", "const value_type *", "unsigned int i"));
+        REQUIRE(
+            IsMethod<Public, Constexpr>(src,
+                "find", "unsigned int", "const value_type & v"));
+#endif
+    });
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -137,4 +178,5 @@ TEST_CASE("t00064", "[test-case][class]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+     */
 }

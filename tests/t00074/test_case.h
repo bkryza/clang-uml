@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00074", "[test-case][class]")
+TEST_CASE("t00074")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00074");
 
     auto diagram = config.diagrams["t00074_class"];
@@ -28,6 +30,19 @@ TEST_CASE("t00074", "[test-case][class]")
 
     REQUIRE(model->name() == "t00074_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsConcept(src, "fruit_c<T>"));
+        REQUIRE(IsConcept(src, "apple_c<T>"));
+        REQUIRE(IsConcept(src, "orange_c<T>"));
+
+        REQUIRE(IsConstraint(src, "apple_c<T>", "fruit_c<T>", "T"));
+        REQUIRE(IsConstraint(src, "orange_c<T>", "fruit_c<T>", "T"));
+
+        REQUIRE(!IsConceptRequirement(src, "apple_c<T>", "t.get_sweetness()"));
+        REQUIRE(
+            !IsConceptRequirement(src, "orange_c<T>", "t.get_bitterness()"));
+    });
+/*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -87,5 +102,5 @@ TEST_CASE("t00074", "[test-case][class]")
             src, !IsConceptRequirement(_A("apple_c<T>"), "t.get_bitterness()"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

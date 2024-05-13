@@ -1,5 +1,5 @@
 /**
- * tests/t00034/test_case.cc
+ * tests/t00034/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00034", "[test-case][class]")
+TEST_CASE("t00034")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00034");
 
     auto diagram = config.diagrams["t00034_class"];
@@ -28,52 +30,14 @@ TEST_CASE("t00034", "[test-case][class]")
 
     REQUIRE(model->name() == "t00034_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClassTemplate(src, "lift_void<T>"));
+        REQUIRE(IsClassTemplate(src, "drop_void<T>"));
+        REQUIRE(IsClass(src, "Void"));
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "R"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClassTemplate("lift_void", "T"));
-        REQUIRE_THAT(src, IsClassTemplate("drop_void", "T"));
-        REQUIRE_THAT(src, IsClass(_A("Void")));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("lift_void<T>"), _A("lift_void<void>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClassTemplate(j, "lift_void<T>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("lift_void<T>")));
-        REQUIRE_THAT(src, IsClass(_A("drop_void<T>")));
-        REQUIRE_THAT(src, IsClass(_A("Void")));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("lift_void<T>"), _A("lift_void<void>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("drop_void<T>"), _A("drop_void<Void>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsInstantiation(src, "lift_void<T>", "lift_void<void>"));
+        REQUIRE(IsInstantiation(src, "drop_void<T>", "drop_void<Void>"));
+    });
 }

@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00055", "[test-case][class]")
+TEST_CASE("t00055")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00055");
 
     auto diagram = config.diagrams["t00055_class"];
@@ -28,6 +30,29 @@ TEST_CASE("t00055", "[test-case][class]")
 
     REQUIRE(model->name() == "t00055_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "F"));
+        REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "H"));
+        REQUIRE(IsClass(src, "I"));
+        REQUIRE(IsClass(src, "J"));
+
+        REQUIRE(IsLayoutHint(src, "A", "right", "C"));
+        REQUIRE(IsLayoutHint(src, "C", "right", "E"));
+        REQUIRE(IsLayoutHint(src, "E", "right", "G"));
+        REQUIRE(IsLayoutHint(src, "G", "right", "I"));
+
+        REQUIRE(IsLayoutHint(src, "B", "down", "D"));
+        REQUIRE(IsLayoutHint(src, "D", "down", "F"));
+        REQUIRE(IsLayoutHint(src, "F", "down", "H"));
+        REQUIRE(IsLayoutHint(src, "H", "down", "J"));
+    });
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -96,5 +121,5 @@ TEST_CASE("t00055", "[test-case][class]")
         REQUIRE_THAT(src, IsClass(_A("J")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

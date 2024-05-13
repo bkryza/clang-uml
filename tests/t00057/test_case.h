@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00057", "[test-case][class]")
+TEST_CASE("t00057")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00057");
 
     auto diagram = config.diagrams["t00057_class"];
@@ -28,86 +30,110 @@ TEST_CASE("t00057", "[test-case][class]")
 
     REQUIRE(model->name() == "t00057_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "t00057_A"));
+        REQUIRE(IsClass(src, "t00057_B"));
+        REQUIRE(IsClass(src, "t00057_C"));
+        REQUIRE(IsUnion(src, "t00057_D"));
+        REQUIRE(IsClass(src, "t00057_E"));
+        REQUIRE(IsClass(src, "t00057_F"));
+        REQUIRE(IsClass(src, "t00057_G"));
+        REQUIRE(!IsClass(src, "(anonymous)"));
+        REQUIRE(IsClass(src, "t00057_R"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsAggregation<Public>(src, "t00057_R", "t00057_A", "a"));
+        REQUIRE(IsAggregation<Public>(src, "t00057_R", "t00057_B", "b"));
+        REQUIRE(IsAssociation<Public>(src, "t00057_R", "t00057_C", "c"));
+        REQUIRE(IsAggregation<Public>(src, "t00057_R", "t00057_D", "d"));
+        REQUIRE(IsAssociation<Public>(src, "t00057_R", "t00057_E", "e"));
+        REQUIRE(IsAssociation<Public>(src, "t00057_R", "t00057_F", "f"));
+        REQUIRE(IsAggregation<Public>(
+            src, "t00057_E", "t00057_E::(coordinates)", "coordinates"));
+        REQUIRE(IsAggregation<Public>(
+            src, "t00057_E", "t00057_E::(height)", "height"));
+    });
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("t00057_A")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_B")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_C")));
-        REQUIRE_THAT(src, IsUnion(_A("t00057_D")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_E")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_F")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_G")));
-        REQUIRE_THAT(src, !IsClass(_A("(anonymous)")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_R")));
+    /*
+            {
+            auto src = generate_class_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-        // Check if all relationships exist
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_A"), "+a"));
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_B"), "+b"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_C"), "+c"));
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_D"), "+d"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_E"), "+e"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_F"), "+f"));
-        REQUIRE_THAT(src,
-            IsAggregation(
-                _A("t00057_E"), _A("t00057_E::(coordinates)"), "+coordinates"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("t00057_E"), _A("t00057_E::(height)"), "+height"));
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsClass(_A("t00057_A")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_B")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_C")));
+            REQUIRE_THAT(src, IsUnion(_A("t00057_D")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_E")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_F")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_G")));
+            REQUIRE_THAT(src, !IsClass(_A("(anonymous)")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_R")));
 
-    {
-        auto j = generate_class_json(diagram, *model);
+            // Check if all relationships exist
+            REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_A"),
+       "+a")); REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_B"),
+       "+b")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_C"),
+       "+c")); REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_D"),
+       "+d")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_E"),
+       "+e")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_F"),
+       "+f")); REQUIRE_THAT(src, IsAggregation( _A("t00057_E"),
+       _A("t00057_E::(coordinates)"), "+coordinates")); REQUIRE_THAT(src,
+                IsAggregation(_A("t00057_E"), _A("t00057_E::(height)"),
+       "+height"));
 
-        using namespace json;
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        REQUIRE(get_element(j, "t00057_A").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_B").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_C").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_D").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_E").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_F").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_G").value()["type"] == "class");
-        REQUIRE(get_element(j, "t00057_R").value()["type"] == "class");
+        {
+            auto j = generate_class_json(diagram, *model);
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
+            using namespace json;
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsUnion;
+            REQUIRE(get_element(j, "t00057_A").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_B").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_C").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_D").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_E").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_F").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_G").value()["type"] == "class");
+            REQUIRE(get_element(j, "t00057_R").value()["type"] == "class");
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("t00057_A")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_B")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_C")));
-        REQUIRE_THAT(src, IsUnion(_A("t00057_D")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_E")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_F")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_G")));
-        REQUIRE_THAT(src, !IsClass(_A("(anonymous)")));
-        REQUIRE_THAT(src, IsClass(_A("t00057_R")));
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
+        {
+            auto src = generate_class_mermaid(diagram, *model);
 
-        // Check if all relationships exist
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_A"), "+a"));
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_B"), "+b"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_C"), "+c"));
-        REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_D"), "+d"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_E"), "+e"));
-        REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_F"), "+f"));
-        REQUIRE_THAT(src,
-            IsAggregation(
-                _A("t00057_E"), _A("t00057_E::(coordinates)"), "+coordinates"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("t00057_E"), _A("t00057_E::(height)"), "+height"));
+            mermaid::AliasMatcher _A(src);
+            using mermaid::IsUnion;
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsClass(_A("t00057_A")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_B")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_C")));
+            REQUIRE_THAT(src, IsUnion(_A("t00057_D")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_E")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_F")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_G")));
+            REQUIRE_THAT(src, !IsClass(_A("(anonymous)")));
+            REQUIRE_THAT(src, IsClass(_A("t00057_R")));
+
+            // Check if all relationships exist
+            REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_A"),
+       "+a")); REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_B"),
+       "+b")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_C"),
+       "+c")); REQUIRE_THAT(src, IsAggregation(_A("t00057_R"), _A("t00057_D"),
+       "+d")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_E"),
+       "+e")); REQUIRE_THAT(src, IsAssociation(_A("t00057_R"), _A("t00057_F"),
+       "+f")); REQUIRE_THAT(src, IsAggregation( _A("t00057_E"),
+       _A("t00057_E::(coordinates)"), "+coordinates")); REQUIRE_THAT(src,
+                IsAggregation(_A("t00057_E"), _A("t00057_E::(height)"),
+       "+height"));
+
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }
+        */
 }

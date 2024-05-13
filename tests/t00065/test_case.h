@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00065", "[test-case][class]")
+TEST_CASE("t00065")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00065");
 
     auto diagram = config.diagrams["t00065_class"];
@@ -28,48 +30,62 @@ TEST_CASE("t00065", "[test-case][class]")
 
     REQUIRE(model->name() == "t00065_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "R"));
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, {"detail", "AImpl"}));
+        REQUIRE(IsEnum(src, "XYZ"));
+        REQUIRE(IsEnum(src, "ABC"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsPackage("module1"));
+        REQUIRE(IsPackage("module2"));
+        REQUIRE(IsPackage("submodule1a"));
+        REQUIRE(IsPackage("concepts"));
+    });
+    /*
+        {
+            auto src = generate_class_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("R")));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
-        REQUIRE_THAT(src, IsEnum(_A("XYZ")));
-        REQUIRE_THAT(src, IsEnum(_A("ABC")));
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(src, IsPackage("module1"));
-        REQUIRE_THAT(src, IsPackage("module2"));
-        REQUIRE_THAT(src, IsPackage("submodule1a"));
-        REQUIRE_THAT(src, IsPackage("concepts"));
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsClass(_A("R")));
+            REQUIRE_THAT(src, IsClass(_A("A")));
+            REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
+            REQUIRE_THAT(src, IsEnum(_A("XYZ")));
+            REQUIRE_THAT(src, IsEnum(_A("ABC")));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            REQUIRE_THAT(src, IsPackage("module1"));
+            REQUIRE_THAT(src, IsPackage("module2"));
+            REQUIRE_THAT(src, IsPackage("submodule1a"));
+            REQUIRE_THAT(src, IsPackage("concepts"));
 
-    {
-        auto j = generate_class_json(diagram, *model);
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        using namespace json;
+        {
+            auto j = generate_class_json(diagram, *model);
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
+            using namespace json;
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsEnum;
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
+        {
+            auto src = generate_class_mermaid(diagram, *model);
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("R")));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
-        REQUIRE_THAT(src, IsEnum(_A("XYZ")));
-        REQUIRE_THAT(src, IsEnum(_A("ABC")));
+            mermaid::AliasMatcher _A(src);
+            using mermaid::IsEnum;
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsClass(_A("R")));
+            REQUIRE_THAT(src, IsClass(_A("A")));
+            REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
+            REQUIRE_THAT(src, IsEnum(_A("XYZ")));
+            REQUIRE_THAT(src, IsEnum(_A("ABC")));
+
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

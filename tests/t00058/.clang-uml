@@ -10,3 +10,6 @@ diagrams:
     plantuml:
       after:
         - '{{ alias("same_as_first_type<T,Args...>") }} ..> {{ alias("first_type<T,Args...>") }}'
+    mermaid:
+      after:
+        - '{{ alias("same_as_first_type<T,Args...>") }} ..> {{ alias("first_type<T,Args...>") }}'

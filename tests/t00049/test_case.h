@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00049", "[test-case][class]")
+TEST_CASE("t00049")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00049");
 
     auto diagram = config.diagrams["t00049_class"];
@@ -27,78 +29,22 @@ TEST_CASE("t00049", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00049_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "R"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClassTemplate(src, "A<T>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsMethod<Public>(src, "R", "get_int_map", "A<intmap>"));
+        REQUIRE(IsMethod<Public>(
+            src, "R", "set_int_map", "void", "A<intmap> && int_map"));
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("R")));
+        REQUIRE(IsField<Public>(src, "R", "a_string", "A<thestring>"));
+        REQUIRE(
+            IsField<Public>(src, "R", "a_vector_string", "A<string_vector>"));
+        REQUIRE(IsField<Public>(src, "R", "a_int_map", "A<intmap>"));
 
-        // Check if class templates exist
-        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
-
-        // Check if all methods exist
-        REQUIRE_THAT(src, (IsMethod<Public>("get_int_map", "A<intmap>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("set_int_map", "void", "A<intmap> && int_map")));
-
-        // Check if all fields exist
-        REQUIRE_THAT(src, (IsField<Public>("a_string", "A<thestring>")));
-        REQUIRE_THAT(
-            src, (IsField<Public>("a_vector_string", "A<string_vector>")));
-        REQUIRE_THAT(src, (IsField<Public>("a_int_map", "A<intmap>")));
-
-        // Check if all relationships exist
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<string_vector>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "R"));
-        REQUIRE(IsClassTemplate(j, "A<T>"));
-        REQUIRE(IsInstantiation(j, "A<T>", "A<string_vector>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsField;
-        using mermaid::IsMethod;
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        // Check if class templates exist
-        REQUIRE_THAT(src, IsClass(_A("A<T>")));
-
-        // Check if all methods exist
-        REQUIRE_THAT(src, (IsMethod<Public>("get_int_map", "A<intmap>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("set_int_map", "void", "A<intmap> && int_map")));
-
-        // Check if all fields exist
-        REQUIRE_THAT(src, (IsField<Public>("a_string", "A<thestring>")));
-        REQUIRE_THAT(
-            src, (IsField<Public>("a_vector_string", "A<string_vector>")));
-        REQUIRE_THAT(src, (IsField<Public>("a_int_map", "A<intmap>")));
-
-        // Check if all relationships exist
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<string_vector>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<thestring>")));
-        REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<intmap>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsInstantiation(src, "A<T>", "A<string_vector>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<thestring>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<intmap>"));
+    });
 }

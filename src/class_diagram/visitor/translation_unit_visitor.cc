@@ -1187,7 +1187,8 @@ void translation_unit_visitor::process_method(
     }
 
     class_method method{common::access_specifier_to_access_t(mf.getAccess()),
-        util::trim(method_name), method_return_type};
+        util::trim(method_name),
+        config().simplify_template_type(method_return_type)};
 
     process_method_properties(mf, c, method_name, method);
 
@@ -1265,6 +1266,8 @@ void translation_unit_visitor::process_method(
         atsp != nullptr) {
         process_function_parameter_find_relationships_in_autotype(c, atsp);
     }
+
+    method.update(config().using_namespace());
 
     if (diagram().should_include(method)) {
         LOG_DBG("Adding method: {}", method.name());
@@ -1389,6 +1392,8 @@ void translation_unit_visitor::process_template_method(
         if (param != nullptr)
             process_function_parameter(*param, method, c);
     }
+
+    method.update(config().using_namespace());
 
     if (diagram().should_include(method)) {
         LOG_DBG("Adding method: {}", method.name());
@@ -1678,7 +1683,9 @@ void translation_unit_visitor::process_static_field(
 
     class_member field{
         common::access_specifier_to_access_t(field_declaration.getAccess()),
-        field_declaration.getNameAsString(), type_name};
+        field_declaration.getNameAsString(),
+        config().simplify_template_type(type_name)};
+
     field.is_static(true);
 
     process_comment(field_declaration, field);
@@ -1769,7 +1776,7 @@ void translation_unit_visitor::process_field(
 
     class_member field{
         common::access_specifier_to_access_t(field_declaration.getAccess()),
-        field_name, field_type_str};
+        field_name, config().simplify_template_type(field_type_str)};
 
     // Parse the field comment
     process_comment(field_declaration, field);

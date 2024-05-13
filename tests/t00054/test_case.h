@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00054", "[test-case][class]")
+TEST_CASE("t00054")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00054");
 
     auto diagram = config.diagrams["t00054_class"];
@@ -28,6 +30,28 @@ TEST_CASE("t00054", "[test-case][class]")
 
     REQUIRE(model->name() == "t00054_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "a"));
+        REQUIRE(IsClass(src, "b"));
+        REQUIRE(IsClass(src, {"detail", "c"}));
+        REQUIRE(IsClass(src, {"detail", "d"}));
+        REQUIRE(IsClass(src, {"detail", "e"}));
+        REQUIRE(IsClass(src, "f"));
+        REQUIRE(IsClass(src, "g"));
+
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, {"detail2", "C"}));
+        REQUIRE(IsClass(src, {"detail2::detail3", "D"}));
+        REQUIRE(IsClass(src, {"detail2::detail3", "E"}));
+        REQUIRE(IsClass(src, {"detail2", "F"}));
+        REQUIRE(IsClass(src, "G"));
+
+        REQUIRE(IsEnum(src, {"detail4", "i"}));
+        REQUIRE(IsEnum(src, {"detail4", "h"}));
+        REQUIRE(IsEnum(src, {"detail4", "j"}));
+    });
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -114,5 +138,5 @@ TEST_CASE("t00054", "[test-case][class]")
         REQUIRE_THAT(src, IsEnum(_A("detail4::j")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

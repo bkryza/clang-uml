@@ -78,6 +78,11 @@ bool diagram::should_include(const namespace_ &ns) const
     return filter_->should_include(ns);
 }
 
+bool diagram::should_include(relationship r) const
+{
+    return should_include(r.type());
+}
+
 bool diagram::should_include(const relationship_t r) const
 {
     if (filter_.get() == nullptr)

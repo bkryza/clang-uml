@@ -102,7 +102,7 @@ foreach(TEST_NAME ${TEST_NAMES})
             target_sources(${TEST_NAME} PUBLIC FILE_SET CXX_MODULES FILES
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
-        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc test_cases_checks.h
+        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
                                            ${TEST_CASE_SOURCES} catch.h)
     else()
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc catch.h)

@@ -1,5 +1,5 @@
 /**
- * tests/t00031/test_case.cc
+ * tests/t00031/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00031", "[test-case][class]")
+TEST_CASE("t00031")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00031");
 
     auto diagram = config.diagrams["t00031_class"];
@@ -28,55 +30,20 @@ TEST_CASE("t00031", "[test-case][class]")
 
     REQUIRE(model->name() == "t00031_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsEnum(src, "B"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClassTemplate(src, "C<T>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsEnum(_A("B")));
-        REQUIRE_THAT(src, IsClassTemplate("C", "T"));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-
-        REQUIRE_THAT(src,
-            IsAssociation(
-                _A("R"), _A("A"), "+aaa", "", "", "[#red,dashed,thickness=2]"));
-        REQUIRE_THAT(src,
-            IsComposition(_A("R"), _A("B"), "+bbb", "", "",
-                "[#green,dashed,thickness=4]"));
-        REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("R"), _A("C<int>"), "+ccc", "", "",
-                "[#blue,dotted,thickness=8]"));
-        REQUIRE_THAT(src,
-            IsAssociation(_A("R"), _A("D"), "+ddd", "", "",
-                "[#blue,plain,thickness=16]"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClassTemplate(j, "C<T>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsEnum;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsEnum(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C<T>")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsAssociation<Public>(
+            src, "R", "A", "aaa", "", "", "[#red,dashed,thickness=2]"));
+        REQUIRE(IsComposition<Public>(
+            src, "R", "B", "bbb", "", "", "[#green,dashed,thickness=4]"));
+        REQUIRE(IsDependency(src, "R", "B"));
+        REQUIRE(IsAggregation<Public>(
+            src, "R", "C<int>", "ccc", "", "", "[#blue,dotted,thickness=8]"));
+        REQUIRE(IsAssociation<Public>(
+            src, "R", "D", "ddd", "", "", "[#blue,plain,thickness=16]"));
+    });
 }

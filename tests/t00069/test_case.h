@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00069", "[test-case][class]")
+TEST_CASE("t00069")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00069");
 
     auto diagram = config.diagrams["t00069_class"];
@@ -28,60 +30,82 @@ TEST_CASE("t00069", "[test-case][class]")
 
     REQUIRE(model->name() == "t00069_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsClassTemplate(src, "generator", "T"));
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE(
+            IsInnerClass(src,("generator<T>", "generator::promise_type"));
 
-        // Check if class templates exist
-        REQUIRE_THAT(src, IsClassTemplate("generator", "T"));
+        REQUIRE(
+            IsMethod<Public, Coroutine>(src,"iota", "generator<unsigned long>"));
+        REQUIRE(
+            IsMethod<Public, Coroutine>(src,"seed", "generator<unsigned long>"));
 
-        // Check if all inner classes exist
-        REQUIRE_THAT(src,
-            IsInnerClass(_A("generator<T>"), _A("generator::promise_type")));
-
-        // Check if all methods exist
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Coroutine>("iota", "generator<unsigned long>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Coroutine>("seed", "generator<unsigned long>")));
-
-        // Check if all relationships exist
-        REQUIRE_THAT(
-            src, IsDependency(_A("A"), _A("generator<unsigned long>")));
-        REQUIRE_THAT(src,
+        REQUIRE(
+            IsDependency(src,"A", "generator<unsigned long>"));
+        REQUIRE(
             IsInstantiation(
-                _A("generator<T>"), _A("generator<unsigned long>")));
+                src,"generator<T>", "generator<unsigned long>"));
+    });
+    /*
+        {
+            auto src = generate_class_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-    {
-        auto j = generate_class_json(diagram, *model);
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsClass(_A("A")));
 
-        using namespace json;
+            // Check if class templates exist
+            REQUIRE_THAT(src, IsClassTemplate("generator", "T"));
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            // Check if all inner classes exist
+            REQUIRE_THAT(src,
+                IsInnerClass(_A("generator<T>"),
+       _A("generator::promise_type")));
 
-    {
-        auto src = generate_class_mermaid(diagram, *model);
+            // Check if all methods exist
+            REQUIRE_THAT(src,
+                (IsMethod<Public, Coroutine>("iota", "generator<unsigned
+       long>"))); REQUIRE_THAT(src, (IsMethod<Public, Coroutine>("seed",
+       "generator<unsigned long>")));
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-        using mermaid::IsMethod;
+            // Check if all relationships exist
+            REQUIRE_THAT(
+                src, IsDependency(_A("A"), _A("generator<unsigned long>")));
+            REQUIRE_THAT(src,
+                IsInstantiation(
+                    _A("generator<T>"), _A("generator<unsigned long>")));
 
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Coroutine>("iota", "generator<unsigned long>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Coroutine>("seed", "generator<unsigned long>")));
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        {
+            auto j = generate_class_json(diagram, *model);
+
+            using namespace json;
+
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
+
+        {
+            auto src = generate_class_mermaid(diagram, *model);
+
+            mermaid::AliasMatcher _A(src);
+            using mermaid::IsClass;
+            using mermaid::IsMethod;
+
+            REQUIRE_THAT(src, IsClass(_A("A")));
+            REQUIRE_THAT(src,
+                (IsMethod<Public, Coroutine>("iota", "generator<unsigned
+       long>"))); REQUIRE_THAT(src, (IsMethod<Public, Coroutine>("seed",
+       "generator<unsigned long>")));
+
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

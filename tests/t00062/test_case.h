@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00062", "[test-case][class]")
+TEST_CASE("t00062")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00062");
 
     auto diagram = config.diagrams["t00062_class"];
@@ -28,6 +30,55 @@ TEST_CASE("t00062", "[test-case][class]")
 
     REQUIRE(model->name() == "t00062_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!src.contains("type-parameter-"));
+
+        REQUIRE(IsClassTemplate(src, "A<T>"));
+        REQUIRE(IsClassTemplate(src, "A<U &>"));
+        REQUIRE(IsClassTemplate(src, "A<U &&>"));
+        REQUIRE(IsClassTemplate(src, "A<U const&>"));
+        REQUIRE(IsClassTemplate(src, "A<M C::*>"));
+        REQUIRE(IsClassTemplate(src, "A<M C::* &&>"));
+        REQUIRE(IsClassTemplate(src, "A<M (C::*)(Arg)>"));
+        REQUIRE(IsClassTemplate(src, "A<int (C::*)(bool)>"));
+        REQUIRE(IsClassTemplate(src, "A<M (C::*)(Arg) &&>"));
+        REQUIRE(IsClassTemplate(src, "A<M (C::*)(Arg1,Arg2,Arg3)>"));
+        REQUIRE(IsClassTemplate(src, "A<float (C::*)(int) &&>"));
+
+        REQUIRE(IsClassTemplate(src, "A<char[N]>"));
+        REQUIRE(IsClassTemplate(src, "A<char[1000]>"));
+
+        REQUIRE(IsClassTemplate(src, "A<U(...)>"));
+        REQUIRE(IsClassTemplate(src, "A<C<T>>"));
+        REQUIRE(IsClassTemplate(src, "A<C<T,Args...>>"));
+
+        REQUIRE(IsField<Public>(src, "A<U &>", "u", "U &"));
+        REQUIRE(IsField<Public>(src, "A<U **>", "u", "U **"));
+        REQUIRE(IsField<Public>(src, "A<U ***>", "u", "U ***"));
+        REQUIRE(IsField<Public>(src, "A<U &&>", "u", "U &&"));
+        REQUIRE(IsField<Public>(src, "A<const U &>", "u", "const U &"));
+        REQUIRE(IsField<Public>(src, "A<C &>", "c", "C &"));
+        REQUIRE(IsField<Public>(src, "A<M C::*>", "m", "M C::*"));
+
+        REQUIRE(IsInstantiation(src, "A<T>", "A<U &>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<U &&>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<M C::*>"));
+        REQUIRE(IsInstantiation(src, "A<U &&>", "A<M C::* &&>"));
+
+        REQUIRE(IsInstantiation(src, "A<T>", "A<M (C::*)(Arg)>"));
+        REQUIRE(
+            IsInstantiation(src, "A<M (C::*)(Arg)>", "A<int (C::*)(bool)>"));
+
+        REQUIRE(IsInstantiation(src, "A<T>", "A<char[N]>"));
+        REQUIRE(IsInstantiation(src, "A<char[N]>", "A<char[1000]>"));
+
+        REQUIRE(IsInstantiation(src, "A<T>", "A<U(...)>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<U(...)>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<C<T>>"));
+        REQUIRE(IsInstantiation(src, "A<T>", "A<C<T,Args...>>"));
+    });
+
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -148,5 +199,5 @@ TEST_CASE("t00062", "[test-case][class]")
         REQUIRE_THAT(src, IsInstantiation(_A("A<T>"), _A("A<C<T,Args...>>")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

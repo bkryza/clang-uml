@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00051", "[test-case][class]")
+TEST_CASE("t00051")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00051");
 
     auto diagram = config.diagrams["t00051_class"];
@@ -28,6 +30,36 @@ TEST_CASE("t00051", "[test-case][class]")
 
     REQUIRE(model->name() == "t00051_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsInnerClass(src, "A", "A::custom_thread1"));
+        REQUIRE(IsInnerClass(src, "A", "A::custom_thread2"));
+
+        REQUIRE(IsMethod<Public>(src, "A::custom_thread1",
+            "custom_thread1<Function,Args...>", "void",
+            "Function && f, Args &&... args"));
+        REQUIRE(IsMethod<Public>(src, "A::custom_thread2", "thread", "void",
+            "(lambda at t00051.cc:59:27) &&"));
+        REQUIRE(IsMethod<Private>(src, "A", "start_thread3",
+            "B<(lambda at t00051.cc:43:18),(lambda at "
+            "t00051.cc:43:27)>"));
+        REQUIRE(IsMethod<Private>(
+            src, "A", "get_function", "(lambda at t00051.cc:48:16)"));
+
+        REQUIRE(IsClassTemplate(src, "B<F,FF=F>"));
+        REQUIRE(IsMethod<Public>(src, "B<F,FF=F>", "f", "void"));
+        REQUIRE(IsMethod<Public>(src, "B<F,FF=F>", "ff", "void"));
+
+        REQUIRE(IsClassTemplate(
+            src, "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+
+        REQUIRE(IsInstantiation(src, "B<F,FF=F>",
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+
+        REQUIRE(IsDependency(src, "A",
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+    });
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -128,4 +160,5 @@ TEST_CASE("t00051", "[test-case][class]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+     */
 }

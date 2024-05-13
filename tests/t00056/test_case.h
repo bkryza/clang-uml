@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00056", "[test-case][class]")
+TEST_CASE("t00056")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00056");
 
     auto diagram = config.diagrams["t00056_class"];
@@ -28,200 +30,267 @@ TEST_CASE("t00056", "[test-case][class]")
 
     REQUIRE(model->name() == "t00056_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsConcept(src, "greater_than_simple<T,L>"));
+        REQUIRE(IsConcept(src, "greater_than_with_requires<T,P>"));
+        REQUIRE(IsConcept(src, "max_four_bytes<T>"));
+        REQUIRE(IsConcept(src, "iterable<T>"));
+        REQUIRE(IsConcept(src, "has_value_type<T>"));
+        REQUIRE(IsConcept(src, "convertible_to_string<T>"));
+        REQUIRE(IsConcept(src, "iterable_with_value_type<T>"));
+        REQUIRE(IsConcept(src, "iterable_or_small_value_type<T>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsConceptRequirement(
+            src, "greater_than_with_requires<T,P>", "sizeof (l) > sizeof (r)"));
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsConcept(_A("greater_than_simple<T,L>")));
-        REQUIRE_THAT(src, IsConcept(_A("greater_than_with_requires<T,P>")));
-        REQUIRE_THAT(src, IsConcept(_A("max_four_bytes<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("has_value_type<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("convertible_to_string<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable_with_value_type<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable_or_small_value_type<T>")));
-
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("greater_than_with_requires<T,P>"),
-                "sizeof (l) > sizeof (r)"));
-
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("iterable<T>"), "container.begin()"));
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
+        REQUIRE(IsConceptRequirement(src, "iterable<T>", "container.begin()"));
+        REQUIRE(IsConceptRequirement(src, "iterable<T>", "container.end()"));
 
 #if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
-        REQUIRE_THAT(src,
-            IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string({s})"));
+        REQUIRE(IsConceptRequirement(
+            src, "convertible_to_string<T>", "std::string({s})"));
 #else
-        REQUIRE_THAT(src,
+        REQUIRE(
             IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string{s}"));
+                src,"convertible_to_string<T>", "std::string{s}"));
 #endif
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("convertible_to_string<T>"),
-                "{std::to_string(s)} noexcept"));
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("convertible_to_string<T>"),
-                "{std::to_string(s)} -> std::same_as<std::string>"));
+        REQUIRE(IsConceptRequirement(
+            src, "convertible_to_string<T>", "{std::to_string(s)} noexcept"));
+        REQUIRE(IsConceptRequirement(src, "convertible_to_string<T>",
+            "{std::to_string(s)} -> std::same_as<std::string>"));
 
-        // Check if class templates exist
-        REQUIRE_THAT(src, IsClassTemplate("A", "max_four_bytes T"));
-        REQUIRE_THAT(src, IsClassTemplate("B", "T"));
-        REQUIRE_THAT(src, IsClassTemplate("C", "convertible_to_string T"));
-        REQUIRE_THAT(
-            src, IsClassTemplate("D", "iterable T1,T2,iterable T3,T4,T5"));
-        REQUIRE_THAT(src, IsClassTemplate("E", "T1,T2,T3"));
-        REQUIRE_THAT(src, IsClassTemplate("F", "T1,T2,T3"));
+        REQUIRE(IsClassTemplate(src, "A<max_four_bytes T>"));
 
-        // Check if all relationships exist
-        REQUIRE_THAT(src,
-            IsConstraint(
-                _A("A<max_four_bytes T>"), _A("max_four_bytes<T>"), "T"));
+        REQUIRE(IsClassTemplate(src, "B<T>"));
+        REQUIRE(IsClassTemplate(src, "C<convertible_to_string T>"));
+        REQUIRE(IsClassTemplate(src, "D<iterable T1,T2,iterable T3,T4,T5>"));
+        REQUIRE(IsClassTemplate(src, "E<T1,T2,T3>"));
+        REQUIRE(IsClassTemplate(src, "F<T1,T2,T3>"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("max_four_bytes<T>"), "T2"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("max_four_bytes<T>"), "T5"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("iterable<T>"), "T1"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("iterable<T>"), "T3"));
+        REQUIRE(
+            IsConstraint(src, "A<max_four_bytes T>", "max_four_bytes<T>", "T"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_with_value_type<T>"),
-                _A("has_value_type<T>"), "T"));
+        REQUIRE(IsConstraint(src, "D<iterable T1,T2,iterable T3,T4,T5>",
+            "max_four_bytes<T>", "T2"));
+        REQUIRE(IsConstraint(src, "D<iterable T1,T2,iterable T3,T4,T5>",
+            "max_four_bytes<T>", "T5"));
+        REQUIRE(IsConstraint(
+            src, "D<iterable T1,T2,iterable T3,T4,T5>", "iterable<T>", "T1"));
+        REQUIRE(IsConstraint(
+            src, "D<iterable T1,T2,iterable T3,T4,T5>", "iterable<T>", "T3"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_or_small_value_type<T>"),
-                _A("max_four_bytes<T>"), "T"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_or_small_value_type<T>"),
-                _A("iterable_with_value_type<T>"), "T"));
+        REQUIRE(IsConstraint(
+            src, "iterable_with_value_type<T>", "has_value_type<T>", "T"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("E<T1,T2,T3>"),
-                _A("greater_than_with_requires<T,P>"), "T1,T3"));
+        REQUIRE(IsConstraint(
+            src, "iterable_or_small_value_type<T>", "max_four_bytes<T>", "T"));
+        REQUIRE(IsConstraint(src, "iterable_or_small_value_type<T>",
+            "iterable_with_value_type<T>", "T"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(
-                _A("F<T1,T2,T3>"), _A("greater_than_simple<T,L>"), "T1,T3"));
+        REQUIRE(IsConstraint(
+            src, "E<T1,T2,T3>", "greater_than_with_requires<T,P>", "T1,T3"));
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
+        REQUIRE(IsConstraint(
+            src, "F<T1,T2,T3>", "greater_than_simple<T,L>", "T1,T3"));
+    });
+    /*
+        {
+            auto src = generate_class_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-        using namespace json;
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE(IsConcept(j, "greater_than_simple<T,L>"));
-        REQUIRE(IsConcept(j, "greater_than_with_requires<T,P>"));
-        REQUIRE(IsConcept(j, "max_four_bytes<T>"));
-        REQUIRE(IsConcept(j, "iterable<T>"));
-        REQUIRE(IsConcept(j, "has_value_type<T>"));
-        REQUIRE(IsConcept(j, "convertible_to_string<T>"));
-        REQUIRE(IsConcept(j, "iterable_with_value_type<T>"));
-        REQUIRE(IsConcept(j, "iterable_or_small_value_type<T>"));
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsConcept(_A("greater_than_simple<T,L>")));
+            REQUIRE_THAT(src, IsConcept(_A("greater_than_with_requires<T,P>")));
+            REQUIRE_THAT(src, IsConcept(_A("max_four_bytes<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("has_value_type<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("convertible_to_string<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable_with_value_type<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable_or_small_value_type<T>")));
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("greater_than_with_requires<T,P>"),
+                    "sizeof (l) > sizeof (r)"));
 
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsConcept;
-        using mermaid::IsConceptRequirement;
-        using mermaid::IsConstraint;
+            REQUIRE_THAT(
+                src, IsConceptRequirement(_A("iterable<T>"),
+    "container.begin()")); REQUIRE_THAT( src,
+    IsConceptRequirement(_A("iterable<T>"), "container.end()"));
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsConcept(_A("greater_than_simple<T,L>")));
-        REQUIRE_THAT(src, IsConcept(_A("greater_than_with_requires<T,P>")));
-        REQUIRE_THAT(src, IsConcept(_A("max_four_bytes<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("has_value_type<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("convertible_to_string<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable_with_value_type<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("iterable_or_small_value_type<T>")));
+    #if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
+            REQUIRE_THAT(src,
+                IsConceptRequirement(
+                    _A("convertible_to_string<T>"), "std::string({s})"));
+    #else
+            REQUIRE_THAT(src,
+                IsConceptRequirement(
+                    _A("convertible_to_string<T>"), "std::string{s}"));
+    #endif
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("convertible_to_string<T>"),
+                    "{std::to_string(s)} noexcept"));
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("convertible_to_string<T>"),
+                    "{std::to_string(s)} -> std::same_as<std::string>"));
 
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("greater_than_with_requires<T,P>"),
-                "sizeof (l) > sizeof (r)"));
+            // Check if class templates exist
+            REQUIRE_THAT(src, IsClassTemplate("A", "max_four_bytes T"));
+            REQUIRE_THAT(src, IsClassTemplate("B", "T"));
+            REQUIRE_THAT(src, IsClassTemplate("C", "convertible_to_string T"));
+            REQUIRE_THAT(
+                src, IsClassTemplate("D", "iterable T1,T2,iterable T3,T4,T5"));
+            REQUIRE_THAT(src, IsClassTemplate("E", "T1,T2,T3"));
+            REQUIRE_THAT(src, IsClassTemplate("F", "T1,T2,T3"));
 
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("iterable<T>"), "container.begin()"));
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("iterable<T>"), "container.end()"));
+            // Check if all relationships exist
+            REQUIRE_THAT(src,
+                IsConstraint(
+                    _A("A<max_four_bytes T>"), _A("max_four_bytes<T>"), "T"));
 
-#if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
-        REQUIRE_THAT(src,
-            IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string({s})"));
-#else
-        REQUIRE_THAT(src,
-            IsConceptRequirement(
-                _A("convertible_to_string<T>"), "std::string{s}"));
-#endif
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("convertible_to_string<T>"),
-                "{std::to_string(s)} noexcept"));
-        REQUIRE_THAT(src,
-            IsConceptRequirement(_A("convertible_to_string<T>"),
-                "{std::to_string(s)} -> std::same_as<std::string>"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("max_four_bytes<T>"), "T2"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("max_four_bytes<T>"), "T5"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("iterable<T>"), "T1"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("iterable<T>"), "T3"));
 
-        // Check if class templates exist
-        REQUIRE_THAT(src, IsClass(_A("A<max_four_bytes T>")));
-        REQUIRE_THAT(src, IsClass(_A("B<T>")));
-        REQUIRE_THAT(src, IsClass(_A("C<convertible_to_string T>")));
-        REQUIRE_THAT(src, IsClass(_A("D<iterable T1,T2,iterable T3,T4,T5>")));
-        REQUIRE_THAT(src, IsClass(_A("E<T1,T2,T3>")));
-        REQUIRE_THAT(src, IsClass(_A("F<T1,T2,T3>")));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_with_value_type<T>"),
+                    _A("has_value_type<T>"), "T"));
 
-        // Check if all relationships exist
-        REQUIRE_THAT(src,
-            IsConstraint(
-                _A("A<max_four_bytes T>"), _A("max_four_bytes<T>"), "T"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_or_small_value_type<T>"),
+                    _A("max_four_bytes<T>"), "T"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_or_small_value_type<T>"),
+                    _A("iterable_with_value_type<T>"), "T"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("max_four_bytes<T>"), "T2"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("max_four_bytes<T>"), "T5"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("iterable<T>"), "T1"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
-                _A("iterable<T>"), "T3"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("E<T1,T2,T3>"),
+                    _A("greater_than_with_requires<T,P>"), "T1,T3"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_with_value_type<T>"),
-                _A("has_value_type<T>"), "T"));
+            REQUIRE_THAT(src,
+                IsConstraint(
+                    _A("F<T1,T2,T3>"), _A("greater_than_simple<T,L>"),
+    "T1,T3"));
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_or_small_value_type<T>"),
-                _A("max_four_bytes<T>"), "T"));
-        REQUIRE_THAT(src,
-            IsConstraint(_A("iterable_or_small_value_type<T>"),
-                _A("iterable_with_value_type<T>"), "T"));
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
+        {
+            auto j = generate_class_json(diagram, *model);
 
-        REQUIRE_THAT(src,
-            IsConstraint(_A("E<T1,T2,T3>"),
-                _A("greater_than_with_requires<T,P>"), "T1,T3"));
+            using namespace json;
 
-        REQUIRE_THAT(src,
-            IsConstraint(
-                _A("F<T1,T2,T3>"), _A("greater_than_simple<T,L>"), "T1,T3"));
+            REQUIRE(IsConcept(j, "greater_than_simple<T,L>"));
+            REQUIRE(IsConcept(j, "greater_than_with_requires<T,P>"));
+            REQUIRE(IsConcept(j, "max_four_bytes<T>"));
+            REQUIRE(IsConcept(j, "iterable<T>"));
+            REQUIRE(IsConcept(j, "has_value_type<T>"));
+            REQUIRE(IsConcept(j, "convertible_to_string<T>"));
+            REQUIRE(IsConcept(j, "iterable_with_value_type<T>"));
+            REQUIRE(IsConcept(j, "iterable_or_small_value_type<T>"));
 
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
+        {
+            auto src = generate_class_mermaid(diagram, *model);
+
+            mermaid::AliasMatcher _A(src);
+            using mermaid::IsConcept;
+            using mermaid::IsConceptRequirement;
+            using mermaid::IsConstraint;
+
+            // Check if all classes exist
+            REQUIRE_THAT(src, IsConcept(_A("greater_than_simple<T,L>")));
+            REQUIRE_THAT(src, IsConcept(_A("greater_than_with_requires<T,P>")));
+            REQUIRE_THAT(src, IsConcept(_A("max_four_bytes<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("has_value_type<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("convertible_to_string<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable_with_value_type<T>")));
+            REQUIRE_THAT(src, IsConcept(_A("iterable_or_small_value_type<T>")));
+
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("greater_than_with_requires<T,P>"),
+                    "sizeof (l) > sizeof (r)"));
+
+            REQUIRE_THAT(
+                src, IsConceptRequirement(_A("iterable<T>"),
+    "container.begin()")); REQUIRE_THAT( src,
+    IsConceptRequirement(_A("iterable<T>"), "container.end()"));
+
+    #if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
+            REQUIRE_THAT(src,
+                IsConceptRequirement(
+                    _A("convertible_to_string<T>"), "std::string({s})"));
+    #else
+            REQUIRE_THAT(src,
+                IsConceptRequirement(
+                    _A("convertible_to_string<T>"), "std::string{s}"));
+    #endif
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("convertible_to_string<T>"),
+                    "{std::to_string(s)} noexcept"));
+            REQUIRE_THAT(src,
+                IsConceptRequirement(_A("convertible_to_string<T>"),
+                    "{std::to_string(s)} -> std::same_as<std::string>"));
+
+            // Check if class templates exist
+            REQUIRE_THAT(src, IsClass(_A("A<max_four_bytes T>")));
+            REQUIRE_THAT(src, IsClass(_A("B<T>")));
+            REQUIRE_THAT(src, IsClass(_A("C<convertible_to_string T>")));
+            REQUIRE_THAT(src, IsClass(_A("D<iterable T1,T2,iterable
+    T3,T4,T5>"))); REQUIRE_THAT(src, IsClass(_A("E<T1,T2,T3>")));
+            REQUIRE_THAT(src, IsClass(_A("F<T1,T2,T3>")));
+
+            // Check if all relationships exist
+            REQUIRE_THAT(src,
+                IsConstraint(
+                    _A("A<max_four_bytes T>"), _A("max_four_bytes<T>"), "T"));
+
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("max_four_bytes<T>"), "T2"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("max_four_bytes<T>"), "T5"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("iterable<T>"), "T1"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("D<iterable T1,T2,iterable T3,T4,T5>"),
+                    _A("iterable<T>"), "T3"));
+
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_with_value_type<T>"),
+                    _A("has_value_type<T>"), "T"));
+
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_or_small_value_type<T>"),
+                    _A("max_four_bytes<T>"), "T"));
+            REQUIRE_THAT(src,
+                IsConstraint(_A("iterable_or_small_value_type<T>"),
+                    _A("iterable_with_value_type<T>"), "T"));
+
+            REQUIRE_THAT(src,
+                IsConstraint(_A("E<T1,T2,T3>"),
+                    _A("greater_than_with_requires<T,P>"), "T1,T3"));
+
+            REQUIRE_THAT(src,
+                IsConstraint(
+                    _A("F<T1,T2,T3>"), _A("greater_than_simple<T,L>"),
+    "T1,T3"));
+
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+    src);
+        }*/
 }

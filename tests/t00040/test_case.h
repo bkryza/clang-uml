@@ -1,5 +1,5 @@
 /**
- * tests/t00040/test_case.cc
+ * tests/t00040/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00040", "[test-case][class]")
+TEST_CASE("t00040")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00040");
 
     auto diagram = config.diagrams["t00040_class"];
@@ -28,51 +30,14 @@ TEST_CASE("t00040", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00040_class");
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-
-        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("A")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "AA"));
-        REQUIRE(IsClass(j, "AAA"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-
-        REQUIRE_THAT(src, !IsDependency(_A("R"), _A("A")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "AA"));
+        REQUIRE(IsClass(src, "AAA"));
+        REQUIRE(IsBaseClass(src, "A", "AA"));
+        REQUIRE(IsBaseClass(src, "AA", "AAA"));
+        REQUIRE(!IsClass(src, "B"));
+        REQUIRE(!IsDependency(src, "R", "A"));
+    });
 }

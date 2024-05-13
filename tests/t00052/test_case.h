@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00052", "[test-case][class]")
+TEST_CASE("t00052")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00052");
 
     auto diagram = config.diagrams["t00052_class"];
@@ -28,6 +30,17 @@ TEST_CASE("t00052", "[test-case][class]")
 
     REQUIRE(model->name() == "t00052_class");
 
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+
+        REQUIRE(IsClassTemplate(src, "B<T>"));
+
+        REQUIRE(IsMethod<Public>(src, "A", "a<T>", "T", "T p"));
+        REQUIRE(IsMethod<Public>(src, "A", "aa<F,Q>", "void", "F && f, Q q"));
+        REQUIRE(IsMethod<Public>(src, "B<T>", "b", "T", "T t"));
+        REQUIRE(IsMethod<Public>(src, "B<T>", "bb<F>", "T", "F && f, T t"));
+    });
+    /*
     {
         auto src = generate_class_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -79,4 +92,5 @@ TEST_CASE("t00052", "[test-case][class]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+     */
 }

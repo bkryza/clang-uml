@@ -46,6 +46,17 @@ public:
 
     ~class_method() override = default;
 
+    void update(const common::model::namespace_& un);
+
+    /**
+     * @brief Method name including template parameters/arguments if any
+     *
+     * @return String representation of the methods display name
+     */
+    std::string display_name() const;
+
+    void set_display_name(const std::string &display_name);
+
     /**
      * @brief Whether the method is pure virtual.
      *
@@ -282,5 +293,7 @@ private:
     bool is_move_assignment_{false};
     bool is_copy_assignment_{false};
     bool is_operator_{false};
+
+    std::string display_name_;
 };
 } // namespace clanguml::class_diagram::model

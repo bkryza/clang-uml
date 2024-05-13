@@ -1,5 +1,5 @@
 /**
- * tests/t00035/test_case.cc
+ * tests/t00035/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00035", "[test-case][class]")
+TEST_CASE("t00035")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00035");
 
     auto diagram = config.diagrams["t00035_class"];
@@ -28,50 +30,16 @@ TEST_CASE("t00035", "[test-case][class]")
 
     REQUIRE(model->name() == "t00035_class");
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "Top"));
+        REQUIRE(IsClass(src, "Bottom"));
+        REQUIRE(IsClass(src, "Center"));
+        REQUIRE(IsClass(src, "Left"));
+        REQUIRE(IsClass(src, "Right"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("Top")));
-        REQUIRE_THAT(src, IsClass(_A("Bottom")));
-        REQUIRE_THAT(src, IsClass(_A("Center")));
-        REQUIRE_THAT(src, IsClass(_A("Left")));
-        REQUIRE_THAT(src, IsClass(_A("Right")));
-
-        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "up", _A("Top")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "left", _A("Left")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "right", _A("Right")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("Center"), "down", _A("Bottom")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "Top"));
-        REQUIRE(IsClass(j, "Bottom"));
-        REQUIRE(IsClass(j, "Center"));
-        REQUIRE(IsClass(j, "Left"));
-        REQUIRE(IsClass(j, "Right"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("Top")));
-        REQUIRE_THAT(src, IsClass(_A("Bottom")));
-        REQUIRE_THAT(src, IsClass(_A("Center")));
-        REQUIRE_THAT(src, IsClass(_A("Left")));
-        REQUIRE_THAT(src, IsClass(_A("Right")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsLayoutHint(src, "Center", "up", "Top"));
+        REQUIRE(IsLayoutHint(src, "Center", "left", "Left"));
+        REQUIRE(IsLayoutHint(src, "Center", "right", "Right"));
+        REQUIRE(IsLayoutHint(src, "Center", "down", "Bottom"));
+    });
 }

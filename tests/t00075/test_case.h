@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00075", "[test-case][class]")
+TEST_CASE("t00075")
 {
+    using namespace clanguml::test;
+
     auto [config, db] = load_config("t00075");
 
     auto diagram = config.diagrams["t00075_class"];
@@ -27,6 +29,25 @@ TEST_CASE("t00075", "[test-case][class]")
     auto model = generate_class_diagram(*db, diagram);
 
     REQUIRE(model->name() == "t00075_class");
+
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClassTemplate(src, "ABE<ns1::ns2::C T>"));
+        REQUIRE(IsClass(src, "R"));
+
+        REQUIRE(IsEnum(src, "E"));
+
+        REQUIRE(IsConcept(src, "C<T>"));
+
+        REQUIRE(IsConceptRequirement(src, "C<T>", "T{}"));
+        REQUIRE(IsConceptRequirement(src, "C<T>", "t.e()"));
+        REQUIRE(IsConceptRequirement(src, "C<T>", "(T t)"));
+        REQUIRE(!IsConceptRequirement(src, "C<T>", "(T ns1::ns2::t)"));
+
+        REQUIRE(IsConstraint(src, "ABE<ns1::ns2::C T>", "C<T>", "T",
+            "up[#green,dashed,thickness=2]"));
+    });
 
     {
         auto src = generate_class_puml(diagram, *model);

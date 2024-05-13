@@ -76,6 +76,8 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["is_move_assignment"] = c.is_move_assignment();
     j["is_copy_assignment"] = c.is_copy_assignment();
     j["is_operator"] = c.is_operator();
+    j["template_parameters"] = c.template_params();
+    j["display_name"] = c.display_name();
 
     j["parameters"] = c.parameters();
 }
@@ -156,7 +158,10 @@ void generator::generate_top_level_elements(nlohmann::json &parent) const
 {
     for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            if (!pkg->is_empty())
+            if (!pkg->is_empty() &&
+                !pkg->all_of([this](const common::model::element &e) {
+                    return !model().should_include(e);
+                }))
                 generate(*pkg, parent);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
@@ -198,7 +203,10 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty()) {
+            if (!sp.is_empty() &&
+                !sp.all_of([this](const common::model::element &e) {
+                    return !model().should_include(e);
+                })) {
                 if (config().generate_packages())
                     generate(sp, package_object);
                 else
@@ -282,6 +290,9 @@ void generator::generate_relationships(
     const class_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -310,6 +321,9 @@ void generator::generate_relationships(
     const enum_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -328,6 +342,9 @@ void generator::generate_relationships(
     const concept_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "

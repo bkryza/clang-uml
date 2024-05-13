@@ -26,6 +26,26 @@ class_method::class_method(common::model::access_t access,
 {
 }
 
+void class_method::update(const common::model::namespace_ &un)
+{
+    if (template_params().empty()) {
+        set_display_name(name());
+    }
+    else {
+        std::stringstream template_params_str;
+        render_template_params(template_params_str, un, true);
+        set_display_name(
+            fmt::format("{}{}", name(), template_params_str.str()));
+    }
+}
+
+std::string class_method::display_name() const { return display_name_; }
+
+void class_method::set_display_name(const std::string &display_name)
+{
+    display_name_ = display_name;
+}
+
 bool class_method::is_pure_virtual() const { return is_pure_virtual_; }
 
 void class_method::is_pure_virtual(bool is_pure_virtual)

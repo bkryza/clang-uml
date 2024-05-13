@@ -30,31 +30,39 @@ TEST_CASE("t00028")
 
     REQUIRE(model->name() == "t00028_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
-        REQUIRE(IsClass(src, "A"));
-        REQUIRE(IsClass(src, "B"));
-        REQUIRE(IsClass(src, "C"));
-        REQUIRE(IsClass(src, "D"));
-        REQUIRE(IsClassTemplate(src, "E<T>"));
-        REQUIRE(IsEnum(src, "F"));
-        REQUIRE(IsClass(src, "R"));
-        REQUIRE(HasNote(src, "A", "top", "A class note."));
-        REQUIRE(HasNote(src, "B", "left", "B class note."));
-        REQUIRE(HasNote(src, "C", "bottom", "C class note."));
-        const auto d_note = R"(
+    CHECK_CLASS_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(IsClass(src, "A"));
+            REQUIRE(IsClass(src, "B"));
+            REQUIRE(IsClass(src, "C"));
+            REQUIRE(IsClass(src, "D"));
+            REQUIRE(IsClassTemplate(src, "E<T>"));
+            REQUIRE(IsEnum(src, "F"));
+            REQUIRE(IsClass(src, "R"));
+            REQUIRE(HasNote(src, "A", "top", "A class note."));
+            REQUIRE(HasNote(src, "B", "left", "B class note."));
+            REQUIRE(HasNote(src, "C", "bottom", "C class note."));
+            const auto d_note = R"(
 D
 class
 note.)";
-        REQUIRE(HasNote(src, "D", "left", d_note));
-        REQUIRE(HasNote(src, "E<T>", "left", "E template class note."));
-        REQUIRE(HasNote(src, "F", "bottom", "F enum note."));
-        REQUIRE(!HasNote(src, "G", "left", "G class note."));
-        REQUIRE(HasNote(src, "R", "right", "R class note."));
-        REQUIRE(HasMemberNote(
-            src, "R", "aaa", "left", "R contains an instance of A."));
-        REQUIRE(!HasMemberNote(src, "R", "bbb", "right", "R class note."));
-        REQUIRE(HasMemberNote(src, "R", "ccc", "left", "Reference to C."));
-    });
+            REQUIRE(HasNote(src, "D", "left", d_note));
+            REQUIRE(HasNote(src, "E<T>", "left", "E template class note."));
+            REQUIRE(HasNote(src, "F", "bottom", "F enum note."));
+            REQUIRE(HasNote(src, "R", "right", "R class note."));
+        },
+        [](const plantuml_t &src) {
+            REQUIRE(HasMemberNote(src, "R", "ccc", "left", "Reference to C."));
+            REQUIRE(!HasMemberNote(src, "R", "bbb", "right", "R class note."));
+            REQUIRE(HasMemberNote(
+                src, "R", "aaa", "left", "R contains an instance of A."));
+            REQUIRE(!HasNote(src, "G", "left", "G class note."));
+        },
+        [](const mermaid_t &src) {
+            REQUIRE(HasNote(src, "R", "left", "R contains an instance of A."));
+            REQUIRE(!HasNote(src, "G", "left", "G class note."));
+        });
     /*
         {
             auto src = generate_class_puml(diagram, *model);
