@@ -19,16 +19,9 @@
 TEST_CASE("t00027")
 {
     using namespace clanguml::test;
-    
-    auto [config, db] = load_config("t00027");
 
-    auto diagram = config.diagrams["t00027_class"];
-
-    REQUIRE(diagram->name == "t00027_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00027_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00027", "t00027_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsAbstractClass(src, "Shape"));
@@ -37,7 +30,8 @@ TEST_CASE("t00027")
         REQUIRE(IsClassTemplate(src, "Line<T<>...>"));
         REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color>"));
         REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color,Weight>"));
-        REQUIRE(IsAggregation<Public>(src, "Window", "Text<Color>", "description"));
+        REQUIRE(
+            IsAggregation<Public>(src, "Window", "Text<Color>", "description"));
 
         REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color>"));
         REQUIRE(IsInstantiation(src, "Line<T<>...>", "Line<Color,Weight>"));
@@ -52,80 +46,4 @@ TEST_CASE("t00027")
         REQUIRE(
             IsAggregation<Public>(src, "Window", "Text<Color>", "description"));
     });
-/*
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsAbstractClass(_A("Shape")));
-        REQUIRE_THAT(src, IsAbstractClass(_A("ShapeDecorator")));
-        REQUIRE_THAT(src, IsClassTemplate("Line", "T<>..."));
-        REQUIRE_THAT(src, IsClassTemplate("Text", "T<>..."));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color,Weight>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color,Weight>")));
-
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Line<Color,Weight>"), "+border"));
-        REQUIRE_THAT(
-            src, IsAggregation(_A("Window"), _A("Line<Color>"), "+divider"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Text<Color,Weight>"), "+title"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsAbstractClass(j, "Shape"));
-        REQUIRE(IsAbstractClass(j, "ShapeDecorator"));
-
-        REQUIRE(IsClassTemplate(j, "Line<T<>...>"));
-        REQUIRE(IsInstantiation(j, "Line<T<>...>", "Line<Color>"));
-        REQUIRE(IsInstantiation(j, "Line<T<>...>", "Line<Color,Weight>"));
-        REQUIRE(IsAggregation(j, "Window", "Text<Color>", "description"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsAbstractClass;
-
-        REQUIRE_THAT(src, IsAbstractClass(_A("Shape")));
-        REQUIRE_THAT(src, IsAbstractClass(_A("ShapeDecorator")));
-        REQUIRE_THAT(src, IsClass(_A("Line<T<>...>")));
-        REQUIRE_THAT(src, IsClass(_A("Text<T<>...>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Line<T<>...>"), _A("Line<Color,Weight>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color>")));
-        REQUIRE_THAT(
-            src, IsInstantiation(_A("Text<T<>...>"), _A("Text<Color,Weight>")));
-
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Line<Color,Weight>"), "+border"));
-        REQUIRE_THAT(
-            src, IsAggregation(_A("Window"), _A("Line<Color>"), "+divider"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Text<Color,Weight>"), "+title"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("Window"), _A("Text<Color>"), "+description"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }*/
 }

@@ -268,8 +268,8 @@ std::string inheritable_diagram_options::simplify_template_type(
 
 bool inheritable_diagram_options::generate_fully_qualified_name() const
 {
-    return generate_packages() &&
-        (package_type() == package_type_t::kNamespace);
+    return (package_type() == package_type_t::kNamespace) &&
+        !generate_packages();
 }
 
 std::vector<std::string> diagram::get_translation_units() const

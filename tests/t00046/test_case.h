@@ -20,15 +20,8 @@ TEST_CASE("t00046")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00046");
-
-    auto diagram = config.diagrams["t00046_class"];
-
-    REQUIRE(diagram->name == "t00046_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00046_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00046", "t00046_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
@@ -40,6 +33,6 @@ TEST_CASE("t00046")
         REQUIRE(IsClass(src, {"ns1::ns2", "R"}));
 
         REQUIRE(IsField<Public>(
-            src, "ns1::ns2::R", "i", "std::vector<std::uint8_t>"));
+            src, {"ns1::ns2", "R"}, "i", "std::vector<std::uint8_t>"));
     });
 }

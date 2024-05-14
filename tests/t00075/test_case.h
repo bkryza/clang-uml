@@ -20,94 +20,25 @@ TEST_CASE("t00075")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00075");
-
-    auto diagram = config.diagrams["t00075_class"];
-
-    REQUIRE(diagram->name == "t00075_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00075_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00075", "t00075_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
-        REQUIRE(IsClass(src, "A"));
-        REQUIRE(IsClass(src, "B"));
-        REQUIRE(IsClassTemplate(src, "ABE<ns1::ns2::C T>"));
-        REQUIRE(IsClass(src, "R"));
+        REQUIRE(IsClass(src, {"ns1::ns2", "A"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "B"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "ABE<ns1::ns2::C T>"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "R"}));
 
-        REQUIRE(IsEnum(src, "E"));
+        REQUIRE(IsEnum(src, {"ns1::ns2", "E"}));
 
-        REQUIRE(IsConcept(src, "C<T>"));
+        REQUIRE(IsConcept(src, {"ns1::ns2", "C<T>"}));
 
         REQUIRE(IsConceptRequirement(src, "C<T>", "T{}"));
         REQUIRE(IsConceptRequirement(src, "C<T>", "t.e()"));
-        REQUIRE(IsConceptRequirement(src, "C<T>", "(T t)"));
-        REQUIRE(!IsConceptRequirement(src, "C<T>", "(T ns1::ns2::t)"));
+        REQUIRE(IsConceptParameterList(src, "C<T>", "(T t)"));
+        REQUIRE(!IsConceptParameterList(src, "C<T>", "(T ns1::ns2::t)"));
 
-        REQUIRE(IsConstraint(src, "ABE<ns1::ns2::C T>", "C<T>", "T",
-            "up[#green,dashed,thickness=2]"));
+        REQUIRE(IsConstraint(src, {"ns1::ns2", "ABE<ns1::ns2::C T>"},
+            {"ns1::ns2", "C<T>"}, "T", "up[#green,dashed,thickness=2]"));
     });
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("ABE<ns1::ns2::C T>")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsEnum(_A("E")));
-
-        REQUIRE_THAT(src, IsConcept(_A("C<T>")));
-
-        REQUIRE_THAT(src, IsConceptRequirement(_A("C<T>"), "T{}"));
-        REQUIRE_THAT(src, IsConceptRequirement(_A("C<T>"), "t.e()"));
-        REQUIRE_THAT(src, IsConceptRequirement(_A("C<T>"), "(T t)"));
-        REQUIRE_THAT(src, !IsConceptRequirement(_A("C<T>"), "(T ns1::ns2::t)"));
-
-        REQUIRE_THAT(src,
-            IsConstraint(_A("ABE<ns1::ns2::C T>"), _A("C<T>"), "T",
-                "up[#green,dashed,thickness=2]"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-        using mermaid::IsConcept;
-        using mermaid::IsConceptRequirement;
-        using mermaid::IsEnum;
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::A")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::B")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::ABE<ns1::ns2::C T>")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::R")));
-
-        REQUIRE_THAT(src, IsEnum(_A("ns1::ns2::E")));
-
-        REQUIRE_THAT(src, IsConcept(_A("ns1::ns2::C<T>")));
-
-        REQUIRE_THAT(src, IsConceptRequirement(_A("ns1::ns2::C<T>"), "T{}"));
-        REQUIRE_THAT(src, IsConceptRequirement(_A("ns1::ns2::C<T>"), "t.e()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
 }

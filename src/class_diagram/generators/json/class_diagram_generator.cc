@@ -247,18 +247,33 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
+
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(c.full_name_no_ns());
+
     parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const enum_ &e, nlohmann::json &parent) const
 {
     nlohmann::json object = e;
+
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(e.full_name_no_ns());
+
     parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const concept_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
+
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(c.full_name_no_ns());
+
     parent["elements"].push_back(std::move(object));
 }
 

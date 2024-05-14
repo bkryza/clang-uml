@@ -20,46 +20,38 @@ TEST_CASE("t00005")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00005");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00005", "t00005_class");
 
-    auto diagram = config.diagrams["t00005_class"];
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "F"));
+        REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "H"));
+        REQUIRE(IsClass(src, "I"));
+        REQUIRE(IsClass(src, "J"));
+        REQUIRE(IsClass(src, "K"));
+        REQUIRE(IsClass(src, "R"));
 
-    REQUIRE(diagram->name == "t00005_class");
+        REQUIRE((IsField<Public>(src, "R", "some_int", "int")));
+        REQUIRE((IsField<Public>(src, "R", "some_int_pointer", "int *")));
+        REQUIRE(
+            (IsField<Public>(src, "R", "some_int_pointer_pointer", "int **")));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00005_class");
-
-    CHECK_CLASS_DIAGRAM(config, diagram, *model,
-        [](const auto &src) {
-            REQUIRE(IsClass(src, "A"));
-            REQUIRE(IsClass(src, "B"));
-            REQUIRE(IsClass(src, "C"));
-            REQUIRE(IsClass(src, "D"));
-            REQUIRE(IsClass(src, "E"));
-            REQUIRE(IsClass(src, "F"));
-            REQUIRE(IsClass(src, "G"));
-            REQUIRE(IsClass(src, "H"));
-            REQUIRE(IsClass(src, "I"));
-            REQUIRE(IsClass(src, "J"));
-            REQUIRE(IsClass(src, "K"));
-            REQUIRE(IsClass(src, "R"));
-
-            REQUIRE((IsField<Public>(src, "R", "some_int", "int")));
-            REQUIRE((IsField<Public>(src, "R", "some_int_pointer", "int *")));
-            REQUIRE((IsField<Public>(
-                src, "R", "some_int_pointer_pointer", "int **")));
-
-            REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
-            REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
-            REQUIRE(IsAssociation<Public>(src, "R", "C", "c"));
-            REQUIRE(IsAssociation<Public>(src, "R", "D", "d"));
-            REQUIRE(IsAssociation<Public>(src, "R", "E", "e"));
-            REQUIRE(IsAggregation<Public>(src, "R", "F", "f"));
-            REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
-            REQUIRE(IsAssociation<Public>(src, "R", "H", "h"));
-            REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
-            REQUIRE(IsAssociation<Public>(src, "R", "J", "j"));
-            REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
-        });
+        REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
+        REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
+        REQUIRE(IsAssociation<Public>(src, "R", "C", "c"));
+        REQUIRE(IsAssociation<Public>(src, "R", "D", "d"));
+        REQUIRE(IsAssociation<Public>(src, "R", "E", "e"));
+        REQUIRE(IsAggregation<Public>(src, "R", "F", "f"));
+        REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
+        REQUIRE(IsAssociation<Public>(src, "R", "H", "h"));
+        REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
+        REQUIRE(IsAssociation<Public>(src, "R", "J", "j"));
+        REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
+    });
 }

@@ -19,16 +19,10 @@
 TEST_CASE("t00065")
 {
     using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto [config, db] = load_config("t00065");
-
-    auto diagram = config.diagrams["t00065_class"];
-
-    REQUIRE(diagram->name == "t00065_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00065_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00065", "t00065_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "R"));
@@ -37,55 +31,9 @@ TEST_CASE("t00065")
         REQUIRE(IsEnum(src, "XYZ"));
         REQUIRE(IsEnum(src, "ABC"));
 
-        REQUIRE(IsPackage("module1"));
-        REQUIRE(IsPackage("module2"));
-        REQUIRE(IsPackage("submodule1a"));
-        REQUIRE(IsPackage("concepts"));
+        REQUIRE(IsDirectoryPackage(src, "module1"s));
+        REQUIRE(IsDirectoryPackage(src, "module2"s));
+        REQUIRE(IsDirectoryPackage(src, "module1"s, "submodule1a"s));
+        REQUIRE(IsDirectoryPackage(src, "module2"s, "concepts"s));
     });
-    /*
-        {
-            auto src = generate_class_puml(diagram, *model);
-            AliasMatcher _A(src);
-
-            REQUIRE_THAT(src, StartsWith("@startuml"));
-            REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-            // Check if all classes exist
-            REQUIRE_THAT(src, IsClass(_A("R")));
-            REQUIRE_THAT(src, IsClass(_A("A")));
-            REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
-            REQUIRE_THAT(src, IsEnum(_A("XYZ")));
-            REQUIRE_THAT(src, IsEnum(_A("ABC")));
-
-            REQUIRE_THAT(src, IsPackage("module1"));
-            REQUIRE_THAT(src, IsPackage("module2"));
-            REQUIRE_THAT(src, IsPackage("submodule1a"));
-            REQUIRE_THAT(src, IsPackage("concepts"));
-
-            save_puml(config.output_directory(), diagram->name + ".puml", src);
-        }
-
-        {
-            auto j = generate_class_json(diagram, *model);
-
-            using namespace json;
-
-            save_json(config.output_directory(), diagram->name + ".json", j);
-        }
-        {
-            auto src = generate_class_mermaid(diagram, *model);
-
-            mermaid::AliasMatcher _A(src);
-            using mermaid::IsEnum;
-
-            // Check if all classes exist
-            REQUIRE_THAT(src, IsClass(_A("R")));
-            REQUIRE_THAT(src, IsClass(_A("A")));
-            REQUIRE_THAT(src, IsClass(_A("detail::AImpl")));
-            REQUIRE_THAT(src, IsEnum(_A("XYZ")));
-            REQUIRE_THAT(src, IsEnum(_A("ABC")));
-
-            save_mermaid(config.output_directory(), diagram->name + ".mmd",
-       src);
-        }*/
 }

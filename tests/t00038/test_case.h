@@ -18,18 +18,10 @@
 
 TEST_CASE("t00038")
 {
-        using namespace clanguml::test;
+    using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00038");
-
-    auto diagram = config.diagrams["t00038_class"];
-
-    REQUIRE(diagram->name == "t00038_class");
-    REQUIRE(diagram->generate_packages() == false);
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00038_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00038", "t00038_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));

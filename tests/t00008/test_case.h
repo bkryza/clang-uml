@@ -20,15 +20,8 @@ TEST_CASE("t00008")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00008");
-
-    auto diagram = config.diagrams["t00008_class"];
-
-    REQUIRE(diagram->name == "t00008_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00008_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00008", "t00008_class");
 
     CHECK_CLASS_DIAGRAM(
         config, diagram, *model,

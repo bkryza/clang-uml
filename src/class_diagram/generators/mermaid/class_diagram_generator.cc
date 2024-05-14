@@ -281,7 +281,8 @@ void generator::generate_member(
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
 {
-    ostr << indent(1) << "class" << " " << c.alias();
+    ostr << indent(1) << "class"
+         << " " << c.alias();
 
     ostr << " {" << '\n';
     ostr << indent(2) << "<<concept>>\n";
@@ -299,7 +300,8 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
              << fmt::format("\"({})\"\n", fmt::join(parameters, ","));
 
         for (const auto &req : c.requires_statements()) {
-            ostr << indent(2) << fmt::format("\"{}\"\n", render_name(req));
+            ostr << indent(2)
+                 << fmt::format("\"{}\"\n", render_name(req, false));
         }
     }
 

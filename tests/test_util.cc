@@ -20,7 +20,6 @@
 #include "util/util.h"
 #include <common/clang_utils.h>
 
-
 #include <filesystem>
 
 #include "doctest/doctest.h"

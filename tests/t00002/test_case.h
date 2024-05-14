@@ -21,19 +21,11 @@ TEST_CASE("t00002")
     using namespace clanguml::test;
     using namespace std::string_literals;
 
-    auto [config, db] = load_config("t00002");
-
-    auto diagram = config.diagrams["t00002_class"];
-
-    REQUIRE(diagram->name == "t00002_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00002", "t00002_class");
 
     REQUIRE(diagram->include().namespaces.size() == 1);
-
     REQUIRE(diagram->exclude().namespaces.size() == 0);
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00002_class");
 
     REQUIRE(model->should_include({"clanguml", "t00002"}, "A"));
     REQUIRE(!model->should_include({"std"}, "vector"));

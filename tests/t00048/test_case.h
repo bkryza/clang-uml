@@ -20,15 +20,8 @@ TEST_CASE("t00048")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00048");
-
-    auto diagram = config.diagrams["t00048_class"];
-
-    REQUIRE(diagram->name == "t00048_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00048_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00048", "t00048_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         // Check if all classes exist

@@ -387,7 +387,8 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
             std::cout << "-----------------------------------------------------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
-                      << T::diagram_type_name << ": " << "\n\n";
+                      << T::diagram_type_name << ": "
+                      << "\n\n";
             std::cout << diagrams.get<T>().to_string() << "\n";
 
             throw e;
@@ -399,9 +400,11 @@ template <typename DiagramType>
 DiagramType render_class_diagram(std::shared_ptr<clanguml::config::diagram> c,
     clanguml::class_diagram::model::diagram &model)
 {
-    return DiagramType{common::model::diagram_t::kClass,
+    auto d = DiagramType{common::model::diagram_t::kClass,
         detail::render_diagram<DiagramType, clanguml::config::class_diagram>(
             c, model)};
+    d.generate_packages = c->generate_packages();
+    return d;
 }
 
 template <typename DiagramType>
@@ -430,6 +433,74 @@ DiagramType render_include_diagram(std::shared_ptr<clanguml::config::diagram> c,
     return DiagramType{common::model::diagram_t::kInclude,
         detail::render_diagram<DiagramType, clanguml::config::include_diagram>(
             c, model)};
+}
+
+auto CHECK_CLASS_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_class_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_SEQUENCE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_sequence_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_PACKAGE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_package_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_INCLUDE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_include_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
 }
 
 template <typename TC, typename... TCs>
@@ -1082,10 +1153,6 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t00062/test_case.h"
 #include "t00063/test_case.h"
 #include "t00064/test_case.h"
-/*
-
-
-
 #if defined(ENABLE_CXX_STD_20_TEST_CASES)
 #include "t00065/test_case.h"
 #endif
@@ -1107,7 +1174,7 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t00074/test_case.h"
 #include "t00075/test_case.h"
 #endif
-
+/*
 ///
 /// Sequence diagram tests
 ///
@@ -1223,7 +1290,7 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-vvv");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 

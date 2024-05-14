@@ -20,54 +20,45 @@ TEST_CASE("t00006")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00006");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00006", "t00006_class");
 
-    auto diagram = config.diagrams["t00006_class"];
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "F"));
+        REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "H"));
+        REQUIRE(IsClass(src, "I"));
+        REQUIRE(IsClass(src, "J"));
+        REQUIRE(IsClass(src, "K"));
+        REQUIRE(IsClass(src, "L"));
+        REQUIRE(IsClass(src, "M"));
+        REQUIRE(IsClass(src, "N"));
+        REQUIRE(IsClass(src, "NN"));
+        REQUIRE(IsClass(src, "NNN"));
 
-    REQUIRE(diagram->name == "t00006_class");
+        REQUIRE(
+            IsInstantiation(src, "custom_container<T>", "custom_container<E>"));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00006_class");
-
-    CHECK_CLASS_DIAGRAM(config, diagram, *model,
-        [](const auto &src) {
-            REQUIRE(IsClass(src, "A"));
-            REQUIRE(IsClass(src, "B"));
-            REQUIRE(IsClass(src, "C"));
-            REQUIRE(IsClass(src, "D"));
-            REQUIRE(IsClass(src, "E"));
-            REQUIRE(IsClass(src, "F"));
-            REQUIRE(IsClass(src, "G"));
-            REQUIRE(IsClass(src, "H"));
-            REQUIRE(IsClass(src, "I"));
-            REQUIRE(IsClass(src, "J"));
-            REQUIRE(IsClass(src, "K"));
-            REQUIRE(IsClass(src, "L"));
-            REQUIRE(IsClass(src, "M"));
-            REQUIRE(IsClass(src, "N"));
-            REQUIRE(IsClass(src, "NN"));
-            REQUIRE(IsClass(src, "NNN"));
-
-            REQUIRE(IsInstantiation(
-                src, "custom_container<T>", "custom_container<E>"));
-
-            REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
-            REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
-            REQUIRE(IsAggregation<Public>(src, "R", "C", "c"));
-            REQUIRE(IsAssociation<Public>(src, "R", "D", "d"));
-            REQUIRE(
-                IsAggregation<Public>(src, "R", "custom_container<E>", "e"));
-            REQUIRE(IsAggregation<Public>(src, "R", "F", "f"));
-            REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
-            REQUIRE(IsAggregation<Public>(src, "R", "H", "h"));
-            REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
-            REQUIRE(IsAggregation<Public>(src, "R", "J", "j"));
-            REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
-            REQUIRE(IsAggregation<Public>(src, "R", "L", "lm"));
-            REQUIRE(IsAggregation<Public>(src, "R", "M", "lm"));
-            REQUIRE(IsAggregation<Public>(src, "R", "N", "ns"));
-            REQUIRE(IsAggregation<Public>(src, "R", "NN", "ns"));
-            REQUIRE(IsAggregation<Public>(src, "R", "NNN", "ns"));
-        });
+        REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
+        REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
+        REQUIRE(IsAggregation<Public>(src, "R", "C", "c"));
+        REQUIRE(IsAssociation<Public>(src, "R", "D", "d"));
+        REQUIRE(IsAggregation<Public>(src, "R", "custom_container<E>", "e"));
+        REQUIRE(IsAggregation<Public>(src, "R", "F", "f"));
+        REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
+        REQUIRE(IsAggregation<Public>(src, "R", "H", "h"));
+        REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
+        REQUIRE(IsAggregation<Public>(src, "R", "J", "j"));
+        REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
+        REQUIRE(IsAggregation<Public>(src, "R", "L", "lm"));
+        REQUIRE(IsAggregation<Public>(src, "R", "M", "lm"));
+        REQUIRE(IsAggregation<Public>(src, "R", "N", "ns"));
+        REQUIRE(IsAggregation<Public>(src, "R", "NN", "ns"));
+        REQUIRE(IsAggregation<Public>(src, "R", "NNN", "ns"));
+    });
 }

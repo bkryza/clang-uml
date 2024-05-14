@@ -21,15 +21,8 @@ TEST_CASE("t30001")
     using namespace clanguml::test;
     using namespace std::string_literals;
 
-    auto [config, db] = load_config("t30001");
-
-    auto diagram = config.diagrams["t30001_package"];
-
-    REQUIRE(diagram->name == "t30001_package");
-
-    auto model = generate_package_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t30001_package");
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30001", "t30001_package");
 
     CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(HasTitle(src, "Basic package diagram example"));

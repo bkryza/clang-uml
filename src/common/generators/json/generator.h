@@ -51,6 +51,8 @@ using clanguml::common::model::element;
 using clanguml::common::model::message_t;
 using clanguml::common::model::relationship_t;
 
+std::string render_name(std::string name);
+
 /**
  * @brief Base class for diagram generators
  *

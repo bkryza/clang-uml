@@ -46,7 +46,7 @@ public:
 
     ~class_method() override = default;
 
-    void update(const common::model::namespace_& un);
+    void update(const common::model::namespace_ &un);
 
     /**
      * @brief Method name including template parameters/arguments if any

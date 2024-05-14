@@ -20,15 +20,8 @@ TEST_CASE("t40002")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t40002");
-
-    auto diagram = config.diagrams["t40002_include"];
-
-    REQUIRE(diagram->name == "t40002_include");
-
-    auto model = generate_include_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t40002_include");
+    auto [config, db, diagram, model] =
+        CHECK_INCLUDE_MODEL("t40002", "t40002_include");
 
     CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsFolder(src, "include"));

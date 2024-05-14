@@ -16,61 +16,48 @@
  * limitations under the License.
  */
 
-// #include "../test_cases.h"
-
 TEST_CASE("t00003")
 {
     using namespace clanguml::test;
     using namespace std::string_literals;
 
-    auto [config, db] = load_config("t00003");
-
-    auto diagram = config.diagrams["t00003_class"];
-
-    REQUIRE(diagram->name == "t00003_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00003", "t00003_class");
 
     REQUIRE(diagram->include().namespaces.size() == 1);
-
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
 
-    REQUIRE(model->name() == "t00003_class");
+        REQUIRE(!IsDependency(src, "A", "A"));
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model,
-        [](const auto &src) {
-            REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsMethod<Public, Default>(src, "A", "A"));
+        REQUIRE(IsMethod<Public, Default>(src, "A", "A", "void", "A &&"));
+        REQUIRE(IsMethod<Public, Deleted>(src, "A", "A", "void", "const A &"));
 
-            REQUIRE(!IsDependency(src, "A", "A"));
+        REQUIRE(IsMethod<Public, Default>(src, "A", "~A"));
 
-            REQUIRE(IsMethod<Public, Default>(src, "A", "A"));
-            REQUIRE(IsMethod<Public, Default>(src, "A", "A", "void", "A &&"));
-            REQUIRE(
-                IsMethod<Public, Deleted>(src, "A", "A", "void", "const A &"));
+        REQUIRE(IsMethod<Public>(src, "A", "basic_method"));
+        REQUIRE(IsMethod<Public, Static>(src, "A", "static_method", "int"));
+        REQUIRE(IsMethod<Public, Const>(src, "A", "const_method"));
+        REQUIRE(IsMethod<Public>(src, "A", "default_int", "int", "int i = 12"));
+        REQUIRE(IsMethod<Public>(src, "A", "default_string", "std::string",
+            "int i, std::string s = \"abc\""));
 
-            REQUIRE(IsMethod<Public, Default>(src, "A", "~A"));
+        REQUIRE(IsMethod<Public, Const, Constexpr>(
+            src, "A", "size", "std::size_t"));
 
-            REQUIRE(IsMethod<Public>(src, "A", "basic_method"));
-            REQUIRE(IsMethod<Public, Static>(src, "A", "static_method", "int"));
-            REQUIRE(IsMethod<Public, Const>(src, "A", "const_method"));
-            REQUIRE(
-                IsMethod<Public>(src, "A", "default_int", "int", "int i = 12"));
-            REQUIRE(IsMethod<Public>(src, "A", "default_string", "std::string",
-                "int i, std::string s = \"abc\""));
+        REQUIRE(IsMethod<Protected>(src, "A", "protected_method"));
+        REQUIRE(IsMethod<Private>(src, "A", "private_method"));
+        REQUIRE(IsField<Public>(src, "A", "public_member", "int"));
+        REQUIRE(IsField<Protected>(src, "A", "protected_member", "int"));
+        REQUIRE(IsField<Private>(src, "A", "private_member", "int"));
+        REQUIRE(IsField<Public, Static>(
+            src, "A", "auto_member", "const unsigned long"));
 
-            REQUIRE(IsMethod<Public, Const, Constexpr>(
-                src, "A", "size", "std::size_t"));
-
-            REQUIRE(IsMethod<Protected>(src, "A", "protected_method"));
-            REQUIRE(IsMethod<Private>(src, "A", "private_method"));
-            REQUIRE(IsField<Public>(src, "A", "public_member", "int"));
-            REQUIRE(IsField<Protected>(src, "A", "protected_member", "int"));
-            REQUIRE(IsField<Private>(src, "A", "private_member", "int"));
-            REQUIRE(IsField<Public, Static>(
-                src, "A", "auto_member", "const unsigned long"));
-
-            REQUIRE(IsField<Private>(src, "A", "a_", "int"));
-            REQUIRE(IsField<Private>(src, "A", "b_", "int"));
-            REQUIRE(IsField<Private>(src, "A", "c_", "int"));
-        });
+        REQUIRE(IsField<Private>(src, "A", "a_", "int"));
+        REQUIRE(IsField<Private>(src, "A", "b_", "int"));
+        REQUIRE(IsField<Private>(src, "A", "c_", "int"));
+    });
 }

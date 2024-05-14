@@ -20,87 +20,29 @@ TEST_CASE("t00074")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00074");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00074", "t00074_class");
 
-    auto diagram = config.diagrams["t00074_class"];
+    CHECK_CLASS_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(IsConcept(src, "fruit_c<T>"));
+            REQUIRE(IsConcept(src, "apple_c<T>"));
+            REQUIRE(IsConcept(src, "orange_c<T>"));
 
-    REQUIRE(diagram->name == "t00074_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00074_class");
-
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
-        REQUIRE(IsConcept(src, "fruit_c<T>"));
-        REQUIRE(IsConcept(src, "apple_c<T>"));
-        REQUIRE(IsConcept(src, "orange_c<T>"));
-
-        REQUIRE(IsConstraint(src, "apple_c<T>", "fruit_c<T>", "T"));
-        REQUIRE(IsConstraint(src, "orange_c<T>", "fruit_c<T>", "T"));
-
-        REQUIRE(!IsConceptRequirement(src, "apple_c<T>", "t.get_sweetness()"));
-        REQUIRE(
-            !IsConceptRequirement(src, "orange_c<T>", "t.get_bitterness()"));
-    });
-/*
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsConcept(_A("fruit_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("apple_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("orange_c<T>")));
-
-        REQUIRE_THAT(
-            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T"));
-        REQUIRE_THAT(
-            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T"));
-
-        REQUIRE_THAT(
-            src, !IsConceptRequirement(_A("apple_c<T>"), "t.get_sweetness()"));
-        REQUIRE_THAT(src,
-            !IsConceptRequirement(_A("orange_c<T>"), "t.get_bitterness()"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsConcept(j, "fruit_c<T>"));
-        REQUIRE(IsConcept(j, "apple_c<T>"));
-        REQUIRE(IsConcept(j, "orange_c<T>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsConcept;
-        using mermaid::IsConceptRequirement;
-        using mermaid::IsConstraint;
-
-        REQUIRE_THAT(src, IsConcept(_A("fruit_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("apple_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("orange_c<T>")));
-
-        REQUIRE_THAT(
-            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T"));
-        REQUIRE_THAT(
-            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T"));
-
-        REQUIRE_THAT(
-            src, !IsConceptRequirement(_A("apple_c<T>"), "t.get_sweetness()"));
-        REQUIRE_THAT(
-            src, !IsConceptRequirement(_A("apple_c<T>"), "t.get_bitterness()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }*/
+            REQUIRE(IsConstraint(src, "apple_c<T>", "fruit_c<T>", "T"));
+            REQUIRE(IsConstraint(src, "orange_c<T>", "fruit_c<T>", "T"));
+        },
+        [](const plantuml_t &src) {
+            REQUIRE(
+                !IsConceptRequirement(src, "apple_c<T>", "t.get_sweetness()"));
+            REQUIRE(!IsConceptRequirement(
+                src, "orange_c<T>", "t.get_bitterness()"));
+        },
+        [](const mermaid_t &src) {
+            REQUIRE(
+                !IsConceptRequirement(src, "apple_c<T>", "t.get_sweetness()"));
+            REQUIRE(!IsConceptRequirement(
+                src, "orange_c<T>", "t.get_bitterness()"));
+        });
 }

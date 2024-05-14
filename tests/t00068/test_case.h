@@ -20,13 +20,8 @@ TEST_CASE("t00068_r0")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00068");
-
-    auto diagram = config.diagrams["t00068_r0_class"];
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00068_r0_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r0_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsClass(src, "A"));
@@ -47,13 +42,9 @@ TEST_CASE("t00068_r1")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00068");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r1_class");
 
-    auto diagram = config.diagrams["t00068_r1_class"];
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00068_r1_class");
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsClass(src, "A"));
         REQUIRE(IsClass(src, "AA"));
@@ -73,13 +64,8 @@ TEST_CASE("t00068_r2")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00068");
-
-    auto diagram = config.diagrams["t00068_r2_class"];
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00068_r2_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r2_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));

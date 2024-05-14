@@ -20,15 +20,8 @@ TEST_CASE("t00060")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00060");
-
-    auto diagram = config.diagrams["t00060_class"];
-
-    REQUIRE(diagram->name == "t00060_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00060_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00060", "t00060_class");
 
     CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
@@ -41,61 +34,4 @@ TEST_CASE("t00060")
         REQUIRE(IsClassTemplate(src, "G<T>"));
         REQUIRE(IsClassTemplate(src, "H<T,P>"));
     });
-    /*
-{
-    auto src = generate_class_puml(diagram, *model);
-    AliasMatcher _A(src);
-
-    REQUIRE_THAT(src, StartsWith("@startuml"));
-    REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-    // Check if all classes exist
-    REQUIRE_THAT(src, IsClass(_A("A")));
-    REQUIRE_THAT(src, IsClass(_A("B")));
-    REQUIRE_THAT(src, IsClass(_A("C")));
-    REQUIRE_THAT(src, IsClass(_A("D")));
-    REQUIRE_THAT(src, !IsClass(_A("E")));
-    REQUIRE_THAT(src, !IsClass(_A("F")));
-
-    // Check if class templates exist
-    REQUIRE_THAT(src, IsClassTemplate("G", "T"));
-    REQUIRE_THAT(src, IsClassTemplate("H", "T,P"));
-
-    save_puml(config.output_directory(), diagram->name + ".puml", src);
-}
-
-{
-    auto j = generate_class_json(diagram, *model);
-
-    using namespace json;
-
-    REQUIRE(IsClass(j, "A"));
-    REQUIRE(IsClass(j, "B"));
-    REQUIRE(IsClass(j, "C"));
-    REQUIRE(IsClass(j, "D"));
-    REQUIRE(!IsClass(j, "E"));
-    REQUIRE(!IsClass(j, "F"));
-
-    save_json(config.output_directory(), diagram->name + ".json", j);
-}
-{
-    auto src = generate_class_mermaid(diagram, *model);
-
-    mermaid::AliasMatcher _A(src);
-
-    // Check if all classes exist
-    REQUIRE_THAT(src, IsClass(_A("A")));
-    REQUIRE_THAT(src, IsClass(_A("B")));
-    REQUIRE_THAT(src, IsClass(_A("C")));
-    REQUIRE_THAT(src, IsClass(_A("D")));
-    REQUIRE_THAT(src, !IsClass(_A("E")));
-    REQUIRE_THAT(src, !IsClass(_A("F")));
-
-    // Check if class templates exist
-    REQUIRE_THAT(src, IsClass(_A("G<T>")));
-    REQUIRE_THAT(src, IsClass(_A("H<T,P>")));
-
-    save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-}
-     */
 }

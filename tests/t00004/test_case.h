@@ -20,46 +20,38 @@ TEST_CASE("t00004")
 {
     using namespace clanguml::test;
 
-    auto [config, db] = load_config("t00004");
-
-    auto diagram = config.diagrams["t00004_class"];
-
-    REQUIRE(diagram->name == "t00004_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00004", "t00004_class");
 
     REQUIRE(diagram->include().namespaces.size() == 1);
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "A::AA"));
+        REQUIRE(IsClass(src, "A::AA::AAA"));
+        REQUIRE(IsEnum(src, "B::AA"));
+        REQUIRE(IsEnum(src, "A::AA::Lights"));
+        REQUIRE(IsInnerClass(src, "A", "A::AA"));
+        REQUIRE(IsInnerClass(src, "A::AA", "A::AA::AAA"));
+        REQUIRE(IsInnerClass(src, "A::AA", "A::AA::Lights"));
 
-    REQUIRE(model->name() == "t00004_class");
+        REQUIRE(IsMethod<Public, Const>(src, "A", "foo"));
+        REQUIRE(IsMethod<Public, Const>(src, "A", "foo2"));
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model,
-        [](const auto &src) {
-            REQUIRE(IsClass(src, "A"));
-            REQUIRE(IsClass(src, "A::AA"));
-            REQUIRE(IsClass(src, "A::AA::AAA"));
-            REQUIRE(IsEnum(src, "B::AA"));
-            REQUIRE(IsEnum(src, "A::AA::Lights"));
-            REQUIRE(IsInnerClass(src, "A", "A::AA"));
-            REQUIRE(IsInnerClass(src, "A::AA", "A::AA::AAA"));
-            REQUIRE(IsInnerClass(src, "A::AA", "A::AA::Lights"));
+        REQUIRE(IsClassTemplate(src, "C<T>"));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::AA"));
+        REQUIRE(IsInnerClass(src, "C::AA", "C::AA::AAA"));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::CC"));
+        REQUIRE(IsInnerClass(src, "C::AA", "C::AA::CCC"));
 
-            REQUIRE(IsMethod<Public, Const>(src, "A", "foo"));
-            REQUIRE(IsMethod<Public, Const>(src, "A", "foo2"));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::B<V>"));
+        REQUIRE(IsAggregation<Public>(src, "C<T>", "C::B<int>", "b_int"));
+        REQUIRE(!IsInnerClass(src, "C<T>", "C::B"));
+        REQUIRE(IsInstantiation(src, "C::B<V>", "C::B<int>"));
 
-            REQUIRE(IsClassTemplate(src, "C<T>"));
-            REQUIRE(IsInnerClass(src, "C<T>", "C::AA"));
-            REQUIRE(IsInnerClass(src, "C::AA", "C::AA::AAA"));
-            REQUIRE(IsInnerClass(src, "C<T>", "C::CC"));
-            REQUIRE(IsInnerClass(src, "C::AA", "C::AA::CCC"));
-
-            REQUIRE(IsInnerClass(src, "C<T>", "C::B<V>"));
-            REQUIRE(IsAggregation<Public>(src, "C<T>", "C::B<int>", "b_int"));
-            REQUIRE(!IsInnerClass(src, "C<T>", "C::B"));
-            REQUIRE(IsInstantiation(src, "C::B<V>", "C::B<int>"));
-
-            REQUIRE(IsClass(src, "detail::D"));
-            REQUIRE(IsClass(src, "detail::D::DD"));
-            REQUIRE(IsEnum(src, "detail::D::AA"));
-        });
+        REQUIRE(IsClass(src, {"detail", "D"}));
+        REQUIRE(IsClass(src, {"detail", "D::DD"}));
+        REQUIRE(IsEnum(src, {"detail", "D::AA"}));
+    });
 }

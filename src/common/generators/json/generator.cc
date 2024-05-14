@@ -18,17 +18,9 @@
 
 #include "generator.h"
 
-namespace clanguml::common::model {
+namespace clanguml::common {
+namespace model {
 using nlohmann::json;
-
-namespace detail {
-std::string render_name(std::string name)
-{
-    util::replace_all(name, "##", "::");
-
-    return name;
-}
-} // namespace detail
 
 void to_json(nlohmann::json &j, const source_location &sl)
 {
@@ -40,9 +32,10 @@ void to_json(nlohmann::json &j, const source_location &sl)
 void to_json(nlohmann::json &j, const element &c)
 {
     j = json{{"id", std::to_string(c.id())},
-        {"name", detail::render_name(c.name())},
+        {"name", common::generators::json::render_name(c.name())},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
-        {"display_name", detail::render_name(c.full_name(true))}};
+        {"display_name",
+            common::generators::json::render_name(c.full_name(true))}};
 
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();
@@ -81,4 +74,16 @@ void to_json(nlohmann::json &j, const relationship &c)
     if (const auto &comment = c.comment(); comment)
         j["comment"] = comment.value();
 }
+} // namespace model
+
+namespace generators::json {
+
+std::string render_name(std::string name)
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
+} // namespace generators::json
 } // namespace clanguml::common::model

@@ -21,15 +21,8 @@ TEST_CASE("t30003")
     using namespace clanguml::test;
     using namespace std::string_literals;
 
-    auto [config, db] = load_config("t30003");
-
-    auto diagram = config.diagrams["t30003_package"];
-
-    REQUIRE(diagram->name == "t30003_package");
-
-    auto model = generate_package_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t30003_package");
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30003", "t30003_package");
 
     CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(IsNamespacePackage(src, "ns1"s));
@@ -39,7 +32,7 @@ TEST_CASE("t30003")
         REQUIRE(IsNamespacePackage(src, "ns3"s, "ns1"s));
         REQUIRE(IsNamespacePackage(src, "ns3"s, "ns1"s, "ns2"s));
 
-        //        REQUIRE(IsDeprecated(src, "ns2_v0_9_0"));
-        //        REQUIRE(IsDeprecated(src, "ns3"));
+        REQUIRE(IsDeprecated(src, "ns2_v0_9_0"));
+        REQUIRE(IsDeprecated(src, "ns3"));
     });
 }
