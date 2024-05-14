@@ -248,9 +248,23 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
 
+    // Perform config dependent postprocessing on generated class;
     if (!config().generate_fully_qualified_name())
         object["display_name"] =
             common::generators::json::render_name(c.full_name_no_ns());
+
+    for (auto &tp : object["template_parameters"]) {
+        if (tp.contains("type") && tp.at("type").is_string()) {
+            tp["type"] = config().using_namespace().relative(tp.at("type"));
+        }
+    }
+    for (auto &tp : object["members"]) {
+        if (tp.contains("type") && tp.at("type").is_string()) {
+            tp["type"] = config().using_namespace().relative(tp.at("type"));
+        }
+    }
+
+    std::string object_str = object.dump(2);
 
     parent["elements"].push_back(std::move(object));
 }

@@ -5,6 +5,8 @@ cmake_minimum_required(VERSION 3.16)
 #
 project(clang-uml C CXX)
 
+cmake_policy(SET CMP0054 NEW)
+
 #
 # CMake standard defines
 #

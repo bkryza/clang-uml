@@ -1300,33 +1300,4 @@ int main(int argc, char *argv[])
         return res;
 
     return res;
-
-    /*
-    Catch::Session session;
-    using namespace Catch::clara;
-
-    bool debug_log{false};
-    auto cli = session.cli() |
-        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
-
-    session.cli(cli);
-
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0)
-        return returnCode;
-
-    clanguml::cli::cli_handler clih;
-
-    std::vector<const char *> argvv = {
-        "clang-uml", "--config", "./test_config_data/simple.yml"};
-
-    if (debug_log)
-        argvv.push_back("-vvv");
-    else
-        argvv.push_back("-q");
-
-    clih.handle_options(argvv.size(), argvv.data());
-
-    return session.run();
-     */
 }
