@@ -1266,15 +1266,12 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
-/*
-
 
 ///
 /// Other tests (e.g. configuration file)
 ///
 #include "t90000/test_case.h"
 #include "t90001/test_case.h"
-*/
 
 ///
 /// Main test function

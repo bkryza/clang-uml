@@ -51,14 +51,6 @@ using namespace clanguml::util;
 std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name);
 
-// std::string generate_sequence_puml(
-//     std::shared_ptr<clanguml::config::diagram> config,
-//     clanguml::sequence_diagram::model::diagram &model);
-//
-// std::string generate_class_puml(
-//     std::shared_ptr<clanguml::config::diagram> config,
-//     clanguml::class_diagram::model::diagram &model);
-
 void save_puml(const std::string &path, const std::string &puml);
 
 namespace clanguml::test {

@@ -1,5 +1,5 @@
 /**
- * tests/t90000/test_case.cc
+ * tests/t90000/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,40 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t90000", "[test-case][config]")
+TEST_CASE("t90000")
 {
-    auto [config, db] = load_config("t90000");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t90000_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t90000", "t90000_class");
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t90000_class");
-
-    {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
-
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(puml, IsClass(_A("Foo")));
-        REQUIRE_THAT(puml, IsClass(_A("Boo")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto mmd = generate_class_mermaid(diagram, *model);
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
-    }
+    CHECK_CLASS_DIAGRAM(
+        config, diagram, *model,
+        [](const plantuml_t &src) {
+            REQUIRE(IsClass(src, "Foo"));
+            REQUIRE(IsClass(src, "Boo"));
+        },
+        [](const mermaid_t &src) {
+            REQUIRE(IsClass(src, "Foo"));
+            REQUIRE(IsClass(src, "Boo"));
+        });
 }
