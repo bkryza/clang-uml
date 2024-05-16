@@ -84,6 +84,12 @@ struct Default { };
 
 struct Deleted { };
 
+struct Entrypoint { };
+
+struct Exitpoint { };
+
+struct InControlCondition { };
+struct Response { };
 struct NamespacePackage { };
 struct ModulePackage { };
 struct DirectoryPackage { };
@@ -122,6 +128,8 @@ template <typename T> struct diagram_source_t {
     }
 
     bool search(const std::string &pattern) const;
+
+    int64_t find(const std::string &pattern, int64_t offset = 0) const;
 
     std::string to_string() const;
 
@@ -189,7 +197,7 @@ struct mermaid_t : public diagram_source_t<std::string> {
 
     inline static const std::string diagram_type_name{"MermaidJS"};
 
-    std::string get_alias(std::string name) const override
+    std::string get_alias_impl(std::string name) const
     {
         std::vector<std::regex> patterns;
 
@@ -223,6 +231,44 @@ struct mermaid_t : public diagram_source_t<std::string> {
         }
 
         return fmt::format("__INVALID__ALIAS__({})", name);
+    }
+
+    std::string get_alias_sequence_diagram_impl(std::string name) const
+    {
+        std::vector<std::regex> patterns;
+
+        const std::string alias_regex("([A-Z]_[0-9]+)");
+
+        util::replace_all(name, "(", "\\(");
+        util::replace_all(name, ")", "\\)");
+        util::replace_all(name, " ", "\\s");
+        util::replace_all(name, "*", "\\*");
+        util::replace_all(name, "[", "\\[");
+        util::replace_all(name, "]", "\\]");
+
+        patterns.push_back(
+            std::regex{"participant\\s" + alias_regex + "\\sas\\s" + name+"\\n"});
+
+        std::smatch base_match;
+
+        for (const auto &pattern : patterns) {
+            if (std::regex_search(src, base_match, pattern) &&
+                base_match.size() == 2) {
+                std::ssub_match base_sub_match = base_match[1];
+                std::string alias = base_sub_match.str();
+                return trim(alias);
+            }
+        }
+
+        return fmt::format("__INVALID__ALIAS__({})", name);
+    }
+
+    std::string get_alias(std::string name) const override
+    {
+        if (diagram_type == common::model::diagram_t::kSequence)
+            return get_alias_sequence_diagram_impl(name);
+
+        return get_alias_impl(name);
     }
 };
 
@@ -338,12 +384,26 @@ template <> bool diagram_source_t<std::string>::contains(std::string name) const
 }
 
 template <>
-bool diagram_source_t<std::string>::search(const std::string &pattern) const
+int64_t diagram_source_t<std::string>::find(
+    const std::string &pattern, int64_t offset) const
 {
     std::regex pattern_regex{pattern};
 
     std::smatch base_match;
-    return std::regex_search(src, base_match, pattern_regex);
+    auto offset_it = src.begin();
+    std::advance(offset_it, offset);
+    bool found =
+        std::regex_search(offset_it, src.end(), base_match, pattern_regex);
+    if (!found)
+        return -1;
+
+    return base_match.position(0);
+}
+
+template <>
+bool diagram_source_t<std::string>::search(const std::string &pattern) const
+{
+    return find(pattern) > -1;
 }
 
 template <>
@@ -397,6 +457,46 @@ struct QualifiedName {
 
     std::optional<std::string> ns;
     std::string name;
+};
+
+struct Message {
+    template <typename... Attrs>
+    Message(QualifiedName f, QualifiedName t, std::string m, Attrs &&...attrs)
+        : from{std::move(f)}
+        , to{std::move(t)}
+        , message{std::move(m)}
+        , is_static{has_type<Static, Attrs...>()}
+        , is_incontrolcondition{has_type<InControlCondition, Attrs...>()}
+        , is_response{has_type<Response, Attrs...>()}
+    {
+    }
+
+    template <typename... Attrs>
+    Message(Entrypoint &&e, QualifiedName t, std::string m, Attrs &&...attrs)
+        : Message(QualifiedName{""}, std::move(t), {},
+              std::forward<Attrs>(attrs)...)
+    {
+        is_entrypoint = true;
+    }
+
+    template <typename... Attrs>
+    Message(Exitpoint &&e, QualifiedName t, Attrs &&...attrs)
+        : Message(QualifiedName{""}, std::move(t), {},
+              std::forward<Attrs>(attrs)...)
+    {
+        is_exitpoint = true;
+    }
+
+    QualifiedName from;
+    QualifiedName to;
+    std::string message;
+    std::optional<std::string> return_type;
+
+    bool is_static{false};
+    bool is_entrypoint{false};
+    bool is_exitpoint{false};
+    bool is_incontrolcondition{false};
+    bool is_response{false};
 };
 
 ///
@@ -573,6 +673,80 @@ bool IsModulePackage(const DiagramType &d, Args... args);
 
 template <typename DiagramType>
 bool IsDeprecated(const DiagramType &d, std::string const &str);
+
+template <typename DiagramType>
+int64_t FindMessage(const DiagramType &d, const Message &msg,
+    int64_t offset = 0, bool fail = true);
+
+template <typename DiagramType>
+bool HasMessage(const DiagramType &d, const Message &msg)
+{
+    return FindMessage(d, msg, 0, false) >= 0;
+}
+
+template <typename DiagramType>
+bool MessageOrder(const DiagramType &d, std::vector<Message> messages)
+{
+    std::vector<int64_t> order;
+    int64_t offset{0};
+    order.reserve(messages.size());
+    std::transform(messages.begin(), messages.end(), std::back_inserter(order),
+        [&d, &offset](const auto &m) {
+            offset = FindMessage(d, m, offset);
+            return offset;
+        });
+    bool are_messages_in_order = std::is_sorted(order.begin(), order.end());
+
+    if (!are_messages_in_order) {
+        FAIL(fmt::format(
+            "Messages are not in order: \n[{}]", fmt::join(order, ",\n")));
+        return false;
+    }
+
+    return true;
+}
+
+template <typename DiagramType>
+bool MessageChainsOrder(
+    const DiagramType &d, std::vector<std::vector<Message>> message_chains)
+{
+    std::vector<Message> flattenned;
+    for (const auto &mc : message_chains) {
+        for (const auto &m : mc)
+            flattenned.emplace_back(m);
+    }
+
+    return MessageOrder(d, std::move(flattenned));
+}
+
+template <typename DiagramType>
+bool IsParticipant(
+    const DiagramType &d, const std::string &name, const std::string &type);
+
+template <typename DiagramType>
+bool IsFunctionParticipant(const DiagramType &d, const std::string &name)
+{
+    return IsParticipant(d, name, "function");
+}
+
+template <typename DiagramType>
+bool IsFunctionTemplateParticipant(
+    const DiagramType &d, const std::string &name)
+{
+    return IsParticipant(d, name, "function_template");
+}
+
+template <typename DiagramType>
+bool IsClassParticipant(const DiagramType &d, const std::string &name)
+{
+    return IsParticipant(d, name, "class");
+}
+
+template <typename DiagramType>
+bool IsFileParticipant(const DiagramType &d, const std::string &name)
+{
+    return IsParticipant(d, name, "file");
+}
 
 ///
 /// @}
@@ -913,14 +1087,6 @@ bool HasNote(const plantuml_t &d, std::string const &cls,
 }
 
 template <>
-bool HasMessageComment(const plantuml_t &d, std::string const &participant,
-    std::string const &note)
-{
-    return d.contains(std::string("note over ") + d.get_alias(participant) +
-        "\\n" + note + "\\n" + "end note");
-}
-
-template <>
 bool HasMemberNote(const plantuml_t &d, std::string const &cls,
     std::string const &member, std::string const &position,
     std::string const &note)
@@ -1019,6 +1185,81 @@ template <> bool IsDeprecated(const plantuml_t &d, const std::string &name)
     return d.contains(d.get_alias(name) + " <<deprecated>> ");
 }
 
+template <>
+int64_t FindMessage(
+    const plantuml_t &d, const Message &msg, int64_t offset, bool fail)
+{
+    auto msg_str = msg.message;
+    util::replace_all(msg_str, "(", "\\(");
+    util::replace_all(msg_str, ")", "\\)");
+    util::replace_all(msg_str, "*", "\\*");
+    util::replace_all(msg_str, "[", "\\[");
+    util::replace_all(msg_str, "]", "\\]");
+    util::replace_all(msg_str, "+", "\\+");
+
+    std::string style;
+    if (msg.is_static)
+        style = "__";
+
+    std::string call_pattern{"__INVALID__"};
+
+    if (msg.is_entrypoint) {
+        call_pattern =
+            fmt::format("\\[-> {} : {}", d.get_alias(msg.to), msg_str);
+    }
+    else if (msg.is_exitpoint) {
+        call_pattern = fmt::format("\\[<-- {}", d.get_alias(msg.to));
+    }
+    else if (msg.is_incontrolcondition) {
+        call_pattern = fmt::format(
+            "{} {} {} "
+            "(\\[\\[.*\\]\\] )?: \\*\\*\\[\\*\\*{}{}{}\\*\\*\\]\\*\\*",
+            d.get_alias(msg.from), "->", d.get_alias(msg.to), style, msg_str,
+            style);
+    }
+    else if (msg.is_response) {
+        call_pattern = fmt::format("{} {} {} : //{}//", d.get_alias(msg.from),
+            "-->", d.get_alias(msg.to), msg_str);
+    }
+    else {
+        call_pattern = fmt::format("{} {} {} "
+                                   "(\\[\\[.*\\]\\] )?: {}{}{}",
+            d.get_alias(msg.from), "->", d.get_alias(msg.to), style, msg_str,
+            style);
+    }
+
+    auto match_offset = d.find(call_pattern, offset);
+
+    if (match_offset < 0) {
+        if (fail)
+            FAIL(fmt::format("Missing message: {} -> {} {} ({})",
+                msg.from.str(), msg.to.str(), msg.message, call_pattern));
+        return -1;
+    }
+
+    return match_offset + offset;
+}
+
+template <>
+bool HasMessageComment(const plantuml_t &d, std::string const &participant,
+    std::string const &note)
+{
+    std::string note_escaped{note};
+    util::replace_all(note_escaped, "(", "\\(");
+    util::replace_all(note_escaped, ")", "\\)");
+
+    return d.search(fmt::format("note over {}\\n{}\\nend note",
+        d.get_alias(participant), note_escaped));
+}
+
+template <>
+bool IsParticipant(
+    const plantuml_t &d, const std::string &name, const std::string &type)
+{
+    return d.contains(
+        fmt::format("participant \"{}\" as ", name, d.get_alias(name)));
+}
+
 //
 // MermaidJS test helpers
 //
@@ -1052,7 +1293,6 @@ template <> bool IsClassTemplate(const mermaid_t &d, QualifiedName cls)
 
 template <> bool IsAbstractClassTemplate(const mermaid_t &d, QualifiedName cls)
 {
-    //    return d.contains(fmt::format("class {}", d.get_alias(cls)));
     return d.search(
         std::string("class ") + d.get_alias(cls) + " \\{\\n\\s+<<abstract>>");
 }
@@ -1367,8 +1607,6 @@ bool IsConceptRequirement(
 {
     util::replace_all(requirement, "<", "&lt;");
     util::replace_all(requirement, ">", "&gt;");
-    //    util::replace_all(requirement, "(", "&lpar;");
-    //    util::replace_all(requirement, ")", "&rpar;");
     util::replace_all(requirement, "##", "::");
     util::replace_all(requirement, "{", "&lbrace;");
     util::replace_all(requirement, "}", "&rbrace;");
@@ -1382,8 +1620,6 @@ bool IsConceptParameterList(
 {
     util::replace_all(params, "<", "&lt;");
     util::replace_all(params, ">", "&gt;");
-    //    util::replace_all(requirement, "(", "&lpar;");
-    //    util::replace_all(requirement, ")", "&rpar;");
     util::replace_all(params, "##", "::");
     util::replace_all(params, "{", "&lbrace;");
     util::replace_all(params, "}", "&rbrace;");
@@ -1412,14 +1648,6 @@ bool HasNote(const mermaid_t &d, std::string const &cls,
     }
 
     return d.contains(fmt::format("note for {}", d.get_alias(cls)));
-}
-
-template <>
-bool HasMessageComment(
-    const mermaid_t &d, std::string const &participant, std::string const &note)
-{
-    return d.contains(
-        std::string("note over ") + d.get_alias(participant) + ": " + note);
 }
 
 template <>
@@ -1507,6 +1735,71 @@ bool IsModulePackage(const mermaid_t &d, Args... args)
 template <> bool IsDeprecated(const mermaid_t &d, const std::string &name)
 {
     return d.contains(d.get_alias(name));
+}
+
+template <>
+int64_t FindMessage(
+    const mermaid_t &d, const Message &msg, int64_t offset, bool fail)
+{
+    auto msg_str = msg.message;
+
+    util::replace_all(msg_str, "(", "\\(");
+    util::replace_all(msg_str, ")", "\\)");
+    util::replace_all(msg_str, "*", "\\*");
+    util::replace_all(msg_str, "[", "\\[");
+    util::replace_all(msg_str, "]", "\\]");
+    util::replace_all(msg_str, "+", "\\+");
+
+    std::string call_pattern{"__INVALID__"};
+
+    if (msg.is_entrypoint) {
+        call_pattern =
+            fmt::format("\\* ->> {} : {}", d.get_alias(msg.to), msg_str);
+    }
+    else if (msg.is_exitpoint) {
+        call_pattern = fmt::format("{} -->> \\*", d.get_alias(msg.to), msg_str);
+    }
+    else if (msg.is_incontrolcondition) {
+        call_pattern = fmt::format("{} {} {} : \\[{}\\]", d.get_alias(msg.from),
+            "->>", d.get_alias(msg.to), msg_str);
+    }
+    else if (msg.is_response) {
+        call_pattern = fmt::format("{} {} {} : {}", d.get_alias(msg.from),
+            "-->>", d.get_alias(msg.to), msg_str);
+    }
+    else {
+        call_pattern = fmt::format("{} {} {} : {}", d.get_alias(msg.from),
+            "->>", d.get_alias(msg.to), msg_str);
+    }
+
+    auto match_offset = d.find(call_pattern, offset);
+
+    if (match_offset < 0) {
+        if (fail)
+            FAIL(fmt::format("Missing message: {} -> {} {} ({})",
+                msg.from.str(), msg.to.str(), msg.message, call_pattern));
+        return -1;
+    }
+
+    return match_offset + offset;
+}
+
+template <>
+bool HasMessageComment(
+    const mermaid_t &d, std::string const &participant, std::string const &note)
+{
+    std::string note_escaped{note};
+    util::replace_all(note_escaped, "\\n", "<br/>");
+
+    return d.contains(std::string("note over ") + d.get_alias(participant) +
+        ": " + note_escaped);
+}
+
+template <>
+bool IsParticipant(
+    const mermaid_t &d, const std::string &name, const std::string &type)
+{
+    return d.contains(fmt::format("participant {}", d.get_alias(name)));
 }
 
 //
@@ -1911,13 +2204,6 @@ bool HasPackageNote(const json_t &d, std::string const &cls,
 }
 
 template <>
-bool HasMessageComment(
-    const json_t &d, std::string const &alias, std::string const &note)
-{
-    return true;
-}
-
-template <>
 bool HasMemberNote(const json_t &d, std::string const &cls,
     std::string const &member, std::string const &position,
     std::string const &note)
@@ -2043,6 +2329,207 @@ template <> bool IsDeprecated(const json_t &d, const std::string &name)
 
     auto e = get_element(j, expand_name(j, name));
     return e && e->at("is_deprecated") == true;
+}
+
+namespace json_helpers {
+int find_message_nested(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type, const nlohmann::json &from_p,
+    const nlohmann::json &to_p, int &count, const int64_t offset,
+    std::optional<int32_t> chain_index = {})
+{
+    if (!j.contains("messages") && !j.contains("message_chains"))
+        return -1;
+
+    const auto &messages = !chain_index.has_value()
+        ? j["messages"]
+        : j["message_chains"][chain_index.value()]["messages"];
+
+    int res{-1};
+
+    for (const auto &m : messages) {
+        if (m.contains("branches")) {
+            for (const auto &b : m["branches"]) {
+                auto nested_res = find_message_nested(
+                    b, from, to, msg, return_type, from_p, to_p, count, offset);
+
+                if (nested_res >= offset)
+                    return nested_res;
+            }
+        }
+        else if (m.contains("messages")) {
+            auto nested_res = find_message_nested(
+                m, from, to, msg, return_type, from_p, to_p, count, offset);
+
+            if (nested_res >= offset)
+                return nested_res;
+        }
+        else {
+            if (count >= offset &&
+                (m["from"]["participant_id"] == from_p["id"]) &&
+                (m["to"]["participant_id"] == to_p["id"]) &&
+                (m["name"] == msg) &&
+                (!return_type || m["return_type"] == *return_type))
+                return count;
+
+            count++;
+        }
+    }
+
+    return res;
+}
+
+int find_message_impl(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type, int64_t offset,
+    std::optional<int32_t> chain_index = {})
+{
+
+    auto from_p = get_participant(j, from);
+    auto to_p = get_participant(j, to);
+
+    // TODO: support diagrams with multiple sequences...
+    int count{0};
+
+    for (const auto &seq : j["sequences"]) {
+        int64_t res{-1};
+
+        res = find_message_nested(seq, from, to, msg, return_type, *from_p,
+            *to_p, count, offset, chain_index);
+
+        if (res >= 0)
+            return res;
+    }
+
+    throw std::runtime_error(fmt::format(
+        "No such message {} {} {} after offset {}", from, to, msg, offset));
+}
+
+int64_t find_message(const nlohmann::json &j, const File &from, const File &to,
+    const std::string &msg, int64_t offset)
+{
+    return find_message_impl(j, from.file, to.file, msg, {}, offset);
+}
+
+int64_t find_message(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type = {}, int64_t offset = 0)
+{
+    return find_message_impl(
+        j, expand_name(j, from), expand_name(j, to), msg, return_type, offset);
+}
+
+int64_t find_message_in_chain(const nlohmann::json &j, const std::string &from,
+    const std::string &to, const std::string &msg,
+    std::optional<std::string> return_type = {}, int64_t offset = 0,
+    uint32_t chain_index = 0)
+{
+    return find_message_impl(j, expand_name(j, from), expand_name(j, to), msg,
+        return_type, offset, chain_index);
+}
+
+} // namespace detail
+
+template <>
+int64_t FindMessage(
+    const json_t &d, const Message &msg, int64_t offset, bool fail)
+{
+    if (msg.is_response) {
+        // TODO: Currently response are not generated as separate messages in
+        //       JSON format
+        return offset;
+    }
+
+    if (msg.is_entrypoint || msg.is_exitpoint)
+        return offset;
+
+    try {
+        return json_helpers::find_message(d.src, msg.from.str(), msg.to.str(),
+            msg.message, msg.return_type, offset);
+    }
+    catch (std::exception &e) {
+        if (!fail)
+            return -1;
+
+        std::cout << "FindMessage failed with error " << e.what() << "\n";
+
+        throw e;
+    }
+}
+
+int64_t find_message_in_chain(const json_t &d, const Message &msg,
+    int64_t offset, bool fail, uint32_t chain_index)
+{
+    if (msg.is_response) {
+        // TODO: Currently response are not generated as separate messages in
+        //       JSON format
+        return offset;
+    }
+
+    if (msg.is_entrypoint || msg.is_exitpoint)
+        return offset;
+
+    try {
+        return json_helpers::find_message_in_chain(d.src, msg.from.str(),
+            msg.to.str(), msg.message, msg.return_type, offset, chain_index);
+    }
+    catch (std::exception &e) {
+        if (!fail)
+            return -1;
+
+        std::cout << "find_message_in_chain failed with " << e.what() << "\n";
+
+        throw e;
+    }
+}
+
+template <>
+bool MessageChainsOrder<json_t>(
+    const json_t &d, std::vector<std::vector<Message>> message_chains)
+{
+    uint32_t chain_index{0};
+    for (const auto &messages : message_chains) {
+        int64_t offset{0};
+
+        std::vector<int64_t> order;
+        order.reserve(messages.size());
+        std::transform(messages.begin(), messages.end(),
+            std::back_inserter(order),
+            [&d, &offset, chain_index](const auto &m) {
+                offset = find_message_in_chain(d, m, offset, true, chain_index);
+                return offset;
+            });
+
+        bool are_messages_in_order = std::is_sorted(order.begin(), order.end());
+
+        chain_index++;
+
+        if (!are_messages_in_order) {
+            FAIL(fmt::format(
+                "Messages are not in order: \n[{}]", fmt::join(order, ",\n")));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template <>
+bool HasMessageComment(
+    const json_t &d, std::string const &alias, std::string const &note)
+{
+    return true;
+}
+
+template <>
+bool IsParticipant(
+    const json_t &d, const std::string &name, const std::string &type)
+{
+    const auto &j = d.src;
+
+    auto p = get_participant(j, expand_name(j, name));
+
+    return p && (p->at("type") == type);
 }
 }
 

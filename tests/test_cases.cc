@@ -387,8 +387,7 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
             std::cout << "-----------------------------------------------------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
-                      << T::diagram_type_name << ": "
-                      << "\n\n";
+                      << T::diagram_type_name << ": " << "\n\n";
             std::cout << diagrams.get<T>().to_string() << "\n";
 
             throw e;
@@ -591,7 +590,6 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
     save_mermaid(config.output_directory(), diagram->name + ".mmd",
         diagram_sources.mermaid.src);
 }
-
 } // namespace clanguml::test
 
 /*
@@ -1174,7 +1172,7 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t00074/test_case.h"
 #include "t00075/test_case.h"
 #endif
-/*
+
 ///
 /// Sequence diagram tests
 ///
@@ -1188,6 +1186,7 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t20005/test_case.h"
 #endif
 #include "t20006/test_case.h"
+
 #include "t20007/test_case.h"
 #include "t20008/test_case.h"
 #include "t20009/test_case.h"
@@ -1222,11 +1221,13 @@ template <> bool IsClass(json_t d, std::string name)
 #include "t20038/test_case.h"
 #include "t20039/test_case.h"
 #include "t20040/test_case.h"
+
 #include "t20041/test_case.h"
 #include "t20042/test_case.h"
 #include "t20043/test_case.h"
 #include "t20044/test_case.h"
 #include "t20045/test_case.h"
+/*
 #include "t20046/test_case.h"
 #include "t20047/test_case.h"
 #include "t20048/test_case.h"

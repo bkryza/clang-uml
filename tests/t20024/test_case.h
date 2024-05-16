@@ -16,17 +16,31 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20024", "[test-case][sequence]")
+TEST_CASE("t20024")
 {
-    auto [config, db] = load_config("t20024");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20024_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20024", "t20024_sequence");
 
-    REQUIRE(diagram->name == "t20024_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "A", "select(enum_a)"}, //
+                {"A", "A", "a0()"},                 //
+                {"A", "A", "a1()"},                 //
+                {"A", "A", "a2()"},                 //
+                {"A", "A", "a3()"},                 //
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20024_sequence");
+                {"tmain()", "B", "select(colors)"}, //
+                {"B", "B", "red()"},                //
+                {"B", "B", "orange()"},             //
+                {"B", "B", "green()"},              //
+                {"B", "B", "grey()"}                //
+            }));
+    });
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -82,5 +96,5 @@ TEST_CASE("t20024", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "green()"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

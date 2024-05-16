@@ -16,73 +16,79 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20007", "[test-case][sequence]")
+TEST_CASE("t20007")
 {
-    auto [config, db] = load_config("t20007");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20007_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20007", "t20007_sequence");
 
-    REQUIRE(diagram->name == "t20007_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                {"tmain()", "Adder<int,int>", "add(int &&,int &&)"}, //
+                {"tmain()", "Adder<int,float,double>",
+                    "add(int &&,float &&,double &&)"}, //
+                {"tmain()", "Adder<std::string,std::string,std::string>",
+                    "add(std::string &&,std::string &&,std::string &&)"} //
+            }));
+    });
+    /*
+        {
+            auto src = generate_sequence_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-    auto model = generate_sequence_diagram(*db, diagram);
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-    REQUIRE(model->name() == "t20007_sequence");
+            // Check if all calls exist
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"), _A("Adder<int,int>"), "add(int &&,int
+       &&)")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
+       _A("Adder<int,float,double>"), "add(int &&,float &&,double &&)"));
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"),
+                    _A("Adder<std::string,std::string,std::string>"),
+                    "add(std::string &&,std::string &&,std::string &&)"));
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+            save_puml(config.output_directory(), diagram->name + ".puml",
+       src);
+        }
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        {
+            auto j = generate_sequence_json(diagram, *model);
 
-        // Check if all calls exist
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("Adder<int,int>"), "add(int &&,int &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("Adder<int,float,double>"),
-                "add(int &&,float &&,double &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("Adder<std::string,std::string,std::string>"),
-                "add(std::string &&,std::string &&,std::string &&)"));
+            using namespace json;
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            std::vector<int> messages = {
+                FindMessage(j, "tmain()", "Adder<int,int>", "add(int &&,int
+       &&)"), FindMessage(j, "tmain()", "Adder<int,float,double>", "add(int
+       &&,float &&,double &&)"), FindMessage(j, "tmain()",
+                    "Adder<std::string,std::string,std::string>",
+                    "add(std::string &&,std::string &&,std::string &&)")};
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        using namespace json;
+            save_json(config.output_directory(), diagram->name + ".json",
+       j);
+        }
 
-        std::vector<int> messages = {
-            FindMessage(j, "tmain()", "Adder<int,int>", "add(int &&,int &&)"),
-            FindMessage(j, "tmain()", "Adder<int,float,double>",
-                "add(int &&,float &&,double &&)"),
-            FindMessage(j, "tmain()",
-                "Adder<std::string,std::string,std::string>",
-                "add(std::string &&,std::string &&,std::string &&)")};
+        {
+            auto src = generate_sequence_mermaid(diagram, *model);
 
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+            mermaid::SequenceDiagramAliasMatcher _A(src);
+            using mermaid::HasCall;
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"), _A("Adder<int,int>"), "add(int &&,int
+       &&)")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
+       _A("Adder<int,float,double>"), "add(int &&,float &&,double &&)"));
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"),
+                    _A("Adder<std::string,std::string,std::string>"),
+                    "add(std::string &&,std::string &&,std::string &&)"));
 
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("Adder<int,int>"), "add(int &&,int &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("Adder<int,float,double>"),
-                "add(int &&,float &&,double &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("Adder<std::string,std::string,std::string>"),
-                "add(std::string &&,std::string &&,std::string &&)"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

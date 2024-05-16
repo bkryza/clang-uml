@@ -16,18 +16,25 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20045", "[test-case][sequence]")
+TEST_CASE("t20045")
 {
-    auto [config, db] = load_config("t20045");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20045_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20045", "t20045_sequence");
 
-    REQUIRE(diagram->name == "t20045_sequence");
-
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20045_sequence");
-
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "a2(int)", ""}, //
+                {"tmain()",
+                    "a1<(lambda at t20045.cc:35:18)>((lambda at "
+                    "t20045.cc:35:18) &&)",
+                    ""}, //
+            }));
+    });
+/*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -80,4 +87,5 @@ TEST_CASE("t20045", "[test-case][sequence]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+    */
 }

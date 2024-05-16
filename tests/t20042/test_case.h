@@ -16,60 +16,64 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20042", "[test-case][sequence]")
+TEST_CASE("t20042")
 {
-    auto [config, db] = load_config("t20042");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20042_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20042", "t20042_sequence");
 
-    REQUIRE(diagram->name == "t20042_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "AHandler", "operator()(A &) const"}, //
+                {"AHandler", "AHandler", "handle(A &) const"},    //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()", "BHandler", "operator()(B &) const"}, //
+                {"BHandler", "BHandler", "handle(B &) const"},    //
+            }));
+    });
+    /*
+        {
+            auto src = generate_sequence_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-    REQUIRE(model->name() == "t20042_sequence");
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &)
+       const")); REQUIRE_THAT( src, HasCall(_A("AHandler"), _A("AHandler"),
+       "handle(A &) const")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
+       _A("BHandler"), "operator()(B &) const")); REQUIRE_THAT( src,
+       HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &) const"));
-        REQUIRE_THAT(
-            src, HasCall(_A("AHandler"), _A("AHandler"), "handle(A &) const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("BHandler"), "operator()(B &) const"));
-        REQUIRE_THAT(
-            src, HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
+        {
+            auto j = generate_sequence_json(diagram, *model);
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            using namespace json;
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
 
-        using namespace json;
+        {
+            auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            mermaid::SequenceDiagramAliasMatcher _A(src);
+            using mermaid::HasCall;
 
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
+            REQUIRE_THAT(src,
+                HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &)
+       const")); REQUIRE_THAT( src, HasCall(_A("AHandler"), _A("AHandler"),
+       "handle(A &) const")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
+       _A("BHandler"), "operator()(B &) const")); REQUIRE_THAT( src,
+       HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
 
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &) const"));
-        REQUIRE_THAT(
-            src, HasCall(_A("AHandler"), _A("AHandler"), "handle(A &) const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("BHandler"), "operator()(B &) const"));
-        REQUIRE_THAT(
-            src, HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

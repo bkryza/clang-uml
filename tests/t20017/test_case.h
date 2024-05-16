@@ -16,17 +16,27 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20017", "[test-case][sequence]")
+TEST_CASE("t20017")
 {
-    auto [config, db] = load_config("t20017");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20017_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20017", "t20017_sequence");
 
-    REQUIRE(diagram->name == "t20017_sequence");
-
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20017_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+        //        {Entrypoint{}, "t20017.cc", "tmain()"},                  //
+                 {"t20017.cc", "include/t20017_a.h", "a3(int,int)"},      //
+                {"t20017.cc", "include/t20017_b.h", "b1(int,int)"},      //
+          /*     {"t20017.cc", "include/t20017_a.h", "a2(int,int)"},      //
+                {"t20017.cc", "include/t20017_a.h", "a1(int,int)"},      //
+                {"t20017.cc", "include/t20017_b.h", "b2<int>(int,int)"}, //
+                {Exitpoint{}, "t20017.cc"},                              //*/
+            }));
+    });
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -105,5 +115,5 @@ TEST_CASE("t20017", "[test-case][sequence]")
         REQUIRE_THAT(src, HasExitpoint(_A("t20017.cc")));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

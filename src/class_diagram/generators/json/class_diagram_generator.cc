@@ -248,7 +248,7 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
 
-    // Perform config dependent postprocessing on generated class;
+    // Perform config dependent postprocessing on generated class
     if (!config().generate_fully_qualified_name())
         object["display_name"] =
             common::generators::json::render_name(c.full_name_no_ns());

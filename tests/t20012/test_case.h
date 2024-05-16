@@ -16,17 +16,60 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20012", "[test-case][sequence]")
+TEST_CASE("t20012")
 {
-    auto [config, db] = load_config("t20012");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20012_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20012", "t20012_sequence");
 
-    REQUIRE(diagram->name == "t20012_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                {"tmain()", "tmain()::(lambda t20012.cc:67:20)",
+                    "operator()() const"},                         //
+                {"tmain()::(lambda t20012.cc:67:20)", "A", "a()"}, //
+                {"A", "A", "aa()"},                                //
+                {"A", "A", "aaa()"},                               //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()::(lambda t20012.cc:67:20)", "B", "b()"}, //
+                {"B", "B", "bb()"},                                //
+                {"B", "B", "bbb()"},                               //
 
-    REQUIRE(model->name() == "t20012_sequence");
+                {"tmain()", "tmain()::(lambda t20012.cc:80:20)",
+                    "operator()() const"},                         //
+                {"tmain()::(lambda t20012.cc:80:20)", "C", "c()"}, //
+                {"C", "C", "cc()"},                                //
+                {"C", "C", "ccc()"},                               //
+
+                {"tmain()::(lambda t20012.cc:80:20)",
+                    "tmain()::(lambda t20012.cc:67:20)",
+                    "operator()() const"}, //
+
+                {"tmain()::(lambda t20012.cc:67:20)", "A", "a()"}, //
+
+                {"A", "A", "aa()"},  //
+                {"A", "A", "aaa()"}, //
+
+                {"tmain()::(lambda t20012.cc:67:20)", "B", "b()"}, //
+                {"B", "B", "bb()"},                                //
+                {"B", "B", "bbb()"},                               //
+
+                {"tmain()", "R<(lambda at t20012.cc:86:9)>",
+                    "R((lambda at t20012.cc:86:9) &&)"},             //
+                {"tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"}, //
+                {"R<(lambda at t20012.cc:86:9)>",
+                    "tmain()::(lambda t20012.cc:86:9)",
+                    "operator()() const"},                        //
+                {"tmain()::(lambda t20012.cc:86:9)", "C", "c()"}, //
+
+                {"tmain()", "tmain()::(lambda t20012.cc:94:9)",
+                    "operator()(auto) const"},                               //
+                {"tmain()::(lambda t20012.cc:94:9)", "D", "add5(int) const"} //
+            }));
+    });
+
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -155,4 +198,5 @@ TEST_CASE("t20012", "[test-case][sequence]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+     */
 }

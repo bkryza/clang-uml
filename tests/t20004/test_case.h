@@ -16,102 +16,115 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20004", "[test-case][sequence]")
+TEST_CASE("t20004")
 {
-    auto [config, db] = load_config("t20004");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20004_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20004", "t20004_sequence");
 
-    REQUIRE(diagram->name == "t20004_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"main()", "m1<float>(float)", ""},                 //
+                {"main()", "m1<unsigned long>(unsigned long)", ""}, //
+                {"m1<unsigned long>(unsigned long)",
+                    "m4<unsigned long>(unsigned long)", ""},    //
+                {"main()", "m1<std::string>(std::string)", ""}, //
+                {"m1<std::string>(std::string)", "m2<std::string>(std::string)",
+                    ""},                              //
+                {"main()", "m1<int>(int)", ""},       //
+                {"m1<int>(int)", "m2<int>(int)", ""}, //
+                {"m2<int>(int)", "m3<int>(int)", ""}, //
+                {"m3<int>(int)", "m4<int>(int)", ""}  //
+            }));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+        REQUIRE(!HasMessage(src, {"m1<float>(float)", "m1<float>(float)", ""}));
+    });
+    /*
+        {
+            auto src = generate_sequence_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-    REQUIRE(model->name() == "t20004_sequence");
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<float>(float)"),
+       ""));
+       REQUIRE_THAT( src, !HasCall(_A("m1<float>(float)"),
+       _A("m1<float>(float)"), ""));
+       REQUIRE_THAT( src,
+       !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+            REQUIRE_THAT(src,
+                HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"),
+       ""));
+       REQUIRE_THAT(src, HasCall(_A("m1<unsigned long>(unsigned long)"),
+                    _A("m4<unsigned long>(unsigned long)"), ""));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<float>(float)"), ""));
-        REQUIRE_THAT(
-            src, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
-        REQUIRE_THAT(
-            src, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
+            REQUIRE_THAT(
+                src, HasCall(_A("main()"), _A("m1<std::string>(std::string)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m1<std::string>(std::string)"),
+                    _A("m2<std::string>(std::string)"), ""));
 
-        REQUIRE_THAT(src,
-            HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"), ""));
-        REQUIRE_THAT(src,
-            HasCall(_A("m1<unsigned long>(unsigned long)"),
-                _A("m4<unsigned long>(unsigned long)"), ""));
+            REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
+            REQUIRE_THAT(src, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"),
+       "")); REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-        REQUIRE_THAT(
-            src, HasCall(_A("main()"), _A("m1<std::string>(std::string)"), ""));
-        REQUIRE_THAT(src,
-            HasCall(_A("m1<std::string>(std::string)"),
-                _A("m2<std::string>(std::string)"), ""));
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        {
+            auto j = generate_sequence_json(diagram, *model);
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            using namespace json;
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            std::vector<int> messages = {
+                FindMessage(j, "main()", "m1<float>(float)", ""),
+                FindMessage(j, "main()", "m1<unsigned long>(unsigned long)",
+       ""), FindMessage(j, "m1<unsigned long>(unsigned long)", "m4<unsigned
+       long>(unsigned long)", ""), FindMessage(j, "main()",
+       "m1<std::string>(std::string)", ""), FindMessage(j,
+       "m1<std::string>(std::string)", "m2<std::string>(std::string)", ""),
+                FindMessage(j, "main()", "m1<int>(int)", ""),
+                FindMessage(j, "m1<int>(int)", "m2<int>(int)", ""),
+                FindMessage(j, "m2<int>(int)", "m3<int>(int)", ""),
+                FindMessage(j, "m3<int>(int)", "m4<int>(int)", "")};
 
-        using namespace json;
+            REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        std::vector<int> messages = {
-            FindMessage(j, "main()", "m1<float>(float)", ""),
-            FindMessage(j, "main()", "m1<unsigned long>(unsigned long)", ""),
-            FindMessage(j, "m1<unsigned long>(unsigned long)",
-                "m4<unsigned long>(unsigned long)", ""),
-            FindMessage(j, "main()", "m1<std::string>(std::string)", ""),
-            FindMessage(j, "m1<std::string>(std::string)",
-                "m2<std::string>(std::string)", ""),
-            FindMessage(j, "main()", "m1<int>(int)", ""),
-            FindMessage(j, "m1<int>(int)", "m2<int>(int)", ""),
-            FindMessage(j, "m2<int>(int)", "m3<int>(int)", ""),
-            FindMessage(j, "m3<int>(int)", "m4<int>(int)", "")};
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
 
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+        {
+            auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            mermaid::SequenceDiagramAliasMatcher _A(src);
+            using mermaid::HasCall;
 
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
+            REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<float>(float)"),
+       "")); REQUIRE_THAT( src, !HasCall(_A("m1<float>(float)"),
+       _A("m1<float>(float)"), "")); REQUIRE_THAT( src,
+       !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
 
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
+            REQUIRE_THAT(src,
+                HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m1<unsigned long>(unsigned long)"),
+                    _A("m4<unsigned long>(unsigned long)"), ""));
 
-        REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<float>(float)"), ""));
-        REQUIRE_THAT(
-            src, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
-        REQUIRE_THAT(
-            src, !HasCall(_A("m1<float>(float)"), _A("m1<float>(float)"), ""));
+            REQUIRE_THAT(
+                src, HasCall(_A("main()"), _A("m1<std::string>(std::string)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m1<std::string>(std::string)"),
+                    _A("m2<std::string>(std::string)"), ""));
 
-        REQUIRE_THAT(src,
-            HasCall(_A("main()"), _A("m1<unsigned long>(unsigned long)"), ""));
-        REQUIRE_THAT(src,
-            HasCall(_A("m1<unsigned long>(unsigned long)"),
-                _A("m4<unsigned long>(unsigned long)"), ""));
+            REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
+            REQUIRE_THAT(src, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"),
+       "")); REQUIRE_THAT(src, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"),
+       ""));
 
-        REQUIRE_THAT(
-            src, HasCall(_A("main()"), _A("m1<std::string>(std::string)"), ""));
-        REQUIRE_THAT(src,
-            HasCall(_A("m1<std::string>(std::string)"),
-                _A("m2<std::string>(std::string)"), ""));
-
-        REQUIRE_THAT(src, HasCall(_A("main()"), _A("m1<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m1<int>(int)"), _A("m2<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m2<int>(int)"), _A("m3<int>(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m3<int>(int)"), _A("m4<int>(int)"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

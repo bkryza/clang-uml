@@ -16,17 +16,31 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20021", "[test-case][sequence]")
+TEST_CASE("t20021")
 {
-    auto [config, db] = load_config("t20021");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20021_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20021", "t20021_sequence");
 
-    REQUIRE(diagram->name == "t20021_sequence");
-
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20021_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "C", "c4()", InControlCondition{}},       //
+                {"C", "C", "c5()"},                                   //
+                {"tmain()", "A", "a3()"},                             //
+                {"tmain()", "A", "a2()", InControlCondition{}},       //
+                {"tmain()", "C", "c1()", InControlCondition{}},       //
+                {"tmain()", "C", "c2()", InControlCondition{}},       //
+                {"tmain()", "A", "a1()"},                             //
+                {"tmain()", "C", "c3()", InControlCondition{}},       //
+                {"tmain()", "B", "b2() const"},                       //
+                {"tmain()", "C", "contents()", InControlCondition{}}, //
+                {"tmain()", "B", "b2() const"},                       //
+            }));
+    });
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -113,5 +127,5 @@ TEST_CASE("t20021", "[test-case][sequence]")
             HasCallInControlCondition(_A("tmain()"), _A("C"), "contents()"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t20001/test_case.cc
+ * tests/t20001/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,18 +16,66 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20001", "[test-case][sequence]")
+TEST_CASE("t20001")
 {
-    auto [config, db] = load_config("t20001");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20001_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20001", "t20001_sequence");
 
-    REQUIRE(diagram->name == "t20001_sequence");
+    CHECK_SEQUENCE_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(HasTitle(src, "Basic sequence diagram example"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+            REQUIRE(MessageOrder(src,
+                {
+                    //
+                    {"tmain()", "A", "A()"}, //
+                    {"tmain()", "B", "B(A &)"}, //
 
-    REQUIRE(model->name() == "t20001_sequence");
+                    {"tmain()", "A", "add(int,int)"},           //
 
+                    {"tmain()", "B", "wrap_add3(int,int,int)"}, //
+                    {"B", "A", "add3(int,int,int)"},            //
+                    {"A", "A", "add(int,int)"},                 //
+                    {"A", "A", "log_result(int)", Static{}},    //
+                    {"B", "A", "log_result(int)", Static{}}     //
+                }));
+
+            REQUIRE(!HasMessage(src, {"A", {"detail", "C"}, "add(int,int)"}));
+
+            REQUIRE(HasComment(src, "t20001 test diagram of type sequence"));
+
+            REQUIRE(HasMessageComment(src, "tmain()", "Just add 2 numbers"));
+
+            REQUIRE(HasMessageComment(src, "tmain()", "And now add another 2"));
+        },
+        [](const json_t &src) {
+            const auto &A = get_participant(src.src, "A");
+
+            CHECK(A.has_value());
+
+            CHECK(A.value()["type"] == "class");
+            CHECK(A.value()["name"] == "A");
+            CHECK(A.value()["display_name"] == "A");
+            CHECK(A.value()["namespace"] == "clanguml::t20001");
+            CHECK(A.value()["source_location"]["file"] == "t20001.cc");
+            CHECK(A.value()["source_location"]["line"] == 13);
+
+            const auto &tmain = get_participant(src.src, "tmain()");
+
+            CHECK(tmain.has_value());
+
+            CHECK(tmain.value()["type"] == "function");
+            CHECK(tmain.value()["name"] == "tmain");
+            CHECK(tmain.value()["display_name"] == "tmain()");
+            CHECK(tmain.value()["namespace"] == "clanguml::t20001");
+            CHECK(tmain.value()["source_location"]["file"] == "t20001.cc");
+            CHECK(tmain.value()["source_location"]["line"] == 61);
+        });
+
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -118,4 +166,5 @@ TEST_CASE("t20001", "[test-case][sequence]")
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
     }
+     */
 }

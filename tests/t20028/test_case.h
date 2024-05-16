@@ -16,17 +16,27 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20028", "[test-case][sequence]")
+TEST_CASE("t20028")
 {
-    auto [config, db] = load_config("t20028");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20028_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20028", "t20028_sequence");
 
-    REQUIRE(diagram->name == "t20028_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "A", "a()", InControlCondition{}}, //
+                {"tmain()", "A", "b()"},                      //
+                {"tmain()", "A", "c()"},                      //
+                {"tmain()", "A", "d()"},                      //
+            }));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+        REQUIRE(!HasMessage(src, {"tmain()", "B", "e()"}));
+    });
 
-    REQUIRE(model->name() == "t20028_sequence");
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -75,5 +85,5 @@ TEST_CASE("t20028", "[test-case][sequence]")
         REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "e()"));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

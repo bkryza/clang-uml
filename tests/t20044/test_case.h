@@ -16,18 +16,47 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20044", "[test-case][sequence]")
+TEST_CASE("t20044")
 {
-    auto [config, db] = load_config("t20044");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20044_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20044", "t20044_sequence");
 
-    REQUIRE(diagram->name == "t20044_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "R", "R((lambda at t20044.cc:74:9) &&)"}, //
+                {"R", "tmain()::(lambda t20044.cc:74:9)",
+                    "operator()() const"},                              //
+                {"tmain()::(lambda t20044.cc:74:9)", "A", "a() const"}, //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()", "tmain()::(lambda t20044.cc:84:18)",
+                    "operator()() const"},                          //
+                {"tmain()::(lambda t20044.cc:84:18)", "A", "a5()"}, //
 
-    REQUIRE(model->name() == "t20044_sequence");
+                {"tmain()", "A", "a1() const"},                        //
+                {"A", "detail::expected<int,error>", "expected(int)"}, //
 
+                {"tmain()", "detail::expected<int,error>",
+                    "and_then((lambda at t20044.cc:90:19) &&)"}, //
+                {"detail::expected<int,error>",
+                    "tmain()::(lambda t20044.cc:90:19)",
+                    "operator()(auto &&) const"},                            //
+                {"tmain()::(lambda t20044.cc:90:19)", "A", "a2(int) const"}, //
+                {"A", "detail::expected<int,error>", "expected(int)"},       //
+
+                {"tmain()", "detail::expected<int,error>",
+                    "and_then(result_t (&)(int))"}, //                                                            //
+                {"tmain()", "detail::expected<int,error>",
+                    "and_then(std::function<result_t (int)> &)"}, //                                                            //
+                {"tmain()", "detail::expected<int,error>",
+                    "value() const"}, //                                                            //
+
+            }));
+    });
+/*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -88,5 +117,5 @@ TEST_CASE("t20044", "[test-case][sequence]")
         using mermaid::IsClass;
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

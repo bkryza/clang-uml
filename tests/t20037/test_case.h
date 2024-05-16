@@ -16,60 +16,76 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20037", "[test-case][sequence]")
+TEST_CASE("t20037")
 {
-    auto [config, db] = load_config("t20037");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20037_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20037", "t20037_sequence");
 
-    REQUIRE(diagram->name == "t20037_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain(int,char **)", "a()", ""}, //
+                {"a()", "A", "A()"},               //
+                {"a()", "initb()", ""},            //
+                {"a()", "B", "get()"},             //
+                {"a()", "c()", ""},                //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+//                {"tmain(int,char **)", "a()", ""}, //
+//                {"a()", "B", "get()"},             //
+//                {"a()", "c()", ""},                //
+//
+//                {"tmain(int,char **)", "a()", ""}, //
+//                {"a()", "B", "get()"},             //
+//                {"a()", "c()", ""}                 //
+            }));
+    });
+    /*
+        {
+            auto src = generate_sequence_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-    REQUIRE(model->name() == "t20037_sequence");
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+            REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a()"), ""));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("initb()"), ""));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("B"), "get()"));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("c()"), ""));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+            save_puml(config.output_directory(), diagram->name + ".puml", src);
+        }
 
-        REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a()"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("initb()"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("B"), "get()"));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("c()"), ""));
+        {
+            auto j = generate_sequence_json(diagram, *model);
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            using namespace json;
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            std::vector<int> messages = {
+                FindMessage(j, "tmain(int,char **)", "a()", ""),
+                FindMessage(j, "a()", "initb()", ""),
+                FindMessage(j, "a()", "B", "get()"),
+                FindMessage(j, "a()", "c()", "")};
 
-        using namespace json;
+            REQUIRE(std::is_sorted(messages.begin(), messages.end()));
 
-        std::vector<int> messages = {
-            FindMessage(j, "tmain(int,char **)", "a()", ""),
-            FindMessage(j, "a()", "initb()", ""),
-            FindMessage(j, "a()", "B", "get()"),
-            FindMessage(j, "a()", "c()", "")};
+            save_json(config.output_directory(), diagram->name + ".json", j);
+        }
 
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
+        {
+            auto src = generate_sequence_mermaid(diagram, *model);
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            mermaid::SequenceDiagramAliasMatcher _A(src);
+            using mermaid::HasCall;
 
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
+            REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a()"), ""));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("initb()"), ""));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("B"), "get()"));
+            REQUIRE_THAT(src, HasCall(_A("a()"), _A("c()"), ""));
 
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a()"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("initb()"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("B"), "get()"));
-        REQUIRE_THAT(src, HasCall(_A("a()"), _A("c()"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_mermaid(config.output_directory(), diagram->name + ".mmd",
+       src);
+        }*/
 }

@@ -286,6 +286,8 @@ void generator::process_call_message(
     else
         LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from(),
             m.to(), m.to());
+
+    visited.pop_back();
 }
 
 void generator::process_while_message(const message &m) const
@@ -813,6 +815,14 @@ void generator::generate_diagram(nlohmann::json &parent) const
         else {
             // TODO: Add support for other sequence start location types
             continue;
+        }
+    }
+
+    // Perform config dependent postprocessing on generated participants
+    for (auto &p : json_["participants"]) {
+        if (p.contains("display_name")) {
+            p["display_name"] =
+                config().simplify_template_type(p["display_name"]);
         }
     }
 

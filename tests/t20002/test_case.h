@@ -1,5 +1,5 @@
 /**
- * tests/t20002/test_case.cc
+ * tests/t20002/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,18 +16,28 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20002", "[test-case][sequence]")
+TEST_CASE("t20002")
 {
-    auto [config, db] = load_config("t20002");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20002_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20002", "t20002_sequence");
 
-    REQUIRE(diagram->name == "t20002_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsFunctionParticipant(src, "m1()"));
+        REQUIRE(IsFunctionParticipant(src, "m2()"));
+        REQUIRE(IsFunctionParticipant(src, "m3()"));
+        REQUIRE(IsFunctionParticipant(src, "m4()"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20002_sequence");
-
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"m1()", "m2()", ""}, //
+                {"m2()", "m3()", ""}, //
+                {"m3()", "m4()", ""}  //
+            }));
+    });
+    /*
     {
         auto src = generate_sequence_puml(diagram, *model);
         AliasMatcher _A(src);
@@ -72,5 +82,5 @@ TEST_CASE("t20002", "[test-case][sequence]")
         REQUIRE_THAT(src, HasCall(_A("m3()"), _A("m4()"), ""));
 
         save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    }*/
 }

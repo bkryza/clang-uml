@@ -16,79 +16,127 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20034", "[test-case][sequence]")
+TEST_CASE("t20034")
 {
-    auto [config, db] = load_config("t20034");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20034_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20034", "t20034_sequence");
 
-    REQUIRE(diagram->name == "t20034_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageChainsOrder(src,
+            {
+                //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "C", "c2()"},          //
+                    {"C", "B", "b2()"},          //
+                    {"B", "A", "a2()"}           //
+                },                               //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "D::d2()::(lambda t20034.cc:56:18)",
+                        "operator()() const"},                         //
+                    {"D::d2()::(lambda t20034.cc:56:18)", "A", "a2()"} //
+                },                                                     //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "A", "a2()"}           //
+                },                               //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "C", "c4()"},          //
+                    {"C", "B", "b4()"},          //
+                    {"B", "B", "b2()"},          //
+                    {"B", "A", "a2()"}           //
+                },                               //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "C", "c1()"},          //
+                    {"C", "B", "b1()"},          //
+                    {"B", "A", "a2()"}           //
+                },                               //
+                {
+                    //
+                    {Entrypoint{}, "D", "d2()"}, //
+                    {"D", "C", "c3()"},          //
+                    {"C", "C", "c2()"},          //
+                    {"C", "B", "b2()"},          //
+                    {"B", "A", "a2()"}           //
+                } //
+            }));
+    });
+    /*
+        {
+            auto src = generate_sequence_puml(diagram, *model);
+            AliasMatcher _A(src);
 
-    auto model = generate_sequence_diagram(*db, diagram);
+            REQUIRE_THAT(src, StartsWith("@startuml"));
+            REQUIRE_THAT(src, EndsWith("@enduml\n"));
 
-    REQUIRE(model->name() == "t20034_sequence");
+            // Check if all calls exist
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("A"), "a2()"));
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c3()"));
+            REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "c2()"));
+            REQUIRE_THAT(src, HasCall(_A("C"), _A("B"), "b2()"));
+            REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "a2()"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c4()"));
 
-        // Check if all calls exist
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("A"), "a2()"));
+            REQUIRE_THAT(src, !HasCall(_A("C"), _A("B"), "b3()"));
 
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c3()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "c2()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("B"), "b2()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "a2()"));
+            save_puml(config.output_directory(), diagram->name +
+       ".puml", src);
+        }
 
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c4()"));
+        {
+            auto j = generate_sequence_json(diagram, *model);
 
-        REQUIRE_THAT(src, !HasCall(_A("C"), _A("B"), "b3()"));
+            using namespace json;
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+            REQUIRE(HasMessageChain(j,
+                {{"d2()", "c3()", "void"}, {"c3()", "c2()", "void"},
+                    {"c2()", "b2()", "void"}, {"b2()", "a2()",
+       "void"}})); REQUIRE(HasMessageChain(j,
+                {{"d2()", "c4()", "void"}, {"c4()", "b4()", "void"},
+                    {"b4()", "b2()", "void"}, {"b2()", "a2()",
+       "void"}})); REQUIRE(HasMessageChain(j, {{"d2()", "a2()",
+       "void"}})); REQUIRE(HasMessageChain(j,
+                {{"d2()", "c1()", "void"}, {"c1()", "b1()", "void"},
+                    {"b1()", "a2()", "void"}}));
+            REQUIRE(HasMessageChain(j,
+                {{"d2()", "c2()", "void"}, {"c2()", "b2()", "void"},
+                    {"b2()", "a2()", "void"}}));
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            save_json(config.output_directory(), diagram->name +
+       ".json", j);
+        }
 
-        using namespace json;
+        {
+            auto src = generate_sequence_mermaid(diagram, *model);
 
-        REQUIRE(HasMessageChain(j,
-            {{"d2()", "c3()", "void"}, {"c3()", "c2()", "void"},
-                {"c2()", "b2()", "void"}, {"b2()", "a2()", "void"}}));
-        REQUIRE(HasMessageChain(j,
-            {{"d2()", "c4()", "void"}, {"c4()", "b4()", "void"},
-                {"b4()", "b2()", "void"}, {"b2()", "a2()", "void"}}));
-        REQUIRE(HasMessageChain(j, {{"d2()", "a2()", "void"}}));
-        REQUIRE(HasMessageChain(j,
-            {{"d2()", "c1()", "void"}, {"c1()", "b1()", "void"},
-                {"b1()", "a2()", "void"}}));
-        REQUIRE(HasMessageChain(j,
-            {{"d2()", "c2()", "void"}, {"c2()", "b2()", "void"},
-                {"b2()", "a2()", "void"}}));
+            mermaid::SequenceDiagramAliasMatcher _A(src);
+            using mermaid::HasCall;
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("A"), "a2()"));
 
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c3()"));
+            REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "c2()"));
+            REQUIRE_THAT(src, HasCall(_A("C"), _A("B"), "b2()"));
+            REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "a2()"));
 
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
+            REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c4()"));
 
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("A"), "a2()"));
+            REQUIRE_THAT(src, !HasCall(_A("C"), _A("B"), "b3()"));
 
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c3()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "c2()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("B"), "b2()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "a2()"));
-
-        REQUIRE_THAT(src, HasCall(_A("D"), _A("C"), "c4()"));
-
-        REQUIRE_THAT(src, !HasCall(_A("C"), _A("B"), "b3()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            save_mermaid(config.output_directory(), diagram->name +
+       ".mmd", src);
+        }
+        */
 }
