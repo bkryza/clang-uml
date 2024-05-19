@@ -88,6 +88,9 @@ struct Entrypoint { };
 
 struct Exitpoint { };
 
+struct CUDAKernel { };
+struct CUDADevice { };
+
 struct InControlCondition { };
 struct Response { };
 struct NamespacePackage { };
@@ -246,8 +249,12 @@ struct mermaid_t : public diagram_source_t<std::string> {
         util::replace_all(name, "[", "\\[");
         util::replace_all(name, "]", "\\]");
 
-        patterns.push_back(
-            std::regex{"participant\\s" + alias_regex + "\\sas\\s" + name+"\\n"});
+        patterns.push_back(std::regex{
+            "participant\\s" + alias_regex + "\\sas\\s" + name + "\\n"});
+        patterns.push_back(std::regex{"participant\\s" + alias_regex +
+            "\\sas\\s<< CUDA Kernel >><br>" + name + "\\n"});
+        patterns.push_back(std::regex{"participant\\s" + alias_regex +
+            "\\sas\\s<< CUDA Device >><br>" + name + "\\n"});
 
         std::smatch base_match;
 
@@ -468,6 +475,8 @@ struct Message {
         , is_static{has_type<Static, Attrs...>()}
         , is_incontrolcondition{has_type<InControlCondition, Attrs...>()}
         , is_response{has_type<Response, Attrs...>()}
+        , is_cuda_kernel{has_type<CUDAKernel, Attrs...>()}
+        , is_cuda_device{has_type<CUDADevice, Attrs...>()}
     {
     }
 
@@ -497,6 +506,8 @@ struct Message {
     bool is_exitpoint{false};
     bool is_incontrolcondition{false};
     bool is_response{false};
+    bool is_cuda_kernel{false};
+    bool is_cuda_device{false};
 };
 
 ///
@@ -1197,6 +1208,11 @@ int64_t FindMessage(
     util::replace_all(msg_str, "]", "\\]");
     util::replace_all(msg_str, "+", "\\+");
 
+    if (msg.is_cuda_kernel)
+        msg_str = fmt::format("<< CUDA Kernel >>\\\\n{}", msg_str);
+    if (msg.is_cuda_device)
+        msg_str = fmt::format("<< CUDA Device >>\\\\n{}", msg_str);
+
     std::string style;
     if (msg.is_static)
         style = "__";
@@ -1749,6 +1765,11 @@ int64_t FindMessage(
     util::replace_all(msg_str, "[", "\\[");
     util::replace_all(msg_str, "]", "\\]");
     util::replace_all(msg_str, "+", "\\+");
+
+    if (msg.is_cuda_kernel)
+        msg_str = fmt::format("<< CUDA Kernel >><br>{}", msg_str);
+    if (msg.is_cuda_device)
+        msg_str = fmt::format("<< CUDA Device >><br>{}", msg_str);
 
     std::string call_pattern{"__INVALID__"};
 
@@ -2387,6 +2408,16 @@ int find_message_impl(const nlohmann::json &j, const std::string &from,
 
     auto from_p = get_participant(j, from);
     auto to_p = get_participant(j, to);
+
+    if (!from_p)
+        throw std::runtime_error(
+            fmt::format("Cannot find participant {}", from));
+
+    if (!to_p)
+        throw std::runtime_error(fmt::format("Cannot find participant {}", to));
+
+    assert(from_p->is_object());
+    assert(to_p->is_object());
 
     // TODO: support diagrams with multiple sequences...
     int count{0};

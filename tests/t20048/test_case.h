@@ -16,76 +16,40 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20048", "[test-case][sequence]")
+TEST_CASE("t20048")
 {
-    auto [config, db] = load_config("t20048");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20048_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20048", "t20048_sequence");
 
-    REQUIRE(diagram->name == "t20048_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "a3(int)", ""}, //
+                {"tmain()", "a2(int)", ""}, //
+                {"tmain()", "a1(int)", ""}, //
+                {"tmain()", "tmain()::(lambda t20048.cc:26:11)",
+                    "operator()(auto &&) const"},                     //
+                {"tmain()::(lambda t20048.cc:26:11)", "a4(int)", ""}, //
+                {"tmain()", "a6(int)", ""},                           //
+                {"tmain()", "a5(int)", ""},                           //
+                {"tmain()", "a7(int)", ""},                           //
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20048_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all calls exist
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a3(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a2(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a1(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a5(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a6(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a7(int)"), ""));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20048.cc:26:11)"),
-                "operator()(auto &&) const"));
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20048.cc:26:11)"), _A("a4(int)"), ""));
-
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"),
-                "a1\\(\\) adds `1` to the result\\n"
-                "of a2\\(\\)"));
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"),
-                "This lambda calls a4\\(\\) which\\n"
-                "adds `4` to it's argument"));
-        REQUIRE_THAT(src,
-            HasMessageComment(
-                _A("tmain()"), "a6\\(\\) adds `1` to its argument"));
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"),
-                "a5\\(\\) adds `1` to the result\\n"
-                "of a6\\(\\)"));
-        REQUIRE_THAT(src,
-            HasMessageComment(
-                _A("tmain()"), "a7\\(\\) is called via add std::async"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            }));
+        REQUIRE(HasMessageComment(src, "tmain()",
+            "a1() adds `1` to the result\\n"
+            "of a2()"));
+        REQUIRE(HasMessageComment(src, "tmain()",
+            "This lambda calls a4() which\\n"
+            "adds `4` to it's argument"));
+        REQUIRE(
+            HasMessageComment(src, "tmain()", "a6() adds `1` to its argument"));
+        REQUIRE(HasMessageComment(src, "tmain()",
+            "a5() adds `1` to the result\\n"
+            "of a6()"));
+        REQUIRE(HasMessageComment(
+            src, "tmain()", "a7() is called via add std::async"));
+    });
 }

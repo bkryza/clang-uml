@@ -37,46 +37,4 @@ TEST_CASE("t20003")
                 {"m3<T>(T)", "m4<T>(T)", ""}  //
             }));
     });
-    /*
-        {
-            auto src = generate_sequence_puml(diagram, *model);
-            AliasMatcher _A(src);
-
-            REQUIRE_THAT(src, StartsWith("@startuml"));
-            REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-            REQUIRE_THAT(src, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
-            REQUIRE_THAT(src, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
-            REQUIRE_THAT(src, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
-
-            save_puml(config.output_directory(), diagram->name + ".puml", src);
-        }
-
-        {
-            auto j = generate_sequence_json(diagram, *model);
-
-            using namespace json;
-
-            std::vector<int> messages = {FindMessage(j, "m1<T>(T)", "m2<T>(T)",
-       ""), FindMessage(j, "m2<T>(T)", "m3<T>(T)", ""), FindMessage(j,
-       "m3<T>(T)", "m4<T>(T)", "")};
-
-            REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-            save_json(config.output_directory(), diagram->name + ".json", j);
-        }
-
-        {
-            auto src = generate_sequence_mermaid(diagram, *model);
-
-            mermaid::SequenceDiagramAliasMatcher _A(src);
-            using mermaid::HasCall;
-
-            REQUIRE_THAT(src, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
-            REQUIRE_THAT(src, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
-            REQUIRE_THAT(src, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
-
-            save_mermaid(config.output_directory(), diagram->name + ".mmd",
-       src);
-        }*/
 }

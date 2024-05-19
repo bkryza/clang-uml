@@ -34,46 +34,4 @@ TEST_CASE("t20042")
                 {"BHandler", "BHandler", "handle(B &) const"},    //
             }));
     });
-    /*
-        {
-            auto src = generate_sequence_puml(diagram, *model);
-            AliasMatcher _A(src);
-
-            REQUIRE_THAT(src, StartsWith("@startuml"));
-            REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-            REQUIRE_THAT(src,
-                HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &)
-       const")); REQUIRE_THAT( src, HasCall(_A("AHandler"), _A("AHandler"),
-       "handle(A &) const")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
-       _A("BHandler"), "operator()(B &) const")); REQUIRE_THAT( src,
-       HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
-
-            save_puml(config.output_directory(), diagram->name + ".puml", src);
-        }
-
-        {
-            auto j = generate_sequence_json(diagram, *model);
-
-            using namespace json;
-
-            save_json(config.output_directory(), diagram->name + ".json", j);
-        }
-
-        {
-            auto src = generate_sequence_mermaid(diagram, *model);
-
-            mermaid::SequenceDiagramAliasMatcher _A(src);
-            using mermaid::HasCall;
-
-            REQUIRE_THAT(src,
-                HasCall(_A("tmain()"), _A("AHandler"), "operator()(A &)
-       const")); REQUIRE_THAT( src, HasCall(_A("AHandler"), _A("AHandler"),
-       "handle(A &) const")); REQUIRE_THAT(src, HasCall(_A("tmain()"),
-       _A("BHandler"), "operator()(B &) const")); REQUIRE_THAT( src,
-       HasCall(_A("BHandler"), _A("BHandler"), "handle(B &) const"));
-
-            save_mermaid(config.output_directory(), diagram->name + ".mmd",
-       src);
-        }*/
 }

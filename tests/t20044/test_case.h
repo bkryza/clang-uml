@@ -24,9 +24,11 @@ TEST_CASE("t20044")
         CHECK_SEQUENCE_MODEL("t20044", "t20044_sequence");
 
     CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsClassParticipant(src, "detail::expected<int,error>"));
+        REQUIRE(IsClassParticipant(src, "result_t"));
+
         REQUIRE(MessageOrder(src,
             {
-                //
                 {"tmain()", "R", "R((lambda at t20044.cc:74:9) &&)"}, //
                 {"R", "tmain()::(lambda t20044.cc:74:9)",
                     "operator()() const"},                              //
@@ -36,86 +38,22 @@ TEST_CASE("t20044")
                     "operator()() const"},                          //
                 {"tmain()::(lambda t20044.cc:84:18)", "A", "a5()"}, //
 
-                {"tmain()", "A", "a1() const"},                        //
-                {"A", "detail::expected<int,error>", "expected(int)"}, //
+                {"tmain()", "A", "a1() const"},     //
+                {"A", "result_t", "expected(int)"}, //
 
-                {"tmain()", "detail::expected<int,error>",
+                {"tmain()", "result_t",
                     "and_then((lambda at t20044.cc:90:19) &&)"}, //
-                {"detail::expected<int,error>",
-                    "tmain()::(lambda t20044.cc:90:19)",
+                {"result_t", "tmain()::(lambda t20044.cc:90:19)",
                     "operator()(auto &&) const"},                            //
                 {"tmain()::(lambda t20044.cc:90:19)", "A", "a2(int) const"}, //
-                {"A", "detail::expected<int,error>", "expected(int)"},       //
+                {"A", "result_t", "expected(int)"},                          //
 
-                {"tmain()", "detail::expected<int,error>",
+                {"tmain()", "result_t",
                     "and_then(result_t (&)(int))"}, //                                                            //
-                {"tmain()", "detail::expected<int,error>",
+                {"tmain()", "result_t",
                     "and_then(std::function<result_t (int)> &)"}, //                                                            //
-                {"tmain()", "detail::expected<int,error>",
+                {"tmain()", "result_t",
                     "value() const"}, //                                                            //
-
             }));
     });
-/*
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all calls exist
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()"), _A("R"), "R((lambda at t20044.cc:74:9) &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("R"), _A("tmain()::(lambda t20044.cc:74:9)"),
-                "operator()()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20044.cc:74:9)"), _A("A"), "a()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20044.cc:84:18)"),
-                "operator()()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20044.cc:84:18)"), _A("A"), "a5()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a1()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("detail::expected<int,error>"),
-                "and_then((lambda at t20044.cc:90:19) &&)"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("detail::expected<int,error>"),
-                _A("tmain()::(lambda t20044.cc:90:19)"),
-                "operator()(auto &&) const"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20044.cc:90:19)"), _A("A"), "a2(int)"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("A"), _A("detail::expected<int,error>"), "expected(int)"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }*/
 }

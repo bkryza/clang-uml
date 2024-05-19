@@ -28,62 +28,11 @@ TEST_CASE("t20028")
             {
                 //
                 {"tmain()", "A", "a()", InControlCondition{}}, //
-                {"tmain()", "A", "b()"},                      //
-                {"tmain()", "A", "c()"},                      //
-                {"tmain()", "A", "d()"},                      //
+                {"tmain()", "A", "b()"},                       //
+                {"tmain()", "A", "c()"},                       //
+                {"tmain()", "A", "d()"},                       //
             }));
 
         REQUIRE(!HasMessage(src, {"tmain()", "B", "e()"}));
     });
-
-    /*
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all calls exist
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "b()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "c()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "d()"));
-        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "e()"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a()"),
-            FindMessage(j, "tmain()", "A", "b()"),
-            FindMessage(j, "tmain()", "A", "c()"),
-            FindMessage(j, "tmain()", "A", "d()")};
-
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-        using mermaid::HasCallInControlCondition;
-
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "b()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "c()"));
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "d()"));
-        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "e()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }*/
 }
