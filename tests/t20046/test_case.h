@@ -49,8 +49,7 @@ TEST_CASE("t20046")
                     "t20046.cc:19:34)",
                     "operator()(auto &&) const"}, //
                 {"tmain()::(lambda t20046.cc:19:9)::(lambda t20046.cc:19:34)",
-                    "a3(int)", ""}
-
+                    "a3(int)", ""} //
             }));
     });
 }

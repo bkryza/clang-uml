@@ -31,73 +31,16 @@ TEST_CASE("t20031")
                 {"tmain(bool,int)", "execute(std::function<int ()>)", ""}, //
                 {"tmain(bool,int)", "A", "value() const"}                  //
             }));
+        REQUIRE(!HasMessage(src, {"A", "A", "create()"}));
+        REQUIRE(!HasMessage(src, {"tmain(int)", "A", "operator+=(int)"}));
+        REQUIRE(!HasMessage(src, {"tmain(bool,int)", "A", "A()"}));
+        REQUIRE(!HasMessage(src, {"tmain(bool,int)", "A", "operator+=(int)"}));
+        REQUIRE(!HasMessage(src, {"A", "A", "add(int)"}));
+        REQUIRE(
+            !HasMessage(src, {"tmain(bool,int)", "A", "operator=(const A &)"}));
+        REQUIRE(!HasMessage(src, {"A", "A", "set(int)"}));
+        REQUIRE(!HasMessage(src,
+            {"tmain(bool,int)::(lambda ../../tests/t20031/t20031.cc:47:26)",
+                "zero()", ""}));
     });
-/*
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain(int)"), _A("magic()"), ""));
-
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "create()"));
-        REQUIRE_THAT(
-            src, !HasCall(_A("tmain(int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "add(int)"));
-
-        REQUIRE_THAT(src, !HasCall(_A("tmain(bool,int)"), _A("A"), "A()"));
-        REQUIRE_THAT(
-            src, !HasCall(_A("tmain(bool,int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "add(int)"));
-        REQUIRE_THAT(src,
-            !HasCall(_A("tmain(bool,int)"), _A("A"), "operator=(const A &)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "set(int)"));
-        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
-        REQUIRE_THAT(src,
-            !HasCall(_A("tmain(bool,int)::(lambda "
-                        "../../tests/t20031/t20031.cc:47:26)"),
-                _A("zero()"), ""));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain(int)"), _A("magic()"), ""));
-
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "create()"));
-        REQUIRE_THAT(
-            src, !HasCall(_A("tmain(int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "add(int)"));
-
-        REQUIRE_THAT(src, !HasCall(_A("tmain(bool,int)"), _A("A"), "A()"));
-        REQUIRE_THAT(
-            src, !HasCall(_A("tmain(bool,int)"), _A("A"), "operator+=(int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "add(int)"));
-        REQUIRE_THAT(src,
-            !HasCall(_A("tmain(bool,int)"), _A("A"), "operator=(const A &)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "set(int)"));
-        REQUIRE_THAT(src, HasCall(_A("tmain(bool,int)"), _A("A"), "value()"));
-        REQUIRE_THAT(src,
-            !HasCall(_A("tmain(bool,int)::(lambda "
-                        "../../tests/t20031/t20031.cc:47:26)"),
-                _A("zero()"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
-*/
- }
+}
