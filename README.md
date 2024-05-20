@@ -447,7 +447,7 @@ This project relies on the following great tools:
 * [Clang LibTooling](https://clang.llvm.org/docs/LibTooling.html) - a C++ library for creating tools based on Clang
 * [PlantUML](https://plantuml.com/) - language and diagram for generating UML diagrams
 * [MermaidJS](https://mermaid.js.org/) - JavaScript based diagramming and charting tool
-* [Catch2](https://github.com/catchorg/Catch2) - C++ unit test framework
+* [doctest](https://github.com/doctest/doctest) - C++ unit test framework
 * [glob](https://github.com/p-ranav/glob) - Unix style path expansion for C++
 * [indicators](https://github.com/p-ranav/indicators) - Activity indicators for modern C++
 * [CLI11](https://github.com/CLIUtils/CLI11) - command line parser for C++

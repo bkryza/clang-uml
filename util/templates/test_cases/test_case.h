@@ -16,45 +16,13 @@
  * limitations under the License.
  */
 
-TEST_CASE("{{ name }}", "[test-case][{{ type }}]")
+TEST_CASE("{{ name }}")
 {
-    auto [config, db] = load_config("{{ name }}");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["{{ name }}_{{ type }}"];
+    auto [config, db, diagram, model] =
+        CHECK_{{ TYPE }}_MODEL("{{ name }}", "{{ name }}_class");
 
-    REQUIRE(diagram->name == "{{ name }}_{{ type }}");
-
-    auto model = generate_{{ type }}_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "{{ name }}_{{ type }}");
-
-    {
-        auto src = generate_{{ type }}_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        {{ examples }}
-
-        save_puml(
-            config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_{{ type }}_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_{{ type }}_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    {{ examples }}
 }
