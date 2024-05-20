@@ -30,7 +30,7 @@ TEST_CASE("t20019")
                 {"tmain()", "Base<D1>", "name()"}, //
                 {"Base<D1>", "D1", "impl()"},      //
                 {"tmain()", "Base<D2>", "name()"}, //
-                {"Base<D2>", "D2", "impl()"}      //
+                {"Base<D2>", "D2", "impl()"}       //
             }));
     });
 }

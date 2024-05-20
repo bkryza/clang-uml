@@ -32,7 +32,7 @@ TEST_CASE("t20022")
                 //       properly
                 {"tmain()", "A", "A(std::unique_ptr<B>)"}, //
                 {"tmain()", "A", "a()"},                   //
-                {"A", "B", "b()"},                        //
+                {"A", "B", "b()"},                         //
             }));
     });
 }

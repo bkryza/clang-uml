@@ -31,10 +31,10 @@ TEST_CASE("t20001")
             REQUIRE(MessageOrder(src,
                 {
                     //
-                    {"tmain()", "A", "A()"}, //
+                    {"tmain()", "A", "A()"},    //
                     {"tmain()", "B", "B(A &)"}, //
 
-                    {"tmain()", "A", "add(int,int)"},           //
+                    {"tmain()", "A", "add(int,int)"}, //
 
                     {"tmain()", "B", "wrap_add3(int,int,int)"}, //
                     {"B", "A", "add3(int,int,int)"},            //

@@ -30,7 +30,7 @@ TEST_CASE("t20015")
             }));
 
         REQUIRE(!HasMessage(src, {"B", {"detail", "A"}, "set_x(int)"}));
-        REQUIRE(!HasMessage(src, {"B", {"detail" ,"A"}, "set_y(int)"}));
+        REQUIRE(!HasMessage(src, {"B", {"detail", "A"}, "set_y(int)"}));
         REQUIRE(!HasMessage(src, {"B", {"detail", "A"}, "set_z(int)"}));
 
         REQUIRE(!HasMessage(src, {"B", "B", "set_x(int)"}));

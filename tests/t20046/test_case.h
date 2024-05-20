@@ -25,7 +25,8 @@ TEST_CASE("t20046")
 
     CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
-            {//
+            {
+                //
                 {"tmain()", "tmain()::(lambda t20046.cc:13:15)",
                     "operator()(auto &&) const"}, //
                 {"tmain()::(lambda t20046.cc:13:15)",

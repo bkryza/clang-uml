@@ -388,8 +388,7 @@ void generator::generate_participant(
         print_debug(class_participant, ostr);
 
         auto participant_name =
-            config().simplify_template_type(
-                class_participant.full_name(false));
+            config().simplify_template_type(class_participant.full_name(false));
         participant_name =
             config().using_namespace().relative(participant_name);
 
@@ -534,7 +533,8 @@ void generator::generate_diagram(std::ostream &ostr) const
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
                 generate_participant(ostr, from_activity_id);
-                ostr << "[->" << " " << generate_alias(from.value()) << " : "
+                ostr << "[->"
+                     << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
                      << '\n';
@@ -573,7 +573,8 @@ void generator::generate_diagram(std::ostream &ostr) const
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
                 generate_participant(ostr, from_activity_id);
-                ostr << "[->" << " " << generate_alias(from.value()) << " : "
+                ostr << "[->"
+                     << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
                      << '\n';
@@ -637,7 +638,8 @@ void generator::generate_diagram(std::ostream &ostr) const
             // first activity for this 'start_from' condition
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
-                ostr << "[->" << " " << from_alias << " : "
+                ostr << "[->"
+                     << " " << from_alias << " : "
                      << from.value().message_name(render_mode) << '\n';
             }
 
@@ -650,7 +652,8 @@ void generator::generate_diagram(std::ostream &ostr) const
                 config().combine_free_functions_into_file_participants()) {
 
                 if (!from.value().is_void()) {
-                    ostr << "[<--" << " " << from_alias;
+                    ostr << "[<--"
+                         << " " << from_alias;
 
                     if (config().generate_return_types())
                         ostr << " : //" << from.value().return_type() << "//";

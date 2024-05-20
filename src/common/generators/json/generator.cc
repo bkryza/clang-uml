@@ -86,4 +86,4 @@ std::string render_name(std::string name)
 }
 
 } // namespace generators::json
-} // namespace clanguml::common::model
+} // namespace clanguml::common

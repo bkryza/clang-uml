@@ -248,7 +248,8 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
             std::cout << "-----------------------------------------------------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
-                      << T::diagram_type_name << ": " << "\n\n";
+                      << T::diagram_type_name << ": "
+                      << "\n\n";
             std::cout << diagrams.get<T>().to_string() << "\n";
 
             throw e;
@@ -609,7 +610,6 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 
 #include "t20052/test_case.h"
 #include "t20053/test_case.h"
-
 
 ///
 /// Package diagram tests

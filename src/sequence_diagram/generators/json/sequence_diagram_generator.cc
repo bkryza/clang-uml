@@ -265,8 +265,10 @@ void generator::process_call_message(
     visited.push_back(m.from());
 
     if (m.in_static_declaration_context()) {
-        if (util::contains(already_generated_in_static_context_, m))
+        if (util::contains(already_generated_in_static_context_, m)) {
+            visited.pop_back();
             return;
+        }
 
         already_generated_in_static_context_.push_back(m);
     }

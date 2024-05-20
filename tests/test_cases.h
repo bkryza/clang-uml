@@ -51,8 +51,6 @@ using namespace clanguml::util;
 std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name);
 
-//void save_puml(const std::string &path, const std::string &puml);
-
 namespace clanguml::test {
 
 template <typename T, typename... Ts> constexpr bool has_type() noexcept
