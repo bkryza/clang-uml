@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+
+#include "doctest/doctest.h"
 
 #include "util/query_driver_output_extractor.h"
 
-#include "catch.h"
-
-TEST_CASE("Test extract system include paths", "[unit-test]")
+TEST_CASE("Test extract system include paths")
 {
 
     std::string output = R"(###

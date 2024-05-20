@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define DOCTEST_CONFIG_IMPLEMENT
 
-#define CATCH_CONFIG_RUNNER
-#define CATCH_CONFIG_CONSOLE_WIDTH 512
-
-#include "catch.h"
+#include "doctest/doctest.h"
 
 #include "class_diagram/model/class.h"
 #include "cli/cli_handler.h"
@@ -31,7 +29,7 @@
 
 #include <filesystem>
 
-TEST_CASE("Test diagram paths filter", "[unit-test]")
+TEST_CASE("Test diagram paths filter")
 {
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::source_file;
@@ -56,7 +54,7 @@ TEST_CASE("Test diagram paths filter", "[unit-test]")
         make_path("sequence_diagram/visitor/translation_unit_visitor.h")));
 }
 
-TEST_CASE("Test method_types include filter", "[unit-test]")
+TEST_CASE("Test method_types include filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
@@ -81,7 +79,7 @@ TEST_CASE("Test method_types include filter", "[unit-test]")
     CHECK(!filter.should_include(cm));
 }
 
-TEST_CASE("Test method_types exclude filter", "[unit-test]")
+TEST_CASE("Test method_types exclude filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
@@ -109,7 +107,7 @@ TEST_CASE("Test method_types exclude filter", "[unit-test]")
     CHECK(!filter.should_include(cm));
 }
 
-TEST_CASE("Test namespaces filter", "[unit-test]")
+TEST_CASE("Test namespaces filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
@@ -173,7 +171,7 @@ TEST_CASE("Test namespaces filter", "[unit-test]")
     CHECK(!filter.should_include(p));
 }
 
-TEST_CASE("Test elements regexp filter", "[unit-test]")
+TEST_CASE("Test elements regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
@@ -213,7 +211,7 @@ TEST_CASE("Test elements regexp filter", "[unit-test]")
     CHECK(filter.should_include(c));
 }
 
-TEST_CASE("Test namespaces regexp filter", "[unit-test]")
+TEST_CASE("Test namespaces regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
@@ -272,7 +270,7 @@ TEST_CASE("Test namespaces regexp filter", "[unit-test]")
     CHECK(filter.should_include(p));
 }
 
-TEST_CASE("Test subclasses regexp filter", "[unit-test]")
+TEST_CASE("Test subclasses regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
@@ -362,7 +360,7 @@ TEST_CASE("Test subclasses regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("ns1::ns2::C1")));
 }
 
-TEST_CASE("Test parents regexp filter", "[unit-test]")
+TEST_CASE("Test parents regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
@@ -452,7 +450,7 @@ TEST_CASE("Test parents regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("ns1::ns2::Common")));
 }
 
-TEST_CASE("Test specializations regexp filter", "[unit-test]")
+TEST_CASE("Test specializations regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
@@ -516,7 +514,7 @@ TEST_CASE("Test specializations regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("A<double>")));
 }
 
-TEST_CASE("Test context regexp filter", "[unit-test]")
+TEST_CASE("Test context regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
@@ -605,7 +603,7 @@ TEST_CASE("Test context regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("C1")));
 }
 
-TEST_CASE("Test dependencies regexp filter", "[unit-test]")
+TEST_CASE("Test dependencies regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
@@ -689,7 +687,7 @@ TEST_CASE("Test dependencies regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("C1")));
 }
 
-TEST_CASE("Test dependants regexp filter", "[unit-test]")
+TEST_CASE("Test dependants regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
@@ -773,7 +771,7 @@ TEST_CASE("Test dependants regexp filter", "[unit-test]")
     CHECK(!filter.should_include(*diagram.find<class_>("C1")));
 }
 
-TEST_CASE("Test callee_types filter", "[unit-test]")
+TEST_CASE("Test callee_types filter")
 {
     using clanguml::common::to_id;
     using clanguml::common::model::diagram_filter;
@@ -829,30 +827,23 @@ TEST_CASE("Test callee_types filter", "[unit-test]")
 ///
 int main(int argc, char *argv[])
 {
-    Catch::Session session;
-    using namespace Catch::clara;
+    doctest::Context context;
 
-    bool debug_log{false};
-    auto cli = session.cli() |
-        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
-
-    session.cli(cli);
-
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0)
-        return returnCode;
+    context.applyCommandLine(argc, argv);
 
     clanguml::cli::cli_handler clih;
 
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    if (debug_log)
-        argvv.push_back("-vvv");
-    else
-        argvv.push_back("-q");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
-    return session.run();
+    int res = context.run();
+
+    if (context.shouldExit())
+        return res;
+
+    return res;
 }

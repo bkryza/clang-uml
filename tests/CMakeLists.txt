@@ -103,9 +103,9 @@ foreach(TEST_NAME ${TEST_NAMES})
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
-                                           ${TEST_CASE_SOURCES} catch.h)
+                                           ${TEST_CASE_SOURCES})
     else()
-        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc catch.h)
+        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc)
     endif(TEST_NAME STREQUAL "test_cases")
 
     target_compile_features(${TEST_NAME} PRIVATE

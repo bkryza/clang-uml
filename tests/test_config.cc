@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_RUNNER
-#define CATCH_CONFIG_CONSOLE_WIDTH 512
-#include "catch.h"
+#define DOCTEST_CONFIG_IMPLEMENT
+
+#include "doctest/doctest.h"
 
 #include "cli/cli_handler.h"
 #include "config/config.h"
 #include "util/util.h"
 
-TEST_CASE("Test config simple", "[unit-test]")
+TEST_CASE("Test config simple")
 {
     using clanguml::common::model::access_t;
     using clanguml::common::model::relationship_t;
@@ -102,7 +102,7 @@ TEST_CASE("Test config simple", "[unit-test]")
         relationship_t::kAggregation);
 }
 
-TEST_CASE("Test config inherited", "[unit-test]")
+TEST_CASE("Test config inherited")
 {
     auto cfg = clanguml::config::load("./test_config_data/inherited.yml");
 
@@ -132,7 +132,7 @@ TEST_CASE("Test config inherited", "[unit-test]")
     CHECK(cus.puml().after.at(1) == "This is a common footnote");
 }
 
-TEST_CASE("Test config includes", "[unit-test]")
+TEST_CASE("Test config includes")
 {
     auto cfg = clanguml::config::load("./test_config_data/includes.yml");
 
@@ -156,7 +156,7 @@ TEST_CASE("Test config includes", "[unit-test]")
         clanguml::config::method_arguments::none);
 }
 
-TEST_CASE("Test config layout", "[unit-test]")
+TEST_CASE("Test config layout")
 {
     using namespace std::string_literals;
 
@@ -242,7 +242,7 @@ TEST_CASE("Test config layout", "[unit-test]")
         clanguml::common::model::diagram_t::kPackage);
 }
 
-TEST_CASE("Test config emitters", "[unit-test]")
+TEST_CASE("Test config emitters")
 {
     auto cfg = clanguml::config::load("./test_config_data/complete.yml");
 
@@ -268,7 +268,7 @@ TEST_CASE("Test config emitters", "[unit-test]")
     std::filesystem::remove(tmp_file);
 }
 
-TEST_CASE("Test config diagram_templates", "[unit-test]")
+TEST_CASE("Test config diagram_templates")
 {
     auto cfg =
         clanguml::config::load("./test_config_data/diagram_templates.yml");
@@ -327,7 +327,7 @@ TEST_CASE("Test config diagram_templates", "[unit-test]")
         clanguml::common::model::diagram_t::kSequence);
 }
 
-TEST_CASE("Test config sequence inherited", "[unit-test]")
+TEST_CASE("Test config sequence inherited")
 {
     auto cfg = clanguml::config::load(
         "./test_config_data/sequence_inheritable_options.yml");
@@ -344,7 +344,7 @@ TEST_CASE("Test config sequence inherited", "[unit-test]")
     CHECK(def.generate_return_types() == false);
 }
 
-TEST_CASE("Test config relative paths handling", "[unit-test]")
+TEST_CASE("Test config relative paths handling")
 {
     auto cfg = clanguml::config::load("./test_config_data/relative_to.yml");
 
@@ -378,7 +378,7 @@ TEST_CASE("Test config relative paths handling", "[unit-test]")
             "{}/test_config_data", std::filesystem::current_path().string()));
 }
 
-TEST_CASE("Test using_module relative to", "[unit-test]")
+TEST_CASE("Test using_module relative to")
 {
     auto cfg = clanguml::config::load("./test_config_data/using_module.yml");
 
@@ -403,7 +403,7 @@ TEST_CASE("Test using_module relative to", "[unit-test]")
             std::string{"modA"}, std::string{"modB"}, std::string{"modC"}});
 }
 
-TEST_CASE("Test config full clang uml dump", "[unit-test]")
+TEST_CASE("Test config full clang uml dump")
 {
     auto cfg =
         clanguml::config::load("./test_config_data/clang_uml_config.yml");
@@ -411,7 +411,7 @@ TEST_CASE("Test config full clang uml dump", "[unit-test]")
     CHECK(cfg.diagrams.size() == 32);
 }
 
-TEST_CASE("Test config type aliases", "[unit-test]")
+TEST_CASE("Test config type aliases")
 {
     auto cfg = clanguml::config::load("./test_config_data/type_aliases.yml");
 
@@ -447,30 +447,23 @@ TEST_CASE("Test config type aliases", "[unit-test]")
 ///
 int main(int argc, char *argv[])
 {
-    Catch::Session session;
-    using namespace Catch::clara;
+    doctest::Context context;
 
-    bool debug_log{false};
-    auto cli = session.cli() |
-        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
-
-    session.cli(cli);
-
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0)
-        return returnCode;
+    context.applyCommandLine(argc, argv);
 
     clanguml::cli::cli_handler clih;
 
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    if (debug_log)
-        argvv.push_back("-vvv");
-    else
-        argvv.push_back("-q");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
-    return session.run();
+    int res = context.run();
+
+    if (context.shouldExit())
+        return res;
+
+    return res;
 }

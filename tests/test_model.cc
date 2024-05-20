@@ -15,16 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "catch.h"
+#include "doctest/doctest.h"
 
 #include "class_diagram/model/class.h"
 #include "common/model/namespace.h"
 #include "common/model/package.h"
 #include "common/model/template_parameter.h"
 
-TEST_CASE("Test namespace_", "[unit-test]")
+TEST_CASE("Test namespace_")
 {
     using clanguml::common::model::namespace_;
 
@@ -74,7 +74,7 @@ TEST_CASE("Test namespace_", "[unit-test]")
     CHECK(ns8.relative(name) == "ccc<std::unique_ptr<ddd>>");
 }
 
-TEST_CASE("Test class_::calculate_specialization_match", "[unit-test]")
+TEST_CASE("Test class_::calculate_specialization_match")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::common::model::template_parameter;
@@ -116,8 +116,7 @@ TEST_CASE("Test class_::calculate_specialization_match", "[unit-test]")
     }
 }
 
-TEST_CASE(
-    "Test template_parameter::calculate_specialization_match", "[unit-test]")
+TEST_CASE("Test template_parameter::calculate_specialization_match")
 {
     using clanguml::common::model::template_parameter;
 
@@ -409,7 +408,7 @@ TEST_CASE(
     }
 }
 
-TEST_CASE("Test common::model::package full_name", "[unit-test]")
+TEST_CASE("Test common::model::package full_name")
 {
     using clanguml::common::model::package;
     using clanguml::common::model::path;
