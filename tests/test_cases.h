@@ -719,13 +719,12 @@ template <typename DiagramType>
 bool MessageChainsOrder(
     const DiagramType &d, std::vector<std::vector<Message>> message_chains)
 {
-    std::vector<Message> flattenned;
-    for (const auto &mc : message_chains) {
-        for (const auto &m : mc)
-            flattenned.emplace_back(m);
+    for (const auto &message_chain : message_chains) {
+        if (!MessageOrder(d, message_chain))
+            return false;
     }
 
-    return MessageOrder(d, std::move(flattenned));
+    return true;
 }
 
 template <typename DiagramType>
