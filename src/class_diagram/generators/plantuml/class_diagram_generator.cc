@@ -67,7 +67,7 @@ void generator::generate_alias(const class_ &c, std::ostream &ostr) const
         class_type = "abstract";
 
     std::string full_name;
-    if (config().generate_fully_qualified_name())
+    if (!config().generate_fully_qualified_name())
         full_name = c.full_name_no_ns();
     else
         full_name = c.full_name();
@@ -89,7 +89,7 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
 {
     print_debug(e, ostr);
 
-    if (config().generate_fully_qualified_name())
+    if (!config().generate_fully_qualified_name())
         ostr << "enum"
              << " \"" << e.name();
     else
@@ -106,7 +106,7 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
 {
     print_debug(c, ostr);
 
-    if (config().generate_fully_qualified_name())
+    if (!config().generate_fully_qualified_name())
         ostr << "class"
              << " \"" << c.full_name_no_ns();
     else

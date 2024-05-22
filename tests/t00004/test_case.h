@@ -1,5 +1,5 @@
 /**
- * tests/t00004/test_case.cc
+ * tests/t00004/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,109 +16,42 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00004", "[test-case][class]")
+TEST_CASE("t00004")
 {
-    auto [config, db] = load_config("t00004");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00004_class"];
-
-    REQUIRE(diagram->name == "t00004_class");
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00004", "t00004_class");
 
     REQUIRE(diagram->include().namespaces.size() == 1);
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "A::AA"));
+        REQUIRE(IsClass(src, "A::AA::AAA"));
+        REQUIRE(IsEnum(src, "B::AA"));
+        REQUIRE(IsEnum(src, "A::AA::Lights"));
+        REQUIRE(IsInnerClass(src, "A", "A::AA"));
+        REQUIRE(IsInnerClass(src, "A::AA", "A::AA::AAA"));
+        REQUIRE(IsInnerClass(src, "A::AA", "A::AA::Lights"));
 
-    REQUIRE(model->name() == "t00004_class");
+        REQUIRE(IsMethod<Public, Const>(src, "A", "foo"));
+        REQUIRE(IsMethod<Public, Const>(src, "A", "foo2"));
 
-    {
-        auto puml = generate_class_puml(diagram, *model);
-        AliasMatcher _A(puml);
+        REQUIRE(IsClassTemplate(src, "C<T>"));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::AA"));
+        REQUIRE(IsInnerClass(src, "C::AA", "C::AA::AAA"));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::CC"));
+        REQUIRE(IsInnerClass(src, "C::AA", "C::AA::CCC"));
 
-        REQUIRE_THAT(puml, StartsWith("@startuml"));
-        REQUIRE_THAT(puml, EndsWith("@enduml\n"));
-        REQUIRE_THAT(puml, IsClass(_A("A")));
-        REQUIRE_THAT(puml, IsClass(_A("A::AA")));
-        REQUIRE_THAT(puml, IsClass(_A("A::AA::AAA")));
-        REQUIRE_THAT(puml, IsEnum(_A("B::AA")));
-        REQUIRE_THAT(puml, IsEnum(_A("A::AA::Lights")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("A"), _A("A::AA")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("A::AA"), _A("A::AA::AAA")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("A::AA"), _A("A::AA::Lights")));
+        REQUIRE(IsInnerClass(src, "C<T>", "C::B<V>"));
+        REQUIRE(IsAggregation<Public>(src, "C<T>", "C::B<int>", "b_int"));
+        REQUIRE(!IsInnerClass(src, "C<T>", "C::B"));
+        REQUIRE(IsInstantiation(src, "C::B<V>", "C::B<int>"));
 
-        REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo")));
-        REQUIRE_THAT(puml, (IsMethod<Public, Const>("foo2")));
-
-        REQUIRE_THAT(puml, IsClassTemplate("C", "T"));
-        REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::AA")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("C::AA"), _A("C::AA::AAA")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::CC")));
-        REQUIRE_THAT(puml, IsInnerClass(_A("C::AA"), _A("C::AA::CCC")));
-
-        REQUIRE_THAT(puml, IsInnerClass(_A("C<T>"), _A("C::B<V>")));
-        REQUIRE_THAT(
-            puml, IsAggregation(_A("C<T>"), _A("C::B<int>"), "+b_int"));
-        REQUIRE_THAT(puml, !IsInnerClass(_A("C<T>"), _A("C::B")));
-        REQUIRE_THAT(puml, IsInstantiation(_A("C::B<V>"), _A("C::B<int>")));
-
-        REQUIRE_THAT(puml, IsClass(_A("detail::D")));
-        REQUIRE_THAT(puml, IsClass(_A("detail::D::DD")));
-        REQUIRE_THAT(puml, IsEnum(_A("detail::D::AA")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", puml);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "A::AA"));
-        REQUIRE(IsClass(j, "A::AA::AAA"));
-        REQUIRE(IsEnum(j, "B::AA"));
-        REQUIRE(IsEnum(j, "A::AA::Lights"));
-        REQUIRE(IsInnerClass(j, "A", "A::AA"));
-        REQUIRE(IsInnerClass(j, "A::AA", "A::AA::AAA"));
-        REQUIRE(IsInnerClass(j, "A::AA", "A::AA::Lights"));
-
-        REQUIRE(IsClassTemplate(j, "C<T>"));
-
-        REQUIRE(IsClass(j, "detail::D"));
-        REQUIRE(IsClass(j, "detail::D::DD"));
-        REQUIRE(IsEnum(j, "detail::D::AA"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto mmd = generate_class_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(mmd);
-
-        REQUIRE_THAT(mmd, IsClass(_A("A")));
-        REQUIRE_THAT(mmd, IsClass(_A("A::AA")));
-        REQUIRE_THAT(mmd, IsClass(_A("A::AA::AAA")));
-        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("B::AA")));
-        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("A::AA::Lights")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("A"), _A("A::AA")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("A::AA"), _A("A::AA::AAA")));
-        REQUIRE_THAT(
-            mmd, mermaid::IsInnerClass(_A("A::AA"), _A("A::AA::Lights")));
-
-        REQUIRE_THAT(mmd, IsClass(_A("C<T>")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::AA")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C::AA"), _A("C::AA::AAA")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::CC")));
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C::AA"), _A("C::AA::CCC")));
-
-        REQUIRE_THAT(mmd, mermaid::IsInnerClass(_A("C<T>"), _A("C::B<V>")));
-        REQUIRE_THAT(mmd, IsAggregation(_A("C<T>"), _A("C::B<int>"), "+b_int"));
-        REQUIRE_THAT(mmd, !mermaid::IsInnerClass(_A("C<T>"), _A("C::B")));
-        REQUIRE_THAT(mmd, IsInstantiation(_A("C::B<V>"), _A("C::B<int>")));
-
-        REQUIRE_THAT(mmd, IsClass(_A("detail::D")));
-        REQUIRE_THAT(mmd, IsClass(_A("detail::D::DD")));
-        REQUIRE_THAT(mmd, mermaid::IsEnum(_A("detail::D::AA")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", mmd);
-    }
+        REQUIRE(IsClass(src, {"detail", "D"}));
+        REQUIRE(IsClass(src, {"detail", "D::DD"}));
+        REQUIRE(IsEnum(src, {"detail", "D::AA"}));
+    });
 }

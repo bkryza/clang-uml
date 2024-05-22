@@ -1,5 +1,5 @@
 /**
- * tests/t00018/test_case.cc
+ * tests/t00018/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,57 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00018", "[test-case][class]")
+TEST_CASE("t00018")
 {
-    auto [config, db] = load_config("t00018");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00018_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00018", "t00018_class");
 
-    REQUIRE(diagram->name == "t00018_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "widget"));
+        REQUIRE(IsClass(src, "impl::widget"));
+        REQUIRE(IsDependency(src, "impl::widget", "widget"));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00018_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("widget")));
-        REQUIRE_THAT(src, IsClass(_A("impl::widget")));
-
-        REQUIRE_THAT(
-            src, IsAggregation(_A("widget"), _A("impl::widget"), "-pImpl"));
-        REQUIRE_THAT(src, IsDependency(_A("impl::widget"), _A("widget")));
-        REQUIRE_THAT(src, !IsDependency(_A("widget"), _A("widget")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "widget"));
-        REQUIRE(IsClass(j, "impl::widget"));
-        REQUIRE(IsDependency(j, "impl::widget", "widget"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("widget")));
-        REQUIRE_THAT(src, IsClass(_A("impl::widget")));
-
-        REQUIRE_THAT(
-            src, IsAggregation(_A("widget"), _A("impl::widget"), "-pImpl"));
-        REQUIRE_THAT(src, IsDependency(_A("impl::widget"), _A("widget")));
-        REQUIRE_THAT(src, !IsDependency(_A("widget"), _A("widget")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsAggregation<Private>(src, "widget", "impl::widget", "pImpl"));
+        REQUIRE(IsDependency(src, "impl::widget", "widget"));
+        REQUIRE(!IsDependency(src, "widget", "widget"));
+    });
 }

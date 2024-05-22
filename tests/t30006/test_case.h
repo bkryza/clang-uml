@@ -16,64 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30006", "[test-case][package]")
+TEST_CASE("t30006")
 {
-    auto [config, db] = load_config("t30006");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["t30006_package"];
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30006", "t30006_package");
 
-    REQUIRE(diagram->name == "t30006_package");
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "A"s));
+        REQUIRE(IsNamespacePackage(src, "B"s));
+        REQUIRE(IsNamespacePackage(src, "C"s));
 
-    auto model = generate_package_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t30006_package");
-
-    {
-        auto src = generate_package_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsPackage("A"));
-        REQUIRE_THAT(src, IsPackage("B"));
-        REQUIRE_THAT(src, IsPackage("C"));
-
-        REQUIRE_THAT(src, IsDependency(_A("A"), _A("B")));
-        REQUIRE_THAT(src, IsDependency(_A("A"), _A("C")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_package_json(diagram, *model);
-
-        using namespace json;
-        using namespace std::string_literals;
-
-        REQUIRE(IsNamespacePackage(j, "A"s));
-        REQUIRE(IsNamespacePackage(j, "B"s));
-        REQUIRE(IsNamespacePackage(j, "C"s));
-
-        REQUIRE(IsDependency(j, "A", "B"));
-        REQUIRE(IsDependency(j, "A", "C"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_package_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsPackage;
-        using mermaid::IsPackageDependency;
-
-        REQUIRE_THAT(src, IsPackage(_A("A")));
-        REQUIRE_THAT(src, IsPackage(_A("B")));
-        REQUIRE_THAT(src, IsPackage(_A("C")));
-
-        REQUIRE_THAT(src, IsPackageDependency(_A("A"), _A("B")));
-        REQUIRE_THAT(src, IsPackageDependency(_A("A"), _A("C")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsDependency(src, "A", "B"));
+        REQUIRE(IsDependency(src, "A", "C"));
+    });
 }

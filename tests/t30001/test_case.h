@@ -1,5 +1,5 @@
 /**
- * tests/t30001/test_case.cc
+ * tests/t30001/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,116 +16,42 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30001", "[test-case][package]")
+TEST_CASE("t30001")
 {
-    auto [config, db] = load_config("t30001");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["t30001_package"];
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30001", "t30001_package");
 
-    REQUIRE(diagram->name == "t30001_package");
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(HasTitle(src, "Basic package diagram example"));
 
-    auto model = generate_package_diagram(*db, diagram);
+        REQUIRE(!IsNamespacePackage(src, "clanguml"s));
+        REQUIRE(!IsNamespacePackage(src, "t30001"s));
+        REQUIRE(IsNamespacePackage(src, "A"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "AA"s));
+        REQUIRE(IsNamespacePackage(src, "A"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(src, "B"s, "AA"s, "AAA"s));
+        REQUIRE(IsNamespacePackage(src, "B"s, "AA"s, "BBB"s));
+        REQUIRE(IsNamespacePackage(src, "B"s, "BB"s));
+        REQUIRE(IsNamespacePackage(src, "B"s));
 
-    REQUIRE(model->name() == "t30001_package");
+        REQUIRE(
+            HasNote(src, "AA", "top", "This is namespace AA in namespace A"));
 
-    {
-        auto src = generate_package_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(HasLink(src, "AAA",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t30001/t30001.cc#L6",
+                clanguml::util::get_git_commit()),
+            "AAA"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(HasLink(src, "BBB",
+            fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
+                        "t30001/t30001.cc#L8",
+                clanguml::util::get_git_commit()),
+            "BBB"));
 
-        REQUIRE_THAT(src, HasTitle("Basic package diagram example"));
-
-        REQUIRE_THAT(src, IsPackage("A"));
-        REQUIRE_THAT(src, IsPackage("AAA"));
-        REQUIRE_THAT(src, IsPackage("AAA"));
-
-        // TODO: Fix _A() to handle fully qualified names, right
-        //       now it only finds the first element with unqualified
-        //       name match
-        REQUIRE_THAT(src,
-            HasNote(_A("AA"), "top", "This is namespace AA in namespace A"));
-
-        REQUIRE_THAT(src,
-            HasLink(_A("AAA"),
-                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                            "t30001/t30001.cc#L6",
-                    clanguml::util::get_git_commit()),
-                "AAA"));
-
-        REQUIRE_THAT(src,
-            HasLink(_A("BBB"),
-                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                            "t30001/t30001.cc#L8",
-                    clanguml::util::get_git_commit()),
-                "BBB"));
-
-        REQUIRE_THAT(src, HasComment("t30001 test diagram of type package"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_package_json(diagram, *model);
-
-        using namespace json;
-        using namespace std::string_literals;
-
-        REQUIRE(HasTitle(j, "Basic package diagram example"));
-
-        REQUIRE(!IsNamespacePackage(j, "clanguml"s));
-        REQUIRE(!IsNamespacePackage(j, "t30001"s));
-        REQUIRE(IsNamespacePackage(j, "A"s));
-        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s));
-        REQUIRE(IsNamespacePackage(j, "A"s, "AA"s, "AAA"s));
-        REQUIRE(IsNamespacePackage(j, "B"s, "AA"s, "AAA"s));
-        REQUIRE(IsNamespacePackage(j, "B"s, "AA"s, "BBB"s));
-        REQUIRE(IsNamespacePackage(j, "B"s, "BB"s));
-        REQUIRE(IsNamespacePackage(j, "B"s));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_package_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-
-        using mermaid::HasComment;
-        using mermaid::HasLink;
-        using mermaid::HasPackageNote;
-        using mermaid::HasTitle;
-        using mermaid::IsPackage;
-
-        REQUIRE_THAT(src, HasTitle("Basic package diagram example"));
-
-        REQUIRE_THAT(src, IsPackage(_A("A")));
-        REQUIRE_THAT(src, IsPackage(_A("AAA")));
-        REQUIRE_THAT(src, IsPackage(_A("AAA")));
-
-        // TODO: Fix _A() to handle fully qualified names, right
-        //       now it only finds the first element with unqualified
-        //       name match
-        REQUIRE_THAT(src,
-            HasPackageNote(
-                _A("AA"), "top", "This is namespace AA in namespace A"));
-
-        REQUIRE_THAT(src,
-            HasLink(_A("AAA"),
-                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                            "t30001/t30001.cc#L6",
-                    clanguml::util::get_git_commit()),
-                "AAA"));
-
-        REQUIRE_THAT(src,
-            HasLink(_A("BBB"),
-                fmt::format("https://github.com/bkryza/clang-uml/blob/{}/tests/"
-                            "t30001/t30001.cc#L8",
-                    clanguml::util::get_git_commit()),
-                "BBB"));
-
-        REQUIRE_THAT(src, HasComment("t30001 test diagram of type package"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(HasComment(src, "t30001 test diagram of type package"));
+    });
 }

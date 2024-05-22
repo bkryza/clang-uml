@@ -16,68 +16,48 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20045", "[test-case][sequence]")
+TEST_CASE("t20045")
 {
-    auto [config, db] = load_config("t20045");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20045_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20045", "t20045_sequence");
 
-    REQUIRE(diagram->name == "t20045_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "a2(int)", ""}, //
+                {"tmain()",
+                    "a1<(lambda at t20045.cc:35:18)>((lambda at "
+                    "t20045.cc:35:18) &&)",
+                    ""}, //
+                {"a1<(lambda at t20045.cc:35:18)>((lambda at t20045.cc:35:18) "
+                 "&&)",
+                    "tmain()::(lambda t20045.cc:35:18)",
+                    "operator()(auto &&) const"},                     //
+                {"tmain()::(lambda t20045.cc:35:18)", "a3(int)", ""}, //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()",
+                    "a1<(lambda at t20045.cc:37:18)>((lambda at "
+                    "t20045.cc:37:18) "
+                    "&&)",
+                    ""}, //
+                {"a1<(lambda at t20045.cc:37:18)>((lambda at t20045.cc:37:18) "
+                 "&&)",
+                    "tmain()::(lambda t20045.cc:37:18)",
+                    "operator()(auto &&) const"},                      //
+                {"tmain()::(lambda t20045.cc:37:18)", "B", "b1(int)"}, //
 
-    REQUIRE(model->name() == "t20045_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a2(int)"), ""));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("a1<(lambda at t20045.cc:35:18)>((lambda at "
-                   "t20045.cc:35:18) &&)"),
-                ""));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("a1<(lambda at t20045.cc:35:18)>((lambda at "
-                       "t20045.cc:35:18) &&)"),
-                _A("tmain()::(lambda t20045.cc:35:18)"),
-                "operator()(auto &&) const"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20045.cc:35:18)"), _A("a3(int)"), ""));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20045.cc:37:18)"), _A("B"), "b1(int)"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20045.cc:39:18)"), _A("C"), "get_x()"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()",
+                    "a1<(lambda at t20045.cc:39:18)>((lambda at "
+                    "t20045.cc:39:18) &&)",
+                    ""}, //
+                {"a1<(lambda at t20045.cc:39:18)>((lambda at "
+                 "t20045.cc:39:18) &&)",
+                    "tmain()::(lambda t20045.cc:39:18)",
+                    "operator()(auto &&) const"},                           //
+                {"tmain()::(lambda t20045.cc:39:18)", "C", "get_x() const"} //
+            }));
+    });
 }

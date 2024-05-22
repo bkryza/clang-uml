@@ -100,60 +100,33 @@ auto generate_diagram_impl(clanguml::common::compilation_database &db,
     return model;
 }
 
-template <typename DiagramConfig, typename DiagramModel>
-auto generate_diagram_puml(
+template <typename GeneratorType, typename DiagramConfig, typename DiagramModel>
+auto render_diagram(
     std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
 {
     using diagram_config = DiagramConfig;
     using diagram_model = DiagramModel;
     using diagram_generator =
         typename clanguml::common::generators::diagram_generator_t<
-            DiagramConfig,
-            clanguml::common::generators::plantuml_generator_tag>::type;
+            DiagramConfig, typename GeneratorType::generator_tag>::type;
 
     std::stringstream ss;
 
     ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
 
-    return ss.str();
+    if constexpr (std::is_same_v<GeneratorType, clanguml::test::json_t>) {
+        return nlohmann::json::parse(ss.str());
+    }
+    else {
+        return ss.str();
+    }
 }
+} // namespace detail
 
-template <typename DiagramConfig, typename DiagramModel>
-auto generate_diagram_json(
-    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
-{
-    using diagram_config = DiagramConfig;
-    using diagram_model = DiagramModel;
-    using diagram_generator =
-        typename clanguml::common::generators::diagram_generator_t<
-            DiagramConfig,
-            clanguml::common::generators::json_generator_tag>::type;
-
-    std::stringstream ss;
-
-    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
-
-    return nlohmann::json::parse(ss.str());
-}
-
-template <typename DiagramConfig, typename DiagramModel>
-auto generate_diagram_mermaid(
-    std::shared_ptr<clanguml::config::diagram> config, DiagramModel &model)
-{
-    using diagram_config = DiagramConfig;
-    using diagram_model = DiagramModel;
-    using diagram_generator =
-        typename clanguml::common::generators::diagram_generator_t<
-            DiagramConfig,
-            clanguml::common::generators::mermaid_generator_tag>::type;
-
-    std::stringstream ss;
-
-    ss << diagram_generator(dynamic_cast<diagram_config &>(*config), model);
-
-    return ss.str();
-}
-}
+///
+/// @defgroup Diagram generators
+/// @{
+///
 
 std::unique_ptr<clanguml::class_diagram::model::diagram> generate_class_diagram(
     clanguml::common::compilation_database &db,
@@ -187,101 +160,7 @@ generate_include_diagram(clanguml::common::compilation_database &db,
         db, diagram);
 }
 
-std::string generate_class_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::class_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_puml<clanguml::config::class_diagram>(
-        config, model);
-}
-
-std::string generate_sequence_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::sequence_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_puml<clanguml::config::sequence_diagram>(
-        config, model);
-}
-
-std::string generate_package_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::package_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_puml<clanguml::config::package_diagram>(
-        config, model);
-}
-
-std::string generate_include_puml(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::include_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_puml<clanguml::config::include_diagram>(
-        config, model);
-}
-
-nlohmann::json generate_class_json(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::class_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_json<clanguml::config::class_diagram>(
-        config, model);
-}
-
-nlohmann::json generate_sequence_json(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::sequence_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_json<clanguml::config::sequence_diagram>(
-        config, model);
-}
-
-nlohmann::json generate_package_json(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::package_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_json<clanguml::config::package_diagram>(
-        config, model);
-}
-
-nlohmann::json generate_include_json(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::include_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_json<clanguml::config::include_diagram>(
-        config, model);
-}
-
-std::string generate_class_mermaid(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::class_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_mermaid<clanguml::config::class_diagram>(
-        config, model);
-}
-
-std::string generate_sequence_mermaid(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::sequence_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_mermaid<clanguml::config::sequence_diagram>(
-        config, model);
-}
-
-std::string generate_package_mermaid(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::package_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_mermaid<clanguml::config::package_diagram>(
-        config, model);
-}
-
-std::string generate_include_mermaid(
-    std::shared_ptr<clanguml::config::diagram> config,
-    clanguml::include_diagram::model::diagram &model)
-{
-    return detail::generate_diagram_mermaid<clanguml::config::include_diagram>(
-        config, model);
-}
+/// }@
 
 template <typename T>
 void save_diagram(const std::filesystem::path &path, const T &diagram)
@@ -326,7 +205,254 @@ void save_mermaid(const std::string &path, const std::string &filename,
     save_diagram(p, mmd);
 }
 
-using namespace clanguml::test::matchers;
+namespace clanguml::test {
+
+struct diagram_source_storage {
+    diagram_source_storage(plantuml_t &&p, json_t &&j, mermaid_t &&m)
+        : plantuml{std::move(p)}
+        , json{std::move(j)}
+        , mermaid{std::move(m)}
+    {
+    }
+
+    template <typename T> const T &get() const;
+
+    plantuml_t plantuml;
+    json_t json;
+    mermaid_t mermaid;
+};
+
+template <> const plantuml_t &diagram_source_storage::get<plantuml_t>() const
+{
+    return plantuml;
+}
+
+template <> const json_t &diagram_source_storage::get<json_t>() const
+{
+    return json;
+}
+
+template <> const mermaid_t &diagram_source_storage::get<mermaid_t>() const
+{
+    return mermaid;
+}
+
+template <typename T, typename TC>
+void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
+{
+    if constexpr (std::is_invocable_v<TC, T>) {
+        try {
+            tc(diagrams.get<T>());
+        }
+        catch (doctest::TestFailureException &e) {
+            std::cout << "-----------------------------------------------------"
+                         "--------------------------\n";
+            std::cout << "Test case failed for diagram type "
+                      << T::diagram_type_name << ": "
+                      << "\n\n";
+            std::cout << diagrams.get<T>().to_string() << "\n";
+
+            throw e;
+        }
+    }
+}
+
+template <typename DiagramType>
+DiagramType render_class_diagram(std::shared_ptr<clanguml::config::diagram> c,
+    clanguml::class_diagram::model::diagram &model)
+{
+    auto d = DiagramType{common::model::diagram_t::kClass,
+        detail::render_diagram<DiagramType, clanguml::config::class_diagram>(
+            c, model)};
+    d.generate_packages = c->generate_packages();
+    return d;
+}
+
+template <typename DiagramType>
+DiagramType render_sequence_diagram(
+    std::shared_ptr<clanguml::config::diagram> c,
+    clanguml::sequence_diagram::model::diagram &model)
+{
+    return DiagramType{common::model::diagram_t::kSequence,
+        detail::render_diagram<DiagramType, clanguml::config::sequence_diagram>(
+            c, model)};
+}
+
+template <typename DiagramType>
+DiagramType render_package_diagram(std::shared_ptr<clanguml::config::diagram> c,
+    clanguml::package_diagram::model::diagram &model)
+{
+    return DiagramType{common::model::diagram_t::kPackage,
+        detail::render_diagram<DiagramType, clanguml::config::package_diagram>(
+            c, model)};
+}
+
+template <typename DiagramType>
+DiagramType render_include_diagram(std::shared_ptr<clanguml::config::diagram> c,
+    clanguml::include_diagram::model::diagram &model)
+{
+    return DiagramType{common::model::diagram_t::kInclude,
+        detail::render_diagram<DiagramType, clanguml::config::include_diagram>(
+            c, model)};
+}
+
+auto CHECK_CLASS_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_class_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_SEQUENCE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_sequence_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_PACKAGE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_package_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+auto CHECK_INCLUDE_MODEL(
+    const std::string &test_name, const std::string &diagram_name)
+{
+    auto [config, db] = load_config(test_name);
+
+    auto diagram = config.diagrams[diagram_name];
+
+    REQUIRE(diagram->name == diagram_name);
+
+    auto model = generate_include_diagram(*db, diagram);
+
+    REQUIRE(model->name() == diagram_name);
+
+    return std::make_tuple(
+        std::move(config), std::move(db), std::move(diagram), std::move(model));
+}
+
+template <typename TC, typename... TCs>
+void CHECK_DIAGRAM_IMPL(
+    const diagram_source_storage &diagrams, TC &&tc, TCs &&...tcs)
+{
+    try_run_test_case<plantuml_t>(diagrams, tc);
+    try_run_test_case<mermaid_t>(diagrams, tc);
+    try_run_test_case<json_t>(diagrams, tc);
+
+    if constexpr (sizeof...(tcs) > 0) {
+        CHECK_DIAGRAM_IMPL(diagrams, std::forward<TCs>(tcs)...);
+    }
+}
+
+template <typename DiagramConfig, typename DiagramModel, typename... TCs>
+void CHECK_CLASS_DIAGRAM(const clanguml::config::config &config,
+    DiagramConfig diagram, DiagramModel &model, TCs &&...tcs)
+{
+    diagram_source_storage diagram_sources{
+        render_class_diagram<plantuml_t>(diagram, model),
+        render_class_diagram<json_t>(diagram, model),
+        render_class_diagram<mermaid_t>(diagram, model)};
+
+    CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
+
+    save_puml(config.output_directory(), diagram->name + ".puml",
+        diagram_sources.plantuml.src);
+    save_json(config.output_directory(), diagram->name + ".json",
+        diagram_sources.json.src);
+    save_mermaid(config.output_directory(), diagram->name + ".mmd",
+        diagram_sources.mermaid.src);
+}
+
+template <typename DiagramConfig, typename DiagramModel, typename... TCs>
+void CHECK_SEQUENCE_DIAGRAM(const clanguml::config::config &config,
+    DiagramConfig diagram, DiagramModel &model, TCs &&...tcs)
+{
+    diagram_source_storage diagram_sources{
+        render_sequence_diagram<plantuml_t>(diagram, model),
+        render_sequence_diagram<json_t>(diagram, model),
+        render_sequence_diagram<mermaid_t>(diagram, model)};
+
+    CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
+
+    save_puml(config.output_directory(), diagram->name + ".puml",
+        diagram_sources.plantuml.src);
+    save_json(config.output_directory(), diagram->name + ".json",
+        diagram_sources.json.src);
+    save_mermaid(config.output_directory(), diagram->name + ".mmd",
+        diagram_sources.mermaid.src);
+}
+
+template <typename DiagramConfig, typename DiagramModel, typename... TCs>
+void CHECK_PACKAGE_DIAGRAM(const clanguml::config::config &config,
+    DiagramConfig diagram, DiagramModel &model, TCs &&...tcs)
+{
+    diagram_source_storage diagram_sources{
+        render_package_diagram<plantuml_t>(diagram, model),
+        render_package_diagram<json_t>(diagram, model),
+        render_package_diagram<mermaid_t>(diagram, model)};
+
+    CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
+
+    save_puml(config.output_directory(), diagram->name + ".puml",
+        diagram_sources.plantuml.src);
+    save_json(config.output_directory(), diagram->name + ".json",
+        diagram_sources.json.src);
+    save_mermaid(config.output_directory(), diagram->name + ".mmd",
+        diagram_sources.mermaid.src);
+}
+
+template <typename DiagramConfig, typename DiagramModel, typename... TCs>
+void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
+    DiagramConfig diagram, DiagramModel &model, TCs &&...tcs)
+{
+    diagram_source_storage diagram_sources{
+        render_include_diagram<plantuml_t>(diagram, model),
+        render_include_diagram<json_t>(diagram, model),
+        render_include_diagram<mermaid_t>(diagram, model)};
+
+    CHECK_DIAGRAM_IMPL(diagram_sources, std::forward<TCs>(tcs)...);
+
+    save_puml(config.output_directory(), diagram->name + ".puml",
+        diagram_sources.plantuml.src);
+    save_json(config.output_directory(), diagram->name + ".json",
+        diagram_sources.json.src);
+    save_mermaid(config.output_directory(), diagram->name + ".mmd",
+        diagram_sources.mermaid.src);
+}
+} // namespace clanguml::test
 
 ///
 /// Class diagram tests
@@ -475,11 +601,13 @@ using namespace clanguml::test::matchers;
 #include "t20046/test_case.h"
 #include "t20047/test_case.h"
 #include "t20048/test_case.h"
+
 #if defined(ENABLE_CUDA_TEST_CASES)
 #include "t20049/test_case.h"
 #include "t20050/test_case.h"
 #include "t20051/test_case.h"
 #endif
+
 #include "t20052/test_case.h"
 #include "t20053/test_case.h"
 
@@ -506,6 +634,7 @@ using namespace clanguml::test::matchers;
 ///
 /// Include diagram tests
 ///
+
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
@@ -521,30 +650,23 @@ using namespace clanguml::test::matchers;
 ///
 int main(int argc, char *argv[])
 {
-    Catch::Session session;
-    using namespace Catch::clara;
+    doctest::Context context;
 
-    bool debug_log{false};
-    auto cli = session.cli() |
-        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
-
-    session.cli(cli);
-
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0)
-        return returnCode;
+    context.applyCommandLine(argc, argv);
 
     clanguml::cli::cli_handler clih;
 
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    if (debug_log)
-        argvv.push_back("-vvv");
-    else
-        argvv.push_back("-q");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
-    return session.run();
+    int res = context.run();
+
+    if (context.shouldExit())
+        return res;
+
+    return res;
 }

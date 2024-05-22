@@ -16,143 +16,56 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20012", "[test-case][sequence]")
+TEST_CASE("t20012")
 {
-    auto [config, db] = load_config("t20012");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20012_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20012", "t20012_sequence");
 
-    REQUIRE(diagram->name == "t20012_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                {"tmain()", "tmain()::(lambda t20012.cc:67:20)",
+                    "operator()() const"},                         //
+                {"tmain()::(lambda t20012.cc:67:20)", "A", "a()"}, //
+                {"A", "A", "aa()"},                                //
+                {"A", "A", "aaa()"},                               //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()::(lambda t20012.cc:67:20)", "B", "b()"}, //
+                {"B", "B", "bb()"},                                //
+                {"B", "B", "bbb()"},                               //
 
-    REQUIRE(model->name() == "t20012_sequence");
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+                {"tmain()", "tmain()::(lambda t20012.cc:80:20)",
+                    "operator()() const"},                         //
+                {"tmain()::(lambda t20012.cc:80:20)", "C", "c()"}, //
+                {"C", "C", "cc()"},                                //
+                {"C", "C", "ccc()"},                               //
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+                {"tmain()::(lambda t20012.cc:80:20)",
+                    "tmain()::(lambda t20012.cc:67:20)",
+                    "operator()() const"}, //
 
-        // Check if all calls exist
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:67:20)"),
-                "operator()() const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("A"), "a()"));
-        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
-        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aaa()"));
+                {"tmain()::(lambda t20012.cc:67:20)", "A", "a()"}, //
 
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("B"), "b()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bb()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bbb()"));
+                {"A", "A", "aa()"},  //
+                {"A", "A", "aaa()"}, //
 
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:80:20)"), _A("C"), "c()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "cc()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:80:20)"),
-                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()() const"));
+                {"tmain()::(lambda t20012.cc:67:20)", "B", "b()"}, //
+                {"B", "B", "bb()"},                                //
+                {"B", "B", "bbb()"},                               //
 
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
+                {"tmain()", "R<(lambda at t20012.cc:86:9)>",
+                    "R((lambda at t20012.cc:86:9) &&)"},             //
+                {"tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"}, //
+                {"R<(lambda at t20012.cc:86:9)>",
+                    "tmain()::(lambda t20012.cc:86:9)",
+                    "operator()() const"},                        //
+                {"tmain()::(lambda t20012.cc:86:9)", "C", "c()"}, //
 
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"),
-                "R((lambda at t20012.cc:86:9) &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
-                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()() const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:94:9)"),
-                "operator()(auto) const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:94:9)"), _A("D"),
-                "add5(int) const"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        std::vector<int> messages = {
-            FindMessage(j, "tmain()", "tmain()::(lambda t20012.cc:67:20)",
-                "operator()() const"),
-            FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "A", "a()"),
-            FindMessage(j, "A", "A", "aa()"),
-            FindMessage(j, "A", "A", "aaa()"),
-            FindMessage(j, "tmain()::(lambda t20012.cc:67:20)", "B", "b()"),
-            FindMessage(j, "B", "B", "bb()"),
-            FindMessage(j, "B", "B", "bbb()"),
-            FindMessage(j, "tmain()::(lambda t20012.cc:80:20)", "C", "c()"),
-            FindMessage(j, "C", "C", "cc()"),
-            FindMessage(j, "C", "C", "ccc()"),
-            FindMessage(j, "tmain()::(lambda t20012.cc:80:20)",
-                "tmain()::(lambda t20012.cc:67:20)", "operator()() const"),
-            FindMessage(j, "tmain()", "R<(lambda at t20012.cc:86:9)>", "r()"),
-            FindMessage(j, "R<(lambda at t20012.cc:86:9)>",
-                "tmain()::(lambda t20012.cc:86:9)", "operator()() const"),
-            FindMessage(j, "tmain()::(lambda t20012.cc:86:9)", "C", "c()"),
-        };
-
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:67:20)"),
-                "operator()() const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("A"), "a()"));
-        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aa()"));
-        REQUIRE_THAT(src, HasCall(_A("A"), _A("A"), "aaa()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:67:20)"), _A("B"), "b()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bb()"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("B"), "bbb()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:80:20)"), _A("C"), "c()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "cc()"));
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:80:20)"),
-                _A("tmain()::(lambda t20012.cc:67:20)"), "operator()() const"));
-
-        REQUIRE_THAT(src, HasCall(_A("C"), _A("C"), "ccc()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("R<(lambda at t20012.cc:86:9)>"), "r()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("R<(lambda at t20012.cc:86:9)>"),
-                _A("tmain()::(lambda t20012.cc:86:9)"), "operator()() const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:86:9)"), _A("C"), "c()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20012.cc:94:9)"),
-                "operator()(auto) const"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20012.cc:94:9)"), _A("D"),
-                "add5(int) const"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()", "tmain()::(lambda t20012.cc:94:9)",
+                    "operator()(auto) const"},                               //
+                {"tmain()::(lambda t20012.cc:94:9)", "D", "add5(int) const"} //
+            }));
+    });
 }

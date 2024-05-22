@@ -1,5 +1,5 @@
 /**
- * tests/t30003/test_case.cc
+ * tests/t30003/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,69 +16,23 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30003", "[test-case][package]")
+TEST_CASE("t30003")
 {
-    auto [config, db] = load_config("t30003");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["t30003_package"];
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30003", "t30003_package");
 
-    REQUIRE(diagram->name == "t30003_package");
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "ns1"s));
+        REQUIRE(IsNamespacePackage(src, "ns1"s, "ns2_v1_0_0"s));
+        REQUIRE(IsNamespacePackage(src, "ns1"s, "ns2_v0_9_0"s));
+        REQUIRE(IsNamespacePackage(src, "ns3"s));
+        REQUIRE(IsNamespacePackage(src, "ns3"s, "ns1"s));
+        REQUIRE(IsNamespacePackage(src, "ns3"s, "ns1"s, "ns2"s));
 
-    auto model = generate_package_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t30003_package");
-    {
-        auto src = generate_package_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsPackage("ns1"));
-        REQUIRE_THAT(src, IsPackage("ns2"));
-        REQUIRE_THAT(src, IsPackage("ns3"));
-        REQUIRE_THAT(src, IsPackage("ns2_v1_0_0"));
-        REQUIRE_THAT(src, IsPackage("ns2_v0_9_0"));
-
-        REQUIRE_THAT(src, IsDeprecated(_A("ns2_v0_9_0")));
-        REQUIRE_THAT(src, IsDeprecated(_A("ns3")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_package_json(diagram, *model);
-
-        using namespace json;
-        using namespace std::string_literals;
-
-        REQUIRE(IsNamespacePackage(j, "ns1"s));
-        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns2_v1_0_0"s));
-        REQUIRE(IsNamespacePackage(j, "ns1"s, "ns2_v0_9_0"s));
-        REQUIRE(IsNamespacePackage(j, "ns3"s));
-        REQUIRE(IsNamespacePackage(j, "ns3"s, "ns1"s));
-        REQUIRE(IsNamespacePackage(j, "ns3"s, "ns1"s, "ns2"s));
-
-        REQUIRE(IsDeprecated(j, "ns2_v0_9_0"));
-        REQUIRE(IsDeprecated(j, "ns3"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_package_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsPackage;
-
-        REQUIRE_THAT(src, IsPackage(_A("ns1")));
-        REQUIRE_THAT(src, IsPackage(_A("ns2")));
-        REQUIRE_THAT(src, IsPackage(_A("ns3")));
-        REQUIRE_THAT(src, IsPackage(_A("ns2_v1_0_0")));
-        REQUIRE_THAT(src, IsPackage(_A("ns2_v0_9_0")));
-
-        //        REQUIRE_THAT(src, IsDeprecated(_A("ns2_v0_9_0")));
-        //        REQUIRE_THAT(src, IsDeprecated(_A("ns3")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsDeprecated(src, "ns2_v0_9_0"));
+        REQUIRE(IsDeprecated(src, "ns3"));
+    });
 }

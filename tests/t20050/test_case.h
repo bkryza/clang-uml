@@ -16,65 +16,27 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20050", "[test-case][sequence]")
+TEST_CASE("t20050")
 {
-    auto [config, db] = load_config("t20050");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20050_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20050", "t20050_sequence");
 
-    REQUIRE(diagram->name == "t20050_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsFileParticipant(src, "t20050.cu"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20050_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all calls exist
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Kernel >>\\\\nvector_square_add(float *,float *,float "
-                "*,int)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Device >>\\\\nsquare(float)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Device >>\\\\nadd<float>(float,float)"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Kernel >><br>vector_square_add(float *,float *,float "
-                "*,int)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Device >><br>square(float)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("t20050.cu"), _A("t20050.cu"),
-                "<< CUDA Device >><br>add<float>(float,float)"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {Entrypoint{}, "t20050.cu", "tmain()"}, //
+                {"t20050.cu", "t20050.cu",
+                    "vector_square_add(float *,float *,float *,int)",
+                    CUDAKernel{}},                                         //
+                {"t20050.cu", "t20050.cu", "square(float)", CUDADevice{}}, //
+                {"t20050.cu", "t20050.cu", "square(float)", CUDADevice{}}, //
+                {"t20050.cu", "t20050.cu", "add<float>(float,float)",
+                    CUDADevice{}}, //
+            }));
+    });
 }

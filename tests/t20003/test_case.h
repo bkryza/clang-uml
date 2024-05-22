@@ -1,5 +1,5 @@
 /**
- * tests/t20003/test_case.cc
+ * tests/t20003/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,56 +16,25 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20003", "[test-case][sequence]")
+TEST_CASE("t20003")
 {
-    auto [config, db] = load_config("t20003");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20003_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20003", "t20003_sequence");
 
-    REQUIRE(diagram->name == "t20003_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsFunctionTemplateParticipant(src, "m1<T>(T)"));
+        REQUIRE(IsFunctionTemplateParticipant(src, "m2<T>(T)"));
+        REQUIRE(IsFunctionTemplateParticipant(src, "m3<T>(T)"));
+        REQUIRE(IsFunctionTemplateParticipant(src, "m4<T>(T)"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20003_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        std::vector<int> messages = {FindMessage(j, "m1<T>(T)", "m2<T>(T)", ""),
-            FindMessage(j, "m2<T>(T)", "m3<T>(T)", ""),
-            FindMessage(j, "m3<T>(T)", "m4<T>(T)", "")};
-
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src, HasCall(_A("m1<T>(T)"), _A("m2<T>(T)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m2<T>(T)"), _A("m3<T>(T)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("m3<T>(T)"), _A("m4<T>(T)"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"m1<T>(T)", "m2<T>(T)", ""}, //
+                {"m2<T>(T)", "m3<T>(T)", ""}, //
+                {"m3<T>(T)", "m4<T>(T)", ""}  //
+            }));
+    });
 }

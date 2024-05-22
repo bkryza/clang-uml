@@ -16,66 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20051", "[test-case][sequence]")
+TEST_CASE("t20051")
 {
-    auto [config, db] = load_config("t20051");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20051_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20051", "t20051_sequence");
 
-    REQUIRE(diagram->name == "t20051_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsFileParticipant(src, "t20051.cu"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20051_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("vector_square_add(float *,float *,float *,int)"), ""));
-        REQUIRE_THAT(src,
-            !HasCall(_A("vector_square_add(float *,float *,float *,int)"),
-                _A("square(float)"), ""));
-        REQUIRE_THAT(src,
-            !HasCall(_A("vector_square_add(float *,float *,float *,int)"),
-                _A("add<float>(float,float)"), ""));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("<< CUDA Kernel >><br>vector_square_add(float *,float "
-                   "*,float *,int)"),
-                ""));
-        REQUIRE_THAT(src,
-            !HasCall(_A("<< CUDA Kernel >><br>vector_square_add(float *,float "
-                        "*,float *,int)"),
-                _A("<< CUDA Device >><br>square(float)"), ""));
-        REQUIRE_THAT(src,
-            !HasCall(_A("<< CUDA Kernel >><br>vector_square_add(float *,float "
-                        "*,float *,int)"),
-                _A("<< CUDA Device >><br>add<float>(float,float)"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "vector_square_add(float *,float *,float *,int)",
+                    ""}, //
+            }));
+    });
 }

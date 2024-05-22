@@ -15,16 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_RUNNER
-#define CATCH_CONFIG_CONSOLE_WIDTH 512
+#define DOCTEST_CONFIG_IMPLEMENT
 
-#include "catch.h"
+#include "doctest/doctest.h"
 
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
 #include "util/util.h"
 
-#include "catch.h"
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/spdlog.h>
 
@@ -35,7 +33,7 @@ std::shared_ptr<spdlog::logger> make_sstream_logger(std::ostream &ostr)
         "clanguml-logger", std::move(oss_sink));
 }
 
-TEST_CASE("Test compilation_database should work", "[unit-test]")
+TEST_CASE("Test compilation_database should work")
 {
     using clanguml::common::compilation_database;
     using clanguml::common::compilation_database_ptr;
@@ -82,7 +80,7 @@ TEST_CASE("Test compilation_database should work", "[unit-test]")
     }
 }
 
-TEST_CASE("Test compilation_database should throw", "[unit-test]")
+TEST_CASE("Test compilation_database should throw")
 {
     using clanguml::common::compilation_database;
     using clanguml::common::compilation_database_ptr;
@@ -102,30 +100,23 @@ TEST_CASE("Test compilation_database should throw", "[unit-test]")
 ///
 int main(int argc, char *argv[])
 {
-    Catch::Session session;
-    using namespace Catch::clara;
+    doctest::Context context;
 
-    bool debug_log{false};
-    auto cli = session.cli() |
-        Opt(debug_log, "debug_log")["-u"]["--debug-log"]("Enable debug logs");
-
-    session.cli(cli);
-
-    int returnCode = session.applyCommandLine(argc, argv);
-    if (returnCode != 0)
-        return returnCode;
+    context.applyCommandLine(argc, argv);
 
     clanguml::cli::cli_handler clih;
 
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    if (debug_log)
-        argvv.push_back("-vvv");
-    else
-        argvv.push_back("-q");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
-    return session.run();
+    int res = context.run();
+
+    if (context.shouldExit())
+        return res;
+
+    return res;
 }

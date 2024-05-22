@@ -388,8 +388,10 @@ void generator::generate_participant(
         print_debug(class_participant, ostr);
 
         auto participant_name =
-            config().using_namespace().relative(config().simplify_template_type(
-                class_participant.full_name(false)));
+            config().simplify_template_type(class_participant.full_name(false));
+        participant_name =
+            config().using_namespace().relative(participant_name);
+
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "

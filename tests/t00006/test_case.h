@@ -1,5 +1,5 @@
 /**
- * tests/t00006/test_case.cc
+ * tests/t00006/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,139 +16,49 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00006", "[test-case][class]")
+TEST_CASE("t00006")
 {
-    auto [config, db] = load_config("t00006");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00006_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00006", "t00006_class");
 
-    REQUIRE(diagram->name == "t00006_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "F"));
+        REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "H"));
+        REQUIRE(IsClass(src, "I"));
+        REQUIRE(IsClass(src, "J"));
+        REQUIRE(IsClass(src, "K"));
+        REQUIRE(IsClass(src, "L"));
+        REQUIRE(IsClass(src, "M"));
+        REQUIRE(IsClass(src, "N"));
+        REQUIRE(IsClass(src, "NN"));
+        REQUIRE(IsClass(src, "NNN"));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00006_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-        REQUIRE_THAT(src, IsClass(_A("K")));
-        REQUIRE_THAT(src, IsClass(_A("L")));
-        REQUIRE_THAT(src, IsClass(_A("M")));
-        REQUIRE_THAT(src, IsClass(_A("N")));
-        REQUIRE_THAT(src, IsClass(_A("NN")));
-        REQUIRE_THAT(src, IsClass(_A("NNN")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(
-                _A("custom_container<T>"), _A("custom_container<E>")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("C"), "+c"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "+d"));
-        REQUIRE_THAT(
-            src, IsAggregation(_A("R"), _A("custom_container<E>"), "+e"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("F"), "+f"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G"), "+g"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("H"), "+h"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("I"), "+i"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("J"), "+j"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("K"), "+k"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("L"), "+lm"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("M"), "+lm"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("N"), "+ns"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("NN"), "+ns"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("NNN"), "+ns"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "B"));
-        REQUIRE(IsClass(j, "C"));
-        REQUIRE(IsClass(j, "D"));
-        REQUIRE(IsClass(j, "E"));
-        REQUIRE(IsClass(j, "F"));
-        REQUIRE(IsClass(j, "G"));
-        REQUIRE(IsClass(j, "H"));
-        REQUIRE(IsClass(j, "I"));
-        REQUIRE(IsClass(j, "J"));
-        REQUIRE(IsClass(j, "K"));
-        REQUIRE(IsClass(j, "L"));
-        REQUIRE(IsClass(j, "M"));
-        REQUIRE(IsClass(j, "N"));
-        REQUIRE(IsClass(j, "NN"));
-        REQUIRE(IsClass(j, "NNN"));
-
-        REQUIRE(IsAggregation(j, "R", "custom_container<E>", "e"));
         REQUIRE(
-            IsInstantiation(j, "custom_container<T>", "custom_container<E>"));
+            IsInstantiation(src, "custom_container<T>", "custom_container<E>"));
 
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-        using mermaid::AliasMatcher;
-
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-        REQUIRE_THAT(src, IsClass(_A("K")));
-        REQUIRE_THAT(src, IsClass(_A("L")));
-        REQUIRE_THAT(src, IsClass(_A("M")));
-        REQUIRE_THAT(src, IsClass(_A("N")));
-        REQUIRE_THAT(src, IsClass(_A("NN")));
-        REQUIRE_THAT(src, IsClass(_A("NNN")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(
-                _A("custom_container<T>"), _A("custom_container<E>")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("C"), "+c"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("D"), "+d"));
-        REQUIRE_THAT(
-            src, IsAggregation(_A("R"), _A("custom_container<E>"), "+e"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("F"), "+f"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("G"), "+g"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("H"), "+h"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("I"), "+i"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("J"), "+j"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("K"), "+k"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("L"), "+lm"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("M"), "+lm"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("N"), "+ns"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("NN"), "+ns"));
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("NNN"), "+ns"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
+        REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
+        REQUIRE(IsAggregation<Public>(src, "R", "C", "c"));
+        REQUIRE(IsAssociation<Public>(src, "R", "D", "d"));
+        REQUIRE(IsAggregation<Public>(src, "R", "custom_container<E>", "e"));
+        REQUIRE(IsAggregation<Public>(src, "R", "F", "f"));
+        REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
+        REQUIRE(IsAggregation<Public>(src, "R", "H", "h"));
+        REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
+        REQUIRE(IsAggregation<Public>(src, "R", "J", "j"));
+        REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
+        REQUIRE(IsAggregation<Public>(src, "R", "L", "lm"));
+        REQUIRE(IsAggregation<Public>(src, "R", "M", "lm"));
+        REQUIRE(IsAggregation<Public>(src, "R", "N", "ns"));
+        REQUIRE(IsAggregation<Public>(src, "R", "NN", "ns"));
+        REQUIRE(IsAggregation<Public>(src, "R", "NNN", "ns"));
+    });
 }

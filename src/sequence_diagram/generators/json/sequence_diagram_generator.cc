@@ -40,6 +40,8 @@ void to_json(nlohmann::json &j, const participant &c)
         j["name"] = dynamic_cast<const method &>(c).method_name();
     }
 
+    j["full_name"] = generators::json::render_name(c.full_name(false));
+
     if (c.type_name() == "function" || c.type_name() == "function_template") {
         const auto &f = dynamic_cast<const function &>(c);
         if (f.is_cuda_kernel())
@@ -172,7 +174,7 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         dynamic_cast<const clanguml::common::model::source_location &>(m);
 
     msg["scope"] = to_string(m.message_scope());
-    msg["return_type"] = m.return_type();
+    msg["return_type"] = config().simplify_template_type(m.return_type());
 
     parent["messages"].push_back(std::move(msg));
 
@@ -263,8 +265,10 @@ void generator::process_call_message(
     visited.push_back(m.from());
 
     if (m.in_static_declaration_context()) {
-        if (util::contains(already_generated_in_static_context_, m))
+        if (util::contains(already_generated_in_static_context_, m)) {
+            visited.pop_back();
             return;
+        }
 
         already_generated_in_static_context_.push_back(m);
     }
@@ -286,6 +290,8 @@ void generator::process_call_message(
     else
         LOG_DBG("Skipping activity {} --> {} - missing sequence {}", m.from(),
             m.to(), m.to());
+
+    visited.pop_back();
 }
 
 void generator::process_while_message(const message &m) const
@@ -566,6 +572,12 @@ common::id_t generator::generate_participant(
                 .value()
                 .class_id();
 
+        LOG_DBG("Generating JSON method participant: {}",
+            model()
+                .get_participant<model::method>(participant_id)
+                .value()
+                .full_name(false));
+
         if (!is_participant_generated(class_participant_id)) {
             const auto &class_participant =
                 model()
@@ -577,6 +589,13 @@ common::id_t generator::generate_participant(
 
             json_["participants"].push_back(class_participant);
             json_["participants"].back()["activities"].push_back(participant);
+
+            // Perform config dependent postprocessing on generated class
+            const auto class_participant_full_name =
+                class_participant.full_name(false);
+
+            json_["participants"].back().at("display_name") =
+                make_display_name(class_participant_full_name);
 
             return class_participant_id;
         }
@@ -805,7 +824,8 @@ void generator::generate_diagram(nlohmann::json &parent) const
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
 
-                sequence["return_type"] = from.value().return_type();
+                sequence["return_type"] =
+                    make_display_name(from.value().return_type());
             }
 
             parent["sequences"].push_back(std::move(sequence));
@@ -816,6 +836,24 @@ void generator::generate_diagram(nlohmann::json &parent) const
         }
     }
 
+    // Perform config dependent postprocessing on generated participants
+    for (auto &p : json_["participants"]) {
+        if (p.contains("display_name")) {
+            p["display_name"] = make_display_name(p["display_name"]);
+        }
+    }
+
     parent["participants"] = json_["participants"];
 }
+
+std::string generator::make_display_name(const std::string &full_name) const
+{
+    auto result = config().simplify_template_type(full_name);
+    result = config().using_namespace().relative(result);
+    common::ensure_lambda_type_is_relative(config(), result);
+    result = render_name(result);
+
+    return result;
+}
+
 } // namespace clanguml::sequence_diagram::generators::json

@@ -16,125 +16,55 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00064", "[test-case][class]")
+TEST_CASE("t00064")
 {
-    auto [config, db] = load_config("t00064");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00064_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00064", "t00064_class");
 
-    REQUIRE(diagram->name == "t00064_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!src.contains("type-parameter-"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "R"));
 
-    REQUIRE(model->name() == "t00064_class");
+        REQUIRE(IsClassTemplate(src, "type_list<Ts...>"));
+        REQUIRE(IsClassTemplate(src, "type_list<Ret(Arg &&),Ts...>"));
+        REQUIRE(IsClassTemplate(src, "type_list<T const,Ts...>"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClassTemplate(src, "head<typename>"));
+        REQUIRE(IsClassTemplate(src, "head<type_list<Head,Tail...>>"));
+        REQUIRE(IsClassTemplate(src, "type_group_pair<typename,typename>"));
+        REQUIRE(IsClassTemplate(
+            src, "type_group_pair<type_list<First...>,type_list<Second...>>"));
+        REQUIRE(IsClassTemplate(
+            src, "type_group_pair<type_list<float,double>,type_list<A,B,C>>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsClassTemplate(src, "optional_ref<T>"));
 
-        REQUIRE_THAT(src, !Contains("type-parameter-"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsClassTemplate("type_list", "Ts..."));
-        REQUIRE_THAT(src, IsClassTemplate("type_list", "Ret(Arg &&),Ts..."));
-        REQUIRE_THAT(src, IsClassTemplate("type_list", "T const,Ts..."));
-
-        REQUIRE_THAT(src, IsClassTemplate("head", "typename"));
-        REQUIRE_THAT(src, IsClassTemplate("head", "type_list<Head,Tail...>"));
-        REQUIRE_THAT(
-            src, IsClassTemplate("type_group_pair", "typename,typename"));
-        REQUIRE_THAT(src,
-            IsClassTemplate(
-                "type_group_pair", "type_list<First...>,type_list<Second...>"));
-        REQUIRE_THAT(src,
-            IsClassTemplate(
-                "type_group_pair", "type_list<float,double>,type_list<A,B,C>"));
-
-        REQUIRE_THAT(src, IsClassTemplate("optional_ref", "T"));
-
-        REQUIRE_THAT(src,
-            IsClassTemplate("type_group_pair_it",
-                "It,type_list<First...>,type_list<Second...>"));
-        REQUIRE_THAT(src, (IsMethod<Public>("get", "ref_t", "unsigned int i")));
+        REQUIRE(IsClassTemplate(src,
+            "type_group_pair_it<It,type_list<First...>,type_list<Second...>>"));
+        REQUIRE(IsMethod<Public>(src,
+            "type_group_pair_it<It,type_list<First...>,type_list<Second...>>",
+            "get", "ref_t", "unsigned int i"));
 #if LLVM_VERSION_MAJOR < 16
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("getp", "value_type const*", "unsigned int i")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Constexpr>(
-                "find", "unsigned int", "value_type const& v")));
+        REQUIRE(IsMethod<Public>(src,
+            "type_group_pair_it<It,type_list<First...>,type_list<Second...>>",
+            "getp", "value_type const*", "unsigned int i"));
+        REQUIRE(IsMethod<Public, Constexpr>(src,
+            "type_group_pair_it<It,type_list<First...>,type_list<Second...>>",
+            "find", "unsigned int", "value_type const& v"));
 #else
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("getp", "const value_type *", "unsigned int i")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Constexpr>(
-                "find", "unsigned int", "const value_type & v")));
-
+        REQUIRE(
+            IsMethod<Public>(src,
+                "type_group_pair_it<It,type_list<First...>,type_list<Second...>>",
+                "getp", "const value_type *", "unsigned int i"));
+        REQUIRE(
+            IsMethod<Public, Constexpr>(src,"type_group_pair_it<It,type_list<First...>,type_list<Second...>>",
+                "find", "unsigned int", "const value_type & v"));
 #endif
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsMethod;
-
-        REQUIRE_THAT(src, !Contains("type-parameter-"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsClass(_A("type_list<Ts...>")));
-        REQUIRE_THAT(src, IsClass(_A("type_list<Ret(Arg &&),Ts...>")));
-        REQUIRE_THAT(src, IsClass(_A("type_list<T const,Ts...>")));
-
-        REQUIRE_THAT(src, IsClass(_A("head<typename>")));
-        REQUIRE_THAT(src, IsClass(_A("head<type_list<Head,Tail...>>")));
-        REQUIRE_THAT(src, IsClass(_A("type_group_pair<typename,typename>")));
-        REQUIRE_THAT(src,
-            IsClass(_A(
-                "type_group_pair<type_list<First...>,type_list<Second...>>")));
-        REQUIRE_THAT(src,
-            IsClass(_A(
-                "type_group_pair<type_list<float,double>,type_list<A,B,C>>")));
-
-        REQUIRE_THAT(src, IsClass(_A("optional_ref<T>")));
-
-        REQUIRE_THAT(src,
-            IsClass(_A("type_group_pair_it<It,type_list<First...>,type_list<"
-                       "Second...>>")));
-        REQUIRE_THAT(src, (IsMethod<Public>("get", "ref_t", "unsigned int i")));
-#if LLVM_VERSION_MAJOR < 16
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("getp", "value_type const*", "unsigned int i")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Constexpr>(
-                "find", "unsigned int", "value_type const& v")));
-#else
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("getp", "const value_type *", "unsigned int i")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public, Constexpr>(
-                "find", "unsigned int", "const value_type & v")));
-
-#endif
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    });
 }

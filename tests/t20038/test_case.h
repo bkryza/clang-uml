@@ -16,110 +16,41 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20038", "[test-case][sequence]")
+TEST_CASE("t20038")
 {
-    auto [config, db] = load_config("t20038");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20038_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20038", "t20038_sequence");
 
-    REQUIRE(diagram->name == "t20038_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "B", "b()"}, //
+                {"B", "A", "a()"},       //
+                {"tmain()", "B", "b()"}, //
+                {"B", "A", "a()"},       //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()", "B", "bbb()"}, //
+                {"B", "A", "aaa()"},       //
 
-    REQUIRE(model->name() == "t20038_sequence");
+                {"tmain()", "B", "bbbb()"},                          //
+                {"B", "A", "aaaa()"},                                //
+                {"A", "add<int>(int,int)", ""},                      //
+                {"add<int>(int,int)", "add_impl<int>(int,int)", ""}, //
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+                {"tmain()", "B", "wrap(int)"}, //
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+                {"tmain()", "add_impl<double>(double,double)", ""}, //
 
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "b()"));
+                {"tmain()", "B", "bbbbb()"},                         //
+                {"B", "A", "aaaa()"},                                //
+                {"A", "add<int>(int,int)", ""},                      //
+                {"add<int>(int,int)", "add_impl<int>(int,int)", ""}, //
 
-        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "bb()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbb()"));
-
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"),
-                "This comment should be rendered only\\n"
-                "once"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("add_impl<double>(double,double)"), ""));
-
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "What is 2 \\+ 2\\?"));
-
-        REQUIRE_THAT(src,
-            !HasMessageComment(
-                _A("tmain()"), "This is specific for some_other_diagram"));
-
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "Calling B::bbbbb\\(\\)"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbbb()"));
-
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"), "This is a conditional operator"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-        using mermaid::HasCallInControlCondition;
-        using mermaid::HasMessageComment;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "b()"));
-
-        REQUIRE_THAT(src, !HasCall(_A("tmain()"), _A("B"), "bb()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbb()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbb()"));
-
-        REQUIRE_THAT(src,
-            HasMessageComment(_A("tmain()"),
-                "This comment should be rendered only<br/>"
-                "once"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("add_impl<double>(double,double)"), ""));
-
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "What is 2 \\+ 2\\?"));
-
-        REQUIRE_THAT(src,
-            !HasMessageComment(
-                _A("tmain()"), "This is specific for some_other_diagram"));
-
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "Calling B::bbbbb\\(\\)"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("B"), "bbbbb()"));
-
-        REQUIRE_THAT(src,
-            !HasMessageComment(
-                _A("tmain()"), "This is specific for some_other_diagram"));
-
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "Calling B::bbbbb\\(\\)"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()", "B", "bbb()", InControlCondition{}}, //
+                {"B", "A", "aaa()"},                             //
+            }));
+    });
 }

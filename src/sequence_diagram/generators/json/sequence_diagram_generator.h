@@ -111,6 +111,8 @@ public:
      */
     nlohmann::json &current_block_statement() const;
 
+    std::string make_display_name(const std::string &full_name) const;
+
 private:
     /**
      * @brief Check if specified participant has already been generated.

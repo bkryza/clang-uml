@@ -6,7 +6,7 @@ file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
                                    test_compilation_database_data/*.yml
                                    test_compilation_database_data/*.json)
 
-set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069)
+set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069 t00074 t00075)
 set(TEST_CASES_REQUIRING_CXX20_MODULES t00070 t00071 t00072
                                        t30012 t30013 t30014 t30015)
 set(TEST_CASES_REQUIRING_CUDA t20049 t20050 t20051)
@@ -103,9 +103,9 @@ foreach(TEST_NAME ${TEST_NAMES})
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
-                                           ${TEST_CASE_SOURCES} catch.h)
+                                           ${TEST_CASE_SOURCES})
     else()
-        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc catch.h)
+        target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc)
     endif(TEST_NAME STREQUAL "test_cases")
 
     target_compile_features(${TEST_NAME} PRIVATE

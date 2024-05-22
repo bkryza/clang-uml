@@ -1,5 +1,5 @@
 /**
- * tests/t00046/test_case.cc
+ * tests/t00046/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,63 +16,23 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00046", "[test-case][class]")
+TEST_CASE("t00046")
 {
-    auto [config, db] = load_config("t00046");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00046_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00046", "t00046_class");
 
-    REQUIRE(diagram->name == "t00046_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "AA"));
+        REQUIRE(IsClass(src, {"ns1::ns2", "B"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "C"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "D"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "E"}));
+        REQUIRE(IsClass(src, {"ns1::ns2", "R"}));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00046_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsField<Public>("i", "std::vector<std::uint8_t>"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(get_element(j, "A").value()["type"] == "class");
-        REQUIRE(get_element(j, "AA").value()["type"] == "class");
-        REQUIRE(get_element(j, "ns1::A").value()["type"] == "class");
-        REQUIRE(get_element(j, "ns1::ns2::D").value()["type"] == "class");
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsField;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::B")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::C")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::D")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::E")));
-        REQUIRE_THAT(src, IsClass(_A("ns1::ns2::R")));
-
-        REQUIRE_THAT(src, IsField<Public>("i", "std::vector<std::uint8_t>"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsField<Public>(
+            src, {"ns1::ns2", "R"}, "i", "std::vector<std::uint8_t>"));
+    });
 }

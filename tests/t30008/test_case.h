@@ -16,91 +16,29 @@
  * limitations under the License.
  */
 
-TEST_CASE("t30008", "[test-case][package]")
+TEST_CASE("t30008")
 {
-    auto [config, db] = load_config("t30008");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["t30008_package"];
+    auto [config, db, diagram, model] =
+        CHECK_PACKAGE_MODEL("t30008", "t30008_package");
 
-    REQUIRE(diagram->name == "t30008_package");
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsNamespacePackage(src, "dependants"s, "A"s));
+        REQUIRE(IsNamespacePackage(src, "dependants"s, "B"s));
+        REQUIRE(IsNamespacePackage(src, "dependants"s, "C"s));
+        REQUIRE(!IsNamespacePackage(src, "dependants"s, "X"s));
 
-    auto model = generate_package_diagram(*db, diagram);
+        REQUIRE(IsDependency(src, "B", "A"));
+        REQUIRE(IsDependency(src, "C", "B"));
 
-    REQUIRE(model->name() == "t30008_package");
+        REQUIRE(IsNamespacePackage(src, "dependencies"s, "D"s));
+        REQUIRE(IsNamespacePackage(src, "dependencies"s, "E"s));
+        REQUIRE(IsNamespacePackage(src, "dependencies"s, "F"s));
+        REQUIRE(!IsNamespacePackage(src, "dependencies"s, "Y"s));
 
-    {
-        auto src = generate_package_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsPackage("A"));
-        REQUIRE_THAT(src, IsPackage("B"));
-        REQUIRE_THAT(src, IsPackage("C"));
-        REQUIRE_THAT(src, !IsPackage("X"));
-
-        REQUIRE_THAT(src, IsDependency(_A("B"), _A("A")));
-        REQUIRE_THAT(src, IsDependency(_A("C"), _A("B")));
-
-        REQUIRE_THAT(src, IsPackage("D"));
-        REQUIRE_THAT(src, IsPackage("E"));
-        REQUIRE_THAT(src, IsPackage("F"));
-        REQUIRE_THAT(src, !IsPackage("Y"));
-
-        REQUIRE_THAT(src, IsDependency(_A("E"), _A("D")));
-        REQUIRE_THAT(src, IsDependency(_A("F"), _A("E")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_package_json(diagram, *model);
-
-        using namespace json;
-        using namespace std::string_literals;
-
-        REQUIRE(IsNamespacePackage(j, "dependants"s, "A"s));
-        REQUIRE(IsNamespacePackage(j, "dependants"s, "B"s));
-        REQUIRE(IsNamespacePackage(j, "dependants"s, "C"s));
-        REQUIRE(!IsNamespacePackage(j, "dependants"s, "X"s));
-
-        REQUIRE(IsDependency(j, "B", "A"));
-        REQUIRE(IsDependency(j, "C", "B"));
-
-        REQUIRE(IsNamespacePackage(j, "dependencies"s, "D"s));
-        REQUIRE(IsNamespacePackage(j, "dependencies"s, "E"s));
-        REQUIRE(IsNamespacePackage(j, "dependencies"s, "F"s));
-        REQUIRE(!IsNamespacePackage(j, "dependencies"s, "Y"s));
-
-        REQUIRE(IsDependency(j, "E", "D"));
-        REQUIRE(IsDependency(j, "F", "E"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_package_mermaid(diagram, *model);
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsPackage;
-        using mermaid::IsPackageDependency;
-
-        REQUIRE_THAT(src, IsPackage(_A("A")));
-        REQUIRE_THAT(src, IsPackage(_A("B")));
-        REQUIRE_THAT(src, IsPackage(_A("C")));
-        REQUIRE_THAT(src, !IsPackage(_A("X")));
-
-        REQUIRE_THAT(src, IsPackageDependency(_A("B"), _A("A")));
-        REQUIRE_THAT(src, IsPackageDependency(_A("C"), _A("B")));
-
-        REQUIRE_THAT(src, IsPackage(_A("D")));
-        REQUIRE_THAT(src, IsPackage(_A("E")));
-        REQUIRE_THAT(src, IsPackage(_A("F")));
-        REQUIRE_THAT(src, !IsPackage(_A("Y")));
-
-        REQUIRE_THAT(src, IsPackageDependency(_A("E"), _A("D")));
-        REQUIRE_THAT(src, IsPackageDependency(_A("F"), _A("E")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsDependency(src, "E", "D"));
+        REQUIRE(IsDependency(src, "F", "E"));
+    });
 }

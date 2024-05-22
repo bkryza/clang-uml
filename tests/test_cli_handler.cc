@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "cli/cli_handler.h"
 #include "version.h"
 
-#include "catch.h"
+#include "doctest/doctest.h"
 
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/spdlog.h>
@@ -32,7 +32,7 @@ std::shared_ptr<spdlog::logger> make_sstream_logger(std::ostream &ostr)
         "clanguml-logger", std::move(oss_sink));
 }
 
-TEST_CASE("Test cli handler print_version", "[unit-test]")
+TEST_CASE("Test cli handler print_version")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -52,7 +52,7 @@ TEST_CASE("Test cli handler print_version", "[unit-test]")
                 "clang-uml {}", clanguml::version::CLANG_UML_VERSION)) == 0);
 }
 
-TEST_CASE("Test cli handler print_config", "[unit-test]")
+TEST_CASE("Test cli handler print_config")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -73,7 +73,7 @@ TEST_CASE("Test cli handler print_config", "[unit-test]")
     REQUIRE(doc["diagrams"]["class_main"]);
 }
 
-TEST_CASE("Test cli handler print_diagrams_list", "[unit-test]")
+TEST_CASE("Test cli handler print_diagrams_list")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -97,7 +97,7 @@ TEST_CASE("Test cli handler print_diagrams_list", "[unit-test]")
 )");
 }
 
-TEST_CASE("Test cli handler print_diagram_templates", "[unit-test]")
+TEST_CASE("Test cli handler print_diagram_templates")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -123,7 +123,7 @@ TEST_CASE("Test cli handler print_diagram_templates", "[unit-test]")
 )");
 }
 
-TEST_CASE("Test cli handler print_diagram_template", "[unit-test]")
+TEST_CASE("Test cli handler print_diagram_template")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -158,8 +158,7 @@ TEST_CASE("Test cli handler print_diagram_template", "[unit-test]")
 )");
 }
 
-TEST_CASE(
-    "Test cli handler add_compile_flag and remove_compile_flag", "[unit-test]")
+TEST_CASE("Test cli handler add_compile_flag and remove_compile_flag")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;
@@ -185,8 +184,7 @@ TEST_CASE(
     REQUIRE(contains(cli.config.remove_compile_flags(), "-I/usr/include"));
 }
 
-TEST_CASE(
-    "Test cli handler puml config inheritance with render cmd", "[unit-test]")
+TEST_CASE("Test cli handler puml config inheritance with render cmd")
 {
     using clanguml::cli::cli_flow_t;
     using clanguml::cli::cli_handler;

@@ -16,85 +16,33 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00055", "[test-case][class]")
+TEST_CASE("t00055")
 {
-    auto [config, db] = load_config("t00055");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00055_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00055", "t00055_class");
 
-    REQUIRE(diagram->name == "t00055_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "F"));
+        REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "H"));
+        REQUIRE(IsClass(src, "I"));
+        REQUIRE(IsClass(src, "J"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsLayoutHint(src, "A", "right", "C"));
+        REQUIRE(IsLayoutHint(src, "C", "right", "E"));
+        REQUIRE(IsLayoutHint(src, "E", "right", "G"));
+        REQUIRE(IsLayoutHint(src, "G", "right", "I"));
 
-    REQUIRE(model->name() == "t00055_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-
-        REQUIRE_THAT(src, IsLayoutHint(_A("A"), "right", _A("C")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("C"), "right", _A("E")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("E"), "right", _A("G")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("G"), "right", _A("I")));
-
-        REQUIRE_THAT(src, IsLayoutHint(_A("B"), "down", _A("D")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("D"), "down", _A("F")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("F"), "down", _A("H")));
-        REQUIRE_THAT(src, IsLayoutHint(_A("H"), "down", _A("J")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "B"));
-        REQUIRE(IsClass(j, "C"));
-        REQUIRE(IsClass(j, "D"));
-        REQUIRE(IsClass(j, "E"));
-        REQUIRE(IsClass(j, "F"));
-        REQUIRE(IsClass(j, "G"));
-        REQUIRE(IsClass(j, "H"));
-        REQUIRE(IsClass(j, "I"));
-        REQUIRE(IsClass(j, "J"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsClass(_A("F")));
-        REQUIRE_THAT(src, IsClass(_A("G")));
-        REQUIRE_THAT(src, IsClass(_A("H")));
-        REQUIRE_THAT(src, IsClass(_A("I")));
-        REQUIRE_THAT(src, IsClass(_A("J")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsLayoutHint(src, "B", "down", "D"));
+        REQUIRE(IsLayoutHint(src, "D", "down", "F"));
+        REQUIRE(IsLayoutHint(src, "F", "down", "H"));
+        REQUIRE(IsLayoutHint(src, "H", "down", "J"));
+    });
 }

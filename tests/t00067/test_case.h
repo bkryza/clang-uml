@@ -16,60 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00067", "[test-case][class]")
+TEST_CASE("t00067")
 {
-    auto [config, db] = load_config("t00067");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00067_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00067", "t00067_class");
 
-    REQUIRE(diagram->name == "t00067_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsMethod<Public, Default>(src, "A", "A"));
+        REQUIRE(!IsMethod<Public, Default>(src, "A", "void", "A &&"));
+        REQUIRE(!IsMethod<Public, Deleted>(src, "A", "void", "const A &"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(!IsMethod<Public, Default>(src, "A", "~A"));
 
-    REQUIRE(model->name() == "t00067_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("A")));
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("A", "void", "A &&")));
-        REQUIRE_THAT(
-            src, !(IsMethod<Public, Deleted>("A", "void", "const A &")));
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("~A")));
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("~A")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsMethod;
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("A")));
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("A", "void", "A &&")));
-        REQUIRE_THAT(
-            src, !(IsMethod<Public, Deleted>("A", "void", "const A &")));
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("~A")));
-
-        REQUIRE_THAT(src, !(IsMethod<Public, Default>("~A")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(!IsMethod<Public, Default>(src, "A", "~A"));
+    });
 }

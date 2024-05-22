@@ -1,5 +1,5 @@
 /**
- * tests/t00042/test_case.cc
+ * tests/t00042/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,51 +16,18 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00042", "[test-case][class]")
+TEST_CASE("t00042")
 {
-    auto [config, db] = load_config("t00042");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00042_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00042", "t00042_class");
 
-    REQUIRE(diagram->name == "t00042_class");
     REQUIRE(diagram->generate_packages() == false);
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00042_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClassTemplate("A", "T"));
-        REQUIRE_THAT(src, IsClassTemplate("B", "T,K"));
-        REQUIRE_THAT(src, !IsClassTemplate("C", "T"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClassTemplate(j, "A<T>"));
-        REQUIRE(IsClassTemplate(j, "B<T,K>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("A<T>")));
-        REQUIRE_THAT(src, IsClass(_A("B<T,K>")));
-        REQUIRE_THAT(src, !IsClass(_A("C<T>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClassTemplate(src, "A<T>"));
+        REQUIRE(IsClassTemplate(src, "B<T,K>"));
+        REQUIRE(!IsClassTemplate(src, "C<T>"));
+    });
 }

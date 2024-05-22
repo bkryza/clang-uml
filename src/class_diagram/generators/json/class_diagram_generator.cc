@@ -76,6 +76,8 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["is_move_assignment"] = c.is_move_assignment();
     j["is_copy_assignment"] = c.is_copy_assignment();
     j["is_operator"] = c.is_operator();
+    j["template_parameters"] = c.template_params();
+    j["display_name"] = c.display_name();
 
     j["parameters"] = c.parameters();
 }
@@ -156,7 +158,10 @@ void generator::generate_top_level_elements(nlohmann::json &parent) const
 {
     for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            if (!pkg->is_empty())
+            if (!pkg->is_empty() &&
+                !pkg->all_of([this](const common::model::element &e) {
+                    return !model().should_include(e);
+                }))
                 generate(*pkg, parent);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
@@ -198,7 +203,10 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     for (const auto &subpackage : p) {
         if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
             const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty()) {
+            if (!sp.is_empty() &&
+                !sp.all_of([this](const common::model::element &e) {
+                    return !model().should_include(e);
+                })) {
                 if (config().generate_packages())
                     generate(sp, package_object);
                 else
@@ -239,18 +247,47 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 void generator::generate(const class_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
+
+    // Perform config dependent postprocessing on generated class
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(c.full_name_no_ns());
+
+    for (auto &tp : object["template_parameters"]) {
+        if (tp.contains("type") && tp.at("type").is_string()) {
+            tp["type"] = config().using_namespace().relative(tp.at("type"));
+        }
+    }
+    for (auto &tp : object["members"]) {
+        if (tp.contains("type") && tp.at("type").is_string()) {
+            tp["type"] = config().using_namespace().relative(tp.at("type"));
+        }
+    }
+
+    std::string object_str = object.dump(2);
+
     parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const enum_ &e, nlohmann::json &parent) const
 {
     nlohmann::json object = e;
+
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(e.full_name_no_ns());
+
     parent["elements"].push_back(std::move(object));
 }
 
 void generator::generate(const concept_ &c, nlohmann::json &parent) const
 {
     nlohmann::json object = c;
+
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(c.full_name_no_ns());
+
     parent["elements"].push_back(std::move(object));
 }
 
@@ -282,6 +319,9 @@ void generator::generate_relationships(
     const class_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -310,6 +350,9 @@ void generator::generate_relationships(
     const enum_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "
@@ -328,6 +371,9 @@ void generator::generate_relationships(
     const concept_ &c, nlohmann::json &parent) const
 {
     for (const auto &r : c.relationships()) {
+        if (!model().should_include(r))
+            continue;
+
         auto target_element = model().get(r.destination());
         if (!target_element.has_value()) {
             LOG_DBG("Skipping {} relation from {} to {} due "

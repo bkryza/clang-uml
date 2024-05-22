@@ -1,5 +1,5 @@
 /**
- * tests/t00024/test_case.cc
+ * tests/t00024/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,62 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00024", "[test-case][class]")
+TEST_CASE("t00024")
 {
-    auto [config, db] = load_config("t00024");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00024_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00024", "t00024_class");
 
-    REQUIRE(diagram->name == "t00024_class");
-
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00024_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsAbstractClass(_A("Target")));
-        REQUIRE_THAT(src, IsClass(_A("Target1")));
-        REQUIRE_THAT(src, IsClass(_A("Target2")));
-        REQUIRE_THAT(src, IsClass(_A("Proxy")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Target1")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Target2")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Proxy")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "Target1"));
-        REQUIRE(IsClass(j, "Target2"));
-        REQUIRE(IsAbstractClass(j, "Target"));
-        REQUIRE(IsBaseClass(j, "Target", "Target1"));
-        REQUIRE(IsBaseClass(j, "Target", "Target2"));
-        REQUIRE(IsBaseClass(j, "Target", "Proxy"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsAbstractClass;
-
-        REQUIRE_THAT(src, IsAbstractClass(_A("Target")));
-        REQUIRE_THAT(src, IsClass(_A("Target1")));
-        REQUIRE_THAT(src, IsClass(_A("Target2")));
-        REQUIRE_THAT(src, IsClass(_A("Proxy")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Target1")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Target2")));
-        REQUIRE_THAT(src, IsBaseClass(_A("Target"), _A("Proxy")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "Target1"));
+        REQUIRE(IsClass(src, "Target2"));
+        REQUIRE(IsClass(src, "Proxy"));
+        REQUIRE(IsAbstractClass(src, "Target"));
+        REQUIRE(IsBaseClass(src, "Target", "Target1"));
+        REQUIRE(IsBaseClass(src, "Target", "Target2"));
+        REQUIRE(IsBaseClass(src, "Target", "Proxy"));
+    });
 }

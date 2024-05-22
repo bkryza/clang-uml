@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define CATCH_CONFIG_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "decorators/decorators.h"
-
-#include "catch.h"
 #include "util/util.h"
 
-TEST_CASE("Test decorator parser on regular comment", "[unit-test]")
+#include "doctest/doctest.h"
+
+TEST_CASE("Test decorator parser on regular comment")
 {
     std::string comment = R"(
     \brief This is a comment.
@@ -42,7 +42,7 @@ TEST_CASE("Test decorator parser on regular comment", "[unit-test]")
     CHECK(clanguml::util::trim(comment) == stripped);
 }
 
-TEST_CASE("Test decorator parser on note", "[unit-test]")
+TEST_CASE("Test decorator parser on note")
 {
     std::string comment = R"(
     \brief This is a comment.
@@ -99,7 +99,7 @@ TEST_CASE("Test decorator parser on note", "[unit-test]")
     \param b float a float)");
 }
 
-TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
+TEST_CASE("Test decorator parser on note with custom tag")
 {
     std::string comment = R"(
     \brief This is a comment.
@@ -156,7 +156,7 @@ TEST_CASE("Test decorator parser on note with custom tag", "[unit-test]")
     \param b float a float)");
 }
 
-TEST_CASE("Test decorator parser on style", "[unit-test]")
+TEST_CASE("Test decorator parser on style")
 {
     std::string comment = R"(
     \uml{style[#green,dashed,thickness=4]}
@@ -175,7 +175,7 @@ TEST_CASE("Test decorator parser on style", "[unit-test]")
     CHECK(stripped.empty());
 }
 
-TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
+TEST_CASE("Test decorator parser on aggregation")
 {
     std::string comment = R"(
     \uml{aggregation[0..1:0..*]}
@@ -194,7 +194,7 @@ TEST_CASE("Test decorator parser on aggregation", "[unit-test]")
     CHECK(stripped.empty());
 }
 
-TEST_CASE("Test decorator parser on skip", "[unit-test]")
+TEST_CASE("Test decorator parser on skip")
 {
     std::string comment = R"(
     \uml{skip}
@@ -212,7 +212,7 @@ TEST_CASE("Test decorator parser on skip", "[unit-test]")
     CHECK(stripped.empty());
 }
 
-TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
+TEST_CASE("Test decorator parser on skiprelationship")
 {
     std::string comment = R"(
     \uml{skiprelationship}
@@ -230,7 +230,7 @@ TEST_CASE("Test decorator parser on skiprelationship", "[unit-test]")
     CHECK(stripped.empty());
 }
 
-TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
+TEST_CASE("Test decorator parser on diagram scope")
 {
     std::string comment = R"(
     \uml{note:diagram1,  diagram2,
@@ -259,7 +259,7 @@ TEST_CASE("Test decorator parser on diagram scope", "[unit-test]")
     CHECK(stripped.empty());
 }
 
-TEST_CASE("Test invalid comment - unterminated curly brace", "[unit-test]")
+TEST_CASE("Test invalid comment - unterminated curly brace")
 {
     std::string comment = R"(
     Test test test

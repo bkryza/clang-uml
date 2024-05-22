@@ -16,77 +16,44 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20044", "[test-case][sequence]")
+TEST_CASE("t20044")
 {
-    auto [config, db] = load_config("t20044");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20044_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20044", "t20044_sequence");
 
-    REQUIRE(diagram->name == "t20044_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsClassParticipant(src, "detail::expected<int,error>"));
+        REQUIRE(IsClassParticipant(src, "result_t"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+        REQUIRE(MessageOrder(src,
+            {
+                {"tmain()", "R", "R((lambda at t20044.cc:74:9) &&)"}, //
+                {"R", "tmain()::(lambda t20044.cc:74:9)",
+                    "operator()() const"},                              //
+                {"tmain()::(lambda t20044.cc:74:9)", "A", "a() const"}, //
 
-    REQUIRE(model->name() == "t20044_sequence");
+                {"tmain()", "tmain()::(lambda t20044.cc:84:18)",
+                    "operator()() const"},                          //
+                {"tmain()::(lambda t20044.cc:84:18)", "A", "a5()"}, //
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+                {"tmain()", "A", "a1() const"},     //
+                {"A", "result_t", "expected(int)"}, //
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+                {"tmain()", "result_t",
+                    "and_then((lambda at t20044.cc:90:19) &&)"}, //
+                {"result_t", "tmain()::(lambda t20044.cc:90:19)",
+                    "operator()(auto &&) const"},                            //
+                {"tmain()::(lambda t20044.cc:90:19)", "A", "a2(int) const"}, //
+                {"A", "result_t", "expected(int)"},                          //
 
-        // Check if all calls exist
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()"), _A("R"), "R((lambda at t20044.cc:74:9) &&)"));
-        REQUIRE_THAT(src,
-            HasCall(_A("R"), _A("tmain()::(lambda t20044.cc:74:9)"),
-                "operator()()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20044.cc:74:9)"), _A("A"), "a()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("tmain()::(lambda t20044.cc:84:18)"),
-                "operator()()"));
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()::(lambda t20044.cc:84:18)"), _A("A"), "a5()"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a1()"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"), _A("detail::expected<int,error>"),
-                "and_then((lambda at t20044.cc:90:19) &&)"));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("detail::expected<int,error>"),
-                _A("tmain()::(lambda t20044.cc:90:19)"),
-                "operator()(auto &&) const"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("tmain()::(lambda t20044.cc:90:19)"), _A("A"), "a2(int)"));
-
-        REQUIRE_THAT(src,
-            HasCall(
-                _A("A"), _A("detail::expected<int,error>"), "expected(int)"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()", "result_t",
+                    "and_then(result_t (&)(int))"}, //                                                            //
+                {"tmain()", "result_t",
+                    "and_then(std::function<result_t (int)> &)"}, //                                                            //
+                {"tmain()", "result_t",
+                    "value() const"}, //                                                            //
+            }));
+    });
 }

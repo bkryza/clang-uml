@@ -16,61 +16,24 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00071", "[test-case][class]")
+TEST_CASE("t00071")
 {
-    auto [config, db] = load_config("t00071");
+    using namespace clanguml::test;
+    using namespace std::string_literals;
 
-    auto diagram = config.diagrams["t00071_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00071", "t00071_class");
 
-    REQUIRE(diagram->name == "t00071_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "R"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsEnum(src, {"detail", "BBB"}));
+        REQUIRE(IsEnum(src, {"detail", "CCC"}));
 
-    REQUIRE(model->name() == "t00071_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsEnum(_A("detail::BBB")));
-        REQUIRE_THAT(src, IsEnum(_A("detail::CCC")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-        using namespace std::string_literals;
-
-        REQUIRE(IsModulePackage(j, "app"s));
-        REQUIRE(IsModulePackage(j, "app"s, "lib1"s));
-        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod1"s));
-        REQUIRE(IsModulePackage(j, "app"s, "lib1"s, "mod2"s));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-        using mermaid::IsEnum;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsEnum(_A("detail::BBB")));
-        REQUIRE_THAT(src, IsEnum(_A("detail::CCC")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsModulePackage(src, "app"s));
+        REQUIRE(IsModulePackage(src, "app"s, "lib1"s));
+        REQUIRE(IsModulePackage(src, "app"s, "lib1"s, "mod1"s));
+        REQUIRE(IsModulePackage(src, "app"s, "lib1"s, "mod2"s));
+    });
 }

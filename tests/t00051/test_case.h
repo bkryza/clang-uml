@@ -16,116 +16,40 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00051", "[test-case][class]")
+TEST_CASE("t00051")
 {
-    auto [config, db] = load_config("t00051");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00051_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00051", "t00051_class");
 
-    REQUIRE(diagram->name == "t00051_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsInnerClass(src, "A", "A::custom_thread1"));
+        REQUIRE(IsInnerClass(src, "A", "A::custom_thread2"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsMethod<Public>(src, "A::custom_thread1",
+            "custom_thread1<Function,Args...>", "void",
+            "Function && f, Args &&... args"));
+        REQUIRE(IsMethod<Public>(src, "A::custom_thread2", "thread", "void",
+            "(lambda at t00051.cc:59:27) &&"));
+        REQUIRE(IsMethod<Private>(src, "A", "start_thread3",
+            "B<(lambda at t00051.cc:43:18),(lambda at "
+            "t00051.cc:43:27)>"));
+        REQUIRE(IsMethod<Private>(
+            src, "A", "get_function", "(lambda at t00051.cc:48:16)"));
 
-    REQUIRE(model->name() == "t00051_class");
+        REQUIRE(IsClassTemplate(src, "B<F,FF=F>"));
+        REQUIRE(IsMethod<Public>(src, "B<F,FF=F>", "f", "void"));
+        REQUIRE(IsMethod<Public>(src, "B<F,FF=F>", "ff", "void"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClassTemplate(
+            src, "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsInstantiation(src, "B<F,FF=F>",
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
 
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread1")));
-        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread2")));
-
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
-                "Function && f, Args &&... args")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>(
-                "thread", "void", "(lambda at t00051.cc:59:27) &&")));
-        REQUIRE_THAT(src,
-            (IsMethod<Private>("start_thread3",
-                "B<(lambda at t00051.cc:43:18),(lambda at "
-                "t00051.cc:43:27)>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Private>("get_function", "(lambda at t00051.cc:48:16)")));
-
-        REQUIRE_THAT(src, IsClassTemplate("B", "F,FF=F"));
-        REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
-        REQUIRE_THAT(src, (IsMethod<Public>("ff", "void")));
-
-        REQUIRE_THAT(src,
-            IsClassTemplate("B",
-                "(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)"));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("B<F,FF=F>"),
-                _A("B<(lambda at t00051.cc:43:18),(lambda at "
-                   "t00051.cc:43:27)>")));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("A"),
-                _A("B<(lambda at t00051.cc:43:18),(lambda "
-                   "at t00051.cc:43:27)>")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsInnerClass(j, "A", "A::custom_thread1"));
-        REQUIRE(IsInnerClass(j, "A", "A::custom_thread2"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsInnerClass;
-        using mermaid::IsMethod;
-
-        // Check if all classes exist
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread1")));
-        REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("A::custom_thread2")));
-
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("custom_thread1<Function,Args...>", "void",
-                "Function && f, Args &&... args")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>(
-                "thread", "void", "(lambda at t00051.cc:59:27) &&")));
-        REQUIRE_THAT(src,
-            (IsMethod<Private>("start_thread3",
-                "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>")));
-        REQUIRE_THAT(src,
-            (IsMethod<Private>("get_function", "(lambda at t00051.cc:48:16)")));
-
-        REQUIRE_THAT(src, IsClass(_A("B<F,FF=F>")));
-        REQUIRE_THAT(src, (IsMethod<Public>("f", "void")));
-        REQUIRE_THAT(src, (IsMethod<Public>("ff", "void")));
-
-        REQUIRE_THAT(src,
-            IsClass(_A("B<(lambda at t00051.cc:43:18),(lambda at "
-                       "t00051.cc:43:27)>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("B<F,FF=F>"),
-                _A("B<(lambda at t00051.cc:43:18),(lambda at "
-                   "t00051.cc:43:27)>")));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("A"),
-                _A("B<(lambda at t00051.cc:43:18),(lambda "
-                   "at t00051.cc:43:27)>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsDependency(src, "A",
+            "B<(lambda at t00051.cc:43:18),(lambda at t00051.cc:43:27)>"));
+    });
 }

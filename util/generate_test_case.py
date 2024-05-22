@@ -25,62 +25,66 @@ import jinja2
 TEST_CASE_MULTIPLIER = 10000
 
 CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
-    // Check if all classes exist
-    //REQUIRE_THAT(src, IsClass(_A("A")));
-    
-    // Check if class templates exist
-    //REQUIRE_THAT(src, IsClassTemplate("A", "T,P,CMP,int N"));
-    
-    // Check concepts
-    //REQUIRE_THAT(src, IsConcept(_A("AConcept<T>")));
-    //REQUIRE_THAT(src,
-    //    IsConceptRequirement(
-    //        _A("AConcept<T,P>"), "sizeof (T) > sizeof (P)"));
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+            // REQUIRE(HasTitle(src, "Basic class diagram example"));
 
-    // Check if all enums exist
-    //REQUIRE_THAT(src, IsEnum(_A("Lights")));
-    
-    // Check if all inner classes exist
-    //REQUIRE_THAT(src, IsInnerClass(_A("A"), _A("AA")));
+            // REQUIRE(!IsClass(src, "NOSUCHCLASS"));
+            // REQUIRE(IsAbstractClass(src, "A"));
+            // REQUIRE(IsClass(src, "B"));
+            // REQUIRE(IsBaseClass(src, "A", "B"));
 
-    // Check if all inheritance relationships exist
-    //REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Child")));
-    
-    // Check if all methods exist
-    //REQUIRE_THAT(src, (IsMethod<Public, Const>("foo")));
-    
-    // Check if all fields exist
-    //REQUIRE_THAT(src, (IsField<Private>("private_member", "int")));
-    
-    // Check if all relationships exist
-    //REQUIRE_THAT(src, IsAssociation(_A("D"), _A("A"), "-as"));
-    //REQUIRE_THAT(src, IsDependency(_A("R"), _A("B")));
-    //REQUIRE_THAT(src, IsAggregation(_A("R"), _A("D"), "-ag"));
-    //REQUIRE_THAT(src, IsComposition(_A("R"), _A("D"), "-ac"));
-    //REQUIRE_THAT(src, IsInstantiation(_A("ABCD::F<T>"), _A("F<int>")));
+            // REQUIRE(IsMethod<Public, Abstract>(src, "A", "foo_a"));
+
+            // REQUIRE(IsAssociation<Private>(src, "D", "A", "as"));
+
+            // REQUIRE(HasNote(src, "A", "left", "This is class A"));
+        });
 """
 
 SEQUENCE_DIAGRAM_TEST_CASE_EXAMPLES = """
-    // Check if all calls exist
-    //REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
-    //REQUIRE_THAT(src, HasCall(_A("A"), "a()"));
+    CHECK_SEQUENCE_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            // REQUIRE(HasTitle(src, "Basic sequence diagram example"));
+
+            REQUIRE(MessageOrder(src,
+                 {
+                     //
+                    // {"tmain()", "A", "A()"},    //
+                    // {"B", "A", "log_result(int)", Static{}}     //
+                }));
+
+            // REQUIRE(!HasMessage(src, {"A", {"detail", "C"}, "add(int,int)"}));
+
+            // REQUIRE(HasComment(src, "t20001 test diagram of type sequence"));
+
+            // REQUIRE(HasMessageComment(src, "tmain()", "Just add 2 numbers"));
+        });
 """
 
 PACKAGE_DIAGRAM_TEST_CASE_EXAMPLES = """
-    // Check if all packages exist
-    //REQUIRE_THAT(src, IsPackage("ns1"));
+    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        // REQUIRE(IsNamespacePackage(src, "A"s, "AA"s));
+
+        // REQUIRE(IsNamespacePackage(src, "B"s, "BB"s, "BBB"s));
+
+        // REQUIRE(IsDependency(src, "BBB", "A1"));
+    });
 """
 
 INCLUDE_DIAGRAM_TEST_CASE_EXAMPLES = """
-    // Check all folders exist
-    //REQUIRE_THAT(src, IsFolder("lib1"));
-    
-    // Check if all files exist
-    //REQUIRE_THAT(src, IsFile("lib1.h"));
-    
-    // Check if all includes exists
-    //REQUIRE_THAT(src, IsAssociation(_A("t40002.cc"), _A("lib1.h")));
-    //REQUIRE_THAT(src, IsDependency(_A("t40001_include1.h"), _A("string")));
+    CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        // REQUIRE(IsFolder(src, "include/lib1"));
+        // REQUIRE(IsFile(src, "include/lib1/lib1.h"));
+
+        // REQUIRE(IsSystemHeader(src, "string"));
+
+        // REQUIRE(IsHeaderDependency(
+        //    src, "src/t40001.cc", "include/t40001_include1.h"));
+
+        // REQUIRE(IsSystemHeaderDependency(
+        //    src, "include/t40001_include1.h", "string"));
+    });
 """
 
 
@@ -153,7 +157,10 @@ def main(args):
 
     examples = examples_for_type(test_case_type)
 
-    variables = dict(type = test_case_type, name = test_case_name, examples = examples)
+    variables = dict(type = test_case_type,
+                     TYPE = test_case_type.upper(),
+                     name = test_case_name,
+                     examples = examples)
 
     generate(environment, variables, '.clang-uml', '.clang-uml', test_case_directory)
     generate(environment, variables, 't00000.cc', f'{test_case_name}.cc', test_case_directory)

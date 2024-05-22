@@ -1,5 +1,5 @@
 /**
- * tests/t00007/test_case.cc
+ * tests/t00007/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,64 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00007", "[test-case][class]")
+TEST_CASE("t00007")
 {
-    auto [config, db] = load_config("t00007");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00007_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00007", "t00007_class");
 
-    REQUIRE(diagram->name == "t00007_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "R"));
 
-    auto model = generate_class_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t00007_class");
-
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "+c"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "B"));
-        REQUIRE(IsClass(j, "C"));
-        REQUIRE(IsClass(j, "R"));
-        REQUIRE(IsAggregation(j, "R", "A", "a"));
-        REQUIRE(IsAssociation(j, "R", "B", "b"));
-        REQUIRE(IsAssociation(j, "R", "C", "c"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsAggregation(_A("R"), _A("A"), "+a"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("B"), "+b"));
-        REQUIRE_THAT(src, IsAssociation(_A("R"), _A("C"), "+c"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsAggregation<Public>(src, "R", "A", "a"));
+        REQUIRE(IsAssociation<Public>(src, "R", "B", "b"));
+        REQUIRE(IsAssociation<Public>(src, "R", "C", "c"));
+    });
 }

@@ -16,54 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20035", "[test-case][sequence]")
+TEST_CASE("t20035")
 {
-    auto [config, db] = load_config("t20035");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20035_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20035", "t20035_sequence");
 
-    REQUIRE(diagram->name == "t20035_sequence");
-
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20035_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a(int)"), _A("b1(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("b1(int)"), _A("c(int)"), ""));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(HasMessageChain(j,
-            {{"tmain(int,char **)", "a(int)", "int"},
-                {"a(int)", "b1(int)", "int"}, {"b1(int)", "c(int)", "int"}}));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain(int,char **)"), _A("a(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("a(int)"), _A("b1(int)"), ""));
-        REQUIRE_THAT(src, HasCall(_A("b1(int)"), _A("c(int)"), ""));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageChainsOrder(src,
+            {{
+                //
+                {"tmain(int,char **)", "a(int)", ""}, //
+                {"a(int)", "b1(int)", ""},            //
+                {"b1(int)", "c(int)", ""}             //
+            }}));
+    });
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t20001/test_case.cc
+ * tests/t20001/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,106 +16,62 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20001", "[test-case][sequence]")
+TEST_CASE("t20001")
 {
-    auto [config, db] = load_config("t20001");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20001_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20001", "t20001_sequence");
 
-    REQUIRE(diagram->name == "t20001_sequence");
+    CHECK_SEQUENCE_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(HasTitle(src, "Basic sequence diagram example"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+            REQUIRE(MessageOrder(src,
+                {
+                    //
+                    {"tmain()", "A", "A()"},    //
+                    {"tmain()", "B", "B(A &)"}, //
 
-    REQUIRE(model->name() == "t20001_sequence");
+                    {"tmain()", "A", "add(int,int)"}, //
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+                    {"tmain()", "B", "wrap_add3(int,int,int)"}, //
+                    {"B", "A", "add3(int,int,int)"},            //
+                    {"A", "A", "add(int,int)"},                 //
+                    {"A", "A", "log_result(int)", Static{}},    //
+                    {"B", "A", "log_result(int)", Static{}}     //
+                }));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+            REQUIRE(!HasMessage(src, {"A", {"detail", "C"}, "add(int,int)"}));
 
-        REQUIRE_THAT(src, HasTitle("Basic sequence diagram example"));
+            REQUIRE(HasComment(src, "t20001 test diagram of type sequence"));
 
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
-        REQUIRE_THAT(src, HasCall(_A("A"), "add(int,int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
-        REQUIRE_THAT(src, HasCall(_A("A"), "__log_result(int)__"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "__log_result(int)__"));
+            REQUIRE(HasMessageComment(src, "tmain()", "Just add 2 numbers"));
 
-        REQUIRE_THAT(src, HasComment("t20001 test diagram of type sequence"));
+            REQUIRE(HasMessageComment(src, "tmain()", "And now add another 2"));
+        },
+        [](const json_t &src) {
+            const auto &A = get_participant(src.src, "A");
 
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "Just add 2 numbers"));
+            CHECK(A.has_value());
 
-        REQUIRE_THAT(
-            src, HasMessageComment(_A("tmain()"), "And now add another 2"));
+            CHECK(A.value()["type"] == "class");
+            CHECK(A.value()["name"] == "A");
+            CHECK(A.value()["display_name"] == "A");
+            CHECK(A.value()["namespace"] == "clanguml::t20001");
+            CHECK(A.value()["source_location"]["file"] == "t20001.cc");
+            CHECK(A.value()["source_location"]["line"] == 13);
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_sequence_json(diagram, *model);
+            const auto &tmain = get_participant(src.src, "tmain()");
 
-        using namespace json;
+            CHECK(tmain.has_value());
 
-        const auto &A = get_participant(j, "A");
-
-        CHECK(A.has_value());
-
-        CHECK(A.value()["type"] == "class");
-        CHECK(A.value()["name"] == "A");
-        CHECK(A.value()["display_name"] == "A");
-        CHECK(A.value()["namespace"] == "clanguml::t20001");
-        CHECK(A.value()["source_location"]["file"] == "t20001.cc");
-        CHECK(A.value()["source_location"]["line"] == 13);
-
-        const auto &tmain = get_participant(j, "tmain()");
-
-        CHECK(tmain.has_value());
-
-        CHECK(tmain.value()["type"] == "function");
-        CHECK(tmain.value()["name"] == "tmain");
-        CHECK(tmain.value()["display_name"] == "tmain()");
-        CHECK(tmain.value()["namespace"] == "clanguml::t20001");
-        CHECK(tmain.value()["source_location"]["file"] == "t20001.cc");
-        CHECK(tmain.value()["source_location"]["line"] == 61);
-
-        REQUIRE(HasTitle(j, "Basic sequence diagram example"));
-
-        REQUIRE(IsFunctionParticipant(j, "tmain()"));
-        REQUIRE(IsClassParticipant(j, "A"));
-        REQUIRE(IsClassParticipant(j, "B"));
-
-        std::vector<int> messages = {
-            FindMessage(j, "tmain()", "A", "add(int,int)"),
-            FindMessage(j, "tmain()", "B", "wrap_add3(int,int,int)"),
-            FindMessage(j, "B", "A", "add3(int,int,int)"),
-            FindMessage(j, "A", "A", "add(int,int)"),
-            FindMessage(j, "A", "A", "log_result(int)"),
-            FindMessage(j, "B", "A", "log_result(int)")};
-
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-        using mermaid::HasComment;
-        using mermaid::HasTitle;
-
-        REQUIRE_THAT(src, HasTitle("Basic sequence diagram example"));
-
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "add3(int,int,int)"));
-        REQUIRE_THAT(src, HasCall(_A("A"), "add(int,int)"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("detail::C"), "add(int,int)"));
-        REQUIRE_THAT(src, HasCall(_A("A"), "log_result(int)"));
-        REQUIRE_THAT(src, HasCall(_A("B"), _A("A"), "log_result(int)"));
-
-        REQUIRE_THAT(src, HasComment("t20001 test diagram of type sequence"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+            CHECK(tmain.value()["type"] == "function");
+            CHECK(tmain.value()["name"] == "tmain");
+            CHECK(tmain.value()["display_name"] == "tmain()");
+            CHECK(tmain.value()["namespace"] == "clanguml::t20001");
+            CHECK(tmain.value()["source_location"]["file"] == "t20001.cc");
+            CHECK(tmain.value()["source_location"]["line"] == 61);
+        });
 }

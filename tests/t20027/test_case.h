@@ -16,54 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20027", "[test-case][sequence]")
+TEST_CASE("t20027")
 {
-    auto [config, db] = load_config("t20027");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20027_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20027", "t20027_sequence");
 
-    REQUIRE(diagram->name == "t20027_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "A", "a()"} //
+            }));
 
-    auto model = generate_sequence_diagram(*db, diagram);
-
-    REQUIRE(model->name() == "t20027_sequence");
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        // Check if all calls exist
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "aa()"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "aaa()"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        std::vector<int> messages = {FindMessage(j, "tmain()", "A", "a()")};
-
-        REQUIRE(std::is_sorted(messages.begin(), messages.end()));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a()"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "aa()"));
-        REQUIRE_THAT(src, !HasCall(_A("A"), _A("A"), "aaa()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(!HasMessage(src, {"A", "A", "aa()"}));
+        REQUIRE(!HasMessage(src, {"A", "A", "aaa()"}));
+    });
 }

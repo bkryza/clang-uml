@@ -89,7 +89,7 @@ void generator::generate(const package &p, std::ostream &ostr) const
              << "]\n";
 
         if (p.is_deprecated())
-            ostr << indent(1) << "%% <<deprecated>>";
+            ostr << indent(1) << "%% <<deprecated>>\n";
     }
 
     for (const auto &subpackage : p) {

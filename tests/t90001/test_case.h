@@ -1,5 +1,5 @@
 /**
- * tests/t90001/test_case.cc
+ * tests/t90001/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,8 +16,9 @@
  * limitations under the License.
  */
 
-TEST_CASE("t90001", "[test-case][config]")
+TEST_CASE("t90001")
 {
+    using namespace clanguml::test;
     using clanguml::error::empty_diagram_error;
 
     auto [config, db] = load_config("t90001");
@@ -31,12 +32,12 @@ TEST_CASE("t90001", "[test-case][config]")
 
         REQUIRE(model->name() == "t90001_class");
 
+        REQUIRE_THROWS_AS(render_class_diagram<plantuml_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_class_diagram<mermaid_t>(diagram, *model),
+            empty_diagram_error);
         REQUIRE_THROWS_AS(
-            generate_class_puml(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_class_json(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_class_mermaid(diagram, *model), empty_diagram_error);
+            render_class_diagram<json_t>(diagram, *model), empty_diagram_error);
     }
 
     {
@@ -48,12 +49,12 @@ TEST_CASE("t90001", "[test-case][config]")
 
         REQUIRE(model->name() == "t90001_sequence");
 
-        REQUIRE_THROWS_AS(
-            generate_sequence_puml(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_sequence_json(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_sequence_mermaid(diagram, *model), empty_diagram_error);
+        REQUIRE_THROWS_AS(render_sequence_diagram<plantuml_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_sequence_diagram<mermaid_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_sequence_diagram<json_t>(diagram, *model),
+            empty_diagram_error);
     }
 
     {
@@ -65,12 +66,12 @@ TEST_CASE("t90001", "[test-case][config]")
 
         REQUIRE(model->name() == "t90001_package");
 
-        REQUIRE_THROWS_AS(
-            generate_package_puml(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_package_json(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_package_mermaid(diagram, *model), empty_diagram_error);
+        REQUIRE_THROWS_AS(render_package_diagram<plantuml_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_package_diagram<mermaid_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_package_diagram<json_t>(diagram, *model),
+            empty_diagram_error);
     }
 
     {
@@ -82,11 +83,11 @@ TEST_CASE("t90001", "[test-case][config]")
 
         REQUIRE(model->name() == "t90001_include");
 
-        REQUIRE_THROWS_AS(
-            generate_include_puml(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_include_json(diagram, *model), empty_diagram_error);
-        REQUIRE_THROWS_AS(
-            generate_include_mermaid(diagram, *model), empty_diagram_error);
+        REQUIRE_THROWS_AS(render_include_diagram<plantuml_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_include_diagram<mermaid_t>(diagram, *model),
+            empty_diagram_error);
+        REQUIRE_THROWS_AS(render_include_diagram<json_t>(diagram, *model),
+            empty_diagram_error);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t00044/test_case.cc
+ * tests/t00044/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,103 +16,35 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00044", "[test-case][class]")
+TEST_CASE("t00044")
 {
-    auto [config, db] = load_config("t00044");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00044_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00044", "t00044_class");
 
-    REQUIRE(diagram->name == "t00044_class");
-    REQUIRE(diagram->generate_packages() == true);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!src.contains("type-parameter-"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsClassTemplate(src, "sink<T>"));
+        REQUIRE(IsClassTemplate(src, "signal_handler<T,A>"));
 
-    REQUIRE(model->name() == "t00044_class");
+        REQUIRE(IsClassTemplate(src, "signal_handler<Ret(Args...),A>"));
+        REQUIRE(IsClassTemplate(src, "signal_handler<void(int),bool>"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClassTemplate(src, "sink<signal_handler<Ret(Args...),A>>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsInstantiation(
+            src, "sink<T>", "sink<signal_handler<Ret(Args...),A>>"));
 
-        REQUIRE_THAT(src, !Contains("type-parameter-"));
+        REQUIRE(IsInstantiation(src, "sink<signal_handler<Ret(Args...),A>>",
+            "sink<signal_handler<void(int),bool>>"));
 
-        REQUIRE_THAT(src, IsClassTemplate("sink", "T"));
-        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "T,A"));
+        REQUIRE(IsClassTemplate(src, "signal_handler<T,A>"));
+        REQUIRE(IsInstantiation(
+            src, "signal_handler<T,A>", "signal_handler<Ret(Args...),A>"));
 
-        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "Ret(Args...),A"));
-        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "void(int),bool"));
-
-        REQUIRE_THAT(
-            src, IsClassTemplate("sink", "signal_handler<Ret(Args...),A>"));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(
-                _A("sink<T>"), _A("sink<signal_handler<Ret(Args...),A>>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("sink<signal_handler<Ret(Args...),A>>"),
-                _A("sink<signal_handler<void(int),bool>>")));
-
-        REQUIRE_THAT(src, IsClassTemplate("signal_handler", "T,A"));
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("signal_handler<T,A>"),
-                _A("signal_handler<Ret(Args...),A>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
-                _A("signal_handler<void(int),bool>")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClassTemplate(j, "sink<T>"));
-        REQUIRE(IsClassTemplate(j, "signal_handler<T,A>"));
-        REQUIRE(IsClassTemplate(j, "signal_handler<Ret(Args...),A>"));
-        REQUIRE(IsStruct(j, "signal_handler<Ret(Args...),A>"));
-        REQUIRE(IsClassTemplate(j, "signal_handler<void(int),bool>"));
-        REQUIRE(IsClassTemplate(j, "sink<signal_handler<Ret(Args...),A>>"));
-        REQUIRE(IsStruct(j, "R"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, !Contains("type-parameter-"));
-
-        REQUIRE_THAT(src, IsClass(_A("sink<T>")));
-        REQUIRE_THAT(src, IsClass(_A("signal_handler<T,A>")));
-
-        REQUIRE_THAT(src, IsClass(_A("signal_handler<Ret(Args...),A>")));
-        REQUIRE_THAT(src, IsClass(_A("signal_handler<void(int),bool>")));
-
-        REQUIRE_THAT(src, IsClass(_A("sink<signal_handler<Ret(Args...),A>>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(
-                _A("sink<T>"), _A("sink<signal_handler<Ret(Args...),A>>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("sink<signal_handler<Ret(Args...),A>>"),
-                _A("sink<signal_handler<void(int),bool>>")));
-
-        REQUIRE_THAT(src, IsClass(_A("signal_handler<T,A>")));
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("signal_handler<T,A>"),
-                _A("signal_handler<Ret(Args...),A>")));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("signal_handler<Ret(Args...),A>"),
-                _A("signal_handler<void(int),bool>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsInstantiation(src, "signal_handler<Ret(Args...),A>",
+            "signal_handler<void(int),bool>"));
+    });
 }

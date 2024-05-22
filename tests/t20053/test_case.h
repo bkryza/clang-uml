@@ -16,55 +16,28 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20053", "[test-case][sequence]")
+TEST_CASE("t20053")
 {
-    auto [config, db] = load_config("t20053");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20053_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20053", "t20053_sequence");
 
-    REQUIRE(diagram->name == "t20053_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsFileParticipant(src, "t20053.cu"));
 
-    auto model = generate_sequence_diagram(*db, diagram);
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "a2(int)", ""}, //
 
-    REQUIRE(model->name() == "t20053_sequence");
-
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("a2(int)"), ""));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("tmain()"),
-                _A("a1<(lambda at t20053.cc:23:9)>((lambda at t20053.cc:23:9) "
-                   "&&)"),
-                ""));
-
-        REQUIRE_THAT(src,
-            HasCall(_A("a1<(lambda at t20053.cc:23:9)>((lambda at "
-                       "t20053.cc:23:9) &&)"),
-                _A("a3(int)"), ""));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()",
+                    "a1<(lambda at t20053.cc:23:9)>((lambda at t20053.cc:23:9) "
+                    "&&)",
+                    ""}, //
+                {"a1<(lambda at t20053.cc:23:9)>((lambda at t20053.cc:23:9) "
+                 "&&)",
+                    "a3(int)", ""}, //
+            }));
+    });
 }

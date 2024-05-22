@@ -16,60 +16,40 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20033", "[test-case][sequence]")
+TEST_CASE("t20033")
 {
-    auto [config, db] = load_config("t20033");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t20033_sequence"];
+    auto [config, db, diagram, model] =
+        CHECK_SEQUENCE_MODEL("t20033", "t20033_sequence");
 
-    REQUIRE(diagram->name == "t20033_sequence");
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {
+                //
+                {"tmain()", "A", "a1()"},                       //
+                {"tmain()", "A", "a2()"},                       //
+                {"tmain()", "A", "a2()", InControlCondition{}}, //
+                {"tmain()", "A", "a3()", InControlCondition{}}, //
+                {"tmain()", "A", "a3()"},                       //
+                {"tmain()", "A", "a4()"},                       //
 
-    auto model = generate_sequence_diagram(*db, diagram);
+                {"tmain()", "A", "a2()", InControlCondition{}}, //
+                {"tmain()", "A", "a3()"},                       //
 
-    REQUIRE(model->name() == "t20033_sequence");
+                {"tmain()", "A", "a2()", InControlCondition{}}, //
+                {"tmain()", "A", "a3()"},                       //
 
-    {
-        auto src = generate_sequence_puml(diagram, *model);
-        AliasMatcher _A(src);
+                {"tmain()", "A", "a3()"}, //
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+                {"tmain()", "A", "a2()"}, //
 
-        // Check if all calls exist
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a1()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a2()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a3()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a4()"));
+                {"tmain()", "A", "a4()"},                       //
+                {"tmain()", "A", "a3()", InControlCondition{}}, //
 
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
+                {"tmain()", "A", "a4()", InControlCondition{}}, //
 
-    {
-        auto j = generate_sequence_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_sequence_mermaid(diagram, *model);
-
-        mermaid::SequenceDiagramAliasMatcher _A(src);
-        using mermaid::HasCall;
-        using mermaid::HasCallInControlCondition;
-
-        REQUIRE_THAT(src, HasCall(_A("tmain()"), _A("A"), "a1()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a2()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a3()"));
-        REQUIRE_THAT(
-            src, HasCallInControlCondition(_A("tmain()"), _A("A"), "a4()"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+                {"tmain()", "A", "a4()"} //
+            }));
+    });
 }

@@ -300,7 +300,8 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
              << fmt::format("\"({})\"\n", fmt::join(parameters, ","));
 
         for (const auto &req : c.requires_statements()) {
-            ostr << indent(2) << fmt::format("\"{}\"\n", render_name(req));
+            ostr << indent(2)
+                 << fmt::format("\"{}\"\n", render_name(req, false));
         }
     }
 

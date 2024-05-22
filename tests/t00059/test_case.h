@@ -16,150 +16,52 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00059", "[test-case][class]")
+TEST_CASE("t00059")
 {
-    auto [config, db] = load_config("t00059");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00059_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00059", "t00059_class");
 
-    REQUIRE(diagram->name == "t00059_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsConcept(src, "fruit_c<T>"));
+        REQUIRE(IsConcept(src, "apple_c<T>"));
+        REQUIRE(IsConcept(src, "orange_c<T>"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsConstraint(src, "apple_c<T>", "fruit_c<T>", "T", "up"));
+        REQUIRE(IsConstraint(src, "orange_c<T>", "fruit_c<T>", "T", "up"));
 
-    REQUIRE(model->name() == "t00059_class");
+        REQUIRE(IsConceptRequirement(src, "apple_c<T>", "t.get_sweetness()"));
+        REQUIRE(IsConceptRequirement(src, "orange_c<T>", "t.get_bitterness()"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClass(src, "gala_apple"));
+        REQUIRE(IsClass(src, "empire_apple"));
+        REQUIRE(IsClass(src, "valencia_orange"));
+        REQUIRE(IsClass(src, "lima_orange"));
+        REQUIRE(IsClass(src, "R"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsClassTemplate(src, "fruit_factory<apple_c TA,orange_c TO>"));
 
-        REQUIRE_THAT(src, IsConcept(_A("fruit_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("apple_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("orange_c<T>")));
+        REQUIRE(IsDependency(src, "fruit_factory<gala_apple,valencia_orange>",
+            "gala_apple", "up"));
+        REQUIRE(IsDependency(src, "fruit_factory<gala_apple,valencia_orange>",
+            "valencia_orange", "up"));
 
-        REQUIRE_THAT(
-            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T", "up"));
-        REQUIRE_THAT(
-            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T", "up"));
+        REQUIRE(IsDependency(src, "fruit_factory<empire_apple,lima_orange>",
+            "empire_apple", "up"));
+        REQUIRE(IsDependency(src, "fruit_factory<empire_apple,lima_orange>",
+            "lima_orange", "up"));
 
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("apple_c<T>"), "t.get_sweetness()"));
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("apple_c<T>"), "t.get_bitterness()"));
+        REQUIRE(IsAggregation<Public>(src, "R",
+            "fruit_factory<gala_apple,valencia_orange>", "factory_1", "", "",
+            "up"));
+        REQUIRE(IsAggregation<Public>(src, "R",
+            "fruit_factory<empire_apple,lima_orange>", "factory_2", "", "",
+            "up"));
 
-        REQUIRE_THAT(src, IsClass(_A("gala_apple")));
-        REQUIRE_THAT(src, IsClass(_A("empire_apple")));
-        REQUIRE_THAT(src, IsClass(_A("valencia_orange")));
-        REQUIRE_THAT(src, IsClass(_A("lima_orange")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(
-            src, IsClassTemplate("fruit_factory", "apple_c TA,orange_c TO"));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("gala_apple"), "up"));
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("valencia_orange"), "up"));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("empire_apple"), "up"));
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("lima_orange"), "up"));
-
-        REQUIRE_THAT(src,
-            IsAggregation(_A("R"),
-                _A("fruit_factory<gala_apple,valencia_orange>"), "+factory_1",
-                "", "", "up"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("R"),
-                _A("fruit_factory<empire_apple,lima_orange>"), "+factory_2", "",
-                "", "up"));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<gala_apple,valencia_orange>"), "up"));
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<empire_apple,lima_orange>"), "up"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsConcept(j, "fruit_c<T>"));
-        REQUIRE(IsConcept(j, "apple_c<T>"));
-        REQUIRE(IsConcept(j, "orange_c<T>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsConcept;
-        using mermaid::IsConceptRequirement;
-        using mermaid::IsConstraint;
-
-        REQUIRE_THAT(src, IsConcept(_A("fruit_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("apple_c<T>")));
-        REQUIRE_THAT(src, IsConcept(_A("orange_c<T>")));
-
-        REQUIRE_THAT(
-            src, IsConstraint(_A("apple_c<T>"), _A("fruit_c<T>"), "T"));
-        REQUIRE_THAT(
-            src, IsConstraint(_A("orange_c<T>"), _A("fruit_c<T>"), "T"));
-
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("apple_c<T>"), "t.get_sweetness()"));
-        REQUIRE_THAT(
-            src, IsConceptRequirement(_A("apple_c<T>"), "t.get_bitterness()"));
-
-        REQUIRE_THAT(src, IsClass(_A("gala_apple")));
-        REQUIRE_THAT(src, IsClass(_A("empire_apple")));
-        REQUIRE_THAT(src, IsClass(_A("valencia_orange")));
-        REQUIRE_THAT(src, IsClass(_A("lima_orange")));
-        REQUIRE_THAT(src, IsClass(_A("R")));
-
-        REQUIRE_THAT(src, IsClass(_A("fruit_factory<apple_c TA,orange_c TO>")));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("gala_apple")));
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<gala_apple,valencia_orange>"),
-                _A("valencia_orange")));
-
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("empire_apple")));
-        REQUIRE_THAT(src,
-            IsDependency(_A("fruit_factory<empire_apple,lima_orange>"),
-                _A("lima_orange")));
-
-        REQUIRE_THAT(src,
-            IsAggregation(_A("R"),
-                _A("fruit_factory<gala_apple,valencia_orange>"), "+factory_1"));
-        REQUIRE_THAT(src,
-            IsAggregation(_A("R"),
-                _A("fruit_factory<empire_apple,lima_orange>"), "+factory_2"));
-
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<gala_apple,valencia_orange>")));
-        REQUIRE_THAT(src,
-            IsInstantiation(_A("fruit_factory<apple_c TA,orange_c TO>"),
-                _A("fruit_factory<empire_apple,lima_orange>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsInstantiation(src, "fruit_factory<apple_c TA,orange_c TO>",
+            "fruit_factory<gala_apple,valencia_orange>", "up"));
+        REQUIRE(IsInstantiation(src, "fruit_factory<apple_c TA,orange_c TO>",
+            "fruit_factory<empire_apple,lima_orange>", "up"));
+    });
 }

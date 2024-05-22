@@ -1,5 +1,5 @@
 /**
- * tests/t00019/test_case.cc
+ * tests/t00019/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,113 +16,40 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00019", "[test-case][class]")
+TEST_CASE("t00019")
 {
-    auto [config, db] = load_config("t00019");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00019_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00019", "t00019_class");
 
-    REQUIRE(diagram->name == "t00019_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "Base"));
+        REQUIRE(IsClassTemplate(src, "Layer1<LowerLayer>"));
+        REQUIRE(IsClassTemplate(src, "Layer2<LowerLayer>"));
+        REQUIRE(IsClassTemplate(src, "Layer3<LowerLayer>"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(IsBaseClass(src, "Base", "Layer3<Base>"));
+        REQUIRE(!IsDependency(src, "Base", "Layer3<Base>"));
 
-    REQUIRE(model->name() == "t00019_class");
+        REQUIRE(IsBaseClass(src, "Layer3<Base>", "Layer2<Layer3<Base>>"));
+        REQUIRE(!IsDependency(src, "Layer3<Base>", "Layer2<Layer3<Base>>"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsBaseClass(
+            src, "Layer2<Layer3<Base>>", "Layer1<Layer2<Layer3<Base>>>"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, IsClass(_A("Base")));
-        REQUIRE_THAT(src, IsClassTemplate("Layer1", "LowerLayer"));
-        REQUIRE_THAT(src, IsClassTemplate("Layer2", "LowerLayer"));
-        REQUIRE_THAT(src, IsClassTemplate("Layer3", "LowerLayer"));
+        REQUIRE(!IsDependency(
+            src, "Layer2<Layer3<Base>>", "Layer1<Layer2<Layer3<Base>>>"));
 
-        REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Layer3<Base>")));
-        REQUIRE_THAT(src, !IsDependency(_A("Base"), _A("Layer3<Base>")));
+        REQUIRE(IsAggregation<Public>(
+            src, "A", "Layer1<Layer2<Layer3<Base>>>", "layers"));
+        REQUIRE(!IsDependency(src, "A", "Layer1<Layer2<Layer3<Base>>>"));
 
-        REQUIRE_THAT(
-            src, IsBaseClass(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
-        REQUIRE_THAT(
-            src, !IsDependency(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
+        REQUIRE(
+            !IsAggregation<Public>(src, "A", "Layer2<Layer3<Base>>", "layers"));
 
-        REQUIRE_THAT(src,
-            IsBaseClass(_A("Layer2<Layer3<Base>>"),
-                _A("Layer1<Layer2<Layer3<Base>>>")));
+        REQUIRE(!IsAggregation<Public>(src, "A", "Layer3<Base>", "layers"));
 
-        REQUIRE_THAT(src,
-            !IsDependency(_A("Layer2<Layer3<Base>>"),
-                _A("Layer1<Layer2<Layer3<Base>>>")));
-
-        REQUIRE_THAT(src,
-            IsAggregation(
-                _A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
-        REQUIRE_THAT(
-            src, !IsDependency(_A("A"), _A("Layer1<Layer2<Layer3<Base>>>")));
-
-        REQUIRE_THAT(src,
-            !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));
-
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("A"), _A("Layer3<Base>"), "+layers"));
-
-        REQUIRE_THAT(src, !IsAggregation(_A("A"), _A("Base"), "+layers"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "Base"));
-        REQUIRE(IsClassTemplate(j, "Layer1<LowerLayer>"));
-        REQUIRE(IsClassTemplate(j, "Layer2<LowerLayer>"));
-        REQUIRE(IsClassTemplate(j, "Layer3<LowerLayer>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("Base")));
-        REQUIRE_THAT(src, IsClass(_A("Layer1<LowerLayer>")));
-        REQUIRE_THAT(src, IsClass(_A("Layer2<LowerLayer>")));
-        REQUIRE_THAT(src, IsClass(_A("Layer3<LowerLayer>")));
-
-        REQUIRE_THAT(src, IsBaseClass(_A("Base"), _A("Layer3<Base>")));
-        REQUIRE_THAT(src, !IsDependency(_A("Base"), _A("Layer3<Base>")));
-
-        REQUIRE_THAT(
-            src, IsBaseClass(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
-        REQUIRE_THAT(
-            src, !IsDependency(_A("Layer3<Base>"), _A("Layer2<Layer3<Base>>")));
-
-        REQUIRE_THAT(src,
-            IsBaseClass(_A("Layer2<Layer3<Base>>"),
-                _A("Layer1<Layer2<Layer3<Base>>>")));
-
-        REQUIRE_THAT(src,
-            !IsDependency(_A("Layer2<Layer3<Base>>"),
-                _A("Layer1<Layer2<Layer3<Base>>>")));
-
-        REQUIRE_THAT(src,
-            IsAggregation(
-                _A("A"), _A("Layer1<Layer2<Layer3<Base>>>"), "+layers"));
-        REQUIRE_THAT(
-            src, !IsDependency(_A("A"), _A("Layer1<Layer2<Layer3<Base>>>")));
-
-        REQUIRE_THAT(src,
-            !IsAggregation(_A("A"), _A("Layer2<Layer3<Base>>"), "+layers"));
-
-        REQUIRE_THAT(
-            src, !IsAggregation(_A("A"), _A("Layer3<Base>"), "+layers"));
-
-        REQUIRE_THAT(src, !IsAggregation(_A("A"), _A("Base"), "+layers"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(!IsAggregation<Public>(src, "A", "Base", "layers"));
+    });
 }

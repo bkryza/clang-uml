@@ -1,5 +1,5 @@
 /**
- * tests/t00039/test_case.cc
+ * tests/t00039/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,108 +16,40 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00039", "[test-case][class]")
+TEST_CASE("t00039")
 {
-    auto [config, db] = load_config("t00039");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00039_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00039", "t00039_class");
 
-    REQUIRE(diagram->name == "t00039_class");
-    REQUIRE(diagram->generate_packages() == false);
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "AA"));
+        REQUIRE(IsClass(src, "AAA"));
+        REQUIRE(IsClass(src, "ns2::AAAA"));
+        REQUIRE(IsBaseClass(src, "A", "AA"));
+        REQUIRE(IsBaseClass(src, "AA", "AAA"));
+        REQUIRE(IsBaseClass(src, "AAA", "ns2::AAAA"));
+        REQUIRE(!IsClass(src, "detail::AA"));
 
-    REQUIRE(model->name() == "t00039_class");
+        REQUIRE(!IsClass(src, "B"));
+        REQUIRE(!IsClass(src, "ns1::BB"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
+        REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsBaseClass(src, "C", "CD"));
+        REQUIRE(IsBaseClass(src, "D", "CD"));
+        REQUIRE(IsBaseClass(src, "D", "DE"));
+        REQUIRE(IsBaseClass(src, "E", "DE"));
+        REQUIRE(IsBaseClass(src, "C", "CDE"));
+        REQUIRE(IsBaseClass(src, "D", "CDE"));
+        REQUIRE(IsBaseClass(src, "E", "CDE"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-        REQUIRE_THAT(src, IsClass(_A("ns2::AAAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AAA"), _A("ns2::AAAA")));
-        REQUIRE_THAT(src, !IsClass(_A("detail::AA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("ns1::BB")));
-
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsBaseClass(_A("C"), _A("CD")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("CD")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("DE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("E"), _A("DE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("C"), _A("CDE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("CDE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("E"), _A("CDE")));
-
-        REQUIRE_THAT(src, IsClassTemplate("ns3::F", "T"));
-        REQUIRE_THAT(src, IsClassTemplate("ns3::FF", "T,M"));
-        REQUIRE_THAT(src, IsClassTemplate("ns3::FE", "T,M"));
-        REQUIRE_THAT(src, IsClassTemplate("ns3::FFF", "T,M,N"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(IsClass(j, "A"));
-        REQUIRE(IsClass(j, "AA"));
-        REQUIRE(IsClass(j, "AAA"));
-        REQUIRE(IsBaseClass(j, "C", "CD"));
-        REQUIRE(IsBaseClass(j, "D", "CD"));
-        REQUIRE(IsBaseClass(j, "E", "DE"));
-        REQUIRE(IsBaseClass(j, "D", "DE"));
-        REQUIRE(IsBaseClass(j, "C", "CDE"));
-        REQUIRE(IsBaseClass(j, "D", "CDE"));
-        REQUIRE(IsBaseClass(j, "E", "CDE"));
-
-        REQUIRE(IsClassTemplate(j, "ns3::F<T>"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-        REQUIRE_THAT(src, IsClass(_A("ns2::AAAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("A"), _A("AA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AA"), _A("AAA")));
-        REQUIRE_THAT(src, IsBaseClass(_A("AAA"), _A("ns2::AAAA")));
-        REQUIRE_THAT(src, !IsClass(_A("detail::AA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("ns1::BB")));
-
-        REQUIRE_THAT(src, IsClass(_A("C")));
-        REQUIRE_THAT(src, IsClass(_A("D")));
-        REQUIRE_THAT(src, IsClass(_A("E")));
-        REQUIRE_THAT(src, IsBaseClass(_A("C"), _A("CD")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("CD")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("DE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("E"), _A("DE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("C"), _A("CDE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("D"), _A("CDE")));
-        REQUIRE_THAT(src, IsBaseClass(_A("E"), _A("CDE")));
-
-        REQUIRE_THAT(src, IsClass(_A("ns3::F<T>")));
-        REQUIRE_THAT(src, IsClass(_A("ns3::FF<T,M>")));
-        REQUIRE_THAT(src, IsClass(_A("ns3::FE<T,M>")));
-        REQUIRE_THAT(src, IsClass(_A("ns3::FFF<T,M,N>")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsClassTemplate(src, "ns3::F<T>"));
+        REQUIRE(IsClassTemplate(src, "ns3::FF<T,M>"));
+        REQUIRE(IsClassTemplate(src, "ns3::FE<T,M>"));
+        REQUIRE(IsClassTemplate(src, "ns3::FFF<T,M,N>"));
+    });
 }

@@ -1,5 +1,5 @@
 /**
- * tests/t40001/test_case.cc
+ * tests/t40001/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,101 +16,30 @@
  * limitations under the License.
  */
 
-TEST_CASE("t40001", "[test-case][include]")
+TEST_CASE("t40001")
 {
-    auto [config, db] = load_config("t40001");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t40001_include"];
+    auto [config, db, diagram, model] =
+        CHECK_INCLUDE_MODEL("t40001", "t40001_include");
 
-    REQUIRE(diagram->name == "t40001_include");
+    CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(HasTitle(src, "Basic include diagram example"));
 
-    auto model = generate_include_diagram(*db, diagram);
+        REQUIRE(IsFolder(src, "include/lib1"));
+        REQUIRE(IsFile(src, "include/lib1/lib1.h"));
+        REQUIRE(IsFile(src, "src/t40001.cc"));
+        REQUIRE(IsFile(src, "include/t40001_include1.h"));
 
-    REQUIRE(model->name() == "t40001_include");
+        REQUIRE(IsSystemHeader(src, "string"));
+        REQUIRE(IsSystemHeader(src, "yaml-cpp/yaml.h"));
 
-    {
-        auto src = generate_include_puml(diagram, *model);
+        REQUIRE(IsHeaderDependency(
+            src, "src/t40001.cc", "include/t40001_include1.h"));
+        REQUIRE(IsHeaderDependency(
+            src, "include/t40001_include1.h", "include/lib1/lib1.h"));
 
-        AliasMatcher _A(src);
-
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-        REQUIRE_THAT(src, HasTitle("Basic include diagram example"));
-
-        REQUIRE_THAT(src, IsFolder("lib1"));
-        REQUIRE_THAT(src, IsFile("lib1.h"));
-        REQUIRE_THAT(src, IsFile("t40001.cc"));
-        REQUIRE_THAT(src, IsFile("t40001_include1.h"));
-
-        REQUIRE_THAT(src, IsFile("string"));
-        REQUIRE_THAT(src, IsFile("yaml-cpp/yaml.h"));
-
-        REQUIRE_THAT(
-            src, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
-        REQUIRE_THAT(src, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
-
-        REQUIRE_THAT(src, IsDependency(_A("t40001_include1.h"), _A("string")));
-
-        REQUIRE_THAT(src, HasComment("t40001 test diagram of type include"));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_include_json(diagram, *model);
-
-        using namespace json;
-
-        REQUIRE(HasTitle(j, "Basic include diagram example"));
-
-        REQUIRE(IsFolder(j, "include"));
-        REQUIRE(IsFolder(j, "include/lib1"));
-        REQUIRE(IsFolder(j, "src"));
-
-        REQUIRE(IsHeader(j, "include/lib1/lib1.h"));
-        REQUIRE(IsHeader(j, "include/t40001_include1.h"));
-        REQUIRE(IsFile(j, "src/t40001.cc"));
-        REQUIRE(IsSystemHeader(j, "yaml-cpp/yaml.h"));
-
-        REQUIRE(IsFile(j, "string"));
-
-        REQUIRE(IsAssociation(j, "src/t40001.cc", "include/t40001_include1.h"));
-        REQUIRE(IsAssociation(
-            j, "include/t40001_include1.h", "include/lib1/lib1.h"));
-        REQUIRE(IsDependency(j, "include/t40001_include1.h", "string"));
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_include_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::HasComment;
-        using mermaid::HasTitle;
-        using mermaid::IsFile;
-        using mermaid::IsFolder;
-        using mermaid::IsIncludeDependency;
-
-        REQUIRE_THAT(src, HasTitle("Basic include diagram example"));
-
-        REQUIRE_THAT(src, IsFolder(_A("lib1")));
-        REQUIRE_THAT(src, IsFile(_A("lib1.h")));
-        REQUIRE_THAT(src, IsFile(_A("t40001.cc")));
-        REQUIRE_THAT(src, IsFile(_A("t40001_include1.h")));
-
-        REQUIRE_THAT(src, IsFile(_A("string")));
-        REQUIRE_THAT(src, IsFile(_A("yaml-cpp/yaml.h")));
-
-        REQUIRE_THAT(
-            src, IsAssociation(_A("t40001.cc"), _A("t40001_include1.h")));
-        REQUIRE_THAT(src, IsAssociation(_A("t40001_include1.h"), _A("lib1.h")));
-
-        REQUIRE_THAT(
-            src, IsIncludeDependency(_A("t40001_include1.h"), _A("string")));
-
-        REQUIRE_THAT(src, HasComment("t40001 test diagram of type include"));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsSystemHeaderDependency(
+            src, "include/t40001_include1.h", "string"));
+    });
 }

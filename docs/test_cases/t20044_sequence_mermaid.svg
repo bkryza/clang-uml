@@ -1,14 +1,14 @@
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1859 1265" style="max-width: 1859px; background-color: white;" width="1859" id="my-svg">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" aria-roledescription="sequence" role="graphics-document document" viewBox="-50 -10 1818 1265" style="max-width: 1818px; background-color: white;" width="1818" id="my-svg">
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="1179" x="1508"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1211.5" x="1628.5">
-      <tspan dy="0" x="1628.5">tmain()::(lambda t20044.cc:90:19)</tspan>
+    <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="1179" x="1467"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1211.5" x="1587.5">
+      <tspan dy="0" x="1587.5">tmain()::(lambda t20044.cc:90:19)</tspan>
     </text>
   </g>
   <g>
-    <rect class="actor" ry="3" rx="3" height="65" width="191" stroke="#666" fill="#eaeaea" y="1179" x="1267"/>
-    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1211.5" x="1362.5">
-      <tspan dy="0" x="1362.5">detail::expected&lt;int,error&gt;</tspan>
+    <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="1179" x="1267"/>
+    <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="1211.5" x="1342">
+      <tspan dy="0" x="1342">result_t</tspan>
     </text>
   </g>
   <g>
@@ -42,20 +42,20 @@
     </text>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1179" x2="1628.5" y1="5" x1="1628.5" id="actor6"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="1179" x2="1587.5" y1="5" x1="1587.5" id="actor6"/>
     <g id="root-6">
-      <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="0" x="1508"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1628.5">
-        <tspan dy="0" x="1628.5">tmain()::(lambda t20044.cc:90:19)</tspan>
+      <rect class="actor" ry="3" rx="3" height="65" width="241" stroke="#666" fill="#eaeaea" y="0" x="1467"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1587.5">
+        <tspan dy="0" x="1587.5">tmain()::(lambda t20044.cc:90:19)</tspan>
       </text>
     </g>
   </g>
   <g>
-    <line stroke="#999" stroke-width="0.5px" class="200" y2="1179" x2="1362.5" y1="5" x1="1362.5" id="actor5"/>
+    <line stroke="#999" stroke-width="0.5px" class="200" y2="1179" x2="1342" y1="5" x1="1342" id="actor5"/>
     <g id="root-5">
-      <rect class="actor" ry="3" rx="3" height="65" width="191" stroke="#666" fill="#eaeaea" y="0" x="1267"/>
-      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1362.5">
-        <tspan dy="0" x="1362.5">detail::expected&lt;int,error&gt;</tspan>
+      <rect class="actor" ry="3" rx="3" height="65" width="150" stroke="#666" fill="#eaeaea" y="0" x="1267"/>
+      <text style="text-anchor: middle; font-size: 16px; font-weight: 400;" class="actor" alignment-baseline="central" dominant-baseline="central" y="32.5" x="1342">
+        <tspan dy="0" x="1342">result_t</tspan>
       </text>
     </g>
   </g>
@@ -200,57 +200,57 @@
     <rect class="activation0" ry="0" rx="0" height="54" width="10" stroke="#666" fill="#EDF2AE" y="573" x="846"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="611" x="1357.5"/>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="611" x="1337"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="316" width="10" stroke="#666" fill="#EDF2AE" y="675" x="1357.5"/>
+    <rect class="activation0" ry="0" rx="0" height="316" width="10" stroke="#666" fill="#EDF2AE" y="675" x="1337"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="225" width="10" stroke="#666" fill="#EDF2AE" y="746" x="1623.5"/>
+    <rect class="activation0" ry="0" rx="0" height="225" width="10" stroke="#666" fill="#EDF2AE" y="746" x="1582.5"/>
   </g>
   <g>
-    <rect class="note" ry="0" rx="0" height="105" width="241" stroke="#666" fill="#EDF2AE" y="754" x="1508"/>
-    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="759" x="1629">
-      <tspan x="1629">Call to a template method</tspan>
+    <rect class="note" ry="0" rx="0" height="105" width="241" stroke="#666" fill="#EDF2AE" y="754" x="1467"/>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="759" x="1588">
+      <tspan x="1588">Call to a template method</tspan>
     </text>
-    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="776" x="1629">
-      <tspan x="1629">accepting a callable with</tspan>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="776" x="1588">
+      <tspan x="1588">accepting a callable with</tspan>
     </text>
-    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="793" x="1629">
-      <tspan x="1629">lambda expression as argument,</tspan>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="793" x="1588">
+      <tspan x="1588">lambda expression as argument,</tspan>
     </text>
-    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="810" x="1629">
-      <tspan x="1629">fully tracked showing method's</tspan>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="810" x="1588">
+      <tspan x="1588">fully tracked showing method's</tspan>
     </text>
-    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="827" x="1629">
-      <tspan x="1629">activity and</tspan>
+    <text style="font-size: 16px; font-weight: 400;" dy="1em" class="noteText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="827" x="1588">
+      <tspan x="1588">activity and</tspan>
     </text>
   </g>
   <g>
     <rect class="activation0" ry="0" rx="0" height="54" width="10" stroke="#666" fill="#EDF2AE" y="907" x="846"/>
   </g>
   <g>
-    <rect class="activation1" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="945" x="1362.5"/>
+    <rect class="activation1" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="945" x="1342"/>
   </g>
   <g>
-    <line class="loopLine" y2="683" x2="1759" y1="683" x1="836"/>
-    <line class="loopLine" y2="981" x2="1759" y1="683" x1="1759"/>
-    <line class="loopLine" y2="981" x2="1759" y1="981" x1="836"/>
+    <line class="loopLine" y2="683" x2="1718" y1="683" x1="836"/>
+    <line class="loopLine" y2="981" x2="1718" y1="683" x1="1718"/>
+    <line class="loopLine" y2="981" x2="1718" y1="981" x1="836"/>
     <line class="loopLine" y2="981" x2="836" y1="683" x1="836"/>
     <polygon class="labelBox" points="836,683 886,683 886,696 877.6,703 836,703"/>
     <text style="font-size: 16px; font-weight: 400;" class="labelText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="696" x="861">alt</text>
-    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="701" x="1322.5">
-      <tspan x="1322.5">​</tspan>
+    <text style="font-size: 16px; font-weight: 400;" class="loopText" text-anchor="middle" y="701" x="1302">
+      <tspan x="1302">​</tspan>
     </text>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1041" x="1357.5"/>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1041" x="1337"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1097" x="1357.5"/>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1097" x="1337"/>
   </g>
   <g>
-    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1153" x="1357.5"/>
+    <rect class="activation0" ry="0" rx="0" height="18" width="10" stroke="#666" fill="#EDF2AE" y="1153" x="1337"/>
   </g>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="80" x="224">R((lambda at t20044.cc:74:9) &amp;&amp;)</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="111" x2="368" y1="111" x1="80"/>
@@ -264,34 +264,34 @@
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="525" x2="851" y1="525" x1="1091.5"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="540" x="466">a1() const</text>
   <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="571" x2="851" y1="571" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="586" x="1109">expected(int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="617" x2="1362.5" y1="617" x1="856"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="586" x="1099">expected(int)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="617" x2="1342" y1="617" x1="856"/>
   <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="632" x="463">​</text>
   <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="627" x2="80" y1="627" x1="846"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="642" x="721">and_then((lambda at t20044.cc:90:19) &amp;&amp;)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="673" x2="1362.5" y1="673" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="713" x="1498">operator()(auto &amp;&amp;) const</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="744" x2="1628.5" y1="744" x1="1367.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="874" x="1237">a2(int) const</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="905" x2="851" y1="905" x1="1623.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="920" x="1107">expected(int)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="951" x2="1357.5" y1="951" x1="856"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="966" x="1240">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="961" x2="1623.5" y1="961" x1="856"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="976" x="1496">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="971" x2="1367.5" y1="971" x1="1623.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="996" x="719">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="991" x2="80" y1="991" x1="1357.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1006" x="721">and_then(result_t (&amp;)(int))</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1037" x2="1362.5" y1="1037" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1052" x="719">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1047" x2="80" y1="1047" x1="1357.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1062" x="721">and_then(std::function&lt;result_t (int)&gt; &amp;)</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1093" x2="1362.5" y1="1093" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1108" x="719">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1103" x2="80" y1="1103" x1="1357.5"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1118" x="721">value() const</text>
-  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1149" x2="1362.5" y1="1149" x1="80"/>
-  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1164" x="719">​</text>
-  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1159" x2="80" y1="1159" x1="1357.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="642" x="711">and_then((lambda at t20044.cc:90:19) &amp;&amp;)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="673" x2="1342" y1="673" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="713" x="1467">operator()(auto &amp;&amp;) const</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="744" x2="1587.5" y1="744" x1="1347"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="874" x="1217">a2(int) const</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="905" x2="851" y1="905" x1="1582.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="920" x="1097">expected(int)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="951" x2="1337" y1="951" x1="856"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="966" x="1219">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="961" x2="1582.5" y1="961" x1="856"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="976" x="1465">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="971" x2="1347" y1="971" x1="1582.5"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="996" x="709">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="991" x2="80" y1="991" x1="1337"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1006" x="711">and_then(result_t (&amp;)(int))</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1037" x2="1342" y1="1037" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1052" x="709">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1047" x2="80" y1="1047" x1="1337"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1062" x="711">and_then(std::function&lt;result_t (int)&gt; &amp;)</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1093" x2="1342" y1="1093" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1108" x="709">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1103" x2="80" y1="1103" x1="1337"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1118" x="711">value() const</text>
+  <line style="fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine0" y2="1149" x2="1342" y1="1149" x1="80"/>
+  <text style="font-size: 16px; font-weight: 400;" dy="1em" class="messageText" alignment-baseline="middle" dominant-baseline="middle" text-anchor="middle" y="1164" x="709">​</text>
+  <line style="stroke-dasharray: 3, 3; fill: none;" marker-end="url(#arrowhead)" stroke="none" stroke-width="2" class="messageLine1" y2="1159" x2="80" y1="1159" x1="1337"/>
 </svg>

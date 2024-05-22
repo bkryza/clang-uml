@@ -16,180 +16,68 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00068_r0", "[test-case][class][t00068]")
+TEST_CASE("t00068_r0")
 {
-    auto [config, db] = load_config("t00068");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00068_r0_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r0_class");
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsClass(src, "A"));
+        REQUIRE(!IsClass(src, "AA"));
+        REQUIRE(IsClass(src, "AAA"));
 
-    REQUIRE(model->name() == "t00068_r0_class");
+        REQUIRE(!IsClass(src, "B"));
+        REQUIRE(!IsClass(src, "BB"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(!IsClass(src, "R"));
+        REQUIRE(!IsClass(src, "RR"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, !IsClass(_A("A")));
-        REQUIRE_THAT(src, !IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("BB")));
-
-        REQUIRE_THAT(src, !IsClass(_A("R")));
-        REQUIRE_THAT(src, !IsClass(_A("RR")));
-
-        REQUIRE_THAT(src, !IsEnum(_A("AKind")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-        using mermaid::IsEnum;
-
-        REQUIRE_THAT(src, !IsClass(_A("A")));
-        REQUIRE_THAT(src, !IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-        REQUIRE_THAT(src, !IsClass(_A("BB")));
-
-        REQUIRE_THAT(src, !IsClass(_A("R")));
-        REQUIRE_THAT(src, !IsClass(_A("RR")));
-
-        REQUIRE_THAT(src, !IsEnum(_A("AKind")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(!IsEnum(src, "AKind"));
+    });
 }
 
-TEST_CASE("t00068_r1", "[test-case][class][t00068]")
+TEST_CASE("t00068_r1")
 {
-    auto [config, db] = load_config("t00068");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00068_r1_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r1_class");
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(!IsClass(src, "A"));
+        REQUIRE(IsClass(src, "AA"));
+        REQUIRE(IsClass(src, "AAA"));
 
-    REQUIRE(model->name() == "t00068_r1_class");
+        REQUIRE(!IsClass(src, "B"));
+        REQUIRE(IsClass(src, "BB"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClass(src, "R"));
+        REQUIRE(!IsClass(src, "RR"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, !IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        REQUIRE_THAT(src, !IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("BB")));
-
-        REQUIRE_THAT(src, IsClass(_A("R")));
-        REQUIRE_THAT(src, !IsClass(_A("RR")));
-
-        REQUIRE_THAT(src, IsEnum(_A("AKind")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-
-        REQUIRE_THAT(src, !IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsEnum(src, "AKind"));
+    });
 }
 
-TEST_CASE("t00068_r2", "[test-case][class][t00068]")
+TEST_CASE("t00068_r2")
 {
-    auto [config, db] = load_config("t00068");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00068_r2_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00068", "t00068_r2_class");
 
-    auto model = generate_class_diagram(*db, diagram);
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
+        REQUIRE(IsClass(src, "AA"));
+        REQUIRE(IsClass(src, "AAA"));
 
-    REQUIRE(model->name() == "t00068_r2_class");
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "BB"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsClass(src, "R"));
+        REQUIRE(IsClass(src, "RR"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("BB")));
-
-        REQUIRE_THAT(src, IsClass(_A("R")));
-        REQUIRE_THAT(src, IsClass(_A("RR")));
-
-        REQUIRE_THAT(src, IsEnum(_A("AKind")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsClass;
-        using mermaid::IsEnum;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-        REQUIRE_THAT(src, IsClass(_A("AA")));
-        REQUIRE_THAT(src, IsClass(_A("AAA")));
-
-        REQUIRE_THAT(src, IsClass(_A("B")));
-        REQUIRE_THAT(src, IsClass(_A("BB")));
-
-        REQUIRE_THAT(src, IsClass(_A("R")));
-        REQUIRE_THAT(src, IsClass(_A("RR")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsEnum(src, "AKind"));
+    });
 }

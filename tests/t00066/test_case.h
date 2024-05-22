@@ -16,110 +16,43 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00066", "[test-case][class]")
+TEST_CASE("t00066")
 {
-    auto [config, db] = load_config("t00066");
+    using namespace clanguml::test;
 
-    auto diagram = config.diagrams["t00066_class"];
+    auto [config, db, diagram, model] =
+        CHECK_CLASS_MODEL("t00066", "t00066_class");
 
-    REQUIRE(diagram->name == "t00066_class");
+    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsClass(src, "A"));
 
-    auto model = generate_class_diagram(*db, diagram);
+        REQUIRE(!IsDependency(src, "A", "A"));
 
-    REQUIRE(model->name() == "t00066_class");
+        REQUIRE(IsMethod<Public, Default>(src, "A", "A"));
+        REQUIRE(IsMethod<Public, Default>(src, "A", "A", "void", "A &&"));
+        REQUIRE(IsMethod<Public, Deleted>(src, "A", "A", "void", "const A &"));
 
-    {
-        auto src = generate_class_puml(diagram, *model);
-        AliasMatcher _A(src);
+        REQUIRE(IsMethod<Public, Default>(src, "A", "~A"));
 
-        REQUIRE_THAT(src, StartsWith("@startuml"));
-        REQUIRE_THAT(src, EndsWith("@enduml\n"));
+        REQUIRE(IsMethod<Public>(src, "A", "basic_method"));
+        REQUIRE(IsMethod<Public, Static>(src, "A", "static_method", "int"));
+        REQUIRE(IsMethod<Public, Const>(src, "A", "const_method"));
+        REQUIRE(IsMethod<Public>(src, "A", "default_int", "int", "int i = 12"));
+        REQUIRE(IsMethod<Public>(src, "A", "default_string", "std::string",
+            "int i, std::string s = \"abc\""));
 
-        REQUIRE_THAT(src, IsClass(_A("A")));
+        REQUIRE(IsMethod<Public, Const>(src, "A", "size", "std::size_t"));
 
-        REQUIRE_THAT(src, !IsDependency(_A("A"), _A("A")));
+        REQUIRE(IsMethod<Protected>(src, "A", "protected_method"));
+        REQUIRE(IsMethod<Private>(src, "A", "private_method"));
+        REQUIRE(IsField<Public>(src, "A", "public_member", "int"));
+        REQUIRE(IsField<Protected>(src, "A", "protected_member", "int"));
+        REQUIRE(IsField<Private>(src, "A", "private_member", "int"));
+        REQUIRE(IsField<Public, Static>(
+            src, "A", "auto_member", "const unsigned long"));
 
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("A")));
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("A", "void", "A &&")));
-        REQUIRE_THAT(
-            src, (IsMethod<Public, Deleted>("A", "void", "const A &")));
-
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("~A")));
-
-        REQUIRE_THAT(src, (IsMethod<Public>("basic_method")));
-        REQUIRE_THAT(src, (IsMethod<Public, Static>("static_method", "int")));
-        REQUIRE_THAT(src, (IsMethod<Public, Const>("const_method")));
-        REQUIRE_THAT(
-            src, (IsMethod<Public>("default_int", "int", "int i = 12")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("default_string", "std::string",
-                "int i, std::string s = \"abc\"")));
-
-        REQUIRE_THAT(src, (IsMethod<Public, Const>("size", "std::size_t")));
-
-        REQUIRE_THAT(src, (IsMethod<Protected>("protected_method")));
-        REQUIRE_THAT(src, (IsMethod<Private>("private_method")));
-        REQUIRE_THAT(src, (IsField<Public>("public_member", "int")));
-        REQUIRE_THAT(src, (IsField<Protected>("protected_member", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("private_member", "int")));
-        REQUIRE_THAT(src,
-            (IsField<Public, Static>("auto_member", "const unsigned long")));
-
-        REQUIRE_THAT(src, (IsField<Private>("a_", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("b_", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("c_", "int")));
-
-        save_puml(config.output_directory(), diagram->name + ".puml", src);
-    }
-
-    {
-        auto j = generate_class_json(diagram, *model);
-
-        using namespace json;
-
-        save_json(config.output_directory(), diagram->name + ".json", j);
-    }
-    {
-        auto src = generate_class_mermaid(diagram, *model);
-
-        mermaid::AliasMatcher _A(src);
-        using mermaid::IsField;
-        using mermaid::IsMethod;
-
-        REQUIRE_THAT(src, IsClass(_A("A")));
-
-        REQUIRE_THAT(src, !IsDependency(_A("A"), _A("A")));
-
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("A")));
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("A", "void", "A &&")));
-        REQUIRE_THAT(
-            src, (IsMethod<Public, Deleted>("A", "void", "const A &")));
-
-        REQUIRE_THAT(src, (IsMethod<Public, Default>("~A")));
-
-        REQUIRE_THAT(src, (IsMethod<Public>("basic_method")));
-        REQUIRE_THAT(src, (IsMethod<Public, Static>("static_method", "int")));
-        REQUIRE_THAT(src, (IsMethod<Public, Const>("const_method")));
-        REQUIRE_THAT(
-            src, (IsMethod<Public>("default_int", "int", "int i = 12")));
-        REQUIRE_THAT(src,
-            (IsMethod<Public>("default_string", "std::string",
-                "int i, std::string s = \"abc\"")));
-
-        REQUIRE_THAT(src, (IsMethod<Public, Const>("size", "std::size_t")));
-
-        REQUIRE_THAT(src, (IsMethod<Protected>("protected_method")));
-        REQUIRE_THAT(src, (IsMethod<Private>("private_method")));
-        REQUIRE_THAT(src, (IsField<Public>("public_member", "int")));
-        REQUIRE_THAT(src, (IsField<Protected>("protected_member", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("private_member", "int")));
-        REQUIRE_THAT(src,
-            (IsField<Public, Static>("auto_member", "const unsigned long")));
-
-        REQUIRE_THAT(src, (IsField<Private>("a_", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("b_", "int")));
-        REQUIRE_THAT(src, (IsField<Private>("c_", "int")));
-
-        save_mermaid(config.output_directory(), diagram->name + ".mmd", src);
-    }
+        REQUIRE(IsField<Private>(src, "A", "a_", "int"));
+        REQUIRE(IsField<Private>(src, "A", "b_", "int"));
+        REQUIRE(IsField<Private>(src, "A", "c_", "int"));
+    });
 }
