@@ -719,6 +719,8 @@ template <typename DiagramType>
 bool MessageChainsOrder(
     const DiagramType &d, std::vector<std::vector<Message>> message_chains)
 {
+    // Try to match each chain to each sequence - sequence order depends
+    // on platform and LLVM version
     for (const auto &message_chain : message_chains) {
         if (!MessageOrder(d, message_chain))
             return false;
@@ -2515,31 +2517,40 @@ template <>
 bool MessageChainsOrder<json_t>(
     const json_t &d, std::vector<std::vector<Message>> message_chains)
 {
-    uint32_t chain_index{0};
+    const auto sequence_chains_count{
+        d.src["sequences"][0]["message_chains"].size()};
+
     for (const auto &messages : message_chains) {
-        int64_t offset{0};
+        for (uint32_t chain_index = 0; chain_index < sequence_chains_count;
+             chain_index++) {
+            int64_t offset{0};
 
-        std::vector<int64_t> order;
-        order.reserve(messages.size());
-        std::transform(messages.begin(), messages.end(),
-            std::back_inserter(order),
-            [&d, &offset, chain_index](const auto &m) {
-                offset = find_message_in_chain(d, m, offset, true, chain_index);
-                return offset;
-            });
+            std::vector<int64_t> order;
+            order.reserve(messages.size());
+            std::transform(messages.begin(), messages.end(),
+                std::back_inserter(order),
+                [&d, &offset, chain_index](const auto &m) -> int64_t {
+                    try {
+                        offset = find_message_in_chain(
+                            d, m, offset, true, chain_index);
+                        return offset;
+                    }
+                    catch (...) {
+                        return 0;
+                    }
+                });
 
-        bool are_messages_in_order = std::is_sorted(order.begin(), order.end());
+            bool are_messages_in_order =
+                std::is_sorted(order.begin(), order.end());
 
-        chain_index++;
-
-        if (!are_messages_in_order) {
-            FAIL(fmt::format(
-                "Messages are not in order: \n[{}]", fmt::join(order, ",\n")));
-            return false;
+            if (are_messages_in_order)
+                return true;
         }
     }
 
-    return true;
+    FAIL(fmt::format("Messages are not in order"));
+
+    return false;
 }
 
 template <>

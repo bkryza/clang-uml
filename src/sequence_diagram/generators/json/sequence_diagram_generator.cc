@@ -40,7 +40,7 @@ void to_json(nlohmann::json &j, const participant &c)
         j["name"] = dynamic_cast<const method &>(c).method_name();
     }
 
-    j["full_name"] = c.full_name(false);
+    j["full_name"] = generators::json::render_name(c.full_name(false));
 
     if (c.type_name() == "function" || c.type_name() == "function_template") {
         const auto &f = dynamic_cast<const function &>(c);
