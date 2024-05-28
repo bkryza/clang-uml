@@ -14,10 +14,6 @@ stdenv.mkDerivation {
   name = "clang-uml";
   src = ../..;
 
-  # variables for substituteAll
-  unwrapped = llvmPackages.clang-unwrapped;
-  clang = if enableLibcxx then llvmPackages.libcxxClang else llvmPackages.clang;
-
   nativeBuildInputs = [
     cmake
     pkg-config
@@ -31,8 +27,15 @@ stdenv.mkDerivation {
     yaml-cpp
   ];
 
+  clang = if enableLibcxx then llvmPackages.libcxxClang else llvmPackages.clang;
+
   postInstall = ''
+    export unwrapped_clang_uml="$out/bin/clang-uml"
+    
+    # inject clang and unwrapp_clang_uml variables into wrapper
     substituteAll ${./wrapper} $out/bin/clang-uml-wrapped
+    chmod +x $out/bin/clang-uml-wrapped
+
     installShellCompletion --bash $src/packaging/autocomplete/clang-uml
     installShellCompletion --zsh $src/packaging/autocomplete/_clang-uml
   '';
