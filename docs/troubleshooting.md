@@ -11,8 +11,8 @@
   * [Cannot generate diagrams from header-only projects](#cannot-generate-diagrams-from-header-only-projects)
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
   * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
-* [Class diagrams](#class-diagrams)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+* [Class diagrams](#class-diagrams)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
   * [Cannot generate classes for 'std' namespace](#cannot-generate-classes-for-std-namespace)
 * [Sequence diagrams](#sequence-diagrams)
@@ -224,8 +224,6 @@ schema validation, and exits if the configuration file is invalid.
 In case there is a bug in the schema validation, the schema validation
 step can be skipped by providing `--no-validate` command line option.
 
-## Class diagrams
-
 ### "fatal error: 'stddef.h' file not found"
 
 This error means that Clang cannot find some standard headers in include
@@ -284,6 +282,8 @@ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
 
 Also see
 [here](./md_docs_2common__options.html#resolving-include-path-and-compiler-flags-issues).
+
+## Class diagrams
 
 ### How can I generate class diagram of my entire project
 

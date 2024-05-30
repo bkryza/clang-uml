@@ -32,7 +32,7 @@ stdenv.mkDerivation {
   postInstall = ''
     export unwrapped_clang_uml="$out/bin/clang-uml"
     
-    # inject clang and unwrapp_clang_uml variables into wrapper
+    # inject clang and unwrap_clang_uml variables into wrapper
     substituteAll ${./wrapper} $out/bin/clang-uml-wrapped
     chmod +x $out/bin/clang-uml-wrapped
 

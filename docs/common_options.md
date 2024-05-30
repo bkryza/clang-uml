@@ -11,6 +11,7 @@
   * [Use '--query-driver' command line option](#use---query-driver-command-line-option)
   * [Manually add and remove compile flags from the compilation database](#manually-add-and-remove-compile-flags-from-the-compilation-database)
   * [Using 'CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES'](#using-cmake_cxx_implicit_include_directories)
+  * [Nix wrapper](#nix-wrapper)
 
 <!-- tocstop -->
 
@@ -224,4 +225,12 @@ Yet another option, for CMake based projects, is to use the following CMake opti
 set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 ```
 
+### Nix wrapper
+On NixOS or when using `nix`, `clang-uml` provides a wrapper script called
+`clang-uml-wrapped`, which builds and exports `CPATH` and `CPLUS_INCLUDE_PATH`
+environment variables before running `clang-uml`, which contain valid
+system header Clang paths for the current Nix environment.
 
+The `clang-uml-wrapped` script can be called the same way as `clang-uml` and
+should resolve the system include paths without the need for any of the above
+solutions.
