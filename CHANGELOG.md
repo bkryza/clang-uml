@@ -1,5 +1,10 @@
 # CHANGELOG
 
+ * Fixed handling of enums in class diagram context filter (#275)
+ * Added Nix clang wrapper for improved include paths handling (Thanks
+   @pogobanane)
+ * Refactored test cases (#272) 
+
 ### 0.5.2
  * Fixed generation of empty packages in class diagrams (#253)
  * Added option inline_lambda_messages to omit lambda expressions from sequence
