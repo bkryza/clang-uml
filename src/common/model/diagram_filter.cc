@@ -669,6 +669,24 @@ void context_filter::initialize_effective_context(
             effective_context.emplace(maybe_match.value().id());
     }
 
+    const auto &context_enum_matches =
+        dynamic_cast<const class_diagram::model::diagram &>(d)
+            .find<class_diagram::model::enum_>(context.pattern);
+
+    for (const auto &maybe_match : context_enum_matches) {
+        if (maybe_match)
+            effective_context.emplace(maybe_match.value().id());
+    }
+
+    const auto &context_concept_matches =
+        dynamic_cast<const class_diagram::model::diagram &>(d)
+            .find<class_diagram::model::concept_>(context.pattern);
+
+    for (const auto &maybe_match : context_concept_matches) {
+        if (maybe_match)
+            effective_context.emplace(maybe_match.value().id());
+    }
+
     // Now repeat radius times - extend the effective context with elements
     // matching in direct relationship to what is in context
     auto radius_counter = context.radius;
@@ -688,12 +706,12 @@ void context_filter::initialize_effective_context(
         find_elements_inheritance_relationship(
             d, effective_context, current_iteration_context);
 
-        // For each enum in the model
-        find_elements_in_relationship_with_enum(
-            d, effective_context, current_iteration_context);
-
         // For each concept in the model
         find_elements_in_direct_relationship<class_diagram::model::concept_>(
+            d, effective_context, current_iteration_context);
+
+        // For each enum in the model
+        find_elements_in_direct_relationship<class_diagram::model::enum_>(
             d, effective_context, current_iteration_context);
 
         for (auto id : current_iteration_context) {
@@ -701,31 +719,6 @@ void context_filter::initialize_effective_context(
                 // Found new element to add to context
                 effective_context.emplace(id);
                 effective_context_extended = true;
-            }
-        }
-    }
-}
-
-void context_filter::find_elements_in_relationship_with_enum(const diagram &d,
-    std::set<id_t> &effective_context,
-    std::set<clanguml::common::id_t> &current_iteration_context) const
-{
-
-    const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
-    for (const auto &enm : cd.enums()) {
-
-        for (const auto &ec : effective_context) {
-            const auto &maybe_class = cd.find<class_diagram::model::class_>(ec);
-
-            if (!maybe_class)
-                continue;
-
-            for (const relationship &rel :
-                maybe_class.value().relationships()) {
-
-                if (d.should_include(rel.type()) &&
-                    rel.destination() == enm.get().id())
-                    current_iteration_context.emplace(enm.get().id());
             }
         }
     }

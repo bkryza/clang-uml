@@ -29,6 +29,10 @@ struct RR : public R {
     F *f;
     detail::G *g;
 
+    enum K { One, Two, Three };
+
+    K k;
+
     void foo(H *h) { }
 };
 
@@ -41,5 +45,16 @@ struct NN : public N { };
 
 struct NM : public N { };
 }
+
+enum class Color { Red, Green, Blue };
+
+struct S {
+    Color c;
+};
+
+struct T {
+    enum class Direction { Left, Right };
+    Direction d;
+};
 
 } // namespace clanguml::t00041
