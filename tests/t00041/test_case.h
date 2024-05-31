@@ -40,9 +40,15 @@ TEST_CASE("t00041")
         REQUIRE(IsClass(src, "RRR"));
         REQUIRE(!IsClass(src, "detail::G"));
         REQUIRE(!IsClass(src, "H"));
+        REQUIRE(IsClass(src, "S"));
+        REQUIRE(IsClass(src, "T"));
 
         REQUIRE(IsBaseClass(src, "R", "RR"));
         REQUIRE(IsBaseClass(src, "RR", "RRR"));
+
+        REQUIRE(IsEnum(src, "RR::K"));
+        REQUIRE(IsEnum(src, "Color"));
+        REQUIRE(IsEnum(src, "T::Direction"));
 
         REQUIRE(IsAssociation<Public>(src, "D", "RR", "rr"));
         REQUIRE(IsAssociation<Public>(src, "RR", "E", "e"));
@@ -54,5 +60,8 @@ TEST_CASE("t00041")
         REQUIRE(IsClass(src, {"ns1", "NM"}));
         REQUIRE(IsBaseClass(src, "ns1::N", "ns1::NN"));
         REQUIRE(IsBaseClass(src, "ns1::N", "ns1::NM"));
+
+        REQUIRE(IsInnerClass(src, "T", "T::Direction"));
+        REQUIRE(IsAggregation<Public>(src, "S", "Color", "c"));
     });
 }

@@ -496,27 +496,34 @@ private:
         std::set<clanguml::common::id_t> &current_iteration_context) const
     {
         static_assert(std::is_same_v<ElementT, class_diagram::model::class_> ||
+                std::is_same_v<ElementT, class_diagram::model::enum_> ||
                 std::is_same_v<ElementT, class_diagram::model::concept_>,
-            "ElementT must be either class_ or concept_");
+            "ElementT must be either class_ or enum_ or concept_");
 
         const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
 
         for (const auto &el : cd.elements<ElementT>()) {
+            // First search all elements of type ElementT in the diagram
+            // which have a relationship to any of the effective_context
+            // elements
             for (const relationship &rel : el.get().relationships()) {
-                for (const auto &ec : effective_context) {
-                    if (d.should_include(rel.type()) && rel.destination() == ec)
+                for (const auto &element_id : effective_context) {
+                    if (d.should_include(rel.type()) &&
+                        rel.destination() == element_id)
                         current_iteration_context.emplace(el.get().id());
                 }
             }
 
-            for (const auto &ec : effective_context) {
-                const auto &maybe_concept = cd.find<ElementT>(ec);
+            // Now search current effective_context elements and add any
+            // elements of any type in the diagram which to that element
+            for (const auto element_id : effective_context) {
+                const auto &maybe_element = cd.get(element_id);
 
-                if (!maybe_concept)
+                if (!maybe_element)
                     continue;
 
                 for (const relationship &rel :
-                    maybe_concept.value().relationships()) {
+                    maybe_element.value().relationships()) {
 
                     if (d.should_include(rel.type()) &&
                         rel.destination() == el.get().id())
@@ -527,10 +534,6 @@ private:
     }
 
     void find_elements_inheritance_relationship(const diagram &d,
-        std::set<id_t> &effective_context,
-        std::set<clanguml::common::id_t> &current_iteration_context) const;
-
-    void find_elements_in_relationship_with_enum(const diagram &d,
         std::set<id_t> &effective_context,
         std::set<clanguml::common::id_t> &current_iteration_context) const;
 

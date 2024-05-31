@@ -401,7 +401,10 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
     for (const auto &element : element_view<ElementT>::view()) {
         const auto full_name = element.get().full_name(false);
 
-        if (full_name == name) {
+        auto full_name_escaped = full_name;
+        util::replace_all(full_name_escaped, "##", "::");
+
+        if (name == full_name || name == full_name_escaped) {
             return {element};
         }
     }
@@ -417,8 +420,10 @@ std::vector<opt_ref<ElementT>> diagram::find(
 
     for (const auto &element : element_view<ElementT>::view()) {
         const auto full_name = element.get().full_name(false);
+        auto full_name_escaped = full_name;
+        util::replace_all(full_name_escaped, "##", "::");
 
-        if (pattern == full_name) {
+        if (pattern == full_name || pattern == full_name_escaped) {
             result.emplace_back(element);
         }
     }
