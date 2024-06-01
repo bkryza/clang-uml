@@ -1,5 +1,7 @@
 # CHANGELOG
 
+ * Improved handling of anonymous and multi-dimensions arrays in
+   class diagrams (#278)
  * Fixed handling of enums in class diagram context filter (#275)
  * Added Nix clang wrapper for improved include paths handling (Thanks
    @pogobanane)
