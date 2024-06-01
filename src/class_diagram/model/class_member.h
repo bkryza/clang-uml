@@ -54,8 +54,23 @@ public:
      */
     void is_static(bool is_static);
 
+    /**
+     * @brief Set members destination multiplicity.
+     *
+     * @param m Optional multiplicity value
+     */
+    void set_destination_multiplicity(std::optional<size_t> m);
+
+    /**
+     * @brief Get members destination multiplicity.
+     *
+     * @return Optional multiplicity value
+     */
+    std::optional<size_t> destination_multiplicity() const;
+
 private:
     bool is_static_{false};
+    std::optional<size_t> destination_multiplicity_{};
 };
 
 } // namespace clanguml::class_diagram::model

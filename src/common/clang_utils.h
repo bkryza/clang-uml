@@ -324,4 +324,12 @@ bool is_struct(const clang::NamedDecl *decl);
  */
 bool has_attr(const clang::FunctionDecl *decl, clang::attr::Kind function_attr);
 
+/**
+ * If `type` is a constant array, return it's number of elements. Otherwise
+ * nothing.
+ *
+ * @param type
+ * @return Number of elements in the array.
+ */
+std::optional<size_t> get_array_size(const clang::ArrayType &type);
 } // namespace clanguml::common

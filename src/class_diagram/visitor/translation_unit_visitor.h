@@ -438,7 +438,8 @@ private:
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,
-            common::model::access_t>>
+            common::model::access_t,
+            std::optional<size_t> /* destination_multiplicity */>>
         anonymous_struct_relationships_;
 
     /**

@@ -35,6 +35,15 @@ TEST_CASE("t00037")
         REQUIRE(
             IsAggregation<Public>(src, "ST", "ST::(dimensions)", "dimensions"));
         REQUIRE(IsAggregation<Private>(src, "ST", "ST::(units)", "units"));
-        REQUIRE(IsAggregation<Public>(src, "ST", "ST::(bars)", "bars"));
+        REQUIRE(
+            IsAggregation<Public>(src, "ST", "ST::(bars)", "bars", "", "10"));
+        REQUIRE(IsAggregation<Private>(
+            src, "ST", "S", "s", "", std::to_string(4 * 3 * 2)));
+
+        REQUIRE(IsField<Private>(src, "ST", "s", "S[4][3][2]"));
+
+        REQUIRE(IsField<Public>(src, "ST", "bars", "ST::(bars)[10]"));
+        REQUIRE(IsField<Public>(src, "ST", "dimensions", "ST::(dimensions)"));
+        REQUIRE(IsField<Private>(src, "ST", "units", "ST::(units)"));
     });
 }

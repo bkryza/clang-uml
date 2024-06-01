@@ -113,13 +113,36 @@ std::string get_tag_name(const clang::TagDecl &declaration)
     return base_name;
 }
 
+std::string to_string(const clang::ArrayType &array_type,
+    const clang::ASTContext &ctx, bool try_canonical,
+    std::vector<std::string> &dimensions)
+{
+    auto maybe_size = get_array_size(array_type);
+    std::string array_size =
+        maybe_size.has_value() ? std::to_string(maybe_size.value()) : "";
+    dimensions.emplace_back(std::move(array_size));
+
+    const auto underlying_type = array_type.getElementType();
+
+    if (underlying_type->isArrayType())
+        return to_string(*underlying_type->getAsArrayTypeUnsafe(), ctx,
+            try_canonical, dimensions);
+
+    std::string dimensions_str;
+    for (const auto &d : dimensions) {
+        dimensions_str += fmt::format("[{}]", d);
+    }
+    return fmt::format(
+        "{}{}", to_string(underlying_type, ctx, try_canonical), dimensions_str);
+}
+
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
     if (type->isArrayType()) {
-        return fmt::format("{}[]",
-            to_string(type->getAsArrayTypeUnsafe()->getElementType(), ctx,
-                try_canonical));
+        std::vector<std::string> dimensions;
+        return to_string(
+            *type->getAsArrayTypeUnsafe(), ctx, try_canonical, dimensions);
     }
 
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
@@ -961,5 +984,16 @@ bool has_attr(const clang::FunctionDecl *decl, clang::attr::Kind function_attr)
     return std::any_of(decl->attrs().begin(), decl->attrs().end(),
         [function_attr](
             auto &&attr) { return attr->getKind() == function_attr; });
+}
+
+std::optional<size_t> get_array_size(const clang::ArrayType &type)
+{
+    if (const auto *constant_array =
+            clang::dyn_cast<clang::ConstantArrayType>(&type);
+        constant_array != nullptr) {
+        return {constant_array->getSize().getZExtValue()};
+    }
+
+    return {};
 }
 } // namespace clanguml::common

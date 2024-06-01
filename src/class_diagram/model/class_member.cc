@@ -30,4 +30,14 @@ bool class_member::is_static() const { return is_static_; }
 
 void class_member::is_static(bool is_static) { is_static_ = is_static; }
 
+void class_member::set_destination_multiplicity(std::optional<size_t> m)
+{
+    destination_multiplicity_ = m;
+}
+
+std::optional<size_t> class_member::destination_multiplicity() const
+{
+    return destination_multiplicity_;
+}
+
 } // namespace clanguml::class_diagram::model

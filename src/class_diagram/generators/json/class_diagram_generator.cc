@@ -34,7 +34,7 @@ void set_module(nlohmann::json &j, const common::model::element &e)
 void to_json(nlohmann::json &j, const class_element &c)
 {
     j["name"] = c.name();
-    j["type"] = c.type();
+    j["type"] = common::generators::json::render_name(c.type());
     if (c.access() != common::model::access_t::kNone)
         j["access"] = to_string(c.access());
     if (!c.file().empty())

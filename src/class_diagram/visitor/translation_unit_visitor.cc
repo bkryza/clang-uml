@@ -906,14 +906,21 @@ void translation_unit_visitor::process_record_parent(
         if (cls_name.empty()) {
             // Nested structs can be anonymous
             if (anonymous_struct_relationships_.count(cls->getID()) > 0) {
-                const auto &[label, hint, access] =
+                const auto &[label, hint, access, destination_multiplicity] =
                     anonymous_struct_relationships_[cls->getID()];
 
                 c.set_name(parent_class.value().name() + "##" +
                     fmt::format("({})", label));
 
+                std::string destination_multiplicity_str{};
+                if (destination_multiplicity.has_value()) {
+                    destination_multiplicity_str =
+                        std::to_string(*destination_multiplicity); // NOLINT
+                }
+
                 parent_class.value().add_relationship(
-                    {hint, common::to_id(c.full_name(false)), access, label});
+                    {hint, common::to_id(c.full_name(false)), access, label, "",
+                        destination_multiplicity_str});
             }
             else
                 c.set_name(parent_class.value().name() + "##" +
@@ -1649,14 +1656,22 @@ void translation_unit_visitor::add_relationships(class_ &c,
             relationship r{relationship_type, target};
             r.set_label(field.name());
             r.set_access(field.access());
+            bool mulitplicity_provided_in_comment{false};
             if (decorator_rtype != relationship_t::kNone) {
                 r.set_type(decorator_rtype);
                 auto mult = util::split(decorator_rmult, ":", false);
                 if (mult.size() == 2) {
+                    mulitplicity_provided_in_comment = true;
                     r.set_multiplicity_source(mult[0]);
                     r.set_multiplicity_destination(mult[1]);
                 }
             }
+            if (!mulitplicity_provided_in_comment &&
+                field.destination_multiplicity().has_value()) {
+                r.set_multiplicity_destination(std::to_string(
+                    *field.destination_multiplicity())); // NOLINT
+            }
+
             r.set_style(field.style_spec());
 
             LOG_DBG("Adding relationship from {} to {} with label {}",
@@ -1797,7 +1812,23 @@ void translation_unit_visitor::process_field(
     }
     else if (field_type->isArrayType()) {
         relationship_hint = relationship_t::kAggregation;
-        field_type = field_type->getAsArrayTypeUnsafe()->getElementType();
+        while (field_type->isArrayType()) {
+            auto current_multiplicity = field.destination_multiplicity();
+            if (!current_multiplicity)
+                field.set_destination_multiplicity(common::get_array_size(
+                    *field_type->getAsArrayTypeUnsafe()));
+            else {
+                auto maybe_array_size =
+                    common::get_array_size(*field_type->getAsArrayTypeUnsafe());
+                if (maybe_array_size.has_value()) {
+                    field.set_destination_multiplicity(
+                        current_multiplicity.value() *
+                        maybe_array_size.value());
+                }
+            }
+
+            field_type = field_type->getAsArrayTypeUnsafe()->getElementType();
+        }
     }
     else if (field_type->isRValueReferenceType()) {
         field_type = field_type.getNonReferenceType();
@@ -1917,8 +1948,8 @@ void translation_unit_visitor::process_field(
                 // struct have to be handled separately here
                 anonymous_struct_relationships_[field_type->getAsRecordDecl()
                                                     ->getID()] =
-                    std::make_tuple(
-                        field.name(), relationship_hint, field.access());
+                    std::make_tuple(field.name(), relationship_hint,
+                        field.access(), field.destination_multiplicity());
             }
             else
                 find_relationships(
@@ -1926,6 +1957,17 @@ void translation_unit_visitor::process_field(
         }
 
         add_relationships(c, field, relationships);
+    }
+
+    // If this is an anonymous struct - replace the anonymous_XYZ part with
+    // field name
+    if ((field_type->getAsRecordDecl() != nullptr) &&
+        field_type->getAsRecordDecl()->getNameAsString().empty()) {
+        if (util::contains(field.type(), "(anonymous_")) {
+            std::regex anonymous_re("anonymous_(\\d*)");
+            field.set_type(
+                std::regex_replace(field.type(), anonymous_re, field_name));
+        }
     }
 
     c.add_member(std::move(field));

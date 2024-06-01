@@ -53,8 +53,8 @@ TEST_CASE("t00006")
         REQUIRE(IsAssociation<Public>(src, "R", "G", "g"));
         REQUIRE(IsAggregation<Public>(src, "R", "H", "h"));
         REQUIRE(IsAssociation<Public>(src, "R", "I", "i"));
-        REQUIRE(IsAggregation<Public>(src, "R", "J", "j"));
-        REQUIRE(IsAssociation<Public>(src, "R", "K", "k"));
+        REQUIRE(IsAggregation<Public>(src, "R", "J", "j", "", "10"));
+        REQUIRE(IsAssociation<Public>(src, "R", "K", "k", "", "20"));
         REQUIRE(IsAggregation<Public>(src, "R", "L", "lm"));
         REQUIRE(IsAggregation<Public>(src, "R", "M", "lm"));
         REQUIRE(IsAggregation<Public>(src, "R", "N", "ns"));

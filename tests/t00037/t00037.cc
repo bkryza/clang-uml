@@ -3,6 +3,11 @@ namespace t00037 {
 
 constexpr auto LENGTH{10ULL};
 
+struct S {
+    double x;
+    double y;
+};
+
 class ST {
 public:
     struct {
@@ -22,6 +27,8 @@ private:
         double c{1.0};
         double h{1.0};
     } units;
+
+    S s[4][3][2];
 };
 
 struct A {
