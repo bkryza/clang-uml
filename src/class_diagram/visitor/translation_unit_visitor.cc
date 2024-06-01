@@ -1795,6 +1795,10 @@ void translation_unit_visitor::process_field(
         relationship_hint = relationship_t::kAssociation;
         field_type = field_type.getNonReferenceType();
     }
+    else if (field_type->isArrayType()) {
+        relationship_hint = relationship_t::kAggregation;
+        field_type = field_type->getAsArrayTypeUnsafe()->getElementType();
+    }
     else if (field_type->isRValueReferenceType()) {
         field_type = field_type.getNonReferenceType();
     }

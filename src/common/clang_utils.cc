@@ -116,6 +116,12 @@ std::string get_tag_name(const clang::TagDecl &declaration)
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {
+    if (type->isArrayType()) {
+        return fmt::format("{}[]",
+            to_string(type->getAsArrayTypeUnsafe()->getElementType(), ctx,
+                try_canonical));
+    }
+
     clang::PrintingPolicy print_policy(ctx.getLangOpts());
     print_policy.SuppressScope = 0;
     print_policy.PrintCanonicalTypes = 0;
@@ -150,8 +156,8 @@ std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
         result = "(anonymous)";
     else if (util::contains(result, "unnamed struct") ||
         util::contains(result, "unnamed union")) {
-        auto declarationTag = type->getAsTagDecl();
-        if (declarationTag == NULL) {
+        const auto *declarationTag = type->getAsTagDecl();
+        if (declarationTag == nullptr) {
             result = "(unnamed undeclared)";
         }
         else {

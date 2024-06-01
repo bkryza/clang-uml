@@ -30,9 +30,11 @@ TEST_CASE("t00037")
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsClass(src, "ST::(units)"));
         REQUIRE(IsClass(src, "ST::(dimensions)"));
+        REQUIRE(IsClass(src, "ST::(bars)"));
 
         REQUIRE(
             IsAggregation<Public>(src, "ST", "ST::(dimensions)", "dimensions"));
         REQUIRE(IsAggregation<Private>(src, "ST", "ST::(units)", "units"));
+        REQUIRE(IsAggregation<Public>(src, "ST", "ST::(bars)", "bars"));
     });
 }

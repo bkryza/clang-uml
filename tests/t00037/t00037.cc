@@ -1,6 +1,8 @@
 namespace clanguml {
 namespace t00037 {
 
+constexpr auto LENGTH{10ULL};
+
 class ST {
 public:
     struct {
@@ -9,6 +11,11 @@ public:
         double y;
         double z;
     } dimensions;
+
+    struct {
+        int len;
+        int flags;
+    } __attribute__((packed)) bars[LENGTH];
 
 private:
     struct {
