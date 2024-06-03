@@ -122,7 +122,8 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
     const auto *parent = enm->getParent();
 
-    std::optional<common::id_t> id_opt;
+    // Id of parent class or struct in which this enum is potentially nested
+    std::optional<common::id_t> parent_id_opt;
 
     if (parent != nullptr) {
         const auto *parent_record_decl =
@@ -133,26 +134,26 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
 
             // First check if the parent has been added to the diagram as
             // regular class
-            id_opt = id_mapper().get_global_id(local_id);
+            parent_id_opt = id_mapper().get_global_id(local_id);
 
             // If not, check if the parent template declaration is in the model
-            if (!id_opt) {
+            if (!parent_id_opt) {
                 if (parent_record_decl->getDescribedTemplate() != nullptr) {
                     local_id =
                         parent_record_decl->getDescribedTemplate()->getID();
-                    id_opt = id_mapper().get_global_id(local_id);
+                    parent_id_opt = id_mapper().get_global_id(local_id);
                 }
             }
         }
     }
 
-    if (id_opt && diagram().find<class_>(*id_opt)) {
-        auto parent_class = diagram().find<class_>(*id_opt);
+    if (parent_id_opt && diagram().find<class_>(*parent_id_opt)) {
+        auto parent_class = diagram().find<class_>(*parent_id_opt);
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
         e.set_id(common::to_id(e.full_name(false)));
-        e.add_relationship({relationship_t::kContainment, *id_opt});
+        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
         e.nested(true);
     }
     else {
@@ -1437,8 +1438,11 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     else if (type->isEnumeralType()) {
         if (const auto *enum_type = type->getAs<clang::EnumType>();
             enum_type != nullptr) {
+            // Use AST's local ID here for relationship target, as we can't
+            // calculate here properly the ID for nested enums. It will be
+            // resolved properly in finalize().
             relationships.emplace_back(
-                common::to_id(*enum_type->getDecl()), relationship_hint);
+                enum_type->getDecl()->getID(), relationship_hint);
         }
     }
     else if (type->isRecordType()) {
@@ -1989,20 +1993,28 @@ void translation_unit_visitor::resolve_local_to_global_ids()
     //       to elements
     for (const auto &cls : diagram().classes()) {
         for (auto &rel : cls.get().relationships()) {
-            if (rel.type() == relationship_t::kInstantiation) {
-                const auto maybe_id =
-                    id_mapper().get_global_id(rel.destination());
-                if (maybe_id) {
-                    LOG_DBG("= Resolved instantiation destination from local "
-                            "id {} to global id {}",
-                        rel.destination(), *maybe_id);
-                    rel.set_destination(*maybe_id);
-                }
+            const auto maybe_id = id_mapper().get_global_id(rel.destination());
+            if (maybe_id) {
+                LOG_DBG("= Resolved instantiation destination from local "
+                        "id {} to global id {}",
+                    rel.destination(), *maybe_id);
+                rel.set_destination(*maybe_id);
             }
         }
     }
     for (const auto &cpt : diagram().concepts()) {
         for (auto &rel : cpt.get().relationships()) {
+            const auto maybe_id = id_mapper().get_global_id(rel.destination());
+            if (maybe_id) {
+                LOG_DBG("= Resolved instantiation destination from local "
+                        "id {} to global id {}",
+                    rel.destination(), *maybe_id);
+                rel.set_destination(*maybe_id);
+            }
+        }
+    }
+    for (const auto &enm : diagram().enums()) {
+        for (auto &rel : enm.get().relationships()) {
             const auto maybe_id = id_mapper().get_global_id(rel.destination());
             if (maybe_id) {
                 LOG_DBG("= Resolved instantiation destination from local "

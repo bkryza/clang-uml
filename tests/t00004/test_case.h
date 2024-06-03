@@ -53,5 +53,10 @@ TEST_CASE("t00004")
         REQUIRE(IsClass(src, {"detail", "D"}));
         REQUIRE(IsClass(src, {"detail", "D::DD"}));
         REQUIRE(IsEnum(src, {"detail", "D::AA"}));
+
+        REQUIRE(IsAssociation<Public>(src, "B", "Color", "color"));
+        REQUIRE(IsAggregation<Public>(src, "B", "B::AA", "aa"));
+        REQUIRE(IsAggregation<Private>(
+            src, "A::AA::AAA", "A::AA::Lights", "lights"));
     });
 }

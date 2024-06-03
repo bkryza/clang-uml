@@ -1,9 +1,14 @@
 namespace clanguml {
 namespace t00004 {
 
+enum Color { Red, Green, Blue };
+
 class B {
 public:
     enum AA { AA_1, AA_2, AA_3 };
+
+    AA aa;
+    Color *color;
 };
 
 class A {
@@ -14,7 +19,9 @@ public:
     public:
         enum class Lights { Green, Yellow, Red };
 
-        class AAA { };
+        class AAA {
+            Lights lights;
+        };
     };
 
     void foo2() const { }
