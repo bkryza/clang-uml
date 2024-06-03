@@ -267,7 +267,7 @@ public:
      * @param to_location Target activity
      * @return Activity id
      */
-    common::id_t get_to_activity_id(
+    std::optional<common::id_t> get_to_activity_id(
         const config::source_location &to_location) const;
 
     /**
@@ -276,7 +276,7 @@ public:
      * @param from_location Source activity
      * @return Activity id
      */
-    common::id_t get_from_activity_id(
+    std::optional<common::id_t> get_from_activity_id(
         const config::source_location &from_location) const;
 
     /**

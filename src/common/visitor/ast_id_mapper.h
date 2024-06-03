@@ -58,7 +58,7 @@ public:
      * @param ast_id Clang's local AST id.
      * @return Global id, if exists.
      */
-    std::optional<id_t> get_global_id(int64_t ast_id);
+    std::optional<id_t> get_global_id(common::id_t ast_id);
 
 private:
     std::map</* Clang AST translation unit local id */ int64_t,

@@ -31,7 +31,7 @@ void to_json(nlohmann::json &j, const source_location &sl)
 
 void to_json(nlohmann::json &j, const element &c)
 {
-    j = json{{"id", std::to_string(c.id())},
+    j = json{{"id", std::to_string(c.id().value())},
         {"name", common::generators::json::render_name(c.name())},
         {"namespace", c.get_namespace().to_string()}, {"type", c.type_name()},
         {"display_name",
@@ -62,7 +62,7 @@ void to_json(nlohmann::json &j, const template_parameter &c)
 void to_json(nlohmann::json &j, const relationship &c)
 {
     j["type"] = to_string(c.type());
-    j["destination"] = std::to_string(c.destination());
+    j["destination"] = std::to_string(c.destination().value());
     if (!c.multiplicity_source().empty())
         j["multiplicity_source"] = c.multiplicity_source();
     if (!c.multiplicity_destination().empty())

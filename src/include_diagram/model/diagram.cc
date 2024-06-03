@@ -51,7 +51,7 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     auto &ff = *f;
 
     assert(!ff.name().empty());
-    assert(ff.id() != 0);
+    assert(ff.id().value() != 0);
 
     element_view<source_file>::add(ff);
 

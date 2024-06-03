@@ -24,7 +24,7 @@ call_expression_context::call_expression_context() = default;
 
 void call_expression_context::reset()
 {
-    current_caller_id_ = 0;
+    current_caller_id_ = common::id_t{};
     current_class_decl_ = nullptr;
     current_class_template_decl_ = nullptr;
     current_class_template_specialization_decl_ = nullptr;
@@ -130,33 +130,33 @@ void call_expression_context::update(
     current_function_template_decl_ = function_template;
 }
 
-std::int64_t call_expression_context::caller_id() const
+common::id_t call_expression_context::caller_id() const
 {
-    if (lambda_caller_id() != 0)
-        return lambda_caller_id();
+    if (lambda_caller_id().has_value())
+        return *lambda_caller_id();
 
     return current_caller_id_;
 }
 
-std::int64_t call_expression_context::lambda_caller_id() const
+std::optional<common::id_t> call_expression_context::lambda_caller_id() const
 {
     if (current_lambda_caller_id_.empty())
-        return 0;
+        return {};
 
     return current_lambda_caller_id_.top();
 }
 
-void call_expression_context::set_caller_id(std::int64_t id)
+void call_expression_context::set_caller_id(common::id_t id)
 {
     LOG_DBG("Setting current caller id to {}", id);
     current_caller_id_ = id;
 }
 
-void call_expression_context::enter_lambda_expression(std::int64_t id)
+void call_expression_context::enter_lambda_expression(common::id_t id)
 {
     LOG_DBG("Setting current lambda caller id to {}", id);
 
-    assert(id != 0);
+    assert(id.value() != 0);
 
     current_lambda_caller_id_.push(id);
 }

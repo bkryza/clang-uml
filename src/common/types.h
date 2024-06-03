@@ -29,7 +29,87 @@
 
 namespace clanguml::common {
 
-using id_t = int64_t;
+class id_t {
+public:
+    using type = uint64_t;
+
+    id_t()
+        : value_{0ULL}
+        , is_global_{true}
+    {
+    }
+
+    explicit id_t(int64_t id)
+        : value_{static_cast<type>(id)}
+        , is_global_{false}
+    {
+    }
+
+    explicit id_t(type id)
+        : value_{id}
+        , is_global_{true}
+    {
+    }
+
+    id_t(const id_t &) = default;
+    id_t(id_t &&) noexcept = default;
+    id_t &operator=(const id_t &) = default;
+    id_t &operator=(id_t &&) noexcept = default;
+
+    id_t &operator=(int64_t ast_id)
+    {
+        assert(!is_global_);
+        value_ = static_cast<uint64_t>(ast_id);
+        return *this;
+    }
+
+    ~id_t() = default;
+
+    bool is_global() const { return is_global_; }
+
+    friend bool operator==(const id_t &lhs, const id_t &rhs)
+    {
+        return (lhs.is_global_ == rhs.is_global_) && (lhs.value_ == rhs.value_);
+    }
+
+    friend bool operator==(const id_t &lhs, const uint64_t &v)
+    {
+        return lhs.value_ == v;
+    }
+
+    friend bool operator!=(const id_t &lhs, const uint64_t &v)
+    {
+        return lhs.value_ != v;
+    }
+
+    friend bool operator!=(const id_t &lhs, const id_t &rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    friend bool operator<(const id_t &lhs, const id_t &rhs)
+    {
+        if (lhs.is_global_ != rhs.is_global_) {
+            return lhs.value_ < rhs.value_ + 1;
+        }
+
+        return lhs.value_ <
+            rhs.value_; // Compare values if is_global_ are the same
+    }
+
+    type value() const { return value_; }
+
+    int64_t ast_local_value() const
+    {
+        assert(!is_global_);
+
+        return static_cast<int64_t>(value_);
+    }
+
+private:
+    type value_;
+    bool is_global_;
+};
 
 /**
  * Type of output diagram format generator.
@@ -293,3 +373,13 @@ using namespace_or_regex = common::or_regex<common::model::namespace_>;
 struct path_or_regex : public or_regex<std::filesystem::path> { };
 
 } // namespace clanguml::common
+
+template <> class fmt::formatter<clanguml::common::id_t> {
+public:
+    constexpr auto parse(format_parse_context &ctx) { return ctx.begin(); }
+    template <typename Context>
+    constexpr auto format(clanguml::common::id_t const &id, Context &ctx) const
+    {
+        return format_to(ctx.out(), "{}", id.value());
+    }
+};

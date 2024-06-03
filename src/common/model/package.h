@@ -91,7 +91,7 @@ struct hash<std::reference_wrapper<clanguml::common::model::package>> {
     {
         using clanguml::common::id_t;
 
-        return std::hash<id_t>{}(key.get().id());
+        return std::hash<id_t::type>{}(key.get().id().value());
     }
 };
 } // namespace std

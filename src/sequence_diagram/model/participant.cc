@@ -178,9 +178,9 @@ std::string method::method_name() const { return method_name_; }
 
 std::string method::alias() const
 {
-    assert(class_id_ >= 0);
+    assert(class_id_.value() >= 0);
 
-    return fmt::format("C_{:022}", class_id_);
+    return fmt::format("C_{:022}", class_id_.value());
 }
 
 bool method::is_constructor() const { return is_constructor_; }

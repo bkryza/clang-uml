@@ -166,7 +166,7 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(decl->getID());
+        auto unique_participant_id = get_unique_id(common::id_t{decl->getID()});
         if (!unique_participant_id.has_value())
             return {};
 
@@ -185,7 +185,7 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(decl->getID());
+        auto unique_participant_id = get_unique_id(common::id_t{decl->getID()});
         if (!unique_participant_id.has_value())
             return {};
 
@@ -243,7 +243,7 @@ public:
      * @param local_id AST local element id
      * @return Global diagram element id
      */
-    std::optional<common::id_t> get_unique_id(int64_t local_id) const;
+    std::optional<common::id_t> get_unique_id(common::id_t local_id) const;
 
     /**
      * @brief Finalize diagram model for this translation unit
@@ -469,7 +469,7 @@ private:
 
     std::optional<std::string> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
-        int64_t caller_id, const clang::Stmt *stmt);
+        common::id_t caller_id, const clang::Stmt *stmt);
 
     /**
      * @brief Initializes model message from comment call directive

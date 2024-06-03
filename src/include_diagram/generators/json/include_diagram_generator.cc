@@ -44,7 +44,7 @@ void generator::generate_relationships(
             [this](const auto &r) { return model().should_include(r.type()); },
             [&f, &parent](const auto &r) {
                 nlohmann::json rel = r;
-                rel["source"] = std::to_string(f.id());
+                rel["source"] = std::to_string(f.id().value());
                 parent["relationships"].push_back(std::move(rel));
             });
     }
@@ -53,7 +53,7 @@ void generator::generate_relationships(
 void generator::generate(const source_file &f, nlohmann::json &parent) const
 {
     nlohmann::json j;
-    j["id"] = std::to_string(f.id());
+    j["id"] = std::to_string(f.id().value());
     j["name"] = f.name();
     auto display_name = f.full_name(false);
 #if defined(_MSC_VER)

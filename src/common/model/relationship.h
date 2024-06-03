@@ -74,14 +74,14 @@ public:
      *
      * @param destination Target element id.
      */
-    void set_destination(int64_t destination);
+    void set_destination(common::id_t destination);
 
     /**
      * Get the id of the target element of this relationship.
      *
      * @return Target element id.
      */
-    clanguml::common::id_t destination() const;
+    common::id_t destination() const;
 
     /**
      * Set the relationship multiplicity at the source.

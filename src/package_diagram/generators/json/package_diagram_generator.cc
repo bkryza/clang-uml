@@ -44,7 +44,7 @@ void generator::generate_relationships(
                     dynamic_cast<const package &>(*destination_package)))
                 continue;
 
-            rel["source"] = std::to_string(p.id());
+            rel["source"] = std::to_string(p.id().value());
             parent["relationships"].push_back(std::move(rel));
         }
     }
@@ -63,7 +63,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     const auto &uns = config().using_namespace();
     if (!uns.starts_with({p.full_name(false)})) {
         nlohmann::json j;
-        j["id"] = std::to_string(p.id());
+        j["id"] = std::to_string(p.id().value());
         j["name"] = p.name();
         j["type"] = to_string(config().package_type());
         j["display_name"] = p.name();

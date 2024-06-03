@@ -53,7 +53,7 @@ public:
      *
      * @return Elements id.
      */
-    common::id_t id() const;
+    const common::id_t& id() const;
 
     /**
      * Set elements id.
@@ -185,8 +185,8 @@ public:
     void complete(bool completed);
 
 private:
-    id_t id_{0};
-    std::optional<id_t> parent_element_id_{0};
+    id_t id_{};
+    std::optional<common::id_t> parent_element_id_{};
     std::string name_;
     std::vector<relationship> relationships_;
     bool nested_{false};

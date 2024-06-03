@@ -200,7 +200,7 @@ private:
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_lambda_{false};
-    common::id_t lambda_operator_id_{0};
+    common::id_t lambda_operator_id_{};
 
     std::string full_name_;
 };

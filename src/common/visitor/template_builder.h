@@ -661,8 +661,8 @@ void template_builder<VisitorT>::build_from_template_declaration(
                                 templated_element.value().add_relationship(
                                     {relationship_t::kConstraint,
                                         id_mapper()
-                                            .get_global_id(
-                                                named_concept->getID())
+                                            .get_global_id(common::id_t{
+                                                named_concept->getID()})
                                             .value(),
                                         model::access_t::kNone,
                                         ct.name().value()});
@@ -865,7 +865,8 @@ void template_builder<VisitorT>::build(
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
         find_instantiation_relationships(template_instantiation,
-            template_decl->getID(), full_template_specialization_name);
+            common::id_t{template_decl->getID()},
+            full_template_specialization_name);
     }
 
     template_instantiation.set_id(
@@ -910,7 +911,7 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
         find_instantiation_relationships(template_instantiation,
-            template_specialization.getID(), qualified_name);
+            common::id_t{template_specialization.getID()}, qualified_name);
     }
 
     visitor_.set_source_location(*template_decl, template_instantiation);

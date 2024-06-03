@@ -415,49 +415,49 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
         [sub_stmt](const auto *e) { return is_subexpr_of(e, sub_stmt); });
 }
 
-template <> id_t to_id(const std::string &full_name)
+template <> common::id_t to_id(const std::string &full_name)
 {
-    return static_cast<id_t>(std::hash<std::string>{}(full_name) >> 3U);
+    return static_cast<common::id_t>(std::hash<std::string>{}(full_name));
 }
 
-id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
+common::id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)
 {
     return to_id(common::to_string(type, ctx));
 }
 
-template <> id_t to_id(const clang::NamespaceDecl &declaration)
+template <> common::id_t to_id(const clang::NamespaceDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
 
-template <> id_t to_id(const clang::RecordDecl &declaration)
+template <> common::id_t to_id(const clang::RecordDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
 
-template <> id_t to_id(const clang::EnumDecl &declaration)
+template <> common::id_t to_id(const clang::EnumDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
 
-template <> id_t to_id(const clang::TagDecl &declaration)
+template <> common::id_t to_id(const clang::TagDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
 
-template <> id_t to_id(const clang::CXXRecordDecl &declaration)
+template <> common::id_t to_id(const clang::CXXRecordDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
 
-template <> id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
+template <> common::id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
 
-template <> id_t to_id(const std::filesystem::path &file)
+template <> common::id_t to_id(const std::filesystem::path &file)
 {
     return to_id(file.lexically_normal().string());
 }
 
-template <> id_t to_id(const clang::TemplateArgument &template_argument)
+template <> common::id_t to_id(const clang::TemplateArgument &template_argument)
 {
     if (template_argument.getKind() == clang::TemplateArgument::Type) {
         if (const auto *enum_type =

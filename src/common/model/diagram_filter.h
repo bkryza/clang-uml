@@ -55,7 +55,8 @@ template <typename ElementT, typename DiagramT>
 const clanguml::common::optional_ref<ElementT> get(
     const DiagramT &d, const std::string &full_name);
 
-template <typename ElementT> int64_t destination_comparator(const ElementT &e)
+template <typename ElementT>
+common::id_t destination_comparator(const ElementT &e)
 {
     return e.id();
 }

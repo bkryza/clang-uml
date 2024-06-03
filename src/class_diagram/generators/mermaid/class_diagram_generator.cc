@@ -405,7 +405,7 @@ void generator::generate_relationships(
         LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
-        clanguml::common::id_t destination{0};
+        clanguml::common::id_t destination{};
         try {
             destination = r.destination();
 
@@ -513,7 +513,7 @@ void generator::generate_relationships(
         LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
-        clanguml::common::id_t destination{0};
+        clanguml::common::id_t destination{};
         try {
             destination = r.destination();
 
@@ -584,7 +584,7 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
         if (!model().should_include(r.type()))
             continue;
 
-        clanguml::common::id_t destination{0};
+        clanguml::common::id_t destination{};
         std::stringstream relstr;
         try {
             destination = r.destination();

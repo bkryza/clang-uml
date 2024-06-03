@@ -77,7 +77,7 @@ public:
      *              the set of active participants
      * @return Id of the generated participant
      */
-    common::id_t generate_participant(
+    std::optional<common::id_t> generate_participant(
         nlohmann::json &parent, common::id_t id, bool force = false) const;
 
     /**

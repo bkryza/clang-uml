@@ -78,7 +78,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_id(common::to_id(*ns));
     set_source_location(*ns, *p);
 
-    assert(p->id() > 0);
+    assert(p->id().value() > 0);
 
     if (diagram().should_include(*p) && !diagram().get(p->id())) {
         process_comment(*ns, *p);
@@ -282,7 +282,7 @@ void translation_unit_visitor::add_relationships(
 
     auto current_package_id = get_package_id(cls);
 
-    if (current_package_id == 0)
+    if (current_package_id.value() == 0)
         // These are relationships to a global namespace, and we don't care
         // about those
         return;

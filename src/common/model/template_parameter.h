@@ -19,6 +19,7 @@
 
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
+#include "common/types.h"
 
 #include <deque>
 #include <optional>
@@ -165,14 +166,14 @@ public:
      *
      * @param id Id of parameter
      */
-    void set_id(const int64_t id) { id_ = id; }
+    void set_id(const common::id_t &id) { id_ = id; }
 
     /**
      * Get id of the template parameter
      *
      * @return Id of the template parameter
      */
-    const std::optional<int64_t> &id() const { return id_; }
+    const std::optional<common::id_t> &id() const { return id_; }
 
     /**
      * Set the name of the template parameter
@@ -388,7 +389,7 @@ public:
      * @return
      */
     bool find_nested_relationships(
-        std::vector<std::pair<int64_t, common::model::relationship_t>>
+        std::vector<std::pair<common::id_t, common::model::relationship_t>>
             &nested_relationships,
         common::model::relationship_t hint,
         const std::function<bool(const std::string &full_name)> &should_include)
@@ -532,7 +533,7 @@ private:
      */
     std::vector<template_parameter> template_params_;
 
-    std::optional<int64_t> id_;
+    std::optional<common::id_t> id_;
 
     bool is_unexposed_{false};
 };

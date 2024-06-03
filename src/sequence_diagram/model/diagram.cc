@@ -226,10 +226,10 @@ std::vector<std::string> diagram::list_to_values() const
     return result;
 }
 
-common::id_t diagram::get_to_activity_id(
+std::optional<common::id_t> diagram::get_to_activity_id(
     const config::source_location &to_location) const
 {
-    common::id_t to_activity{0};
+    std::optional<common::id_t> to_activity{};
 
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
@@ -246,7 +246,7 @@ common::id_t diagram::get_to_activity_id(
         }
     }
 
-    if (to_activity == 0) {
+    if (!to_activity.has_value()) {
         LOG_WARN("Failed to find 'to' participant {} for to "
                  "condition",
             to_location.location);
@@ -255,10 +255,10 @@ common::id_t diagram::get_to_activity_id(
     return to_activity;
 }
 
-common::id_t diagram::get_from_activity_id(
+std::optional<common::id_t> diagram::get_from_activity_id(
     const config::source_location &from_location) const
 {
-    common::id_t from_activity{0};
+    std::optional<common::id_t> from_activity{};
 
     for (const auto &[k, v] : sequences()) {
         const auto &caller = *participants().at(v.from());
@@ -270,7 +270,7 @@ common::id_t diagram::get_from_activity_id(
         }
     }
 
-    if (from_activity == 0) {
+    if (!from_activity.has_value()) {
         LOG_WARN("Failed to find 'from' participant {} for from "
                  "condition",
             from_location.location);
@@ -385,7 +385,7 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
                 message_chains_unique.end(), mc) != message_chains_unique.end())
             continue;
 
-        if (from_activity == 0 || (mc.front().from() == from_activity)) {
+        if (from_activity.value() == 0 || (mc.front().from() == from_activity)) {
             message_chains_unique.push_back(mc);
         }
     }
