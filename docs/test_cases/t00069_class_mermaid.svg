@@ -51,8 +51,9 @@
       <g class="clusters"/>
       <g class="edgePaths">
         <path marker-start="url(#classDiagram-lollipopStart)" style="fill:none" class="edge-pattern-solid relation" id="id1" d="M196.2421875,433L196.2421875,437.1666666666667C196.2421875,441.3333333333333,196.2421875,449.6666666666667,196.2421875,458C196.2421875,466.3333333333333,196.2421875,474.6666666666667,196.2421875,478.8333333333333L196.2421875,483"/>
-        <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id2" d="M196.2421875,238L196.2421875,242.16666666666666C196.2421875,246.33333333333334,196.2421875,254.66666666666666,196.2421875,263C196.2421875,271.3333333333333,196.2421875,279.6666666666667,196.2421875,283.8333333333333L196.2421875,288"/>
-        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id3" d="M196.2421875,131L196.2421875,135.16666666666666C196.2421875,139.33333333333334,196.2421875,147.66666666666666,196.2421875,156C196.2421875,164.33333333333334,196.2421875,172.66666666666666,196.2421875,176.83333333333334L196.2421875,181"/>
+        <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id2" d="M124.5390625,238L124.5390625,242.16666666666666C124.5390625,246.33333333333334,124.5390625,254.66666666666666,127.6032986111111,263C130.6675347222222,271.3333333333333,136.79600694444443,279.6666666666667,139.86024305555554,283.8333333333333L142.92447916666666,288"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id3" d="M145.26250903179192,131L141.80860127649328,135.16666666666666C138.3546935211946,139.33333333333334,131.44687801059732,147.66666666666666,127.99297025529866,156C124.5390625,164.33333333333334,124.5390625,172.66666666666666,124.5390625,176.83333333333334L124.5390625,181"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id4" d="M247.22186596820808,131L250.67577372350672,135.16666666666666C254.1296814788054,139.33333333333334,261.03749698940265,147.66666666666666,264.49140474470136,160.75C267.9453125,173.83333333333334,267.9453125,191.66666666666666,267.9453125,209.5C267.9453125,227.33333333333334,267.9453125,245.16666666666666,264.88107638888886,258.25C261.81684027777777,271.3333333333333,255.68836805555557,279.6666666666667,252.62413194444446,283.8333333333333L249.55989583333334,288"/>
       </g>
       <g class="edgeLabels">
         <g transform="translate(undefined, undefined)" class="edgeLabel">
@@ -88,9 +89,20 @@
             </foreignObject>
           </g>
         </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
       </g>
       <g class="nodes">
-        <a transform="translate(196.2421875, 360.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/ff7edef585644878a4e6226787deb894bef4590f/tests/t00069/t00069.cc#L7">
+        <a transform="translate(196.2421875, 360.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/2e861ee3dea4b484cbec7687f2cf71d63c69d2c2/tests/t00069/t00069.cc#L7">
           <g title="generator" id="classId-C_0002142496233889685657-0" class="node default clickable">
             <rect height="145" width="246.71875" y="-72.5" x="-123.359375" class="outer title-state"/>
             <line y2="-42.5" y1="-42.5" x2="123.359375" x1="-123.359375" class="divider"/>
@@ -129,7 +141,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(196.2421875, 599.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/ff7edef585644878a4e6226787deb894bef4590f/tests/t00069/t00069.cc#L18">
+        <a transform="translate(196.2421875, 599.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/2e861ee3dea4b484cbec7687f2cf71d63c69d2c2/tests/t00069/t00069.cc#L18">
           <g title="generator##promise_type" id="classId-C_0000721812727497968117-1" class="node default clickable">
             <rect height="233" width="376.484375" y="-116.5" x="-188.2421875" class="outer title-state"/>
             <line y2="-86.5" y1="-86.5" x2="188.2421875" x1="-188.2421875" class="divider"/>
@@ -188,7 +200,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(196.2421875, 209.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/ff7edef585644878a4e6226787deb894bef4590f/tests/t00069/t00069.cc#L7">
+        <a transform="translate(124.5390625, 209.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/2e861ee3dea4b484cbec7687f2cf71d63c69d2c2/tests/t00069/t00069.cc#L7">
           <g title="generator" id="classId-C_0001604358347140526608-2" class="node default clickable">
             <rect height="57" width="216.8125" y="-28.5" x="-108.40625" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="108.40625" x1="-108.40625" class="divider"/>
@@ -207,7 +219,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(196.2421875, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/ff7edef585644878a4e6226787deb894bef4590f/tests/t00069/t00069.cc#L48">
+        <a transform="translate(196.2421875, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/2e861ee3dea4b484cbec7687f2cf71d63c69d2c2/tests/t00069/t00069.cc#L48">
           <g title="A" id="classId-C_0002160142503252767290-3" class="node default clickable">
             <rect height="123" width="349.015625" y="-61.5" x="-174.5078125" class="outer title-state"/>
             <line y2="-31.5" y1="-31.5" x2="174.5078125" x1="-174.5078125" class="divider"/>

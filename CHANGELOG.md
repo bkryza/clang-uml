@@ -1,5 +1,6 @@
 # CHANGELOG
 
+ * Fixed handling of relationships to nested enums (#280)
  * Improved handling of anonymous and multi-dimensions arrays in
    class diagrams (#278)
  * Fixed handling of enums in class diagram context filter (#275)
