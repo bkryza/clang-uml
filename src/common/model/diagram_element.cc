@@ -42,7 +42,8 @@ void diagram_element::set_parent_element_id(common::id_t id)
 
 std::string diagram_element::alias() const
 {
-    assert(id_.value() >= 0);
+    // Only generate alias for global id's
+    assert(id_.is_global());
 
     return fmt::format("C_{:022}", id_.value());
 }

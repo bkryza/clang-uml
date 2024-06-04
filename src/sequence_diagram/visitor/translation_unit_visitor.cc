@@ -1934,11 +1934,11 @@ std::string translation_unit_visitor::make_lambda_name(
         // Parent is also a lambda (this id points to a lambda operator())
         std::string parent_lambda_class_name{"()"};
         if (diagram().get_participant<model::method>(
-                context().lambda_caller_id().value())) {
+                context().lambda_caller_id().value())) { // NOLINT
             auto parent_lambda_class_id =
                 diagram()
                     .get_participant<model::method>(
-                        context().lambda_caller_id().value())
+                        context().lambda_caller_id().value()) // NOLINT
                     .value()
                     .class_id();
 

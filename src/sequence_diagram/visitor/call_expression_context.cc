@@ -133,7 +133,7 @@ void call_expression_context::update(
 common::id_t call_expression_context::caller_id() const
 {
     if (lambda_caller_id().has_value())
-        return *lambda_caller_id();
+        return *lambda_caller_id(); // NOLINT
 
     return current_caller_id_;
 }

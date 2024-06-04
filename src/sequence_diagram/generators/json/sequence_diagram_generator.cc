@@ -744,11 +744,11 @@ void generator::generate_diagram(nlohmann::json &parent) const
     for (const auto &to_location : config().to()) {
         auto to_activity_id = model().get_to_activity_id(to_location);
 
-        if (to_activity_id == 0)
+        if (!to_activity_id.has_value())
             continue;
 
         auto message_chains_unique = model().get_all_from_to_message_chains(
-            common::id_t{}, *to_activity_id);
+            common::id_t{}, to_activity_id.value());
 
         nlohmann::json sequence;
         sequence["to"]["location"] = to_location.location;
