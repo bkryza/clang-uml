@@ -163,7 +163,7 @@ format:
 
 .PHONY: debug_tidy
 tidy: debug_tidy
-	run-clang-tidy-15 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug_tidy ./src
+	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug_tidy ./src
 
 .PHONY: check-formatting
 check-formatting:

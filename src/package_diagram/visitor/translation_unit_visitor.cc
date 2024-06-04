@@ -684,8 +684,9 @@ std::vector<common::id_t> translation_unit_visitor::get_parent_package_ids(
     std::optional<common::id_t> parent_id = id;
 
     while (parent_id.has_value()) {
-        parent_ids.push_back(parent_id.value());
-        auto parent = this->diagram().get(parent_id.value());
+        const auto pid = parent_id.value(); // NOLINT
+        parent_ids.push_back(pid);
+        auto parent = this->diagram().get(pid);
         if (parent)
             parent_id = parent.value().parent_element_id();
         else

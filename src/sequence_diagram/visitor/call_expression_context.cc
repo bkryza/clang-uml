@@ -158,7 +158,7 @@ void call_expression_context::enter_lambda_expression(common::id_t id)
 
     assert(id.value() != 0);
 
-    current_lambda_caller_id_.push(id);
+    current_lambda_caller_id_.emplace(id);
 }
 
 void call_expression_context::leave_lambda_expression()
@@ -182,7 +182,7 @@ clang::IfStmt *call_expression_context::current_ifstmt() const
 
 void call_expression_context::enter_ifstmt(clang::IfStmt *stmt)
 {
-    if_stmt_stack_.push(stmt);
+    if_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_ifstmt()
@@ -197,7 +197,7 @@ void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 {
     assert(current_ifstmt() != nullptr);
 
-    elseif_stmt_stacks_[current_ifstmt()].push(stmt);
+    elseif_stmt_stacks_[current_ifstmt()].emplace(stmt);
 }
 
 clang::IfStmt *call_expression_context::current_elseifstmt() const
@@ -221,7 +221,7 @@ clang::Stmt *call_expression_context::current_loopstmt() const
 
 void call_expression_context::enter_loopstmt(clang::Stmt *stmt)
 {
-    loop_stmt_stack_.push(stmt);
+    loop_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_loopstmt()
@@ -241,12 +241,12 @@ call_expression_context::current_callexpr() const
 
 void call_expression_context::enter_callexpr(clang::CallExpr *expr)
 {
-    call_expr_stack_.push(expr);
+    call_expr_stack_.emplace(expr);
 }
 
 void call_expression_context::enter_callexpr(clang::CXXConstructExpr *expr)
 {
-    call_expr_stack_.push(expr);
+    call_expr_stack_.emplace(expr);
 }
 
 void call_expression_context::leave_callexpr()
@@ -266,7 +266,7 @@ clang::Stmt *call_expression_context::current_trystmt() const
 
 void call_expression_context::enter_trystmt(clang::Stmt *stmt)
 {
-    try_stmt_stack_.push(stmt);
+    try_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_trystmt()
@@ -285,7 +285,7 @@ clang::SwitchStmt *call_expression_context::current_switchstmt() const
 
 void call_expression_context::enter_switchstmt(clang::SwitchStmt *stmt)
 {
-    switch_stmt_stack_.push(stmt);
+    switch_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_switchstmt()
@@ -306,7 +306,7 @@ call_expression_context::current_conditionaloperator() const
 void call_expression_context::enter_conditionaloperator(
     clang::ConditionalOperator *stmt)
 {
-    conditional_operator_stack_.push(stmt);
+    conditional_operator_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_conditionaloperator()

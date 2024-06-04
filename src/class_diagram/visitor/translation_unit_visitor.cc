@@ -917,7 +917,7 @@ void translation_unit_visitor::process_record_parent(
                 std::string destination_multiplicity_str{};
                 if (destination_multiplicity.has_value()) {
                     destination_multiplicity_str =
-                        std::to_string(*destination_multiplicity); // NOLINT
+                        std::to_string(*destination_multiplicity);
                 }
 
                 parent_class.value().add_relationship(
@@ -1673,8 +1673,8 @@ void translation_unit_visitor::add_relationships(class_ &c,
             }
             if (!mulitplicity_provided_in_comment &&
                 field.destination_multiplicity().has_value()) {
-                r.set_multiplicity_destination(std::to_string(
-                    *field.destination_multiplicity())); // NOLINT
+                r.set_multiplicity_destination(
+                    std::to_string(*field.destination_multiplicity()));
             }
 
             r.set_style(field.style_spec());

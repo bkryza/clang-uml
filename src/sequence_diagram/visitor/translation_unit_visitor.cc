@@ -1930,15 +1930,16 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto location = cls->getLocation();
     const std::string source_location{lambda_source_location(location)};
 
-    if (context().lambda_caller_id().has_value()) {
+    const auto maybe_lambda_caller_id = context().lambda_caller_id();
+    if (maybe_lambda_caller_id.has_value()) {
         // Parent is also a lambda (this id points to a lambda operator())
         std::string parent_lambda_class_name{"()"};
         if (diagram().get_participant<model::method>(
-                context().lambda_caller_id().value())) { // NOLINT
+                maybe_lambda_caller_id.value())) {
             auto parent_lambda_class_id =
                 diagram()
                     .get_participant<model::method>(
-                        context().lambda_caller_id().value()) // NOLINT
+                        maybe_lambda_caller_id.value())
                     .value()
                     .class_id();
 

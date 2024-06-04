@@ -164,7 +164,7 @@ template <typename T, typename S>
 std::unique_ptr<T> unique_pointer_cast(std::unique_ptr<S> &&p) noexcept
 {
     if (T *const converted = dynamic_cast<T *>(p.get())) {
-        p.release(); // NOLINT
+        std::move(p).release(); // NOLINT
         return std::unique_ptr<T>{converted};
     }
 
