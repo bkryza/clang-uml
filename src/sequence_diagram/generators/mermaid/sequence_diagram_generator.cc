@@ -424,8 +424,9 @@ void generator::generate_participant(
             std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 
-        ostr << indent(1) << "participant " << fmt::format("C_{:022}", file_id)
-             << " as " << render_participant_name(participant_name);
+        ostr << indent(1) << "participant "
+             << fmt::format("C_{:022}", file_id.value()) << " as "
+             << render_participant_name(participant_name);
         ostr << '\n';
 
         generated_participants_.emplace(file_id);
@@ -474,7 +475,7 @@ std::string generator::generate_alias(
         config().combine_free_functions_into_file_participants()) {
         const auto file_id = common::to_id(participant.file());
 
-        return fmt::format("C_{:022}", file_id);
+        return fmt::format("C_{:022}", file_id.value());
     }
 
     return participant.alias();

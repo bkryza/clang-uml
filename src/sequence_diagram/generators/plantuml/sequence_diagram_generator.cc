@@ -429,7 +429,7 @@ void generator::generate_participant(
                                                       .string());
 
         ostr << "participant \"" << render_name(participant_name) << "\" as "
-             << fmt::format("C_{:022}", file_id);
+             << fmt::format("C_{:022}", file_id.value());
 
         ostr << '\n';
 
@@ -480,7 +480,7 @@ std::string generator::generate_alias(
         config().combine_free_functions_into_file_participants()) {
         const auto file_id = common::to_id(participant.file());
 
-        return fmt::format("C_{:022}", file_id);
+        return fmt::format("C_{:022}", file_id.value());
     }
 
     return participant.alias();

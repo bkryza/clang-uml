@@ -77,6 +77,8 @@ void diagram::add_participant(std::unique_ptr<participant> p)
 {
     const auto participant_id = p->id();
 
+    assert(participant_id.is_global());
+
     if (participants_.find(participant_id) == participants_.end()) {
         LOG_DBG("Adding '{}' participant: {}, {} [{}]", p->type_name(),
             p->full_name(false), p->id(),

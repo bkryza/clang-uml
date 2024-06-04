@@ -720,7 +720,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
             std::any_of(current_elseifstmt->children().begin(),
                 current_elseifstmt->children().end(), child_stmt_compare);
 
-    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
+    if ((current_caller_id.value() != 0) && !stmt->isConstexpr()) {
         if (elseif_block) {
             context().enter_elseifstmt(stmt);
 
@@ -745,7 +745,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
-    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
+    if ((current_caller_id.value() != 0) && !stmt->isConstexpr()) {
         if (!elseif_block) {
             diagram().end_block_message(
                 {message_t::kIfEnd, current_caller_id}, message_t::kIf);
@@ -768,7 +768,7 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kWhile, current_caller_id};
         set_source_location(*stmt, m);
@@ -779,7 +779,7 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kWhileEnd, current_caller_id}, message_t::kWhile);
         context().leave_loopstmt();
@@ -800,7 +800,7 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kDo, current_caller_id};
         set_source_location(*stmt, m);
@@ -812,7 +812,7 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kDoEnd, current_caller_id}, message_t::kDo);
         context().leave_loopstmt();
@@ -833,7 +833,7 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
@@ -847,7 +847,7 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
@@ -864,7 +864,7 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_trystmt(stmt);
         message m{message_t::kTry, current_caller_id};
         set_source_location(*stmt, m);
@@ -875,7 +875,7 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kTryEnd, current_caller_id}, message_t::kTry);
         context().leave_trystmt();
@@ -892,7 +892,8 @@ bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) && (context().current_trystmt() != nullptr)) {
+    if ((current_caller_id.value() != 0) &&
+        (context().current_trystmt() != nullptr)) {
         std::string caught_type;
         if (stmt->getCaughtType().isNull())
             caught_type = "...";
@@ -923,7 +924,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
@@ -936,7 +937,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
         stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
@@ -951,7 +952,7 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_switchstmt(stmt);
         model::message m{message_t::kSwitch, current_caller_id};
         set_source_location(*stmt, m);
@@ -962,7 +963,7 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().leave_switchstmt();
         diagram().end_block_message(
             {message_t::kSwitchEnd, current_caller_id}, message_t::kSwitch);
@@ -977,7 +978,7 @@ bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) &&
+    if ((current_caller_id.value() != 0) &&
         (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name(common::to_string(stmt->getLHS()));
@@ -995,7 +996,7 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) &&
+    if ((current_caller_id.value() != 0) &&
         (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name("default");
@@ -1018,7 +1019,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_conditionaloperator(stmt);
         model::message m{message_t::kConditional, current_caller_id};
         set_source_location(*stmt, m);
@@ -1034,7 +1035,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getTrueExpr());
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         model::message m{message_t::kConditionalElse, current_caller_id};
         set_source_location(*stmt, m);
         diagram().add_message(std::move(m));
@@ -1043,7 +1044,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getFalseExpr());
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().leave_conditionaloperator();
         diagram().end_block_message(
             {message_t::kConditionalEnd, current_caller_id},
@@ -1929,11 +1930,10 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto location = cls->getLocation();
     const std::string source_location{lambda_source_location(location)};
 
-    if (context().lambda_caller_id() != 0) {
+    if (context().lambda_caller_id().has_value()) {
         // Parent is also a lambda (this id points to a lambda operator())
         std::string parent_lambda_class_name{"()"};
-        if (context().lambda_caller_id() &&
-            diagram().get_participant<model::method>(
+        if (diagram().get_participant<model::method>(
                 context().lambda_caller_id().value())) {
             auto parent_lambda_class_id =
                 diagram()
@@ -1955,7 +1955,7 @@ std::string translation_unit_visitor::make_lambda_name(
         result = fmt::format(
             "{}##(lambda {})", parent_lambda_class_name, source_location);
     }
-    else if (context().caller_id() != 0 &&
+    else if (context().caller_id().value() != 0 &&
         get_participant(context().caller_id()).has_value()) {
         auto parent_full_name =
             get_participant(context().caller_id()).value().full_name_no_ns();
@@ -2044,7 +2044,7 @@ void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
             auto participant = diagram().get_participant<model::class_>(m.to());
 
             if (participant && participant.value().is_lambda() &&
-                participant.value().lambda_operator_id() != 0) {
+                participant.value().lambda_operator_id().value() != 0) {
                 LOG_DBG("Changing lambda expression target id from {} to {}",
                     m.to(), participant.value().lambda_operator_id());
 
@@ -2067,7 +2067,7 @@ void translation_unit_visitor::resolve_ids_to_global()
             active_participants_unique.emplace(
                 local_ast_id_map_.at(id.ast_local_value()));
         }
-        else {
+        else if (id.is_global()) {
             active_participants_unique.emplace(id);
         }
     }
@@ -2077,7 +2077,7 @@ void translation_unit_visitor::resolve_ids_to_global()
     // Change all message callees AST local ids to diagram global ids
     for (auto &[id, activity] : diagram().sequences()) {
         for (auto &m : activity.messages()) {
-            if (!id.is_global() &&
+            if (!m.to().is_global() &&
                 local_ast_id_map_.find(m.to().ast_local_value()) !=
                     local_ast_id_map_.end()) {
                 m.set_to(local_ast_id_map_.at(m.to().ast_local_value()));
@@ -2300,7 +2300,8 @@ std::optional<std::string> translation_unit_visitor::get_expression_comment(
     if (raw_comment == nullptr)
         return {};
 
-    if (!processed_comments_by_caller_id_
+    if (!caller_id.is_global() &&
+        !processed_comments_by_caller_id_
              .emplace(caller_id.ast_local_value(), raw_comment)
              .second) {
         return {};

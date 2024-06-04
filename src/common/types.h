@@ -79,6 +79,14 @@ public:
 
     friend bool operator!=(const id_t &lhs, const uint64_t &v)
     {
+        // This is sadly necessary to catch accidental comparisons to empty
+        // std::optional<id_t>:
+        //
+        //     std::optional<id_t> id{};
+        //     if(id != 0) { /* id is nullopt, not 0 - so this executes... */ }
+        //
+        assert(v != 0);
+
         return lhs.value_ != v;
     }
 
@@ -115,7 +123,7 @@ private:
  * Type of output diagram format generator.
  */
 enum class generator_type_t {
-    plantuml, /*!< Diagrams will be gnerated in PlantUML format */
+    plantuml, /*!< Diagrams will be generated in PlantUML format */
     json,     /*!< Diagrams will be generated in JSON format */
     mermaid   /*!< Diagrams will be generated in MermaidJS format */
 };
