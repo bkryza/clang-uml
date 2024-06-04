@@ -33,86 +33,32 @@ class id_t {
 public:
     using type = uint64_t;
 
-    id_t()
-        : value_{0ULL}
-        , is_global_{true}
-    {
-    }
+    id_t();
 
-    explicit id_t(int64_t id)
-        : value_{static_cast<type>(id)}
-        , is_global_{false}
-    {
-    }
+    explicit id_t(int64_t id);
 
-    explicit id_t(type id)
-        : value_{id}
-        , is_global_{true}
-    {
-    }
+    explicit id_t(type id);
 
     id_t(const id_t &) = default;
     id_t(id_t &&) noexcept = default;
     id_t &operator=(const id_t &) = default;
     id_t &operator=(id_t &&) noexcept = default;
 
-    id_t &operator=(int64_t ast_id)
-    {
-        assert(!is_global_);
-        value_ = static_cast<uint64_t>(ast_id);
-        return *this;
-    }
+    id_t &operator=(int64_t ast_id);
 
     ~id_t() = default;
 
-    bool is_global() const { return is_global_; }
+    bool is_global() const;
 
-    friend bool operator==(const id_t &lhs, const id_t &rhs)
-    {
-        return (lhs.is_global_ == rhs.is_global_) && (lhs.value_ == rhs.value_);
-    }
+    friend bool operator==(const id_t &lhs, const id_t &rhs);
+    friend bool operator==(const id_t &lhs, const uint64_t &v);
+    friend bool operator!=(const id_t &lhs, const uint64_t &v);
+    friend bool operator!=(const id_t &lhs, const id_t &rhs);
+    friend bool operator<(const id_t &lhs, const id_t &rhs);
 
-    friend bool operator==(const id_t &lhs, const uint64_t &v)
-    {
-        return lhs.value_ == v;
-    }
+    type value() const;
 
-    friend bool operator!=(const id_t &lhs, const uint64_t &v)
-    {
-        // This is sadly necessary to catch accidental comparisons to empty
-        // std::optional<id_t>:
-        //
-        //     std::optional<id_t> id{};
-        //     if(id != 0) { /* id is nullopt, not 0 - so this executes... */ }
-        //
-        assert(v != 0);
-
-        return lhs.value_ != v;
-    }
-
-    friend bool operator!=(const id_t &lhs, const id_t &rhs)
-    {
-        return !(lhs == rhs);
-    }
-
-    friend bool operator<(const id_t &lhs, const id_t &rhs)
-    {
-        if (lhs.is_global_ != rhs.is_global_) {
-            return lhs.value_ < rhs.value_ + 1;
-        }
-
-        return lhs.value_ <
-            rhs.value_; // Compare values if is_global_ are the same
-    }
-
-    type value() const { return value_; }
-
-    int64_t ast_local_value() const
-    {
-        assert(!is_global_);
-
-        return static_cast<int64_t>(value_);
-    }
+    int64_t ast_local_value() const;
 
 private:
     type value_;

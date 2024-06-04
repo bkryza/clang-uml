@@ -20,6 +20,75 @@
 
 namespace clanguml::common {
 
+id_t::id_t()
+    : value_{0ULL}
+    , is_global_{true}
+{
+}
+
+id_t::id_t(int64_t id)
+    : value_{static_cast<type>(id)}
+    , is_global_{false}
+{
+}
+
+id_t::id_t(type id)
+    : value_{id}
+    , is_global_{true}
+{
+}
+
+id_t &id_t::operator=(int64_t ast_id)
+{
+    // Can't assign ast_id if the id is already a global one
+    assert(!is_global_);
+
+    value_ = static_cast<uint64_t>(ast_id);
+    return *this;
+}
+
+bool id_t::is_global() const { return is_global_; }
+
+bool operator==(const id_t &lhs, const id_t &rhs)
+{
+    return (lhs.is_global_ == rhs.is_global_) && (lhs.value_ == rhs.value_);
+}
+
+bool operator==(const id_t &lhs, const uint64_t &v) { return lhs.value_ == v; }
+
+bool operator!=(const id_t &lhs, const uint64_t &v)
+{
+    // This is sadly necessary to catch accidental comparisons to empty
+    // std::optional<id_t>:
+    //
+    //     std::optional<id_t> id{};
+    //     if(id != 0) { /* id is nullopt, not 0 - so this executes... */ }
+    //
+    assert(v != 0);
+
+    return lhs.value_ != v;
+}
+
+bool operator!=(const id_t &lhs, const id_t &rhs) { return !(lhs == rhs); }
+
+bool operator<(const id_t &lhs, const id_t &rhs)
+{
+    if (lhs.is_global_ != rhs.is_global_) {
+        return lhs.value_ < rhs.value_ + 1;
+    }
+
+    return lhs.value_ < rhs.value_; // Compare values if is_global_ are the same
+}
+
+id_t::type id_t::value() const { return value_; }
+
+int64_t id_t::ast_local_value() const
+{
+    assert(!is_global_);
+
+    return static_cast<int64_t>(value_);
+}
+
 std::string to_string(const std::string &s) { return s; }
 
 std::string to_string(const string_or_regex &sr) { return sr.to_string(); }

@@ -450,7 +450,10 @@ template <> common::id_t to_id(const clang::CXXRecordDecl &declaration)
     return to_id(get_qualified_name(declaration));
 }
 
-template <> common::id_t to_id(const clang::EnumType &t) { return to_id(*t.getDecl()); }
+template <> common::id_t to_id(const clang::EnumType &t)
+{
+    return to_id(*t.getDecl());
+}
 
 template <> common::id_t to_id(const std::filesystem::path &file)
 {

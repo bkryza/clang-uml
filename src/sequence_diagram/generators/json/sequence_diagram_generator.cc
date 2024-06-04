@@ -747,8 +747,8 @@ void generator::generate_diagram(nlohmann::json &parent) const
         if (to_activity_id == 0)
             continue;
 
-        auto message_chains_unique =
-            model().get_all_from_to_message_chains(common::id_t{}, *to_activity_id);
+        auto message_chains_unique = model().get_all_from_to_message_chains(
+            common::id_t{}, *to_activity_id);
 
         nlohmann::json sequence;
         sequence["to"]["location"] = to_location.location;

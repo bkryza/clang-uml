@@ -650,7 +650,8 @@ void generator::generate_diagram(std::ostream &ostr) const
                     ostr << indent(1) << from_alias << " "
                          << common::generators::mermaid::to_mermaid(
                                 message_t::kReturn)
-                         << " *" << " : ";
+                         << " *"
+                         << " : ";
 
                     if (config().generate_return_types())
                         ostr << from.value().return_type();

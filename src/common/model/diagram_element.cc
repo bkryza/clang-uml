@@ -26,7 +26,7 @@ namespace clanguml::common::model {
 
 diagram_element::diagram_element() = default;
 
-const common::id_t & diagram_element::id() const { return id_; }
+const common::id_t &diagram_element::id() const { return id_; }
 
 void diagram_element::set_id(common::id_t id) { id_ = id; }
 

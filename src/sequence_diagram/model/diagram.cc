@@ -387,7 +387,8 @@ std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
                 message_chains_unique.end(), mc) != message_chains_unique.end())
             continue;
 
-        if (from_activity.value() == 0 || (mc.front().from() == from_activity)) {
+        if (from_activity.value() == 0 ||
+            (mc.front().from() == from_activity)) {
             message_chains_unique.push_back(mc);
         }
     }

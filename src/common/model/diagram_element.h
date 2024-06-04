@@ -53,7 +53,7 @@ public:
      *
      * @return Elements id.
      */
-    const common::id_t& id() const;
+    const common::id_t &id() const;
 
     /**
      * Set elements id.

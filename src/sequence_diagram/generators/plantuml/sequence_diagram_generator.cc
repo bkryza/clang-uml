@@ -552,8 +552,8 @@ void generator::generate_diagram(std::ostream &ostr) const
         if (!to_activity_id)
             continue;
 
-        auto message_chains_unique =
-            model().get_all_from_to_message_chains(common::id_t{}, *to_activity_id);
+        auto message_chains_unique = model().get_all_from_to_message_chains(
+            common::id_t{}, *to_activity_id);
 
         bool first_separator_skipped{false};
         for (const auto &mc : message_chains_unique) {
