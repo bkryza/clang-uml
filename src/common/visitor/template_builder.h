@@ -30,8 +30,8 @@ using common::model::namespace_;
 using common::model::relationship_t;
 using common::model::template_parameter;
 
-using found_relationships_t = std::vector<
-    std::pair<clanguml::common::id_t, common::model::relationship_t>>;
+using found_relationships_t =
+    std::vector<std::pair<eid_t, common::model::relationship_t>>;
 
 namespace detail {
 
@@ -524,8 +524,8 @@ public:
         const template_parameter &ct, found_relationships_t &relationships);
 
     void find_instantiation_relationships(
-        common::model::template_element &template_instantiation,
-        common::id_t id, const std::string &qualified_name) const;
+        common::model::template_element &template_instantiation, eid_t id,
+        const std::string &qualified_name) const;
 
     /**
      * @brief Get reference to Clang AST to clang-uml id mapper
@@ -661,8 +661,8 @@ void template_builder<VisitorT>::build_from_template_declaration(
                                 templated_element.value().add_relationship(
                                     {relationship_t::kConstraint,
                                         id_mapper()
-                                            .get_global_id(common::id_t{
-                                                named_concept->getID()})
+                                            .get_global_id(
+                                                eid_t{named_concept->getID()})
                                             .value(),
                                         model::access_t::kNone,
                                         ct.name().value()});
@@ -865,8 +865,7 @@ void template_builder<VisitorT>::build(
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
         find_instantiation_relationships(template_instantiation,
-            common::id_t{template_decl->getID()},
-            full_template_specialization_name);
+            eid_t{template_decl->getID()}, full_template_specialization_name);
     }
 
     template_instantiation.set_id(
@@ -911,7 +910,7 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
     if constexpr (std::is_same_v<typename VisitorT::diagram_t,
                       class_diagram::model::diagram>) {
         find_instantiation_relationships(template_instantiation,
-            common::id_t{template_specialization.getID()}, qualified_name);
+            eid_t{template_specialization.getID()}, qualified_name);
     }
 
     visitor_.set_source_location(*template_decl, template_instantiation);
@@ -919,7 +918,7 @@ void template_builder<VisitorT>::build_from_class_template_specialization(
 
 template <typename VisitorT>
 void template_builder<VisitorT>::find_instantiation_relationships(
-    common::model::template_element &template_instantiation, common::id_t id,
+    common::model::template_element &template_instantiation, eid_t id,
     const std::string &qualified_name) const
 {
     visitor_.find_instantiation_relationships(

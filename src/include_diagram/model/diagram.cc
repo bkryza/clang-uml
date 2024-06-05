@@ -35,7 +35,7 @@ common::optional_ref<common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
-    const common::id_t id) const
+    const eid_t id) const
 {
     return find<source_file>(id);
 }

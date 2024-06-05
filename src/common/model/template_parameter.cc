@@ -505,7 +505,7 @@ std::string template_parameter::to_string(
 }
 
 bool template_parameter::find_nested_relationships(
-    std::vector<std::pair<common::id_t, common::model::relationship_t>>
+    std::vector<std::pair<eid_t, common::model::relationship_t>>
         &nested_relationships,
     common::model::relationship_t hint,
     const std::function<bool(const std::string &full_name)> &should_include)

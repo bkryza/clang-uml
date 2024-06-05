@@ -45,6 +45,7 @@ using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
+using clanguml::common::eid_t;
 using clanguml::common::model::access_t;
 using clanguml::common::model::namespace_;
 using clanguml::common::model::relationship;
@@ -149,7 +150,7 @@ public:
 
     void find_instantiation_relationships(
         common::model::template_element &template_instantiation_base,
-        const std::string &full_name, common::id_t templated_decl_id);
+        const std::string &full_name, eid_t templated_decl_id);
 
 private:
     /**
@@ -432,8 +433,7 @@ private:
 
     template_builder_t template_builder_;
 
-    std::map<common::id_t,
-        std::unique_ptr<clanguml::class_diagram::model::class_>>
+    std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
         forward_declarations_;
 
     std::map<int64_t /* local anonymous struct id */,

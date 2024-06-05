@@ -26,6 +26,7 @@
 
 namespace clanguml::package_diagram::model {
 
+using clanguml::common::eid_t;
 using clanguml::common::opt_ref;
 using clanguml::common::model::diagram_element;
 using clanguml::common::model::package;
@@ -75,7 +76,7 @@ public:
      * @param id Element id.
      * @return Optional reference to a diagram element.
      */
-    opt_ref<diagram_element> get(common::id_t id) const override;
+    opt_ref<diagram_element> get(eid_t id) const override;
 
     /**
      * @brief Find an element in the diagram by name.
@@ -100,7 +101,7 @@ public:
      * @param id Id of the element
      * @return Optional reference to a diagram element
      */
-    template <typename ElementT> opt_ref<ElementT> find(common::id_t id) const;
+    template <typename ElementT> opt_ref<ElementT> find(eid_t id) const;
 
     /**
      * @brief Find elements in the diagram by regex pattern.
@@ -148,7 +149,7 @@ public:
      * @param id Id of a package in the diagram
      * @return PlantUML alias of the element
      */
-    std::string to_alias(common::id_t id) const;
+    std::string to_alias(eid_t id) const;
 
     /**
      * @brief Return the elements JSON context for inja templates.
@@ -213,8 +214,7 @@ opt_ref<ElementT> diagram::find(const std::string &name) const
     return {};
 }
 
-template <typename ElementT>
-opt_ref<ElementT> diagram::find(common::id_t id) const
+template <typename ElementT> opt_ref<ElementT> diagram::find(eid_t id) const
 {
     for (const auto &element : element_view<ElementT>::view()) {
         if (element.get().id() == id) {

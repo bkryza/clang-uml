@@ -81,7 +81,7 @@ const clanguml::common::optional_ref<common::model::source_file> get(
 }
 
 template <>
-clanguml::common::id_t destination_comparator<common::model::source_file>(
+eid_t destination_comparator<common::model::source_file>(
     const common::model::source_file &f)
 {
     return f.id();
@@ -690,7 +690,7 @@ void context_filter::initialize_effective_context(
     // Now repeat radius times - extend the effective context with elements
     // matching in direct relationship to what is in context
     auto radius_counter = context.radius;
-    std::set<clanguml::common::id_t> current_iteration_context;
+    std::set<eid_t> current_iteration_context;
 
     while (radius_counter > 0 && effective_context_extended) {
         // If at any iteration the effective context was not extended - we
@@ -725,8 +725,8 @@ void context_filter::initialize_effective_context(
 }
 
 void context_filter::find_elements_inheritance_relationship(const diagram &d,
-    std::set<id_t> &effective_context,
-    std::set<clanguml::common::id_t> &current_iteration_context) const
+    std::set<eid_t> &effective_context,
+    std::set<eid_t> &current_iteration_context) const
 {
     const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
 

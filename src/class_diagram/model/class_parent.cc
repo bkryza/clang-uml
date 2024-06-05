@@ -24,9 +24,9 @@ void class_parent::set_name(const std::string &name) { name_ = name; }
 
 std::string class_parent::name() const { return name_; }
 
-void class_parent::set_id(clanguml::common::id_t id) { id_ = id; }
+void class_parent::set_id(eid_t id) { id_ = id; }
 
-clanguml::common::id_t class_parent::id() const noexcept { return id_; }
+eid_t class_parent::id() const noexcept { return id_; }
 
 void class_parent::is_virtual(bool is_virtual) { is_virtual_ = is_virtual; }
 

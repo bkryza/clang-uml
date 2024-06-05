@@ -42,7 +42,7 @@ common::optional_ref<common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
-    const common::id_t id) const
+    const eid_t id) const
 {
     if (participants_.find(id) != participants_.end())
         return {*participants_.at(id)};
@@ -90,22 +90,19 @@ void diagram::add_participant(std::unique_ptr<participant> p)
     }
 }
 
-void diagram::add_active_participant(common::id_t id)
+void diagram::add_active_participant(eid_t id)
 {
     active_participants_.emplace(id);
 }
 
-const activity &diagram::get_activity(common::id_t id) const
+const activity &diagram::get_activity(eid_t id) const
 {
     return activities_.at(id);
 }
 
-bool diagram::has_activity(common::id_t id) const
-{
-    return activities_.count(id) > 0;
-}
+bool diagram::has_activity(eid_t id) const { return activities_.count(id) > 0; }
 
-activity &diagram::get_activity(common::id_t id) { return activities_.at(id); }
+activity &diagram::get_activity(eid_t id) { return activities_.at(id); }
 
 void diagram::add_message(model::message &&message)
 {
@@ -153,30 +150,27 @@ void diagram::add_case_stmt_message(model::message &&m)
     }
 }
 
-std::map<common::id_t, activity> &diagram::sequences() { return activities_; }
+std::map<eid_t, activity> &diagram::sequences() { return activities_; }
 
-const std::map<common::id_t, activity> &diagram::sequences() const
+const std::map<eid_t, activity> &diagram::sequences() const
 {
     return activities_;
 }
 
-std::map<common::id_t, std::unique_ptr<participant>> &diagram::participants()
+std::map<eid_t, std::unique_ptr<participant>> &diagram::participants()
 {
     return participants_;
 }
 
-const std::map<common::id_t, std::unique_ptr<participant>> &
+const std::map<eid_t, std::unique_ptr<participant>> &
 diagram::participants() const
 {
     return participants_;
 }
 
-std::set<common::id_t> &diagram::active_participants()
-{
-    return active_participants_;
-}
+std::set<eid_t> &diagram::active_participants() { return active_participants_; }
 
-const std::set<common::id_t> &diagram::active_participants() const
+const std::set<eid_t> &diagram::active_participants() const
 {
     return active_participants_;
 }
@@ -228,10 +222,10 @@ std::vector<std::string> diagram::list_to_values() const
     return result;
 }
 
-std::optional<common::id_t> diagram::get_to_activity_id(
+std::optional<eid_t> diagram::get_to_activity_id(
     const config::source_location &to_location) const
 {
-    std::optional<common::id_t> to_activity{};
+    std::optional<eid_t> to_activity{};
 
     for (const auto &[k, v] : sequences()) {
         for (const auto &m : v.messages()) {
@@ -257,10 +251,10 @@ std::optional<common::id_t> diagram::get_to_activity_id(
     return to_activity;
 }
 
-std::optional<common::id_t> diagram::get_from_activity_id(
+std::optional<eid_t> diagram::get_from_activity_id(
     const config::source_location &from_location) const
 {
-    std::optional<common::id_t> from_activity{};
+    std::optional<eid_t> from_activity{};
 
     for (const auto &[k, v] : sequences()) {
         const auto &caller = *participants().at(v.from());
@@ -282,7 +276,7 @@ std::optional<common::id_t> diagram::get_from_activity_id(
 }
 
 std::vector<message_chain_t> diagram::get_all_from_to_message_chains(
-    const common::id_t from_activity, const common::id_t to_activity) const
+    const eid_t from_activity, const eid_t to_activity) const
 {
     std::vector<message_chain_t> message_chains_unique{};
 
@@ -414,9 +408,9 @@ bool diagram::is_empty() const
 
 void diagram::inline_lambda_operator_calls()
 {
-    std::map<common::id_t, activity> activities;
-    std::map<common::id_t, std::unique_ptr<participant>> participants;
-    std::set<common::id_t> active_participants;
+    std::map<eid_t, activity> activities;
+    std::map<eid_t, std::unique_ptr<participant>> participants;
+    std::set<eid_t> active_participants;
 
     for (auto &[id, act] : sequences()) {
         model::activity new_activity{id};
@@ -488,8 +482,8 @@ void diagram::inline_lambda_operator_calls()
     active_participants_ = std::move(active_participants);
 }
 
-bool diagram::inline_lambda_operator_call(const common::id_t id,
-    model::activity &new_activity, const model::message &m)
+bool diagram::inline_lambda_operator_call(
+    const eid_t id, model::activity &new_activity, const model::message &m)
 {
     bool message_call_to_lambda{false};
     auto maybe_lambda_operator = get_participant<model::method>(m.to());

@@ -123,14 +123,14 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     const auto *parent = enm->getParent();
 
     // Id of parent class or struct in which this enum is potentially nested
-    std::optional<common::id_t> parent_id_opt;
+    std::optional<eid_t> parent_id_opt;
 
     if (parent != nullptr) {
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
         if (parent_record_decl != nullptr) {
-            common::id_t local_id{parent_record_decl->getID()};
+            eid_t local_id{parent_record_decl->getID()};
 
             // First check if the parent has been added to the diagram as
             // regular class
@@ -222,7 +222,7 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!template_specialization.template_specialization_found()) {
         // Only do this if we haven't found a better specialization during
         // construction of the template specialization
-        const common::id_t ast_id{cls->getSpecializedTemplate()->getID()};
+        const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
         const auto maybe_id = id_mapper().get_global_id(ast_id);
         if (maybe_id.has_value())
             template_specialization.add_relationship(
@@ -621,7 +621,7 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         should_include(cpt)) {
 
         const auto cpt_name = cpt->getNameAsString();
-        const common::id_t ast_id{cpt->getID()};
+        const eid_t ast_id{cpt->getID()};
         const auto maybe_id = id_mapper().get_global_id(ast_id);
         if (!maybe_id)
             return;
@@ -707,7 +707,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
         // skip it:
-        const common::id_t ast_id{cls->getDescribedTemplate()->getID()};
+        const eid_t ast_id{cls->getDescribedTemplate()->getID()};
         if (id_mapper().get_global_id(ast_id))
             return true;
     }
@@ -869,7 +869,7 @@ void translation_unit_visitor::process_record_parent(
 {
     const auto *parent = cls->getParent();
 
-    std::optional<common::id_t> id_opt;
+    std::optional<eid_t> id_opt;
 
     auto parent_ns = ns;
     if (parent != nullptr) {
@@ -879,7 +879,7 @@ void translation_unit_visitor::process_record_parent(
         if (parent_record_decl != nullptr) {
             parent_ns = common::get_tag_namespace(*parent_record_decl);
 
-            common::id_t ast_id{parent_record_decl->getID()};
+            eid_t ast_id{parent_record_decl->getID()};
 
             // First check if the parent has been added to the diagram as
             // regular class
@@ -2176,7 +2176,7 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 
 void translation_unit_visitor::find_instantiation_relationships(
     common::model::template_element &template_instantiation_base,
-    const std::string &full_name, common::id_t templated_decl_id)
+    const std::string &full_name, eid_t templated_decl_id)
 {
     auto &template_instantiation = dynamic_cast<class_diagram::model::class_ &>(
         template_instantiation_base);
@@ -2187,7 +2187,7 @@ void translation_unit_visitor::find_instantiation_relationships(
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::id_t best_match_id{};
+    eid_t best_match_id{};
 
     for (const auto templ : diagram().classes()) {
         if (templ.get() == template_instantiation)
@@ -2206,7 +2206,7 @@ void translation_unit_visitor::find_instantiation_relationships(
     }
 
     auto templated_decl_global_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(common::id_t{});
+        id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
 
     if (best_match_id.value() > 0) {
         destination = best_match_full_name;

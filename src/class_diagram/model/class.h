@@ -185,8 +185,6 @@ struct hash<std::reference_wrapper<clanguml::class_diagram::model::class_>> {
         const std::reference_wrapper<clanguml::class_diagram::model::class_>
             &key) const
     {
-        using clanguml::common::id_t;
-
         return std::hash<uint64_t>{}(key.get().id().value());
     }
 };

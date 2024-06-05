@@ -28,6 +28,8 @@
 
 namespace clanguml::sequence_diagram::visitor {
 
+using clanguml::common::eid_t;
+
 /**
  * @brief This class is used to track current context of the call expressions.
  *
@@ -116,14 +118,14 @@ struct call_expression_context {
      *
      * @param id Set current caller id.
      */
-    void set_caller_id(common::id_t id);
+    void set_caller_id(eid_t id);
 
     /**
      * @brief Get current caller id
      *
      * @return Id of the current caller participant
      */
-    common::id_t caller_id() const;
+    eid_t caller_id() const;
 
     /**
      * @brief Get the id of the current lambda caller.
@@ -133,14 +135,14 @@ struct call_expression_context {
      *
      * @return Current lambda caller id, or 0 if current caller is not lambda.
      */
-    std::optional<common::id_t> lambda_caller_id() const;
+    std::optional<eid_t> lambda_caller_id() const;
 
     /**
      * @brief Enter a lambda expression
      *
      * @param id Lambda id
      */
-    void enter_lambda_expression(common::id_t id);
+    void enter_lambda_expression(eid_t id);
 
     /**
      * @brief Leave current lambda expression
@@ -315,8 +317,8 @@ struct call_expression_context {
     clang::FunctionTemplateDecl *current_function_template_decl_{nullptr};
 
 private:
-    common::id_t current_caller_id_{};
-    std::stack<common::id_t> current_lambda_caller_id_;
+    eid_t current_caller_id_{};
+    std::stack<eid_t> current_lambda_caller_id_;
 
     std::stack<callexpr_stack_t> call_expr_stack_;
 

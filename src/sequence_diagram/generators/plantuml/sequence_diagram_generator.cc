@@ -20,6 +20,7 @@
 
 namespace clanguml::sequence_diagram::generators::plantuml {
 
+using clanguml::common::eid_t;
 using clanguml::common::model::message_t;
 using clanguml::config::location_t;
 using clanguml::sequence_diagram::model::activity;
@@ -149,8 +150,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     }
 }
 
-void generator::generate_activity(const activity &a, std::ostream &ostr,
-    std::vector<common::id_t> &visited) const
+void generator::generate_activity(
+    const activity &a, std::ostream &ostr, std::vector<eid_t> &visited) const
 {
     for (const auto &m : a.messages()) {
         if (m.in_static_declaration_context()) {
@@ -348,9 +349,9 @@ void generator::generate_participant(
 }
 
 void generator::generate_participant(
-    std::ostream &ostr, common::id_t id, bool force) const
+    std::ostream &ostr, eid_t id, bool force) const
 {
-    common::id_t participant_id{};
+    eid_t participant_id{};
 
     if (!force) {
         for (const auto pid : model().active_participants()) {
@@ -465,7 +466,7 @@ void generator::generate_participant(
     }
 }
 
-bool generator::is_participant_generated(common::id_t id) const
+bool generator::is_participant_generated(eid_t id) const
 {
     return std::find(generated_participants_.begin(),
                generated_participants_.end(),
@@ -552,8 +553,8 @@ void generator::generate_diagram(std::ostream &ostr) const
         if (!to_activity_id)
             continue;
 
-        auto message_chains_unique = model().get_all_from_to_message_chains(
-            common::id_t{}, *to_activity_id);
+        auto message_chains_unique =
+            model().get_all_from_to_message_chains(eid_t{}, *to_activity_id);
 
         bool first_separator_skipped{false};
         for (const auto &mc : message_chains_unique) {
@@ -588,7 +589,7 @@ void generator::generate_diagram(std::ostream &ostr) const
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::id_t start_from{};
+            eid_t start_from{};
             for (const auto &[k, v] : model().sequences()) {
                 if (model().participants().count(v.from()) == 0)
                     continue;
@@ -613,7 +614,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                 continue;
 
             // Use this to break out of recurrent loops
-            std::vector<common::id_t> visited_participants;
+            std::vector<eid_t> visited_participants;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);

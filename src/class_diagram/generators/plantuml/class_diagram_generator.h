@@ -52,6 +52,7 @@ using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
+using clanguml::common::eid_t;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;

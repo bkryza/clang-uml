@@ -178,27 +178,27 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt);
  *
  * @{
  */
-template <typename T> common::id_t to_id(const T &declaration);
+template <typename T> eid_t to_id(const T &declaration);
 
-template <> common::id_t to_id(const std::string &full_name);
+template <> eid_t to_id(const std::string &full_name);
 
-common::id_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
+eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx);
 
-template <> common::id_t to_id(const clang::NamespaceDecl &declaration);
+template <> eid_t to_id(const clang::NamespaceDecl &declaration);
 
-template <> common::id_t to_id(const clang::CXXRecordDecl &declaration);
+template <> eid_t to_id(const clang::CXXRecordDecl &declaration);
 
-template <> common::id_t to_id(const clang::RecordDecl &declaration);
+template <> eid_t to_id(const clang::RecordDecl &declaration);
 
-template <> common::id_t to_id(const clang::EnumDecl &declaration);
+template <> eid_t to_id(const clang::EnumDecl &declaration);
 
-template <> common::id_t to_id(const clang::TagDecl &declaration);
+template <> eid_t to_id(const clang::TagDecl &declaration);
 
-template <> common::id_t to_id(const clang::EnumType &type);
+template <> eid_t to_id(const clang::EnumType &type);
 
-template <> common::id_t to_id(const clang::TemplateSpecializationType &type);
+template <> eid_t to_id(const clang::TemplateSpecializationType &type);
 
-template <> common::id_t to_id(const std::filesystem::path &type);
+template <> eid_t to_id(const std::filesystem::path &type);
 /** @} */ // end of to_id
 
 /**

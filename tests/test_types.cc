@@ -21,21 +21,21 @@
 
 #include "doctest/doctest.h"
 
-TEST_CASE("Test common::id_t")
+TEST_CASE("Test eid_t")
 {
-    using namespace clanguml;
+    using clanguml::common::eid_t;
 
-    common::id_t empty{};
+    eid_t empty{};
 
     REQUIRE(empty.is_global());
     REQUIRE_EQ(empty.value(), 0);
 
-    common::id_t local_id{(int64_t)100};
+    eid_t local_id{(int64_t)100};
     REQUIRE_EQ(local_id.ast_local_value(), 100);
     REQUIRE_EQ(local_id.value(), 100);
     REQUIRE(!local_id.is_global());
 
-    common::id_t global_id{(uint64_t)100};
+    eid_t global_id{(uint64_t)100};
     REQUIRE_EQ(global_id.value(), 100);
     REQUIRE(global_id.is_global());
 

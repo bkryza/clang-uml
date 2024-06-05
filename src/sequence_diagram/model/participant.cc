@@ -197,7 +197,7 @@ void method::is_assignment(bool a) { is_assignment_ = a; }
 
 void method::set_method_name(const std::string &name) { method_name_ = name; }
 
-void method::set_class_id(common::id_t id) { class_id_ = id; }
+void method::set_class_id(eid_t id) { class_id_ = id; }
 
 void method::set_class_full_name(const std::string &name)
 {
@@ -238,7 +238,7 @@ std::string method::message_name(message_render_mode mode) const
         fmt::join(parameters(), ","), is_const() ? " const" : "", style);
 }
 
-common::id_t method::class_id() const { return class_id_; }
+eid_t method::class_id() const { return class_id_; }
 
 std::string method::to_string() const
 {

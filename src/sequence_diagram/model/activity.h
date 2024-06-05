@@ -35,7 +35,7 @@ public:
      *
      * @param id Id of the participant parent for the activity
      */
-    activity(common::id_t id);
+    activity(eid_t id);
 
     /**
      * @brief Add a message call to the activity
@@ -63,10 +63,10 @@ public:
      *
      * @return Id of activity participant
      */
-    common::id_t from() const;
+    eid_t from() const;
 
 private:
-    common::id_t from_;
+    eid_t from_;
     std::vector<message> messages_;
 };
 

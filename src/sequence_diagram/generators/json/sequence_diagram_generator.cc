@@ -186,7 +186,7 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 }
 
 void generator::generate_activity(
-    const activity &a, std::vector<common::id_t> &visited) const
+    const activity &a, std::vector<eid_t> &visited) const
 {
     // Generate calls from this activity to other activities
     for (const auto &m : a.messages()) {
@@ -263,7 +263,7 @@ nlohmann::json &generator::current_block_statement() const
 }
 
 void generator::process_call_message(
-    const model::message &m, std::vector<common::id_t> &visited) const
+    const model::message &m, std::vector<eid_t> &visited) const
 {
     visited.push_back(m.from());
 
@@ -541,10 +541,10 @@ void generator::generate_participant(
     generate_participant(parent, p.value().id(), true);
 }
 
-std::optional<common::id_t> generator::generate_participant(
-    nlohmann::json & /*parent*/, common::id_t id, bool force) const
+std::optional<eid_t> generator::generate_participant(
+    nlohmann::json & /*parent*/, eid_t id, bool force) const
 {
-    std::optional<common::id_t> participant_id{};
+    std::optional<eid_t> participant_id{};
 
     if (!force) {
         for (const auto pid : model().active_participants()) {
@@ -672,7 +672,7 @@ std::optional<common::id_t> generator::generate_participant(
     return participant_id;
 }
 
-bool generator::is_participant_generated(common::id_t id) const
+bool generator::is_participant_generated(eid_t id) const
 {
     return std::find(generated_participants_.begin(),
                generated_participants_.end(),
@@ -748,7 +748,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
             continue;
 
         auto message_chains_unique = model().get_all_from_to_message_chains(
-            common::id_t{}, to_activity_id.value());
+            eid_t{}, to_activity_id.value());
 
         nlohmann::json sequence;
         sequence["to"]["location"] = to_location.location;
@@ -779,7 +779,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::id_t start_from{};
+            eid_t start_from{};
             std::string start_from_str;
             for (const auto &[k, v] : model().sequences()) {
                 const auto &caller = *model().participants().at(v.from());
@@ -799,7 +799,7 @@ void generator::generate_diagram(nlohmann::json &parent) const
             }
 
             // Use this to break out of recurrent loops
-            std::vector<common::id_t> visited_participants;
+            std::vector<eid_t> visited_participants;
 
             const auto &from =
                 model().get_participant<model::function>(start_from);

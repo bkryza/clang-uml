@@ -166,7 +166,7 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(common::id_t{decl->getID()});
+        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
         if (!unique_participant_id.has_value())
             return {};
 
@@ -185,7 +185,7 @@ public:
     {
         assert(decl != nullptr);
 
-        auto unique_participant_id = get_unique_id(common::id_t{decl->getID()});
+        auto unique_participant_id = get_unique_id(eid_t{decl->getID()});
         if (!unique_participant_id.has_value())
             return {};
 
@@ -200,7 +200,7 @@ public:
      * @return Optional reference to participant diagram element
      */
     template <typename T = model::participant>
-    common::optional_ref<T> get_participant(const common::id_t id)
+    common::optional_ref<T> get_participant(const eid_t id)
     {
         if (diagram().participants().find(id) == diagram().participants().end())
             return {};
@@ -217,7 +217,7 @@ public:
      * @return Optional reference to participant diagram element
      */
     template <typename T = model::participant>
-    common::optional_ref<T> get_participant(common::id_t id) const
+    common::optional_ref<T> get_participant(eid_t id) const
     {
         if (diagram().participants().find(id) == diagram().participants().end())
             return {};
@@ -235,7 +235,7 @@ public:
      * @param local_id Local AST element id
      * @param global_id Globa diagram element id
      */
-    void set_unique_id(int64_t local_id, common::id_t global_id);
+    void set_unique_id(int64_t local_id, eid_t global_id);
 
     /**
      * @brief Retrieve the global `clang-uml` entity id based on the Clang
@@ -243,7 +243,7 @@ public:
      * @param local_id AST local element id
      * @return Global diagram element id
      */
-    std::optional<common::id_t> get_unique_id(common::id_t local_id) const;
+    std::optional<eid_t> get_unique_id(eid_t local_id) const;
 
     /**
      * @brief Finalize diagram model for this translation unit
@@ -469,7 +469,7 @@ private:
 
     std::optional<std::string> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
-        common::id_t caller_id, const clang::Stmt *stmt);
+        eid_t caller_id, const clang::Stmt *stmt);
 
     /**
      * @brief Initializes model message from comment call directive
@@ -502,15 +502,14 @@ private:
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
 
-    std::map<common::id_t,
-        std::unique_ptr<clanguml::sequence_diagram::model::class_>>
+    std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
 
     /**
      * @todo Refactor to @ref ast_id_mapper
      */
     std::map</* local id from ->getID() */ int64_t,
-        /* global ID based on full name */ common::id_t>
+        /* global ID based on full name */ eid_t>
         local_ast_id_map_;
 
     std::map<int64_t /* local anonymous struct id */,

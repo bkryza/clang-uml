@@ -29,6 +29,8 @@
 
 namespace clanguml::common::model {
 
+using clanguml::common::eid_t;
+
 /**
  * Type of template parameter or argument.
  */
@@ -166,14 +168,14 @@ public:
      *
      * @param id Id of parameter
      */
-    void set_id(const common::id_t &id) { id_ = id; }
+    void set_id(const eid_t &id) { id_ = id; }
 
     /**
      * Get id of the template parameter
      *
      * @return Id of the template parameter
      */
-    const std::optional<common::id_t> &id() const { return id_; }
+    const std::optional<eid_t> &id() const { return id_; }
 
     /**
      * Set the name of the template parameter
@@ -389,7 +391,7 @@ public:
      * @return
      */
     bool find_nested_relationships(
-        std::vector<std::pair<common::id_t, common::model::relationship_t>>
+        std::vector<std::pair<eid_t, common::model::relationship_t>>
             &nested_relationships,
         common::model::relationship_t hint,
         const std::function<bool(const std::string &full_name)> &should_include)
@@ -533,7 +535,7 @@ private:
      */
     std::vector<template_parameter> template_params_;
 
-    std::optional<common::id_t> id_;
+    std::optional<eid_t> id_;
 
     bool is_unexposed_{false};
 };

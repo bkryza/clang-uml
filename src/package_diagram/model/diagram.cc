@@ -41,12 +41,12 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
-    const clanguml::common::id_t id) const
+    const eid_t id) const
 {
     return find<package>(id);
 }
 
-std::string diagram::to_alias(const clanguml::common::id_t id) const
+std::string diagram::to_alias(const eid_t id) const
 {
     LOG_DBG("Looking for alias for {}", id);
 

@@ -290,7 +290,7 @@ void translation_unit_visitor::add_relationships(
     auto current_package = diagram().get(current_package_id);
 
     if (current_package) {
-        std::vector<common::id_t> parent_ids =
+        std::vector<eid_t> parent_ids =
             get_parent_package_ids(current_package_id);
 
         for (const auto &dependency : relationships) {
@@ -313,7 +313,7 @@ void translation_unit_visitor::add_relationships(
     }
 }
 
-common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
+eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
 {
     if (config().package_type() == config::package_type_t::kNamespace) {
         const auto *namespace_context =
@@ -677,11 +677,10 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
 
 void translation_unit_visitor::finalize() { }
 
-std::vector<common::id_t> translation_unit_visitor::get_parent_package_ids(
-    common::id_t id)
+std::vector<eid_t> translation_unit_visitor::get_parent_package_ids(eid_t id)
 {
-    std::vector<common::id_t> parent_ids;
-    std::optional<common::id_t> parent_id = id;
+    std::vector<eid_t> parent_ids;
+    std::optional<eid_t> parent_id = id;
 
     while (parent_id.has_value()) {
         const auto pid = parent_id.value(); // NOLINT
