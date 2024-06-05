@@ -417,7 +417,8 @@ bool is_subexpr_of(const clang::Stmt *parent_stmt, const clang::Stmt *sub_stmt)
 
 template <> eid_t to_id(const std::string &full_name)
 {
-    return static_cast<eid_t>(std::hash<std::string>{}(full_name));
+    return static_cast<eid_t>(
+        static_cast<uint64_t>(std::hash<std::string>{}(full_name)));
 }
 
 eid_t to_id(const clang::QualType &type, const clang::ASTContext &ctx)

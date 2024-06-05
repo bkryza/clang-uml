@@ -349,6 +349,6 @@ public:
     template <typename Context>
     constexpr auto format(clanguml::common::eid_t const &id, Context &ctx) const
     {
-        return format_to(ctx.out(), "{}", id.value());
+        return fmt::format_to(ctx.out(), "{}", id.value());
     }
 };
