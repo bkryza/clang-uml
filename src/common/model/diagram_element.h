@@ -53,28 +53,28 @@ public:
      *
      * @return Elements id.
      */
-    common::id_t id() const;
+    const eid_t &id() const;
 
     /**
      * Set elements id.
      *
      * @param id Elements id.
      */
-    void set_id(common::id_t id);
+    void set_id(eid_t id);
 
     /**
      * Get elements parent package id.
      *
      * @return Parent package id if element is nested.
      */
-    std::optional<id_t> parent_element_id() const;
+    std::optional<eid_t> parent_element_id() const;
 
     /**
      * Set elements parent package id.
      *
      * @param id Id of parent package.
      */
-    void set_parent_element_id(id_t id);
+    void set_parent_element_id(eid_t id);
 
     /**
      * @brief Return elements' diagram alias.
@@ -185,8 +185,8 @@ public:
     void complete(bool completed);
 
 private:
-    id_t id_{0};
-    std::optional<id_t> parent_element_id_{0};
+    eid_t id_{};
+    std::optional<eid_t> parent_element_id_{};
     std::string name_;
     std::vector<relationship> relationships_;
     bool nested_{false};

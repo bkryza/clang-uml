@@ -35,6 +35,8 @@ namespace sequence_diagram {
 namespace generators {
 namespace mermaid {
 
+using clanguml::common::eid_t;
+
 using diagram_config = clanguml::config::sequence_diagram;
 using diagram_model = clanguml::sequence_diagram::model::diagram;
 
@@ -95,7 +97,7 @@ public:
      * @return Id of the generated participant
      */
     void generate_participant(
-        std::ostream &ostr, common::id_t id, bool force = false) const;
+        std::ostream &ostr, eid_t id, bool force = false) const;
 
     /**
      * @brief Generate sequence diagram participant by name
@@ -117,7 +119,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const clanguml::sequence_diagram::model::activity &a,
-        std::ostream &ostr, std::vector<common::id_t> &visited) const;
+        std::ostream &ostr, std::vector<eid_t> &visited) const;
 
 private:
     /**
@@ -126,7 +128,7 @@ private:
      * @param id Participant id.
      * @return True, if participant has already been generated.
      */
-    bool is_participant_generated(common::id_t id) const;
+    bool is_participant_generated(eid_t id) const;
 
     /**
      * @brief Generate MermaidJS alias for participant
@@ -153,7 +155,7 @@ private:
     model::function::message_render_mode
     select_method_arguments_render_mode() const;
 
-    mutable std::set<common::id_t> generated_participants_;
+    mutable std::set<eid_t> generated_participants_;
     mutable std::vector<model::message> already_generated_in_static_context_;
 };
 

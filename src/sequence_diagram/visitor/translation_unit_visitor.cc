@@ -64,7 +64,7 @@ bool translation_unit_visitor::VisitCXXRecordDecl(
     // Skip this class if it's parent template is already in the model
     if (declaration->isTemplated() &&
         declaration->getDescribedTemplate() != nullptr) {
-        if (get_unique_id(declaration->getDescribedTemplate()->getID()))
+        if (get_unique_id(eid_t{declaration->getDescribedTemplate()->getID()}))
             return true;
     }
 
@@ -335,7 +335,8 @@ bool translation_unit_visitor::VisitFunctionDecl(
         if (declaration->getDescribedTemplate() != nullptr) {
             // If the described templated of this function is already in the
             // model skip it:
-            if (get_unique_id(declaration->getDescribedTemplate()->getID()))
+            if (get_unique_id(
+                    eid_t{declaration->getDescribedTemplate()->getID()}))
                 return true;
         }
     }
@@ -474,7 +475,7 @@ bool translation_unit_visitor::VisitLambdaExpr(clang::LambdaExpr *expr)
     // method function would be excluded by filters
     if (std::holds_alternative<clang::CallExpr *>(
             context().current_callexpr()) &&
-        (context().lambda_caller_id() == 0)) {
+        (!context().lambda_caller_id().has_value())) {
         using clanguml::common::model::message_t;
         using clanguml::sequence_diagram::model::message;
 
@@ -661,7 +662,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
         if (current_elseifstmt->getElse() == stmt) {
             const auto current_caller_id = context().caller_id();
 
-            if (current_caller_id != 0) {
+            if (current_caller_id.value() != 0) {
                 model::message m{message_t::kElse, current_caller_id};
                 set_source_location(*stmt, m);
                 diagram().add_message(std::move(m));
@@ -672,7 +673,7 @@ bool translation_unit_visitor::TraverseCompoundStmt(clang::CompoundStmt *stmt)
         if (current_ifstmt->getElse() == stmt) {
             const auto current_caller_id = context().caller_id();
 
-            if (current_caller_id != 0) {
+            if (current_caller_id.value() != 0) {
                 model::message m{message_t::kElse, current_caller_id};
                 set_source_location(*stmt, m);
                 diagram().add_message(std::move(m));
@@ -718,7 +719,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
             std::any_of(current_elseifstmt->children().begin(),
                 current_elseifstmt->children().end(), child_stmt_compare);
 
-    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
+    if ((current_caller_id.value() != 0) && !stmt->isConstexpr()) {
         if (elseif_block) {
             context().enter_elseifstmt(stmt);
 
@@ -743,7 +744,7 @@ bool translation_unit_visitor::TraverseIfStmt(clang::IfStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseIfStmt(stmt);
 
-    if ((current_caller_id != 0) && !stmt->isConstexpr()) {
+    if ((current_caller_id.value() != 0) && !stmt->isConstexpr()) {
         if (!elseif_block) {
             diagram().end_block_message(
                 {message_t::kIfEnd, current_caller_id}, message_t::kIf);
@@ -766,7 +767,7 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kWhile, current_caller_id};
         set_source_location(*stmt, m);
@@ -777,7 +778,7 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
     }
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kWhileEnd, current_caller_id}, message_t::kWhile);
         context().leave_loopstmt();
@@ -798,7 +799,7 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kDo, current_caller_id};
         set_source_location(*stmt, m);
@@ -810,7 +811,7 @@ bool translation_unit_visitor::TraverseDoStmt(clang::DoStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseDoStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kDoEnd, current_caller_id}, message_t::kDo);
         context().leave_loopstmt();
@@ -831,7 +832,7 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
@@ -845,7 +846,7 @@ bool translation_unit_visitor::TraverseForStmt(clang::ForStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseForStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
@@ -862,7 +863,7 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_trystmt(stmt);
         message m{message_t::kTry, current_caller_id};
         set_source_location(*stmt, m);
@@ -873,7 +874,7 @@ bool translation_unit_visitor::TraverseCXXTryStmt(clang::CXXTryStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXTryStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kTryEnd, current_caller_id}, message_t::kTry);
         context().leave_trystmt();
@@ -890,7 +891,8 @@ bool translation_unit_visitor::TraverseCXXCatchStmt(clang::CXXCatchStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) && (context().current_trystmt() != nullptr)) {
+    if ((current_caller_id.value() != 0) &&
+        (context().current_trystmt() != nullptr)) {
         std::string caught_type;
         if (stmt->getCaughtType().isNull())
             caught_type = "...";
@@ -921,7 +923,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_loopstmt(stmt);
         message m{message_t::kFor, current_caller_id};
         set_source_location(*stmt, m);
@@ -934,7 +936,7 @@ bool translation_unit_visitor::TraverseCXXForRangeStmt(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseCXXForRangeStmt(
         stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         diagram().end_block_message(
             {message_t::kForEnd, current_caller_id}, message_t::kFor);
         context().leave_loopstmt();
@@ -949,7 +951,7 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_switchstmt(stmt);
         model::message m{message_t::kSwitch, current_caller_id};
         set_source_location(*stmt, m);
@@ -960,7 +962,7 @@ bool translation_unit_visitor::TraverseSwitchStmt(clang::SwitchStmt *stmt)
 
     RecursiveASTVisitor<translation_unit_visitor>::TraverseSwitchStmt(stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().leave_switchstmt();
         diagram().end_block_message(
             {message_t::kSwitchEnd, current_caller_id}, message_t::kSwitch);
@@ -975,7 +977,7 @@ bool translation_unit_visitor::TraverseCaseStmt(clang::CaseStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) &&
+    if ((current_caller_id.value() != 0) &&
         (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name(common::to_string(stmt->getLHS()));
@@ -993,7 +995,7 @@ bool translation_unit_visitor::TraverseDefaultStmt(clang::DefaultStmt *stmt)
 
     const auto current_caller_id = context().caller_id();
 
-    if ((current_caller_id != 0) &&
+    if ((current_caller_id.value() != 0) &&
         (context().current_switchstmt() != nullptr)) {
         model::message m{message_t::kCase, current_caller_id};
         m.set_message_name("default");
@@ -1016,7 +1018,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     if (config().generate_condition_statements())
         condition_text = common::get_condition_text(source_manager(), stmt);
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().enter_conditionaloperator(stmt);
         model::message m{message_t::kConditional, current_caller_id};
         set_source_location(*stmt, m);
@@ -1032,7 +1034,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getTrueExpr());
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         model::message m{message_t::kConditionalElse, current_caller_id};
         set_source_location(*stmt, m);
         diagram().add_message(std::move(m));
@@ -1041,7 +1043,7 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     RecursiveASTVisitor<translation_unit_visitor>::TraverseStmt(
         stmt->getFalseExpr());
 
-    if (current_caller_id != 0) {
+    if (current_caller_id.value() != 0) {
         context().leave_conditionaloperator();
         diagram().end_block_message(
             {message_t::kConditionalEnd, current_caller_id},
@@ -1185,7 +1187,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     }
 
     // Add message to diagram
-    if (m.from() > 0 && m.to() > 0) {
+    if (m.from().value() > 0 && m.to().value() > 0) {
         m.set_comment(stripped_comment);
 
         if (diagram().sequences().find(m.from()) ==
@@ -1269,7 +1271,7 @@ bool translation_unit_visitor::VisitCXXConstructExpr(
     if (!process_construct_expression(m, expr))
         return true;
 
-    if (m.from() > 0 && m.to() > 0) {
+    if (m.from().value() > 0 && m.to().value() > 0) {
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {
             activity a{m.from()};
@@ -1311,10 +1313,10 @@ bool translation_unit_visitor::process_cuda_kernel_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    const auto maybe_id = get_unique_id(callee_function->getID());
+    const auto maybe_id = get_unique_id(eid_t{callee_function->getID()});
     if (!maybe_id.has_value()) {
         // This is hopefully not an interesting call...
-        m.set_to(callee_function->getID());
+        m.set_to(eid_t{callee_function->getID()});
     }
     else {
         m.set_to(maybe_id.value());
@@ -1349,16 +1351,16 @@ bool translation_unit_visitor::process_operator_call_expression(
 
         auto lambda_name = make_lambda_name(lambda_method->getParent());
 
-        m.set_to(lambda_method->getParent()->getID());
+        m.set_to(eid_t{lambda_method->getParent()->getID()});
     }
     else {
         auto maybe_id =
-            get_unique_id(operator_call_expr->getCalleeDecl()->getID());
+            get_unique_id(eid_t{operator_call_expr->getCalleeDecl()->getID()});
         if (maybe_id.has_value()) {
             m.set_to(maybe_id.value());
         }
         else {
-            m.set_to(operator_call_expr->getCalleeDecl()->getID());
+            m.set_to(eid_t{operator_call_expr->getCalleeDecl()->getID()});
         }
     }
 
@@ -1384,19 +1386,19 @@ bool translation_unit_visitor::process_construct_expression(
         constructor->getID(),
         construct_expr->getBeginLoc().printToString(source_manager()));
 
-    auto maybe_id = get_unique_id(constructor->getID());
+    auto maybe_id = get_unique_id(eid_t{constructor->getID()});
     if (maybe_id.has_value()) {
         m.set_to(maybe_id.value());
     }
     else {
-        m.set_to(constructor->getID());
+        m.set_to(eid_t{constructor->getID()});
     }
 
     m.set_message_name(
         fmt::format("{}::{}", constructor_parent->getQualifiedNameAsString(),
             constructor_parent->getNameAsString()));
 
-    diagram().add_active_participant(constructor->getID());
+    diagram().add_active_participant(eid_t{constructor->getID()});
 
     return true;
 }
@@ -1421,7 +1423,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
     if (!should_include(callee_decl) || !should_include(method_decl))
         return false;
 
-    m.set_to(method_decl->getID());
+    m.set_to(eid_t{method_decl->getID()});
     m.set_message_name(method_decl->getNameAsString());
     m.set_return_type(
         method_call_expr->getCallReturnType(*context().get_ast_context())
@@ -1430,7 +1432,7 @@ bool translation_unit_visitor::process_class_method_call_expression(
     LOG_TRACE("Set callee method id {} for method name {}", m.to(),
         method_decl->getQualifiedNameAsString());
 
-    diagram().add_active_participant(method_decl->getID());
+    diagram().add_active_participant(eid_t{method_decl->getID()});
 
     return true;
 }
@@ -1507,7 +1509,7 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                 dependent_member_callee->getMember().getAsString());
 
             if (const auto maybe_id =
-                    get_unique_id(template_declaration->getID());
+                    get_unique_id(eid_t{template_declaration->getID()});
                 maybe_id.has_value())
                 diagram().add_active_participant(maybe_id.value());
         }
@@ -1544,10 +1546,10 @@ bool translation_unit_visitor::process_function_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    const auto maybe_id = get_unique_id(callee_function->getID());
+    const auto maybe_id = get_unique_id(eid_t{callee_function->getID()});
     if (!maybe_id.has_value()) {
         // This is hopefully not an interesting call...
-        m.set_to(callee_function->getID());
+        m.set_to(eid_t{callee_function->getID()});
     }
     else {
         m.set_to(maybe_id.value());
@@ -1567,7 +1569,7 @@ bool translation_unit_visitor::process_lambda_call_expression(
     if (lambda_expr == nullptr)
         return true;
 
-    const auto lambda_class_id = lambda_expr->getLambdaClass()->getID();
+    const auto lambda_class_id = eid_t{lambda_expr->getLambdaClass()->getID()};
     const auto maybe_id = get_unique_id(lambda_class_id);
     if (!maybe_id.has_value())
         m.set_to(lambda_class_id);
@@ -1592,9 +1594,9 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                 const auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
 
-                const auto maybe_id = get_unique_id(ftd->getID());
+                const auto maybe_id = get_unique_id(eid_t{ftd->getID()});
                 if (!maybe_id.has_value())
-                    m.set_to(ftd->getID());
+                    m.set_to(eid_t{ftd->getID()});
                 else {
                     m.set_to(maybe_id.value());
                 }
@@ -1606,9 +1608,9 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                 const auto *fd =
                     clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
 
-                const auto maybe_id = get_unique_id(fd->getID());
+                const auto maybe_id = get_unique_id(eid_t{fd->getID()});
                 if (!maybe_id.has_value())
-                    m.set_to(fd->getID());
+                    m.set_to(eid_t{fd->getID()});
                 else {
                     m.set_to(maybe_id.value());
                 }
@@ -1678,24 +1680,24 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
         //  - the parent is a regular C++ class/struct
         //  - the parent is a class template declaration/specialization
         //  - the parent is a lambda (i.e. this is a nested lambda expression)
-        std::optional<common::id_t> id_opt;
+        std::optional<eid_t> id_opt;
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
         assert(parent_record_decl != nullptr);
 
-        int64_t local_id = parent_record_decl->getID();
+        const eid_t ast_id{parent_record_decl->getID()};
 
         // First check if the parent has been added to the diagram as
         // regular class
-        id_opt = get_unique_id(local_id);
+        id_opt = get_unique_id(ast_id);
 
         // If not, check if the parent template declaration is in the model
         if (!id_opt &&
             (parent_record_decl->getDescribedTemplate() != nullptr)) {
             parent_record_decl->getDescribedTemplate()->getID();
             if (parent_record_decl->getDescribedTemplate() != nullptr)
-                id_opt = get_unique_id(local_id);
+                id_opt = get_unique_id(ast_id);
         }
 
         if (!id_opt)
@@ -1769,21 +1771,21 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
     return c_ptr;
 }
 
-void translation_unit_visitor::set_unique_id(
-    int64_t local_id, common::id_t global_id)
+void translation_unit_visitor::set_unique_id(int64_t local_id, eid_t global_id)
 {
     LOG_TRACE("Setting local element mapping {} --> {}", local_id, global_id);
 
     local_ast_id_map_[local_id] = global_id;
 }
 
-std::optional<common::id_t> translation_unit_visitor::get_unique_id(
-    int64_t local_id) const
+std::optional<eid_t> translation_unit_visitor::get_unique_id(
+    eid_t local_id) const
 {
-    if (local_ast_id_map_.find(local_id) == local_ast_id_map_.end())
+    if (local_ast_id_map_.find(local_id.ast_local_value()) ==
+        local_ast_id_map_.end())
         return {};
 
-    return local_ast_id_map_.at(local_id);
+    return local_ast_id_map_.at(local_id.ast_local_value());
 }
 
 std::unique_ptr<model::function_template>
@@ -1924,16 +1926,18 @@ std::string translation_unit_visitor::make_lambda_name(
     const auto location = cls->getLocation();
     const std::string source_location{lambda_source_location(location)};
 
-    if (context().lambda_caller_id() != 0) {
+    const auto maybe_lambda_caller_id = context().lambda_caller_id();
+    if (maybe_lambda_caller_id.has_value()) {
         // Parent is also a lambda (this id points to a lambda operator())
         std::string parent_lambda_class_name{"()"};
         if (diagram().get_participant<model::method>(
-                context().lambda_caller_id())) {
-            auto parent_lambda_class_id = diagram()
-                                              .get_participant<model::method>(
-                                                  context().lambda_caller_id())
-                                              .value()
-                                              .class_id();
+                maybe_lambda_caller_id.value())) {
+            auto parent_lambda_class_id =
+                diagram()
+                    .get_participant<model::method>(
+                        maybe_lambda_caller_id.value())
+                    .value()
+                    .class_id();
 
             if (diagram().get_participant<model::class_>(
                     parent_lambda_class_id)) {
@@ -1948,7 +1952,7 @@ std::string translation_unit_visitor::make_lambda_name(
         result = fmt::format(
             "{}##(lambda {})", parent_lambda_class_name, source_location);
     }
-    else if (context().caller_id() != 0 &&
+    else if (context().caller_id().value() != 0 &&
         get_participant(context().caller_id()).has_value()) {
         auto parent_full_name =
             get_participant(context().caller_id()).value().full_name_no_ns();
@@ -2037,7 +2041,7 @@ void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
             auto participant = diagram().get_participant<model::class_>(m.to());
 
             if (participant && participant.value().is_lambda() &&
-                participant.value().lambda_operator_id() != 0) {
+                participant.value().lambda_operator_id().value() != 0) {
                 LOG_DBG("Changing lambda expression target id from {} to {}",
                     m.to(), participant.value().lambda_operator_id());
 
@@ -2050,14 +2054,17 @@ void translation_unit_visitor::ensure_lambda_messages_have_operator_as_target()
 
 void translation_unit_visitor::resolve_ids_to_global()
 {
-    std::set<common::id_t> active_participants_unique;
+    std::set<eid_t> active_participants_unique;
 
     // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {
-        if (local_ast_id_map_.find(id) != local_ast_id_map_.end()) {
-            active_participants_unique.emplace(local_ast_id_map_.at(id));
+        if (!id.is_global() &&
+            local_ast_id_map_.find(id.ast_local_value()) !=
+                local_ast_id_map_.end()) {
+            active_participants_unique.emplace(
+                local_ast_id_map_.at(id.ast_local_value()));
         }
-        else {
+        else if (id.is_global()) {
             active_participants_unique.emplace(id);
         }
     }
@@ -2067,8 +2074,10 @@ void translation_unit_visitor::resolve_ids_to_global()
     // Change all message callees AST local ids to diagram global ids
     for (auto &[id, activity] : diagram().sequences()) {
         for (auto &m : activity.messages()) {
-            if (local_ast_id_map_.find(m.to()) != local_ast_id_map_.end()) {
-                m.set_to(local_ast_id_map_.at(m.to()));
+            if (!m.to().is_global() &&
+                local_ast_id_map_.find(m.to().ast_local_value()) !=
+                    local_ast_id_map_.end()) {
+                m.set_to(local_ast_id_map_.at(m.to().ast_local_value()));
             }
         }
     }
@@ -2280,7 +2289,7 @@ bool translation_unit_visitor::should_include(
 
 std::optional<std::string> translation_unit_visitor::get_expression_comment(
     const clang::SourceManager &sm, const clang::ASTContext &context,
-    const int64_t caller_id, const clang::Stmt *stmt)
+    const eid_t caller_id, const clang::Stmt *stmt)
 {
     const auto *raw_comment =
         clanguml::common::get_expression_raw_comment(sm, context, stmt);
@@ -2288,7 +2297,9 @@ std::optional<std::string> translation_unit_visitor::get_expression_comment(
     if (raw_comment == nullptr)
         return {};
 
-    if (!processed_comments_by_caller_id_.emplace(caller_id, raw_comment)
+    if (!caller_id.is_global() &&
+        !processed_comments_by_caller_id_
+             .emplace(caller_id.ast_local_value(), raw_comment)
              .second) {
         return {};
     }

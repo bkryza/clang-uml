@@ -32,6 +32,8 @@
 
 namespace clanguml::sequence_diagram::generators::json {
 
+using clanguml::common::eid_t;
+
 std::string render_name(std::string name);
 
 using diagram_config = clanguml::config::sequence_diagram;
@@ -77,8 +79,8 @@ public:
      *              the set of active participants
      * @return Id of the generated participant
      */
-    common::id_t generate_participant(
-        nlohmann::json &parent, common::id_t id, bool force = false) const;
+    std::optional<eid_t> generate_participant(
+        nlohmann::json &parent, eid_t id, bool force = false) const;
 
     /**
      * @brief Generate sequence diagram participant by name
@@ -99,7 +101,7 @@ public:
      *                for breaking infinite recursion on recursive calls
      */
     void generate_activity(const sequence_diagram::model::activity &a,
-        std::vector<common::id_t> &visited) const;
+        std::vector<eid_t> &visited) const;
 
     /**
      * @brief Get reference to the current block statement.
@@ -120,7 +122,7 @@ private:
      * @param id Participant id.
      * @return True, if participant has already been generated.
      */
-    bool is_participant_generated(common::id_t id) const;
+    bool is_participant_generated(eid_t id) const;
 
     /**
      * @brief Process call message
@@ -129,7 +131,7 @@ private:
      * @param visited List of already visited participants
      */
     void process_call_message(
-        const model::message &m, std::vector<common::id_t> &visited) const;
+        const model::message &m, std::vector<eid_t> &visited) const;
 
     /**
      * @brief Process `if` statement message
@@ -239,7 +241,7 @@ private:
      */
     void process_end_while_message() const;
 
-    mutable std::set<common::id_t> generated_participants_;
+    mutable std::set<eid_t> generated_participants_;
 
     // Needed to add "participants" array in a temporary object accessible from
     // all methods of the generator

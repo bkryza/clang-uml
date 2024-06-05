@@ -37,6 +37,8 @@
 
 namespace clanguml::common::model {
 
+using clanguml::common::eid_t;
+
 /**
  * Diagram filters can be add in 2 modes:
  *  - inclusive - the elements that match are included in the diagram
@@ -55,14 +57,12 @@ template <typename ElementT, typename DiagramT>
 const clanguml::common::optional_ref<ElementT> get(
     const DiagramT &d, const std::string &full_name);
 
-template <typename ElementT> int64_t destination_comparator(const ElementT &e)
+template <typename ElementT> eid_t destination_comparator(const ElementT &e)
 {
     return e.id();
 }
 
-template <>
-clanguml::common::id_t destination_comparator(
-    const common::model::source_file &f);
+template <> eid_t destination_comparator(const common::model::source_file &f);
 } // namespace detail
 
 /**
@@ -492,8 +492,8 @@ private:
 
     template <typename ElementT>
     void find_elements_in_direct_relationship(const diagram &d,
-        std::set<id_t> &effective_context,
-        std::set<clanguml::common::id_t> &current_iteration_context) const
+        std::set<eid_t> &effective_context,
+        std::set<eid_t> &current_iteration_context) const
     {
         static_assert(std::is_same_v<ElementT, class_diagram::model::class_> ||
                 std::is_same_v<ElementT, class_diagram::model::enum_> ||
@@ -534,8 +534,8 @@ private:
     }
 
     void find_elements_inheritance_relationship(const diagram &d,
-        std::set<id_t> &effective_context,
-        std::set<clanguml::common::id_t> &current_iteration_context) const;
+        std::set<eid_t> &effective_context,
+        std::set<eid_t> &current_iteration_context) const;
 
     std::vector<config::context_config> context_;
 
@@ -543,7 +543,7 @@ private:
      * Represents all elements which should belong to the diagram based
      * on this filter. It is populated by the initialize() method.
      */
-    mutable std::vector<std::set<clanguml::common::id_t>> effective_contexts_;
+    mutable std::vector<std::set<eid_t>> effective_contexts_;
 
     /*! Flag to mark whether the filter context has been computed */
     mutable bool initialized_{false};

@@ -192,8 +192,8 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
     }
 }
 
-void generator::generate_activity(const activity &a, std::ostream &ostr,
-    std::vector<common::id_t> &visited) const
+void generator::generate_activity(
+    const activity &a, std::ostream &ostr, std::vector<eid_t> &visited) const
 {
     for (const auto &m : a.messages()) {
         if (m.in_static_declaration_context()) {
@@ -352,9 +352,9 @@ void generator::generate_participant(
 }
 
 void generator::generate_participant(
-    std::ostream &ostr, common::id_t id, bool force) const
+    std::ostream &ostr, eid_t id, bool force) const
 {
-    common::id_t participant_id{0};
+    eid_t participant_id{};
 
     if (!force) {
         for (const auto pid : model().active_participants()) {
@@ -424,8 +424,9 @@ void generator::generate_participant(
             std::filesystem::path{file_path}, config().root_directory())
                                                       .string());
 
-        ostr << indent(1) << "participant " << fmt::format("C_{:022}", file_id)
-             << " as " << render_participant_name(participant_name);
+        ostr << indent(1) << "participant "
+             << fmt::format("C_{:022}", file_id.value()) << " as "
+             << render_participant_name(participant_name);
         ostr << '\n';
 
         generated_participants_.emplace(file_id);
@@ -459,7 +460,7 @@ void generator::generate_participant(
     }
 }
 
-bool generator::is_participant_generated(common::id_t id) const
+bool generator::is_participant_generated(eid_t id) const
 {
     return std::find(generated_participants_.begin(),
                generated_participants_.end(),
@@ -474,7 +475,7 @@ std::string generator::generate_alias(
         config().combine_free_functions_into_file_participants()) {
         const auto file_id = common::to_id(participant.file());
 
-        return fmt::format("C_{:022}", file_id);
+        return fmt::format("C_{:022}", file_id.value());
     }
 
     return participant.alias();
@@ -504,21 +505,21 @@ void generator::generate_diagram(std::ostream &ostr) const
         auto from_activity_id = model().get_from_activity_id(from_location);
         auto to_activity_id = model().get_to_activity_id(to_location);
 
-        if (from_activity_id == 0 || to_activity_id == 0)
+        if (!from_activity_id || !to_activity_id)
             continue;
 
-        if (model().participants().count(from_activity_id) == 0)
+        if (model().participants().count(*from_activity_id) == 0)
             continue;
 
-        if (model().participants().count(to_activity_id) == 0)
+        if (model().participants().count(*to_activity_id) == 0)
             continue;
 
         auto message_chains_unique = model().get_all_from_to_message_chains(
-            from_activity_id, to_activity_id);
+            *from_activity_id, *to_activity_id);
 
         for (const auto &mc : message_chains_unique) {
             const auto &from =
-                model().get_participant<model::function>(from_activity_id);
+                model().get_participant<model::function>(*from_activity_id);
 
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
@@ -526,7 +527,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                     ostr << indent(1) << "participant *\n";
                     star_participant_generated = true;
                 }
-                generate_participant(ostr, from_activity_id);
+                generate_participant(ostr, *from_activity_id);
                 ostr << indent(1) << "* "
                      << common::generators::mermaid::to_mermaid(
                             message_t::kCall)
@@ -545,11 +546,11 @@ void generator::generate_diagram(std::ostream &ostr) const
     for (const auto &to_location : config().to()) {
         auto to_activity_id = model().get_to_activity_id(to_location);
 
-        if (to_activity_id == 0)
+        if (!to_activity_id)
             continue;
 
         auto message_chains_unique =
-            model().get_all_from_to_message_chains(0, to_activity_id);
+            model().get_all_from_to_message_chains(eid_t{}, *to_activity_id);
 
         for (const auto &mc : message_chains_unique) {
             const auto from_activity_id = mc.front().from();
@@ -580,7 +581,7 @@ void generator::generate_diagram(std::ostream &ostr) const
 
     for (const auto &sf : config().from()) {
         if (sf.location_type == location_t::function) {
-            common::id_t start_from{0};
+            eid_t start_from{};
             for (const auto &[k, v] : model().sequences()) {
                 if (model().participants().count(v.from()) == 0)
                     continue;
@@ -602,7 +603,7 @@ void generator::generate_diagram(std::ostream &ostr) const
             }
 
             // Use this to break out of recurrent loops
-            std::vector<common::id_t> visited_participants;
+            std::vector<eid_t> visited_participants;
 
             if (model().participants().count(start_from) == 0)
                 continue;

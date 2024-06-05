@@ -78,7 +78,7 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_id(common::to_id(*ns));
     set_source_location(*ns, *p);
 
-    assert(p->id() > 0);
+    assert(p->id().value() > 0);
 
     if (diagram().should_include(*p) && !diagram().get(p->id())) {
         process_comment(*ns, *p);
@@ -282,7 +282,7 @@ void translation_unit_visitor::add_relationships(
 
     auto current_package_id = get_package_id(cls);
 
-    if (current_package_id == 0)
+    if (current_package_id.value() == 0)
         // These are relationships to a global namespace, and we don't care
         // about those
         return;
@@ -290,7 +290,7 @@ void translation_unit_visitor::add_relationships(
     auto current_package = diagram().get(current_package_id);
 
     if (current_package) {
-        std::vector<common::id_t> parent_ids =
+        std::vector<eid_t> parent_ids =
             get_parent_package_ids(current_package_id);
 
         for (const auto &dependency : relationships) {
@@ -313,7 +313,7 @@ void translation_unit_visitor::add_relationships(
     }
 }
 
-common::id_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
+eid_t translation_unit_visitor::get_package_id(const clang::Decl *cls)
 {
     if (config().package_type() == config::package_type_t::kNamespace) {
         const auto *namespace_context =
@@ -677,15 +677,15 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
 
 void translation_unit_visitor::finalize() { }
 
-std::vector<common::id_t> translation_unit_visitor::get_parent_package_ids(
-    common::id_t id)
+std::vector<eid_t> translation_unit_visitor::get_parent_package_ids(eid_t id)
 {
-    std::vector<common::id_t> parent_ids;
-    std::optional<common::id_t> parent_id = id;
+    std::vector<eid_t> parent_ids;
+    std::optional<eid_t> parent_id = id;
 
     while (parent_id.has_value()) {
-        parent_ids.push_back(parent_id.value());
-        auto parent = this->diagram().get(parent_id.value());
+        const auto pid = parent_id.value(); // NOLINT
+        parent_ids.push_back(pid);
+        auto parent = this->diagram().get(pid);
         if (parent)
             parent_id = parent.value().parent_element_id();
         else

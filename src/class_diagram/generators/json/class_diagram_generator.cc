@@ -85,7 +85,7 @@ void to_json(nlohmann::json &j, const class_method &c)
 void to_json(nlohmann::json &j, const class_parent &c)
 {
     j["is_virtual"] = c.is_virtual();
-    j["id"] = std::to_string(c.id());
+    j["id"] = std::to_string(c.id().value());
     if (c.access() != common::model::access_t::kNone)
         j["access"] = to_string(c.access());
     j["name"] = c.name();
@@ -331,7 +331,7 @@ void generator::generate_relationships(
         }
 
         nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id());
+        rel["source"] = std::to_string(c.id().value());
         parent["relationships"].push_back(rel);
     }
 
@@ -340,7 +340,7 @@ void generator::generate_relationships(
             common::model::relationship r(
                 relationship_t::kExtension, b.id(), b.access());
             nlohmann::json rel = r;
-            rel["source"] = std::to_string(c.id());
+            rel["source"] = std::to_string(c.id().value());
             parent["relationships"].push_back(rel);
         }
     }
@@ -362,7 +362,7 @@ void generator::generate_relationships(
         }
 
         nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id());
+        rel["source"] = std::to_string(c.id().value());
         parent["relationships"].push_back(rel);
     }
 }
@@ -383,7 +383,7 @@ void generator::generate_relationships(
         }
 
         nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id());
+        rel["source"] = std::to_string(c.id().value());
         parent["relationships"].push_back(rel);
     }
 }

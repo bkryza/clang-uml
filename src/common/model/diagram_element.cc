@@ -26,25 +26,26 @@ namespace clanguml::common::model {
 
 diagram_element::diagram_element() = default;
 
-common::id_t diagram_element::id() const { return id_; }
+const eid_t &diagram_element::id() const { return id_; }
 
-void diagram_element::set_id(common::id_t id) { id_ = id; }
+void diagram_element::set_id(eid_t id) { id_ = id; }
 
-std::optional<id_t> diagram_element::parent_element_id() const
+std::optional<eid_t> diagram_element::parent_element_id() const
 {
     return parent_element_id_;
 }
 
-void diagram_element::set_parent_element_id(common::id_t id)
+void diagram_element::set_parent_element_id(eid_t id)
 {
     parent_element_id_ = id;
 }
 
 std::string diagram_element::alias() const
 {
-    assert(id_ >= 0);
+    // Only generate alias for global id's
+    assert(id_.is_global());
 
-    return fmt::format("C_{:022}", id_);
+    return fmt::format("C_{:022}", id_.value());
 }
 
 void diagram_element::add_relationship(relationship &&cr)

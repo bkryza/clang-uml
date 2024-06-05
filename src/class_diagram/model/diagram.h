@@ -103,7 +103,7 @@ public:
      * @param id Element id.
      * @return Optional reference to a diagram element.
      */
-    opt_ref<diagram_element> get(common::id_t id) const override;
+    opt_ref<diagram_element> get(eid_t id) const override;
 
     /**
      * @brief Get list of references to classes in the diagram model.
@@ -172,7 +172,7 @@ public:
      * @param id Id of the element
      * @return Optional reference to a diagram element
      */
-    template <typename ElementT> opt_ref<ElementT> find(common::id_t id) const;
+    template <typename ElementT> opt_ref<ElementT> find(eid_t id) const;
 
     /**
      * @brief Get reference to vector of elements of specific type
@@ -218,7 +218,7 @@ public:
      * @param id Id of the diagram element.
      * @return PlantUML alias.
      */
-    std::string to_alias(common::id_t id) const;
+    std::string to_alias(eid_t id) const;
 
     /**
      * @brief Given an initial set of classes, add all their parents to the
@@ -235,7 +235,7 @@ public:
      * @param id Id of the element.
      * @return True, if diagram contains an element with a specific id.
      */
-    bool has_element(common::id_t id) const override;
+    bool has_element(eid_t id) const override;
 
     /**
      * @brief Remove redundant dependency relationships
@@ -431,8 +431,7 @@ std::vector<opt_ref<ElementT>> diagram::find(
     return result;
 }
 
-template <typename ElementT>
-opt_ref<ElementT> diagram::find(common::id_t id) const
+template <typename ElementT> opt_ref<ElementT> diagram::find(eid_t id) const
 {
     for (const auto &element : element_view<ElementT>::view()) {
         if (element.get().id() == id) {

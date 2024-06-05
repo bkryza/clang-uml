@@ -22,7 +22,6 @@
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
-#include "common/generators/generators.h"
 #include "common/model/diagram_filter.h"
 #include "config/config.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"

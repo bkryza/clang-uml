@@ -38,7 +38,7 @@ public:
      * @param type Message type
      * @param from Id of originating sequence
      */
-    message(common::model::message_t type, common::id_t from);
+    message(common::model::message_t type, eid_t from);
 
     /**
      * @brief Equality operator
@@ -67,28 +67,28 @@ public:
      *
      * @param f Id of the participant from which message originates
      */
-    void set_from(common::id_t f);
+    void set_from(eid_t f);
 
     /**
      * @brief Get the id of source of message
      *
      * @return
      */
-    common::id_t from() const;
+    eid_t from() const;
 
     /**
      * @brief Set the id of the message target
      *
      * @param t Id of the message target
      */
-    void set_to(common::id_t t);
+    void set_to(eid_t t);
 
     /**
      * @brief Get the id of the message target
      *
      * @return Id of the message target
      */
-    common::id_t to() const;
+    eid_t to() const;
 
     /**
      * @brief Set the message label
@@ -162,9 +162,9 @@ public:
 private:
     common::model::message_t type_{common::model::message_t::kNone};
 
-    common::id_t from_{};
+    eid_t from_{};
 
-    common::id_t to_{};
+    eid_t to_{};
 
     common::model::message_scope_t scope_{
         common::model::message_scope_t::kNormal};

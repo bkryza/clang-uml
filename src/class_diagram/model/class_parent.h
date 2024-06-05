@@ -25,6 +25,8 @@
 
 namespace clanguml::class_diagram::model {
 
+using clanguml::common::eid_t;
+
 /**
  * @brief Class parent relationship model.
  *
@@ -59,14 +61,14 @@ public:
      *
      * @param id Id of the parent class.
      */
-    void set_id(clanguml::common::id_t id);
+    void set_id(eid_t id);
 
     /**
      * @brief Get the id of class parent.
      *
      * @return Id of the parent class.
      */
-    clanguml::common::id_t id() const noexcept;
+    eid_t id() const noexcept;
 
     /**
      * @brief Set whether the parent is virtual.
@@ -97,7 +99,7 @@ public:
     common::model::access_t access() const;
 
 private:
-    clanguml::common::id_t id_{};
+    eid_t id_{};
     std::string name_;
     bool is_virtual_{false};
     common::model::access_t access_{common::model::access_t::kPublic};

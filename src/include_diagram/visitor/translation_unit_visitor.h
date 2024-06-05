@@ -35,6 +35,8 @@
 
 namespace clanguml::include_diagram::visitor {
 
+using clanguml::common::eid_t;
+
 using visitor_specialization_t =
     common::visitor::translation_unit_visitor<clanguml::config::include_diagram,
         clanguml::include_diagram::model::diagram>;
@@ -104,7 +106,7 @@ public:
          * @param current_file_id File id
          */
         void process_internal_header(const std::filesystem::path &include_path,
-            bool is_system, common::id_t current_file_id);
+            bool is_system, eid_t current_file_id);
 
         /**
          * @brief Handle system header include directive
@@ -113,8 +115,7 @@ public:
          * @param current_file_id File id
          */
         void process_external_system_header(
-            const std::filesystem::path &include_path,
-            common::id_t current_file_id);
+            const std::filesystem::path &include_path, eid_t current_file_id);
 
         /**
          * @brief Handle a source file
@@ -125,7 +126,7 @@ public:
          * @param file Absolute path to a source file
          * @return Diagram element id, in case the file was added to the diagram
          */
-        std::optional<common::id_t> process_source_file(
+        std::optional<eid_t> process_source_file(
             const std::filesystem::path &file);
     };
 

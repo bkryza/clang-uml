@@ -112,7 +112,7 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
 
 void translation_unit_visitor::include_visitor::process_internal_header(
     const std::filesystem::path &include_path, bool is_system,
-    const common::id_t current_file_id)
+    const eid_t current_file_id)
 {
     // Make the path relative with respect to relative_to config option
     auto relative_include_path =
@@ -151,8 +151,7 @@ void translation_unit_visitor::include_visitor::process_internal_header(
 }
 
 void translation_unit_visitor::include_visitor::process_external_system_header(
-    const std::filesystem::path &include_path,
-    const common::id_t current_file_id)
+    const std::filesystem::path &include_path, const eid_t current_file_id)
 {
     const auto file_name = include_path.filename();
     const auto file_name_str = file_name.string();
@@ -177,7 +176,7 @@ void translation_unit_visitor::include_visitor::process_external_system_header(
     }
 }
 
-std::optional<common::id_t>
+std::optional<eid_t>
 translation_unit_visitor::include_visitor::process_source_file(
     const std::filesystem::path &file)
 {

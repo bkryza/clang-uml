@@ -210,9 +210,7 @@ struct hash<std::reference_wrapper<clanguml::common::model::source_file>> {
         const std::reference_wrapper<clanguml::common::model::source_file> &key)
         const
     {
-        using clanguml::common::id_t;
-
-        return std::hash<id_t>{}(key.get().id());
+        return key.get().id().value();
     }
 };
 } // namespace std

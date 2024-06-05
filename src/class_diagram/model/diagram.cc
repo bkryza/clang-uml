@@ -74,7 +74,7 @@ common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<clanguml::common::model::diagram_element> diagram::get(
-    const clanguml::common::id_t id) const
+    const eid_t id) const
 {
     common::optional_ref<clanguml::common::model::diagram_element> res;
 
@@ -153,7 +153,7 @@ void diagram::get_parents(
     }
 }
 
-bool diagram::has_element(clanguml::common::id_t id) const
+bool diagram::has_element(eid_t id) const
 {
     const auto has_class = std::any_of(classes().begin(), classes().end(),
         [id](const auto &c) { return c.get().id() == id; });
@@ -171,7 +171,7 @@ bool diagram::has_element(clanguml::common::id_t id) const
         [id](const auto &c) { return c.get().id() == id; });
 }
 
-std::string diagram::to_alias(clanguml::common::id_t id) const
+std::string diagram::to_alias(eid_t id) const
 {
     LOG_DBG("Looking for alias for {}", id);
 
@@ -224,12 +224,12 @@ inja::json diagram::context() const
 
 void diagram::remove_redundant_dependencies()
 {
-    using common::id_t;
+    using common::eid_t;
     using common::model::relationship;
     using common::model::relationship_t;
 
     for (auto &c : element_view<class_>::view()) {
-        std::set<id_t> dependency_relationships_to_remove;
+        std::set<eid_t> dependency_relationships_to_remove;
 
         for (auto &r : c.get().relationships()) {
             if (r.type() != relationship_t::kDependency)

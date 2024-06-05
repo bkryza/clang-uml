@@ -21,6 +21,8 @@
 
 namespace clanguml::common::model {
 
+using clanguml::common::eid_t;
+
 /**
  * Provides type based views over elements in a diagram.
  *
@@ -58,7 +60,7 @@ public:
      *
      * @return
      */
-    common::optional_ref<T> get(clanguml::common::id_t id) const
+    common::optional_ref<T> get(eid_t id) const
     {
         for (const auto &e : elements_) {
             if (e.get().id() == id) {

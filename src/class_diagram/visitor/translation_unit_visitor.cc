@@ -123,14 +123,14 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
     const auto *parent = enm->getParent();
 
     // Id of parent class or struct in which this enum is potentially nested
-    std::optional<common::id_t> parent_id_opt;
+    std::optional<eid_t> parent_id_opt;
 
     if (parent != nullptr) {
         const auto *parent_record_decl =
             clang::dyn_cast<clang::RecordDecl>(parent);
 
         if (parent_record_decl != nullptr) {
-            int64_t local_id = parent_record_decl->getID();
+            eid_t local_id{parent_record_decl->getID()};
 
             // First check if the parent has been added to the diagram as
             // regular class
@@ -222,8 +222,8 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
     if (!template_specialization.template_specialization_found()) {
         // Only do this if we haven't found a better specialization during
         // construction of the template specialization
-        const auto maybe_id =
-            id_mapper().get_global_id(cls->getSpecializedTemplate()->getID());
+        const eid_t ast_id{cls->getSpecializedTemplate()->getID()};
+        const auto maybe_id = id_mapper().get_global_id(ast_id);
         if (maybe_id.has_value())
             template_specialization.add_relationship(
                 {relationship_t::kInstantiation, maybe_id.value()});
@@ -621,8 +621,8 @@ void translation_unit_visitor::process_concept_specialization_relationships(
         should_include(cpt)) {
 
         const auto cpt_name = cpt->getNameAsString();
-
-        const auto maybe_id = id_mapper().get_global_id(cpt->getID());
+        const eid_t ast_id{cpt->getID()};
+        const auto maybe_id = id_mapper().get_global_id(ast_id);
         if (!maybe_id)
             return;
 
@@ -707,7 +707,8 @@ bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
     if (cls->isTemplated() && (cls->getDescribedTemplate() != nullptr)) {
         // If the described templated of this class is already in the model
         // skip it:
-        if (id_mapper().get_global_id(cls->getDescribedTemplate()->getID()))
+        const eid_t ast_id{cls->getDescribedTemplate()->getID()};
+        if (id_mapper().get_global_id(ast_id))
             return true;
     }
 
@@ -868,7 +869,7 @@ void translation_unit_visitor::process_record_parent(
 {
     const auto *parent = cls->getParent();
 
-    std::optional<common::id_t> id_opt;
+    std::optional<eid_t> id_opt;
 
     auto parent_ns = ns;
     if (parent != nullptr) {
@@ -878,19 +879,19 @@ void translation_unit_visitor::process_record_parent(
         if (parent_record_decl != nullptr) {
             parent_ns = common::get_tag_namespace(*parent_record_decl);
 
-            int64_t local_id = parent_record_decl->getID();
+            eid_t ast_id{parent_record_decl->getID()};
 
             // First check if the parent has been added to the diagram as
             // regular class
-            id_opt = id_mapper().get_global_id(local_id);
+            id_opt = id_mapper().get_global_id(ast_id);
 
             // If not, check if the parent template declaration is in the
             // model
             if (!id_opt) {
                 if (parent_record_decl->getDescribedTemplate() != nullptr) {
-                    local_id =
+                    ast_id =
                         parent_record_decl->getDescribedTemplate()->getID();
-                    id_opt = id_mapper().get_global_id(local_id);
+                    id_opt = id_mapper().get_global_id(ast_id);
                 }
             }
         }
@@ -916,7 +917,7 @@ void translation_unit_visitor::process_record_parent(
                 std::string destination_multiplicity_str{};
                 if (destination_multiplicity.has_value()) {
                     destination_multiplicity_str =
-                        std::to_string(*destination_multiplicity); // NOLINT
+                        std::to_string(*destination_multiplicity);
                 }
 
                 parent_class.value().add_relationship(
@@ -1672,8 +1673,8 @@ void translation_unit_visitor::add_relationships(class_ &c,
             }
             if (!mulitplicity_provided_in_comment &&
                 field.destination_multiplicity().has_value()) {
-                r.set_multiplicity_destination(std::to_string(
-                    *field.destination_multiplicity())); // NOLINT
+                r.set_multiplicity_destination(
+                    std::to_string(*field.destination_multiplicity()));
             }
 
             r.set_style(field.style_spec());
@@ -1993,34 +1994,43 @@ void translation_unit_visitor::resolve_local_to_global_ids()
     //       to elements
     for (const auto &cls : diagram().classes()) {
         for (auto &rel : cls.get().relationships()) {
-            const auto maybe_id = id_mapper().get_global_id(rel.destination());
-            if (maybe_id) {
-                LOG_DBG("= Resolved instantiation destination from local "
-                        "id {} to global id {}",
-                    rel.destination(), *maybe_id);
-                rel.set_destination(*maybe_id);
+            if (!rel.destination().is_global()) {
+                const auto maybe_id =
+                    id_mapper().get_global_id(rel.destination());
+                if (maybe_id) {
+                    LOG_DBG("= Resolved instantiation destination from local "
+                            "id {} to global id {}",
+                        rel.destination(), *maybe_id);
+                    rel.set_destination(*maybe_id);
+                }
             }
         }
     }
     for (const auto &cpt : diagram().concepts()) {
         for (auto &rel : cpt.get().relationships()) {
-            const auto maybe_id = id_mapper().get_global_id(rel.destination());
-            if (maybe_id) {
-                LOG_DBG("= Resolved instantiation destination from local "
-                        "id {} to global id {}",
-                    rel.destination(), *maybe_id);
-                rel.set_destination(*maybe_id);
+            if (!rel.destination().is_global()) {
+                const auto maybe_id =
+                    id_mapper().get_global_id(rel.destination());
+                if (maybe_id) {
+                    LOG_DBG("= Resolved instantiation destination from local "
+                            "id {} to global id {}",
+                        rel.destination(), *maybe_id);
+                    rel.set_destination(*maybe_id);
+                }
             }
         }
     }
     for (const auto &enm : diagram().enums()) {
         for (auto &rel : enm.get().relationships()) {
-            const auto maybe_id = id_mapper().get_global_id(rel.destination());
-            if (maybe_id) {
-                LOG_DBG("= Resolved instantiation destination from local "
-                        "id {} to global id {}",
-                    rel.destination(), *maybe_id);
-                rel.set_destination(*maybe_id);
+            if (!rel.destination().is_global()) {
+                const auto maybe_id =
+                    id_mapper().get_global_id(rel.destination());
+                if (maybe_id) {
+                    LOG_DBG("= Resolved instantiation destination from local "
+                            "id {} to global id {}",
+                        rel.destination(), *maybe_id);
+                    rel.set_destination(*maybe_id);
+                }
             }
         }
     }
@@ -2166,7 +2176,7 @@ void translation_unit_visitor::add_concept(std::unique_ptr<concept_> &&c)
 
 void translation_unit_visitor::find_instantiation_relationships(
     common::model::template_element &template_instantiation_base,
-    const std::string &full_name, common::id_t templated_decl_id)
+    const std::string &full_name, eid_t templated_decl_id)
 {
     auto &template_instantiation = dynamic_cast<class_diagram::model::class_ &>(
         template_instantiation_base);
@@ -2177,7 +2187,7 @@ void translation_unit_visitor::find_instantiation_relationships(
     std::string best_match_full_name{};
     auto full_template_name = template_instantiation.full_name(false);
     int best_match{};
-    common::id_t best_match_id{0};
+    eid_t best_match_id{};
 
     for (const auto templ : diagram().classes()) {
         if (templ.get() == template_instantiation)
@@ -2196,9 +2206,9 @@ void translation_unit_visitor::find_instantiation_relationships(
     }
 
     auto templated_decl_global_id =
-        id_mapper().get_global_id(templated_decl_id).value_or(0);
+        id_mapper().get_global_id(templated_decl_id).value_or(eid_t{});
 
-    if (best_match_id > 0) {
+    if (best_match_id.value() > 0) {
         destination = best_match_full_name;
         template_instantiation.add_relationship(
             {common::model::relationship_t::kInstantiation, best_match_id});

@@ -70,7 +70,7 @@ public:
      * @return Optional reference to a diagram element.
      */
     virtual common::optional_ref<clanguml::common::model::diagram_element> get(
-        common::id_t id) const = 0;
+        eid_t id) const = 0;
 
     /**
      * Return optional reference to a diagram_element by name and namespace.
@@ -152,7 +152,7 @@ public:
     // Disallow std::string overload
     bool should_include(const std::string &s) const = delete;
 
-    virtual bool has_element(const common::id_t /*id*/) const { return false; }
+    virtual bool has_element(const eid_t /*id*/) const { return false; }
 
     virtual bool should_include(
         const namespace_ &ns, const std::string &name) const;

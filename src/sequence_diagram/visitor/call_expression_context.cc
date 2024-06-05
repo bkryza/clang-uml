@@ -24,7 +24,7 @@ call_expression_context::call_expression_context() = default;
 
 void call_expression_context::reset()
 {
-    current_caller_id_ = 0;
+    current_caller_id_ = eid_t{};
     current_class_decl_ = nullptr;
     current_class_template_decl_ = nullptr;
     current_class_template_specialization_decl_ = nullptr;
@@ -130,35 +130,35 @@ void call_expression_context::update(
     current_function_template_decl_ = function_template;
 }
 
-std::int64_t call_expression_context::caller_id() const
+eid_t call_expression_context::caller_id() const
 {
-    if (lambda_caller_id() != 0)
-        return lambda_caller_id();
+    if (lambda_caller_id().has_value())
+        return *lambda_caller_id(); // NOLINT
 
     return current_caller_id_;
 }
 
-std::int64_t call_expression_context::lambda_caller_id() const
+std::optional<eid_t> call_expression_context::lambda_caller_id() const
 {
     if (current_lambda_caller_id_.empty())
-        return 0;
+        return {};
 
     return current_lambda_caller_id_.top();
 }
 
-void call_expression_context::set_caller_id(std::int64_t id)
+void call_expression_context::set_caller_id(eid_t id)
 {
     LOG_DBG("Setting current caller id to {}", id);
     current_caller_id_ = id;
 }
 
-void call_expression_context::enter_lambda_expression(std::int64_t id)
+void call_expression_context::enter_lambda_expression(eid_t id)
 {
     LOG_DBG("Setting current lambda caller id to {}", id);
 
-    assert(id != 0);
+    assert(id.value() != 0);
 
-    current_lambda_caller_id_.push(id);
+    current_lambda_caller_id_.emplace(id);
 }
 
 void call_expression_context::leave_lambda_expression()
@@ -182,7 +182,7 @@ clang::IfStmt *call_expression_context::current_ifstmt() const
 
 void call_expression_context::enter_ifstmt(clang::IfStmt *stmt)
 {
-    if_stmt_stack_.push(stmt);
+    if_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_ifstmt()
@@ -197,7 +197,7 @@ void call_expression_context::enter_elseifstmt(clang::IfStmt *stmt)
 {
     assert(current_ifstmt() != nullptr);
 
-    elseif_stmt_stacks_[current_ifstmt()].push(stmt);
+    elseif_stmt_stacks_[current_ifstmt()].emplace(stmt);
 }
 
 clang::IfStmt *call_expression_context::current_elseifstmt() const
@@ -221,7 +221,7 @@ clang::Stmt *call_expression_context::current_loopstmt() const
 
 void call_expression_context::enter_loopstmt(clang::Stmt *stmt)
 {
-    loop_stmt_stack_.push(stmt);
+    loop_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_loopstmt()
@@ -241,12 +241,12 @@ call_expression_context::current_callexpr() const
 
 void call_expression_context::enter_callexpr(clang::CallExpr *expr)
 {
-    call_expr_stack_.push(expr);
+    call_expr_stack_.emplace(expr);
 }
 
 void call_expression_context::enter_callexpr(clang::CXXConstructExpr *expr)
 {
-    call_expr_stack_.push(expr);
+    call_expr_stack_.emplace(expr);
 }
 
 void call_expression_context::leave_callexpr()
@@ -266,7 +266,7 @@ clang::Stmt *call_expression_context::current_trystmt() const
 
 void call_expression_context::enter_trystmt(clang::Stmt *stmt)
 {
-    try_stmt_stack_.push(stmt);
+    try_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_trystmt()
@@ -285,7 +285,7 @@ clang::SwitchStmt *call_expression_context::current_switchstmt() const
 
 void call_expression_context::enter_switchstmt(clang::SwitchStmt *stmt)
 {
-    switch_stmt_stack_.push(stmt);
+    switch_stmt_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_switchstmt()
@@ -306,7 +306,7 @@ call_expression_context::current_conditionaloperator() const
 void call_expression_context::enter_conditionaloperator(
     clang::ConditionalOperator *stmt)
 {
-    conditional_operator_stack_.push(stmt);
+    conditional_operator_stack_.emplace(stmt);
 }
 
 void call_expression_context::leave_conditionaloperator()

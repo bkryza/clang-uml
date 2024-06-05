@@ -1,5 +1,5 @@
 /**
- * @file src/sequence_diagram/model/activity.cc
+ * @file tests/test_types.cc
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,22 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "activity.h"
+#include "common/types.h"
 
-namespace clanguml::sequence_diagram::model {
+#include "doctest/doctest.h"
 
-activity::activity(eid_t id)
-    : from_{id}
+TEST_CASE("Test eid_t")
 {
+    using clanguml::common::eid_t;
+
+    eid_t empty{};
+
+    REQUIRE(empty.is_global());
+    REQUIRE_EQ(empty.value(), 0);
+
+    eid_t local_id{(int64_t)100};
+    REQUIRE_EQ(local_id.ast_local_value(), 100);
+    REQUIRE_EQ(local_id.value(), 100);
+    REQUIRE(!local_id.is_global());
+
+    eid_t global_id{(uint64_t)100};
+    REQUIRE_EQ(global_id.value(), 100);
+    REQUIRE(global_id.is_global());
+
+    REQUIRE(local_id != global_id);
 }
-
-void activity::add_message(message m) { messages_.emplace_back(std::move(m)); }
-
-std::vector<message> &activity::messages() { return messages_; }
-
-const std::vector<message> &activity::messages() const { return messages_; }
-
-eid_t activity::from() const { return from_; }
-
-} // namespace clanguml::sequence_diagram::model

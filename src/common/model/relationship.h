@@ -25,6 +25,8 @@
 
 namespace clanguml::common::model {
 
+using clanguml::common::eid_t;
+
 /**
  * @brief Class representing any relationship other than inheritance
  *
@@ -47,7 +49,7 @@ public:
      * @param multiplicity_source Multiplicity at the source
      * @param multiplicity_destination Multiplicity at the destination
      */
-    relationship(relationship_t type, clanguml::common::id_t destination,
+    relationship(relationship_t type, eid_t destination,
         access_t access = access_t::kPublic, std::string label = "",
         std::string multiplicity_source = "",
         std::string multiplicity_destination = "");
@@ -74,14 +76,14 @@ public:
      *
      * @param destination Target element id.
      */
-    void set_destination(int64_t destination);
+    void set_destination(eid_t destination);
 
     /**
      * Get the id of the target element of this relationship.
      *
      * @return Target element id.
      */
-    clanguml::common::id_t destination() const;
+    eid_t destination() const;
 
     /**
      * Set the relationship multiplicity at the source.
@@ -144,7 +146,7 @@ public:
 
 private:
     relationship_t type_;
-    clanguml::common::id_t destination_;
+    eid_t destination_;
     std::string multiplicity_source_;
     std::string multiplicity_destination_;
     std::string label_;

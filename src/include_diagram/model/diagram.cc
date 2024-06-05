@@ -35,7 +35,7 @@ common::optional_ref<common::model::diagram_element> diagram::get(
 }
 
 common::optional_ref<common::model::diagram_element> diagram::get(
-    const common::id_t id) const
+    const eid_t id) const
 {
     return find<source_file>(id);
 }
@@ -51,7 +51,7 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     auto &ff = *f;
 
     assert(!ff.name().empty());
-    assert(ff.id() != 0);
+    assert(ff.id().value() != 0);
 
     element_view<source_file>::add(ff);
 

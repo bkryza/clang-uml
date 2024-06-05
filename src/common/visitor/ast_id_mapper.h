@@ -24,6 +24,8 @@
 
 namespace clanguml::common::visitor {
 
+using clanguml::common::eid_t;
+
 /**
  * @brief Mapping between Clang AST identifier and `clang-uml` unique ids
  *
@@ -40,8 +42,6 @@ namespace clanguml::common::visitor {
  */
 class ast_id_mapper {
 public:
-    using id_t = common::id_t;
-
     ast_id_mapper() = default;
 
     /**
@@ -50,7 +50,7 @@ public:
      * @param ast_id Clang's local AST id.
      * @param global_id Global element id.
      */
-    void add(int64_t ast_id, id_t global_id);
+    void add(int64_t ast_id, eid_t global_id);
 
     /**
      * Get global element id based on it's local Clang AST id, if exists.
@@ -58,11 +58,11 @@ public:
      * @param ast_id Clang's local AST id.
      * @return Global id, if exists.
      */
-    std::optional<id_t> get_global_id(int64_t ast_id);
+    std::optional<eid_t> get_global_id(eid_t ast_id);
 
 private:
     std::map</* Clang AST translation unit local id */ int64_t,
-        /* clang-uml global id */ id_t>
+        /* clang-uml global id */ eid_t>
         id_map_;
 };
 

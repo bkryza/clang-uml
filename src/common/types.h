@@ -29,13 +29,62 @@
 
 namespace clanguml::common {
 
-using id_t = int64_t;
+/**
+ * @brief Universal class for representing all kinds of Id's in the diagram
+ *        model.
+ *
+ * This class provides a convenient way of representing id's in the diagram
+ * model. The main problem it solves is that it allows to store both
+ * Clang AST ID's (obtained using getID() method), which are local to a single
+ * translation unit and have a type int64_t as well as global (across
+ * multiple translation units) id's used by clang-uml in the intermediate
+ * model (which are uint64_t).
+ *
+ * The class is aware which kind of value it holds and tries to ensure that
+ * mistakes such as using AST local ID in place where global id is needed
+ * do not happen.
+ */
+class eid_t {
+public:
+    using type = uint64_t;
+
+    eid_t();
+
+    explicit eid_t(int64_t id);
+
+    explicit eid_t(type id);
+
+    eid_t(const eid_t &) = default;
+    eid_t(eid_t &&) noexcept = default;
+    eid_t &operator=(const eid_t &) = default;
+    eid_t &operator=(eid_t &&) noexcept = default;
+
+    eid_t &operator=(int64_t ast_id);
+
+    ~eid_t() = default;
+
+    bool is_global() const;
+
+    friend bool operator==(const eid_t &lhs, const eid_t &rhs);
+    friend bool operator==(const eid_t &lhs, const uint64_t &v);
+    friend bool operator!=(const eid_t &lhs, const uint64_t &v);
+    friend bool operator!=(const eid_t &lhs, const eid_t &rhs);
+    friend bool operator<(const eid_t &lhs, const eid_t &rhs);
+
+    type value() const;
+
+    int64_t ast_local_value() const;
+
+private:
+    type value_;
+    bool is_global_;
+};
 
 /**
  * Type of output diagram format generator.
  */
 enum class generator_type_t {
-    plantuml, /*!< Diagrams will be gnerated in PlantUML format */
+    plantuml, /*!< Diagrams will be generated in PlantUML format */
     json,     /*!< Diagrams will be generated in JSON format */
     mermaid   /*!< Diagrams will be generated in MermaidJS format */
 };
@@ -293,3 +342,13 @@ using namespace_or_regex = common::or_regex<common::model::namespace_>;
 struct path_or_regex : public or_regex<std::filesystem::path> { };
 
 } // namespace clanguml::common
+
+template <> class fmt::formatter<clanguml::common::eid_t> {
+public:
+    constexpr auto parse(format_parse_context &ctx) { return ctx.begin(); }
+    template <typename Context>
+    constexpr auto format(clanguml::common::eid_t const &id, Context &ctx) const
+    {
+        return fmt::format_to(ctx.out(), "{}", id.value());
+    }
+};

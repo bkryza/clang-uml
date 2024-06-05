@@ -27,6 +27,7 @@
 
 namespace clanguml::sequence_diagram::model {
 
+using clanguml::common::eid_t;
 using clanguml::common::model::template_trait;
 
 /**
@@ -190,9 +191,9 @@ public:
      */
     void is_lambda(bool is_lambda);
 
-    void set_lambda_operator_id(common::id_t id) { lambda_operator_id_ = id; }
+    void set_lambda_operator_id(eid_t id) { lambda_operator_id_ = id; }
 
-    common::id_t lambda_operator_id() const { return lambda_operator_id_; }
+    eid_t lambda_operator_id() const { return lambda_operator_id_; }
 
 private:
     bool is_struct_{false};
@@ -200,7 +201,7 @@ private:
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_lambda_{false};
-    common::id_t lambda_operator_id_{0};
+    eid_t lambda_operator_id_{};
 
     std::string full_name_;
 };
@@ -420,7 +421,7 @@ struct method : public function {
      *
      * @param id Id of the class to which this method belongs to
      */
-    void set_class_id(common::id_t id);
+    void set_class_id(eid_t id);
 
     /**
      * @brief Set full qualified name of the class
@@ -450,7 +451,7 @@ struct method : public function {
      *
      * @return Class id
      */
-    common::id_t class_id() const;
+    eid_t class_id() const;
 
     /**
      * @brief Create a string representation of the participant
@@ -502,7 +503,7 @@ struct method : public function {
     void is_assignment(bool a);
 
 private:
-    common::id_t class_id_{};
+    eid_t class_id_{};
     std::string method_name_;
     std::string class_full_name_;
     bool is_constructor_{false};
