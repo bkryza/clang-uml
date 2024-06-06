@@ -57,6 +57,7 @@ conda install -c bkryza/label/clang-uml clang-uml
 #### Nix
 
 You can use the version packaged in nixpkgs like this:
+Currently clang-uml version 0.5.1 is available in nixos-unstable and nixos-24.05
 ```bash
 nix-shell -p clang-uml
 ```
