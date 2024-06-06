@@ -35,7 +35,7 @@ public:
         : result_{result}
         ,
 #if defined(__linux) || defined(__unix) || defined(__APPLE__)
-        pipe_{popen(command.c_str(), "r")}
+        pipe_{popen(fmt::format("{} 2>&1", command).c_str(), "r")}
 #elif defined(_WIN32)
         pipe_{_popen(command.c_str(), "r")}
 #endif

@@ -40,16 +40,7 @@ void cli_handler::setup_logging()
 {
     spdlog::drop("clanguml-logger");
 
-    if (!progress) {
-        spdlog::register_logger(logger_);
-    }
-    else {
-        // Setup null logger for clean progress indicators
-        std::vector<spdlog::sink_ptr> sinks;
-        logger_ = std::make_shared<spdlog::logger>(
-            "clanguml-logger", begin(sinks), end(sinks));
-        spdlog::register_logger(logger_);
-    }
+    spdlog::register_logger(logger_);
 
     logger_->set_pattern("[%^%l%^] [tid %t] %v");
 
@@ -195,6 +186,16 @@ cli_flow_t cli_handler::handle_options(int argc, const char **argv)
     res = handle_post_config_options();
 
     config.inherit();
+
+    if (progress) {
+        spdlog::drop("clanguml-logger");
+
+        // Setup null logger for clean progress indicators
+        std::vector<spdlog::sink_ptr> sinks;
+        logger_ = std::make_shared<spdlog::logger>(
+            "clanguml-logger", begin(sinks), end(sinks));
+        spdlog::register_logger(logger_);
+    }
 
     return res;
 }
