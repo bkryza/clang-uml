@@ -226,11 +226,10 @@ set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTOR
 ```
 
 ### Nix wrapper
-On NixOS or when using `nix`, `clang-uml` provides a wrapper script called
-`clang-uml-wrapped`, which builds and exports `CPATH` and `CPLUS_INCLUDE_PATH`
+On NixOS or when using `nix`, `clang-uml` uses a wrapper script,
+which builds and exports `CPATH` and `CPLUS_INCLUDE_PATH`
 environment variables before running `clang-uml`, which contain valid
 system header Clang paths for the current Nix environment.
 
-The `clang-uml-wrapped` script can be called the same way as `clang-uml` and
-should resolve the system include paths without the need for any of the above
-solutions.
+If you want to use an unwrapped version, the `clang-uml-unwrapped` binary
+can be called the same way as `clang-uml`.
