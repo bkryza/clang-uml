@@ -30,11 +30,13 @@ stdenv.mkDerivation {
   clang = if enableLibcxx then llvmPackages.libcxxClang else llvmPackages.clang;
 
   postInstall = ''
-    export unwrapped_clang_uml="$out/bin/clang-uml"
-    
-    # inject clang and unwrap_clang_uml variables into wrapper
-    substituteAll ${./wrapper} $out/bin/clang-uml-wrapped
-    chmod +x $out/bin/clang-uml-wrapped
+    cp $out/bin/clang-uml $out/bin/clang-uml-unwrapped
+    rm $out/bin/clang-uml
+    export unwrapped_clang_uml="$out/bin/clang-uml-unwrapped"
+
+    # inject clang and unwrapp_clang_uml variables into wrapper
+    substituteAll ${./wrapper} $out/bin/clang-uml
+    chmod +x $out/bin/clang-uml
 
     installShellCompletion --bash $src/packaging/autocomplete/clang-uml
     installShellCompletion --zsh $src/packaging/autocomplete/_clang-uml
