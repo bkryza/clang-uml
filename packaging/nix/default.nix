@@ -38,7 +38,8 @@ stdenv.mkDerivation {
     substituteAll ${./wrapper} $out/bin/clang-uml
     chmod +x $out/bin/clang-uml
 
-    installShellCompletion --bash $src/packaging/autocomplete/clang-uml
-    installShellCompletion --zsh $src/packaging/autocomplete/_clang-uml
+    installShellCompletion --cmd clang-uml \
+      --bash $src/packaging/autocomplete/clang-uml \
+      --zsh $src/packaging/autocomplete/_clang-uml
   '';
 }
