@@ -1,5 +1,5 @@
 /**
- * tests/{{ name }}/test_case.h
+ * tests/t20054/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,13 +16,20 @@
  * limitations under the License.
  */
 
-TEST_CASE("{{ name }}")
+TEST_CASE("t20054")
 {
     using namespace clanguml::test;
     using namespace std::string_literals;
 
     auto [config, db, diagram, model] =
-        CHECK_{{ TYPE }}_MODEL("{{ name }}", "{{ name }}_{{ type }}");
+        CHECK_SEQUENCE_MODEL("t20054", "t20054_sequence");
 
-    {{ examples }}
+    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+        REQUIRE(MessageOrder(src,
+            {{"tmain()", "A", "a()"}, {"A", "A::AA", "aa()"},
+                {"A::AA", "A::AA::AAA", "aaa()"},
+
+                {Entrypoint{}, "A::AA", "bb()"},
+                {"A::AA", "A::AA::BBB", "bbb()"}}));
+    });
 }

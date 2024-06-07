@@ -610,6 +610,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 
 #include "t20052/test_case.h"
 #include "t20053/test_case.h"
+#include "t20054/test_case.h"
 
 ///
 /// Package diagram tests

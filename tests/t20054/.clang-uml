@@ -1,0 +1,12 @@
+diagrams:
+  t20054_sequence:
+    type: sequence
+    glob:
+      - t20054.cc
+    include:
+      namespaces:
+        - clanguml::t20054
+    using_namespace: clanguml::t20054
+    from:
+      - function: "clanguml::t20054::tmain()"
+      - function: "clanguml::t20054::A::AA::bb()"
