@@ -389,6 +389,11 @@ runtime_config cli_handler::get_runtime_config() const
     return cfg;
 }
 
+void cli_handler::set_config_path(const std::string &path)
+{
+    config_path = path;
+}
+
 cli_flow_t cli_handler::print_version()
 {
     ostr_ << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
@@ -477,7 +482,7 @@ cli_flow_t cli_handler::create_config_file()
 {
     namespace fs = std::filesystem;
 
-    fs::path config_file{"./.clang-uml"};
+    fs::path config_file{config_path};
 
     if (fs::exists(config_file)) {
         ostr_ << "ERROR: .clang-uml file already exists\n";

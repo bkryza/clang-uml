@@ -115,6 +115,12 @@ test: debug
 test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
 
+coverage_report: test
+	lcov -c -d debug -o coverage.info
+	lcov -e coverage.info "${PWD}/src/*" -o coverage-src.info
+	lcov -l coverage-src.info
+	genhtml coverage-src.info --output-directory debug/coverage_html
+
 install: release
 	make -C release install DESTDIR=${DESTDIR}
 
