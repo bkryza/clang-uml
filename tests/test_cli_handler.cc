@@ -22,6 +22,7 @@
 
 #include "doctest/doctest.h"
 
+#include <random>
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/spdlog.h>
 
@@ -30,6 +31,36 @@ std::shared_ptr<spdlog::logger> make_sstream_logger(std::ostream &ostr)
     auto oss_sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(ostr);
     return std::make_shared<spdlog::logger>(
         "clanguml-logger", std::move(oss_sink));
+}
+
+std::string create_temp_file()
+{
+#ifdef _WIN32
+    const std::string result = std::tmpnam(nullptr);
+#else
+    std::string result = std::filesystem::temp_directory_path();
+
+    if (result.empty()) {
+        result = "/tmp";
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib('A', 'Z');
+
+    const size_t filename_length = 10;
+
+    do {
+        result += "/clanguml_test_";
+        for (size_t i = 0; i < filename_length; ++i) {
+            char random_char = static_cast<char>(distrib(gen));
+            result += random_char;
+        }
+    } while (std::filesystem::exists(result));
+
+#endif
+
+    return result;
 }
 
 TEST_CASE("Test cli handler print_version")
@@ -190,7 +221,7 @@ TEST_CASE("Test cli handler properly adds new diagram configs from template")
     std::vector<const char *> argv{"clang-uml", "--init"};
 
     // Generate temporary file path
-    std::string config_file{std::tmpnam(nullptr)};
+    const std::string config_file{create_temp_file()};
 
     std::ostringstream ostr;
     cli_handler cli{ostr, make_sstream_logger(ostr)};
@@ -270,7 +301,7 @@ TEST_CASE("Test cli handler properly reports error when adding config from "
     std::vector<const char *> argv{"clang-uml", "--init"};
 
     // Generate temporary file path
-    std::string config_file{std::tmpnam(nullptr)};
+    std::string config_file{create_temp_file()};
 
     std::ostringstream ostr;
     cli_handler cli{ostr, make_sstream_logger(ostr)};
@@ -368,7 +399,7 @@ TEST_CASE("Test cli handler properly initializes new config file")
     std::vector<const char *> argv{"clang-uml", "--init"};
 
     // Generate temporary file path
-    std::string config_file{std::tmpnam(nullptr)};
+    std::string config_file{create_temp_file()};
 
     std::ostringstream ostr;
     cli_handler cli{ostr, make_sstream_logger(ostr)};
@@ -438,7 +469,7 @@ TEST_CASE("Test cli handler properly adds new diagram configs")
     std::vector<const char *> argv{"clang-uml", "--init"};
 
     // Generate temporary file path
-    std::string config_file{std::tmpnam(nullptr)};
+    std::string config_file{create_temp_file()};
 
     std::ostringstream ostr;
     cli_handler cli{ostr, make_sstream_logger(ostr)};
