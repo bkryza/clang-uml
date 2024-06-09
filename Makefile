@@ -50,7 +50,7 @@ DESTDIR ?=
 
 .PHONY: clean
 clean:
-	rm -rf debug release debug_tidy
+	rm -rf debug release debug_tidy coverage.info coverage-src.info
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
@@ -117,7 +117,8 @@ test_release: release
 
 coverage_report: test
 	lcov -c -d debug -o coverage.info
-	lcov -e coverage.info "${PWD}/src/*" -o coverage-src.info
+	lcov -r coverage.info -o coverage-src.info "${PWD}/src/main.cc" "${PWD}/src/common/generators/generators.cc"
+	lcov -e coverage-src.info -o coverage-src.info "${PWD}/src/*"
 	lcov -l coverage-src.info
 	genhtml coverage-src.info --output-directory debug/coverage_html
 

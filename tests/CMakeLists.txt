@@ -94,7 +94,8 @@ set(TEST_NAMES
         test_cli_handler
         test_filters
         test_thread_pool_executor
-        test_query_driver_output_extractor)
+        test_query_driver_output_extractor
+        test_progress_indicator)
 
 foreach(TEST_NAME ${TEST_NAMES})
     add_executable(${TEST_NAME})

@@ -40,4 +40,26 @@ TEST_CASE("Test eid_t")
     REQUIRE(global_id.is_global());
 
     REQUIRE(local_id != global_id);
+
+    REQUIRE(local_id != 101);
+}
+
+TEST_CASE("Test to_string")
+{
+    using namespace clanguml::common;
+
+    std::string t1{"abcd"};
+    REQUIRE_EQ(t1, to_string(t1));
+
+    string_or_regex t2{"abcdef"};
+    REQUIRE_EQ(to_string(t2), "abcdef");
+    REQUIRE_EQ(to_string(t2), t2.to_string());
+
+    string_or_regex t3{std::regex{"ab.*"}, "ab.*"};
+    REQUIRE_EQ(to_string(t3), "ab.*");
+    REQUIRE_EQ(to_string(t3), t3.to_string());
+
+    REQUIRE_EQ(to_string(generator_type_t::plantuml), "plantuml");
+    REQUIRE_EQ(to_string(generator_type_t::mermaid), "mermaid");
+    REQUIRE_EQ(to_string(generator_type_t::json), "json");
 }

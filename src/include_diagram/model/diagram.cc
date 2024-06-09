@@ -89,25 +89,6 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     add_element(p, std::move(f));
 }
 
-std::string diagram::to_alias(const std::string &full_name) const
-{
-    LOG_DBG("Looking for alias for {}", full_name);
-
-    auto path = common::model::filesystem_path{full_name};
-
-    if (path.is_empty())
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", path.to_string()));
-
-    auto source_file = get_element<common::model::source_file>(path);
-
-    if (!source_file)
-        throw error::uml_alias_missing(
-            fmt::format("Missing alias for '{}'", path.to_string()));
-
-    return source_file.value().alias();
-}
-
 const common::reference_vector<common::model::source_file> &
 diagram::files() const
 {

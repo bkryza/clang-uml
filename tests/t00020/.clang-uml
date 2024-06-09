@@ -9,7 +9,13 @@ diagrams:
         - clanguml::t00020
     plantuml:
       after:
-        - '@A(ProductA1) <.. @A(Factory1)'
-        - '@A(ProductB1) <.. @A(Factory1)'
-        - '{{ alias("ProductA2") }} <.. {{ alias("Factory2") }}'
-        - '{{ alias("ProductB2") }} <.. {{ alias("Factory2") }}'
+        - '@A(Factory1) ..> @A(ProductA1)'
+        - '@A(Factory1) ..> @A(ProductB1)'
+        - '{{ alias("Factory2") }} ..> {{ alias("ProductA2") }}'
+        - '{{ alias("Factory2") }} ..> {{ alias("ProductB2") }}'
+    mermaid:
+      after:
+        - '@A(Factory1) ..> @A(ProductA1)'
+        - '@A(Factory1) ..> @A(ProductB1)'
+        - '{{ alias("Factory2") }} ..> {{ alias("ProductA2") }}'
+        - '{{ alias("Factory2") }} ..> {{ alias("ProductB2") }}'

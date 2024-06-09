@@ -30,6 +30,9 @@ TEST_CASE("t00043")
         REQUIRE(IsClass(src, {"dependants", "D"}));
         REQUIRE(IsClass(src, {"dependants", "BB"}));
         REQUIRE(IsClass(src, {"dependants", "E"}));
+        REQUIRE(!IsClass(src, {"dependants", "EE"}));
+        REQUIRE(!IsClass(src, {"dependants", "EEE"}));
+
         REQUIRE(IsDependency(src, {"dependants", "B"}, {"dependants", "A"}));
         REQUIRE(IsDependency(src, {"dependants", "BB"}, {"dependants", "A"}));
         REQUIRE(IsDependency(src, {"dependants", "C"}, {"dependants", "B"}));
@@ -40,6 +43,8 @@ TEST_CASE("t00043")
         REQUIRE(IsClass(src, {"dependencies", "GG"}));
         REQUIRE(IsClass(src, {"dependencies", "H"}));
         REQUIRE(!IsClass(src, {"dependencies", "HH"}));
+        REQUIRE(!IsClass(src, {"dependencies", "II"}));
+        REQUIRE(!IsClass(src, {"dependencies", "III"}));
 
         REQUIRE(
             IsDependency(src, {"dependencies", "J"}, {"dependencies", "I"}));

@@ -23,15 +23,29 @@ TEST_CASE("t00020")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00020", "t00020_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
-        REQUIRE(IsAbstractClass(src, "AbstractFactory"));
-        REQUIRE(IsAbstractClass(src, "ProductA"));
-        REQUIRE(IsAbstractClass(src, "ProductB"));
-        REQUIRE(IsClass(src, "ProductA1"));
-        REQUIRE(IsClass(src, "ProductA2"));
-        REQUIRE(IsClass(src, "ProductB1"));
-        REQUIRE(IsClass(src, "ProductB2"));
-        REQUIRE(IsClass(src, "Factory1"));
-        REQUIRE(IsClass(src, "Factory2"));
-    });
+    CHECK_CLASS_DIAGRAM(
+        config, diagram, *model,
+        [](const auto &src) {
+            REQUIRE(IsAbstractClass(src, "AbstractFactory"));
+            REQUIRE(IsAbstractClass(src, "ProductA"));
+            REQUIRE(IsAbstractClass(src, "ProductB"));
+            REQUIRE(IsClass(src, "ProductA1"));
+            REQUIRE(IsClass(src, "ProductA2"));
+            REQUIRE(IsClass(src, "ProductB1"));
+            REQUIRE(IsClass(src, "ProductB2"));
+            REQUIRE(IsClass(src, "Factory1"));
+            REQUIRE(IsClass(src, "Factory2"));
+        },
+        [](const plantuml_t &src) {
+            REQUIRE(IsDependency(src, "Factory1", "ProductA1"));
+            REQUIRE(IsDependency(src, "Factory1", "ProductB1"));
+            REQUIRE(IsDependency(src, "Factory2", "ProductA2"));
+            REQUIRE(IsDependency(src, "Factory2", "ProductB2"));
+        },
+        [](const mermaid_t &src) {
+            REQUIRE(IsDependency(src, "Factory1", "ProductA1"));
+            REQUIRE(IsDependency(src, "Factory1", "ProductB1"));
+            REQUIRE(IsDependency(src, "Factory2", "ProductA2"));
+            REQUIRE(IsDependency(src, "Factory2", "ProductB2"));
+        });
 }

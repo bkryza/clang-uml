@@ -45,7 +45,8 @@ jobs:
     - name: Run coverage
       run: |
         lcov -c -d debug -o coverage.info
-        lcov -e coverage.info "$PWD/src/*" -o coverage-src.info
+        lcov -r coverage.info -o coverage-src.info "$PWD/src/main.cc" "$PWD/src/common/generators/generators.cc"
+        lcov -e coverage-src.info -o coverage-src.info "$PWD/src/*"
         lcov -l coverage-src.info
     - name: Upload coverage
       uses: codecov/codecov-action@v3

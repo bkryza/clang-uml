@@ -17,6 +17,7 @@
  */
 
 #include "clang_visitor.h"
+#include "util/util.h"
 
 #if LLVM_VERSION_MAJOR > 17
 #define CLANG_UML_LLVM_COMMENT_KIND(COMMENT_KIND)                              \
@@ -191,7 +192,7 @@ void clang_visitor::visit_param_command(
 
         inja::json param = inja::json::object();
         param["name"] = name;
-        param["description"] = description;
+        param["description"] = util::trim(description);
         cmt["param"].push_back(std::move(param));
     }
 }
@@ -226,7 +227,7 @@ void clang_visitor::visit_tparam_command(
 
         inja::json param = inja::json::object();
         param["name"] = name;
-        param["description"] = description;
+        param["description"] = util::trim(description);
         cmt["tparam"].push_back(std::move(param));
     }
 }

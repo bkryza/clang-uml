@@ -68,12 +68,21 @@ TEST_CASE("Test compilation_database should work")
                 .make_preferred()
                 .string()));
 
+        REQUIRE_EQ(db->guess_language_from_filename("file.cpp"), "c++");
+        REQUIRE_EQ(db->guess_language_from_filename("file.cc"), "c++");
+
+        REQUIRE_EQ(db->guess_language_from_filename("file.c"), "c");
+
         auto ccs = db->getAllCompileCommands();
 
         REQUIRE(contains(ccs.at(0).CommandLine, "-Wno-error"));
         REQUIRE(contains(ccs.at(0).CommandLine, "-Wno-unknown-warning-option"));
         REQUIRE(
             !contains(ccs.at(0).CommandLine, "-Wno-deprecated-declarations"));
+
+        REQUIRE_EQ(
+            db->count_matching_commands({"./src/class_diagram/model/class.cc"}),
+            1);
     }
     catch (clanguml::error::compilation_database_error &e) {
         REQUIRE(false);

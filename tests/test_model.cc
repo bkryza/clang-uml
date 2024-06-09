@@ -22,6 +22,7 @@
 #include "class_diagram/model/class.h"
 #include "common/model/namespace.h"
 #include "common/model/package.h"
+#include "common/model/path.h"
 #include "common/model/template_parameter.h"
 
 TEST_CASE("Test namespace_")
@@ -468,4 +469,19 @@ TEST_CASE("Test common::model::package full_name")
         CHECK(pkg.full_name(false) == "A.B.C:D");
         CHECK(pkg.full_name(true) == ":D");
     }
+}
+
+TEST_CASE("Test path_type")
+{
+    using namespace clanguml::common::model;
+
+    REQUIRE_EQ(to_string(path_type::kModule), "module");
+    REQUIRE_EQ(to_string(path_type::kFilesystem), "directory");
+    REQUIRE_EQ(to_string(path_type::kNamespace), "namespace");
+
+    // Check that assiging a namespace path to a filesystem path throws
+    auto p1 = path{"A::B::C", path_type::kNamespace};
+    auto p2 = path{"A/B/C/D", path_type::kFilesystem};
+
+    REQUIRE_THROWS_AS(p1 = p2, std::runtime_error);
 }
