@@ -619,7 +619,6 @@ void template_builder<VisitorT>::build_from_template_declaration(
     const clang::TemplateDecl &template_declaration,
     common::optional_ref<common::model::element> templated_element)
 {
-
     LOG_DBG("Processing {} template parameters...",
         common::get_qualified_name(template_declaration));
 
@@ -669,6 +668,9 @@ void template_builder<VisitorT>::build_from_template_declaration(
                             }
                         });
                 }
+            }
+            else {
+                (void)templated_element; // NOLINT
             }
 
             template_model.add_template(std::move(ct));
