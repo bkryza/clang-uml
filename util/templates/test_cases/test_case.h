@@ -22,7 +22,7 @@ TEST_CASE("{{ name }}")
     using namespace std::string_literals;
 
     auto [config, db, diagram, model] =
-        CHECK_{{ TYPE }}_MODEL("{{ name }}", "{{ name }}_class");
+        CHECK_{{ TYPE }}_MODEL("{{ name }}", "{{ name }}_{{ type }}");
 
     {{ examples }}
 }

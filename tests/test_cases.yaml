@@ -382,6 +382,9 @@ test_cases:
     - name: t20053
       title: Test case for inlining nested lambda operator calls
       description:
+    - name: t20054
+      title: Test case for sequence diagram with nested classes
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

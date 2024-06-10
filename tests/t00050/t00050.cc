@@ -81,6 +81,11 @@ enum class E { E1, E2, E3 };
 template <typename T, typename V, int N> class F {
     T t[N];
     V v;
+
+    /// \brief Set value of v
+    ///
+    /// \param v_ New value for v
+    V set_value(V v_) const { return v = v_; }
 };
 
 /// This is a short description of class G.

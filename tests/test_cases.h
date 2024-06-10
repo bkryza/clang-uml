@@ -48,7 +48,8 @@
 
 using namespace clanguml::util;
 
-std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
+std::pair<clanguml::config::config_ptr,
+    clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name);
 
 namespace clanguml::test {

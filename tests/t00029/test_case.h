@@ -25,7 +25,7 @@ TEST_CASE("t00029")
 
     REQUIRE(model->name() == "t00029_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
         REQUIRE(!IsClass(src, "B"));
         REQUIRE(IsClassTemplate(src, "C<T>"));

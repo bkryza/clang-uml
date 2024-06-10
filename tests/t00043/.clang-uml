@@ -12,3 +12,8 @@ diagrams:
         - clanguml::t00043::dependencies::J
       relationships:
         - dependency
+    exclude:
+      dependants:
+        - clanguml::t00043::dependants::EE
+      dependencies:
+        - clanguml::t00043::dependencies::II

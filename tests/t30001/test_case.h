@@ -24,7 +24,7 @@ TEST_CASE("t30001")
     auto [config, db, diagram, model] =
         CHECK_PACKAGE_MODEL("t30001", "t30001_package");
 
-    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_PACKAGE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(HasTitle(src, "Basic package diagram example"));
 
         REQUIRE(!IsNamespacePackage(src, "clanguml"s));

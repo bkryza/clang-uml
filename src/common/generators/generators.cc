@@ -166,6 +166,8 @@ void generate_diagram_impl(const std::string &name,
                 runtime_config.output_directory, name, diagram, model);
         }
 
+        // Convert plantuml or mermaid to an image using command provided
+        // in the command line arguments
         if (runtime_config.render_diagrams) {
             render_diagram(generator_type, diagram);
         }

@@ -104,17 +104,6 @@ public:
     template <typename ElementT> opt_ref<ElementT> find(eid_t id) const;
 
     /**
-     * @brief Convert element id to PlantUML alias.
-     *
-     * @todo This method does not belong here - refactor to PlantUML specific
-     *       code.
-     *
-     * @param full_name Full name of the diagram element.
-     * @return PlantUML alias.
-     */
-    std::string to_alias(const std::string &full_name) const;
-
-    /**
      * @brief Get list of references to files in the diagram model.
      *
      * @return List of references to concepts in the diagram model.

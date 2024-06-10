@@ -23,7 +23,7 @@ TEST_CASE("t20053")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20053", "t20053_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsFileParticipant(src, "t20053.cu"));
 
         REQUIRE(MessageOrder(src,

@@ -24,7 +24,7 @@ TEST_CASE("t00074")
         CHECK_CLASS_MODEL("t00074", "t00074_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const auto &src) {
             REQUIRE(IsConcept(src, "fruit_c<T>"));
             REQUIRE(IsConcept(src, "apple_c<T>"));

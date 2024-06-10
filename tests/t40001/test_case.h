@@ -23,7 +23,7 @@ TEST_CASE("t40001")
     auto [config, db, diagram, model] =
         CHECK_INCLUDE_MODEL("t40001", "t40001_include");
 
-    CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_INCLUDE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(HasTitle(src, "Basic include diagram example"));
 
         REQUIRE(IsFolder(src, "include/lib1"));

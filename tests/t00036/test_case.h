@@ -26,7 +26,7 @@ TEST_CASE("t00036")
 
     REQUIRE(diagram->generate_packages() == true);
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClassTemplate(src, {"ns1::ns11", "A<T>"}));
         REQUIRE(IsClassTemplate(src, {"ns1::ns11", "A<int>"}));
         REQUIRE(IsClass(src, {"ns1::ns11::ns111", "B"}));

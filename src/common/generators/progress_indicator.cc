@@ -23,6 +23,12 @@
 namespace clanguml::common::generators {
 
 progress_indicator::progress_indicator()
+    : progress_indicator(std::cout)
+{
+}
+
+progress_indicator::progress_indicator(std::ostream &ostream)
+    : ostream_(ostream)
 {
     progress_bars_.set_option(indicators::option::HideBarWhenComplete{false});
 }
@@ -36,6 +42,7 @@ void progress_indicator::add_progress_bar(
     const auto kPrefixTextWidth = 25U;
 
     auto bar = std::make_shared<indicators::ProgressBar>(
+        indicators::option::Stream{ostream_},
         indicators::option::BarWidth{kBarWidth},
         indicators::option::ForegroundColor{color},
         indicators::option::ShowElapsedTime{true},
@@ -78,6 +85,7 @@ void progress_indicator::increment(const std::string &name)
     bar.set_progress((p.progress * kASTTraverseProgressPercent) / p.max);
     bar.set_option(indicators::option::PostfixText{
         fmt::format("{}/{}", p.progress, p.max)});
+
     progress_bars_mutex_.unlock();
 }
 
@@ -106,6 +114,8 @@ void progress_indicator::complete(const std::string &name)
     auto &p = progress_bar_index_.at(name);
     auto &bar = progress_bars_[p.index];
 
+    p.progress = p.max;
+
     bar.set_progress(kCompleteProgressPercent);
 
 #if _MSC_VER
@@ -124,6 +134,12 @@ void progress_indicator::complete(const std::string &name)
 void progress_indicator::fail(const std::string &name)
 {
     progress_bars_mutex_.lock();
+
+    if (progress_bar_index_.count(name) == 0) {
+        progress_bars_mutex_.unlock();
+        return;
+    }
+
     auto &p = progress_bar_index_.at(name);
     auto &bar = progress_bars_[p.index];
 

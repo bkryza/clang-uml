@@ -1717,20 +1717,20 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
                 const auto &[label, hint, access] =
                     anonymous_struct_relationships_[cls->getID()];
 
-                c.set_name(parent_class.value().name() + "##" +
-                    fmt::format("({})", label));
+                c.set_name(parent_class.value().name() +
+                    "::" + fmt::format("({})", label));
 
                 parent_class.value().add_relationship(
                     {hint, common::to_id(c.full_name(false)), access, label});
             }
             else
-                c.set_name(parent_class.value().name() + "##" +
+                c.set_name(parent_class.value().name() + "::" +
                     fmt::format(
                         "(anonymous_{})", std::to_string(cls->getID())));
         }
         else {
             c.set_name(
-                parent_class.value().name() + "##" + cls->getNameAsString());
+                parent_class.value().name() + "::" + cls->getNameAsString());
         }
 
         c.set_id(common::to_id(c.full_name(false)));

@@ -23,7 +23,7 @@ TEST_CASE("t00056")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00056", "t00056_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsConcept(src, "greater_than_simple<T,L>"));
         REQUIRE(IsConcept(src, "greater_than_with_requires<T,P>"));
         REQUIRE(IsConcept(src, "max_four_bytes<T>"));

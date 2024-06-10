@@ -37,6 +37,7 @@ CMAKE_PREFIX ?=
 CMAKE_CXX_FLAGS ?=
 CMAKE_EXE_LINKER_FLAGS ?=
 CMAKE_GENERATOR ?= Unix Makefiles
+CODE_COVERAGE ?= OFF
 
 ENABLE_CXX_MODULES_TEST_CASES ?= OFF
 ENABLE_CUDA_TEST_CASES ?= OFF
@@ -50,7 +51,7 @@ DESTDIR ?=
 
 .PHONY: clean
 clean:
-	rm -rf debug release debug_tidy
+	rm -rf debug release debug_tidy coverage.info coverage-src.info
 
 debug/CMakeLists.txt:
 	cmake -S . -B debug \
@@ -65,7 +66,8 @@ debug/CMakeLists.txt:
 		-DLINK_LLVM_SHARED=${LLVM_SHARED} \
 		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
 		-DENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
-		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES)
+		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+		-DCODE_COVERAGE=$(CODE_COVERAGE)
 
 release/CMakeLists.txt:
 	cmake -S . -B release \
@@ -114,6 +116,13 @@ test: debug
 
 test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
+
+coverage_report: test
+	lcov -c -d debug -o coverage.info
+	lcov -r coverage.info -o coverage-src.info "${PWD}/src/main.cc" "${PWD}/src/common/generators/generators.cc"
+	lcov -e coverage-src.info -o coverage-src.info "${PWD}/src/*"
+	lcov -l coverage-src.info
+	genhtml coverage-src.info --output-directory debug/coverage_html
 
 install: release
 	make -C release install DESTDIR=${DESTDIR}

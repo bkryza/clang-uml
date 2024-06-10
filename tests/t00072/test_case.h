@@ -24,7 +24,7 @@ TEST_CASE("t00072")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00072", "t00072_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsModulePackage(src, "app"s));
         REQUIRE(IsModulePackage(src, "app"s, ":lib1"s));
         REQUIRE(IsModulePackage(src, "app"s, ":lib1"s, "mod1"s));

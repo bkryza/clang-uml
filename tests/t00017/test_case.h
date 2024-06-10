@@ -24,7 +24,7 @@ TEST_CASE("t00017")
         CHECK_CLASS_MODEL("t00017", "t00017_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const auto &src) {
             REQUIRE(IsClass(src, "A"));
             REQUIRE(IsClass(src, "B"));

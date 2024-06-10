@@ -143,12 +143,6 @@ public:
     static template_parameter make_unexposed_argument(const std::string &type,
         const std::optional<std::string> &default_value = {});
 
-    friend bool operator==(
-        const template_parameter &l, const template_parameter &r);
-
-    friend bool operator!=(
-        const template_parameter &l, const template_parameter &r);
-
     /**
      * Set the type of template argument
      *

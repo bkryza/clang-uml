@@ -98,25 +98,6 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
     }
 }
 
-void generator::generate_notes(
-    std::ostream &ostr, const common::model::diagram_element &element) const
-{
-    const auto &config =
-        common_generator<diagram_config, diagram_model>::config();
-
-    for (const auto &decorator : element.decorators()) {
-        auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
-        if (note && note->applies_to_diagram(config.name)) {
-            auto note_id_str = fmt::format("N_{}", note_id_++);
-
-            ostr << indent(1) << note_id_str << "(" << note->text << ")\n";
-
-            ostr << indent(1) << note_id_str << "-.-" << element.alias()
-                 << '\n';
-        }
-    }
-}
-
 void generator::generate_diagram(std::ostream &ostr) const
 {
     // Generate files and folders

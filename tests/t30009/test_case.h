@@ -24,7 +24,7 @@ TEST_CASE("t30009")
     auto [config, db, diagram, model] =
         CHECK_PACKAGE_MODEL("t30009", "t30009_package");
 
-    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_PACKAGE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsNamespacePackage(src, "One"s));
         REQUIRE(IsNamespacePackage(src, "Two"s));
         REQUIRE(IsNamespacePackage(src, "One"s, "A"s));

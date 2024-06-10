@@ -23,7 +23,7 @@ TEST_CASE("t20012")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20012", "t20012_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {
                 {"tmain()", "tmain()::(lambda t20012.cc:67:20)",

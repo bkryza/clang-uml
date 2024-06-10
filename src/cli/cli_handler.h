@@ -153,6 +153,13 @@ public:
      */
     runtime_config get_runtime_config() const;
 
+    /**
+     * @brief Set the default config path
+     *
+     * @param path
+     */
+    void set_config_path(const std::string &path);
+
     std::string config_path{".clang-uml"};
     std::optional<std::string> compilation_database_dir{};
     std::vector<std::string> diagram_names{};

@@ -23,7 +23,7 @@ TEST_CASE("t20007")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20007", "t20007_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {
                 {"tmain()", "Adder<int,int>", "add(int &&,int &&)"}, //

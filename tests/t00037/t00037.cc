@@ -20,7 +20,11 @@ public:
     struct {
         int len;
         int flags;
-    } __attribute__((packed)) bars[LENGTH];
+    }
+#ifndef _MSC_VER
+    __attribute__((packed))
+#endif
+    bars[LENGTH];
 
 private:
     struct {

@@ -24,7 +24,7 @@ TEST_CASE("t00008")
         CHECK_CLASS_MODEL("t00008", "t00008_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const auto &src) {
             // TODO: add option to resolve using declared types
             // REQUIRE(IsClassTemplate(src, "A<T,P,bool (*)(int, int),int N>"));

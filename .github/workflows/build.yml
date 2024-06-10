@@ -41,11 +41,12 @@ jobs:
         make check-formatting
     - name: Build and unit test
       run: |
-        NUMPROC=2 CMAKE_CXX_FLAGS="--coverage -fno-inline" CMAKE_EXE_LINKER_FLAGS="-lgcov --coverage" LLVM_VERSION=15 make test
+        NUMPROC=2 CODE_COVERAGE=ON LLVM_VERSION=15 make test
     - name: Run coverage
       run: |
         lcov -c -d debug -o coverage.info
-        lcov -e coverage.info "$PWD/src/*" -o coverage-src.info
+        lcov -r coverage.info -o coverage-src.info "$PWD/src/main.cc" "$PWD/src/common/generators/generators.cc"
+        lcov -e coverage-src.info -o coverage-src.info "$PWD/src/*"
         lcov -l coverage-src.info
     - name: Upload coverage
       uses: codecov/codecov-action@v3

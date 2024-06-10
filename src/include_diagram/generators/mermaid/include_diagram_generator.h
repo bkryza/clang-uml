@@ -80,24 +80,12 @@ public:
     void generate_relationships(const source_file &p, std::ostream &ostr) const;
 
     /**
-     * @brief Generate notes attached to files
-     *
-     * @param ostr Output stream
-     * @param element Element with a note
-     */
-    void generate_notes(std::ostream &ostr,
-        const common::model::diagram_element &element) const override;
-
-    /**
      * @brief Generate diagram element
      *
      * @param e Source file diagram element
      * @param parent Output stream
      */
     void generate(const source_file &e, std::ostream &ostr) const;
-
-private:
-    mutable uint64_t note_id_{0UL};
 };
 
 } // namespace clanguml::include_diagram::generators::mermaid

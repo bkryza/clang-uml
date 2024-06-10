@@ -23,7 +23,7 @@ TEST_CASE("t20003")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20003", "t20003_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsFunctionTemplateParticipant(src, "m1<T>(T)"));
         REQUIRE(IsFunctionTemplateParticipant(src, "m2<T>(T)"));
         REQUIRE(IsFunctionTemplateParticipant(src, "m3<T>(T)"));

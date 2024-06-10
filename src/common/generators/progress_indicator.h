@@ -45,6 +45,8 @@ public:
 
     progress_indicator();
 
+    progress_indicator(std::ostream &ostream);
+
     /**
      * Add a new progress bar to the indicator set
      *
@@ -86,5 +88,6 @@ private:
     std::vector<std::shared_ptr<indicators::ProgressBar>> bars_;
     std::map<std::string, progress_state> progress_bar_index_;
     std::mutex progress_bars_mutex_;
+    std::ostream &ostream_;
 };
 } // namespace clanguml::common::generators

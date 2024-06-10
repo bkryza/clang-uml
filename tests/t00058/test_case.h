@@ -24,7 +24,7 @@ TEST_CASE("t00058")
         CHECK_CLASS_MODEL("t00058", "t00058_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const auto &src) {
             REQUIRE(IsClassTemplate(src, "A<int,int,double,std::string>"));
             REQUIRE(IsClassTemplate(

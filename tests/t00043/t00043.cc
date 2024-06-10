@@ -24,6 +24,14 @@ struct E {
     void e(D *d) { }
 };
 
+struct EE {
+    void ee(E *e) { }
+};
+
+struct EEE {
+    void eee(EE *e) { }
+};
+
 struct F { };
 } // namespace dependants
 
@@ -46,8 +54,18 @@ struct I {
     void i(H *h) { }
 };
 
+struct II;
+struct III {
+    void iii(II *i) { }
+};
+
+struct II {
+    void ii() { }
+};
+
 struct J {
     void i(I *i) { }
+    void ii(II *ii) { }
 };
 
 } // namespace dependencies

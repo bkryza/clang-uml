@@ -224,7 +224,7 @@ private:
         clang::ClassTemplateSpecializationDecl *cls);
 
     /**
-     * @brief Process template specialiaztion children (members and methods)
+     * @brief Process template specialization children (members and methods)
      * @param cls Class template specialization declaration
      * @param c Class diagram element model
      */

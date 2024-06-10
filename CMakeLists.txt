@@ -62,6 +62,15 @@ message(STATUS "clang-uml version: "
                "${GIT_VERSION_MAJOR}.${GIT_VERSION_MINOR}.${GIT_VERSION_PATCH}")
 
 #
+# Setup coverage
+#
+option(CODE_COVERAGE "" OFF)
+if(CODE_COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fno-inline")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcov --coverage")
+endif(CODE_COVERAGE)
+
+#
 # Setup LLVM
 #
 include(LLVMSetup)
