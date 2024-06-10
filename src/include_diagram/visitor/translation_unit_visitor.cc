@@ -83,8 +83,12 @@ void translation_unit_visitor::include_visitor::InclusionDirective(
     assert(diagram().get(current_file_id.value()));
 
 #if LLVM_VERSION_MAJOR > 14
+    if (!file.has_value())
+        return;
     auto include_path = std::filesystem::path(file->getDir().getName().str());
 #else
+    if (file == nullptr)
+        return;
     auto include_path = std::filesystem::path(file->getDir()->getName().str());
 #endif
     include_path = include_path / file->getName().str();
