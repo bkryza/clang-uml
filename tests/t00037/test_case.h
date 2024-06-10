@@ -25,7 +25,7 @@ TEST_CASE("t00037")
 
     REQUIRE(diagram->generate_packages() == true);
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "ST"));
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsClass(src, "ST::(units)"));

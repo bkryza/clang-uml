@@ -24,7 +24,7 @@ TEST_CASE("t30011")
     auto [config, db, diagram, model] =
         CHECK_PACKAGE_MODEL("t30011", "t30011_package");
 
-    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_PACKAGE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsDirectoryPackage(src, "app"s));
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib1"s));
         REQUIRE(IsDirectoryPackage(src, "libraries"s, "lib2"s));

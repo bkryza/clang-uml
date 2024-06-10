@@ -23,7 +23,7 @@ TEST_CASE("t00019")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00019", "t00019_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "Base"));
         REQUIRE(IsClassTemplate(src, "Layer1<LowerLayer>"));
         REQUIRE(IsClassTemplate(src, "Layer2<LowerLayer>"));

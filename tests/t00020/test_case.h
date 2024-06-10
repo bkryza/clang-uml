@@ -24,7 +24,7 @@ TEST_CASE("t00020")
         CHECK_CLASS_MODEL("t00020", "t00020_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const auto &src) {
             REQUIRE(IsAbstractClass(src, "AbstractFactory"));
             REQUIRE(IsAbstractClass(src, "ProductA"));

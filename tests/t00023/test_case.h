@@ -23,7 +23,7 @@ TEST_CASE("t00023")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00023", "t00023_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsAbstractClass(src, "Strategy"));
         REQUIRE(IsClass(src, "StrategyA"));
         REQUIRE(IsClass(src, "StrategyB"));

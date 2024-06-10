@@ -23,7 +23,7 @@ TEST_CASE("t00012")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00012", "t00012_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClassTemplate(src, "A<T,Ts...>"));
         REQUIRE(IsClassTemplate(src, "B<int... Is>"));
 

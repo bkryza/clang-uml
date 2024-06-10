@@ -756,6 +756,8 @@ struct config : public inheritable_diagram_options {
     void inherit();
 };
 
+using config_ptr = std::unique_ptr<config>;
+
 /**
  * @brief Load and parse `.clang-uml` configuration file
  *

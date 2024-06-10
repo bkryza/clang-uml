@@ -25,7 +25,7 @@ import jinja2
 TEST_CASE_MULTIPLIER = 10000
 
 CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
             // REQUIRE(HasTitle(src, "Basic class diagram example"));
 
             // REQUIRE(!IsClass(src, "NOSUCHCLASS"));
@@ -43,7 +43,7 @@ CLASS_DIAGRAM_TEST_CASE_EXAMPLES = """
 
 SEQUENCE_DIAGRAM_TEST_CASE_EXAMPLES = """
     CHECK_SEQUENCE_DIAGRAM(
-        config, diagram, *model,
+       *config, diagram, *model,
         [](const auto &src) {
             // REQUIRE(HasTitle(src, "Basic sequence diagram example"));
 
@@ -63,7 +63,7 @@ SEQUENCE_DIAGRAM_TEST_CASE_EXAMPLES = """
 """
 
 PACKAGE_DIAGRAM_TEST_CASE_EXAMPLES = """
-    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_PACKAGE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         // REQUIRE(IsNamespacePackage(src, "A"s, "AA"s));
 
         // REQUIRE(IsNamespacePackage(src, "B"s, "BB"s, "BBB"s));

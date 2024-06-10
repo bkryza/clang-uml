@@ -24,7 +24,7 @@ TEST_CASE("t90000")
         CHECK_CLASS_MODEL("t90000", "t90000_class");
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         [](const plantuml_t &src) {
             REQUIRE(IsClass(src, "Foo"));
             REQUIRE(IsClass(src, "Boo"));

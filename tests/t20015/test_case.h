@@ -23,7 +23,7 @@ TEST_CASE("t20015")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20015", "t20015_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {
                 {"tmain()", "B", "setup_a(std::shared_ptr<detail::A> &)"} //

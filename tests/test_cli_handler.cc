@@ -497,3 +497,34 @@ TEST_CASE("Test cli handler properly adds new diagram configs")
     REQUIRE(clanguml::util::contains(
         config_file_content, fmt::format("{}:", diagram_name)));
 }
+
+TEST_CASE("Test cli handler fail to add diagram with stdin config")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {"clang-uml", "--init", "-c", "-"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kError);
+}
+
+TEST_CASE("Test cli handler fail when print_to or print_from do not have "
+          "specified diagram")
+{
+    using clanguml::cli::cli_flow_t;
+    using clanguml::cli::cli_handler;
+
+    std::vector<const char *> argv = {"clang-uml", "--print-from"};
+
+    std::ostringstream ostr;
+    cli_handler cli{ostr, make_sstream_logger(ostr)};
+
+    auto res = cli.handle_options(argv.size(), argv.data());
+
+    REQUIRE(res == cli_flow_t::kError);
+}

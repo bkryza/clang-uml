@@ -23,7 +23,7 @@ TEST_CASE("t40003")
     auto [config, db, diagram, model] =
         CHECK_INCLUDE_MODEL("t40003", "t40003_include");
 
-    CHECK_INCLUDE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_INCLUDE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsFolder(src, "include/dependants"));
         REQUIRE(IsFolder(src, "include/dependencies"));
         REQUIRE(IsFolder(src, "src/dependants"));
@@ -34,11 +34,17 @@ TEST_CASE("t40003")
         REQUIRE(IsFile(src, "include/dependants/t3.h"));
         REQUIRE(!IsFile(src, "include/dependants/t4.h"));
         REQUIRE(IsFile(src, "src/dependants/t1.cc"));
+        REQUIRE(!IsFile(src, "include/dependants/t10.h"));
+        REQUIRE(!IsFile(src, "include/dependants/t11.h"));
 
         REQUIRE(IsFile(src, "include/dependencies/t1.h"));
         REQUIRE(IsFile(src, "include/dependencies/t2.h"));
         REQUIRE(IsFile(src, "include/dependencies/t3.h"));
         REQUIRE(!IsFile(src, "include/dependencies/t4.h"));
+        REQUIRE(!IsFile(src, "include/dependencies/t6.h"));
+
         REQUIRE(IsFile(src, "src/dependencies/t2.cc"));
+        REQUIRE(!IsFile(src, "include/dependencies/t7.h"));
+        REQUIRE(!IsFile(src, "include/dependencies/t8.h"));
     });
 }

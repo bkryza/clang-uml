@@ -21,10 +21,12 @@ TEST_CASE("t90001")
     using namespace clanguml::test;
     using clanguml::error::empty_diagram_error;
 
-    auto [config, db] = load_config("t90001");
+    auto [cfg, db] = load_config("t90001");
+
+    const auto &config = *cfg;
 
     {
-        auto diagram = config.diagrams["t90001_class"];
+        auto diagram = config.diagrams.at("t90001_class");
 
         auto model = generate_class_diagram(*db, diagram);
 
@@ -41,7 +43,7 @@ TEST_CASE("t90001")
     }
 
     {
-        auto diagram = config.diagrams["t90001_sequence"];
+        auto diagram = config.diagrams.at("t90001_sequence");
 
         auto model = generate_sequence_diagram(*db, diagram);
 
@@ -58,7 +60,7 @@ TEST_CASE("t90001")
     }
 
     {
-        auto diagram = config.diagrams["t90001_package"];
+        auto diagram = config.diagrams.at("t90001_package");
 
         auto model = generate_package_diagram(*db, diagram);
 
@@ -75,7 +77,7 @@ TEST_CASE("t90001")
     }
 
     {
-        auto diagram = config.diagrams["t90001_include"];
+        auto diagram = config.diagrams.at("t90001_include");
 
         auto model = generate_include_diagram(*db, diagram);
 

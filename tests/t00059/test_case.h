@@ -23,7 +23,7 @@ TEST_CASE("t00059")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00059", "t00059_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsConcept(src, "fruit_c<T>"));
         REQUIRE(IsConcept(src, "apple_c<T>"));
         REQUIRE(IsConcept(src, "orange_c<T>"));

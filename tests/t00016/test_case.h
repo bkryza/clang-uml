@@ -23,7 +23,7 @@ TEST_CASE("t00016")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00016", "t00016_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClassTemplate(src, "is_numeric<typename>"));
         REQUIRE(IsClassTemplate(src, "is_numeric<int>"));
         REQUIRE(IsClassTemplate(src, "is_numeric<bool>"));

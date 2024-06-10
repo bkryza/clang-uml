@@ -23,7 +23,7 @@ TEST_CASE("t00068_r0")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00068", "t00068_r0_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsClass(src, "A"));
         REQUIRE(!IsClass(src, "AA"));
         REQUIRE(IsClass(src, "AAA"));
@@ -45,7 +45,7 @@ TEST_CASE("t00068_r1")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00068", "t00068_r1_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsClass(src, "A"));
         REQUIRE(IsClass(src, "AA"));
         REQUIRE(IsClass(src, "AAA"));
@@ -67,7 +67,7 @@ TEST_CASE("t00068_r2")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00068", "t00068_r2_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsClass(src, "AA"));
         REQUIRE(IsClass(src, "AAA"));

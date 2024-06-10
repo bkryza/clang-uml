@@ -4,6 +4,7 @@ comment_parser: clang
 add_compile_flags:
   - -fparse-all-comments
   - -Wno-deprecated-declarations
+  - -Wno-ignored-optimization-argument
 remove_compile_flags:
   - -Wno-class-memaccess
   - -Wno-dangling-reference

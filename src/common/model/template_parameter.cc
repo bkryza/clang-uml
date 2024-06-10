@@ -332,34 +332,6 @@ template_parameter::template_params() const
     return template_params_;
 }
 
-bool operator==(const template_parameter &l, const template_parameter &r)
-{
-    bool res{false};
-
-    if (l.is_template_parameter() != r.is_template_parameter())
-        return res;
-
-    if (l.is_function_template() != r.is_function_template())
-        return res;
-
-    if (l.is_template_parameter()) {
-        // If this is a template parameter (e.g. 'typename T' or 'typename U'
-        // we don't actually care what it is called
-        res = (l.is_variadic() == r.is_variadic()) &&
-            (l.default_value() == r.default_value());
-    }
-    else
-        res = (l.name() == r.name()) && (l.type() == r.type()) &&
-            (l.default_value() == r.default_value());
-
-    return res && (l.template_params_ == r.template_params_);
-}
-
-bool operator!=(const template_parameter &l, const template_parameter &r)
-{
-    return !(l == r);
-}
-
 std::string template_parameter::deduced_context_str() const
 {
     std::vector<std::string> deduced_contexts;

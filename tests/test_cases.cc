@@ -37,10 +37,11 @@ void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
     diagram->generate_links.set(links_config);
 }
 
-std::pair<clanguml::config::config, clanguml::common::compilation_database_ptr>
+std::pair<clanguml::config::config_ptr,
+    clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name)
 {
-    std::pair<clanguml::config::config,
+    std::pair<clanguml::config::config_ptr,
         clanguml::common::compilation_database_ptr>
         res;
 
@@ -54,22 +55,25 @@ load_config(const std::string &test_name)
     const auto output_directory = weakly_canonical(
         std::filesystem::current_path() / std::filesystem::path{"diagrams"});
 
-    res.first = clanguml::config::load(test_config_path, true, false, true);
+    res.first = std::make_unique<clanguml::config::config>(
+        clanguml::config::load(test_config_path, true, false, true));
 
-    res.first.compilation_database_dir.set(compilation_database_dir.string());
-    res.first.output_directory.set(output_directory.string());
+    assert(res.first.get() != nullptr);
+
+    res.first->compilation_database_dir.set(compilation_database_dir.string());
+    res.first->output_directory.set(output_directory.string());
 
     LOG_DBG("Loading compilation database from {}",
-        res.first.compilation_database_dir());
+        res.first->compilation_database_dir());
 
     std::vector<std::string> remove_compile_flags{
         std::string{"-Wno-class-memaccess"}};
 
-    res.first.remove_compile_flags.set(remove_compile_flags);
+    res.first->remove_compile_flags.set(remove_compile_flags);
 
     res.second =
         clanguml::common::compilation_database::auto_detect_from_directory(
-            res.first);
+            *res.first);
 
     return res;
 }
@@ -301,7 +305,7 @@ auto CHECK_CLASS_MODEL(
 {
     auto [config, db] = load_config(test_name);
 
-    auto diagram = config.diagrams[diagram_name];
+    auto diagram = config->diagrams[diagram_name];
 
     REQUIRE(diagram->name == diagram_name);
 
@@ -318,7 +322,7 @@ auto CHECK_SEQUENCE_MODEL(
 {
     auto [config, db] = load_config(test_name);
 
-    auto diagram = config.diagrams[diagram_name];
+    auto diagram = config->diagrams[diagram_name];
 
     REQUIRE(diagram->name == diagram_name);
 
@@ -335,7 +339,7 @@ auto CHECK_PACKAGE_MODEL(
 {
     auto [config, db] = load_config(test_name);
 
-    auto diagram = config.diagrams[diagram_name];
+    auto diagram = config->diagrams[diagram_name];
 
     REQUIRE(diagram->name == diagram_name);
 
@@ -352,7 +356,7 @@ auto CHECK_INCLUDE_MODEL(
 {
     auto [config, db] = load_config(test_name);
 
-    auto diagram = config.diagrams[diagram_name];
+    auto diagram = config->diagrams[diagram_name];
 
     REQUIRE(diagram->name == diagram_name);
 

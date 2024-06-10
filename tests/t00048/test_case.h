@@ -23,7 +23,7 @@ TEST_CASE("t00048")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00048", "t00048_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         // Check if all classes exist
         REQUIRE(IsAbstractClass(src, "Base"));
         REQUIRE(IsClass(src, "A"));

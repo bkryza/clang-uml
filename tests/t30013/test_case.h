@@ -24,7 +24,7 @@ TEST_CASE("t30013")
     auto [config, db, diagram, model] =
         CHECK_PACKAGE_MODEL("t30013", "t30013_package");
 
-    CHECK_PACKAGE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_PACKAGE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsModulePackage(src, "app"s));
         REQUIRE(IsModulePackage(src, "mod1"s));
         REQUIRE(IsModulePackage(src, "mod2"s));

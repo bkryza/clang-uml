@@ -23,7 +23,7 @@ TEST_CASE("t20044")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20044", "t20044_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsClassParticipant(src, "detail::expected<int,error>"));
         REQUIRE(IsClassParticipant(src, "result_t"));
 

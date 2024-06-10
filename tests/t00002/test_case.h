@@ -31,7 +31,7 @@ TEST_CASE("t00002")
     REQUIRE(!model->should_include({"std"}, "vector"));
 
     CHECK_CLASS_DIAGRAM(
-        config, diagram, *model,
+        *config, diagram, *model,
         // Common test case for all diagram types
         [](const auto &src) {
             REQUIRE(HasTitle(src, "Basic class diagram example"));

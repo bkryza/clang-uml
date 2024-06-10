@@ -319,7 +319,13 @@ struct edge_traversal_filter : public filter_visitor {
         // Now check if the e element is contained in the calculated set
         return std::any_of(matching_elements_.begin(), matching_elements_.end(),
             [&e](const auto &te) {
-                return te.get().full_name(false) == e.full_name(false);
+                std::string tes = te.get().full_name(false);
+                std::string es = e.full_name(false);
+
+                if (tes == es)
+                    return true;
+
+                return false;
             });
     }
 
@@ -397,9 +403,7 @@ private:
             }
         }
 
-        assert(roots_.empty() == matching_elements_.empty());
-
-        bool keep_looking{true};
+        bool keep_looking{!matching_elements_.empty()};
         while (keep_looking) {
             keep_looking = false;
             if (forward_) {
@@ -647,14 +651,22 @@ public:
      */
     template <typename T> bool should_include(const T &e) const
     {
-        auto exc = tvl::any_of(exclusive_.begin(), exclusive_.end(),
-            [this, &e](const auto &ex) { return ex->match(diagram_, e); });
+        auto exc = tvl::any_of(
+            exclusive_.begin(), exclusive_.end(), [this, &e](const auto &ex) {
+                assert(ex.get() != nullptr);
+
+                return ex->match(diagram_, e);
+            });
 
         if (tvl::is_true(exc))
             return false;
 
-        auto inc = tvl::all_of(inclusive_.begin(), inclusive_.end(),
-            [this, &e](const auto &in) { return in->match(diagram_, e); });
+        auto inc = tvl::all_of(
+            inclusive_.begin(), inclusive_.end(), [this, &e](const auto &in) {
+                assert(in.get() != nullptr);
+
+                return in->match(diagram_, e);
+            });
 
         return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }

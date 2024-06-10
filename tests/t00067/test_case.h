@@ -23,7 +23,7 @@ TEST_CASE("t00067")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00067", "t00067_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(!IsMethod<Public, Default>(src, "A", "A"));
         REQUIRE(!IsMethod<Public, Default>(src, "A", "void", "A &&"));
         REQUIRE(!IsMethod<Public, Deleted>(src, "A", "void", "const A &"));

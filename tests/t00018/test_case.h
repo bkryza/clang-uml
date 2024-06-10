@@ -23,7 +23,7 @@ TEST_CASE("t00018")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00018", "t00018_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "widget"));
         REQUIRE(IsClass(src, "impl::widget"));
         REQUIRE(IsDependency(src, "impl::widget", "widget"));

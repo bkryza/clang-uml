@@ -207,10 +207,6 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
     auto &template_specialization = *template_specialization_ptr;
 
-    if (cls->hasBody()) {
-        process_template_specialization_children(cls, template_specialization);
-    }
-
     if (cls->hasDefinition()) {
         // Process template specialization bases
         process_class_bases(cls, template_specialization);
@@ -1002,75 +998,6 @@ void translation_unit_visitor::process_class_bases(
             c.name());
 
         c.add_parent(std::move(cp));
-    }
-}
-
-void translation_unit_visitor::process_template_specialization_children(
-    const clang::ClassTemplateSpecializationDecl *cls, class_ &c)
-{
-    assert(cls != nullptr);
-
-    // Iterate over class methods (both regular and static)
-    for (const auto *method : cls->methods()) {
-        if (method != nullptr) {
-            process_method(*method, c);
-        }
-    }
-
-    // Iterate over class template methods
-    if (const auto *cls_decl_context =
-            clang::dyn_cast_or_null<clang::DeclContext>(cls);
-        cls_decl_context != nullptr) {
-        for (auto const *decl_iterator :
-            clang::dyn_cast_or_null<clang::DeclContext>(cls)->decls()) {
-            auto const *method_template =
-                llvm::dyn_cast_or_null<clang::FunctionTemplateDecl>(
-                    decl_iterator);
-            if (method_template == nullptr)
-                continue;
-
-            process_template_method(*method_template, c);
-        }
-    }
-
-    // Iterate over regular class fields
-    for (const auto *field : cls->fields()) {
-        if (field != nullptr)
-            process_field(*field, c);
-    }
-
-    // Static fields have to be processed by iterating over variable
-    // declarations
-    for (const auto *decl : cls->decls()) {
-        if (decl->getKind() == clang::Decl::Var) {
-            const clang::VarDecl *variable_declaration{
-                dynamic_cast<const clang::VarDecl *>(decl)};
-            if ((variable_declaration != nullptr) &&
-                variable_declaration->isStaticDataMember()) {
-                process_static_field(*variable_declaration, c);
-            }
-        }
-        else if (decl->getKind() == clang::Decl::Enum) {
-            const auto *enum_decl =
-                clang::dyn_cast_or_null<clang::EnumDecl>(decl);
-            if (enum_decl == nullptr)
-                continue;
-
-            if (enum_decl->getNameAsString().empty()) {
-                for (const auto *enum_const : enum_decl->enumerators()) {
-                    class_member m{common::access_specifier_to_access_t(
-                                       enum_decl->getAccess()),
-                        enum_const->getNameAsString(), "enum"};
-                    c.add_member(std::move(m));
-                }
-            }
-        }
-    }
-
-    if (cls->hasFriends()) {
-        for (const auto *friend_declaration : cls->friends()) {
-            process_friend(*friend_declaration, c);
-        }
     }
 }
 

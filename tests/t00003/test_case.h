@@ -27,7 +27,7 @@ TEST_CASE("t00003")
     REQUIRE(diagram->include().namespaces.size() == 1);
     REQUIRE(diagram->exclude().namespaces.size() == 0);
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
 
         REQUIRE(!IsDependency(src, "A", "A"));

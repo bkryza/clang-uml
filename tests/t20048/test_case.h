@@ -23,7 +23,7 @@ TEST_CASE("t20048")
     auto [config, db, diagram, model] =
         CHECK_SEQUENCE_MODEL("t20048", "t20048_sequence");
 
-    CHECK_SEQUENCE_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(MessageOrder(src,
             {
                 //

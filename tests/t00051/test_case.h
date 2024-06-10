@@ -23,7 +23,7 @@ TEST_CASE("t00051")
     auto [config, db, diagram, model] =
         CHECK_CLASS_MODEL("t00051", "t00051_class");
 
-    CHECK_CLASS_DIAGRAM(config, diagram, *model, [](const auto &src) {
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "A"));
         REQUIRE(IsInnerClass(src, "A", "A::custom_thread1"));
         REQUIRE(IsInnerClass(src, "A", "A::custom_thread2"));

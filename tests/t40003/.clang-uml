@@ -8,12 +8,19 @@ diagrams:
       - src/dependencies/t2.cc
     # Render the paths relative to this directory
     include:
-      # Include only files which depend on t1.h
+      # Include files which depend on t1.h
       dependants:
         - include/dependants/t1.h
       # and dependencies of t2.cc
       dependencies:
         - src/dependencies/t2.cc
+    exclude:
+      # Exclude files which depend on t10.h
+      dependants:
+        - include/dependants/t10.h
+      # and other dependencies of t8.h
+      dependencies:
+        - include/dependencies/t8.h
     plantuml:
       before:
         - "' t40003 test include diagram"
