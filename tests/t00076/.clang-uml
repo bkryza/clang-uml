@@ -8,7 +8,7 @@ diagrams:
         - clanguml::t00076
       context:
         - match:
-            radius: 1
+            radius: 2
             pattern: clanguml::t00076::B
             direction: inward
             #relationships:

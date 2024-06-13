@@ -4,7 +4,13 @@ namespace t00076 {
 enum Color { red, green, blue };
 
 struct F;
-struct G { };
+struct GG { };
+struct G {
+    GG gg;
+};
+struct GGG {
+    G g;
+};
 struct H { };
 struct J { };
 
@@ -24,9 +30,17 @@ struct C : public B { };
 
 struct D : public C { };
 
+struct EE { };
+
 struct E {
     B *b;
+    EE *ee;
 };
+
+struct EEE {
+    E *e;
+};
+
 struct F { };
 
 struct I {

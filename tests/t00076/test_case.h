@@ -27,14 +27,21 @@ TEST_CASE("t00076")
     CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         REQUIRE(IsClass(src, "B"));
         REQUIRE(IsClass(src, "C"));
+        REQUIRE(IsClass(src, "D"));
         REQUIRE(IsClass(src, "E"));
+        REQUIRE(IsClass(src, "EEE"));
+
         REQUIRE(IsClass(src, "G"));
+        REQUIRE(IsClass(src, "GG"));
+
         REQUIRE(IsClass(src, "I"));
         REQUIRE(IsClass(src, "J"));
+
         REQUIRE(IsEnum(src, "Color"));
         REQUIRE(!IsClass(src, "A"));
-        REQUIRE(!IsClass(src, "D"));
         REQUIRE(!IsClass(src, "F"));
         REQUIRE(!IsClass(src, "H"));
+        REQUIRE(!IsClass(src, "EE"));
+        REQUIRE(!IsClass(src, "GGG"));
     });
 }

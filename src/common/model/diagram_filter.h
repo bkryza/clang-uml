@@ -516,9 +516,10 @@ private:
             // which have a relationship to any of the effective_context
             // elements
             for (const relationship &rel : el.get().relationships()) {
-                if (context_cfg.direction ==
-                        config::context_direction_t::outward/* &&
-                    !is_inward(rel.type())*/) {
+                // At the moment aggregation and composition are added in the
+                // model in reverse direction so we don't consider them here
+                if (rel.type() == relationship_t::kAggregation ||
+                    rel.type() == relationship_t::kComposition) {
                     continue;
                 }
 
@@ -532,7 +533,6 @@ private:
             // Now search current effective_context elements and add any
             // elements of any type in the diagram which have a relationship
             // to that element
-
             for (const auto element_id : effective_context) {
                 const auto &maybe_element = cd.get(element_id);
 
@@ -545,6 +545,12 @@ private:
                             config::context_direction_t::inward) &&
                         (rel.type() != relationship_t::kAggregation &&
                             rel.type() != relationship_t::kComposition)) {
+                        continue;
+                    }
+                    if (context_cfg.direction ==
+                            config::context_direction_t::outward &&
+                        (rel.type() == relationship_t::kAggregation ||
+                            rel.type() == relationship_t::kComposition)) {
                         continue;
                     }
 
