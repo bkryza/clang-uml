@@ -517,12 +517,19 @@ private:
             // elements
             for (const relationship &rel : el.get().relationships()) {
                 // At the moment aggregation and composition are added in the
-                // model in reverse direction so we don't consider them here
-                if (rel.type() == relationship_t::kAggregation ||
-                    rel.type() == relationship_t::kComposition) {
+                // model in reverse direction, so we don't consider them here
+                if (context_cfg.direction ==
+                        config::context_direction_t::inward &&
+                    (rel.type() == relationship_t::kAggregation ||
+                        rel.type() == relationship_t::kComposition)) {
                     continue;
                 }
-
+                if (context_cfg.direction ==
+                        config::context_direction_t::outward &&
+                    (rel.type() != relationship_t::kAggregation &&
+                        rel.type() != relationship_t::kComposition)) {
+                    continue;
+                }
                 for (const auto &element_id : effective_context) {
                     if (d.should_include(rel.type()) &&
                         rel.destination() == element_id)

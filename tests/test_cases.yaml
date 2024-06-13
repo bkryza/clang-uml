@@ -224,6 +224,10 @@ test_cases:
       description:
     - name: t00076
       title: Test case for context diagram with inward direction flag
+      description:
+    - name: t00077
+      title: Test case for context diagram with outward direction flag
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
