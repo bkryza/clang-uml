@@ -23,6 +23,10 @@ struct B : public A {
     /// @uml{composition[0..1:1..*]}
     J j;
 
+    struct BB { };
+
+    BB *bb;
+
     void a(H *h) { (void)h; }
 };
 

@@ -30,7 +30,7 @@ TEST_CASE("t00076")
         REQUIRE(IsClass(src, "D"));
         REQUIRE(IsClass(src, "E"));
         REQUIRE(IsClass(src, "EEE"));
-
+        REQUIRE(IsClass(src, "B::BB"));
         REQUIRE(IsClass(src, "G"));
         REQUIRE(IsClass(src, "GG"));
 
