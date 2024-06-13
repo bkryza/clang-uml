@@ -35,6 +35,7 @@ using clanguml::config::callee_type;
 using clanguml::config::class_diagram;
 using clanguml::config::config;
 using clanguml::config::context_config;
+using clanguml::config::context_direction_t;
 using clanguml::config::diagram_template;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
@@ -260,6 +261,25 @@ template <> struct convert<module_access_t> {
 };
 
 //
+// config context_direction_t decoder
+//
+template <> struct convert<context_direction_t> {
+    static bool decode(const Node &node, context_direction_t &rhs)
+    {
+        if (node.as<std::string>() == "inward")
+            rhs = context_direction_t::inward;
+        else if (node.as<std::string>() == "outward")
+            rhs = context_direction_t::outward;
+        else if (node.as<std::string>() == "any")
+            rhs = context_direction_t::any;
+        else
+            return false;
+
+        return true;
+    }
+};
+
+//
 // config method_type decoder
 //
 template <> struct convert<method_type> {
@@ -460,8 +480,11 @@ template <> struct convert<context_config> {
     {
         using namespace std::string_literals;
         if (node.IsMap() && has_key(node, "match")) {
-            rhs.radius = node["match"]["radius"].as<unsigned>();
-            rhs.pattern = node["match"]["pattern"].as<string_or_regex>();
+            const auto &match = node["match"];
+            rhs.radius = match["radius"].as<unsigned>();
+            rhs.pattern = match["pattern"].as<string_or_regex>();
+            if (has_key(match, "direction"))
+                rhs.direction = match["direction"].as<context_direction_t>();
         }
         else {
             rhs.radius = 1;

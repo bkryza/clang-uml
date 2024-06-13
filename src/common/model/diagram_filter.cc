@@ -659,10 +659,10 @@ void context_filter::initialize_effective_context(
     auto &effective_context = effective_contexts_[idx];
 
     // First add to effective context all elements matching context_ patterns
-    const auto &context = context_.at(idx);
+    const auto &context_cfg = context_.at(idx);
     const auto &context_matches =
         dynamic_cast<const class_diagram::model::diagram &>(d)
-            .find<class_diagram::model::class_>(context.pattern);
+            .find<class_diagram::model::class_>(context_cfg.pattern);
 
     for (const auto &maybe_match : context_matches) {
         if (maybe_match)
@@ -671,7 +671,7 @@ void context_filter::initialize_effective_context(
 
     const auto &context_enum_matches =
         dynamic_cast<const class_diagram::model::diagram &>(d)
-            .find<class_diagram::model::enum_>(context.pattern);
+            .find<class_diagram::model::enum_>(context_cfg.pattern);
 
     for (const auto &maybe_match : context_enum_matches) {
         if (maybe_match)
@@ -680,7 +680,7 @@ void context_filter::initialize_effective_context(
 
     const auto &context_concept_matches =
         dynamic_cast<const class_diagram::model::diagram &>(d)
-            .find<class_diagram::model::concept_>(context.pattern);
+            .find<class_diagram::model::concept_>(context_cfg.pattern);
 
     for (const auto &maybe_match : context_concept_matches) {
         if (maybe_match)
@@ -689,7 +689,7 @@ void context_filter::initialize_effective_context(
 
     // Now repeat radius times - extend the effective context with elements
     // matching in direct relationship to what is in context
-    auto radius_counter = context.radius;
+    auto radius_counter = context_cfg.radius;
     std::set<eid_t> current_iteration_context;
 
     while (radius_counter > 0 && effective_context_extended) {
@@ -701,18 +701,18 @@ void context_filter::initialize_effective_context(
 
         // For each class in the model
         find_elements_in_direct_relationship<class_diagram::model::class_>(
-            d, effective_context, current_iteration_context);
+            d, context_cfg, effective_context, current_iteration_context);
 
         find_elements_inheritance_relationship(
-            d, effective_context, current_iteration_context);
+            d, context_cfg, effective_context, current_iteration_context);
 
         // For each concept in the model
         find_elements_in_direct_relationship<class_diagram::model::concept_>(
-            d, effective_context, current_iteration_context);
+            d, context_cfg, effective_context, current_iteration_context);
 
         // For each enum in the model
         find_elements_in_direct_relationship<class_diagram::model::enum_>(
-            d, effective_context, current_iteration_context);
+            d, context_cfg, effective_context, current_iteration_context);
 
         for (auto id : current_iteration_context) {
             if (effective_context.count(id) == 0) {
@@ -725,6 +725,7 @@ void context_filter::initialize_effective_context(
 }
 
 void context_filter::find_elements_inheritance_relationship(const diagram &d,
+    const config::context_config &context_cfg,
     std::set<eid_t> &effective_context,
     std::set<eid_t> &current_iteration_context) const
 {
@@ -733,33 +734,54 @@ void context_filter::find_elements_inheritance_relationship(const diagram &d,
     for (const auto &c : cd.classes()) {
         // Check if any of the elements parents are already in the
         // effective context...
-        for (const class_diagram::model::class_parent &p : c.get().parents()) {
-            for (const auto &ec : effective_context) {
-                const auto &maybe_parent =
-                    cd.find<class_diagram::model::class_>(ec);
-                if (!maybe_parent)
-                    continue;
-
-                if (d.should_include(relationship_t::kExtension) &&
-                    maybe_parent.value().full_name(false) == p.name())
-                    current_iteration_context.emplace(c.get().id());
-            }
-        }
+        if (context_cfg.direction != config::context_direction_t::outward)
+            find_elements_base_classes(
+                d, effective_context, current_iteration_context, cd, c);
 
         // .. or vice-versa
-        for (const auto &ec : effective_context) {
-            const auto &maybe_child = cd.find<class_diagram::model::class_>(ec);
+        if (context_cfg.direction != config::context_direction_t::inward)
+            find_elements_sub_classes(
+                effective_context, current_iteration_context, cd, c);
+    }
+}
 
-            // The element might not exist because it might have been
-            // something other than a class
-            if (!maybe_child)
+void context_filter::find_elements_sub_classes(
+    std::set<eid_t> &effective_context,
+    std::set<eid_t> &current_iteration_context,
+    const class_diagram::model::diagram &cd,
+    const std::reference_wrapper<class_diagram::model::class_> &c) const
+{
+    for (const auto &ec : effective_context) {
+        const auto &maybe_child = cd.find<class_diagram::model::class_>(ec);
+
+        // The element might not exist because it might have been
+        // something other than a class
+        if (!maybe_child)
+            continue;
+
+        for (const auto &p : maybe_child.value().parents()) {
+            if (p.name() == c.get().full_name(false)) {
+                current_iteration_context.emplace(c.get().id());
+            }
+        }
+    }
+}
+void context_filter::find_elements_base_classes(const diagram &d,
+    std::set<eid_t> &effective_context,
+    std::set<eid_t> &current_iteration_context,
+    const class_diagram::model::diagram &cd,
+    const std::reference_wrapper<class_diagram::model::class_> &c) const
+{
+    for (const class_diagram::model::class_parent &p : c.get().parents()) {
+        for (const auto &ec : effective_context) {
+            const auto &maybe_parent =
+                cd.find<class_diagram::model::class_>(ec);
+            if (!maybe_parent)
                 continue;
 
-            for (const auto &p : maybe_child.value().parents()) {
-                if (p.name() == c.get().full_name(false)) {
-                    current_iteration_context.emplace(c.get().id());
-                }
-            }
+            if (d.should_include(relationship_t::kExtension) &&
+                maybe_parent.value().full_name(false) == p.name())
+                current_iteration_context.emplace(c.get().id());
         }
     }
 }
@@ -800,6 +822,16 @@ tvl::value_t context_filter::match(const diagram &d, const element &e) const
     }
 
     return false;
+}
+
+bool context_filter::is_inward(relationship_t r) const
+{
+    return r == relationship_t::kAssociation;
+}
+
+bool context_filter::is_outward(relationship_t r) const
+{
+    return r != relationship_t::kAssociation;
 }
 
 paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,

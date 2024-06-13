@@ -222,6 +222,8 @@ test_cases:
     - name: t00075
       title: Test case for class diagram styles in config file
       description:
+    - name: t00076
+      title: Test case for context diagram with inward direction flag
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

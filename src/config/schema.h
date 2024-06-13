@@ -114,10 +114,15 @@ types:
         - lambda
         - cuda_kernel
         - cuda_device
+    direction_t: !variant
+        - inward
+        - outward
+        - any
     context_filter_match_t:
         match:
             radius: int
             pattern: regex_or_string_t
+            direction: !optional direction_t
     context_filter_t:
         - regex_or_string_t
         - context_filter_match_t

@@ -171,6 +171,20 @@ std::string to_string(member_order_t mo)
         return "";
     }
 }
+std::string to_string(context_direction_t cd)
+{
+    switch (cd) {
+    case context_direction_t::inward:
+        return "inward";
+    case context_direction_t::outward:
+        return "outward";
+    case context_direction_t::any:
+        return "any";
+    default:
+        assert(false);
+        return "";
+    }
+}
 
 std::optional<std::string> plantuml::get_style(
     const common::model::relationship_t relationship_type) const

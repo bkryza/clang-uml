@@ -1,0 +1,16 @@
+diagrams:
+  t00076_class:
+    type: class
+    glob:
+      - t00076.cc
+    include:
+      namespaces:
+        - clanguml::t00076
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::t00076::B
+            direction: inward
+            #relationships:
+            #  - any
+    using_namespace: clanguml::t00076
