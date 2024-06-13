@@ -485,6 +485,9 @@ template <> struct convert<context_config> {
             rhs.pattern = match["pattern"].as<string_or_regex>();
             if (has_key(match, "direction"))
                 rhs.direction = match["direction"].as<context_direction_t>();
+            if (has_key(match, "relationships"))
+                rhs.relationships =
+                    match["relationships"].as<std::vector<relationship_t>>();
         }
         else {
             rhs.radius = 1;

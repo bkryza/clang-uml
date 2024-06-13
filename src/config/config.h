@@ -167,6 +167,7 @@ struct context_config {
     common::string_or_regex pattern;
     unsigned radius{0};
     context_direction_t direction{context_direction_t::any};
+    std::vector<common::model::relationship_t> relationships;
 };
 
 /**

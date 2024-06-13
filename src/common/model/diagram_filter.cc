@@ -724,12 +724,23 @@ void context_filter::initialize_effective_context(
     }
 }
 
+bool context_filter::should_include(
+    const config::context_config &context_cfg, relationship_t r) const
+{
+    return context_cfg.relationships.empty() ||
+        util::contains(context_cfg.relationships, r);
+}
+
 void context_filter::find_elements_inheritance_relationship(const diagram &d,
     const config::context_config &context_cfg,
     std::set<eid_t> &effective_context,
     std::set<eid_t> &current_iteration_context) const
 {
     const auto &cd = dynamic_cast<const class_diagram::model::diagram &>(d);
+
+    if (!should_include(context_cfg, relationship_t::kExtension)) {
+        return;
+    }
 
     for (const auto &c : cd.classes()) {
         // Check if any of the elements parents are already in the

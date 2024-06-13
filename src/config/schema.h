@@ -87,6 +87,18 @@ types:
         - dependency
         - constraint
         - none
+    relationship_context_t: !variant
+        - extension
+        - inheritance
+        - composition
+        - aggregation
+        - containment
+        - ownership
+        - association
+        - instantiation
+        - friendship
+        - dependency
+        - constraint
     access_filter_t: !variant
         - public
         - protected
@@ -123,6 +135,7 @@ types:
             radius: int
             pattern: regex_or_string_t
             direction: !optional direction_t
+            relationships: !optional [relationship_context_t]
     context_filter_t:
         - regex_or_string_t
         - context_filter_match_t

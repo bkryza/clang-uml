@@ -1,0 +1,16 @@
+diagrams:
+  t00078_class:
+    type: class
+    glob:
+      - t00078.cc
+    include:
+      namespaces:
+        - clanguml::t00078
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::t00078::A
+            relationships:
+              - inheritance
+              - aggregation
+    using_namespace: clanguml::t00078

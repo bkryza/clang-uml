@@ -516,6 +516,10 @@ private:
             // which have a relationship to any of the effective_context
             // elements
             for (const relationship &rel : el.get().relationships()) {
+                if (!should_include(context_cfg, rel.type()) ||
+                    !d.should_include(rel.type())) {
+                    continue;
+                }
                 // At the moment aggregation and composition are added in the
                 // model in reverse direction, so we don't consider them here
                 if (context_cfg.direction ==
@@ -531,8 +535,7 @@ private:
                     continue;
                 }
                 for (const auto &element_id : effective_context) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == element_id)
+                    if (rel.destination() == element_id)
                         current_iteration_context.emplace(el.get().id());
                 }
             }
@@ -548,6 +551,11 @@ private:
 
                 for (const relationship &rel :
                     maybe_element.value().relationships()) {
+                    if (!should_include(context_cfg, rel.type()) ||
+                        !d.should_include(rel.type())) {
+                        continue;
+                    }
+
                     if ((context_cfg.direction ==
                             config::context_direction_t::inward) &&
                         (rel.type() != relationship_t::kAggregation &&
@@ -561,13 +569,15 @@ private:
                         continue;
                     }
 
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == el.get().id())
+                    if (rel.destination() == el.get().id())
                         current_iteration_context.emplace(el.get().id());
                 }
             }
         }
     }
+
+    bool should_include(
+        const config::context_config &context_cfg, relationship_t r) const;
 
     void find_elements_inheritance_relationship(const diagram &d,
         const config::context_config &context_cfg,
