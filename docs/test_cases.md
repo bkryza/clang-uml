@@ -80,6 +80,10 @@
  * [t00073](./test_cases/t00073.md) - Class diagram for template overload pattern
  * [t00074](./test_cases/t00074.md) - Test case for rendering concepts without requirements
  * [t00075](./test_cases/t00075.md) - Test case for class diagram styles in config file
+ * [t00076](./test_cases/t00076.md) - Test case for context diagram with inward direction flag
+ * [t00077](./test_cases/t00077.md) - Test case for context diagram with outward direction flag
+ * [t00078](./test_cases/t00078.md) - Test case for context diagram with relationships option
+ * [t00079](./test_cases/t00079.md) - Test case for context diagram exclude filter with relationships option
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -134,6 +138,7 @@
  * [t20051](./test_cases/t20051.md) - Test case for CUDA calls callee_type filter
  * [t20052](./test_cases/t20052.md) - Test case for inlining lambda operator calls
  * [t20053](./test_cases/t20053.md) - Test case for inlining nested lambda operator calls
+ * [t20054](./test_cases/t20054.md) - Test case for sequence diagram with nested classes
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
