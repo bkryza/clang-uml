@@ -1,5 +1,5 @@
 /**
- * tests/t00078/test_case.h
+ * tests/t00079/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,25 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t00078")
+TEST_CASE("t00079")
 {
     using namespace clanguml::test;
     using namespace std::string_literals;
 
     auto [config, db, diagram, model] =
-        CHECK_CLASS_MODEL("t00078", "t00078_class");
+        CHECK_CLASS_MODEL("t00079", "t00079_class");
 
     CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        REQUIRE(IsClass(src, "Base"));
-        REQUIRE(IsClass(src, "A"));
-        REQUIRE(IsClass(src, "C"));
-        REQUIRE(IsClass(src, "D"));
+        REQUIRE(!IsClass(src, "Base"));
+        REQUIRE(!IsClass(src, "A"));
+        REQUIRE(!IsClass(src, "C"));
+        REQUIRE(!IsClass(src, "D"));
 
-        REQUIRE(!IsClass(src, "B"));
-        REQUIRE(!IsClass(src, "E"));
-
-        REQUIRE(!IsAssociation<Public>(src, "A", "E"));
-        REQUIRE(IsAggregation<Public>(src, "A", "D"));
-        REQUIRE(IsAggregation<Public>(src, "C", "A"));
+        REQUIRE(IsClass(src, "B"));
+        REQUIRE(IsClass(src, "E"));
     });
 }
