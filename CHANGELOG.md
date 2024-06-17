@@ -1,5 +1,7 @@
 # CHANGELOG
 
+ * Added context filter direction and relationships options (#274)
+ * Improved test coverage (#287)
  * Fixed handling of relationships to nested enums (#280)
  * Improved handling of anonymous and multi-dimensions arrays in
    class diagrams (#278)

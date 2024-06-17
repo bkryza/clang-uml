@@ -1,0 +1,17 @@
+diagrams:
+  t00079_class:
+    type: class
+    glob:
+      - t00079.cc
+    include:
+      namespaces:
+        - clanguml::t00079
+    exclude:
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::t00079::A
+            relationships:
+              - inheritance
+              - aggregation
+    using_namespace: clanguml::t00079

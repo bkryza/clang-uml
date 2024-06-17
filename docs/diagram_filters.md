@@ -8,6 +8,9 @@
 * [element_types](#element_types)
 * [paths](#paths)
 * [context](#context)
+  * [context radius](#context-radius)
+  * [context direction](#context-direction)
+  * [context relationships](#context-relationships)
 * [relationships](#relationships)
 * [subclasses](#subclasses)
 * [parents](#parents)
@@ -152,7 +155,8 @@ paths to directories can be specified.
 ## context
 
 This filter allows to limit the diagram elements only to classes which are in
-direct relationship (of any kind) with the specified class, enum or concept:
+direct relationship (of any kind) with the specified `class`, `enum` or
+`concept`:
 
 ```yaml
   include:
@@ -160,6 +164,7 @@ direct relationship (of any kind) with the specified class, enum or concept:
       - ns1::ns2::MyClass
 ```
 
+### context radius
 By default, the filter will only include or exclude items in direct
 relationship (radius 1). It is however possible to define the context filter
 and provide a custom radius:
@@ -177,6 +182,46 @@ and provide a custom radius:
 
 Please note that you can specify multiple context filters in a single diagram
 with different radius. Radius set to 0 will match only the given element.
+
+### context direction
+Sometimes we may be interested only in relationships pointing outward from
+a specific element, or inward. For instance we may want to see which elements
+depend through any relationship on a specified element. For this purpose the
+context filter has a `direction` option, which can have one of 3 values:
+  * `any` (default)
+  * `inward` - only relationships pointing toward the specified class are
+               considered in calculating the context
+  * `outward` -  only relationships pointing toward the specified class are
+               considered in calculating the context
+
+For example, the following filter:
+```yaml
+      context:
+        - match:
+            radius: 2
+            pattern: clanguml::t00076::B
+            direction: inward
+```
+will include all elements related to class `B` through relationships pointing
+toward `B` within a radius of maximum 2 relationships (see test case
+[t00076](./test_cases/t00076.md)).
+
+### context relationships
+Another way to customize the context of a specified element is to declare
+which relationships should be considered when calculating the elements' context.
+
+For example, the following filter:
+```yaml
+      context:
+        - match:
+            radius: 1
+            pattern: clanguml::t00078::A
+            relationships:
+              - inheritance
+              - aggregation
+```
+will only include elements related to class `A` through inheritance or
+aggregation relationship (see test case [t00076](./test_cases/t00078.md)).
 
 ## relationships
 

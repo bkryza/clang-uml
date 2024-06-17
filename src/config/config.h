@@ -159,9 +159,15 @@ struct mermaid {
     void append(const mermaid &r);
 };
 
+enum class context_direction_t { inward, outward, any };
+
+std::string to_string(context_direction_t cd);
+
 struct context_config {
     common::string_or_regex pattern;
     unsigned radius{0};
+    context_direction_t direction{context_direction_t::any};
+    std::vector<common::model::relationship_t> relationships;
 };
 
 /**

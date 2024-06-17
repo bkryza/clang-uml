@@ -494,8 +494,13 @@ private:
 
     void initialize_effective_context(const diagram &d, unsigned idx) const;
 
+    bool is_inward(relationship_t r) const;
+
+    bool is_outward(relationship_t r) const;
+
     template <typename ElementT>
     void find_elements_in_direct_relationship(const diagram &d,
+        const config::context_config &context_cfg,
         std::set<eid_t> &effective_context,
         std::set<eid_t> &current_iteration_context) const
     {
@@ -511,15 +516,33 @@ private:
             // which have a relationship to any of the effective_context
             // elements
             for (const relationship &rel : el.get().relationships()) {
+                if (!should_include(context_cfg, rel.type()) ||
+                    !d.should_include(rel.type())) {
+                    continue;
+                }
+                // At the moment aggregation and composition are added in the
+                // model in reverse direction, so we don't consider them here
+                if (context_cfg.direction ==
+                        config::context_direction_t::inward &&
+                    (rel.type() == relationship_t::kAggregation ||
+                        rel.type() == relationship_t::kComposition)) {
+                    continue;
+                }
+                if (context_cfg.direction ==
+                        config::context_direction_t::outward &&
+                    (rel.type() != relationship_t::kAggregation &&
+                        rel.type() != relationship_t::kComposition)) {
+                    continue;
+                }
                 for (const auto &element_id : effective_context) {
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == element_id)
+                    if (rel.destination() == element_id)
                         current_iteration_context.emplace(el.get().id());
                 }
             }
 
             // Now search current effective_context elements and add any
-            // elements of any type in the diagram which to that element
+            // elements of any type in the diagram which have a relationship
+            // to that element
             for (const auto element_id : effective_context) {
                 const auto &maybe_element = cd.get(element_id);
 
@@ -528,18 +551,49 @@ private:
 
                 for (const relationship &rel :
                     maybe_element.value().relationships()) {
+                    if (!should_include(context_cfg, rel.type()) ||
+                        !d.should_include(rel.type())) {
+                        continue;
+                    }
 
-                    if (d.should_include(rel.type()) &&
-                        rel.destination() == el.get().id())
+                    if ((context_cfg.direction ==
+                            config::context_direction_t::inward) &&
+                        (rel.type() != relationship_t::kAggregation &&
+                            rel.type() != relationship_t::kComposition)) {
+                        continue;
+                    }
+                    if (context_cfg.direction ==
+                            config::context_direction_t::outward &&
+                        (rel.type() == relationship_t::kAggregation ||
+                            rel.type() == relationship_t::kComposition)) {
+                        continue;
+                    }
+
+                    if (rel.destination() == el.get().id())
                         current_iteration_context.emplace(el.get().id());
                 }
             }
         }
     }
 
+    bool should_include(
+        const config::context_config &context_cfg, relationship_t r) const;
+
     void find_elements_inheritance_relationship(const diagram &d,
+        const config::context_config &context_cfg,
         std::set<eid_t> &effective_context,
         std::set<eid_t> &current_iteration_context) const;
+
+    void find_elements_base_classes(const diagram &d,
+        std::set<eid_t> &effective_context,
+        std::set<eid_t> &current_iteration_context,
+        const class_diagram::model::diagram &cd,
+        const std::reference_wrapper<class_diagram::model::class_> &c) const;
+
+    void find_elements_sub_classes(std::set<eid_t> &effective_context,
+        std::set<eid_t> &current_iteration_context,
+        const class_diagram::model::diagram &cd,
+        const std::reference_wrapper<class_diagram::model::class_> &c) const;
 
     std::vector<config::context_config> context_;
 

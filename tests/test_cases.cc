@@ -549,6 +549,10 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00074/test_case.h"
 #include "t00075/test_case.h"
 #endif
+#include "t00076/test_case.h"
+#include "t00077/test_case.h"
+#include "t00078/test_case.h"
+#include "t00079/test_case.h"
 
 ///
 /// Sequence diagram tests
@@ -664,7 +668,7 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-q");
+    argvv.push_back("-vvv");
 
     clih.handle_options(argvv.size(), argvv.data());
 
