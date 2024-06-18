@@ -241,10 +241,17 @@ void diagram::remove_redundant_dependencies()
         }
 
         util::erase_if(c.get().relationships(),
-            [&dependency_relationships_to_remove](const auto &r) {
-                return r.type() == relationship_t::kDependency &&
+            [&dependency_relationships_to_remove, &c](const auto &r) {
+                if (r.type() != relationship_t::kDependency)
+                    return false;
+
+                auto has_another_relationship_to_destination =
                     dependency_relationships_to_remove.count(r.destination()) >
                     0;
+                auto is_self_dependency = r.destination() == c.get().id();
+
+                return has_another_relationship_to_destination ||
+                    is_self_dependency;
             });
     }
 }

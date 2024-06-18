@@ -1433,13 +1433,13 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
             }
         }
         else if (type->getAsCXXRecordDecl() != nullptr) {
-            const auto target_id = common::to_id(*type->getAsCXXRecordDecl());
-            relationships.emplace_back(target_id, relationship_hint);
+            relationships.emplace_back(
+                type->getAsCXXRecordDecl()->getID(), relationship_hint);
             result = true;
         }
         else {
-            const auto target_id = common::to_id(*type->getAsRecordDecl());
-            relationships.emplace_back(target_id, relationship_hint);
+            relationships.emplace_back(
+                type->getAsRecordDecl()->getID(), relationship_hint);
             result = true;
         }
     }

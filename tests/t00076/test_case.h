@@ -43,5 +43,7 @@ TEST_CASE("t00076")
         REQUIRE(!IsClass(src, "H"));
         REQUIRE(!IsClass(src, "EE"));
         REQUIRE(!IsClass(src, "GGG"));
+
+        REQUIRE(IsAssociation<Public>(src, "B", "B::BB"));
     });
 }

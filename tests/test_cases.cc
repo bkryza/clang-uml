@@ -668,7 +668,7 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {
         "clang-uml", "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-vvv");
+    argvv.push_back("-q");
 
     clih.handle_options(argvv.size(), argvv.data());
 
