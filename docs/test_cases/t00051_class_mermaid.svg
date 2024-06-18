@@ -51,9 +51,11 @@
       <g class="clusters"/>
       <g class="edgePaths">
         <path marker-end="url(#classDiagram-extensionEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id1" d="M292.6171875,370L292.6171875,374.1666666666667C292.6171875,378.3333333333333,292.6171875,386.6666666666667,292.6171875,395C292.6171875,403.3333333333333,292.6171875,411.6666666666667,292.6171875,415.8333333333333L292.6171875,420"/>
-        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id2" d="M543.8359375,132.3584405753217L501.9661458333333,139.96536714610144C460.0963541666667,147.57229371688115,376.3567708333333,162.78614685844056,334.4869791666667,174.55974009588695C292.6171875,186.33333333333334,292.6171875,194.66666666666666,292.6171875,198.83333333333334L292.6171875,203"/>
-        <path marker-start="url(#classDiagram-lollipopStart)" style="fill:none" class="edge-pattern-solid relation" id="id3" d="M829.2734375,153L829.2734375,157.16666666666666C829.2734375,161.33333333333334,829.2734375,169.66666666666666,829.2734375,185.33333333333334C829.2734375,201,829.2734375,224,829.2734375,235.5L829.2734375,247"/>
-        <path marker-start="url(#classDiagram-lollipopStart)" style="fill:none" class="edge-pattern-solid relation" id="id4" d="M1114.7109375,145.1426043878273L1138.8919270833333,150.61883698985608C1163.0729166666667,156.09506959188488,1211.4348958333333,167.04753479594243,1235.6158854166667,184.02376739797123C1259.796875,201,1259.796875,224,1259.796875,235.5L1259.796875,247"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id2" d="M749.09765625,140.5318506222668L719.4055989583334,146.77654218522233C689.7135416666666,153.02123374817788,630.3294270833334,165.51061687408892,628.0177701372887,183.25530843704448C625.7061131912443,201,680.4669138824885,224,707.8473142281106,235.5L735.2277145737328,247"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id3" d="M1049.406951121795,153L1050.2616519764958,157.16666666666666C1051.1163528311965,161.33333333333334,1052.8257545405984,169.66666666666666,1075.436305769723,185.33333333333334C1098.046856998848,201,1141.5585577476959,224,1163.3144081221199,235.5L1185.0702584965438,247"/>
+        <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id4" d="M749.09765625,118.01109613491215L673.017578125,128.00924677909344C596.9375,138.00739742327477,444.77734375,158.00369871163738,368.697265625,172.16851602248536C292.6171875,186.33333333333334,292.6171875,194.66666666666666,292.6171875,198.83333333333334L292.6171875,203"/>
+        <path marker-start="url(#classDiagram-lollipopStart)" style="fill:none" class="edge-pattern-solid relation" id="id5" d="M1034.53515625,153L1034.53515625,157.16666666666666C1034.53515625,161.33333333333334,1034.53515625,169.66666666666666,1012.779305875576,185.33333333333334C991.0234555011521,201,947.5117547523041,224,925.7559043778801,235.5L904.0000540034562,247"/>
+        <path marker-start="url(#classDiagram-lollipopStart)" style="fill:none" class="edge-pattern-solid relation" id="id6" d="M1209.473357371795,153L1219.5272769764958,157.16666666666666C1229.5811965811965,161.33333333333334,1249.6890357905984,169.66666666666666,1258.6830475611978,185.33333333333334C1267.6770593317972,201,1265.5572436635946,224,1264.497335829493,235.5L1263.4374279953918,247"/>
       </g>
       <g class="edgeLabels">
         <g transform="translate(undefined, undefined)" class="edgeLabel">
@@ -100,9 +102,31 @@
             </foreignObject>
           </g>
         </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
       </g>
       <g class="nodes">
-        <a transform="translate(292.6171875, 503.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/c45830f35a6b34145559a084352a1083fa792527/tests/t00051/t00051.cc#L6">
+        <a transform="translate(292.6171875, 503.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9a43ebe739f894d2752a14cfc96ea865f63c381a/tests/t00051/t00051.cc#L6">
           <g title="B" id="classId-C_0003893405395576401653-0" class="node default clickable">
             <rect height="167" width="200.09375" y="-83.5" x="-100.046875" class="outer title-state"/>
             <line y2="-53.5" y1="-53.5" x2="100.046875" x1="-100.046875" class="divider"/>
@@ -146,7 +170,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(292.6171875, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/c45830f35a6b34145559a084352a1083fa792527/tests/t00051/t00051.cc#L6">
+        <a transform="translate(292.6171875, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9a43ebe739f894d2752a14cfc96ea865f63c381a/tests/t00051/t00051.cc#L6">
           <g title="B" id="classId-C_0015756021897900635813-1" class="node default clickable">
             <rect height="167" width="569.234375" y="-83.5" x="-284.6171875" class="outer title-state"/>
             <line y2="-53.5" y1="-53.5" x2="284.6171875" x1="-284.6171875" class="divider"/>
@@ -190,7 +214,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(829.2734375, 80.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/c45830f35a6b34145559a084352a1083fa792527/tests/t00051/t00051.cc#L20">
+        <a transform="translate(1034.53515625, 80.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9a43ebe739f894d2752a14cfc96ea865f63c381a/tests/t00051/t00051.cc#L20">
           <g title="A" id="classId-C_0008517308902178609395-2" class="node default clickable">
             <rect height="145" width="570.875" y="-72.5" x="-285.4375" class="outer title-state"/>
             <line y2="-42.5" y1="-42.5" x2="285.4375" x1="-285.4375" class="divider"/>
@@ -229,7 +253,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(829.2734375, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/c45830f35a6b34145559a084352a1083fa792527/tests/t00051/t00051.cc#L23">
+        <a transform="translate(829.2734375, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9a43ebe739f894d2752a14cfc96ea865f63c381a/tests/t00051/t00051.cc#L23">
           <g title="A##custom_thread1" id="classId-C_0002142096945777718118-3" class="node default clickable">
             <rect height="79" width="404.078125" y="-39.5" x="-202.0390625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="202.0390625" x1="-202.0390625" class="divider"/>
@@ -253,7 +277,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(1259.796875, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/c45830f35a6b34145559a084352a1083fa792527/tests/t00051/t00051.cc#L35">
+        <a transform="translate(1259.796875, 286.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/9a43ebe739f894d2752a14cfc96ea865f63c381a/tests/t00051/t00051.cc#L35">
           <g title="A##custom_thread2" id="classId-C_0005828010557987819764-4" class="node default clickable">
             <rect height="79" width="356.96875" y="-39.5" x="-178.484375" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="178.484375" x1="-178.484375" class="divider"/>
