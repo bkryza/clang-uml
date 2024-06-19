@@ -33,17 +33,17 @@ sudo apt install clang-uml
 #### Fedora
 
 ```bash
-# Fedora 37
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc37.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.1-1.fc37.x86_64.rpm
-
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.1-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.3-1.fc38.x86_64.rpm
 
 # Fedora 39
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.1/clang-uml-0.5.1-1.fc39.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.1-1.fc39.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.3-1.fc39.x86_64.rpm
+
+# Fedora 40
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc40.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.3-1.fc40.x86_64.rpm
 ```
 
 #### Conda
@@ -57,7 +57,7 @@ conda install -c bkryza/label/clang-uml clang-uml
 #### Nix
 
 You can use the version packaged in nixpkgs like this:
-Currently clang-uml version 0.5.1 is available in nixos-unstable and nixos-24.05
+Currently clang-uml version 0.5.2 is available in nixos-unstable and nixos-24.05
 ```bash
 nix-shell -p clang-uml
 ```
