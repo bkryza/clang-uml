@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.5.3
  * Added context filter direction and relationships options (#274)
  * Improved test coverage (#287)
  * Fixed handling of relationships to nested enums (#280)
