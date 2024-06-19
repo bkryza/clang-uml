@@ -32,8 +32,11 @@ TEST_CASE("t00075")
         REQUIRE(IsEnum(src, {"ns1::ns2", "E"}));
 
         REQUIRE(IsConcept(src, {"ns1::ns2", "C<T>"}));
-
+#if (LLVM_VERSION_MAJOR == 13) || (LLVM_VERSION_MAJOR == 14)
+        REQUIRE(IsConceptRequirement(src, "C<T>", "T({})"));
+#else
         REQUIRE(IsConceptRequirement(src, "C<T>", "T{}"));
+#endif
         REQUIRE(IsConceptRequirement(src, "C<T>", "t.e()"));
         REQUIRE(IsConceptParameterList(src, "C<T>", "(T t)"));
         REQUIRE(!IsConceptParameterList(src, "C<T>", "(T ns1::ns2::t)"));
