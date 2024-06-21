@@ -133,14 +133,25 @@ endif()
 link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
 
 #
-# Setup libdw and libunwind
+# Setup backward-cpp, libdw and libunwind
 #
-if(LINUX AND (CMAKE_BUILD_TYPE MATCHES Debug))
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    set(CLANG_UML_ENABLE_BACKTRACE_DEFAULT ON)
+else()
+    set(CLANG_UML_ENABLE_BACKTRACE_DEFAULT OFF)
+endif()
+option(CLANG_UML_ENABLE_BACKTRACE "Enable backtrace on segfault"
+        ${CLANG_UML_ENABLE_BACKTRACE_DEFAULT})
+
+if(LINUX AND CLANG_UML_ENABLE_BACKTRACE)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(DW REQUIRED IMPORTED_TARGET libdw)
     pkg_check_modules(UNWIND REQUIRED IMPORTED_TARGET libunwind)
     set(BACKWARD_CPP_LIBRARIES PkgConfig::DW PkgConfig::UNWIND)
     set(ENABLE_BACKWARD_CPP -DENABLE_BACKWARD_CPP)
+    message(STATUS "Enabling backward-cpp")
+else()
+    message(STATUS "Disabling backward-cpp")
 endif()
 
 #
