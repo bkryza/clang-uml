@@ -18,7 +18,7 @@
 
 #include "diagram.h"
 
-#include "common/model/diagram_filter.h"
+#include "common/model/filters/diagram_filter.h"
 #include "util/error.h"
 #include "util/util.h"
 

@@ -21,7 +21,7 @@
 
 #include "class_diagram/model/class.h"
 #include "cli/cli_handler.h"
-#include "common/model/diagram_filter.h"
+#include "common/model/filters/diagram_filter_factory.h"
 #include "common/model/source_file.h"
 #include "config/config.h"
 #include "include_diagram/model/diagram.h"
@@ -32,6 +32,7 @@
 TEST_CASE("Test diagram paths filter")
 {
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::source_file;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
@@ -39,7 +40,8 @@ TEST_CASE("Test diagram paths filter")
     auto &config = *cfg.diagrams["include_test"];
     clanguml::include_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     auto make_path = [&](std::string_view p) {
         return source_file{config.root_directory() / p};
@@ -59,6 +61,7 @@ TEST_CASE("Test method_types include filter")
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::source_file;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
@@ -66,7 +69,8 @@ TEST_CASE("Test method_types include filter")
     auto &config = *cfg.diagrams["method_type_include_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     class_method cm{access_t::kPublic, "A", ""};
     cm.is_constructor(true);
@@ -84,6 +88,7 @@ TEST_CASE("Test method_types exclude filter")
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::source_file;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
@@ -91,7 +96,8 @@ TEST_CASE("Test method_types exclude filter")
     auto &config = *cfg.diagrams["method_type_exclude_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     class_method cm{access_t::kPublic, "A", ""};
 
@@ -109,22 +115,23 @@ TEST_CASE("Test method_types exclude filter")
 
 TEST_CASE("Test namespaces filter")
 {
+    using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::namespace_;
     using clanguml::common::model::package;
     using clanguml::common::model::source_file;
-
-    using clanguml::class_diagram::model::class_;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["namespace_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     class_ c{{}};
 
@@ -173,20 +180,21 @@ TEST_CASE("Test namespaces filter")
 
 TEST_CASE("Test elements regexp filter")
 {
+    using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::namespace_;
     using clanguml::common::model::source_file;
-
-    using clanguml::class_diagram::model::class_;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_elements_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     class_ c{{}};
 
@@ -213,22 +221,23 @@ TEST_CASE("Test elements regexp filter")
 
 TEST_CASE("Test namespaces regexp filter")
 {
+    using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
     using clanguml::class_diagram::model::class_parent;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::common::model::namespace_;
     using clanguml::common::model::package;
     using clanguml::common::model::source_file;
-
-    using clanguml::class_diagram::model::class_;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
     auto &config = *cfg.diagrams["regex_namespace_test"];
     clanguml::class_diagram::model::diagram diagram;
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     class_ c{{}};
 
@@ -281,8 +290,8 @@ TEST_CASE("Test subclasses regexp filter")
     using clanguml::common::model::package;
     using clanguml::common::model::source_file;
     using namespace std::string_literals;
-
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -353,7 +362,8 @@ TEST_CASE("Test subclasses regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::A1")));
     CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::B1")));
@@ -371,8 +381,8 @@ TEST_CASE("Test parents regexp filter")
     using clanguml::common::model::package;
     using clanguml::common::model::source_file;
     using namespace std::string_literals;
-
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -443,7 +453,8 @@ TEST_CASE("Test parents regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::BaseA")));
     CHECK(filter.should_include(*diagram.find<class_>("ns1::ns2::BaseB")));
@@ -464,8 +475,8 @@ TEST_CASE("Test specializations regexp filter")
     using clanguml::common::model::source_file;
     using clanguml::common::model::template_parameter;
     using namespace std::string_literals;
-
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -508,7 +519,8 @@ TEST_CASE("Test specializations regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("A<int,std::string>")));
     CHECK(!filter.should_include(*diagram.find<class_>("A<double>")));
@@ -529,8 +541,8 @@ TEST_CASE("Test context regexp filter")
     using clanguml::common::model::source_file;
     using clanguml::common::model::template_parameter;
     using namespace std::string_literals;
-
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -588,7 +600,8 @@ TEST_CASE("Test context regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("A")));
     CHECK(filter.should_include(*diagram.find<class_>("A1")));
@@ -619,6 +632,7 @@ TEST_CASE("Test dependencies regexp filter")
     using clanguml::common::model::template_parameter;
     using namespace std::string_literals;
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -673,7 +687,8 @@ TEST_CASE("Test dependencies regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("A")));
     CHECK(!filter.should_include(*diagram.find<class_>("A1")));
@@ -703,6 +718,7 @@ TEST_CASE("Test dependants regexp filter")
     using clanguml::common::model::template_parameter;
     using namespace std::string_literals;
     using clanguml::class_diagram::model::class_;
+    using clanguml::common::model::diagram_filter_factory;
 
     auto cfg = clanguml::config::load("./test_config_data/filters.yml");
 
@@ -757,7 +773,8 @@ TEST_CASE("Test dependants regexp filter")
 
     diagram.set_complete(true);
 
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(filter.should_include(*diagram.find<class_>("A")));
     CHECK(filter.should_include(*diagram.find<class_>("A1")));
@@ -775,6 +792,7 @@ TEST_CASE("Test callee_types filter")
 {
     using clanguml::common::to_id;
     using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
     using clanguml::sequence_diagram::model::class_;
     using clanguml::sequence_diagram::model::function;
     using clanguml::sequence_diagram::model::function_template;
@@ -812,7 +830,8 @@ TEST_CASE("Test callee_types filter")
     diagram.add_participant(std::move(p));
 
     diagram.set_complete(true);
-    diagram_filter filter(diagram, config);
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
 
     CHECK(
         filter.should_include(*diagram.get_participant<function>(to_id("A"s))));

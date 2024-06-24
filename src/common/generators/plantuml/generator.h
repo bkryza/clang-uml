@@ -18,7 +18,7 @@
 #pragma once
 
 #include "common/generators/generator.h"
-#include "common/model/diagram_filter.h"
+#include "common/model/filters/diagram_filter.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
 #include "util/error.h"

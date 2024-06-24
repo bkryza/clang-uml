@@ -18,7 +18,7 @@
 
 #include "diagram.h"
 
-#include "diagram_filter.h"
+#include "filters/diagram_filter.h"
 #include "namespace.h"
 
 namespace clanguml::common::model {

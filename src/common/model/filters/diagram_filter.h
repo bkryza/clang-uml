@@ -1,5 +1,5 @@
 /**
- * @file src/common/model/diagram_filter.h
+ * @file src/common/model/filters/diagram_filter.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,17 +25,18 @@
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
+#include "common/model/source_file.h"
+#include "common/model/tvl.h"
 #include "config/config.h"
-#include "diagram.h"
 #include "include_diagram/model/diagram.h"
 #include "sequence_diagram/model/participant.h"
-#include "source_file.h"
-#include "tvl.h"
 
 #include <filesystem>
 #include <utility>
 
 namespace clanguml::common::model {
+
+class diagram_filter_factory;
 
 using clanguml::common::eid_t;
 
@@ -660,6 +661,8 @@ private:
     std::unique_ptr<access_filter> access_filter_;
 };
 
+class diagram_filter_factory;
+
 /**
  * @brief Composite of all diagrams filters.
  *
@@ -671,8 +674,12 @@ private:
  * @see clanguml::common::model::filter_visitor
  */
 class diagram_filter {
+private:
+    struct private_constructor_tag_t { };
+
 public:
-    diagram_filter(const common::model::diagram &d, const config::diagram &c);
+    diagram_filter(const common::model::diagram &d, const config::diagram &c,
+        private_constructor_tag_t unused);
 
     /**
      * Add inclusive filter.
@@ -725,6 +732,8 @@ public:
         return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }
 
+    friend class diagram_filter_factory;
+
 private:
     /**
      * @brief Initialize filters.
@@ -733,7 +742,7 @@ private:
      *
      * @param c Diagram config.
      */
-    void init_filters(const config::diagram &c);
+    // void init_filters(const config::diagram &c);
 
     /*! List of inclusive filters */
     std::vector<std::unique_ptr<filter_visitor>> inclusive_;

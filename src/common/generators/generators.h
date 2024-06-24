@@ -22,7 +22,7 @@
 #include "class_diagram/generators/plantuml/class_diagram_generator.h"
 #include "cli/cli_handler.h"
 #include "common/compilation_database.h"
-#include "common/model/diagram_filter.h"
+#include "common/model/filters/diagram_filter_factory.h"
 #include "config/config.h"
 #include "include_diagram/generators/json/include_diagram_generator.h"
 #include "include_diagram/generators/mermaid/include_diagram_generator.h"
@@ -369,7 +369,7 @@ std::unique_ptr<DiagramModel> generate(const common::compilation_database &db,
     auto diagram = std::make_unique<DiagramModel>();
     diagram->set_name(name);
     diagram->set_filter(
-        std::make_unique<model::diagram_filter>(*diagram, config));
+        model::diagram_filter_factory::create(*diagram, config));
 
     LOG_DBG("Found translation units for diagram {}: {}", name,
         fmt::join(translation_units, ", "));
