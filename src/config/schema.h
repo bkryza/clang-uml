@@ -156,6 +156,8 @@ types:
         paths: !optional [string]
         method_types: !optional [method_type_filter_t]
         callee_types: !optional [callee_type_filter_t]
+        anyof: !optional filter_t
+        allof: !optional filter_t
     function_location_t:
         function: string
     marker_location_t:
@@ -163,6 +165,9 @@ types:
     source_location_t:
         - function_location_t
         - marker_location_t
+    filter_mode_t: !variant
+        - basic
+        - advanced
     class_diagram_t:
         type: !variant [class]
         #
@@ -171,6 +176,7 @@ types:
         __parent_path: !optional string
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
+        filter_mode: !optional filter_mode_t
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t

@@ -93,6 +93,7 @@ set(TEST_NAMES
         test_config
         test_cli_handler
         test_filters
+        test_filters_advanced
         test_thread_pool_executor
         test_query_driver_output_extractor
         test_progress_indicator)

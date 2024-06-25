@@ -169,22 +169,116 @@ anyof_filter::anyof_filter(
 tvl::value_t anyof_filter::match(
     const diagram &d, const common::model::element &e) const
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &e](const auto &f) { return f->match(d, e); });
+    return match_anyof(d, e);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::relationship_t &r) const
+{
+    return match_anyof(d, r);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::access_t &a) const
+{
+    return match_anyof(d, a);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::namespace_ &ns) const
+{
+    return match_anyof(d, ns);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::source_file &f) const
+{
+    return match_anyof(d, f);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::source_location &f) const
+{
+    return match_anyof(d, f);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    return match_anyof(d, m);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return match_anyof(d, m);
 }
 
 tvl::value_t anyof_filter::match(
     const diagram &d, const sequence_diagram::model::participant &p) const
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &p](const auto &f) { return f->match(d, p); });
+    return match_anyof(d, p);
 }
 
-tvl::value_t anyof_filter::match(
-    const diagram &d, const common::model::source_file &e) const
+allof_filter::allof_filter(
+    filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
+    : filter_visitor{type}
+    , filters_{std::move(filters)}
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &e](const auto &f) { return f->match(d, e); });
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::element &e) const
+{
+    return match_allof(d, e);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::relationship_t &r) const
+{
+    return match_allof(d, r);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::access_t &a) const
+{
+    return match_allof(d, a);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::namespace_ &ns) const
+{
+    return match_allof(d, ns);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::source_file &f) const
+{
+    return match_allof(d, f);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::source_location &f) const
+{
+    return match_allof(d, f);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    return match_allof(d, m);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return match_allof(d, m);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    return match_allof(d, p);
 }
 
 namespace_filter::namespace_filter(
@@ -976,6 +1070,15 @@ diagram_filter::diagram_filter(const common::model::diagram &d,
     const config::diagram &c, private_constructor_tag_t /*unused*/)
     : diagram_{d}
 {
+}
+
+void diagram_filter::add_filter(
+    filter_t filter_type, std::unique_ptr<filter_visitor> fv)
+{
+    if (filter_type == filter_t::kInclusive)
+        add_inclusive_filter(std::move(fv));
+    else
+        add_exclusive_filter(std::move(fv));
 }
 
 void diagram_filter::add_inclusive_filter(std::unique_ptr<filter_visitor> fv)

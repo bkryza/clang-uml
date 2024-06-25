@@ -1,0 +1,20 @@
+compilation_database_dir: debug
+output_directory: output
+diagrams:
+  anyof_test:
+    type: class
+    relative_to: ../../../src
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    filter_mode: advanced
+    include:
+      anyof:
+        namespaces:
+          - ns1::ns2
+        elements:
+          - std::thread
+    exclude:
+      anyof:
+        namespaces:
+          - ns1::ns2::detail

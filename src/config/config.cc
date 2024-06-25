@@ -186,6 +186,19 @@ std::string to_string(context_direction_t cd)
     }
 }
 
+std::string to_string(filter_mode_t fm)
+{
+    switch (fm) {
+    case filter_mode_t::basic:
+        return "basic";
+    case filter_mode_t::advanced:
+        return "advanced";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 std::optional<std::string> plantuml::get_style(
     const common::model::relationship_t relationship_type) const
 {
@@ -228,6 +241,7 @@ void inheritable_diagram_options::inherit(
     using_module.override(parent.using_module);
     include_relations_also_as_members.override(
         parent.include_relations_also_as_members);
+    filter_mode.override(parent.filter_mode);
     include.override(parent.include);
     exclude.override(parent.exclude);
     puml.override(parent.puml);

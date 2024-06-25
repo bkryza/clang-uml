@@ -116,6 +116,13 @@ struct plantuml_keyword_mapping_t {
         relationships;
 };
 
+enum class filter_mode_t {
+    basic,   /*!< Default filter structure without logical operators */
+    advanced /*!< Advanced filter config with logical operators */
+};
+
+std::string to_string(filter_mode_t cp);
+
 /**
  * @brief PlantUML diagram config section
  *
@@ -187,6 +194,9 @@ struct diagram_template {
 };
 
 struct filter {
+    std::shared_ptr<filter> anyof;
+    std::shared_ptr<filter> allof;
+
     /*! @brief Namespaces filter
      *
      * Example:
@@ -544,6 +554,7 @@ struct inheritable_diagram_options {
     option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
+    option<filter_mode_t> filter_mode{"filter_mode", filter_mode_t::basic};
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};

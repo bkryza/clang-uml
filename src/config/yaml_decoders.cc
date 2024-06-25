@@ -159,6 +159,21 @@ void get_option<clanguml::config::comment_parser_t>(const Node &node,
 }
 
 template <>
+void get_option<clanguml::config::filter_mode_t>(const Node &node,
+    clanguml::config::option<clanguml::config::filter_mode_t> &option)
+{
+    if (node[option.name]) {
+        const auto &val = node[option.name].as<std::string>();
+        if (val == "basic")
+            option.set(clanguml::config::filter_mode_t::basic);
+        else if (val == "advanced")
+            option.set(clanguml::config::filter_mode_t::advanced);
+        else
+            throw std::runtime_error("Invalid comment_parser value: " + val);
+    }
+}
+
+template <>
 void get_option<std::map<std::string, clanguml::config::diagram_template>>(
     const Node &node,
     clanguml::config::option<
@@ -521,6 +536,14 @@ template <> struct convert<namespace_or_regex> {
 template <> struct convert<filter> {
     static bool decode(const Node &node, filter &rhs)
     {
+        if (node["anyof"]) {
+            rhs.anyof = std::make_unique<filter>(node["anyof"].as<filter>());
+        }
+
+        if (node["allof"]) {
+            rhs.anyof = std::make_unique<filter>(node["anyof"].as<filter>());
+        }
+
         if (node["namespaces"]) {
             auto namespace_list =
                 node["namespaces"].as<decltype(rhs.namespaces)>();
@@ -631,6 +654,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.glob);
     get_option(node, rhs.using_namespace);
     get_option(node, rhs.using_module);
+    get_option(node, rhs.filter_mode);
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);
@@ -849,6 +873,7 @@ template <> struct convert<config> {
         get_option(node, rhs.glob);
         get_option(node, rhs.using_namespace);
         get_option(node, rhs.using_module);
+        get_option(node, rhs.filter_mode);
         get_option(node, rhs.output_directory);
         get_option(node, rhs.query_driver);
         get_option(node, rhs.allow_empty_diagrams);

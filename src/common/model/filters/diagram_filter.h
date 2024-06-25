@@ -128,12 +128,81 @@ struct anyof_filter : public filter_visitor {
         const diagram &d, const common::model::element &e) const override;
 
     tvl::value_t match(const diagram &d,
-        const sequence_diagram::model::participant &p) const override;
+        const common::model::relationship_t &r) const override;
 
     tvl::value_t match(
-        const diagram &d, const common::model::source_file &e) const override;
+        const diagram &d, const common::model::access_t &a) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::namespace_ &ns) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::source_location &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
 
 private:
+    template <typename E>
+    tvl::value_t match_anyof(const diagram &d, const E &element) const
+    {
+        return tvl::any_of(filters_.begin(), filters_.end(),
+            [&d, &element](const auto &f) { return f->match(d, element); });
+    }
+
+    std::vector<std::unique_ptr<filter_visitor>> filters_;
+};
+
+struct allof_filter : public filter_visitor {
+    allof_filter(
+        filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
+
+    ~allof_filter() override = default;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::element &e) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::relationship_t &r) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::access_t &a) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::namespace_ &ns) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::source_location &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
+
+private:
+    template <typename E>
+    tvl::value_t match_allof(const diagram &d, const E &element) const
+    {
+        return tvl::all_of(filters_.begin(), filters_.end(),
+            [&d, &element](const auto &f) { return f->match(d, element); });
+    }
+
     std::vector<std::unique_ptr<filter_visitor>> filters_;
 };
 
@@ -680,6 +749,8 @@ private:
 public:
     diagram_filter(const common::model::diagram &d, const config::diagram &c,
         private_constructor_tag_t unused);
+
+    void add_filter(filter_t filter_type, std::unique_ptr<filter_visitor> fv);
 
     /**
      * Add inclusive filter.
