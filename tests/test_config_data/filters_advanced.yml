@@ -1,5 +1,6 @@
 compilation_database_dir: debug
 output_directory: output
+filter_mode: advanced
 diagrams:
   anyof_test:
     type: class
@@ -7,7 +8,6 @@ diagrams:
     glob:
       - src/**/*.cc
       - src/**/*.h
-    filter_mode: advanced
     include:
       anyof:
         namespaces:
@@ -18,3 +18,11 @@ diagrams:
       anyof:
         namespaces:
           - ns1::ns2::detail
+  modules_test:
+    type: class
+    include:
+      anyof:
+        modules:
+          - mod1::mod2
+        namespaces:
+          - ns1::ns2

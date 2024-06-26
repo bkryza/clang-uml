@@ -28,15 +28,14 @@
 #include "sequence_diagram/model/diagram.h"
 
 #include <filesystem>
+using clanguml::common::model::diagram_filter;
+using clanguml::common::model::diagram_filter_factory;
+using clanguml::common::model::namespace_;
+using clanguml::common::model::source_file;
+using clanguml::config::filter_mode_t;
 
 TEST_CASE("Test advanced diagram filter anyof")
 {
-    using clanguml::common::model::diagram_filter;
-    using clanguml::common::model::diagram_filter_factory;
-    using clanguml::common::model::namespace_;
-    using clanguml::common::model::source_file;
-    using clanguml::config::filter_mode_t;
-
     auto cfg =
         clanguml::config::load("./test_config_data/filters_advanced.yml");
 
@@ -59,6 +58,39 @@ TEST_CASE("Test advanced diagram filter anyof")
     CHECK_FALSE(filter.should_include(std_thread));
 
     CHECK_FALSE(filter.should_include(namespace_{"ns1::ns2::detail"}));
+}
+
+TEST_CASE("Test advanced diagram filter modules")
+{
+    auto cfg =
+        clanguml::config::load("./test_config_data/filters_advanced.yml");
+
+    auto &config = *cfg.diagrams["modules_test"];
+    clanguml::include_diagram::model::diagram diagram;
+
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
+
+    CHECK(config.filter_mode() == filter_mode_t::advanced);
+    CHECK(filter.should_include(namespace_{"ns1::ns2"}));
+    CHECK_FALSE(filter.should_include(namespace_{"std::string"}));
+
+    clanguml::common::model::element std_string{{}};
+    std_string.set_namespace(namespace_{"std"});
+    std_string.set_name("string");
+
+    CHECK_FALSE(filter.should_include(std_string));
+
+    CHECK(filter.should_include(namespace_{"ns1"}));
+
+    clanguml::common::model::element e1{{}};
+    e1.set_module("mod1::mod2");
+    e1.set_namespace(namespace_{"ns5::ns6"});
+    e1.set_name("ClassA");
+    CHECK(filter.should_include(e1));
+
+    e1.set_module("mod1::mod3");
+    CHECK_FALSE(filter.should_include(e1));
 }
 
 ///

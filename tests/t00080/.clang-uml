@@ -1,0 +1,14 @@
+diagrams:
+  t00080_class:
+    type: class
+    filter_mode: advanced
+    include_system_headers: true
+    glob:
+      - t00080.cc
+    include:
+      anyof:
+        namespaces:
+          - clanguml::t00080
+        elements:
+          - std::thread
+    using_namespace: clanguml::t00080

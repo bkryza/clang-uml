@@ -541,7 +541,7 @@ template <> struct convert<filter> {
         }
 
         if (node["allof"]) {
-            rhs.anyof = std::make_unique<filter>(node["anyof"].as<filter>());
+            rhs.allof = std::make_unique<filter>(node["allof"].as<filter>());
         }
 
         if (node["namespaces"]) {
@@ -655,6 +655,7 @@ template <typename T> bool decode_diagram(const Node &node, T &rhs)
     get_option(node, rhs.using_namespace);
     get_option(node, rhs.using_module);
     get_option(node, rhs.filter_mode);
+    get_option(node, rhs.include_system_headers);
     get_option(node, rhs.include);
     get_option(node, rhs.exclude);
     get_option(node, rhs.puml);

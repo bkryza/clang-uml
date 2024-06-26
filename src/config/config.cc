@@ -242,6 +242,7 @@ void inheritable_diagram_options::inherit(
     include_relations_also_as_members.override(
         parent.include_relations_also_as_members);
     filter_mode.override(parent.filter_mode);
+    include_system_headers.override(parent.include_system_headers);
     include.override(parent.include);
     exclude.override(parent.exclude);
     puml.override(parent.puml);

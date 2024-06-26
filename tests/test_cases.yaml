@@ -234,6 +234,9 @@ test_cases:
     - name: t00079
       title: Test case for context diagram exclude filter with relationships option
       description:
+    - name: t00080
+      title: Test case for including elements from system headers
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

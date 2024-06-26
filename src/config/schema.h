@@ -177,6 +177,7 @@ types:
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
         filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
@@ -221,6 +222,8 @@ types:
         debug_mode: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         git: !optional git_t
         glob: !optional [string]
         include: !optional filter_t
@@ -264,6 +267,8 @@ types:
         generate_links: !optional generate_links_t
         git: !optional git_t
         glob: !optional [string]
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -292,6 +297,8 @@ types:
         __parent_path: !optional string
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
@@ -377,6 +384,8 @@ root:
     generate_template_argument_dependencies: !optional bool
     skip_redundant_dependencies: !optional bool
     type_aliases: !optional map_t<string;string>
+    filter_mode: !optional filter_mode_t
+    include_system_headers: !optional bool
 )";
 
 } // namespace clanguml::config

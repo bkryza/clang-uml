@@ -555,6 +555,7 @@ struct inheritable_diagram_options {
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
     option<filter_mode_t> filter_mode{"filter_mode", filter_mode_t::basic};
+    option<bool> include_system_headers{"include_system_headers", false};
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};

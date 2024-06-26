@@ -76,7 +76,8 @@ bool translation_unit_visitor::VisitNamespaceDecl(clang::NamespaceDecl *ns)
     p->set_id(common::to_id(*ns));
     id_mapper().add(ns->getID(), p->id());
 
-    if (diagram().should_include(*p) && !diagram().get(p->id())) {
+    if (config().filter_mode() == config::filter_mode_t::advanced ||
+        (diagram().should_include(*p) && !diagram().get(p->id()))) {
         process_comment(*ns, *p);
         set_source_location(*ns, *p);
 
@@ -667,10 +668,6 @@ void translation_unit_visitor::process_concept_specialization_relationships(
 
 bool translation_unit_visitor::VisitCXXRecordDecl(clang::CXXRecordDecl *cls)
 {
-    // Skip system headers
-    if (source_manager().isInSystemHeader(cls->getSourceRange().getBegin()))
-        return true;
-
     if (!should_include(cls))
         return true;
 

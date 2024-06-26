@@ -84,26 +84,14 @@ private:
             result.emplace_back(std::make_unique<FT>(
                 filter_type, filter_config, std::forward<Args>(args)...));
     }
-
-    template <>
-    void add_filter<source_file_dependency_filter_t>(
-        const filter_t &filter_type,
-        const std::vector<common::string_or_regex> &filter_config,
-        std::vector<std::unique_ptr<filter_visitor>> &result,
-        relationship_t &&rt, bool &&direction)
-    {
-        std::vector<std::string> deps;
-        for (auto &&path : filter_config) {
-            if (auto p = path.get<std::string>(); p.has_value()) {
-                const std::filesystem::path dep_path{*p};
-                deps.emplace_back(dep_path.lexically_normal().string());
-            }
-        }
-
-        result.emplace_back(std::make_unique<source_file_dependency_filter_t>(
-            filter_type, deps, rt, direction));
-    }
 };
+
+template <>
+void advanced_diagram_filter_initializer::add_filter<
+    source_file_dependency_filter_t>(const filter_t &filter_type,
+    const std::vector<common::string_or_regex> &filter_config,
+    std::vector<std::unique_ptr<filter_visitor>> &result, relationship_t &&rt,
+    bool &&direction);
 
 class diagram_filter_factory {
 public:
