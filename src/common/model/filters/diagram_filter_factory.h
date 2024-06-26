@@ -21,6 +21,27 @@
 #include "package_diagram/model/diagram.h"
 
 namespace clanguml::common::model {
+using specializations_filter_t =
+    edge_traversal_filter<class_diagram::model::diagram,
+        class_diagram::model::class_, common::string_or_regex>;
+
+using class_dependants_filter_t =
+    edge_traversal_filter<class_diagram::model::diagram,
+        class_diagram::model::class_, common::string_or_regex>;
+using class_dependencies_filter_t =
+    edge_traversal_filter<class_diagram::model::diagram,
+        class_diagram::model::class_, common::string_or_regex>;
+
+using package_dependants_filter_t =
+    edge_traversal_filter<package_diagram::model::diagram,
+        common::model::package, common::string_or_regex>;
+using package_dependencies_filter_t =
+    edge_traversal_filter<package_diagram::model::diagram,
+        common::model::package, common::string_or_regex>;
+
+using source_file_dependency_filter_t =
+    edge_traversal_filter<include_diagram::model::diagram,
+        common::model::source_file, std::string, common::model::source_file>;
 
 class diagram_filter_initializer {
 public:
@@ -54,24 +75,33 @@ private:
     std::vector<std::unique_ptr<filter_visitor>> build(
         filter_t filter_type, const config::filter &filter_config);
 
-    template <typename FT, typename T>
+    template <typename FT, typename T, typename... Args>
     void add_filter(const filter_t &filter_type,
         const std::vector<T> &filter_config,
-        std::vector<std::unique_ptr<filter_visitor>> &result)
-    {
-        if (!filter_config.empty())
-            result.emplace_back(
-                std::make_unique<FT>(filter_type, filter_config));
-    }
-
-    template <typename FT, typename T>
-    void add_edge_filter(const filter_t &filter_type,
-        const std::vector<T> &filter_config, relationship_t rt, bool direction,
-        std::vector<std::unique_ptr<filter_visitor>> &result)
+        std::vector<std::unique_ptr<filter_visitor>> &result, Args &&...args)
     {
         if (!filter_config.empty())
             result.emplace_back(std::make_unique<FT>(
-                filter_type, rt, filter_config, direction));
+                filter_type, filter_config, std::forward<Args>(args)...));
+    }
+
+    template <>
+    void add_filter<source_file_dependency_filter_t>(
+        const filter_t &filter_type,
+        const std::vector<common::string_or_regex> &filter_config,
+        std::vector<std::unique_ptr<filter_visitor>> &result,
+        relationship_t &&rt, bool &&direction)
+    {
+        std::vector<std::string> deps;
+        for (auto &&path : filter_config) {
+            if (auto p = path.get<std::string>(); p.has_value()) {
+                const std::filesystem::path dep_path{*p};
+                deps.emplace_back(dep_path.lexically_normal().string());
+            }
+        }
+
+        result.emplace_back(std::make_unique<source_file_dependency_filter_t>(
+            filter_type, deps, rt, direction));
     }
 };
 

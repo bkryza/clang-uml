@@ -350,8 +350,8 @@ template <typename DiagramT, typename ElementT,
     typename ConfigEntryT = std::string,
     typename MatchOverrideT = common::model::element>
 struct edge_traversal_filter : public filter_visitor {
-    edge_traversal_filter(filter_t type, relationship_t relationship,
-        std::vector<ConfigEntryT> roots, bool forward = false)
+    edge_traversal_filter(filter_t type, std::vector<ConfigEntryT> roots,
+        relationship_t relationship, bool forward = false)
         : filter_visitor{type}
         , roots_{std::move(roots)}
         , relationship_{relationship}
@@ -682,8 +682,8 @@ private:
  * a specified file paths.
  */
 struct paths_filter : public filter_visitor {
-    paths_filter(filter_t type, const std::filesystem::path &root,
-        const std::vector<std::string> &p);
+    paths_filter(filter_t type, const std::vector<std::string> &p,
+        const std::filesystem::path &root);
 
     ~paths_filter() override = default;
 

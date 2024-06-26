@@ -939,8 +939,8 @@ bool context_filter::is_outward(relationship_t r) const
     return r != relationship_t::kAssociation;
 }
 
-paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    const std::vector<std::string> &p)
+paths_filter::paths_filter(filter_t type, const std::vector<std::string> &p,
+    const std::filesystem::path &root)
     : filter_visitor{type}
     , root_{root}
 {

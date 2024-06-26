@@ -20,30 +20,6 @@
 
 namespace clanguml::common::model {
 
-namespace {
-using specializations_filter_t =
-    edge_traversal_filter<class_diagram::model::diagram,
-        class_diagram::model::class_, common::string_or_regex>;
-
-using class_dependants_filter_t =
-    edge_traversal_filter<class_diagram::model::diagram,
-        class_diagram::model::class_, common::string_or_regex>;
-using class_dependencies_filter_t =
-    edge_traversal_filter<class_diagram::model::diagram,
-        class_diagram::model::class_, common::string_or_regex>;
-
-using package_dependants_filter_t =
-    edge_traversal_filter<package_diagram::model::diagram,
-        common::model::package, common::string_or_regex>;
-using package_dependencies_filter_t =
-    edge_traversal_filter<package_diagram::model::diagram,
-        common::model::package, common::string_or_regex>;
-
-using source_file_dependency_filter_t =
-    edge_traversal_filter<include_diagram::model::diagram,
-        common::model::source_file, std::string, common::model::source_file>;
-}
-
 void basic_diagram_filter_initializer::initialize()
 {
     // Process inclusive filters
@@ -64,8 +40,8 @@ void basic_diagram_filter_initializer::initialize()
             filter_t::kInclusive, diagram_config.include().access));
 
         df.add_inclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kInclusive, diagram_config.root_directory(),
-            diagram_config.include().paths));
+            filter_t::kInclusive, diagram_config.include().paths,
+            diagram_config.root_directory()));
 
         df.add_inclusive_filter(
             std::make_unique<class_method_filter>(filter_t::kInclusive,
@@ -97,18 +73,18 @@ void basic_diagram_filter_initializer::initialize()
 
             element_filters.emplace_back(
                 std::make_unique<specializations_filter_t>(filter_t::kInclusive,
-                    relationship_t::kInstantiation,
-                    diagram_config.include().specializations));
+                    diagram_config.include().specializations,
+                    relationship_t::kInstantiation));
 
             element_filters.emplace_back(
                 std::make_unique<class_dependants_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    diagram_config.include().dependants));
+                    filter_t::kInclusive, diagram_config.include().dependants,
+                    relationship_t::kDependency));
 
             element_filters.emplace_back(
                 std::make_unique<class_dependencies_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    diagram_config.include().dependencies, true));
+                    filter_t::kInclusive, diagram_config.include().dependencies,
+                    relationship_t::kDependency, true));
         }
         else if (diagram_config.type() == diagram_t::kSequence) {
             element_filters.emplace_back(std::make_unique<callee_filter>(
@@ -117,13 +93,13 @@ void basic_diagram_filter_initializer::initialize()
         else if (diagram_config.type() == diagram_t::kPackage) {
             element_filters.emplace_back(
                 std::make_unique<package_dependants_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    diagram_config.include().dependants));
+                    filter_t::kInclusive, diagram_config.include().dependants,
+                    relationship_t::kDependency));
 
             element_filters.emplace_back(
                 std::make_unique<package_dependencies_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    diagram_config.include().dependencies, true));
+                    filter_t::kInclusive, diagram_config.include().dependencies,
+                    relationship_t::kDependency, true));
         }
         else if (diagram_config.type() == diagram_t::kInclude) {
             std::vector<std::string> dependants;
@@ -147,13 +123,13 @@ void basic_diagram_filter_initializer::initialize()
 
             element_filters.emplace_back(
                 std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kInclusive, relationship_t::kAssociation,
-                    dependants, false));
+                    filter_t::kInclusive, dependants,
+                    relationship_t::kAssociation, false));
 
             element_filters.emplace_back(
                 std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kInclusive, relationship_t::kAssociation,
-                    dependencies, true));
+                    filter_t::kInclusive, dependencies,
+                    relationship_t::kAssociation, true));
         }
 
         element_filters.emplace_back(std::make_unique<context_filter>(
@@ -175,8 +151,8 @@ void basic_diagram_filter_initializer::initialize()
             filter_t::kExclusive, diagram_config.exclude().module_access));
 
         df.add_exclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kExclusive, diagram_config.root_directory(),
-            diagram_config.exclude().paths));
+            filter_t::kExclusive, diagram_config.exclude().paths,
+            diagram_config.root_directory()));
 
         df.add_exclusive_filter(std::make_unique<element_filter>(
             filter_t::kExclusive, diagram_config.exclude().elements));
@@ -209,18 +185,18 @@ void basic_diagram_filter_initializer::initialize()
             filter_t::kExclusive, diagram_config.exclude().parents));
 
         df.add_exclusive_filter(std::make_unique<specializations_filter_t>(
-            filter_t::kExclusive, relationship_t::kInstantiation,
-            diagram_config.exclude().specializations));
+            filter_t::kExclusive, diagram_config.exclude().specializations,
+            relationship_t::kInstantiation));
 
         if (diagram_config.type() == diagram_t::kClass) {
             df.add_exclusive_filter(std::make_unique<class_dependants_filter_t>(
-                filter_t::kExclusive, relationship_t::kDependency,
-                diagram_config.exclude().dependants));
+                filter_t::kExclusive, diagram_config.exclude().dependants,
+                relationship_t::kDependency));
 
             df.add_exclusive_filter(
                 std::make_unique<class_dependencies_filter_t>(
-                    filter_t::kExclusive, relationship_t::kDependency,
-                    diagram_config.exclude().dependencies, true));
+                    filter_t::kExclusive, diagram_config.exclude().dependencies,
+                    relationship_t::kDependency, true));
         }
         else if (diagram_config.type() == diagram_t::kSequence) {
             df.add_exclusive_filter(std::make_unique<callee_filter>(
@@ -229,13 +205,13 @@ void basic_diagram_filter_initializer::initialize()
         else if (diagram_config.type() == diagram_t::kPackage) {
             df.add_exclusive_filter(
                 std::make_unique<package_dependencies_filter_t>(
-                    filter_t::kExclusive, relationship_t::kDependency,
-                    diagram_config.exclude().dependencies, true));
+                    filter_t::kExclusive, diagram_config.exclude().dependencies,
+                    relationship_t::kDependency, true));
 
             df.add_exclusive_filter(
                 std::make_unique<package_dependants_filter_t>(
-                    filter_t::kExclusive, relationship_t::kDependency,
-                    diagram_config.exclude().dependants));
+                    filter_t::kExclusive, diagram_config.exclude().dependants,
+                    relationship_t::kDependency));
         }
         else if (diagram_config.type() == diagram_t::kInclude) {
             std::vector<std::string> dependants;
@@ -259,13 +235,13 @@ void basic_diagram_filter_initializer::initialize()
 
             df.add_exclusive_filter(
                 std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kExclusive, relationship_t::kAssociation,
-                    dependants, false));
+                    filter_t::kExclusive, dependants,
+                    relationship_t::kAssociation, false));
 
             df.add_exclusive_filter(
                 std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kExclusive, relationship_t::kAssociation,
-                    dependencies, true));
+                    filter_t::kExclusive, dependencies,
+                    relationship_t::kAssociation, true));
         }
 
         df.add_exclusive_filter(std::make_unique<context_filter>(
@@ -308,24 +284,11 @@ advanced_diagram_filter_initializer::build(
     add_filter<relationship_filter>(
         filter_type, filter_config.relationships, result);
     add_filter<access_filter>(filter_type, filter_config.access, result);
+    add_filter<method_type_filter>(
+        filter_type, filter_config.method_types, result);
 
-    if (!filter_config.method_types.empty()) {
-        result.emplace_back(std::make_unique<class_method_filter>(filter_type,
-            std::make_unique<access_filter>(
-                filter_t::kInclusive, filter_config.access),
-            std::make_unique<method_type_filter>(
-                filter_t::kInclusive, filter_config.method_types)));
-    }
-
-    if (!filter_config.paths.empty()) {
-        result.emplace_back(std::make_unique<paths_filter>(
-            filter_type, diagram_config.root_directory(), filter_config.paths));
-    }
-
-    if (!filter_config.access.empty())
-        result.emplace_back(std::make_unique<class_member_filter>(filter_type,
-            std::make_unique<access_filter>(
-                filter_type, filter_config.access)));
+    add_filter<paths_filter>(filter_type, filter_config.paths, result,
+        diagram_config.root_directory());
 
     add_filter<element_filter>(filter_type, filter_config.elements, result);
     add_filter<element_type_filter>(
@@ -333,45 +296,30 @@ advanced_diagram_filter_initializer::build(
     add_filter<subclass_filter>(filter_type, filter_config.subclasses, result);
     add_filter<parents_filter>(filter_type, filter_config.parents, result);
 
-    add_edge_filter<specializations_filter_t>(filter_type,
-        filter_config.specializations, relationship_t::kInstantiation, false,
-        result);
-    add_edge_filter<class_dependants_filter_t>(filter_type,
-        filter_config.dependants, relationship_t::kDependency, false, result);
-    add_edge_filter<class_dependencies_filter_t>(filter_type,
-        filter_config.dependencies, relationship_t::kDependency, true, result);
+    add_filter<specializations_filter_t>(filter_type,
+        filter_config.specializations, result, relationship_t::kInstantiation,
+        false);
+    add_filter<class_dependants_filter_t>(filter_type, filter_config.dependants,
+        result, relationship_t::kDependency, false);
+    add_filter<class_dependencies_filter_t>(filter_type,
+        filter_config.dependencies, result, relationship_t::kDependency, true);
 
     add_filter<callee_filter>(filter_type, filter_config.callee_types, result);
 
-    add_edge_filter<package_dependants_filter_t>(filter_type,
-        filter_config.dependants, relationship_t::kDependency, false, result);
-    add_edge_filter<package_dependencies_filter_t>(filter_type,
-        filter_config.dependencies, relationship_t::kDependency, true, result);
+    add_filter<package_dependants_filter_t>(filter_type,
+        filter_config.dependants, result, relationship_t::kDependency, false);
+    add_filter<package_dependencies_filter_t>(filter_type,
+        filter_config.dependencies, result, relationship_t::kDependency, true);
 
     add_filter<context_filter>(filter_type, filter_config.context, result);
 
     if (diagram_config.type() == diagram_t::kInclude) {
-        std::vector<std::string> dependants;
-        std::vector<std::string> dependencies;
-
-        for (auto &&path : filter_config.dependants) {
-            if (auto p = path.get<std::string>(); p.has_value()) {
-                const std::filesystem::path dep_path{*p};
-                dependants.emplace_back(dep_path.lexically_normal().string());
-            }
-        }
-
-        for (auto &&path : filter_config.dependencies) {
-            if (auto p = path.get<std::string>(); p.has_value()) {
-                const std::filesystem::path dep_path{*p};
-                dependencies.emplace_back(dep_path.lexically_normal().string());
-            }
-        }
-
-        add_edge_filter<source_file_dependency_filter_t>(filter_type,
-            dependants, relationship_t::kAssociation, false, result);
-        add_edge_filter<source_file_dependency_filter_t>(filter_type,
-            dependencies, relationship_t::kAssociation, true, result);
+        add_filter<source_file_dependency_filter_t>(filter_type,
+            filter_config.dependants, result, relationship_t::kAssociation,
+            false);
+        add_filter<source_file_dependency_filter_t>(filter_type,
+            filter_config.dependencies, result, relationship_t::kAssociation,
+            true);
     }
 
     return result;
