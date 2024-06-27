@@ -237,6 +237,9 @@ test_cases:
     - name: t00080
       title: Test case for including elements from system headers
       description:
+    - name: t00081
+      title: Test case for class members relationships to std types
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

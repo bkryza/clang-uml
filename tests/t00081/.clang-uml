@@ -1,0 +1,25 @@
+diagrams:
+  t00081_class:
+    type: class
+    glob:
+      - t00081.cc
+    filter_mode: advanced
+    include_system_headers: true
+    include:
+      allof:
+        namespaces:
+          - clanguml::t00081
+          - std
+        context:
+          - match:
+              radius: 2
+              pattern: clanguml::t00081::A
+    exclude:
+      anyof:
+        access:
+          - private
+          - public
+          - protected
+        relationships:
+          - dependency
+    using_namespace: clanguml::t00081

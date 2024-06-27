@@ -25,6 +25,7 @@
 namespace clanguml::class_diagram::generators::mermaid {
 
 using clanguml::common::eid_t;
+using clanguml::common::generators::mermaid::escape_name;
 using clanguml::common::generators::mermaid::indent;
 using clanguml::common::generators::mermaid::render_name;
 
@@ -50,8 +51,8 @@ void generator::generate_alias(
 
     auto class_label = config().simplify_template_type(render_name(full_name));
 
-    ostr << indent(1) << "class " << c.alias() << "[\"" << class_label
-         << "\"]\n";
+    ostr << indent(1) << "class " << c.alias() << "[\""
+         << escape_name(class_label) << "\"]\n";
 
     // Register the added alias
     m_generated_aliases.emplace(c.alias());
@@ -257,7 +258,7 @@ void generator::generate_method(
         ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));
     }
 
-    ostr << render_name(type);
+    ostr << escape_name(render_name(type));
 
     if (m.is_pure_virtual())
         ostr << "*";
@@ -276,8 +277,8 @@ void generator::generate_member(
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name()
          << " : "
-         << render_name(
-                uns.relative(config().simplify_template_type(m.type())));
+         << escape_name(uns.relative(
+                config().simplify_template_type(render_name(m.type()))));
 }
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
@@ -294,7 +295,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {
             parameters.emplace_back(
-                render_name(p.to_string(config().using_namespace())));
+                escape_name(p.to_string(config().using_namespace())));
         }
 
         ostr << indent(2)
@@ -302,7 +303,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 
         for (const auto &req : c.requires_statements()) {
             ostr << indent(2)
-                 << fmt::format("\"{}\"\n", render_name(req, false));
+                 << fmt::format("\"{}\"\n", escape_name(req, false));
         }
     }
 

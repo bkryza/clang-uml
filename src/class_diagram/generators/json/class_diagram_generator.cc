@@ -253,6 +253,9 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
         object["display_name"] =
             common::generators::json::render_name(c.full_name_no_ns());
 
+    object["display_name"] =
+        config().simplify_template_type(object["display_name"]);
+
     for (auto &tp : object["template_parameters"]) {
         if (tp.contains("type") && tp.at("type").is_string()) {
             tp["type"] = config().using_namespace().relative(tp.at("type"));
