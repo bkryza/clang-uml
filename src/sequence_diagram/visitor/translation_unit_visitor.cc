@@ -1708,7 +1708,9 @@ translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
                 .get_participant<clanguml::sequence_diagram::model::class_>(
                     *id_opt);
 
-        assert(parent_class);
+        if (!parent_class) {
+            return {};
+        }
 
         c.set_namespace(ns);
         if (cls->getNameAsString().empty()) {
