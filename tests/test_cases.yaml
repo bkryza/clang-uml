@@ -240,6 +240,12 @@ test_cases:
     - name: t00081
       title: Test case for class members relationships to std types
       description:
+    - name: t00082
+      title: Test case for advanced diagram filter inclusion test with subclasses and namespaces
+      description:
+    - name: t00083
+      title: Test case for advanced diagram filter exclusion test with subclasses and namespaces
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

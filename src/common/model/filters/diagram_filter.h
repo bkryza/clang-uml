@@ -39,6 +39,7 @@ namespace clanguml::common::model {
 class diagram_filter_factory;
 
 using clanguml::common::eid_t;
+using clanguml::config::filter_mode_t;
 
 /**
  * Diagram filters can be add in 2 modes:
@@ -113,9 +114,12 @@ public:
     bool is_exclusive() const;
 
     filter_t type() const;
+    filter_mode_t mode() const;
+    void set_mode(filter_mode_t mode);
 
 private:
     filter_t type_;
+    filter_mode_t mode_{filter_mode_t::basic};
 };
 
 struct anyof_filter : public filter_visitor {
@@ -155,8 +159,13 @@ private:
     template <typename E>
     tvl::value_t match_anyof(const diagram &d, const E &element) const
     {
-        return tvl::any_of(filters_.begin(), filters_.end(),
+        auto result = tvl::any_of(filters_.begin(), filters_.end(),
             [&d, &element](const auto &f) { return f->match(d, element); });
+
+        if (mode() == filter_mode_t::advanced && !d.complete())
+            return type() == filter_t::kInclusive;
+
+        return result;
     }
 
     std::vector<std::unique_ptr<filter_visitor>> filters_;

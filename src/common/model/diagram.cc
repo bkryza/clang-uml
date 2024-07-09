@@ -66,6 +66,11 @@ bool diagram::should_include(const element &e) const
     if (filter_.get() == nullptr)
         return true;
 
+    if (!complete()) {
+        return filter_->should_include(
+            dynamic_cast<const source_location &>(e));
+    }
+
     return filter_->should_include(e) &&
         filter_->should_include(dynamic_cast<const source_location &>(e));
 }

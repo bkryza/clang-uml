@@ -159,6 +159,10 @@ bool filter_visitor::is_exclusive() const
 
 filter_t filter_visitor::type() const { return type_; }
 
+filter_mode_t filter_visitor::mode() const { return mode_; }
+
+void filter_visitor::set_mode(filter_mode_t mode) { mode_ = mode; }
+
 anyof_filter::anyof_filter(
     filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
     : filter_visitor{type}

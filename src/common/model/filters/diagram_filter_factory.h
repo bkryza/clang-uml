@@ -80,9 +80,12 @@ private:
         const std::vector<T> &filter_config,
         std::vector<std::unique_ptr<filter_visitor>> &result, Args &&...args)
     {
-        if (!filter_config.empty())
-            result.emplace_back(std::make_unique<FT>(
-                filter_type, filter_config, std::forward<Args>(args)...));
+        if (!filter_config.empty()) {
+            auto filter = std::make_unique<FT>(
+                filter_type, filter_config, std::forward<Args>(args)...);
+            filter->set_mode(filter_mode_t::advanced);
+            result.emplace_back(std::move(filter));
+        }
     }
 };
 
