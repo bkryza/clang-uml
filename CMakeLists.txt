@@ -71,6 +71,23 @@ if(CODE_COVERAGE)
 endif(CODE_COVERAGE)
 
 #
+# Setup Address Sanitizer
+#
+option(ADDRESS_SANITIZER "" OFF)
+if(ADDRESS_SANITIZER)
+    set(CMAKE_CXX_FLAGS
+            "${CMAKE_CXX_FLAGS} \
+            -fno-omit-frame-pointer \
+            -fsanitize=address \
+            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist")
+    set(CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} \
+            -fno-omit-frame-pointer \
+            -fsanitize=address \
+            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist")
+endif(ADDRESS_SANITIZER)
+
+#
 # Setup LLVM
 #
 include(LLVMSetup)
