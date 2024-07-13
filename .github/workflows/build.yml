@@ -1,4 +1,4 @@
-name: build
+name: Linux
 
 on:
   push:
@@ -8,6 +8,8 @@ on:
       - 'util/**'
       - 'uml/**'
       - '**.md'
+      - '**.svg'
+      - '**.png'
     branches-ignore:
       - 'noactions/*'
   pull_request:
@@ -30,6 +32,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Update package database
       run: sudo apt -y update
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
     - name: Install deps
       run: sudo apt -y install git make pkg-config gcc-11 g++-11 ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15 lcov zlib1g-dev libunwind-dev libdw-dev
     - name: Select g++ version
