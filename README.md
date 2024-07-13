@@ -2,7 +2,8 @@
 
 # C++ UML diagram generator based on Clang
 
-[![Build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
+[![Linux build status](https://github.com/bkryza/clang-uml/actions/workflows/build.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
+[![macos build status](https://github.com/bkryza/clang-uml/actions/workflows/macos.yml/badge.svg)](https://github.com/bkryza/clang-uml/actions)
 [![Coverage](https://codecov.io/gh/bkryza/clang-uml/branch/master/graph/badge.svg)](https://codecov.io/gh/bkryza/clang-uml)
 [![Version](https://img.shields.io/badge/version-0.5.3-blue)](https://github.com/bkryza/clang-uml/releases)
 [![Version](https://img.shields.io/badge/LLVM-12,13,14,15,16,17,18-orange)](https://github.com/bkryza/clang-uml/releases)

@@ -122,8 +122,9 @@ make install DESTDIR=/opt/clang-uml
 export PATH=$PATH:$PWD/release
 ```
 
-#### macos
+#### macOS
 
+On Intel-based macOS:
 ```bash
 brew install ccache cmake llvm yaml-cpp
 
@@ -133,6 +134,17 @@ LLVM_VERSION=16 make release
 # or, if this fails, try:
 CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm make release
 ```
+
+On Arm-based macOS:
+```bash
+brew install ccache cmake llvm yaml-cpp
+
+export CC=/opt/homebrew/opt/llvm/bin/clang
+export CXX=/opt/homebrew/opt/llvm/bin/clang++
+CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm CMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++" make release
+```
+> These paths will use the latest LLVM version installed by `brew`.
+> If you want to use a specific version, you will need to adjust the paths.
 
 #### Windows
 

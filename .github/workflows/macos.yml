@@ -1,0 +1,49 @@
+name: macOS
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'packaging/**'
+      - 'util/**'
+      - 'uml/**'
+      - '**.md'
+      - '**.svg'
+      - '**.png'
+    branches-ignore:
+      - 'noactions/*'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'packaging/**'
+      - 'util/**'
+      - 'uml/**'
+      - '**.md'
+      - '**.svg'
+      - '**.png'
+    branches-ignore:
+      - 'noactions/*'
+
+jobs:
+  build-macos:
+    name: Build and test on macos
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+
+      - name: Install dependencies using homebrew
+        run: brew install llvm@18 ninja yaml-cpp cmake ccache
+
+      - name: Build and test
+        run: CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ CMAKE_PREFIX=/opt/homebrew/opt/llvm/lib/cmake/llvm/ CMAKE_GENERATOR=Ninja CMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++" make test
+
+      - name: Print build version
+        run: debug/src/clang-uml --version
+
+      - name: Print help
+        run: debug/src/clang-uml --help
