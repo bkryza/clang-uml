@@ -8,6 +8,7 @@
   * [Conda](#conda)
   * [Nix](#nix)
   * [Windows](#windows)
+  * [macOS](#macos)
 * [Building from source](#building-from-source)
   * [Linux](#linux)
   * [macos](#macos)
@@ -85,6 +86,14 @@ nix run github:bkryza/clang-uml
 Download and run the latest Windows installer from
 [Releases page](https://github.com/bkryza/clang-uml/releases).
 
+#### macOS
+
+Use Homebrew:
+
+```console
+brew install clang-uml
+```
+
 ### Building from source
 
 #### Linux
@@ -135,13 +144,13 @@ LLVM_VERSION=16 make release
 CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm make release
 ```
 
-On Arm-based macOS:
+On Arm-based macOS (since Ventura):
 ```bash
 brew install ccache cmake llvm yaml-cpp
 
 export CC=/opt/homebrew/opt/llvm/bin/clang
 export CXX=/opt/homebrew/opt/llvm/bin/clang++
-CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm CMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++" make release
+CMAKE_PREFIX=/opt/homebrew/opt/llvm/lib/cmake/llvm CMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++" make release
 ```
 > These paths will use the latest LLVM version installed by `brew`.
 > If you want to use a specific version, you will need to adjust the paths.
