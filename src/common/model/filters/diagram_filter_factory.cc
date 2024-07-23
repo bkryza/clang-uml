@@ -253,8 +253,10 @@ template <>
 void advanced_diagram_filter_initializer::add_filter<
     source_file_dependency_filter_t>(const filter_t &filter_type,
     const std::vector<common::string_or_regex> &filter_config,
-    std::vector<std::unique_ptr<filter_visitor>> &result, relationship_t &&rt,
-    bool &&direction)
+    std::vector<std::unique_ptr<filter_visitor>> &result,
+    relationship_t &&rt, // NOLINT
+    bool &&direction     // NOLINT
+)
 {
     std::vector<std::string> deps;
     for (auto &&path : filter_config) {

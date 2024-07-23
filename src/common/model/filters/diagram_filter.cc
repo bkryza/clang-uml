@@ -100,6 +100,12 @@ tvl::value_t filter_visitor::match(
 }
 
 tvl::value_t filter_visitor::match(
+    const diagram &d, const common::model::relationship &r) const
+{
+    return match(d, r.type());
+}
+
+tvl::value_t filter_visitor::match(
     const diagram & /*d*/, const common::model::relationship_t & /*r*/) const
 {
     return {};
@@ -997,7 +1003,7 @@ tvl::value_t paths_filter::match(
         return {};
     }
 
-    // Matching source paths doesn't make sens if they are not absolute
+    // Matching source paths doesn't make sense if they are not absolute
     if (!p.is_absolute()) {
         return {};
     }
@@ -1071,7 +1077,7 @@ tvl::value_t class_member_filter::match(
 }
 
 diagram_filter::diagram_filter(const common::model::diagram &d,
-    const config::diagram &c, private_constructor_tag_t /*unused*/)
+    const config::diagram & /*c*/, private_constructor_tag_t /*unused*/)
     : diagram_{d}
 {
 }

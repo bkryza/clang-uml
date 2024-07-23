@@ -30,6 +30,10 @@
 #include <string>
 #include <vector>
 
+namespace clanguml::common::model {
+class diagram_filter;
+}
+
 namespace clanguml::class_diagram::model {
 
 /**
@@ -126,6 +130,7 @@ public:
      * @return Reference to class parents.
      */
     const std::vector<class_parent> &parents() const;
+    std::vector<class_parent> &parents();
 
     /**
      * @brief Get class full name.
@@ -165,6 +170,9 @@ public:
      * @return Doxygen-style HTML link for the class.
      */
     std::optional<std::string> doxygen_link() const override;
+
+    void apply_filter(const common::model::diagram_filter &filter,
+        const std::set<eid_t> &removed) override;
 
 private:
     bool is_struct_{false};

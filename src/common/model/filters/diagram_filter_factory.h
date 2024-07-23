@@ -51,6 +51,8 @@ public:
     {
     }
 
+    virtual ~diagram_filter_initializer() = default;
+
     virtual void initialize() = 0;
 
 protected:
@@ -62,12 +64,16 @@ class basic_diagram_filter_initializer : public diagram_filter_initializer {
 public:
     using diagram_filter_initializer::diagram_filter_initializer;
 
+    ~basic_diagram_filter_initializer() override = default;
+
     void initialize() override;
 };
 
 class advanced_diagram_filter_initializer : public diagram_filter_initializer {
 public:
     using diagram_filter_initializer::diagram_filter_initializer;
+
+    ~advanced_diagram_filter_initializer() override = default;
 
     void initialize() override;
 

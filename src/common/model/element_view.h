@@ -78,6 +78,15 @@ public:
      */
     bool is_empty() const { return elements_.empty(); }
 
+    void remove(const std::set<eid_t> &element_ids)
+    {
+        elements_.erase(std::remove_if(elements_.begin(), elements_.end(),
+                            [&element_ids](auto &&e) {
+                                return element_ids.count(e.get().id()) > 0;
+                            }),
+            elements_.end());
+    }
+
 private:
     reference_vector<T> elements_;
 };

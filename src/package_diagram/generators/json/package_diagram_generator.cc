@@ -39,9 +39,7 @@ void generator::generate_relationships(
 
             auto destination_package = model().get(r.destination());
 
-            if (!destination_package ||
-                !model().should_include(
-                    dynamic_cast<const package &>(*destination_package)))
+            if (!destination_package)
                 continue;
 
             rel["source"] = std::to_string(p.id().value());
@@ -88,9 +86,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
 
         for (const auto &subpackage : p) {
             auto &pkg = dynamic_cast<package &>(*subpackage);
-            if (model().should_include(pkg)) {
-                generate(pkg, j);
-            }
+            generate(pkg, j);
         }
 
         parent["elements"].push_back(std::move(j));
@@ -98,9 +94,7 @@ void generator::generate(const package &p, nlohmann::json &parent) const
     else {
         for (const auto &subpackage : p) {
             auto &pkg = dynamic_cast<package &>(*subpackage);
-            if (model().should_include(pkg)) {
-                generate(pkg, parent);
-            }
+            generate(pkg, parent);
         }
     }
 }
@@ -120,15 +114,12 @@ void generator::generate_diagram(nlohmann::json &parent) const
 
     for (const auto &p : model()) {
         auto &pkg = dynamic_cast<package &>(*p);
-        if (model().should_include(pkg)) {
-            generate(pkg, parent);
-        }
+        generate(pkg, parent);
     }
 
     // Process package relationships
     for (const auto &p : model()) {
-        if (model().should_include(dynamic_cast<package &>(*p)))
-            generate_relationships(dynamic_cast<package &>(*p), parent);
+        generate_relationships(dynamic_cast<package &>(*p), parent);
     }
 }
 

@@ -39,14 +39,11 @@ void generator::generate_relationships(
         });
     }
     else {
-        util::for_each_if(
-            f.relationships(),
-            [this](const auto &r) { return model().should_include(r.type()); },
-            [&f, &parent](const auto &r) {
-                nlohmann::json rel = r;
-                rel["source"] = std::to_string(f.id().value());
-                parent["relationships"].push_back(std::move(rel));
-            });
+        for (const auto &r : f.relationships()) {
+            nlohmann::json rel = r;
+            rel["source"] = std::to_string(f.id().value());
+            parent["relationships"].push_back(std::move(rel));
+        }
     }
 }
 
@@ -73,17 +70,15 @@ void generator::generate(const source_file &f, nlohmann::json &parent) const
         parent["elements"].push_back(std::move(j));
     }
     else {
-        if (model().should_include(f)) {
-            LOG_DBG("Generating file {}", f.name());
+        LOG_DBG("Generating file {}", f.name());
 
-            j["type"] = "file";
-            j["file_kind"] = to_string(f.type());
-            if (f.type() == common::model::source_file_t::kHeader) {
-                j["is_system"] = f.is_system_header();
-            }
-
-            parent["elements"].push_back(std::move(j));
+        j["type"] = "file";
+        j["file_kind"] = to_string(f.type());
+        if (f.type() == common::model::source_file_t::kHeader) {
+            j["is_system"] = f.is_system_header();
         }
+
+        parent["elements"].push_back(std::move(j));
     }
 }
 

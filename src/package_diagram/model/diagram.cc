@@ -18,6 +18,7 @@
 
 #include "diagram.h"
 
+#include "common/model/filters/diagram_filter.h"
 #include "util/error.h"
 #include "util/util.h"
 
@@ -72,6 +73,23 @@ inja::json diagram::context() const
     ctx["elements"] = elements;
 
     return ctx;
+}
+
+void diagram::apply_filter()
+{
+    // First find all element ids which should be removed
+    std::set<eid_t> to_remove;
+
+    for (const auto &c : packages())
+        if (!filter().should_include(c.get()))
+            to_remove.emplace(c.get().id());
+
+    nested_trait_ns::remove(to_remove);
+
+    element_view<package>::remove(to_remove);
+
+    for (auto &c : element_view<package>::view())
+        c.get().apply_filter(filter(), to_remove);
 }
 
 bool diagram::is_empty() const { return element_view<package>::is_empty(); }

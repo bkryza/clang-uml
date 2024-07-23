@@ -32,14 +32,16 @@ using clanguml::common::model::diagram_element;
 using clanguml::common::model::package;
 using clanguml::common::model::path;
 
+using nested_trait_ns =
+    clanguml::common::model::nested_trait<clanguml::common::model::element,
+        clanguml::common::model::namespace_>;
+
 /**
  * @brief Package diagram model.
  */
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_view<package>,
-                public clanguml::common::model::nested_trait<
-                    clanguml::common::model::element,
-                    clanguml::common::model::namespace_> {
+                public nested_trait_ns {
 public:
     diagram() = default;
 
@@ -164,6 +166,8 @@ public:
      * @return True, if diagram is empty
      */
     bool is_empty() const override;
+
+    void apply_filter() override;
 
 private:
     /**

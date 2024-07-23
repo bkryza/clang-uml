@@ -253,8 +253,12 @@ public:
 
         comment_visitor_->visit(decl, e);
 
-        const auto *comment =
-            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+        auto *comment = decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+
+        if (comment == nullptr) {
+            comment = clanguml::common::get_declaration_raw_comment(
+                source_manager(), decl.getASTContext(), &decl);
+        }
 
         process_comment(comment, decl.getASTContext().getDiagnostics(), e);
     }

@@ -59,10 +59,18 @@ void diagram::set_complete(bool complete) { complete_ = complete; }
 
 bool diagram::complete() const { return complete_; }
 
-void diagram::finalize() { }
+void diagram::finalize()
+{
+    // Remove elements that do not match the filter
+    apply_filter();
+    filtered_ = true;
+}
 
 bool diagram::should_include(const element &e) const
 {
+    if (filtered_)
+        return true;
+
     if (filter_.get() == nullptr)
         return true;
 
@@ -77,6 +85,9 @@ bool diagram::should_include(const element &e) const
 
 bool diagram::should_include(const namespace_ &ns) const
 {
+    if (filtered_)
+        return true;
+
     if (filter_.get() == nullptr)
         return true;
 

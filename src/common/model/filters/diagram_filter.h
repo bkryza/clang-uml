@@ -87,6 +87,9 @@ public:
         const diagram &d, const common::model::element &e) const;
 
     virtual tvl::value_t match(
+        const diagram &d, const common::model::relationship &r) const;
+
+    virtual tvl::value_t match(
         const diagram &d, const common::model::relationship_t &r) const;
 
     virtual tvl::value_t match(
@@ -815,15 +818,6 @@ public:
     friend class diagram_filter_factory;
 
 private:
-    /**
-     * @brief Initialize filters.
-     *
-     * Some filters require initialization.
-     *
-     * @param c Diagram config.
-     */
-    // void init_filters(const config::diagram &c);
-
     /*! List of inclusive filters */
     std::vector<std::unique_ptr<filter_visitor>> inclusive_;
 
@@ -833,6 +827,27 @@ private:
     /*! Reference to the diagram model */
     const common::model::diagram &diagram_;
 };
+
+template <typename Collection>
+void apply_filter(Collection &col, const diagram_filter &filter)
+{
+    col.erase(std::remove_if(col.begin(), col.end(),
+                  [&filter](auto &&element) {
+                      return !filter.should_include(element);
+                  }),
+        col.end());
+}
+
+template <typename T>
+void apply_filter(
+    std::vector<std::reference_wrapper<T>> &col, const diagram_filter &filter)
+{
+    col.erase(std::remove_if(col.begin(), col.end(),
+                  [&filter](auto &&element) {
+                      return !filter.should_include(element.get());
+                  }),
+        col.end());
+}
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const;
