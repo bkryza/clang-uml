@@ -84,9 +84,9 @@ void diagram::apply_filter()
         if (!filter().should_include(c.get()))
             to_remove.emplace(c.get().id());
 
-    nested_trait_ns::remove(to_remove);
-
     element_view<package>::remove(to_remove);
+
+    nested_trait_ns::remove(to_remove);
 
     for (auto &c : element_view<package>::view())
         c.get().apply_filter(filter(), to_remove);

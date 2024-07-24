@@ -1,6 +1,3 @@
-add_compile_flags:
-  - -fparse-all-comments
-  - -fretain-comments-from-system-headers
 diagrams:
   t00080_class:
     type: class
@@ -16,9 +13,3 @@ diagrams:
         elements:
           - std::thread
     using_namespace: clanguml::t00080
-    plantuml:
-      after:
-        - '{% set e=element("std::thread") %} note top of {{ e.alias }} : {{ trim(e.comment.paragraph.0) }}'
-    mermaid:
-      after:
-        - '{% set e=element("std::thread") %} note for {{ e.alias }} "{{ trim(e.comment.paragraph.0) }}"'
