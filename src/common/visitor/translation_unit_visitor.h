@@ -289,7 +289,7 @@ public:
         return stripped_comment;
     }
 
-    bool skip_system_header_decl(const clang::NamedDecl *decl)
+    bool skip_system_header_decl(const clang::NamedDecl *decl) const
     {
         return !config().include_system_headers() &&
             source_manager().isInSystemHeader(
@@ -302,7 +302,7 @@ public:
      * @param decl Clang declaration.
      * @return True, if the entity should be included in the diagram.
      */
-    bool should_include(const clang::NamedDecl *decl)
+    bool should_include(const clang::NamedDecl *decl) const
     {
         if (decl == nullptr)
             return false;

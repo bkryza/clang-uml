@@ -380,7 +380,7 @@ private:
 struct method : public function {
     method(const common::model::namespace_ &using_namespace);
 
-    method(const function &) = delete;
+    method(const method &) = delete;
     method(method &&) noexcept = delete;
     method &operator=(const method &) = delete;
     method &operator=(method &&) = delete;

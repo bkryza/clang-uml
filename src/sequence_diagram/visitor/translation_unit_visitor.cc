@@ -1085,6 +1085,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
     auto generated_message_from_comment = generate_message_from_comment(m);
 
     if (!generated_message_from_comment && !should_include(expr)) {
+        LOG_DBG("Skipping call expression due to filter at: {}",
+            expr->getBeginLoc().printToString(source_manager()));
+
         processed_comments().erase(raw_expr_comment);
         return true;
     }
@@ -1178,7 +1181,7 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
             auto success = process_function_call_expression(m, expr);
 
             if (!success) {
-                LOG_DBG("Skipping call to call expression at: {}",
+                LOG_DBG("Skipping call expression at: {}",
                     expr->getBeginLoc().printToString(source_manager()));
 
                 return true;
@@ -2098,6 +2101,7 @@ translation_unit_visitor::create_lambda_method_model(
     ns.pop_back();
     method_model_ptr->set_name(ns.name());
     ns.pop_back();
+    method_model_ptr->set_namespace(ns);
 
     method_model_ptr->is_defaulted(declaration->isDefaulted());
     method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
@@ -2137,6 +2141,7 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
     ns.pop_back();
     method_model_ptr->set_name(ns.name());
     ns.pop_back();
+    method_model_ptr->set_namespace(ns);
 
     method_model_ptr->is_defaulted(declaration->isDefaulted());
     method_model_ptr->is_assignment(declaration->isCopyAssignmentOperator() ||
@@ -2191,14 +2196,8 @@ translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
 
 bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 {
-    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
-        return false;
-
-    const auto decl_file = decl->getLocation().printToString(source_manager());
-
-    return diagram().should_include(
-               namespace_{decl->getQualifiedNameAsString()}) &&
-        diagram().should_include(common::model::source_file{decl_file});
+    return visitor_specialization_t::should_include(
+        dynamic_cast<const clang::NamedDecl *>(decl));
 }
 
 bool translation_unit_visitor::should_include(
@@ -2236,8 +2235,11 @@ bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
     if (callee_decl != nullptr) {
         const auto *callee_function = callee_decl->getAsFunction();
 
-        if ((callee_function == nullptr) || !should_include(callee_function))
+        if ((callee_function == nullptr) || !should_include(callee_function)) {
+            LOG_DBG("Skipping call expression at {}",
+                expr->getBeginLoc().printToString(source_manager()));
             return false;
+        }
 
         return should_include(callee_function);
     }
@@ -2263,30 +2265,19 @@ bool translation_unit_visitor::should_include(
 bool translation_unit_visitor::should_include(
     const clang::FunctionDecl *decl) const
 {
-    const auto decl_file = decl->getLocation().printToString(source_manager());
-
-    return diagram().should_include(
-               namespace_{decl->getQualifiedNameAsString()}) &&
-        diagram().should_include(common::model::source_file{decl_file});
+    return visitor_specialization_t::should_include(decl);
 }
 
 bool translation_unit_visitor::should_include(
     const clang::FunctionTemplateDecl *decl) const
 {
-    return should_include(decl->getAsFunction());
+    return visitor_specialization_t::should_include(decl->getAsFunction());
 }
 
 bool translation_unit_visitor::should_include(
     const clang::ClassTemplateDecl *decl) const
 {
-    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
-        return false;
-
-    const auto decl_file = decl->getLocation().printToString(source_manager());
-
-    return diagram().should_include(
-               namespace_{decl->getQualifiedNameAsString()}) &&
-        diagram().should_include(common::model::source_file{decl_file});
+    return visitor_specialization_t::should_include(decl);
 }
 
 std::optional<std::string> translation_unit_visitor::get_expression_comment(

@@ -389,6 +389,12 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
     return result;
 }
 
+tvl::value_t namespace_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    return match(d, dynamic_cast<const element &>(p));
+}
+
 modules_filter::modules_filter(
     filter_t type, std::vector<common::string_or_regex> modules)
     : filter_visitor{type}
