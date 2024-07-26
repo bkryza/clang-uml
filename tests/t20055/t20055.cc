@@ -2,13 +2,19 @@ namespace clanguml {
 namespace t20055 {
 namespace ns1 {
 
+void d() { }
+
 struct A {
     void a() { }
 };
 
 struct B {
     A a;
-    void b() { a.a(); }
+    void b()
+    {
+        a.a();
+        d();
+    }
 };
 
 } // namespace ns1

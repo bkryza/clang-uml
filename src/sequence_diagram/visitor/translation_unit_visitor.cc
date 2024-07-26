@@ -518,7 +518,8 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
-    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
         return true;
 
     LOG_TRACE("Entering call expression at {}",
@@ -541,7 +542,8 @@ bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 bool translation_unit_visitor::TraverseCUDAKernelCallExpr(
     clang::CUDAKernelCallExpr *expr)
 {
-    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
         return true;
 
     LOG_TRACE("Entering CUDA kernel call expression at {}",
@@ -564,7 +566,8 @@ bool translation_unit_visitor::TraverseCUDAKernelCallExpr(
 bool translation_unit_visitor::TraverseCXXMemberCallExpr(
     clang::CXXMemberCallExpr *expr)
 {
-    if (source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
         return true;
 
     LOG_TRACE("Entering member call expression at {}",

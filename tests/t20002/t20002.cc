@@ -1,7 +1,3 @@
-#include <algorithm>
-#include <numeric>
-#include <vector>
-
 namespace clanguml {
 namespace t20002 {
 
