@@ -21,7 +21,6 @@
 #include "common/model/filters/diagram_filter.h"
 #include "common/model/relationship.h"
 #include "config/config.h"
-#include "util/error.h"
 #include "util/util.h"
 #include "version.h"
 
@@ -63,8 +62,6 @@ public:
         : clanguml::common::generators::generator<ConfigType, DiagramType>{
               config, model}
     {
-        init_context();
-        init_env();
     }
 
     ~generator() override = default;
@@ -177,21 +174,6 @@ public:
      */
     void print_debug(
         const common::model::source_location &e, std::ostream &ostr) const;
-    /**
-     * @brief Update diagram Jinja context
-     *
-     * This method updates the diagram context with models properties
-     * which can be used to render Jinja templates in the diagram (e.g.
-     * in notes or links)
-     */
-    void update_context() const;
-
-protected:
-    const inja::json &context() const;
-
-    inja::Environment &env() const;
-
-    template <typename E> inja::json element_context(const E &e) const;
 
 private:
     void generate_row_column_hints(std::ostream &ostr,
@@ -200,66 +182,9 @@ private:
     void generate_position_hints(std::ostream &ostr,
         const std::string &entity_name, const config::layout_hint &hint) const;
 
-    void init_context();
-
-    void init_env();
-
 protected:
     mutable std::set<std::string> m_generated_aliases;
-    mutable inja::json m_context;
-    mutable inja::Environment m_env;
 };
-
-template <typename C, typename D>
-const inja::json &generator<C, D>::context() const
-{
-    return m_context;
-}
-
-template <typename C, typename D>
-inja::Environment &generator<C, D>::env() const
-{
-    return m_env;
-}
-
-template <typename C, typename D>
-template <typename E>
-inja::json generator<C, D>::element_context(const E &e) const
-{
-    auto ctx = context();
-
-    ctx["element"] = e.context();
-
-    if (!e.file().empty()) {
-        std::filesystem::path file{e.file()};
-        std::string git_relative_path = file.string();
-        if (!e.file_relative().empty()) {
-#if _MSC_VER
-            if (file.is_absolute() && ctx.contains("git"))
-#else
-            if (file.is_absolute() && ctx.template contains("git"))
-#endif
-                git_relative_path =
-                    std::filesystem::relative(file, ctx["git"]["toplevel"])
-                        .string();
-        }
-        else {
-            git_relative_path = "";
-        }
-
-        ctx["element"]["source"]["path"] = util::path_to_url(git_relative_path);
-        ctx["element"]["source"]["full_path"] = file.string();
-        ctx["element"]["source"]["name"] = file.filename().string();
-        ctx["element"]["source"]["line"] = e.line();
-    }
-
-    const auto &maybe_comment = e.comment();
-    if (maybe_comment) {
-        ctx["element"]["comment"] = maybe_comment.value();
-    }
-
-    return ctx;
-}
 
 template <typename C, typename D>
 void generator<C, D>::generate(std::ostream &ostr) const
@@ -267,7 +192,7 @@ void generator<C, D>::generate(std::ostream &ostr) const
     const auto &config = generators::generator<C, D>::config();
     const auto &model = generators::generator<C, D>::model();
 
-    update_context();
+    generators::generator<C, D>::update_context();
 
     if (!config.allow_empty_diagrams() && model.is_empty() &&
         config.puml().before.empty() && config.puml().after.empty()) {
@@ -413,7 +338,8 @@ void generator<C, D>::generate_plantuml_directives(
     for (const auto &d : directives) {
         try {
             // Render the directive with template engine first
-            std::string directive{env().render(std::string_view{d}, context())};
+            std::string directive{generators::generator<C, D>::env().render(
+                std::string_view{d}, generators::generator<C, D>::context())};
 
             // Now search for alias `@A()` directives in the text
             // (this is deprecated)
@@ -519,42 +445,56 @@ template <typename C, typename D>
 template <typename E>
 void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
 {
-    const auto &config = generators::generator<C, D>::config();
-
-    if (e.file_relative().empty())
+    if (e.file().empty() && e.file_relative().empty())
         return;
+
+    auto maybe_link_pattern = generators::generator<C, D>::get_link_pattern(e);
+
+    if (!maybe_link_pattern)
+        return;
+
+    const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
 
     ostr << " [[";
     try {
-        if (!config.generate_links().link.empty()) {
-            ostr << env().render(std::string_view{config.generate_links().link},
-                element_context(e));
+        if (!link_pattern.empty()) {
+            auto ec = generators::generator<C, D>::element_context(e);
+            common::generators::make_context_source_relative(ec, link_prefix);
+            ostr << generators::generator<C, D>::env().render(
+                std::string_view{link_pattern}, ec);
         }
     }
     catch (const inja::json::parse_error &e) {
-        LOG_ERROR(
-            "Failed to parse Jinja template: {}", config.generate_links().link);
+        LOG_ERROR("Failed to parse Jinja template: {}", link_pattern);
     }
     catch (const inja::json::exception &e) {
         LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-            config.generate_links().link, e.what());
+            link_pattern, e.what());
     }
+
+    auto maybe_tooltip_pattern =
+        generators::generator<C, D>::get_tooltip_pattern(e);
+
+    if (!maybe_tooltip_pattern)
+        return;
+
+    const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
 
     ostr << "{";
     try {
-        if (!config.generate_links().tooltip.empty()) {
-            ostr << env().render(
-                std::string_view{config.generate_links().tooltip},
-                element_context(e));
+        auto ec = generators::generator<C, D>::element_context(e);
+        common::generators::make_context_source_relative(ec, tooltip_prefix);
+        if (!tooltip_pattern.empty()) {
+            ostr << generators::generator<C, D>::env().render(
+                std::string_view{tooltip_pattern}, ec);
         }
     }
     catch (const inja::json::parse_error &e) {
-        LOG_ERROR(
-            "Failed to parse Jinja template: {}", config.generate_links().link);
+        LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
     }
     catch (const inja::json::exception &e) {
         LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-            config.generate_links().link, e.what());
+            tooltip_pattern, e.what());
     }
 
     ostr << "}";
@@ -579,126 +519,4 @@ std::ostream &operator<<(
     return os;
 }
 
-template <typename C, typename D> void generator<C, D>::init_context()
-{
-    const auto &config = generators::generator<C, D>::config();
-
-    if (config.git) {
-        m_context["git"]["branch"] = config.git().branch;
-        m_context["git"]["revision"] = config.git().revision;
-        m_context["git"]["commit"] = config.git().commit;
-        m_context["git"]["toplevel"] = config.git().toplevel;
-    }
-}
-
-template <typename C, typename D> void generator<C, D>::update_context() const
-{
-    m_context["diagram"] = generators::generator<C, D>::model().context();
-}
-
-template <typename C, typename D> void generator<C, D>::init_env()
-{
-    const auto &model = generators::generator<C, D>::model();
-    const auto &config = generators::generator<C, D>::config();
-
-    //
-    // Add basic string functions to inja environment
-    //
-
-    // Check if string is empty
-    m_env.add_callback("empty", 1, [](inja::Arguments &args) {
-        return args.at(0)->get<std::string>().empty();
-    });
-
-    // Remove spaces from the left of a string
-    m_env.add_callback("ltrim", 1, [](inja::Arguments &args) {
-        return util::ltrim(args.at(0)->get<std::string>());
-    });
-
-    // Remove trailing spaces from a string
-    m_env.add_callback("rtrim", 1, [](inja::Arguments &args) {
-        return util::rtrim(args.at(0)->get<std::string>());
-    });
-
-    // Remove spaces before and after a string
-    m_env.add_callback("trim", 1, [](inja::Arguments &args) {
-        return util::trim(args.at(0)->get<std::string>());
-    });
-
-    // Make a string shorted with a limit to
-    m_env.add_callback("abbrv", 2, [](inja::Arguments &args) {
-        return util::abbreviate(
-            args.at(0)->get<std::string>(), args.at(1)->get<unsigned>());
-    });
-
-    m_env.add_callback("replace", 3, [](inja::Arguments &args) {
-        std::string result = args[0]->get<std::string>();
-        std::regex pattern(args[1]->get<std::string>());
-        return std::regex_replace(result, pattern, args[2]->get<std::string>());
-    });
-
-    m_env.add_callback("split", 2, [](inja::Arguments &args) {
-        return util::split(
-            args[0]->get<std::string>(), args[1]->get<std::string>());
-    });
-
-    //
-    // Add PlantUML specific functions
-    //
-
-    // Return the entire element JSON context based on element name
-    // e.g.:
-    //   {{ element("clanguml::t00050::A").comment }}
-    //
-    m_env.add_callback("element", 1, [&model, &config](inja::Arguments &args) {
-        inja::json res{};
-        auto element_opt = model.get_with_namespace(
-            args[0]->get<std::string>(), config.using_namespace());
-
-        if (element_opt.has_value())
-            res = element_opt.value().context();
-
-        return res;
-    });
-
-    // Convert C++ entity to PlantUML alias, e.g.
-    //   "note left of {{ alias("A") }}: This is a note"
-    // Shortcut to:
-    //   {{ element("A").alias }}
-    //
-    m_env.add_callback("alias", 1, [&model, &config](inja::Arguments &args) {
-        auto element_opt = model.get_with_namespace(
-            args[0]->get<std::string>(), config.using_namespace());
-
-        if (!element_opt.has_value())
-            throw clanguml::error::uml_alias_missing(
-                args[0]->get<std::string>());
-
-        return element_opt.value().alias();
-    });
-
-    // Get elements' comment:
-    //   "note left of {{ alias("A") }}: {{ comment("A") }}"
-    // Shortcut to:
-    //   {{ element("A").comment }}
-    //
-    m_env.add_callback("comment", 1, [&model, &config](inja::Arguments &args) {
-        inja::json res{};
-        auto element_opt = model.get_with_namespace(
-            args[0]->get<std::string>(), config.using_namespace());
-
-        if (!element_opt.has_value())
-            throw clanguml::error::uml_alias_missing(
-                args[0]->get<std::string>());
-
-        auto comment = element_opt.value().comment();
-
-        if (comment.has_value()) {
-            assert(comment.value().is_object());
-            res = comment.value();
-        }
-
-        return res;
-    });
-}
 } // namespace clanguml::common::generators::plantuml

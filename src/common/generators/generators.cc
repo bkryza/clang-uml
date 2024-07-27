@@ -21,6 +21,28 @@
 #include "progress_indicator.h"
 
 namespace clanguml::common::generators {
+void make_context_source_relative(
+    inja::json &context, const std::string &prefix)
+{
+    if (!context.contains("element"))
+        return;
+
+    if (!context["element"].contains("source"))
+        return;
+
+    auto &source = context["element"]["source"];
+
+    if (source.at("path").empty())
+        return;
+
+    auto path = std::filesystem::path(source.at("path"));
+    auto prefix_path = std::filesystem::path(prefix);
+    if (path.is_absolute() && util::is_relative_to(path, prefix_path)) {
+        source["path"] = relative(path, prefix_path);
+        return;
+    }
+}
+
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,

@@ -616,11 +616,19 @@ template <> struct convert<filter> {
 template <> struct convert<generate_links_config> {
     static bool decode(const Node &node, generate_links_config &rhs)
     {
-        if (node["link"])
-            rhs.link = node["link"].as<decltype(rhs.link)>();
+        if (node["link"]) {
+            if (node["link"].IsMap())
+                rhs.link = node["link"].as<decltype(rhs.link)>();
+            else
+                rhs.link.emplace(".", node["link"].as<std::string>());
+        }
 
-        if (node["tooltip"])
-            rhs.tooltip = node["tooltip"].as<decltype(rhs.tooltip)>();
+        if (node["tooltip"]) {
+            if (node["tooltip"].IsMap())
+                rhs.tooltip = node["tooltip"].as<decltype(rhs.tooltip)>();
+            else
+                rhs.tooltip.emplace(".", node["tooltip"].as<std::string>());
+        }
 
         return true;
     }

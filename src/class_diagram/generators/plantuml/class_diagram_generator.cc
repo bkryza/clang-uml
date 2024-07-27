@@ -38,16 +38,24 @@ void generator::generate_link(
 
     auto context = element_context(e);
 
-    if (!config().generate_links().link.empty()) {
+    auto maybe_link_pattern = get_link_pattern(e);
+    if (maybe_link_pattern) {
+        const auto &[link_prefix, link_pattern] = *maybe_link_pattern;
+        auto ec = element_context(e);
+        common::generators::make_context_source_relative(ec, link_prefix);
+
         ostr << " [[[";
-        ostr << env().render(
-            std::string_view{config().generate_links().link}, context);
+        ostr << env().render(std::string_view{link_pattern}, context);
     }
 
-    if (!config().generate_links().tooltip.empty()) {
+    auto maybe_tooltip_pattern = get_tooltip_pattern(e);
+
+    if (maybe_tooltip_pattern) {
+        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
+        auto ec = element_context(e);
+        common::generators::make_context_source_relative(ec, tooltip_prefix);
         ostr << "{";
-        ostr << env().render(
-            std::string_view{config().generate_links().tooltip}, context);
+        ostr << env().render(std::string_view{tooltip_pattern}, ec);
         ostr << "}";
     }
     ostr << "]]]";

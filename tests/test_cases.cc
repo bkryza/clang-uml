@@ -30,11 +30,14 @@
 void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
     // Inject links config to all test cases
-    clanguml::config::generate_links_config links_config{
-        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})",
-        R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})"};
+    clanguml::config::generate_links_config links_config;
 
-    diagram->generate_links.set(links_config);
+    links_config.link.emplace(".",
+        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})");
+    links_config.tooltip.emplace(".",
+        R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})");
+
+    diagram->generate_links.set(std::move(links_config));
 }
 
 std::pair<clanguml::config::config_ptr,
@@ -249,7 +252,8 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
             tc(diagrams.get<T>());
         }
         catch (doctest::TestFailureException &e) {
-            std::cout << "-----------------------------------------------------"
+            std::cout << "---------------------------------------------"
+                         "--------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
                       << T::diagram_type_name << ": "

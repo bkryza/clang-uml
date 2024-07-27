@@ -455,8 +455,44 @@ struct layout_hint {
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
 
 struct generate_links_config {
-    std::string link;
-    std::string tooltip;
+    std::map</* path */ std::string, /* pattern */ std::string> link;
+    std::map</* path */ std::string, /* pattern */ std::string> tooltip;
+
+    std::optional<std::pair<std::string, std::string>> get_link_pattern(
+        const std::string &path) const
+    {
+        if (link.empty())
+            return {};
+
+        if ((path.empty() || path == ".") && link.count(".") > 0) {
+            return {{".", link.at(".")}};
+        }
+
+        for (const auto &[key, pattern] : link) {
+            if (util::starts_with(path, key))
+                return {{key, pattern}};
+        }
+
+        return {};
+    }
+
+    std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
+        const std::string &path) const
+    {
+        if (tooltip.empty())
+            return {};
+
+        if ((path.empty() || path == ".") && tooltip.count(".") > 0) {
+            return {{".", tooltip.at(".")}};
+        }
+
+        for (const auto &[key, pattern] : tooltip) {
+            if (util::starts_with(path, key))
+                return {{key, pattern}};
+        }
+
+        return {};
+    }
 };
 
 struct git_config {

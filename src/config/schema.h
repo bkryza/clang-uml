@@ -37,8 +37,8 @@ types:
         - abbreviated
         - none
     generate_links_t:
-        link: string
-        tooltip: string
+        link: !optional [string, map_t<string;string>]
+        tooltip: !optional [string, map_t<string;string>]
     git_t:
         branch: string
         revision: [string, int]
