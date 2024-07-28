@@ -475,3 +475,63 @@ TEST_CASE("Test parse_source_location")
 
     result = false, file = "", line = 0, column = 0;
 }
+
+TEST_CASE("Test is_subpath")
+{
+    using clanguml::util::is_subpath;
+
+    CHECK(is_subpath("./include/f.h", "."));
+    CHECK(is_subpath("include/f.h", "."));
+    CHECK(is_subpath("./include/f.h", "./"));
+    CHECK(is_subpath("./include/f.h", "./include"));
+    CHECK(is_subpath("./include/f.h", "include"));
+    CHECK(is_subpath("include/f.h", "./include"));
+    CHECK(is_subpath("include/f.h", "include"));
+
+    CHECK(is_subpath("include/f.h", "include/f.h"));
+    CHECK(is_subpath("./include/f.h", "include/f.h"));
+    CHECK(is_subpath("include/f.h", "./include/f.h"));
+    CHECK(is_subpath("./include/f.h", "include/f.h"));
+
+#if !defined(_MSC_VER)
+    CHECK(is_subpath("/usr/local/include/f.h", "/usr/local"));
+    CHECK_FALSE(is_subpath("/usr/local/include/f.h", "/usr/local/lib"));
+    CHECK_FALSE(is_subpath("/usr/include/f.h", "."));
+#else
+    CHECK(is_subpath("E:\\test\\src\\main.cpp", "E:\\test"));
+    CHECK_FALSE(is_subpath("E:\\test\\src\\main.cpp", "C:\\test"));
+#endif
+}
+
+TEST_CASE("Test find_entry_by_path_prefix")
+{
+    using clanguml::util::find_entry_by_path_prefix;
+
+    std::map<std::string, std::string> m;
+    m.emplace(".", "default");
+    m.emplace("./src", "internal_sources");
+    m.emplace("./src/thirdparty/", "thirdparty_sources");
+    m.emplace("/usr/include/boost", "boost_sources");
+    m.emplace("../my_other_project/src", "my_other_project_sources");
+
+    auto kv = find_entry_by_path_prefix(m, "/tmp");
+    CHECK_FALSE(kv.has_value());
+
+    kv = find_entry_by_path_prefix(m, "./src/main.cc");
+    CHECK(kv.value().second == "internal_sources");
+
+    kv = find_entry_by_path_prefix(m, "src/main.cc");
+    CHECK(kv.value().second == "internal_sources");
+
+    kv = find_entry_by_path_prefix(m, "src/thirdparty/main.cc");
+    CHECK(kv.value().second == "thirdparty_sources");
+
+    kv = find_entry_by_path_prefix(m, "include/f.h");
+    CHECK(kv.value().second == "default");
+
+    kv = find_entry_by_path_prefix(m, "./include/f.h");
+    CHECK(kv.value().second == "default");
+
+    kv = find_entry_by_path_prefix(m, "../my_other_project/src/lib.cc");
+    CHECK(kv.value().second == "my_other_project_sources");
+}

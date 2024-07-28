@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
+#include <map>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -460,4 +462,9 @@ bool is_relative_to(
 std::string format_message_comment(
     const std::string &c, unsigned width = kDefaultMessageCommentWidth);
 
+bool is_subpath(
+    const std::filesystem::path &path, const std::filesystem::path &prefix);
+
+std::optional<std::pair<std::string, std::string>> find_entry_by_path_prefix(
+    const std::map<std::string, std::string> &m, const std::string &prefix);
 } // namespace clanguml::util

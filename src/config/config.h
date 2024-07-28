@@ -461,37 +461,13 @@ struct generate_links_config {
     std::optional<std::pair<std::string, std::string>> get_link_pattern(
         const std::string &path) const
     {
-        if (link.empty())
-            return {};
-
-        if ((path.empty() || path == ".") && link.count(".") > 0) {
-            return {{".", link.at(".")}};
-        }
-
-        for (const auto &[key, pattern] : link) {
-            if (util::starts_with(path, key))
-                return {{key, pattern}};
-        }
-
-        return {};
+        return util::find_entry_by_path_prefix(link, path);
     }
 
     std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
         const std::string &path) const
     {
-        if (tooltip.empty())
-            return {};
-
-        if ((path.empty() || path == ".") && tooltip.count(".") > 0) {
-            return {{".", tooltip.at(".")}};
-        }
-
-        for (const auto &[key, pattern] : tooltip) {
-            if (util::starts_with(path, key))
-                return {{key, pattern}};
-        }
-
-        return {};
+        return util::find_entry_by_path_prefix(tooltip, path);
     }
 };
 

@@ -85,25 +85,14 @@ public:
     template <typename E> inja::json element_context(const E &e) const;
 
     std::optional<std::pair<std::string, std::string>> get_link_pattern(
-        const common::model::source_location &sl) const
-    {
-        if (sl.file_relative().empty()) {
-            return config().generate_links().get_link_pattern(sl.file());
-        }
-
-        return config().generate_links().get_link_pattern(".");
-    }
+        const common::model::source_location &sl) const;
 
     std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
-        const common::model::source_location &sl) const
-    {
-        if (sl.file_relative().empty()) {
-            return config().generate_links().get_tooltip_pattern(sl.file());
-        }
+        const common::model::source_location &sl) const;
 
-        return config().generate_links().get_tooltip_pattern(".");
-    }
-
+    /**
+     * @brief Initialize diagram Jinja context
+     */
     void init_context();
 
     /**
@@ -317,5 +306,29 @@ inja::json generator<C, D>::element_context(const E &e) const
     }
 
     return ctx;
+}
+
+template <typename C, typename D>
+std::optional<std::pair<std::string, std::string>>
+generator<C, D>::get_link_pattern(
+    const common::model::source_location &sl) const
+{
+    if (sl.file_relative().empty()) {
+        return config().generate_links().get_link_pattern(sl.file());
+    }
+
+    return config().generate_links().get_link_pattern(sl.file_relative());
+}
+
+template <typename C, typename D>
+std::optional<std::pair<std::string, std::string>>
+generator<C, D>::get_tooltip_pattern(
+    const common::model::source_location &sl) const
+{
+    if (sl.file_relative().empty()) {
+        return config().generate_links().get_tooltip_pattern(sl.file());
+    }
+
+    return config().generate_links().get_tooltip_pattern(sl.file_relative());
 }
 } // namespace clanguml::common::generators

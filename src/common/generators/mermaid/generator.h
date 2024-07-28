@@ -240,33 +240,34 @@ void generator<C, D>::generate_link(std::ostream &ostr, const E &e) const
     auto maybe_tooltip_pattern =
         generators::generator<C, D>::get_tooltip_pattern(e);
 
-    if (!maybe_tooltip_pattern)
-        return;
+    if (maybe_tooltip_pattern) {
+        const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
 
-    const auto &[tooltip_prefix, tooltip_pattern] = *maybe_tooltip_pattern;
+        if (!tooltip_pattern.empty()) {
+            ostr << " \"";
+            try {
+                auto ec = generators::generator<C, D>::element_context(e);
+                common::generators::make_context_source_relative(
+                    ec, tooltip_prefix);
+                auto tooltip_text = generators::generator<C, D>::env().render(
+                    std::string_view{tooltip_pattern}, ec);
+                util::replace_all(tooltip_text, "\"", "&bdquo;");
+                ostr << tooltip_text;
+            }
+            catch (const inja::json::parse_error &e) {
+                LOG_ERROR(
+                    "Failed to parse Jinja template: {}", tooltip_pattern);
+                ostr << " ";
+            }
+            catch (const inja::json::exception &e) {
+                LOG_ERROR(
+                    "Failed to render PlantUML directive: \n{}\n due to: {}",
+                    tooltip_pattern, e.what());
+                ostr << " ";
+            }
 
-    if (!tooltip_pattern.empty()) {
-        ostr << " \"";
-        try {
-            auto ec = generators::generator<C, D>::element_context(e);
-            common::generators::make_context_source_relative(
-                ec, tooltip_prefix);
-            auto tooltip_text = generators::generator<C, D>::env().render(
-                std::string_view{tooltip_pattern}, ec);
-            util::replace_all(tooltip_text, "\"", "&bdquo;");
-            ostr << tooltip_text;
+            ostr << "\"";
         }
-        catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", tooltip_pattern);
-            ostr << " ";
-        }
-        catch (const inja::json::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
-                tooltip_pattern, e.what());
-            ostr << " ";
-        }
-
-        ostr << "\"";
     }
     ostr << "\n";
 }

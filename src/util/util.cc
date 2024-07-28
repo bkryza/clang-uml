@@ -496,4 +496,75 @@ std::string format_message_comment(const std::string &comment, unsigned width)
     return result;
 }
 
+std::filesystem::path normalize_relative_path(const std::filesystem::path &path)
+{
+    if (path.is_absolute())
+        return path;
+
+    std::filesystem::path result;
+
+    for (const auto &part : path) {
+        if (part == ".") {
+            continue;
+        }
+        result /= part;
+    }
+
+    return result;
+}
+
+bool is_subpath(
+    const std::filesystem::path &path, const std::filesystem::path &base)
+{
+    if (path.empty())
+        return false;
+
+    auto normalized_path = normalize_relative_path(path);
+    auto normalized_base = normalize_relative_path(base);
+
+    if (normalized_path == normalized_base)
+        return true;
+
+    auto rel = std::filesystem::relative(normalized_path, normalized_base);
+
+    std::string rel_str = rel.string();
+    return !rel_str.empty() && rel.native()[0] != '.';
+}
+
+std::optional<std::pair<std::string, std::string>> find_entry_by_path_prefix(
+    const std::map<std::string, std::string> &m, const std::string &path)
+{
+    if (m.empty())
+        return {};
+
+    // Extract keys and sort them by length in descending order
+    std::vector<std::string> keys;
+    keys.reserve(m.size());
+    for (const auto &[key, pattern] : m) {
+        keys.push_back(key);
+    }
+
+    std::sort(keys.begin(), keys.end(),
+        [](const std::string &a, const std::string &b) {
+            return a.size() > b.size();
+        });
+
+    std::filesystem::path file_path{path};
+
+    for (const auto &key : keys) {
+        const auto &pattern = m.at(key);
+        std::filesystem::path key_path{key};
+
+        if (is_subpath(file_path, key_path)) {
+            return {{key, pattern}};
+        }
+    }
+
+    if ((path.empty() || file_path.is_relative() || path == ".") &&
+        m.count(".") > 0) {
+        return {{".", m.at(".")}};
+    }
+
+    return {};
+}
 } // namespace clanguml::util
