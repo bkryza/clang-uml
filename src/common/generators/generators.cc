@@ -254,7 +254,13 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
 
         const auto &valid_translation_units = translation_units_map.at(name);
 
-        if (valid_translation_units.empty()) {
+        LOG_DBG("Found {} valid translation units for diagram {}",
+            valid_translation_units.size(), name);
+
+        const auto matching_commands_count =
+            db->count_matching_commands(valid_translation_units);
+
+        if (matching_commands_count == 0) {
             if (indicator) {
                 indicator->add_progress_bar(
                     name, 0, diagram_type_to_color(diagram->type()));
@@ -270,8 +276,8 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
             continue;
         }
 
-        const auto matching_commands_count =
-            db->count_matching_commands(valid_translation_units);
+        LOG_DBG("Found {} matching translation unit commands for diagram {}",
+            matching_commands_count, name);
 
         auto generator = [&name = name, &diagram = diagram, &indicator,
                              db = std::ref(*db), matching_commands_count,

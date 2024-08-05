@@ -971,7 +971,7 @@ void resolve_option_path(YAML::Node &doc, const std::string &option_name)
     std::filesystem::path relative_to_path{
         doc["relative_to"].as<std::string>()};
 
-    assert(relative_to_path.is_absolute());
+    relative_to_path = weakly_canonical(relative_to_path);
 
     std::filesystem::path option_path{doc[option_name].as<std::string>()};
 

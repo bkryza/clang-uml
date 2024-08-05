@@ -96,8 +96,12 @@ long compilation_database::count_matching_commands(
     auto commands = base().getAllCompileCommands();
 
     for (const auto &command : commands) {
-        result += std::count_if(files.begin(), files.end(),
-            [&command](const auto &file) { return command.Filename == file; });
+        result += std::count_if(
+            files.begin(), files.end(), [&command](const auto &file) {
+                return (command.Filename == file) ||
+                    (std::filesystem::weakly_canonical(command.Filename)
+                            .string() == file);
+            });
     }
 
     return result;

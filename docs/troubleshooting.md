@@ -144,6 +144,14 @@ remove_compile_flags:
   - -Wshadow
 ```
 
+If you don't care about warnings in general during the diagram generation, a
+more convenient option is to ignore all warnings:
+
+```yaml
+add_compile_flags:
+  - -Wno-unknown-warning-option
+```
+
 ### Errors with C++20 modules and LLVM 18
 
 When running `clang-uml` on code using C++20 modules, the LLVM version used to
@@ -282,6 +290,17 @@ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
 
 Also see
 [here](./md_docs_2common__options.html#resolving-include-path-and-compiler-flags-issues).
+
+### "error: unknown pragma ignored"
+If your code bases uses some non-standard pragmas declarations or you
+are using older LLVM version, which does not yet support a specific pragma, the
+warning can be ignore by adding the following compilation flag in the `.clang-uml`
+config:
+
+```yaml
+add_compile_flags:
+  - -Wno-unknown-pragmas
+```
 
 ## Class diagrams
 

@@ -324,6 +324,7 @@ std::vector<std::string> diagram::get_translation_units() const
         for (const auto &match : matches) {
             const auto path =
                 std::filesystem::canonical(root_directory() / match);
+
             translation_units.emplace_back(path.string());
         }
     }
