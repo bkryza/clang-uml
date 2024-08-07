@@ -70,7 +70,9 @@ load_config(const std::string &test_name)
         res.first->compilation_database_dir());
 
     std::vector<std::string> remove_compile_flags{
-        std::string{"-Wno-class-memaccess"}};
+        std::string{"-Wno-class-memaccess"},
+        std::string{"-forward-unknown-to-host-compiler"},
+        std::string{"--generate-code=arch=compute_75,code=[compute_75,sm_75]"}};
 
     res.first->remove_compile_flags.set(remove_compile_flags);
 
@@ -99,10 +101,11 @@ auto generate_diagram_impl(clanguml::common::compilation_database &db,
 
     inject_diagram_options(diagram);
 
+    auto tus = diagram->glob_translation_units(db.getAllFiles());
+
     auto model = clanguml::common::generators::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units());
+        diagram_config, diagram_visitor>(
+        db, diagram->name, dynamic_cast<diagram_config &>(*diagram), tus);
 
     return model;
 }

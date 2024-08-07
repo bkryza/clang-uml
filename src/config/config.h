@@ -561,7 +561,7 @@ struct inheritable_diagram_options {
      */
     option<std::filesystem::path> &get_relative_to() { return relative_to; }
 
-    option<std::vector<std::string>> glob{"glob"};
+    option<std::vector<common::string_or_regex>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{
@@ -639,11 +639,12 @@ struct diagram : public inheritable_diagram_options {
     virtual common::model::diagram_t type() const = 0;
 
     /**
-     * @brief Returns list of translation unit paths
+     * @brief Filter translation units based on glob patterns
      *
      * @return List of translation unit paths
      */
-    std::vector<std::string> get_translation_units() const;
+    std::vector<std::string> glob_translation_units(
+        const std::vector<std::string> &compilation_database_files) const;
 
     /**
      * @brief Make path relative to the `relative_to` config option

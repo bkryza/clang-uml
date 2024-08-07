@@ -55,27 +55,11 @@ void find_translation_units_for_diagrams(
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
-        // If glob is not defined use all translation units from the
-        // compilation database
-        if (!diagram->glob.has_value) {
-            translation_units_map[name] = compilation_database_files;
-        }
-        // Otherwise, get all translation units matching the glob from diagram
-        // configuration
-        else {
-            const std::vector<std::string> translation_units =
-                diagram->get_translation_units();
+        translation_units_map[name] =
+            diagram->glob_translation_units(compilation_database_files);
 
-            std::vector<std::string> valid_translation_units{};
-            std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(),
-                std::back_inserter(valid_translation_units),
-                [&translation_units](const auto &tu) {
-                    return util::contains(translation_units, tu);
-                });
-
-            translation_units_map[name] = std::move(valid_translation_units);
-        }
+        LOG_DBG("Found {} translation units for diagram {}",
+            translation_units_map.at(name).size(), name);
     }
 }
 

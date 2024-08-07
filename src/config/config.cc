@@ -301,35 +301,59 @@ bool inheritable_diagram_options::generate_fully_qualified_name() const
         !generate_packages();
 }
 
-std::vector<std::string> diagram::get_translation_units() const
+std::vector<std::string> diagram::glob_translation_units(
+    const std::vector<std::string> &compilation_database_files) const
 {
-    std::vector<std::string> translation_units{};
+    // If glob is not defined use all translation units from the
+    // compilation database
+    if (!glob.has_value) {
+        return compilation_database_files;
+    }
+
+    // Otherwise, get all translation units matching the glob from diagram
+    // configuration
+    std::vector<std::string> result{};
 
     LOG_DBG("Looking for translation units in {}", root_directory().string());
 
     for (const auto &g : glob()) {
-        std::filesystem::path absolute_glob_path{g};
+        if (g.is_regex()) {
+            LOG_DBG("Searching glob regex {}", g.to_string());
+
+            std::regex regex_pattern(
+                g.to_string(), std::regex_constants::optimize);
+
+            std::copy_if(compilation_database_files.begin(),
+                compilation_database_files.end(), std::back_inserter(result),
+                [&regex_pattern](const auto &tu) {
+                    std::smatch m;
+                    return std::regex_search(tu, m, regex_pattern);
+                });
+        }
+        else {
+            std::filesystem::path absolute_glob_path{g.to_string()};
 
 #ifdef _MSC_VER
-        if (!absolute_glob_path.has_root_name())
+            if (!absolute_glob_path.has_root_name())
 #else
-        if (!absolute_glob_path.is_absolute())
+            if (!absolute_glob_path.is_absolute())
 #endif
-            absolute_glob_path = root_directory() / absolute_glob_path;
+                absolute_glob_path = root_directory() / absolute_glob_path;
 
-        LOG_DBG("Searching glob path {}", absolute_glob_path.string());
+            LOG_DBG("Searching glob path {}", absolute_glob_path.string());
 
-        auto matches = glob::glob(absolute_glob_path.string(), true, false);
+            auto matches = glob::glob(absolute_glob_path.string(), true, false);
 
-        for (const auto &match : matches) {
-            const auto path =
-                std::filesystem::canonical(root_directory() / match);
+            for (const auto &match : matches) {
+                const auto path =
+                    std::filesystem::canonical(root_directory() / match);
 
-            translation_units.emplace_back(path.string());
+                result.emplace_back(path.string());
+            }
         }
     }
 
-    return translation_units;
+    return result;
 }
 
 std::filesystem::path diagram::root_directory() const

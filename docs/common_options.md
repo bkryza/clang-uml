@@ -71,6 +71,7 @@ configuration file as follows:
    glob:
      - src/dir1/*.cc
      - src/dir3/*.cc
+     - r: ".*test.*cpp$"
 ```
 
 The glob patterns only need to match the translation units, which are also in
@@ -78,6 +79,13 @@ the `compile_commands.json` file, i.e. any files that match the glob patterns,
 but are not in `compile_commands.json` will be ignored. In case the `glob`
 pattern set does not match any translation units an error will be printed on
 the standard output.
+
+For more advanced control over the `glob` pattern, instead of simple glob style
+pattern, a full regular expression can be provided as an object with a single
+key `r`. In such case, the pattern will not be checked against file system at
+all but will only filter the compile commands database entries. This can
+significantly improve performance on projects with tens of thousands of
+translation units.
 
 For small projects, the `glob` property can be omitted, which will result in
 `clang-uml` parsing all translation units from `compile_commands.json` for

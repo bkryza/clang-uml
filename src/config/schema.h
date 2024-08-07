@@ -181,7 +181,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -225,7 +225,7 @@ types:
         filter_mode: !optional filter_mode_t
         include_system_headers: !optional bool
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -266,7 +266,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         filter_mode: !optional filter_mode_t
         include_system_headers: !optional bool
         include: !optional filter_t
@@ -302,7 +302,7 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -352,7 +352,7 @@ root:
     exclude: !optional filter_t
     generate_links: !optional generate_links_t
     git: !optional git_t
-    glob: !optional [string]
+    glob: !optional [regex_or_string_t]
     include: !optional filter_t
     plantuml: !optional
         before: !optional [string]
