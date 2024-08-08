@@ -100,6 +100,12 @@ tvl::value_t filter_visitor::match(
 }
 
 tvl::value_t filter_visitor::match(
+    const diagram &d, const common::model::relationship &r) const
+{
+    return match(d, r.type());
+}
+
+tvl::value_t filter_visitor::match(
     const diagram & /*d*/, const common::model::relationship_t & /*r*/) const
 {
     return {};
@@ -159,6 +165,10 @@ bool filter_visitor::is_exclusive() const
 
 filter_t filter_visitor::type() const { return type_; }
 
+filter_mode_t filter_visitor::mode() const { return mode_; }
+
+void filter_visitor::set_mode(filter_mode_t mode) { mode_ = mode; }
+
 anyof_filter::anyof_filter(
     filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
     : filter_visitor{type}
@@ -169,22 +179,116 @@ anyof_filter::anyof_filter(
 tvl::value_t anyof_filter::match(
     const diagram &d, const common::model::element &e) const
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &e](const auto &f) { return f->match(d, e); });
+    return match_anyof(d, e);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::relationship_t &r) const
+{
+    return match_anyof(d, r);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::access_t &a) const
+{
+    return match_anyof(d, a);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::namespace_ &ns) const
+{
+    return match_anyof(d, ns);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::source_file &f) const
+{
+    return match_anyof(d, f);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const common::model::source_location &f) const
+{
+    return match_anyof(d, f);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    return match_anyof(d, m);
+}
+
+tvl::value_t anyof_filter::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return match_anyof(d, m);
 }
 
 tvl::value_t anyof_filter::match(
     const diagram &d, const sequence_diagram::model::participant &p) const
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &p](const auto &f) { return f->match(d, p); });
+    return match_anyof(d, p);
 }
 
-tvl::value_t anyof_filter::match(
-    const diagram &d, const common::model::source_file &e) const
+allof_filter::allof_filter(
+    filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters)
+    : filter_visitor{type}
+    , filters_{std::move(filters)}
 {
-    return tvl::any_of(filters_.begin(), filters_.end(),
-        [&d, &e](const auto &f) { return f->match(d, e); });
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::element &e) const
+{
+    return match_allof(d, e);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::relationship_t &r) const
+{
+    return match_allof(d, r);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::access_t &a) const
+{
+    return match_allof(d, a);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::namespace_ &ns) const
+{
+    return match_allof(d, ns);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::source_file &f) const
+{
+    return match_allof(d, f);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const common::model::source_location &f) const
+{
+    return match_allof(d, f);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const class_diagram::model::class_method &m) const
+{
+    return match_allof(d, m);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const class_diagram::model::class_member &m) const
+{
+    return match_allof(d, m);
+}
+
+tvl::value_t allof_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    return match_allof(d, p);
 }
 
 namespace_filter::namespace_filter(
@@ -283,6 +387,12 @@ tvl::value_t namespace_filter::match(const diagram &d, const element &e) const
         });
 
     return result;
+}
+
+tvl::value_t namespace_filter::match(
+    const diagram &d, const sequence_diagram::model::participant &p) const
+{
+    return match(d, dynamic_cast<const element &>(p));
 }
 
 modules_filter::modules_filter(
@@ -845,8 +955,8 @@ bool context_filter::is_outward(relationship_t r) const
     return r != relationship_t::kAssociation;
 }
 
-paths_filter::paths_filter(filter_t type, const std::filesystem::path &root,
-    const std::vector<std::string> &p)
+paths_filter::paths_filter(filter_t type, const std::vector<std::string> &p,
+    const std::filesystem::path &root)
     : filter_visitor{type}
     , root_{root}
 {
@@ -899,7 +1009,7 @@ tvl::value_t paths_filter::match(
         return {};
     }
 
-    // Matching source paths doesn't make sens if they are not absolute
+    // Matching source paths doesn't make sense if they are not absolute
     if (!p.is_absolute()) {
         return {};
     }
@@ -972,11 +1082,19 @@ tvl::value_t class_member_filter::match(
     return access_filter_->match(d, m.access());
 }
 
-diagram_filter::diagram_filter(
-    const common::model::diagram &d, const config::diagram &c)
+diagram_filter::diagram_filter(const common::model::diagram &d,
+    const config::diagram & /*c*/, private_constructor_tag_t /*unused*/)
     : diagram_{d}
 {
-    init_filters(c);
+}
+
+void diagram_filter::add_filter(
+    filter_t filter_type, std::unique_ptr<filter_visitor> fv)
+{
+    if (filter_type == filter_t::kInclusive)
+        add_inclusive_filter(std::move(fv));
+    else
+        add_exclusive_filter(std::move(fv));
 }
 
 void diagram_filter::add_inclusive_filter(std::unique_ptr<filter_visitor> fv)
@@ -1001,254 +1119,6 @@ bool diagram_filter::should_include(
     }
 
     return false;
-}
-
-void diagram_filter::init_filters(const config::diagram &c)
-{
-    using specializations_filter_t =
-        edge_traversal_filter<class_diagram::model::diagram,
-            class_diagram::model::class_, common::string_or_regex>;
-
-    using class_dependants_filter_t =
-        edge_traversal_filter<class_diagram::model::diagram,
-            class_diagram::model::class_, common::string_or_regex>;
-    using class_dependencies_filter_t =
-        edge_traversal_filter<class_diagram::model::diagram,
-            class_diagram::model::class_, common::string_or_regex>;
-
-    using package_dependants_filter_t =
-        edge_traversal_filter<package_diagram::model::diagram,
-            common::model::package, common::string_or_regex>;
-    using package_dependencies_filter_t =
-        edge_traversal_filter<package_diagram::model::diagram,
-            common::model::package, common::string_or_regex>;
-
-    using source_file_dependency_filter_t =
-        edge_traversal_filter<include_diagram::model::diagram,
-            common::model::source_file, std::string,
-            common::model::source_file>;
-
-    // Process inclusive filters
-    if (c.include) {
-        add_inclusive_filter(std::make_unique<namespace_filter>(
-            filter_t::kInclusive, c.include().namespaces));
-
-        add_inclusive_filter(std::make_unique<modules_filter>(
-            filter_t::kInclusive, c.include().modules));
-
-        add_inclusive_filter(std::make_unique<module_access_filter>(
-            filter_t::kInclusive, c.include().module_access));
-
-        add_inclusive_filter(std::make_unique<relationship_filter>(
-            filter_t::kInclusive, c.include().relationships));
-
-        add_inclusive_filter(std::make_unique<access_filter>(
-            filter_t::kInclusive, c.include().access));
-
-        add_inclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kInclusive, c.root_directory(), c.include().paths));
-
-        add_inclusive_filter(
-            std::make_unique<class_method_filter>(filter_t::kInclusive,
-                std::make_unique<access_filter>(
-                    filter_t::kInclusive, c.include().access),
-                std::make_unique<method_type_filter>(
-                    filter_t::kInclusive, c.include().method_types)));
-
-        add_inclusive_filter(
-            std::make_unique<class_member_filter>(filter_t::kInclusive,
-                std::make_unique<access_filter>(
-                    filter_t::kInclusive, c.include().access)));
-
-        // Include any of these matches even if one them does not match
-        std::vector<std::unique_ptr<filter_visitor>> element_filters;
-
-        element_filters.emplace_back(std::make_unique<element_filter>(
-            filter_t::kInclusive, c.include().elements));
-
-        element_filters.emplace_back(std::make_unique<element_type_filter>(
-            filter_t::kInclusive, c.include().element_types));
-
-        if (c.type() == diagram_t::kClass) {
-            element_filters.emplace_back(std::make_unique<subclass_filter>(
-                filter_t::kInclusive, c.include().subclasses));
-
-            element_filters.emplace_back(std::make_unique<parents_filter>(
-                filter_t::kInclusive, c.include().parents));
-
-            element_filters.emplace_back(
-                std::make_unique<specializations_filter_t>(filter_t::kInclusive,
-                    relationship_t::kInstantiation,
-                    c.include().specializations));
-
-            element_filters.emplace_back(
-                std::make_unique<class_dependants_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    c.include().dependants));
-
-            element_filters.emplace_back(
-                std::make_unique<class_dependencies_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    c.include().dependencies, true));
-        }
-        else if (c.type() == diagram_t::kSequence) {
-            element_filters.emplace_back(std::make_unique<callee_filter>(
-                filter_t::kInclusive, c.include().callee_types));
-        }
-        else if (c.type() == diagram_t::kPackage) {
-            element_filters.emplace_back(
-                std::make_unique<package_dependants_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    c.include().dependants));
-
-            element_filters.emplace_back(
-                std::make_unique<package_dependencies_filter_t>(
-                    filter_t::kInclusive, relationship_t::kDependency,
-                    c.include().dependencies, true));
-        }
-        else if (c.type() == diagram_t::kInclude) {
-            std::vector<std::string> dependants;
-            std::vector<std::string> dependencies;
-
-            for (auto &&path : c.include().dependants) {
-                if (auto p = path.get<std::string>(); p.has_value()) {
-                    const std::filesystem::path dep_path{*p};
-                    dependants.emplace_back(
-                        dep_path.lexically_normal().string());
-                }
-            }
-
-            for (auto &&path : c.include().dependencies) {
-                if (auto p = path.get<std::string>(); p.has_value()) {
-                    const std::filesystem::path dep_path{*p};
-                    dependencies.emplace_back(
-                        dep_path.lexically_normal().string());
-                }
-            }
-
-            element_filters.emplace_back(
-                std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kInclusive, relationship_t::kAssociation,
-                    dependants, false));
-
-            element_filters.emplace_back(
-                std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kInclusive, relationship_t::kAssociation,
-                    dependencies, true));
-        }
-
-        element_filters.emplace_back(std::make_unique<context_filter>(
-            filter_t::kInclusive, c.include().context));
-
-        add_inclusive_filter(std::make_unique<anyof_filter>(
-            filter_t::kInclusive, std::move(element_filters)));
-    }
-
-    // Process exclusive filters
-    if (c.exclude) {
-        add_exclusive_filter(std::make_unique<namespace_filter>(
-            filter_t::kExclusive, c.exclude().namespaces));
-
-        add_exclusive_filter(std::make_unique<modules_filter>(
-            filter_t::kExclusive, c.exclude().modules));
-
-        add_exclusive_filter(std::make_unique<module_access_filter>(
-            filter_t::kExclusive, c.exclude().module_access));
-
-        add_exclusive_filter(std::make_unique<paths_filter>(
-            filter_t::kExclusive, c.root_directory(), c.exclude().paths));
-
-        add_exclusive_filter(std::make_unique<element_filter>(
-            filter_t::kExclusive, c.exclude().elements));
-
-        add_exclusive_filter(std::make_unique<element_type_filter>(
-            filter_t::kExclusive, c.exclude().element_types));
-
-        add_exclusive_filter(std::make_unique<relationship_filter>(
-            filter_t::kExclusive, c.exclude().relationships));
-
-        add_exclusive_filter(std::make_unique<access_filter>(
-            filter_t::kExclusive, c.exclude().access));
-
-        add_exclusive_filter(
-            std::make_unique<class_method_filter>(filter_t::kExclusive,
-                std::make_unique<access_filter>(
-                    filter_t::kExclusive, c.exclude().access),
-                std::make_unique<method_type_filter>(
-                    filter_t::kExclusive, c.exclude().method_types)));
-
-        add_exclusive_filter(
-            std::make_unique<class_member_filter>(filter_t::kExclusive,
-                std::make_unique<access_filter>(
-                    filter_t::kExclusive, c.exclude().access)));
-
-        add_exclusive_filter(std::make_unique<subclass_filter>(
-            filter_t::kExclusive, c.exclude().subclasses));
-
-        add_exclusive_filter(std::make_unique<parents_filter>(
-            filter_t::kExclusive, c.exclude().parents));
-
-        add_exclusive_filter(
-            std::make_unique<specializations_filter_t>(filter_t::kExclusive,
-                relationship_t::kInstantiation, c.exclude().specializations));
-
-        if (c.type() == diagram_t::kClass) {
-            add_exclusive_filter(std::make_unique<class_dependants_filter_t>(
-                filter_t::kExclusive, relationship_t::kDependency,
-                c.exclude().dependants));
-
-            add_exclusive_filter(std::make_unique<class_dependencies_filter_t>(
-                filter_t::kExclusive, relationship_t::kDependency,
-                c.exclude().dependencies, true));
-        }
-        else if (c.type() == diagram_t::kSequence) {
-            add_exclusive_filter(std::make_unique<callee_filter>(
-                filter_t::kExclusive, c.exclude().callee_types));
-        }
-        else if (c.type() == diagram_t::kPackage) {
-            add_exclusive_filter(
-                std::make_unique<package_dependencies_filter_t>(
-                    filter_t::kExclusive, relationship_t::kDependency,
-                    c.exclude().dependencies, true));
-
-            add_exclusive_filter(std::make_unique<package_dependants_filter_t>(
-                filter_t::kExclusive, relationship_t::kDependency,
-                c.exclude().dependants));
-        }
-        else if (c.type() == diagram_t::kInclude) {
-            std::vector<std::string> dependants;
-            std::vector<std::string> dependencies;
-
-            for (auto &&path : c.exclude().dependants) {
-                if (auto p = path.get<std::string>(); p.has_value()) {
-                    std::filesystem::path dep_path{*p};
-                    dependants.emplace_back(
-                        dep_path.lexically_normal().string());
-                }
-            }
-
-            for (auto &&path : c.exclude().dependencies) {
-                if (auto p = path.get<std::string>(); p.has_value()) {
-                    std::filesystem::path dep_path{*p};
-                    dependencies.emplace_back(
-                        dep_path.lexically_normal().string());
-                }
-            }
-
-            add_exclusive_filter(
-                std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kExclusive, relationship_t::kAssociation,
-                    dependants, false));
-
-            add_exclusive_filter(
-                std::make_unique<source_file_dependency_filter_t>(
-                    filter_t::kExclusive, relationship_t::kAssociation,
-                    dependencies, true));
-        }
-
-        add_exclusive_filter(std::make_unique<context_filter>(
-            filter_t::kExclusive, c.exclude().context));
-    }
 }
 
 template <>

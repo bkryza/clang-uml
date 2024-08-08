@@ -37,8 +37,8 @@ types:
         - abbreviated
         - none
     generate_links_t:
-        link: string
-        tooltip: string
+        link: !optional [string, map_t<string;string>]
+        tooltip: !optional [string, map_t<string;string>]
     git_t:
         branch: string
         revision: [string, int]
@@ -156,6 +156,8 @@ types:
         paths: !optional [string]
         method_types: !optional [method_type_filter_t]
         callee_types: !optional [callee_type_filter_t]
+        anyof: !optional filter_t
+        allof: !optional filter_t
     function_location_t:
         function: string
     marker_location_t:
@@ -163,6 +165,9 @@ types:
     source_location_t:
         - function_location_t
         - marker_location_t
+    filter_mode_t: !variant
+        - basic
+        - advanced
     class_diagram_t:
         type: !variant [class]
         #
@@ -171,10 +176,12 @@ types:
         __parent_path: !optional string
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -215,8 +222,10 @@ types:
         debug_mode: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -257,7 +266,9 @@ types:
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -286,10 +297,12 @@ types:
         __parent_path: !optional string
         comment_parser: !optional comment_parser_t
         debug_mode: !optional bool
+        filter_mode: !optional filter_mode_t
+        include_system_headers: !optional bool
         exclude: !optional filter_t
         generate_links: !optional generate_links_t
         git: !optional git_t
-        glob: !optional [string]
+        glob: !optional [regex_or_string_t]
         include: !optional filter_t
         plantuml: !optional
             before: !optional [string]
@@ -339,7 +352,7 @@ root:
     exclude: !optional filter_t
     generate_links: !optional generate_links_t
     git: !optional git_t
-    glob: !optional [string]
+    glob: !optional [regex_or_string_t]
     include: !optional filter_t
     plantuml: !optional
         before: !optional [string]
@@ -371,6 +384,8 @@ root:
     generate_template_argument_dependencies: !optional bool
     skip_redundant_dependencies: !optional bool
     type_aliases: !optional map_t<string;string>
+    filter_mode: !optional filter_mode_t
+    include_system_headers: !optional bool
 )";
 
 } // namespace clanguml::config

@@ -21,6 +21,28 @@
 #include "progress_indicator.h"
 
 namespace clanguml::common::generators {
+void make_context_source_relative(
+    inja::json &context, const std::string &prefix)
+{
+    if (!context.contains("element"))
+        return;
+
+    if (!context["element"].contains("source"))
+        return;
+
+    auto &source = context["element"]["source"];
+
+    if (source.at("path").empty())
+        return;
+
+    auto path = std::filesystem::path(source.at("path"));
+    auto prefix_path = std::filesystem::path(prefix);
+    if (path.is_absolute() && util::is_relative_to(path, prefix_path)) {
+        source["path"] = relative(path, prefix_path);
+        return;
+    }
+}
+
 void find_translation_units_for_diagrams(
     const std::vector<std::string> &diagram_names,
     clanguml::config::config &config,
@@ -33,27 +55,11 @@ void find_translation_units_for_diagrams(
         if (!diagram_names.empty() && !util::contains(diagram_names, name))
             continue;
 
-        // If glob is not defined use all translation units from the
-        // compilation database
-        if (!diagram->glob.has_value) {
-            translation_units_map[name] = compilation_database_files;
-        }
-        // Otherwise, get all translation units matching the glob from diagram
-        // configuration
-        else {
-            const std::vector<std::string> translation_units =
-                diagram->get_translation_units();
+        translation_units_map[name] =
+            diagram->glob_translation_units(compilation_database_files);
 
-            std::vector<std::string> valid_translation_units{};
-            std::copy_if(compilation_database_files.begin(),
-                compilation_database_files.end(),
-                std::back_inserter(valid_translation_units),
-                [&translation_units](const auto &tu) {
-                    return util::contains(translation_units, tu);
-                });
-
-            translation_units_map[name] = std::move(valid_translation_units);
-        }
+        LOG_DBG("Found {} translation units for diagram {}",
+            translation_units_map.at(name).size(), name);
     }
 }
 
@@ -232,7 +238,13 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
 
         const auto &valid_translation_units = translation_units_map.at(name);
 
-        if (valid_translation_units.empty()) {
+        LOG_DBG("Found {} valid translation units for diagram {}",
+            valid_translation_units.size(), name);
+
+        const auto matching_commands_count =
+            db->count_matching_commands(valid_translation_units);
+
+        if (matching_commands_count == 0) {
             if (indicator) {
                 indicator->add_progress_bar(
                     name, 0, diagram_type_to_color(diagram->type()));
@@ -248,8 +260,8 @@ void generate_diagrams(const std::vector<std::string> &diagram_names,
             continue;
         }
 
-        const auto matching_commands_count =
-            db->count_matching_commands(valid_translation_units);
+        LOG_DBG("Found {} matching translation unit commands for diagram {}",
+            matching_commands_count, name);
 
         auto generator = [&name = name, &diagram = diagram, &indicator,
                              db = std::ref(*db), matching_commands_count,

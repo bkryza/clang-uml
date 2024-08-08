@@ -601,6 +601,9 @@ template <typename VisitorT>
 bool template_builder<VisitorT>::simplify_system_template(
     template_parameter &ct, const std::string &full_name) const
 {
+    if (ct.kind() == model::template_parameter_kind_t::template_type)
+        return false;
+
     auto simplified = config().simplify_template_type(full_name);
 
     if (simplified != full_name) {

@@ -18,6 +18,7 @@
 
 #include "diagram.h"
 
+#include "common/model/filters/diagram_filter.h"
 #include "util/error.h"
 #include "util/util.h"
 
@@ -53,8 +54,6 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
     assert(!ff.name().empty());
     assert(ff.id().value() != 0);
 
-    element_view<source_file>::add(ff);
-
     auto p = ff.path();
 
     if (!f->path().is_empty()) {
@@ -86,7 +85,8 @@ void diagram::add_file(std::unique_ptr<common::model::source_file> &&f)
 
     assert(p.type() == common::model::path_type::kFilesystem);
 
-    add_element(p, std::move(f));
+    if (add_element(p, std::move(f)))
+        element_view<source_file>::add(ff);
 }
 
 const common::reference_vector<common::model::source_file> &
@@ -131,6 +131,25 @@ inja::json diagram::context() const
     ctx["elements"] = elements;
 
     return ctx;
+}
+
+void diagram::apply_filter()
+{
+    // First find all element ids which should be removed
+    std::set<eid_t> to_remove;
+
+    for (auto &f : element_view<source_file>::view())
+        if (f.get().type() != common::model::source_file_t::kDirectory &&
+            !filter().should_include(f.get())) {
+            to_remove.emplace(f.get().id());
+        }
+
+    for (auto &sf : element_view<source_file>::view())
+        sf.get().apply_filter(filter(), to_remove);
+
+    element_view<source_file>::remove(to_remove);
+
+    nested_trait_fspath::remove(to_remove);
 }
 
 bool diagram::is_empty() const { return element_view<source_file>::is_empty(); }

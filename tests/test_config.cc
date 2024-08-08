@@ -43,10 +43,10 @@ TEST_CASE("Test config simple")
     CHECK(diagram.generate_packages() == true);
     CHECK(diagram.generate_template_argument_dependencies() == false);
     CHECK(diagram.generate_links == true);
-    CHECK(diagram.generate_links().link ==
+    CHECK(diagram.generate_links().link.at(".") ==
         "https://github.com/bkryza/clang-uml/blob/{{ git.branch }}/{{ "
         "element.source.file }}#L{{ element.source.line }}");
-    CHECK(diagram.generate_links().tooltip == "{{ element.comment }}");
+    CHECK(diagram.generate_links().tooltip.at(".") == "{{ element.comment }}");
 
     CHECK(
         diagram.comment_parser() == clanguml::config::comment_parser_t::clang);

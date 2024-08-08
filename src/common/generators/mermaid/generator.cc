@@ -78,7 +78,14 @@ std::string indent(const unsigned level)
     return std::string(level * kIndentWidth, ' '); // NOLINT
 }
 
-std::string render_name(std::string name, bool round_brackets)
+std::string render_name(std::string name)
+{
+    util::replace_all(name, "##", "::");
+
+    return name;
+}
+
+std::string escape_name(std::string name, bool round_brackets)
 {
     util::replace_all(name, "<", "&lt;");
     util::replace_all(name, ">", "&gt;");
@@ -86,7 +93,6 @@ std::string render_name(std::string name, bool round_brackets)
         util::replace_all(name, "(", "&lpar;");
         util::replace_all(name, ")", "&rpar;");
     }
-    util::replace_all(name, "##", "::");
     util::replace_all(name, "{", "&lbrace;");
     util::replace_all(name, "}", "&rbrace;");
 

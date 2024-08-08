@@ -26,10 +26,13 @@
 
 #include <atomic>
 #include <exception>
+#include <set>
 #include <string>
 #include <vector>
 
 namespace clanguml::common::model {
+
+class diagram_filter;
 
 /**
  * @brief Base class for standalone diagram elements.
@@ -183,6 +186,9 @@ public:
      * @param completed
      */
     void complete(bool completed);
+
+    virtual void apply_filter(
+        const diagram_filter &filter, const std::set<eid_t> &removed);
 
 private:
     eid_t id_{};

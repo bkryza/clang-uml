@@ -20,6 +20,8 @@
 * [method_types](#method_types)
 * [callee_types](#callee_types)
 * [dependants and dependencies](#dependants-and-dependencies)
+* [anyof](#anyof)
+* [allof](#allof)
 
 <!-- tocstop -->
 
@@ -72,11 +74,13 @@ The following table specifies the values allowed in each filter:
 | `parents`         | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
 | `specializations` | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
 | `access`          | Method or member access scope     | ```public```, ```protected```, ```private```                                                                                                            |
-| `module_access`   | Module access scope               | ```public```, ```private```                                                                                                            |
+| `module_access`   | Module access scope               | ```public```, ```private```                                                                                                                             |
 | `method_types`    | Type of class method              | ```constructor```, ```destructor```, ```assignment```, ```operator```, ```defaulted```, ```deleted```, ```static```                                     |
 | `dependants`      | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
 | `dependencies`    | Qualified name or regex           | ```ns1::ns2::ClassA```, ```r: 'ns1::ns2::ClassA.+'```                                                                                                   |
 | `callee_types`    | Callee types in sequence diagrams | ```constructor```, ```assignment```, ```operator```, ```defaulted```, ```static```, ```method```, ```function```, ```function_template```, ```lambda``` |
+| `anyof`           | Match any of the nested filters   | Logical operator, which returns true if any of its nested filters match (requires `filter_mode: advanced` option)                                       |
+| `allof`           | Match all of the nested filters   | Logical operator, which returns true if all of its nested filters match (requires `filter_mode: advanced` option)                                       |
 
 The following filters are available:
 
@@ -385,3 +389,58 @@ and the following filter:
 results in the following diagram:
 
 ![t00043_class](./test_cases/t00043_class.svg)
+
+## anyof
+
+> Requires setting `filter_mode: advanced` in diagram config
+
+This filter is in fact a logical operator, which allows to gain more control
+over how the specific diagram filters are combined. Consider for instance a
+case where you want to include all elements from a specific namespace, as well
+as some other elements from another namespace. With basic filter this is not
+possible, as the `namespaces` filter will only allow elements from the
+namespaces lister. However when using `anyof` it's possible to specify them
+as an alternative, i.e. any element matching any of the `anyof` subfilters
+will be included. For example:
+
+```yaml
+    include:
+      anyof:
+        subclasses:
+          - ns1::nsA::A1
+        namespaces:
+          - ns2::nsB
+        context:
+          - ns3::nsC::B3
+```
+
+will include all subclasses of `ns1::nsA::A1`, all elements in the `ns2::nsB`
+namespace as well as all elements in the context of element `ns3::nsC::B3`.
+
+For more examples of this checkout test cases
+[t00082](./test_cases/t00082_class.md) and
+[t00083](./test_cases/t00083_class.md).
+
+## allof
+
+> Requires setting `filter_mode: advanced` in diagram config
+
+This filter logical operator is complementary to the `anyof`. It matches all
+diagram elements, which match all of it's subfilters. For instance the following
+filter:
+
+```yaml
+    include:
+      allof:
+        namespaces:
+          - clanguml
+          - std
+        context:
+          - match:
+              radius: 2
+              pattern: clanguml::A
+```
+
+which will include all elements that are in the context of element `clanguml::A`
+not farther than 2 relationships away and also they belong to either `clanguml`
+or `std` namespace.

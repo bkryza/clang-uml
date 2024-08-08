@@ -18,7 +18,7 @@
 
 #include "diagram.h"
 
-#include "common/model/diagram_filter.h"
+#include "common/model/filters/diagram_filter.h"
 #include "util/error.h"
 #include "util/util.h"
 
@@ -254,6 +254,39 @@ void diagram::remove_redundant_dependencies()
                     is_self_dependency;
             });
     }
+}
+
+void diagram::apply_filter()
+{
+    // First find all element ids which should be removed
+    std::set<eid_t> to_remove;
+
+    for (const auto &c : element_view<class_>::view())
+        if (!filter().should_include(c.get()))
+            to_remove.emplace(c.get().id());
+
+    for (const auto &e : element_view<enum_>::view())
+        if (!filter().should_include(e.get()))
+            to_remove.emplace(e.get().id());
+
+    for (const auto &c : element_view<concept_>::view())
+        if (!filter().should_include(c.get()))
+            to_remove.emplace(c.get().id());
+
+    element_view<class_>::remove(to_remove);
+    element_view<enum_>::remove(to_remove);
+    element_view<concept_>::remove(to_remove);
+
+    nested_trait_ns::remove(to_remove);
+
+    for (auto &c : element_view<class_>::view())
+        c.get().apply_filter(filter(), to_remove);
+
+    for (auto &e : element_view<enum_>::view())
+        e.get().apply_filter(filter(), to_remove);
+
+    for (auto &c : element_view<concept_>::view())
+        c.get().apply_filter(filter(), to_remove);
 }
 
 bool diagram::is_empty() const

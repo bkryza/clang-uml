@@ -1,0 +1,20 @@
+diagrams:
+  t00082_class:
+    type: class
+    glob:
+      - t00082.cc
+    generate_packages: true
+    filter_mode: advanced
+    include:
+      anyof:
+        subclasses:
+          - clanguml::t00082::ns1::nsA::A1
+        namespaces:
+          - clanguml::t00082::ns2::nsB
+        context:
+          - clanguml::t00082::ns3::nsC::B3
+    exclude:
+      allof:
+        elements:
+          - clanguml::t00082::ns1::nsA::A1
+    using_namespace: clanguml::t00082

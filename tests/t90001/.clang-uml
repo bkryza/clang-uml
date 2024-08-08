@@ -1,11 +1,15 @@
 diagrams:
   t90001_class:
     type: class
+    glob:
+      - NONE
     include:
       namespaces:
         - no_such_namespace
   t90001_sequence:
     type: sequence
+    glob:
+      - NONE
     include:
       namespaces:
         - no_such_namespace
@@ -13,11 +17,15 @@ diagrams:
       - function: "nowhere"
   t90001_include:
     type: include
+    glob:
+      - NONE
     include:
       namespaces:
         - no_such_namespace
   t90001_package:
     type: package
+    glob:
+      - NONE
     include:
       namespaces:
         - no_such_namespace

@@ -116,6 +116,13 @@ struct plantuml_keyword_mapping_t {
         relationships;
 };
 
+enum class filter_mode_t {
+    basic,   /*!< Default filter structure without logical operators */
+    advanced /*!< Advanced filter config with logical operators */
+};
+
+std::string to_string(filter_mode_t cp);
+
 /**
  * @brief PlantUML diagram config section
  *
@@ -187,6 +194,9 @@ struct diagram_template {
 };
 
 struct filter {
+    std::shared_ptr<filter> anyof;
+    std::shared_ptr<filter> allof;
+
     /*! @brief Namespaces filter
      *
      * Example:
@@ -445,8 +455,20 @@ struct layout_hint {
 using layout_hints = std::map<std::string, std::vector<layout_hint>>;
 
 struct generate_links_config {
-    std::string link;
-    std::string tooltip;
+    std::map</* path */ std::string, /* pattern */ std::string> link;
+    std::map</* path */ std::string, /* pattern */ std::string> tooltip;
+
+    std::optional<std::pair<std::string, std::string>> get_link_pattern(
+        const std::string &path) const
+    {
+        return util::find_entry_by_path_prefix(link, path);
+    }
+
+    std::optional<std::pair<std::string, std::string>> get_tooltip_pattern(
+        const std::string &path) const
+    {
+        return util::find_entry_by_path_prefix(tooltip, path);
+    }
 };
 
 struct git_config {
@@ -539,11 +561,13 @@ struct inheritable_diagram_options {
      */
     option<std::filesystem::path> &get_relative_to() { return relative_to; }
 
-    option<std::vector<std::string>> glob{"glob"};
+    option<std::vector<common::string_or_regex>> glob{"glob"};
     option<common::model::namespace_> using_namespace{"using_namespace"};
     option<std::string> using_module{"using_module"};
     option<bool> include_relations_also_as_members{
         "include_relations_also_as_members", true};
+    option<filter_mode_t> filter_mode{"filter_mode", filter_mode_t::basic};
+    option<bool> include_system_headers{"include_system_headers", false};
     option<filter> include{"include"};
     option<filter> exclude{"exclude"};
     option<plantuml> puml{"plantuml", option_inherit_mode::kAppend};
@@ -615,11 +639,12 @@ struct diagram : public inheritable_diagram_options {
     virtual common::model::diagram_t type() const = 0;
 
     /**
-     * @brief Returns list of translation unit paths
+     * @brief Filter translation units based on glob patterns
      *
      * @return List of translation unit paths
      */
-    std::vector<std::string> get_translation_units() const;
+    std::vector<std::string> glob_translation_units(
+        const std::vector<std::string> &compilation_database_files) const;
 
     /**
      * @brief Make path relative to the `relative_to` config option

@@ -1,0 +1,16 @@
+diagrams:
+  t20055_sequence:
+    type: sequence
+    filter_mode: advanced
+    glob:
+      - t20055.cc
+    include:
+      anyof:
+        namespaces:
+          - clanguml::t20055::ns2
+        elements:
+          - clanguml::t20055::ns1::B
+          - clanguml::t20055::ns1::d()
+    using_namespace: clanguml::t20055
+    from:
+      - function: "clanguml::t20055::ns2::tmain()"

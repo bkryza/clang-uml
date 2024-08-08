@@ -39,10 +39,7 @@ void generator::generate_relationships(
             std::stringstream relstr;
             try {
                 auto destination_package = model().get(r.destination());
-
-                if (!destination_package ||
-                    !model().should_include(
-                        dynamic_cast<const package &>(*destination_package)))
+                if (!destination_package)
                     continue;
 
                 auto destination_alias = model().to_alias(r.destination());
@@ -62,9 +59,8 @@ void generator::generate_relationships(
 
     // Process it's subpackages relationships
     for (const auto &subpackage : p) {
-        if (model().should_include(dynamic_cast<const package &>(*subpackage)))
-            generate_relationships(
-                dynamic_cast<const package &>(*subpackage), ostr);
+        generate_relationships(
+            dynamic_cast<const package &>(*subpackage), ostr);
     }
 }
 
@@ -96,16 +92,12 @@ void generator::generate(const package &p, std::ostream &ostr) const
 
     for (const auto &subpackage : p) {
         auto &pkg = dynamic_cast<package &>(*subpackage);
-        if (model().should_include(pkg)) {
-            auto together_group =
-                config().get_together_group(pkg.full_name(false));
-            if (together_group) {
-                together_group_stack_.group_together(
-                    together_group.value(), &pkg);
-            }
-            else {
-                generate(pkg, ostr);
-            }
+        auto together_group = config().get_together_group(pkg.full_name(false));
+        if (together_group) {
+            together_group_stack_.group_together(together_group.value(), &pkg);
+        }
+        else {
+            generate(pkg, ostr);
         }
     }
 
@@ -138,16 +130,12 @@ void generator::generate_diagram(std::ostream &ostr) const
 {
     for (const auto &p : model()) {
         auto &pkg = dynamic_cast<package &>(*p);
-        if (model().should_include(pkg)) {
-            auto together_group =
-                config().get_together_group(pkg.full_name(false));
-            if (together_group) {
-                together_group_stack_.group_together(
-                    together_group.value(), &pkg);
-            }
-            else {
-                generate(pkg, ostr);
-            }
+        auto together_group = config().get_together_group(pkg.full_name(false));
+        if (together_group) {
+            together_group_stack_.group_together(together_group.value(), &pkg);
+        }
+        else {
+            generate(pkg, ostr);
         }
     }
 
@@ -155,8 +143,7 @@ void generator::generate_diagram(std::ostream &ostr) const
 
     // Process package relationships
     for (const auto &p : model()) {
-        if (model().should_include(dynamic_cast<package &>(*p)))
-            generate_relationships(dynamic_cast<package &>(*p), ostr);
+        generate_relationships(dynamic_cast<package &>(*p), ostr);
     }
 
     generate_config_layout_hints(ostr);

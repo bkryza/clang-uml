@@ -1,5 +1,5 @@
 /**
- * @file src/common/model/diagram_filter.h
+ * @file src/common/model/filters/diagram_filter.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -25,19 +25,21 @@
 #include "common/model/element.h"
 #include "common/model/enums.h"
 #include "common/model/namespace.h"
+#include "common/model/source_file.h"
+#include "common/model/tvl.h"
 #include "config/config.h"
-#include "diagram.h"
 #include "include_diagram/model/diagram.h"
 #include "sequence_diagram/model/participant.h"
-#include "source_file.h"
-#include "tvl.h"
 
 #include <filesystem>
 #include <utility>
 
 namespace clanguml::common::model {
 
+class diagram_filter_factory;
+
 using clanguml::common::eid_t;
+using clanguml::config::filter_mode_t;
 
 /**
  * Diagram filters can be add in 2 modes:
@@ -85,6 +87,9 @@ public:
         const diagram &d, const common::model::element &e) const;
 
     virtual tvl::value_t match(
+        const diagram &d, const common::model::relationship &r) const;
+
+    virtual tvl::value_t match(
         const diagram &d, const common::model::relationship_t &r) const;
 
     virtual tvl::value_t match(
@@ -112,9 +117,12 @@ public:
     bool is_exclusive() const;
 
     filter_t type() const;
+    filter_mode_t mode() const;
+    void set_mode(filter_mode_t mode);
 
 private:
     filter_t type_;
+    filter_mode_t mode_{filter_mode_t::basic};
 };
 
 struct anyof_filter : public filter_visitor {
@@ -127,12 +135,86 @@ struct anyof_filter : public filter_visitor {
         const diagram &d, const common::model::element &e) const override;
 
     tvl::value_t match(const diagram &d,
-        const sequence_diagram::model::participant &p) const override;
+        const common::model::relationship_t &r) const override;
 
     tvl::value_t match(
-        const diagram &d, const common::model::source_file &e) const override;
+        const diagram &d, const common::model::access_t &a) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::namespace_ &ns) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::source_location &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
 
 private:
+    template <typename E>
+    tvl::value_t match_anyof(const diagram &d, const E &element) const
+    {
+        auto result = tvl::any_of(filters_.begin(), filters_.end(),
+            [&d, &element](const auto &f) { return f->match(d, element); });
+
+        if (mode() == filter_mode_t::advanced && !d.complete())
+            return type() == filter_t::kInclusive;
+
+        return result;
+    }
+
+    std::vector<std::unique_ptr<filter_visitor>> filters_;
+};
+
+struct allof_filter : public filter_visitor {
+    allof_filter(
+        filter_t type, std::vector<std::unique_ptr<filter_visitor>> filters);
+
+    ~allof_filter() override = default;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::element &e) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::relationship_t &r) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::access_t &a) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::namespace_ &ns) const override;
+
+    tvl::value_t match(
+        const diagram &d, const common::model::source_file &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const common::model::source_location &f) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
+
+private:
+    template <typename E>
+    tvl::value_t match_allof(const diagram &d, const E &element) const
+    {
+        return tvl::all_of(filters_.begin(), filters_.end(),
+            [&d, &element](const auto &f) { return f->match(d, element); });
+    }
+
     std::vector<std::unique_ptr<filter_visitor>> filters_;
 };
 
@@ -149,6 +231,9 @@ struct namespace_filter : public filter_visitor {
     tvl::value_t match(const diagram &d, const namespace_ &ns) const override;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
+
+    tvl::value_t match(const diagram &d,
+        const sequence_diagram::model::participant &p) const override;
 
 private:
     std::vector<common::namespace_or_regex> namespaces_;
@@ -280,8 +365,8 @@ template <typename DiagramT, typename ElementT,
     typename ConfigEntryT = std::string,
     typename MatchOverrideT = common::model::element>
 struct edge_traversal_filter : public filter_visitor {
-    edge_traversal_filter(filter_t type, relationship_t relationship,
-        std::vector<ConfigEntryT> roots, bool forward = false)
+    edge_traversal_filter(filter_t type, std::vector<ConfigEntryT> roots,
+        relationship_t relationship, bool forward = false)
         : filter_visitor{type}
         , roots_{std::move(roots)}
         , relationship_{relationship}
@@ -612,8 +697,8 @@ private:
  * a specified file paths.
  */
 struct paths_filter : public filter_visitor {
-    paths_filter(filter_t type, const std::filesystem::path &root,
-        const std::vector<std::string> &p);
+    paths_filter(filter_t type, const std::vector<std::string> &p,
+        const std::filesystem::path &root);
 
     ~paths_filter() override = default;
 
@@ -660,6 +745,8 @@ private:
     std::unique_ptr<access_filter> access_filter_;
 };
 
+class diagram_filter_factory;
+
 /**
  * @brief Composite of all diagrams filters.
  *
@@ -671,8 +758,14 @@ private:
  * @see clanguml::common::model::filter_visitor
  */
 class diagram_filter {
+private:
+    struct private_constructor_tag_t { };
+
 public:
-    diagram_filter(const common::model::diagram &d, const config::diagram &c);
+    diagram_filter(const common::model::diagram &d, const config::diagram &c,
+        private_constructor_tag_t unused);
+
+    void add_filter(filter_t filter_type, std::unique_ptr<filter_visitor> fv);
 
     /**
      * Add inclusive filter.
@@ -725,16 +818,9 @@ public:
         return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }
 
-private:
-    /**
-     * @brief Initialize filters.
-     *
-     * Some filters require initialization.
-     *
-     * @param c Diagram config.
-     */
-    void init_filters(const config::diagram &c);
+    friend class diagram_filter_factory;
 
+private:
     /*! List of inclusive filters */
     std::vector<std::unique_ptr<filter_visitor>> inclusive_;
 
@@ -744,6 +830,27 @@ private:
     /*! Reference to the diagram model */
     const common::model::diagram &diagram_;
 };
+
+template <typename Collection>
+void apply_filter(Collection &col, const diagram_filter &filter)
+{
+    col.erase(std::remove_if(col.begin(), col.end(),
+                  [&filter](auto &&element) {
+                      return !filter.should_include(element);
+                  }),
+        col.end());
+}
+
+template <typename T>
+void apply_filter(
+    std::vector<std::reference_wrapper<T>> &col, const diagram_filter &filter)
+{
+    col.erase(std::remove_if(col.begin(), col.end(),
+                  [&filter](auto &&element) {
+                      return !filter.should_include(element.get());
+                  }),
+        col.end());
+}
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const;

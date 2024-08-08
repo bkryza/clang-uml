@@ -12,6 +12,7 @@
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
   * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+  * ["error: unknown pragma ignored"](#error-unknown-pragma-ignored)
 * [Class diagrams](#class-diagrams)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
   * [Cannot generate classes for 'std' namespace](#cannot-generate-classes-for-std-namespace)
@@ -142,6 +143,14 @@ add_compile_flags:
   - -Wno-shadow
 remove_compile_flags:
   - -Wshadow
+```
+
+If you don't care about warnings in general during the diagram generation, a
+more convenient option is to ignore all warnings:
+
+```yaml
+add_compile_flags:
+  - -Wno-unknown-warning-option
 ```
 
 ### Errors with C++20 modules and LLVM 18
@@ -282,6 +291,17 @@ clang-uml --add-compile-flag -I/opt/my_toolchain/include \
 
 Also see
 [here](./md_docs_2common__options.html#resolving-include-path-and-compiler-flags-issues).
+
+### "error: unknown pragma ignored"
+If your code bases uses some non-standard pragmas declarations or you
+are using older LLVM version, which does not yet support a specific pragma, the
+warning can be ignore by adding the following compilation flag in the `.clang-uml`
+config:
+
+```yaml
+add_compile_flags:
+  - -Wno-unknown-pragmas
+```
 
 ## Class diagrams
 

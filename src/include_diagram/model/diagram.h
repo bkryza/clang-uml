@@ -33,13 +33,15 @@ using clanguml::common::opt_ref;
 using clanguml::common::model::diagram_element;
 using clanguml::common::model::source_file;
 
+using nested_trait_fspath = clanguml::common::model::nested_trait<source_file,
+    clanguml::common::model::filesystem_path>;
+
 /**
  * @brief Class representing an include diagram model.
  */
 class diagram : public clanguml::common::model::diagram,
                 public clanguml::common::model::element_view<source_file>,
-                public clanguml::common::model::nested_trait<source_file,
-                    clanguml::common::model::filesystem_path> {
+                public nested_trait_fspath {
 public:
     diagram() = default;
 
@@ -128,6 +130,8 @@ public:
      * @return True, if diagram is empty
      */
     bool is_empty() const override;
+
+    void apply_filter() override;
 };
 
 template <typename ElementT>

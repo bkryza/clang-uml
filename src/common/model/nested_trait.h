@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -242,6 +243,23 @@ public:
             else {
                 std::cout << std::string(level, ' ') << "- " << *e << "]\n";
             }
+        }
+    }
+
+    void remove(const std::set<eid_t> &element_ids)
+    {
+        // First remove all matching elements on this level
+        elements_.erase(std::remove_if(elements_.begin(), elements_.end(),
+                            [&element_ids](auto &&e) {
+                                return element_ids.count(e->id()) > 0;
+                            }),
+            elements_.end());
+
+        // Now recurse to any packages on this level
+        for (auto &p : elements_) {
+            if (dynamic_cast<nested_trait<T, Path> *>(p.get()))
+                dynamic_cast<nested_trait<T, Path> *>(p.get())->remove(
+                    element_ids);
         }
     }
 

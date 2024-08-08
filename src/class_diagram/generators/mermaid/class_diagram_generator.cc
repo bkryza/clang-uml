@@ -25,6 +25,7 @@
 namespace clanguml::class_diagram::generators::mermaid {
 
 using clanguml::common::eid_t;
+using clanguml::common::generators::mermaid::escape_name;
 using clanguml::common::generators::mermaid::indent;
 using clanguml::common::generators::mermaid::render_name;
 
@@ -50,8 +51,8 @@ void generator::generate_alias(
 
     auto class_label = config().simplify_template_type(render_name(full_name));
 
-    ostr << indent(1) << "class " << c.alias() << "[\"" << class_label
-         << "\"]\n";
+    ostr << indent(1) << "class " << c.alias() << "[\""
+         << escape_name(class_label) << "\"]\n";
 
     // Register the added alias
     m_generated_aliases.emplace(c.alias());
@@ -88,9 +89,6 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
 
     std::stringstream all_relations_str;
     for (const auto &r : c.relationships()) {
-        if (!model().should_include(r.type()))
-            continue;
-
         try {
             generate_relationship(r, rendered_relations);
         }
@@ -110,9 +108,6 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     sort_class_elements(members);
 
     for (const auto &m : members) {
-        if (!model().should_include(m))
-            continue;
-
         if (!config().include_relations_also_as_members() &&
             rendered_relations.find(m.name()) != rendered_relations.end())
             continue;
@@ -155,11 +150,7 @@ void generator::generate_methods(
     sort_class_elements(sorted_methods);
 
     for (const auto &m : sorted_methods) {
-        if (!model().should_include(m))
-            continue;
-
         generate_method(m, ostr);
-
         ostr << '\n';
     }
 }
@@ -169,17 +160,11 @@ generator::method_groups_t generator::group_methods(
 {
     std::map<std::string, std::vector<class_method>> result;
 
-    // First get rid of methods which don't pass the filters
-    std::vector<class_method> filtered_methods;
-    std::copy_if(methods.cbegin(), methods.cend(),
-        std::back_inserter(filtered_methods),
-        [this](auto &m) { return model().should_include(m); });
-
     for (const auto &g : method_groups_) {
         result[g] = {};
     }
 
-    for (const auto &m : filtered_methods) {
+    for (const auto &m : methods) {
         if (m.is_constructor() || m.is_destructor()) {
             result["constructors"].push_back(m);
         }
@@ -257,7 +242,7 @@ void generator::generate_method(
         ostr << fmt::format("[{}] ", fmt::join(method_mods, ","));
     }
 
-    ostr << render_name(type);
+    ostr << escape_name(render_name(type));
 
     if (m.is_pure_virtual())
         ostr << "*";
@@ -276,8 +261,8 @@ void generator::generate_member(
 
     ostr << indent(2) << mermaid_common::to_mermaid(m.access()) << m.name()
          << " : "
-         << render_name(
-                uns.relative(config().simplify_template_type(m.type())));
+         << escape_name(uns.relative(
+                config().simplify_template_type(render_name(m.type()))));
 }
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
@@ -294,7 +279,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
         parameters.reserve(c.requires_parameters().size());
         for (const auto &p : c.requires_parameters()) {
             parameters.emplace_back(
-                render_name(p.to_string(config().using_namespace())));
+                escape_name(p.to_string(config().using_namespace())));
         }
 
         ostr << indent(2)
@@ -302,7 +287,7 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
 
         for (const auto &req : c.requires_statements()) {
             ostr << indent(2)
-                 << fmt::format("\"{}\"\n", render_name(req, false));
+                 << fmt::format("\"{}\"\n", escape_name(req, false));
         }
     }
 
@@ -332,19 +317,13 @@ void generator::generate_relationships(std::ostream &ostr) const
             generate_relationships(*pkg, ostr);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            if (model().should_include(*cls)) {
-                generate_relationships(*cls, ostr);
-            }
+            generate_relationships(*cls, ostr);
         }
         else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            if (model().should_include(*enm)) {
-                generate_relationships(*enm, ostr);
-            }
+            generate_relationships(*enm, ostr);
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            if (model().should_include(*cpt)) {
-                generate_relationships(*cpt, ostr);
-            }
+            generate_relationships(*cpt, ostr);
         }
     }
 }
@@ -400,9 +379,6 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        if (!model().should_include(r.type()))
-            continue;
-
         LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
@@ -508,9 +484,6 @@ void generator::generate_relationships(
     std::set<std::string> unique_relations;
 
     for (const auto &r : c.relationships()) {
-        if (!model().should_include(r.type()))
-            continue;
-
         LOG_DBG("== Processing relationship {}", to_string(r.type()));
 
         std::stringstream relstr;
@@ -582,9 +555,6 @@ void generator::generate_relationships(
 void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
 {
     for (const auto &r : e.relationships()) {
-        if (!model().should_include(r.type()))
-            continue;
-
         eid_t destination{};
         std::stringstream relstr;
         try {
@@ -717,10 +687,7 @@ void generator::generate_relationships(
             //       packages which do not contain anything but other
             //       packages are skipped
             const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty() &&
-                !sp.all_of([this](const common::model::element &e) {
-                    return !model().should_include(e);
-                }))
+            if (!sp.is_empty())
                 generate_relationships(sp, ostr);
         }
         else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
@@ -757,52 +724,43 @@ void generator::generate_top_level_elements(std::ostream &ostr) const
 {
     for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            if (!pkg->is_empty() &&
-                !pkg->all_of([this](const common::model::element &e) {
-                    return !model().should_include(e);
-                }))
+            if (!pkg->is_empty())
                 generate(*pkg, ostr);
         }
         else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            if (model().should_include(*cls)) {
-                auto together_group =
-                    config().get_together_group(cls->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), cls);
-                }
-                else {
-                    generate_alias(*cls, ostr);
-                    generate(*cls, ostr);
-                }
+            auto together_group =
+                config().get_together_group(cls->full_name(false));
+            if (together_group) {
+                together_group_stack_.group_together(
+                    together_group.value(), cls);
+            }
+            else {
+                generate_alias(*cls, ostr);
+                generate(*cls, ostr);
             }
         }
         else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            if (model().should_include(*enm)) {
-                auto together_group =
-                    config().get_together_group(enm->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), enm);
-                }
-                else {
-                    generate_alias(*enm, ostr);
-                    generate(*enm, ostr);
-                }
+            auto together_group =
+                config().get_together_group(enm->full_name(false));
+            if (together_group) {
+                together_group_stack_.group_together(
+                    together_group.value(), enm);
+            }
+            else {
+                generate_alias(*enm, ostr);
+                generate(*enm, ostr);
             }
         }
         else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            if (model().should_include(*cpt)) {
-                auto together_group =
-                    config().get_together_group(cpt->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), cpt);
-                }
-                else {
-                    generate_alias(*cpt, ostr);
-                    generate(*cpt, ostr);
-                }
+            auto together_group =
+                config().get_together_group(cpt->full_name(false));
+            if (together_group) {
+                together_group_stack_.group_together(
+                    together_group.value(), cpt);
+            }
+            else {
+                generate_alias(*cpt, ostr);
+                generate(*cpt, ostr);
             }
         }
     }

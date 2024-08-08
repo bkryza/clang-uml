@@ -18,7 +18,7 @@
 
 #include "diagram.h"
 
-#include "diagram_filter.h"
+#include "filters/diagram_filter.h"
 #include "namespace.h"
 
 namespace clanguml::common::model {
@@ -59,12 +59,25 @@ void diagram::set_complete(bool complete) { complete_ = complete; }
 
 bool diagram::complete() const { return complete_; }
 
-void diagram::finalize() { }
+void diagram::finalize()
+{
+    // Remove elements that do not match the filter
+    apply_filter();
+    filtered_ = true;
+}
 
 bool diagram::should_include(const element &e) const
 {
+    if (filtered_)
+        return true;
+
     if (filter_.get() == nullptr)
         return true;
+
+    if (!complete()) {
+        return filter_->should_include(
+            dynamic_cast<const source_location &>(e));
+    }
 
     return filter_->should_include(e) &&
         filter_->should_include(dynamic_cast<const source_location &>(e));
@@ -72,6 +85,9 @@ bool diagram::should_include(const element &e) const
 
 bool diagram::should_include(const namespace_ &ns) const
 {
+    if (filtered_)
+        return true;
+
     if (filter_.get() == nullptr)
         return true;
 

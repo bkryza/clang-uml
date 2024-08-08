@@ -171,10 +171,13 @@ public:
      */
     virtual bool is_empty() const = 0;
 
+    virtual void apply_filter() { }
+
 private:
     std::string name_;
     std::unique_ptr<diagram_filter> filter_;
     bool complete_{false};
+    bool filtered_{false};
 };
 
 template <typename DiagramT> bool check_diagram_type(diagram_t t);

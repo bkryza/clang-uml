@@ -339,8 +339,16 @@ std::optional<nlohmann::json> get_participant(
     if (!j.contains("participants"))
         return {};
 
+    std::string using_namespace{};
+    if (j.contains("using_namespace")) {
+        using_namespace =
+            fmt::format("{}::", j["using_namespace"].get<std::string>());
+    }
+
     for (const nlohmann::json &e : j.at("participants")) {
-        if (e["display_name"] == name)
+        if (e["display_name"] == name ||
+            e["full_name"].get<std::string>().substr(using_namespace.size()) ==
+                name)
             return {e};
     }
 
@@ -2482,7 +2490,7 @@ int64_t FindMessage(
         if (!fail)
             return -1;
 
-        std::cout << "FindMessage failed with error " << e.what() << "\n";
+        std::cout << "FindMessage failed with error: " << e.what() << "\n";
 
         throw e;
     }

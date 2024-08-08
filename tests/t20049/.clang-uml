@@ -2,7 +2,7 @@ diagrams:
   t20049_sequence:
     type: sequence
     glob:
-      - t20049.cu
+      - r: ".*t20049.cu$"
     include:
       namespaces:
         - clanguml::t20049

@@ -95,12 +95,14 @@ diagrams:
     # Generate packages from the namespaces
     generate_packages: true
     package_type: namespace  # or 'directory' to generate from projects subdirectories
-    # Limiting the number of files to include can significantly
+    # Limiting the number of files to include can significantly improve
+    # diagram generation times
     glob:
       - src/common/model/*.h
       - src/common/model/*.cc
       - src/class_diagram/model/*.h
       - src/class_diagram/model/*.cc
+      - r: ".*test.*\\.cpp$
     include:
       # Only include entities from the following namespaces
       namespaces:

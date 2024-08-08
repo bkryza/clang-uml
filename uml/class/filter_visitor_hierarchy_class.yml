@@ -3,7 +3,7 @@ title: Diagram filter visitor class hierarchy
 include_relations_also_as_members: true
 generate_packages: true
 glob:
-  - src/common/model/diagram_filter.cc
+  - src/common/model/filters/*.cc
 include:
   namespaces:
     - clanguml

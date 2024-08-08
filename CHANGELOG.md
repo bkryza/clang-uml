@@ -1,5 +1,10 @@
 # CHANGELOG
 
+ * Added regular expression support to glob patterns (#299)
+ * Enabled relative link patterns in generate_links option (#297)
+ * Added advanced diagram filter config with anyof and allof operators (#289)
+ * Added CLANG_UML_ENABLE_BACKTRACE CMake option (#292)
+
 ### 0.5.3
  * Added context filter direction and relationships options (#274)
  * Improved test coverage (#287)

@@ -30,11 +30,14 @@
 void inject_diagram_options(std::shared_ptr<clanguml::config::diagram> diagram)
 {
     // Inject links config to all test cases
-    clanguml::config::generate_links_config links_config{
-        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})",
-        R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})"};
+    clanguml::config::generate_links_config links_config;
 
-    diagram->generate_links.set(links_config);
+    links_config.link.emplace(".",
+        R"(https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }})");
+    links_config.tooltip.emplace(".",
+        R"({% if existsIn(element, "comment") and existsIn(element.comment, "brief")  %}{{ abbrv(trim(replace(element.comment.brief.0, "\n+", " ")), 256) }}{% else %}{{ element.name }}{% endif %})");
+
+    diagram->generate_links.set(std::move(links_config));
 }
 
 std::pair<clanguml::config::config_ptr,
@@ -67,7 +70,9 @@ load_config(const std::string &test_name)
         res.first->compilation_database_dir());
 
     std::vector<std::string> remove_compile_flags{
-        std::string{"-Wno-class-memaccess"}};
+        std::string{"-Wno-class-memaccess"},
+        std::string{"-forward-unknown-to-host-compiler"},
+        std::string{"--generate-code=arch=compute_75,code=[compute_75,sm_75]"}};
 
     res.first->remove_compile_flags.set(remove_compile_flags);
 
@@ -96,10 +101,11 @@ auto generate_diagram_impl(clanguml::common::compilation_database &db,
 
     inject_diagram_options(diagram);
 
+    auto tus = diagram->glob_translation_units(db.getAllFiles());
+
     auto model = clanguml::common::generators::generate<diagram_model,
-        diagram_config, diagram_visitor>(db, diagram->name,
-        dynamic_cast<diagram_config &>(*diagram),
-        diagram->get_translation_units());
+        diagram_config, diagram_visitor>(
+        db, diagram->name, dynamic_cast<diagram_config &>(*diagram), tus);
 
     return model;
 }
@@ -249,7 +255,8 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
             tc(diagrams.get<T>());
         }
         catch (doctest::TestFailureException &e) {
-            std::cout << "-----------------------------------------------------"
+            std::cout << "---------------------------------------------"
+                         "--------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
                       << T::diagram_type_name << ": "
@@ -553,6 +560,10 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00077/test_case.h"
 #include "t00078/test_case.h"
 #include "t00079/test_case.h"
+#include "t00080/test_case.h"
+#include "t00081/test_case.h"
+#include "t00082/test_case.h"
+#include "t00083/test_case.h"
 
 ///
 /// Sequence diagram tests
@@ -619,6 +630,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t20052/test_case.h"
 #include "t20053/test_case.h"
 #include "t20054/test_case.h"
+#include "t20055/test_case.h"
 
 ///
 /// Package diagram tests

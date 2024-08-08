@@ -329,6 +329,8 @@ template <typename T> struct or_regex {
 
     const std::variant<T, regex> &value() const { return value_; }
 
+    bool is_regex() const { return std::holds_alternative<regex>(value_); }
+
 private:
     std::variant<T, regex> value_;
 };

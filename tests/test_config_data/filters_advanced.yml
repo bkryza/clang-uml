@@ -1,0 +1,87 @@
+compilation_database_dir: debug
+output_directory: output
+filter_mode: advanced
+diagrams:
+  include_test:
+    type: include
+    relative_to: ../../../src
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    include:
+      allof:
+        paths:
+          - class_d*/
+          - common
+          - util/*.h
+          - util/*.cc
+          - main.cc
+    exclude:
+      allof:
+        paths:
+          - sequence_diagram
+          - util/error.h
+  anyof_test:
+    type: class
+    relative_to: ../../../src
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    include:
+      anyof:
+        namespaces:
+          - ns1::ns2
+        elements:
+          - std::thread
+    exclude:
+      anyof:
+        namespaces:
+          - ns1::ns2::detail
+  modules_test:
+    type: class
+    include:
+      anyof:
+        modules:
+          - mod1::mod2
+        namespaces:
+          - ns1::ns2
+  method_type_include_test:
+    type: class
+    include:
+      anyof:
+        namespaces:
+          - ns1::ns2
+        method_types:
+          - constructor
+          - operator
+  regex_elements_test:
+    type: class
+    include:
+      elements:
+        - ns1::ClassA
+        - r: 'ns1::ns2::Class.+'
+        - r: 'ns1::.+::ns3::.+'
+    exclude:
+      elements:
+        - ns1::ns2::ClassZ
+  regex_elements_and_namespaces:
+    type: class
+    include:
+      allof:
+        elements:
+          - ns1::ClassA
+          - r: 'ns1::ns2::Class.+'
+          - r: 'ns1::.+::ns3::.+'
+        namespaces:
+          - r: '.+ns2.+'
+  edge_filter_and_namespaces:
+    type: class
+    filter_mode: advanced
+    include:
+      anyof:
+        subclasses:
+          - ns1::nsA::A
+        namespaces:
+          - ns2::nsB
+        context:
+          - ns1::nsA::C

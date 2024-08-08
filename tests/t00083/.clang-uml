@@ -1,0 +1,16 @@
+diagrams:
+  t00083_class:
+    type: class
+    glob:
+      - t00083.cc
+    generate_packages: true
+    filter_mode: advanced
+    exclude:
+      anyof:
+        subclasses:
+          - clanguml::t00083::ns1::nsA::A1
+        namespaces:
+          - clanguml::t00083::ns2::nsB
+        context:
+          - clanguml::t00083::ns3::nsC::B3
+    using_namespace: clanguml::t00083

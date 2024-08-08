@@ -256,6 +256,8 @@ public:
      */
     bool is_empty() const override;
 
+    void apply_filter() override;
+
 private:
     template <typename ElementT>
     bool add_with_namespace_path(std::unique_ptr<ElementT> &&e);

@@ -253,8 +253,7 @@ public:
 
         comment_visitor_->visit(decl, e);
 
-        const auto *comment =
-            decl.getASTContext().getRawCommentForDeclNoCache(&decl);
+        auto *comment = decl.getASTContext().getRawCommentForDeclNoCache(&decl);
 
         process_comment(comment, decl.getASTContext().getDiagnostics(), e);
     }
@@ -290,20 +289,29 @@ public:
         return stripped_comment;
     }
 
+    bool skip_system_header_decl(const clang::NamedDecl *decl) const
+    {
+        return !config().include_system_headers() &&
+            source_manager().isInSystemHeader(
+                decl->getSourceRange().getBegin());
+    }
+
     /**
      * @brief Check if the diagram should include a declaration.
      *
      * @param decl Clang declaration.
      * @return True, if the entity should be included in the diagram.
      */
-    bool should_include(const clang::NamedDecl *decl)
+    bool should_include(const clang::NamedDecl *decl) const
     {
         if (decl == nullptr)
             return false;
 
-        if (source_manager().isInSystemHeader(
-                decl->getSourceRange().getBegin()))
+        if (skip_system_header_decl(decl))
             return false;
+
+        if (config().filter_mode() == config::filter_mode_t::advanced)
+            return true;
 
         auto should_include_namespace = diagram().should_include(
             common::model::namespace_{decl->getQualifiedNameAsString()});

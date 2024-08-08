@@ -49,21 +49,13 @@ void generator::generate_relationships(
         });
     }
     else {
-        util::for_each_if(
-            f.relationships(),
-            [this](const auto &r) {
-                return model().should_include(r.type()) &&
-                    util::contains(m_generated_aliases,
-                        model().get(r.destination()).value().alias());
-            },
-            [&f, &ostr, this](const auto &r) {
-                ostr << indent(1) << f.alias() << " "
-                     << (r.type() == common::model::relationship_t::kDependency
-                                ? "-.->"
-                                : "-->")
-                     << " " << model().get(r.destination()).value().alias()
-                     << '\n';
-            });
+        for (const auto &r : f.relationships()) {
+            ostr << indent(1) << f.alias() << " "
+                 << (r.type() == common::model::relationship_t::kDependency
+                            ? "-.->"
+                            : "-->")
+                 << " " << model().get(r.destination()).value().alias() << '\n';
+        }
     }
 }
 
@@ -86,11 +78,9 @@ void generator::generate(const source_file &f, std::ostream &ostr) const
     else {
         LOG_DBG("Generating file {}", f.name());
 
-        if (model().should_include(f)) {
-            ostr << indent(1) << f.alias() << "[" << f.name() << "]\n";
+        ostr << indent(1) << f.alias() << "[" << f.name() << "]\n";
 
-            m_generated_aliases.emplace(f.alias());
-        }
+        m_generated_aliases.emplace(f.alias());
     }
 
     if (config().generate_links) {

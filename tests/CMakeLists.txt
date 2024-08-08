@@ -1,5 +1,5 @@
 
-file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c)
+file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c t*/*.cu)
 file(GLOB_RECURSE TEST_CASE_MODULE_SOURCES t*/src/*.cppm)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
@@ -93,6 +93,7 @@ set(TEST_NAMES
         test_config
         test_cli_handler
         test_filters
+        test_filters_advanced
         test_thread_pool_executor
         test_query_driver_output_extractor
         test_progress_indicator)

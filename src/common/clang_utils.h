@@ -299,6 +299,12 @@ consume_type_context(clang::QualType type);
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt);
 
+clang::RawComment *get_declaration_raw_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const clang::Decl *decl);
+
+clang::RawComment *get_raw_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const clang::SourceRange &source_range);
+
 /**
  * Check if function or method declaration is a C++20 coroutine.
  *

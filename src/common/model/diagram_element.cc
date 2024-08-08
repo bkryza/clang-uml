@@ -18,6 +18,7 @@
 
 #include "diagram_element.h"
 
+#include "common/model/filters/diagram_filter.h"
 #include "util/util.h"
 
 #include <ostream>
@@ -101,6 +102,19 @@ void diagram_element::nested(bool nested) { nested_ = nested; }
 bool diagram_element::complete() const { return complete_; }
 
 void diagram_element::complete(bool completed) { complete_ = completed; }
+
+void diagram_element::apply_filter(
+    const diagram_filter &filter, const std::set<eid_t> &removed)
+{
+    common::model::apply_filter(relationships(), filter);
+
+    auto &rels = relationships();
+    rels.erase(std::remove_if(std::begin(rels), std::end(rels),
+                   [&removed](auto &&r) {
+                       return removed.count(r.destination()) > 0;
+                   }),
+        std::end(rels));
+}
 
 bool operator==(const diagram_element &l, const diagram_element &r)
 {

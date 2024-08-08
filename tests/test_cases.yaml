@@ -234,6 +234,18 @@ test_cases:
     - name: t00079
       title: Test case for context diagram exclude filter with relationships option
       description:
+    - name: t00080
+      title: Test case for including elements from system headers
+      description:
+    - name: t00081
+      title: Test case for class members relationships to std types
+      description:
+    - name: t00082
+      title: Test case for advanced diagram filter inclusion test with subclasses and namespaces
+      description:
+    - name: t00083
+      title: Test case for advanced diagram filter exclusion test with subclasses and namespaces
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -396,6 +408,9 @@ test_cases:
       description:
     - name: t20054
       title: Test case for sequence diagram with nested classes
+      description:
+    - name: t20055
+      title: Test case for advanced filter in sequence diagram
       description:
   Package diagrams:
     - name: t30001

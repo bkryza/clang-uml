@@ -941,12 +941,27 @@ bool parse_source_location(const std::string &location_str, std::string &file,
 clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
     const clang::ASTContext &context, const clang::Stmt *stmt)
 {
-    // First get the first line of the expression
-    auto expr_begin = stmt->getSourceRange().getBegin();
+    return get_raw_comment(sm, context, stmt->getSourceRange());
+}
+
+clang::RawComment *get_declaration_raw_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const clang::Decl *decl)
+{
+    return get_raw_comment(sm, context, decl->getSourceRange());
+}
+
+clang::RawComment *get_raw_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const clang::SourceRange &source_range)
+{
+    auto expr_begin = source_range.getBegin();
     const auto expr_begin_line = sm.getSpellingLineNumber(expr_begin);
 
+    std::string file_Path = sm.getFilename(expr_begin).str();
+
+    auto file_id = sm.getFileID(expr_begin);
+
     if (!context.Comments.empty() &&
-        context.Comments.getCommentsInFile(sm.getFileID(expr_begin)) != nullptr)
+        context.Comments.getCommentsInFile(file_id) != nullptr) {
         for (const auto [offset, raw_comment] :
             *context.Comments.getCommentsInFile(sm.getFileID(expr_begin))) {
             const auto comment_end_line = sm.getSpellingLineNumber(
@@ -956,6 +971,7 @@ clang::RawComment *get_expression_raw_comment(const clang::SourceManager &sm,
                 expr_begin_line == comment_end_line + 1)
                 return raw_comment;
         }
+    }
 
     return {};
 }
