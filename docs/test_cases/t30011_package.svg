@@ -1,49 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="202px" preserveAspectRatio="none" style="width:373px;height:202px;" version="1.1" viewBox="0 0 373 202" width="373px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="195px" preserveAspectRatio="none" style="width:347px;height:195px;background:#FFFFFF;" version="1.1" viewBox="0 0 347 195" width="347px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="fvruwjn526z9f" width="300%" x="-1" y="-1">
-      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
-      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
-      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
-      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
-    </filter>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="22,86,92,86,99,108.2969,351,108.2969,351,190,22,190,22,86" style="stroke: #000000; stroke-width: 1.5;"/>
-    <line style="stroke: #000000; stroke-width: 1.5;" x1="22" x2="99" y1="108.2969" y2="108.2969"/>
-    <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="64" x="26" y="100.9951">libraries</text>
-    <a href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib1/lib1.h#L3" target="_top" title="lib1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib1/lib1.h#L3" xlink:show="new" xlink:title="lib1" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="287,121,321,121,328,143.2969,335,143.2969,335,173.5938,287,173.5938,287,121" style="stroke: #000000; stroke-width: 1.5;"/>
-      <line style="stroke: #000000; stroke-width: 1.5;" x1="287" x2="328" y1="143.2969" y2="143.2969"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="291" y="135.9951">lib1</text>
+    <g id="cluster_C_0007035209531004006049">
+      <path d="M8.5,84 L75.002,84 A3.75,3.75 0 0 1 77.502,86.5 L84.502,106.2969 L337.5,106.2969 A2.5,2.5 0 0 1 340,108.7969 L340,185.5 A2.5,2.5 0 0 1 337.5,188 L8.5,188 A2.5,2.5 0 0 1 6,185.5 L6,86.5 A2.5,2.5 0 0 1 8.5,84 " fill="none" style="stroke:#000000;stroke-width:1.5;"/>
+      <line style="stroke:#000000;stroke-width:1.5;" x1="6" x2="84.502" y1="106.2969" y2="106.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="65.502" x="10" y="98.9951">libraries</text>
+    </g>
+    <a href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib1/lib1.h#L3" target="_top" title="lib1" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib1/lib1.h#L3" xlink:show="new" xlink:title="lib1" xlink:type="simple">
+      <path d="M277,119 L307.3604,119 A3.75,3.75 0 0 1 309.8604,121.5 L316.8604,141.2969 L321.3604,141.2969 A2.5,2.5 0 0 1 323.8604,143.7969 L323.8604,169.0938 A2.5,2.5 0 0 1 321.3604,171.5938 L277,171.5938 A2.5,2.5 0 0 1 274.5,169.0938 L274.5,121.5 A2.5,2.5 0 0 1 277,119 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="274.5" x2="316.8604" y1="141.2969" y2="141.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="29.3604" x="278.5" y="133.9951">lib1</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib2/lib2.h#L3" target="_top" title="lib2" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib2/lib2.h#L3" xlink:show="new" xlink:title="lib2" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="204,121,238,121,245,143.2969,252,143.2969,252,173.5938,204,173.5938,204,121" style="stroke: #000000; stroke-width: 1.5;"/>
-      <line style="stroke: #000000; stroke-width: 1.5;" x1="204" x2="245" y1="143.2969" y2="143.2969"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="208" y="135.9951">lib2</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib2/lib2.h#L3" target="_top" title="lib2" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib2/lib2.h#L3" xlink:show="new" xlink:title="lib2" xlink:type="simple">
+      <path d="M193,119 L223.3604,119 A3.75,3.75 0 0 1 225.8604,121.5 L232.8604,141.2969 L237.3604,141.2969 A2.5,2.5 0 0 1 239.8604,143.7969 L239.8604,169.0938 A2.5,2.5 0 0 1 237.3604,171.5938 L193,171.5938 A2.5,2.5 0 0 1 190.5,169.0938 L190.5,121.5 A2.5,2.5 0 0 1 193,119 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="190.5" x2="232.8604" y1="141.2969" y2="141.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="29.3604" x="194.5" y="133.9951">lib2</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib3/lib3.h#L3" target="_top" title="lib3" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib3/lib3.h#L3" xlink:show="new" xlink:title="lib3" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="121,121,155,121,162,143.2969,169,143.2969,169,173.5938,121,173.5938,121,121" style="stroke: #000000; stroke-width: 1.5;"/>
-      <line style="stroke: #000000; stroke-width: 1.5;" x1="121" x2="162" y1="143.2969" y2="143.2969"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="125" y="135.9951">lib3</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib3/lib3.h#L3" target="_top" title="lib3" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib3/lib3.h#L3" xlink:show="new" xlink:title="lib3" xlink:type="simple">
+      <path d="M109,119 L139.3604,119 A3.75,3.75 0 0 1 141.8604,121.5 L148.8604,141.2969 L153.3604,141.2969 A2.5,2.5 0 0 1 155.8604,143.7969 L155.8604,169.0938 A2.5,2.5 0 0 1 153.3604,171.5938 L109,171.5938 A2.5,2.5 0 0 1 106.5,169.0938 L106.5,121.5 A2.5,2.5 0 0 1 109,119 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="106.5" x2="148.8604" y1="141.2969" y2="141.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="29.3604" x="110.5" y="133.9951">lib3</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib4/lib4.h#L3" target="_top" title="lib4" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/libraries/lib4/lib4.h#L3" xlink:show="new" xlink:title="lib4" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="38,121,72,121,79,143.2969,86,143.2969,86,173.5938,38,173.5938,38,121" style="stroke: #000000; stroke-width: 1.5;"/>
-      <line style="stroke: #000000; stroke-width: 1.5;" x1="38" x2="79" y1="143.2969" y2="143.2969"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="28" x="42" y="135.9951">lib4</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib4/lib4.h#L3" target="_top" title="lib4" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/libraries/lib4/lib4.h#L3" xlink:show="new" xlink:title="lib4" xlink:type="simple">
+      <path d="M25,119 L55.3604,119 A3.75,3.75 0 0 1 57.8604,121.5 L64.8604,141.2969 L69.3604,141.2969 A2.5,2.5 0 0 1 71.8604,143.7969 L71.8604,169.0938 A2.5,2.5 0 0 1 69.3604,171.5938 L25,171.5938 A2.5,2.5 0 0 1 22.5,169.0938 L22.5,121.5 A2.5,2.5 0 0 1 25,119 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="22.5" x2="64.8604" y1="141.2969" y2="141.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="29.3604" x="26.5" y="133.9951">lib4</text>
     </a>
-    <a href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/app/app.h#L8" target="_top" title="app" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/e41b0da6776e43f4d4f0bb41619a04e152c35cb6/tests/t30011/app/app.h#L8" xlink:show="new" xlink:title="app" xlink:type="simple">
-      <polygon fill="#FFFFFF" filter="url(#fvruwjn526z9f)" points="161.5,8,196.5,8,203.5,30.2969,210.5,30.2969,210.5,60.5938,161.5,60.5938,161.5,8" style="stroke: #000000; stroke-width: 1.5;"/>
-      <line style="stroke: #000000; stroke-width: 1.5;" x1="161.5" x2="203.5" y1="30.2969" y2="30.2969"/>
-      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="29" x="165.5" y="22.9951">app</text>
+    <a href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/app/app.h#L8" target="_top" title="app" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/1aecadc20ec85d3e8b9d6199a45c6d1034411a29/tests/t30011/app/app.h#L8" xlink:show="new" xlink:title="app" xlink:type="simple">
+      <path d="M151,6 L181.4902,6 A3.75,3.75 0 0 1 183.9902,8.5 L190.9902,28.2969 L195.4902,28.2969 A2.5,2.5 0 0 1 197.9902,30.7969 L197.9902,56.0938 A2.5,2.5 0 0 1 195.4902,58.5938 L151,58.5938 A2.5,2.5 0 0 1 148.5,56.0938 L148.5,8.5 A2.5,2.5 0 0 1 151,6 " fill="#F1F1F1" style="stroke:#181818;stroke-width:0.5;"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="148.5" x2="190.9902" y1="28.2969" y2="28.2969"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="29.4902" x="152.5" y="20.9951">app</text>
     </a>
-    <path d="M210.65,43.72 C228.69,50.68 252.9,62.07 270,78 C281.47,88.69 290.81,103.3 297.66,116.29 " fill="none" id="C_0016010562093136641194-&gt;C_0007033698116283031691" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="#A80036" points="300.07,120.99,299.5224,111.1564,297.7884,116.5409,292.4039,114.8069,300.07,120.99" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M195.74,61.24 C201.94,77.64 210.01,98.94 216.52,116.16 " fill="none" id="C_0016010562093136641194-&gt;C_0012180849757009627397" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="#A80036" points="218.31,120.89,218.859,111.0565,216.5372,116.2148,211.3788,113.893,218.31,120.89" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M176.49,61.24 C170.44,77.64 162.57,98.94 156.21,116.16 " fill="none" id="C_0016010562093136641194-&gt;C_0018109676637220650603" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="#A80036" points="154.46,120.89,161.3277,113.8306,156.1905,116.199,153.8221,111.0618,154.46,120.89" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M161.24,44.2 C143.75,51.27 120.55,62.6 104,78 C92.54,88.66 83.06,103.14 76.02,116.04 " fill="none" id="C_0016010562093136641194-&gt;C_0008827624240187281752" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <polygon fill="#A80036" points="73.54,120.71,81.3078,114.6551,75.8952,116.2994,74.2508,110.8868,73.54,120.71" style="stroke: #A80036; stroke-width: 1.0;"/>
+    <g id="link_C_0016010562093136641194_C_0007033698116283031691">
+      <path codeLine="13" d="M197.61,41.77 C215.62,48.76 239.81,60.16 257,76 C270.03,88.01 277.7275,99.6234 284.9375,113.6534 " fill="none" id="C_0016010562093136641194-to-C_0007033698116283031691" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="287.68,118.99,287.124,109.1568,285.3946,114.5429,280.0086,112.8135,287.68,118.99" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+    <g id="link_C_0016010562093136641194_C_0012180849757009627397">
+      <path codeLine="14" d="M182.74,59.24 C189.53,77.18 196.4175,95.378 203.1875,113.278 " fill="none" id="C_0016010562093136641194-to-C_0012180849757009627397" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="205.31,118.89,205.8675,109.0569,203.5412,114.2133,198.3848,111.887,205.31,118.89" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+    <g id="link_C_0016010562093136641194_C_0018109676637220650603">
+      <path codeLine="15" d="M163.26,59.24 C156.47,77.18 149.5825,95.378 142.8125,113.278 " fill="none" id="C_0016010562093136641194-to-C_0018109676637220650603" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="140.69,118.89,147.6152,111.887,142.4588,114.2133,140.1325,109.0569,140.69,118.89" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+    <g id="link_C_0016010562093136641194_C_0008827624240187281752">
+      <path codeLine="16" d="M148.39,41.77 C130.38,48.76 106.19,60.16 89,76 C75.97,88.01 68.2725,99.6234 61.0625,113.6534 " fill="none" id="C_0016010562093136641194-to-C_0008827624240187281752" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="#181818" points="58.32,118.99,65.9914,112.8135,60.6054,114.5429,58.876,109.1568,58.32,118.99" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
   </g>
 </svg>

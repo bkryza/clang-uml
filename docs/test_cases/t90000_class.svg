@@ -1,48 +1,60 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="396px" preserveAspectRatio="none" style="width:455px;height:396px;" version="1.1" viewBox="0 0 455 396" width="455px" zoomAndPan="magnify">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="394px" preserveAspectRatio="none" style="width:462px;height:394px;background:#FFFFFF;" version="1.1" viewBox="0 0 462 394" width="462px" zoomAndPan="magnify">
   <defs>
-    <filter height="300%" id="fna43uwevhc6s" width="300%" x="-1" y="-1">
-      <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
-      <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
-      <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
-      <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
-    </filter>
     <style type="text/css">a:hover { text-decoration: underline; }</style>
   </defs>
   <g>
-    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="60.8047" id="C_001" style="stroke: #A80036; stroke-width: 1.5;" width="74" x="74" y="116"/>
-    <ellipse cx="97.55" cy="132" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M100.5188,137.6406 Q99.9406,137.9375 99.3,138.0781 Q98.6594,138.2344 97.9563,138.2344 Q95.4563,138.2344 94.1281,136.5938 Q92.8156,134.9375 92.8156,131.8125 Q92.8156,128.6875 94.1281,127.0313 Q95.4563,125.375 97.9563,125.375 Q98.6594,125.375 99.3,125.5313 Q99.9563,125.6875 100.5188,125.9844 L100.5188,128.7031 Q99.8938,128.125 99.3,127.8594 Q98.7063,127.5781 98.0813,127.5781 Q96.7375,127.5781 96.05,128.6563 Q95.3625,129.7188 95.3625,131.8125 Q95.3625,133.9063 96.05,134.9844 Q96.7375,136.0469 98.0813,136.0469 Q98.7063,136.0469 99.3,135.7813 Q99.8938,135.5 100.5188,134.9219 L100.5188,137.6406 Z "/>
-    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="23" x="113.45" y="136.1543">Foo</text>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="148" y2="148"/>
-    <ellipse cx="85" cy="159" fill="none" rx="3" ry="3" style="stroke: #038048; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="11" lengthAdjust="spacingAndGlyphs" textLength="48" x="94" y="162.2104">int value</text>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="75" x2="147" y1="168.8047" y2="168.8047"/>
-    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="ArrayList" style="stroke: #A80036; stroke-width: 1.5;" width="85" x="68.5" y="337"/>
-    <ellipse cx="83.5" cy="353" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M86.4688,358.6406 Q85.8906,358.9375 85.25,359.0781 Q84.6094,359.2344 83.9063,359.2344 Q81.4063,359.2344 80.0781,357.5938 Q78.7656,355.9375 78.7656,352.8125 Q78.7656,349.6875 80.0781,348.0313 Q81.4063,346.375 83.9063,346.375 Q84.6094,346.375 85.25,346.5313 Q85.9063,346.6875 86.4688,346.9844 L86.4688,349.7031 Q85.8438,349.125 85.25,348.8594 Q84.6563,348.5781 84.0313,348.5781 Q82.6875,348.5781 82,349.6563 Q81.3125,350.7188 81.3125,352.8125 Q81.3125,354.9063 82,355.9844 Q82.6875,357.0469 84.0313,357.0469 Q84.6563,357.0469 85.25,356.7813 Q85.8438,356.5 86.4688,355.9219 L86.4688,358.6406 Z "/>
-    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="53" x="97.5" y="357.1543">ArrayList</text>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="369" y2="369"/>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="69.5" x2="152.5" y1="377" y2="377"/>
-    <path d="M6,19.5 L6,44.6328 A0,0 0 0 0 6,44.6328 L107,44.6328 L111,115.66 L115,44.6328 L216,44.6328 A0,0 0 0 0 216,44.6328 L216,29.5 L206,19.5 L6,19.5 A0,0 0 0 0 6,19.5 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M206,19.5 L206,29.5 L216,29.5 L206,19.5 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="189" x="12" y="36.5669">This is a very important class.</text>
-    <path d="M251.5,12 L251.5,52.2656 L352.5,52.2656 L352.5,22 L342.5,12 L251.5,12 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M342.5,12 L342.5,22 L352.5,22 L342.5,12 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="51" x="257.5" y="29.0669">This is a</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="80" x="257.5" y="44.1997">floating note</text>
-    <path d="M97,237 L97,277.2656 L261,277.2656 L261,247 L251,237 L97,237 " fill="#FBFB77" filter="url(#fna43uwevhc6s)" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M251,237 L251,247 L261,247 L251,237 " fill="#FBFB77" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="143" x="103" y="254.0669">This note is connected</text>
-    <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="117" x="103" y="269.1997">to several objects.</text>
-    <rect fill="#FEFECE" filter="url(#fna43uwevhc6s)" height="48" id="C_002" style="stroke: #A80036; stroke-width: 1.5;" width="56" x="388" y="8"/>
-    <ellipse cx="403" cy="24" fill="#ADD1B2" rx="11" ry="11" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M405.9688,29.6406 Q405.3906,29.9375 404.75,30.0781 Q404.1094,30.2344 403.4063,30.2344 Q400.9063,30.2344 399.5781,28.5938 Q398.2656,26.9375 398.2656,23.8125 Q398.2656,20.6875 399.5781,19.0313 Q400.9063,17.375 403.4063,17.375 Q404.1094,17.375 404.75,17.5313 Q405.4063,17.6875 405.9688,17.9844 L405.9688,20.7031 Q405.3438,20.125 404.75,19.8594 Q404.1563,19.5781 403.5313,19.5781 Q402.1875,19.5781 401.5,20.6563 Q400.8125,21.7188 400.8125,23.8125 Q400.8125,25.9063 401.5,26.9844 Q402.1875,28.0469 403.5313,28.0469 Q404.1563,28.0469 404.75,27.7813 Q405.3438,27.5 405.9688,26.9219 L405.9688,29.6406 Z "/>
-    <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="24" x="417" y="28.1543">Boo</text>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="40" y2="40"/>
-    <line style="stroke: #A80036; stroke-width: 1.5;" x1="389" x2="443" y1="48" y2="48"/>
-    <path d="M88.93,195.94 C80.49,220.14 73.97,249.96 79,277 C82.9,297.95 91.89,320.43 99.36,336.71 " fill="none" id="C_001&lt;-ArrayList" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <polygon fill="none" points="82.48,193.22,96.26,177.12,95.53,198.29,82.48,193.22" style="stroke: #A80036; stroke-width: 1.0;"/>
-    <path d="M129.58,177.15 C141.54,196.22 156.72,220.44 167.08,236.98 " fill="none" id="C_001-N2" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
-    <path d="M166.21,277.19 C154.9,294.15 138.37,318.94 126.35,336.97 " fill="none" id="N2-ArrayList" style="stroke: #A80036; stroke-width: 1.0; stroke-dasharray: 7.0,7.0;"/>
+    <g id="elem_C_001">
+      <rect codeLine="2" fill="#F1F1F1" height="64.2969" id="C_001" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="86.9424" x="70.5" y="115"/>
+      <ellipse cx="98.8915" cy="131" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M101.8602,136.6406 Q101.2821,136.9375 100.6415,137.0781 Q100.0008,137.2344 99.2977,137.2344 Q96.7977,137.2344 95.4696,135.5938 Q94.1571,133.9375 94.1571,130.8125 Q94.1571,127.6875 95.4696,126.0313 Q96.7977,124.375 99.2977,124.375 Q100.0008,124.375 100.6415,124.5313 Q101.2977,124.6875 101.8602,124.9844 L101.8602,127.7031 Q101.2352,127.125 100.6415,126.8594 Q100.0477,126.5781 99.4227,126.5781 Q98.079,126.5781 97.3915,127.6563 Q96.704,128.7188 96.704,130.8125 Q96.704,132.9063 97.3915,133.9844 Q98.079,135.0469 99.4227,135.0469 Q100.0477,135.0469 100.6415,134.7813 Q101.2352,134.5 101.8602,133.9219 L101.8602,136.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="25.1836" x="115.8673" y="135.8467">Foo</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="71.5" x2="156.4424" y1="147" y2="147"/>
+      <ellipse cx="81.5" cy="160.6484" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.9424" x="90.5" y="163.9951">int value</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="71.5" x2="156.4424" y1="171.2969" y2="171.2969"/>
+    </g>
+    <g id="elem_ArrayList">
+      <rect fill="#F1F1F1" height="48" id="ArrayList" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="94.4258" x="67" y="339"/>
+      <ellipse cx="82" cy="355" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M84.9688,360.6406 Q84.3906,360.9375 83.75,361.0781 Q83.1094,361.2344 82.4063,361.2344 Q79.9063,361.2344 78.5781,359.5938 Q77.2656,357.9375 77.2656,354.8125 Q77.2656,351.6875 78.5781,350.0313 Q79.9063,348.375 82.4063,348.375 Q83.1094,348.375 83.75,348.5313 Q84.4063,348.6875 84.9688,348.9844 L84.9688,351.7031 Q84.3438,351.125 83.75,350.8594 Q83.1563,350.5781 82.5313,350.5781 Q81.1875,350.5781 80.5,351.6563 Q79.8125,352.7188 79.8125,354.8125 Q79.8125,356.9063 80.5,357.9844 Q81.1875,359.0469 82.5313,359.0469 Q83.1563,359.0469 83.75,358.7813 Q84.3438,358.5 84.9688,357.9219 L84.9688,360.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.4258" x="96" y="359.8467">ArrayList</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="68" x2="160.4258" y1="371" y2="371"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="68" x2="160.4258" y1="379" y2="379"/>
+    </g>
+    <g id="elem_GMN5">
+      <path d="M6,18.5 L6,43.6328 A0,0 0 0 0 6,43.6328 L110,43.6328 L114,114.8 L118,43.6328 L221.9365,43.6328 A0,0 0 0 0 221.9365,43.6328 L221.9365,28.5 L211.9365,18.5 L6,18.5 A0,0 0 0 0 6,18.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M211.9365,18.5 L211.9365,28.5 L221.9365,28.5 L211.9365,18.5 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="194.9365" x="12" y="35.5669">This is a very important class.</text>
+    </g>
+    <g id="elem_N1">
+      <path d="M257,11 L257,51.2656 L360.729,51.2656 L360.729,21 L350.729,11 L257,11 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M350.729,11 L350.729,21 L360.729,21 L350.729,11 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="53.1807" x="263" y="28.0669">This is a</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="82.729" x="263" y="43.1997">floating note</text>
+    </g>
+    <g id="elem_N2">
+      <path d="M99,239 L99,279.2656 L266.707,279.2656 L266.707,249 L256.707,239 L99,239 " fill="#FEFFDD" style="stroke:#181818;stroke-width:0.5;"/>
+      <path d="M256.707,239 L256.707,249 L266.707,249 L256.707,239 " fill="#FEFFDD" style="stroke:#181818;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="146.707" x="105" y="256.0669">This note is connected</text>
+      <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="119.666" x="105" y="271.1997">to several objects.</text>
+    </g>
+    <g id="elem_C_002">
+      <rect codeLine="12" fill="#F1F1F1" height="48" id="C_002" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="58.7354" x="396.5" y="7"/>
+      <ellipse cx="411.5" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M414.4688,28.6406 Q413.8906,28.9375 413.25,29.0781 Q412.6094,29.2344 411.9063,29.2344 Q409.4063,29.2344 408.0781,27.5938 Q406.7656,25.9375 406.7656,22.8125 Q406.7656,19.6875 408.0781,18.0313 Q409.4063,16.375 411.9063,16.375 Q412.6094,16.375 413.25,16.5313 Q413.9063,16.6875 414.4688,16.9844 L414.4688,19.7031 Q413.8438,19.125 413.25,18.8594 Q412.6563,18.5781 412.0313,18.5781 Q410.6875,18.5781 410,19.6563 Q409.3125,20.7188 409.3125,22.8125 Q409.3125,24.9063 410,25.9844 Q410.6875,27.0469 412.0313,27.0469 Q412.6563,27.0469 413.25,26.7813 Q413.8438,26.5 414.4688,25.9219 L414.4688,28.6406 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="26.7354" x="425.5" y="27.8467">Boo</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="397.5" x2="454.2354" y1="39" y2="39"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="397.5" x2="454.2354" y1="47" y2="47"/>
+    </g>
+    <g id="link_C_001_ArrayList">
+      <path codeLine="5" d="M91.8003,195.6117 C80.6903,222.0217 75.58,244.48 82,279 C85.9,299.95 94.89,322.43 102.36,338.71 " fill="none" id="C_001-backto-ArrayList" style="stroke:#181818;stroke-width:1.0;"/>
+      <polygon fill="none" points="98.78,179.02,86.2697,193.2851,97.3309,197.9382,98.78,179.02" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+    <g id="link_C_001_N2">
+      <path codeLine="9" d="M133.59,179.23 C145.62,198.41 160.65,222.37 170.95,238.8 " fill="none" id="C_001-N2" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+    </g>
+    <g id="link_N2_ArrayList">
+      <path codeLine="10" d="M170.02,279.19 C158.54,296.15 141.78,320.94 129.58,338.97 " fill="none" id="N2-ArrayList" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+    </g>
   </g>
 </svg>

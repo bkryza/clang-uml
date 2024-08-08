@@ -84,6 +84,10 @@
  * [t00077](./test_cases/t00077.md) - Test case for context diagram with outward direction flag
  * [t00078](./test_cases/t00078.md) - Test case for context diagram with relationships option
  * [t00079](./test_cases/t00079.md) - Test case for context diagram exclude filter with relationships option
+ * [t00080](./test_cases/t00080.md) - Test case for including elements from system headers
+ * [t00081](./test_cases/t00081.md) - Test case for class members relationships to std types
+ * [t00082](./test_cases/t00082.md) - Test case for advanced diagram filter inclusion test with subclasses and namespaces
+ * [t00083](./test_cases/t00083.md) - Test case for advanced diagram filter exclusion test with subclasses and namespaces
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -139,6 +143,7 @@
  * [t20052](./test_cases/t20052.md) - Test case for inlining lambda operator calls
  * [t20053](./test_cases/t20053.md) - Test case for inlining nested lambda operator calls
  * [t20054](./test_cases/t20054.md) - Test case for sequence diagram with nested classes
+ * [t20055](./test_cases/t20055.md) - Test case for advanced filter in sequence diagram
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
