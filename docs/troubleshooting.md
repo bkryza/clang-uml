@@ -12,6 +12,7 @@
   * [YAML anchors and aliases are not fully supported](#yaml-anchors-and-aliases-are-not-fully-supported)
   * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
+  * ["error: unknown pragma ignored"](#error-unknown-pragma-ignored)
 * [Class diagrams](#class-diagrams)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
   * [Cannot generate classes for 'std' namespace](#cannot-generate-classes-for-std-namespace)
