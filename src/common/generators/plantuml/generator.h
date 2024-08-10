@@ -353,7 +353,7 @@ void generator<C, D>::generate_plantuml_directives(
                     directive.replace(std::get<1>(alias_match),
                         std::get<2>(alias_match), element_opt.value().alias());
                 else {
-                    LOG_ERROR("Cannot find clang-uml alias for element {}",
+                    LOG_WARN("Cannot find clang-uml alias for element {}",
                         full_name.to_string());
                     directive.replace(std::get<1>(alias_match),
                         std::get<2>(alias_match), "UNKNOWN_ALIAS");
@@ -363,24 +363,24 @@ void generator<C, D>::generate_plantuml_directives(
             ostr << directive << '\n';
         }
         catch (const clanguml::error::uml_alias_missing &e) {
-            LOG_ERROR("Failed to render PlantUML directive due to unresolvable "
-                      "alias: {}",
+            LOG_WARN("Failed to render PlantUML directive due to unresolvable "
+                     "alias: {}",
                 e.what());
         }
         catch (const inja::json::parse_error &e) {
-            LOG_ERROR("Failed to parse Jinja template: {}", d);
+            LOG_WARN("Failed to parse Jinja template: {}", d);
         }
         catch (const inja::json::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+            LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
                 d, e.what());
         }
         catch (const std::regex_error &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to "
-                      "std::regex_error: {}",
+            LOG_WARN("Failed to render PlantUML directive: \n{}\n due to "
+                     "std::regex_error: {}",
                 d, e.what());
         }
         catch (const std::exception &e) {
-            LOG_ERROR("Failed to render PlantUML directive: \n{}\n due to: {}",
+            LOG_WARN("Failed to render PlantUML directive: \n{}\n due to: {}",
                 d, e.what());
         }
     }

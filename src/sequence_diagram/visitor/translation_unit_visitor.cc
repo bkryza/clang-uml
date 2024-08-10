@@ -771,6 +771,9 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
         condition_text = common::get_condition_text(source_manager(), stmt);
 
     if (current_caller_id.value() != 0) {
+        LOG_TRACE("Entering while statement at {}",
+            stmt->getBeginLoc().printToString(source_manager()));
+
         context().enter_loopstmt(stmt);
         message m{message_t::kWhile, current_caller_id};
         set_source_location(*stmt, m);
@@ -779,6 +782,7 @@ bool translation_unit_visitor::TraverseWhileStmt(clang::WhileStmt *stmt)
             *context().get_ast_context(), current_caller_id, stmt));
         diagram().add_block_message(std::move(m));
     }
+
     RecursiveASTVisitor<translation_unit_visitor>::TraverseWhileStmt(stmt);
 
     if (current_caller_id.value() != 0) {
@@ -1194,7 +1198,9 @@ bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 
     // Add message to diagram
     if (m.from().value() > 0 && m.to().value() > 0) {
-        m.set_comment(stripped_comment);
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
 
         if (diagram().sequences().find(m.from()) ==
             diagram().sequences().end()) {
@@ -2283,9 +2289,10 @@ bool translation_unit_visitor::should_include(
     return visitor_specialization_t::should_include(decl);
 }
 
-std::optional<std::string> translation_unit_visitor::get_expression_comment(
-    const clang::SourceManager &sm, const clang::ASTContext &context,
-    const eid_t caller_id, const clang::Stmt *stmt)
+std::optional<std::pair<unsigned int, std::string>>
+translation_unit_visitor::get_expression_comment(const clang::SourceManager &sm,
+    const clang::ASTContext &context, const eid_t caller_id,
+    const clang::Stmt *stmt)
 {
     const auto *raw_comment =
         clanguml::common::get_expression_raw_comment(sm, context, stmt);
@@ -2306,6 +2313,6 @@ std::optional<std::string> translation_unit_visitor::get_expression_comment(
     if (stripped_comment.empty())
         return {};
 
-    return stripped_comment;
+    return {{raw_comment->getBeginLoc().getHashValue(), stripped_comment}};
 }
 } // namespace clanguml::sequence_diagram::visitor

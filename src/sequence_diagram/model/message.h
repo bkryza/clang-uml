@@ -118,11 +118,16 @@ public:
      */
     const std::string &return_type() const;
 
-    const std::optional<std::string> &comment() const;
+    const std::optional<common::model::comment_t> &comment() const;
 
-    void set_comment(std::string c);
+    void set_comment(
+        std::optional<std::pair<unsigned int, std::string>> comment);
 
-    void set_comment(const std::optional<std::string> &c);
+    void set_comment(unsigned int id, std::string comment);
+
+    void set_comment(common::model::comment_t c);
+
+    void set_comment(const std::optional<common::model::comment_t> &c);
 
     /**
      * @brief Set message scope
@@ -177,7 +182,7 @@ private:
 
     std::optional<std::string> condition_text_;
 
-    std::optional<std::string> comment_;
+    std::optional<common::model::comment_t> comment_;
 
     bool in_static_declaration_context_{false};
 };

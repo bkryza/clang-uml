@@ -156,6 +156,7 @@ private:
     select_method_arguments_render_mode() const;
 
     mutable std::set<eid_t> generated_participants_;
+    mutable std::set<unsigned int> generated_comment_ids_;
     mutable std::vector<model::message> already_generated_in_static_context_;
 };
 

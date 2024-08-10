@@ -467,7 +467,7 @@ private:
     void pop_message_to_diagram(clang::CallExpr *expr);
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
 
-    std::optional<std::string> get_expression_comment(
+    std::optional<std::pair<unsigned int, std::string>> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
         eid_t caller_id, const clang::Stmt *stmt);
 
