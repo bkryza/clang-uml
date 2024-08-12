@@ -551,12 +551,17 @@ void diagram::print() const
             else {
                 const auto &to_participant = *participants_.at(message.to());
 
+                std::string message_comment{"None"};
+                if (const auto &cmt = message.comment(); cmt.has_value()) {
+                    message_comment = cmt.value().at("comment");
+                }
+
                 LOG_TRACE("       Message from={}, from_id={}, "
                           "to={}, to_id={}, name={}, type={}, comment={}",
                     from_participant.full_name(false), from_participant.id(),
                     to_participant.full_name(false), to_participant.id(),
                     message.message_name(), to_string(message.type()),
-                    message.comment().value_or("None"));
+                    message_comment);
             }
         }
     }

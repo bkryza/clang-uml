@@ -31,7 +31,7 @@ bool message::operator==(const message &other) const noexcept
     return from_ == other.from_ && to_ == other.to_ && type_ == other.type_ &&
         scope_ == other.scope_ && message_name_ == other.message_name_ &&
         return_type_ == other.return_type_ &&
-        condition_text_ == other.condition_text_;
+        condition_text_ == other.condition_text_ && comment_ == other.comment_;
 }
 
 void message::set_type(common::model::message_t t) { type_ = t; }
@@ -57,15 +57,38 @@ void message::set_return_type(std::string t) { return_type_ = std::move(t); }
 
 const std::string &message::return_type() const { return return_type_; }
 
-const std::optional<std::string> &message::comment() const { return comment_; }
+const std::optional<common::model::comment_t> &message::comment() const
+{
+    return comment_;
+}
 
-void message::set_comment(std::string c)
+void message::set_comment(
+    std::optional<std::pair<unsigned int, std::string>> comment)
+{
+    if (comment.has_value()) {
+        set_comment(comment.value().first, comment.value().second);
+    }
+}
+
+void message::set_comment(unsigned int id, std::string comment)
+{
+    if (comment.empty())
+        return;
+
+    common::model::comment_t c;
+    c["id"] = id;
+    c["comment"] = comment;
+
+    set_comment(std::move(c));
+}
+
+void message::set_comment(common::model::comment_t c)
 {
     if (!c.empty())
         comment_ = std::move(c);
 }
 
-void message::set_comment(const std::optional<std::string> &c)
+void message::set_comment(const std::optional<common::model::comment_t> &c)
 {
     if (c)
         set_comment(c.value());

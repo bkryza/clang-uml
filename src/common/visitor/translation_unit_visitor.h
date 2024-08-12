@@ -273,7 +273,7 @@ public:
         if (comment == nullptr)
             return {};
 
-        auto [it, inserted] = processed_comments_.emplace(comment);
+        auto [it, inserted] = processed_comments().emplace(comment);
 
         if (!inserted)
             return {};
@@ -282,7 +282,7 @@ public:
         // TODO: Refactor to use standard block comments processable by
         //       clang comments
         const auto &[decorators, stripped_comment] =
-            decorators::parse(comment->getFormattedText(source_manager_, de));
+            decorators::parse(comment->getFormattedText(source_manager(), de));
 
         e.add_decorators(decorators);
 

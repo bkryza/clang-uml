@@ -467,7 +467,7 @@ private:
     void pop_message_to_diagram(clang::CallExpr *expr);
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
 
-    std::optional<std::string> get_expression_comment(
+    std::optional<std::pair<unsigned int, std::string>> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
         eid_t caller_id, const clang::Stmt *stmt);
 
@@ -504,13 +504,6 @@ private:
 
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
-
-    /**
-     * @todo Refactor to @ref ast_id_mapper
-     */
-    std::map</* local id from ->getID() */ int64_t,
-        /* global ID based on full name */ eid_t>
-        local_ast_id_map_;
 
     std::map<int64_t /* local anonymous struct id */,
         std::tuple<std::string /* field name */, common::model::relationship_t,

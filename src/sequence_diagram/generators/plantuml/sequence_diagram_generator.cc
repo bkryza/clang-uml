@@ -300,6 +300,7 @@ void generator::generate_message_comment(
     if (!from)
         return;
 
+    // First generate message comments from \note directives in comments
     bool comment_generated_from_note_decorators{false};
     for (const auto &decorator : m.decorators()) {
         auto note = std::dynamic_pointer_cast<decorators::note>(decorator);
@@ -322,11 +323,14 @@ void generator::generate_message_comment(
     if (!config().generate_message_comments())
         return;
 
-    if (const auto &comment = m.comment(); comment) {
+    // Now generate message notes from raw comments if enabled
+    if (const auto &comment = m.comment(); comment &&
+        generated_comment_ids_.emplace(comment.value().at("id")).second) {
+
         ostr << "note over " << generate_alias(from.value()) << '\n';
 
-        ostr << util::format_message_comment(
-                    comment.value(), config().message_comment_width())
+        ostr << util::format_message_comment(comment.value().at("comment"),
+                    config().message_comment_width())
              << '\n';
 
         ostr << "end note" << '\n';
