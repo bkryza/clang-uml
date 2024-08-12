@@ -60,6 +60,8 @@ public:
      */
     std::optional<eid_t> get_global_id(eid_t ast_id);
 
+    eid_t resolve_or(eid_t id);
+
 private:
     std::map</* Clang AST translation unit local id */ int64_t,
         /* clang-uml global id */ eid_t>

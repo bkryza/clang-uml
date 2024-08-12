@@ -1325,15 +1325,7 @@ bool translation_unit_visitor::process_cuda_kernel_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    const auto maybe_id = get_unique_id(eid_t{callee_function->getID()});
-    if (!maybe_id.has_value()) {
-        // This is hopefully not an interesting call...
-        m.set_to(eid_t{callee_function->getID()});
-    }
-    else {
-        m.set_to(maybe_id.value());
-    }
-
+    m.set_to(id_mapper().resolve_or(eid_t{callee_function->getID()}));
     m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
 
     return true;
@@ -1366,14 +1358,9 @@ bool translation_unit_visitor::process_operator_call_expression(
         m.set_to(eid_t{lambda_method->getParent()->getID()});
     }
     else {
-        auto maybe_id =
-            get_unique_id(eid_t{operator_call_expr->getCalleeDecl()->getID()});
-        if (maybe_id.has_value()) {
-            m.set_to(maybe_id.value());
-        }
-        else {
-            m.set_to(eid_t{operator_call_expr->getCalleeDecl()->getID()});
-        }
+        const auto operator_ast_id =
+            operator_call_expr->getCalleeDecl()->getID();
+        m.set_to(id_mapper().resolve_or(eid_t{operator_ast_id}));
     }
 
     m.set_message_name(fmt::format(
@@ -1398,14 +1385,7 @@ bool translation_unit_visitor::process_construct_expression(
         constructor->getID(),
         construct_expr->getBeginLoc().printToString(source_manager()));
 
-    auto maybe_id = get_unique_id(eid_t{constructor->getID()});
-    if (maybe_id.has_value()) {
-        m.set_to(maybe_id.value());
-    }
-    else {
-        m.set_to(eid_t{constructor->getID()});
-    }
-
+    m.set_to(id_mapper().resolve_or(eid_t{constructor->getID()}));
     m.set_message_name(
         fmt::format("{}::{}", constructor_parent->getQualifiedNameAsString(),
             constructor_parent->getNameAsString()));
@@ -1506,8 +1486,7 @@ bool translation_unit_visitor::process_class_template_method_call_expression(
                         if (p_full_name.find(callee_method_full_name + "(") ==
                             0) {
                             // TODO: This selects the first matching template
-                            // method
-                            //       without considering arguments!!!
+                            //       method without considering arguments!!!
                             m.set_to(id);
                             break;
                         }
@@ -1558,15 +1537,7 @@ bool translation_unit_visitor::process_function_call_expression(
 
     auto callee_name = callee_function->getQualifiedNameAsString() + "()";
 
-    const auto maybe_id = get_unique_id(eid_t{callee_function->getID()});
-    if (!maybe_id.has_value()) {
-        // This is hopefully not an interesting call...
-        m.set_to(eid_t{callee_function->getID()});
-    }
-    else {
-        m.set_to(maybe_id.value());
-    }
-
+    m.set_to(id_mapper().resolve_or(eid_t{callee_function->getID()}));
     m.set_message_name(callee_name.substr(0, callee_name.size() - 2));
 
     return true;
@@ -1582,12 +1553,7 @@ bool translation_unit_visitor::process_lambda_call_expression(
         return true;
 
     const auto lambda_class_id = eid_t{lambda_expr->getLambdaClass()->getID()};
-    const auto maybe_id = get_unique_id(lambda_class_id);
-    if (!maybe_id.has_value())
-        m.set_to(lambda_class_id);
-    else {
-        m.set_to(maybe_id.value());
-    }
+    m.set_to(id_mapper().resolve_or(eid_t{lambda_class_id}));
 
     return true;
 }
@@ -1605,28 +1571,14 @@ bool translation_unit_visitor::process_unresolved_lookup_call_expression(
                 nullptr) {
                 const auto *ftd =
                     clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(decl);
-
-                const auto maybe_id = get_unique_id(eid_t{ftd->getID()});
-                if (!maybe_id.has_value())
-                    m.set_to(eid_t{ftd->getID()});
-                else {
-                    m.set_to(maybe_id.value());
-                }
-
+                m.set_to(id_mapper().resolve_or(eid_t{ftd->getID()}));
                 break;
             }
 
             if (clang::dyn_cast_or_null<clang::FunctionDecl>(decl) != nullptr) {
                 const auto *fd =
                     clang::dyn_cast_or_null<clang::FunctionDecl>(decl);
-
-                const auto maybe_id = get_unique_id(eid_t{fd->getID()});
-                if (!maybe_id.has_value())
-                    m.set_to(eid_t{fd->getID()});
-                else {
-                    m.set_to(maybe_id.value());
-                }
-
+                m.set_to(id_mapper().resolve_or(eid_t{fd->getID()}));
                 break;
             }
 
@@ -1789,17 +1741,15 @@ void translation_unit_visitor::set_unique_id(int64_t local_id, eid_t global_id)
 {
     LOG_TRACE("Setting local element mapping {} --> {}", local_id, global_id);
 
-    local_ast_id_map_[local_id] = global_id;
+    assert(global_id.is_global());
+
+    id_mapper().add(local_id, global_id);
 }
 
 std::optional<eid_t> translation_unit_visitor::get_unique_id(
     eid_t local_id) const
 {
-    if (local_ast_id_map_.find(local_id.ast_local_value()) ==
-        local_ast_id_map_.end())
-        return {};
-
-    return local_ast_id_map_.at(local_id.ast_local_value());
+    return id_mapper().get_global_id(local_id);
 }
 
 std::unique_ptr<model::function_template>
@@ -2072,11 +2022,9 @@ void translation_unit_visitor::resolve_ids_to_global()
 
     // Change all active participants AST local ids to diagram global ids
     for (auto id : diagram().active_participants()) {
-        if (!id.is_global() &&
-            local_ast_id_map_.find(id.ast_local_value()) !=
-                local_ast_id_map_.end()) {
-            active_participants_unique.emplace(
-                local_ast_id_map_.at(id.ast_local_value()));
+        if (const auto unique_id = get_unique_id(id);
+            !id.is_global() && unique_id.has_value()) {
+            active_participants_unique.emplace(unique_id.value());
         }
         else if (id.is_global()) {
             active_participants_unique.emplace(id);
@@ -2088,10 +2036,10 @@ void translation_unit_visitor::resolve_ids_to_global()
     // Change all message callees AST local ids to diagram global ids
     for (auto &[id, activity] : diagram().sequences()) {
         for (auto &m : activity.messages()) {
-            if (!m.to().is_global() &&
-                local_ast_id_map_.find(m.to().ast_local_value()) !=
-                    local_ast_id_map_.end()) {
-                m.set_to(local_ast_id_map_.at(m.to().ast_local_value()));
+            if (const auto unique_id = get_unique_id(m.to());
+                !m.to().is_global() && unique_id.has_value()) {
+                m.set_to(unique_id.value());
+                assert(m.to().is_global());
             }
         }
     }

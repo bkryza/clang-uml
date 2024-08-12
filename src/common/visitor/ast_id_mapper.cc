@@ -22,13 +22,11 @@ namespace clanguml::common::visitor {
 
 void ast_id_mapper::add(int64_t ast_id, eid_t global_id)
 {
-    id_map_.emplace(ast_id, global_id);
+    id_map_[ast_id] = global_id;
 }
 
 std::optional<eid_t> ast_id_mapper::get_global_id(eid_t ast_id)
 {
-    assert(!ast_id.is_global());
-
     if (ast_id.is_global())
         return {};
 
@@ -36,6 +34,17 @@ std::optional<eid_t> ast_id_mapper::get_global_id(eid_t ast_id)
         return {};
 
     return id_map_.at(ast_id.ast_local_value());
+}
+
+eid_t ast_id_mapper::resolve_or(eid_t id)
+{
+    if (id.is_global())
+        return id;
+
+    if (id_map_.count(id.ast_local_value()) == 0)
+        return id;
+
+    return id_map_.at(id.ast_local_value());
 }
 
 } // namespace clanguml::common::visitor
