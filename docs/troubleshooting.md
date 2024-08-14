@@ -271,7 +271,9 @@ If this doesn't help to include paths can be customized using config options:
 * `add_compile_flags` - which adds a list of compile flags such as include paths
   to each entry of the compilation database
 * `remove_compile_flags` - which removes existing compile flags from each entry
-  of the compilation database
+  of the compilation database, it can be provided as a regular string that
+  must match the entire flag or as an object with `r:` key, which can contain
+  a regular expression that will match a set of flags
 
 For instance:
 
@@ -280,6 +282,7 @@ add_compile_flags:
   - -I/opt/my_toolchain/include
 remove_compile_flags:
   - -I/usr/include
+  - r: "-m.*"
 ```
 
 These options can be also passed on the command line, for instance:

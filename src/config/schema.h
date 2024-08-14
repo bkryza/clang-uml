@@ -339,7 +339,7 @@ root:
     output_directory: !optional string
     query_driver: !optional string
     add_compile_flags: !optional [string]
-    remove_compile_flags: !optional [string]
+    remove_compile_flags: !optional [regex_or_string_t]
     allow_empty_diagrams: !optional bool
     diagram_templates: !optional diagram_templates_t
     diagrams: !required map_t<string;diagram_t>

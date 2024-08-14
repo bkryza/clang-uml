@@ -44,6 +44,8 @@ std::pair<clanguml::config::config_ptr,
     clanguml::common::compilation_database_ptr>
 load_config(const std::string &test_name)
 {
+    using clanguml::common::string_or_regex;
+
     std::pair<clanguml::config::config_ptr,
         clanguml::common::compilation_database_ptr>
         res;
@@ -69,10 +71,11 @@ load_config(const std::string &test_name)
     LOG_DBG("Loading compilation database from {}",
         res.first->compilation_database_dir());
 
-    std::vector<std::string> remove_compile_flags{
-        std::string{"-Wno-class-memaccess"},
-        std::string{"-forward-unknown-to-host-compiler"},
-        std::string{"--generate-code=arch=compute_75,code=[compute_75,sm_75]"}};
+    std::vector<string_or_regex> remove_compile_flags{
+        string_or_regex{"-Wno-class-memaccess"},
+        string_or_regex{"-forward-unknown-to-host-compiler"},
+        string_or_regex{
+            std::regex{"--generate-code=.*"}, "--generate-code=.*"}};
 
     res.first->remove_compile_flags.set(remove_compile_flags);
 
