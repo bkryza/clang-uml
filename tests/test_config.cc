@@ -242,6 +242,18 @@ TEST_CASE("Test config layout")
         clanguml::common::model::diagram_t::kPackage);
 }
 
+TEST_CASE("Test add and remove compile flags options")
+{
+    auto cfg = clanguml::config::load("./test_config_data/complete.yml");
+
+    REQUIRE(cfg.add_compile_flags().size() == 1);
+    REQUIRE(cfg.add_compile_flags()[0] == "-fparse-all-comments");
+    REQUIRE(cfg.remove_compile_flags().size() == 2);
+    REQUIRE(cfg.remove_compile_flags()[0] == "-Werror");
+    REQUIRE_FALSE(cfg.remove_compile_flags()[1] == "-Wwarning");
+    REQUIRE(cfg.remove_compile_flags()[1] == "-march=amd64");
+}
+
 TEST_CASE("Test config emitters")
 {
     auto cfg = clanguml::config::load("./test_config_data/complete.yml");

@@ -219,6 +219,14 @@ remove_compile_flags:
   - -I/usr/include
 ```
 
+`remove_compile_flags` also accepts regular expression, so a single entry can
+remove a whole set of flags, e.g.:
+
+```yaml
+remove_compile_flags:
+  - r: "-m.*"
+```
+
 These options can be also passed on the command line, for instance:
 
 ```bash

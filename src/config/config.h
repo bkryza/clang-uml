@@ -759,7 +759,7 @@ struct config : public inheritable_diagram_options {
     /*! List of compilation flags to be removed from the compilation
      * commands from database
      */
-    option<std::vector<std::string>> remove_compile_flags{
+    option<std::vector<common::string_or_regex>> remove_compile_flags{
         "remove_compile_flags"};
 
     /*! Extract include paths by executing specified compiler driver.

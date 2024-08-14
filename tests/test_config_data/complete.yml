@@ -12,6 +12,11 @@ generate_links:
   link: "https://github.com/bkryza/clang-uml/blob/{{ git.commit }}/{{ element.source.path }}#L{{ element.source.line }}"
   # Tooltip pattern
   tooltip: "{{ element.name }}"
+add_compile_flags:
+  - -fparse-all-comments
+remove_compile_flags:
+  - -Werror
+  - r: "-m.*"
 # The map of diagrams - keys are also diagram file names
 diagrams:
   config_class:
