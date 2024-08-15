@@ -366,7 +366,7 @@ auto get_relationship(const nlohmann::json &j, const nlohmann::json &from,
             if (match && label.empty())
                 return true;
 
-            if (match && (label == it["label"]))
+            if (match && (it["label"] == label))
                 return true;
 
             return false;
@@ -1970,7 +1970,7 @@ bool IsAssociation(const json_t &d, std::string const &from,
     if (rel == j["relationships"].end())
         return false;
 
-    if (!label.empty() && (label != rel->at("label")))
+    if (!label.empty() && (rel->at("label") != label))
         return false;
 
     std::string access;
@@ -1981,7 +1981,7 @@ bool IsAssociation(const json_t &d, std::string const &from,
     else
         access = "private";
 
-    if (access != rel->at("access"))
+    if (rel->at("access") != access)
         return false;
 
     return true;
@@ -2001,7 +2001,7 @@ bool IsComposition(const json_t &d, std::string const &from,
     if (rel == j["relationships"].end())
         return false;
 
-    if (!label.empty() && label != rel->at("label"))
+    if (!label.empty() && (rel->at("label") != label))
         return false;
 
     std::string access;
@@ -2012,7 +2012,7 @@ bool IsComposition(const json_t &d, std::string const &from,
     else
         access = "private";
 
-    if (access != rel->at("access"))
+    if (rel->at("access") != access)
         return false;
 
     return true;
@@ -2032,7 +2032,7 @@ bool IsAggregation(const json_t &d, std::string const &from,
     if (rel == j["relationships"].end())
         return false;
 
-    if (!label.empty() && label != rel->at("label"))
+    if (!label.empty() && (rel->at("label") != label))
         return false;
 
     std::string access;
@@ -2043,7 +2043,7 @@ bool IsAggregation(const json_t &d, std::string const &from,
     else
         access = "private";
 
-    if (access != rel->at("access"))
+    if (rel->at("access") != access)
         return false;
 
     return true;
@@ -2190,7 +2190,8 @@ bool IsConceptParameterList(
 
     std::vector<std::string> params;
     for (const auto &it : parameters) {
-        params.push_back(fmt::format("{} {}", it["type"], it["name"]));
+        params.push_back(fmt::format("{} {}", it["type"].get<std::string>(),
+            it["name"].get<std::string>()));
     }
 
     return parameter_list == fmt::format("({})", fmt::join(params, ","));

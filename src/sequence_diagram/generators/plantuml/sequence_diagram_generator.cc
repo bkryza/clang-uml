@@ -119,8 +119,9 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
 
     ostr << '\n';
 
-    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
-        m.from(), to, m.to());
+    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message,
+        from.value().full_name(false), m.from(), to.value().full_name(false),
+        m.to());
 }
 
 void generator::generate_return(const message &m, std::ostream &ostr) const

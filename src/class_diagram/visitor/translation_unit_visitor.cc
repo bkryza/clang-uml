@@ -449,8 +449,9 @@ void translation_unit_visitor::process_constraint_requirements(
 
         LOG_DBG("== Processing constraint: '{}'", constraint_source);
 
-        for (const auto *requirement : constraint->getRequirements()) {
-            LOG_DBG("== Processing requirement: '{}'", requirement->getKind());
+        for ([[maybe_unused]] const auto *requirement :
+            constraint->getRequirements()) {
+            // TODO
         }
 
         // process 'requires (...)' declaration
