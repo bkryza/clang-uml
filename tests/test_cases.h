@@ -2190,7 +2190,8 @@ bool IsConceptParameterList(
 
     std::vector<std::string> params;
     for (const auto &it : parameters) {
-        params.push_back(fmt::format("{} {}", it["type"], it["name"]));
+        params.push_back(fmt::format("{} {}", it["type"].get<std::string>(),
+            it["name"].get<std::string>()));
     }
 
     return parameter_list == fmt::format("({})", fmt::join(params, ","));

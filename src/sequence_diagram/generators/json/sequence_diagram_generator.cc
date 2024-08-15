@@ -181,8 +181,9 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
 
     parent["messages"].push_back(std::move(msg));
 
-    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message, from,
-        m.from(), to, m.to());
+    LOG_DBG("Generated call '{}' from {} [{}] to {} [{}]", message,
+        from.value().full_name(false), m.from(), to.value().full_name(false),
+        m.to());
 }
 
 void generator::generate_activity(
