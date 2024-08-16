@@ -1,6 +1,6 @@
 /*!
-  Highlight.js v11.9.0 (git: b7ec4bfafc)
-  (c) 2006-2023 undefined and other contributors
+  Highlight.js v11.10.0 (git: 366a8bd012)
+  (c) 2006-2024 Josh Goebel <hello@joshgoebel.com> and other contributors
   License: BSD-3-Clause
  */
 var hljs = (function () {
@@ -1558,7 +1558,7 @@ var hljs = (function () {
     return mode;
   }
 
-  var version = "11.9.0";
+  var version = "11.10.0";
 
   class HTMLInjectionError extends Error {
     constructor(reason, html) {
@@ -2604,7 +2604,7 @@ var hljs = (function () {
 
 })();
 if (typeof exports === 'object' && typeof module !== 'undefined') { module.exports = hljs; }
-/*! `bash` grammar compiled for Highlight.js 11.9.0 */
+/*! `bash` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -2794,6 +2794,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
       "read",
       "readarray",
       "source",
+      "sudo",
       "type",
       "typeset",
       "ulimit",
@@ -2979,7 +2980,10 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 
     return {
       name: 'Bash',
-      aliases: [ 'sh' ],
+      aliases: [
+        'sh',
+        'zsh'
+      ],
       keywords: {
         $pattern: /\b[a-z][a-z0-9._-]+\b/,
         keyword: KEYWORDS,
@@ -3016,7 +3020,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('bash', hljsGrammar);
-  })();/*! `c` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `c` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -3093,7 +3097,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
       end: /$/,
       keywords: { keyword:
           'if else elif endif define undef warning error line '
-          + 'pragma _Pragma ifdef ifndef include' },
+          + 'pragma _Pragma ifdef ifndef elifdef elifndef include' },
       contains: [
         {
           begin: /\\\n/,
@@ -3137,6 +3141,8 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
       "restrict",
       "return",
       "sizeof",
+      "typeof",
+      "typeof_unqual",
       "struct",
       "switch",
       "typedef",
@@ -3171,14 +3177,26 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
       "char",
       "void",
       "_Bool",
+      "_BitInt",
       "_Complex",
       "_Imaginary",
       "_Decimal32",
       "_Decimal64",
+      "_Decimal96",
       "_Decimal128",
+      "_Decimal64x",
+      "_Decimal128x",
+      "_Float16",
+      "_Float32",
+      "_Float64",
+      "_Float128",
+      "_Float32x",
+      "_Float64x",
+      "_Float128x",
       // modifiers
       "const",
       "static",
+      "constexpr",
       // aliases
       "complex",
       "bool",
@@ -3343,7 +3361,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('c', hljsGrammar);
-  })();/*! `cmake` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `cmake` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -3416,7 +3434,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('cmake', hljsGrammar);
-  })();/*! `cpp` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `cpp` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -4028,7 +4046,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('cpp', hljsGrammar);
-  })();/*! `json` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `json` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -4069,6 +4087,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 
     return {
       name: 'JSON',
+      aliases: ['jsonc'],
       keywords:{
         literal: LITERALS,
       },
@@ -4090,7 +4109,373 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('json', hljsGrammar);
-  })();/*! `python` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `nix` grammar compiled for Highlight.js 11.10.0 */
+  (function(){
+    var hljsGrammar = (function () {
+  'use strict';
+
+  /*
+  Language: Nix
+  Author: Domen Kožar <domen@dev.si>
+  Description: Nix functional language
+  Website: http://nixos.org/nix
+  Category: system
+  */
+
+  function nix(hljs) {
+    const KEYWORDS = {
+      keyword: [
+        "rec",
+        "with",
+        "let",
+        "in",
+        "inherit",
+        "assert",
+        "if",
+        "else",
+        "then"
+      ],
+      literal: [
+        "true",
+        "false",
+        "or",
+        "and",
+        "null"
+      ],
+      built_in: [
+        "import",
+        "abort",
+        "baseNameOf",
+        "dirOf",
+        "isNull",
+        "builtins",
+        "map",
+        "removeAttrs",
+        "throw",
+        "toString",
+        "derivation"
+      ]
+    };
+    const ANTIQUOTE = {
+      className: 'subst',
+      begin: /\$\{/,
+      end: /\}/,
+      keywords: KEYWORDS
+    };
+    const ESCAPED_DOLLAR = {
+      className: 'char.escape',
+      begin: /''\$/,
+    };
+    const ATTRS = {
+      begin: /[a-zA-Z0-9-_]+(\s*=)/,
+      returnBegin: true,
+      relevance: 0,
+      contains: [
+        {
+          className: 'attr',
+          begin: /\S+/,
+          relevance: 0.2
+        }
+      ]
+    };
+    const STRING = {
+      className: 'string',
+      contains: [ ESCAPED_DOLLAR, ANTIQUOTE ],
+      variants: [
+        {
+          begin: "''",
+          end: "''"
+        },
+        {
+          begin: '"',
+          end: '"'
+        }
+      ]
+    };
+    const EXPRESSIONS = [
+      hljs.NUMBER_MODE,
+      hljs.HASH_COMMENT_MODE,
+      hljs.C_BLOCK_COMMENT_MODE,
+      STRING,
+      ATTRS
+    ];
+    ANTIQUOTE.contains = EXPRESSIONS;
+    return {
+      name: 'Nix',
+      aliases: [ "nixos" ],
+      keywords: KEYWORDS,
+      contains: EXPRESSIONS
+    };
+  }
+
+  return nix;
+
+})();
+
+    hljs.registerLanguage('nix', hljsGrammar);
+  })();/*! `objectivec` grammar compiled for Highlight.js 11.10.0 */
+  (function(){
+    var hljsGrammar = (function () {
+  'use strict';
+
+  /*
+  Language: Objective-C
+  Author: Valerii Hiora <valerii.hiora@gmail.com>
+  Contributors: Angel G. Olloqui <angelgarcia.mail@gmail.com>, Matt Diephouse <matt@diephouse.com>, Andrew Farmer <ahfarmer@gmail.com>, Minh Nguyễn <mxn@1ec5.org>
+  Website: https://developer.apple.com/documentation/objectivec
+  Category: common
+  */
+
+  function objectivec(hljs) {
+    const API_CLASS = {
+      className: 'built_in',
+      begin: '\\b(AV|CA|CF|CG|CI|CL|CM|CN|CT|MK|MP|MTK|MTL|NS|SCN|SK|UI|WK|XC)\\w+'
+    };
+    const IDENTIFIER_RE = /[a-zA-Z@][a-zA-Z0-9_]*/;
+    const TYPES = [
+      "int",
+      "float",
+      "char",
+      "unsigned",
+      "signed",
+      "short",
+      "long",
+      "double",
+      "wchar_t",
+      "unichar",
+      "void",
+      "bool",
+      "BOOL",
+      "id|0",
+      "_Bool"
+    ];
+    const KWS = [
+      "while",
+      "export",
+      "sizeof",
+      "typedef",
+      "const",
+      "struct",
+      "for",
+      "union",
+      "volatile",
+      "static",
+      "mutable",
+      "if",
+      "do",
+      "return",
+      "goto",
+      "enum",
+      "else",
+      "break",
+      "extern",
+      "asm",
+      "case",
+      "default",
+      "register",
+      "explicit",
+      "typename",
+      "switch",
+      "continue",
+      "inline",
+      "readonly",
+      "assign",
+      "readwrite",
+      "self",
+      "@synchronized",
+      "id",
+      "typeof",
+      "nonatomic",
+      "IBOutlet",
+      "IBAction",
+      "strong",
+      "weak",
+      "copy",
+      "in",
+      "out",
+      "inout",
+      "bycopy",
+      "byref",
+      "oneway",
+      "__strong",
+      "__weak",
+      "__block",
+      "__autoreleasing",
+      "@private",
+      "@protected",
+      "@public",
+      "@try",
+      "@property",
+      "@end",
+      "@throw",
+      "@catch",
+      "@finally",
+      "@autoreleasepool",
+      "@synthesize",
+      "@dynamic",
+      "@selector",
+      "@optional",
+      "@required",
+      "@encode",
+      "@package",
+      "@import",
+      "@defs",
+      "@compatibility_alias",
+      "__bridge",
+      "__bridge_transfer",
+      "__bridge_retained",
+      "__bridge_retain",
+      "__covariant",
+      "__contravariant",
+      "__kindof",
+      "_Nonnull",
+      "_Nullable",
+      "_Null_unspecified",
+      "__FUNCTION__",
+      "__PRETTY_FUNCTION__",
+      "__attribute__",
+      "getter",
+      "setter",
+      "retain",
+      "unsafe_unretained",
+      "nonnull",
+      "nullable",
+      "null_unspecified",
+      "null_resettable",
+      "class",
+      "instancetype",
+      "NS_DESIGNATED_INITIALIZER",
+      "NS_UNAVAILABLE",
+      "NS_REQUIRES_SUPER",
+      "NS_RETURNS_INNER_POINTER",
+      "NS_INLINE",
+      "NS_AVAILABLE",
+      "NS_DEPRECATED",
+      "NS_ENUM",
+      "NS_OPTIONS",
+      "NS_SWIFT_UNAVAILABLE",
+      "NS_ASSUME_NONNULL_BEGIN",
+      "NS_ASSUME_NONNULL_END",
+      "NS_REFINED_FOR_SWIFT",
+      "NS_SWIFT_NAME",
+      "NS_SWIFT_NOTHROW",
+      "NS_DURING",
+      "NS_HANDLER",
+      "NS_ENDHANDLER",
+      "NS_VALUERETURN",
+      "NS_VOIDRETURN"
+    ];
+    const LITERALS = [
+      "false",
+      "true",
+      "FALSE",
+      "TRUE",
+      "nil",
+      "YES",
+      "NO",
+      "NULL"
+    ];
+    const BUILT_INS = [
+      "dispatch_once_t",
+      "dispatch_queue_t",
+      "dispatch_sync",
+      "dispatch_async",
+      "dispatch_once"
+    ];
+    const KEYWORDS = {
+      "variable.language": [
+        "this",
+        "super"
+      ],
+      $pattern: IDENTIFIER_RE,
+      keyword: KWS,
+      literal: LITERALS,
+      built_in: BUILT_INS,
+      type: TYPES
+    };
+    const CLASS_KEYWORDS = {
+      $pattern: IDENTIFIER_RE,
+      keyword: [
+        "@interface",
+        "@class",
+        "@protocol",
+        "@implementation"
+      ]
+    };
+    return {
+      name: 'Objective-C',
+      aliases: [
+        'mm',
+        'objc',
+        'obj-c',
+        'obj-c++',
+        'objective-c++'
+      ],
+      keywords: KEYWORDS,
+      illegal: '</',
+      contains: [
+        API_CLASS,
+        hljs.C_LINE_COMMENT_MODE,
+        hljs.C_BLOCK_COMMENT_MODE,
+        hljs.C_NUMBER_MODE,
+        hljs.QUOTE_STRING_MODE,
+        hljs.APOS_STRING_MODE,
+        {
+          className: 'string',
+          variants: [
+            {
+              begin: '@"',
+              end: '"',
+              illegal: '\\n',
+              contains: [ hljs.BACKSLASH_ESCAPE ]
+            }
+          ]
+        },
+        {
+          className: 'meta',
+          begin: /#\s*[a-z]+\b/,
+          end: /$/,
+          keywords: { keyword:
+              'if else elif endif define undef warning error line '
+              + 'pragma ifdef ifndef include' },
+          contains: [
+            {
+              begin: /\\\n/,
+              relevance: 0
+            },
+            hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'string' }),
+            {
+              className: 'string',
+              begin: /<.*?>/,
+              end: /$/,
+              illegal: '\\n'
+            },
+            hljs.C_LINE_COMMENT_MODE,
+            hljs.C_BLOCK_COMMENT_MODE
+          ]
+        },
+        {
+          className: 'class',
+          begin: '(' + CLASS_KEYWORDS.keyword.join('|') + ')\\b',
+          end: /(\{|$)/,
+          excludeEnd: true,
+          keywords: CLASS_KEYWORDS,
+          contains: [ hljs.UNDERSCORE_TITLE_MODE ]
+        },
+        {
+          begin: '\\.' + hljs.UNDERSCORE_IDENT_RE,
+          relevance: 0
+        }
+      ]
+    };
+  }
+
+  return objectivec;
+
+})();
+
+    hljs.registerLanguage('objectivec', hljsGrammar);
+  })();/*! `python` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';
@@ -4470,7 +4855,8 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
         NUMBER,
         {
           // very common convention
-          begin: /\bself\b/
+          scope: 'variable.language',
+          match: /\bself\b/
         },
         {
           // eat "if" prior to string so that it won't accidentally be
@@ -4534,299 +4920,7 @@ if (typeof exports === 'object' && typeof module !== 'undefined') { module.expor
 })();
 
     hljs.registerLanguage('python', hljsGrammar);
-  })();/*! `shell` grammar compiled for Highlight.js 11.9.0 */
-  (function(){
-    var hljsGrammar = (function () {
-  'use strict';
-
-  /*
-  Language: Shell Session
-  Requires: bash.js
-  Author: TSUYUSATO Kitsune <make.just.on@gmail.com>
-  Category: common
-  Audit: 2020
-  */
-
-  /** @type LanguageFn */
-  function shell(hljs) {
-    return {
-      name: 'Shell Session',
-      aliases: [
-        'console',
-        'shellsession'
-      ],
-      contains: [
-        {
-          className: 'meta.prompt',
-          // We cannot add \s (spaces) in the regular expression otherwise it will be too broad and produce unexpected result.
-          // For instance, in the following example, it would match "echo /path/to/home >" as a prompt:
-          // echo /path/to/home > t.exe
-          begin: /^\s{0,3}[/~\w\d[\]()@-]*[>%$#][ ]?/,
-          starts: {
-            end: /[^\\](?=\s*$)/,
-            subLanguage: 'bash'
-          }
-        }
-      ]
-    };
-  }
-
-  return shell;
-
-})();
-
-    hljs.registerLanguage('shell', hljsGrammar);
-  })();/*! `xml` grammar compiled for Highlight.js 11.9.0 */
-  (function(){
-    var hljsGrammar = (function () {
-  'use strict';
-
-  /*
-  Language: HTML, XML
-  Website: https://www.w3.org/XML/
-  Category: common, web
-  Audit: 2020
-  */
-
-  /** @type LanguageFn */
-  function xml(hljs) {
-    const regex = hljs.regex;
-    // XML names can have the following additional letters: https://www.w3.org/TR/xml/#NT-NameChar
-    // OTHER_NAME_CHARS = /[:\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]/;
-    // Element names start with NAME_START_CHAR followed by optional other Unicode letters, ASCII digits, hyphens, underscores, and periods
-    // const TAG_NAME_RE = regex.concat(/[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]/, regex.optional(/[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*:/), /[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*/);;
-    // const XML_IDENT_RE = /[A-Z_a-z:\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]+/;
-    // const TAG_NAME_RE = regex.concat(/[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]/, regex.optional(/[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*:/), /[A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\-.0-9\u00B7\u0300-\u036F\u203F-\u2040]*/);
-    // however, to cater for performance and more Unicode support rely simply on the Unicode letter class
-    const TAG_NAME_RE = regex.concat(/[\p{L}_]/u, regex.optional(/[\p{L}0-9_.-]*:/u), /[\p{L}0-9_.-]*/u);
-    const XML_IDENT_RE = /[\p{L}0-9._:-]+/u;
-    const XML_ENTITIES = {
-      className: 'symbol',
-      begin: /&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;/
-    };
-    const XML_META_KEYWORDS = {
-      begin: /\s/,
-      contains: [
-        {
-          className: 'keyword',
-          begin: /#?[a-z_][a-z1-9_-]+/,
-          illegal: /\n/
-        }
-      ]
-    };
-    const XML_META_PAR_KEYWORDS = hljs.inherit(XML_META_KEYWORDS, {
-      begin: /\(/,
-      end: /\)/
-    });
-    const APOS_META_STRING_MODE = hljs.inherit(hljs.APOS_STRING_MODE, { className: 'string' });
-    const QUOTE_META_STRING_MODE = hljs.inherit(hljs.QUOTE_STRING_MODE, { className: 'string' });
-    const TAG_INTERNALS = {
-      endsWithParent: true,
-      illegal: /</,
-      relevance: 0,
-      contains: [
-        {
-          className: 'attr',
-          begin: XML_IDENT_RE,
-          relevance: 0
-        },
-        {
-          begin: /=\s*/,
-          relevance: 0,
-          contains: [
-            {
-              className: 'string',
-              endsParent: true,
-              variants: [
-                {
-                  begin: /"/,
-                  end: /"/,
-                  contains: [ XML_ENTITIES ]
-                },
-                {
-                  begin: /'/,
-                  end: /'/,
-                  contains: [ XML_ENTITIES ]
-                },
-                { begin: /[^\s"'=<>`]+/ }
-              ]
-            }
-          ]
-        }
-      ]
-    };
-    return {
-      name: 'HTML, XML',
-      aliases: [
-        'html',
-        'xhtml',
-        'rss',
-        'atom',
-        'xjb',
-        'xsd',
-        'xsl',
-        'plist',
-        'wsf',
-        'svg'
-      ],
-      case_insensitive: true,
-      unicodeRegex: true,
-      contains: [
-        {
-          className: 'meta',
-          begin: /<![a-z]/,
-          end: />/,
-          relevance: 10,
-          contains: [
-            XML_META_KEYWORDS,
-            QUOTE_META_STRING_MODE,
-            APOS_META_STRING_MODE,
-            XML_META_PAR_KEYWORDS,
-            {
-              begin: /\[/,
-              end: /\]/,
-              contains: [
-                {
-                  className: 'meta',
-                  begin: /<![a-z]/,
-                  end: />/,
-                  contains: [
-                    XML_META_KEYWORDS,
-                    XML_META_PAR_KEYWORDS,
-                    QUOTE_META_STRING_MODE,
-                    APOS_META_STRING_MODE
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        hljs.COMMENT(
-          /<!--/,
-          /-->/,
-          { relevance: 10 }
-        ),
-        {
-          begin: /<!\[CDATA\[/,
-          end: /\]\]>/,
-          relevance: 10
-        },
-        XML_ENTITIES,
-        // xml processing instructions
-        {
-          className: 'meta',
-          end: /\?>/,
-          variants: [
-            {
-              begin: /<\?xml/,
-              relevance: 10,
-              contains: [
-                QUOTE_META_STRING_MODE
-              ]
-            },
-            {
-              begin: /<\?[a-z][a-z0-9]+/,
-            }
-          ]
-
-        },
-        {
-          className: 'tag',
-          /*
-          The lookahead pattern (?=...) ensures that 'begin' only matches
-          '<style' as a single word, followed by a whitespace or an
-          ending bracket.
-          */
-          begin: /<style(?=\s|>)/,
-          end: />/,
-          keywords: { name: 'style' },
-          contains: [ TAG_INTERNALS ],
-          starts: {
-            end: /<\/style>/,
-            returnEnd: true,
-            subLanguage: [
-              'css',
-              'xml'
-            ]
-          }
-        },
-        {
-          className: 'tag',
-          // See the comment in the <style tag about the lookahead pattern
-          begin: /<script(?=\s|>)/,
-          end: />/,
-          keywords: { name: 'script' },
-          contains: [ TAG_INTERNALS ],
-          starts: {
-            end: /<\/script>/,
-            returnEnd: true,
-            subLanguage: [
-              'javascript',
-              'handlebars',
-              'xml'
-            ]
-          }
-        },
-        // we need this for now for jSX
-        {
-          className: 'tag',
-          begin: /<>|<\/>/
-        },
-        // open tag
-        {
-          className: 'tag',
-          begin: regex.concat(
-            /</,
-            regex.lookahead(regex.concat(
-              TAG_NAME_RE,
-              // <tag/>
-              // <tag>
-              // <tag ...
-              regex.either(/\/>/, />/, /\s/)
-            ))
-          ),
-          end: /\/?>/,
-          contains: [
-            {
-              className: 'name',
-              begin: TAG_NAME_RE,
-              relevance: 0,
-              starts: TAG_INTERNALS
-            }
-          ]
-        },
-        // close tag
-        {
-          className: 'tag',
-          begin: regex.concat(
-            /<\//,
-            regex.lookahead(regex.concat(
-              TAG_NAME_RE, />/
-            ))
-          ),
-          contains: [
-            {
-              className: 'name',
-              begin: TAG_NAME_RE,
-              relevance: 0
-            },
-            {
-              begin: />/,
-              relevance: 0,
-              endsParent: true
-            }
-          ]
-        }
-      ]
-    };
-  }
-
-  return xml;
-
-})();
-
-    hljs.registerLanguage('xml', hljsGrammar);
-  })();/*! `yaml` grammar compiled for Highlight.js 11.9.0 */
+  })();/*! `yaml` grammar compiled for Highlight.js 11.10.0 */
   (function(){
     var hljsGrammar = (function () {
   'use strict';

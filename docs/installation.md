@@ -11,7 +11,7 @@
   * [macOS](#macos)
 * [Building from source](#building-from-source)
   * [Linux](#linux)
-  * [macos](#macos)
+  * [macOS](#macos-1)
   * [Windows](#windows-1)
     * [Visual Studio native build](#visual-studio-native-build)
 * [Shell autocompletion scripts](#shell-autocompletion-scripts)
@@ -35,16 +35,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.3-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.4-1.fc38.x86_64.rpm
 
 # Fedora 39
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc39.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.3-1.fc39.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.4-1.fc39.x86_64.rpm
 
 # Fedora 40
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.3/clang-uml-0.5.3-1.fc40.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.3-1.fc40.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc40.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.4-1.fc40.x86_64.rpm
 ```
 
 #### Conda
@@ -221,11 +221,11 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.5.2
+clang-uml 0.5.4
 Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
-Built against LLVM/Clang libraries version: 17.0.6
-Using LLVM/Clang libraries version: Ubuntu clang version 17.0.6
+Built against LLVM/Clang libraries version: 18.1.8
+Using LLVM/Clang libraries version: Ubuntu clang version 18.1.8
 ```
 
 Finally, remove the temporary build directory:

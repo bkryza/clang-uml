@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.5.4
  * Updated thirdparty dependencies (#306)
  * Added regular expression support to remove_compile_flags (#303)
  * Fixed repeated comments in sequence diagrams (#301)

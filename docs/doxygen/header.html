@@ -44,8 +44,10 @@ $mathjax
         hljs.configure({useBR: false});
         $(".fragment").each(function(i,node) {
             var $node = $(node);
-            // Only apply highlight.js to non-cpp code blocks
-            if (!$node.hasClass("language-cpp")) {
+            // Only apply highlight.js to non-cpp and non-yaml code blocks
+            if (!$node.hasClass("language-cpp")
+                && !$node.hasClass("language-yaml")
+                && !$node.hasClass("language-json")) {
                 $node.html("<pre><code class='" +
                     $node.attr("class") + "'>" +
                     $node.text() + "</code></pre>");
