@@ -35,7 +35,7 @@ void make_context_source_relative(
     if (source.at("path").empty())
         return;
 
-    auto path = std::filesystem::path{source.at("path")};
+    auto path = std::filesystem::path{source.at("path").get<std::string>()};
     auto prefix_path = std::filesystem::path(prefix);
     if (path.is_absolute() && util::is_relative_to(path, prefix_path)) {
         source["path"] = relative(path, prefix_path);
