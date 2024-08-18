@@ -37,6 +37,7 @@ namespace clanguml::class_diagram::model {
 using common::opt_ref;
 using common::model::diagram_element;
 using common::model::diagram_t;
+using common::model::eid_t;
 using common::model::element_view;
 using common::model::path;
 using common::model::path_type;

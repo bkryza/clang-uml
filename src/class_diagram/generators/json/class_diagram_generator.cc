@@ -82,15 +82,6 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["parameters"] = c.parameters();
 }
 
-void to_json(nlohmann::json &j, const class_parent &c)
-{
-    j["is_virtual"] = c.is_virtual();
-    j["id"] = std::to_string(c.id().value());
-    if (c.access() != common::model::access_t::kNone)
-        j["access"] = to_string(c.access());
-    j["name"] = c.name();
-}
-
 void to_json(nlohmann::json &j, const class_ &c)
 {
     j = dynamic_cast<const common::model::element &>(c);
@@ -102,7 +93,21 @@ void to_json(nlohmann::json &j, const class_ &c)
 
     j["members"] = c.members();
     j["methods"] = c.methods();
-    j["bases"] = c.parents();
+    auto bases = nlohmann::json::array();
+
+    for (const auto &rel : c.relationships()) {
+        if (rel.type() != common::model::relationship_t::kExtension)
+            continue;
+
+        auto base = nlohmann::json::object();
+        base["is_virtual"] = rel.is_virtual();
+        base["id"] = std::to_string(rel.destination().value());
+        if (rel.access() != common::model::access_t::kNone)
+            base["access"] = to_string(rel.access());
+        base["name"] = c.name();
+        bases.push_back(std::move(base));
+    }
+    j["bases"] = std::move(bases);
 
     set_module(j, c);
 
@@ -309,16 +314,6 @@ void generator::generate_relationships(
         nlohmann::json rel = r;
         rel["source"] = std::to_string(c.id().value());
         parent["relationships"].push_back(rel);
-    }
-
-    if (model().should_include(relationship_t::kExtension)) {
-        for (const auto &b : c.parents()) {
-            common::model::relationship r(
-                relationship_t::kExtension, b.id(), b.access());
-            nlohmann::json rel = r;
-            rel["source"] = std::to_string(c.id().value());
-            parent["relationships"].push_back(rel);
-        }
     }
 }
 

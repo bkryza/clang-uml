@@ -31,7 +31,14 @@ relationship::relationship(relationship_t type, eid_t destination,
     , multiplicity_destination_{std::move(multiplicity_destination)}
     , label_{std::move(label)}
     , access_{access}
+    , is_virtual_{false}
 {
+}
+
+relationship::relationship(eid_t destination, access_t access, bool is_virtual)
+    : relationship{relationship_t::kExtension, destination, access}
+{
+    set_virtual(is_virtual);
 }
 
 void relationship::set_type(relationship_t type) noexcept { type_ = type; }
@@ -74,6 +81,14 @@ std::string relationship::label() const { return label_; }
 void relationship::set_access(access_t access) noexcept { access_ = access; }
 
 access_t relationship::access() const noexcept { return access_; }
+
+bool relationship::is_virtual() const { return is_virtual_; }
+
+void relationship::set_virtual(const bool iv)
+{
+    assert(type() == relationship_t::kExtension);
+    is_virtual_ = iv;
+}
 
 bool operator==(const relationship &l, const relationship &r)
 {

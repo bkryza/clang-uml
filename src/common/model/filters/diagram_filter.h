@@ -664,22 +664,6 @@ private:
     bool should_include(
         const config::context_config &context_cfg, relationship_t r) const;
 
-    void find_elements_inheritance_relationship(const diagram &d,
-        const config::context_config &context_cfg,
-        std::set<eid_t> &effective_context,
-        std::set<eid_t> &current_iteration_context) const;
-
-    void find_elements_base_classes(const diagram &d,
-        std::set<eid_t> &effective_context,
-        std::set<eid_t> &current_iteration_context,
-        const class_diagram::model::diagram &cd,
-        const std::reference_wrapper<class_diagram::model::class_> &c) const;
-
-    void find_elements_sub_classes(std::set<eid_t> &effective_context,
-        std::set<eid_t> &current_iteration_context,
-        const class_diagram::model::diagram &cd,
-        const std::reference_wrapper<class_diagram::model::class_> &c) const;
-
     std::vector<config::context_config> context_;
 
     /*!

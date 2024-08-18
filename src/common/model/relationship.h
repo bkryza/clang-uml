@@ -54,6 +54,16 @@ public:
         std::string multiplicity_source = "",
         std::string multiplicity_destination = "");
 
+    /**
+     * Convenience constructor for extension relationships.
+     *
+     * @param destination Id of relationship target.
+     * @param access Inheritance access (public, protected, private).
+     * @param is_virtual Whether the inheritance is virtual.
+     */
+    relationship(eid_t destination, access_t access = access_t::kPublic,
+        bool is_virtual = false);
+
     ~relationship() override = default;
 
     /**
@@ -142,6 +152,20 @@ public:
      */
     access_t access() const noexcept;
 
+    /**
+     * Return true if an extension relationship is virtual.
+     *
+     * @return True if an extension relationship is virtual.
+     */
+    bool is_virtual() const;
+
+    /**
+     * Sets whether an extension relationship is virtual.
+     *
+     * @param iv True, if an extension relationship is virtual.
+     */
+    void set_virtual(bool iv);
+
     friend bool operator==(const relationship &l, const relationship &r);
 
 private:
@@ -151,5 +175,6 @@ private:
     std::string multiplicity_destination_;
     std::string label_;
     access_t access_;
+    bool is_virtual_;
 };
 } // namespace clanguml::common::model

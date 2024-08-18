@@ -48,23 +48,9 @@ void class_::add_method(class_method &&method)
     methods_.emplace_back(std::move(method));
 }
 
-void class_::add_parent(class_parent &&parent)
-{
-    for (const auto &p : bases_) {
-        if (p.id() == parent.id()) {
-            return;
-        }
-    }
-
-    bases_.emplace_back(std::move(parent));
-}
-
 const std::vector<class_member> &class_::members() const { return members_; }
 
 const std::vector<class_method> &class_::methods() const { return methods_; }
-
-const std::vector<class_parent> &class_::parents() const { return bases_; }
-std::vector<class_parent> &class_::parents() { return bases_; }
 
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
@@ -120,12 +106,6 @@ void class_::apply_filter(
 
     common::model::apply_filter(members_, filter);
     common::model::apply_filter(methods_, filter);
-
-    // Remove class bases which are no longer in the diagram
-    parents().erase(
-        std::remove_if(parents().begin(), parents().end(),
-            [&removed](auto &&p) { return removed.count(p.id()) > 0; }),
-        parents().end());
 }
 
 std::optional<std::string> class_::doxygen_link() const

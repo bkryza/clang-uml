@@ -497,7 +497,11 @@ void generator::generate_relationships(
                 m_generated_aliases.end())
                 continue;
 
-            relstr << c.alias() << " " << puml_relation << " " << target_alias;
+            if (r.type() != relationship_t::kExtension)
+                relstr << c.alias() << " " << puml_relation << " "
+                       << target_alias;
+            else
+                relstr << target_alias << " <|-- " << c.alias() << '\n';
 
             if (!r.label().empty()) {
                 relstr << " : " << plantuml_common::to_plantuml(r.access())
@@ -519,27 +523,6 @@ void generator::generate_relationships(
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
                 to_string(r.type()), c.full_name(), destination, e.what());
-        }
-    }
-
-    if (model().should_include(relationship_t::kExtension)) {
-        for (const auto &b : c.parents()) {
-            std::stringstream relstr;
-            try {
-                auto target_alias = model().to_alias(b.id());
-
-                if (m_generated_aliases.find(target_alias) ==
-                    m_generated_aliases.end())
-                    continue;
-
-                relstr << target_alias << " <|-- " << c.alias() << '\n';
-                all_relations_str << relstr.str();
-            }
-            catch (error::uml_alias_missing &e) {
-                LOG_DBG("=== Skipping inheritance relation from {} to {} due "
-                        "to: {}",
-                    b.name(), c.name(), e.what());
-            }
         }
     }
 

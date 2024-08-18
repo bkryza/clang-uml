@@ -1852,13 +1852,9 @@ bool template_builder<VisitorT>::add_base_classes(
         LOG_DBG("Adding template argument as base class '{}'",
             ct.to_string({}, false));
 
-        class_diagram::model::class_parent cp;
-        cp.set_access(common::model::access_t::kPublic);
-        cp.set_name(ct.to_string({}, false));
-        cp.set_id(maybe_id.value());
-
-        dynamic_cast<class_diagram::model::class_ &>(tinst).add_parent(
-            std::move(cp));
+        dynamic_cast<class_diagram::model::class_ &>(tinst).add_relationship(
+            common::model::relationship{
+                maybe_id.value(), common::model::access_t::kPublic, false});
     }
 
     return variadic_params;
