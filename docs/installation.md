@@ -5,6 +5,7 @@
 * [Distribution packages](#distribution-packages)
   * [Ubuntu](#ubuntu)
   * [Fedora](#fedora)
+  * [Arch Linux](#arch-linux)
   * [Conda](#conda)
   * [Nix](#nix)
   * [Windows](#windows)
@@ -45,6 +46,21 @@ sudo dnf install ./clang-uml-0.5.4-1.fc39.x86_64.rpm
 # Fedora 40
 wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc40.x86_64.rpm
 sudo dnf install ./clang-uml-0.5.4-1.fc40.x86_64.rpm
+```
+
+#### Arch Linux
+`clang-uml` is available from [AUR](https://aur.archlinux.org/packages/clang-uml), and can be installed using several methods:
+
+```console
+git clone https://aur.archlinux.org/clang-uml.git
+cd clang-uml
+makepkg -s -i -c
+```
+
+or using [yay](https://aur.archlinux.org/packages/yay):
+
+```console
+yay -S clang-uml
 ```
 
 #### Conda
@@ -101,7 +117,7 @@ First make sure that you have the following dependencies installed:
 
 ```bash
 # Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 22.04)
-apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15 
+apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15
 ```
 
 Then proceed with building the sources:
@@ -195,7 +211,7 @@ msbuild .\INSTALL.vcxproj -maxcpucount /p:Configuration=Release
 
 Build and install `LLVM`:
 
-```bash 
+```bash
 pip install psutil
 # Update the LLVM branch if necessary
 git clone --branch llvmorg-15.0.6 --depth 1 https://github.com/llvm/llvm-project.git llvm
