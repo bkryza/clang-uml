@@ -58,7 +58,9 @@ def main(dir1, dir2):
         """Go to the next image."""
         if current_index['index'] < len(common_files) - 1:
             current_index['index'] += 1
-            update_images()
+        else:
+            current_index['index'] = 0
+        update_images()
 
     def prev_image():
         """Go to the previous image."""
@@ -82,7 +84,9 @@ def main(dir1, dir2):
             elif event.key.arrow_left:
                 prev_image()
 
-    ui.label('SVG Image Comparison').classes('text-3xl font-bold text-center mb-4')
+    with ui.header().style('height: 5vh; display: flex; align-items: center; padding: 0 1rem;'):
+        ui.image('https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/img/clang-uml-logo.svg').style('width: 300px')
+        ui.label('Test Case Diagram Viewer').classes('text-4xl ml-4')
 
     with ui.row().classes('justify-center'):
         ui.button('Previous', on_click=prev_image)
