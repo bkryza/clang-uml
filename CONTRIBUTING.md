@@ -71,6 +71,17 @@ Thanks for taking interest in `clang-uml`!
   make tidy
   ```
 
+* Compare generated diagrams in your branch against master using `util/test_case_browser.py` script, for instance:
+  ```console
+  CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 LLVM_VERSION=18 NUMPROC=16 CMAKE_GENERATOR=Ninja ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON CLANG_UML_ENABLE_BACKTRACE=ON make test_diagrams
+  util/test_case_browser.py ../clang-uml-master/debug/tests/diagrams/plantuml debug/tests/diagrams/plantuml/
+  ```
+  
+  This will open your default web browser to a simple [NiceGUI](https://nicegui.io/) interface,
+  where diagrams generated from each test case can be compared side by side.
+  > The script only compares diagrams existing in both directories, so any
+  > new diagrams will not be included in this interface.
+
 * Create a pull request from your branch to `master` branch
 
 ## If you would like to add a feature

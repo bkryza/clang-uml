@@ -413,6 +413,9 @@ void generator::generate_relationships(
                 relstr << indent(1) << target_alias << " " << relation_str
                        << " " << c.alias();
             }
+            else if (r.type() == relationship_t::kExtension) {
+                relstr << indent(1) << target_alias << " <|-- " << c.alias();
+            }
             else {
                 relstr << indent(1) << c.alias() << " " << relation_str << " "
                        << target_alias;
@@ -442,28 +445,6 @@ void generator::generate_relationships(
             LOG_DBG("=== Skipping {} relation from {} to {} due "
                     "to: {}",
                 to_string(r.type()), c.full_name(), destination, e.what());
-        }
-    }
-
-    if (model().should_include(relationship_t::kExtension)) {
-        for (const auto &b : c.parents()) {
-            std::stringstream relstr;
-            try {
-                auto target_alias = model().to_alias(b.id());
-
-                if (m_generated_aliases.find(target_alias) ==
-                    m_generated_aliases.end())
-                    continue;
-
-                relstr << indent(1) << target_alias << " <|-- " << c.alias()
-                       << '\n';
-                all_relations_str << relstr.str();
-            }
-            catch (error::uml_alias_missing &e) {
-                LOG_DBG("=== Skipping inheritance relation from {} to {} due "
-                        "to: {}",
-                    b.name(), c.name(), e.what());
-            }
         }
     }
 

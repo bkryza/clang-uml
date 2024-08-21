@@ -117,7 +117,6 @@ TEST_CASE("Test namespaces filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::diagram_filter_factory;
@@ -223,7 +222,6 @@ TEST_CASE("Test namespaces regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::diagram_filter_factory;
@@ -282,12 +280,12 @@ TEST_CASE("Test namespaces regexp filter")
 TEST_CASE("Test subclasses regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
     using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
     using clanguml::common::model::source_file;
     using namespace std::string_literals;
     using clanguml::class_diagram::model::class_;
@@ -307,57 +305,60 @@ TEST_CASE("Test subclasses regexp filter")
     p->set_name("ns2");
     diagram.add(namespace_{"ns1"}, std::move(p));
 
+    auto base_id = to_id("ns1::ns2::BaseA"s);
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseA");
-    c->set_id(to_id("ns1::ns2::BaseA"s));
+    c->set_id(base_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
     c->set_id(to_id("ns1::ns2::A1"s));
-    c->add_parent({"ns1::ns2::BaseA"});
+    c->add_relationship(relationship{base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
     c->set_id(to_id("ns1::ns2::A2"s));
-    c->add_parent({"ns1::ns2::BaseA"});
+    c->add_relationship(relationship{base_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
+    auto b_id = to_id("ns1::ns2::BaseB"s);
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseB");
-    c->set_id(to_id("ns1::ns2::BaseB"s));
+    c->set_id(b_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
     c->set_id(to_id("ns1::ns2::B1"s));
-    c->add_parent({"ns1::ns2::BaseB"});
+    c->add_relationship(relationship{b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
     c->set_id(to_id("ns1::ns2::B2"s));
-    c->add_parent({"ns1::ns2::BaseB"});
+    c->add_relationship(relationship{b_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
+    auto common_id = to_id("ns1::ns2::Common"s);
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("Common");
-    c->set_id(to_id("ns1::ns2::Common"s));
+    c->set_id(common_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C1");
     c->set_id(to_id("ns1::ns2::C1"s));
-    c->add_parent({"ns1::ns2::Common"});
+    c->add_relationship(relationship{common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     diagram.set_complete(true);
@@ -373,12 +374,12 @@ TEST_CASE("Test subclasses regexp filter")
 TEST_CASE("Test parents regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
     using clanguml::common::model::namespace_;
     using clanguml::common::model::package;
+    using clanguml::common::model::relationship;
     using clanguml::common::model::source_file;
     using namespace std::string_literals;
     using clanguml::class_diagram::model::class_;
@@ -398,57 +399,60 @@ TEST_CASE("Test parents regexp filter")
     p->set_name("ns2");
     diagram.add(namespace_{"ns1"}, std::move(p));
 
+    auto basea_id = to_id("ns1::ns2::BaseA"s);
     auto c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseA");
-    c->set_id(to_id("ns1::ns2::BaseA"s));
+    c->set_id(basea_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A1");
     c->set_id(to_id("ns1::ns2::A1"s));
-    c->add_parent({"ns1::ns2::BaseA"});
+    c->add_relationship(relationship{basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("A2");
     c->set_id(to_id("ns1::ns2::A2"s));
-    c->add_parent({"ns1::ns2::BaseA"});
+    c->add_relationship(relationship{basea_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
+    auto baseb_id = to_id("ns1::ns2::BaseB"s);
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("BaseB");
-    c->set_id(to_id("ns1::ns2::BaseB"s));
+    c->set_id(baseb_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B1");
     c->set_id(to_id("ns1::ns2::B1"s));
-    c->add_parent({"ns1::ns2::BaseB"});
+    c->add_relationship(relationship{baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("B2");
     c->set_id(to_id("ns1::ns2::B2"s));
-    c->add_parent({"ns1::ns2::BaseB"});
+    c->add_relationship(relationship{baseb_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
+    auto common_id = to_id("ns1::ns2::Common"s);
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("Common");
-    c->set_id(to_id("ns1::ns2::Common"s));
+    c->set_id(common_id);
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     c = std::make_unique<class_>(config.using_namespace());
     c->set_namespace(namespace_{"ns1::ns2"});
     c->set_name("C3");
     c->set_id(to_id("ns1::ns2::C3"s));
-    c->add_parent({"ns1::ns2::Common"});
+    c->add_relationship(relationship{common_id});
     diagram.add(namespace_{"ns1::ns2"}, std::move(c));
 
     diagram.set_complete(true);
@@ -464,7 +468,6 @@ TEST_CASE("Test parents regexp filter")
 TEST_CASE("Test specializations regexp filter")
 {
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
@@ -530,7 +533,6 @@ TEST_CASE("Test context regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
@@ -620,7 +622,6 @@ TEST_CASE("Test dependencies regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;
@@ -706,7 +707,6 @@ TEST_CASE("Test dependants regexp filter")
 {
     using clanguml::class_diagram::model::class_;
     using clanguml::class_diagram::model::class_method;
-    using clanguml::class_diagram::model::class_parent;
     using clanguml::common::to_id;
     using clanguml::common::model::access_t;
     using clanguml::common::model::diagram_filter;

@@ -40,7 +40,6 @@ namespace clanguml::class_diagram::visitor {
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
-using clanguml::class_diagram::model::class_parent;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;

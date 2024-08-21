@@ -9,16 +9,12 @@
 cd packaging
 make DIST=focal deb
 make DIST=jammy deb
-make DIST=mantic deb
 make DIST=noble deb
 
 cd _BUILD/ubuntu/focal
 dput ppa:bkryza/clang-uml *.changes
 
 cd _BUILD/ubuntu/jammy
-dput ppa:bkryza/clang-uml *.changes
-
-cd _BUILD/ubuntu/mantic
 dput ppa:bkryza/clang-uml *.changes
 
 cd _BUILD/ubuntu/noble
@@ -40,7 +36,7 @@ find packaging/_BUILD/fedora
 ```bash
 docker run --rm -v $PWD:$PWD -it continuumio/miniconda3 bash
 conda install conda-build make anaconda-client
-cd packaging
+cd /home/bartek/devel/clang-uml/packaging
 git config --global --add safe.directory /home/bartek/devel/clang-uml
 make CONDA_TOKEN=<TOKEN> conda
 ```
@@ -53,5 +49,5 @@ to the [documentation](../docs/installation.md#visual-studio-native-build).
 ```bash
 cd packaging
 .\make_installer.ps1
-ls .\_BUILD\windows\clang-uml-0.5.2-win64.exe
+ls .\_BUILD\windows\clang-uml-0.5.4-win64.exe
 ```

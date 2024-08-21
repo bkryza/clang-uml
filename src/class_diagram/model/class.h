@@ -19,7 +19,6 @@
 
 #include "class_member.h"
 #include "class_method.h"
-#include "class_parent.h"
 #include "common/model/enums.h"
 #include "common/model/stylable_element.h"
 #include "common/model/template_element.h"
@@ -101,16 +100,6 @@ public:
     void add_method(class_method &&method);
 
     /**
-     * Add class parent (inheritance relationship).
-     *
-     * @todo Maybe it would be good to refactor this into a regular
-     *       relationship. We could drop the 'class_parent' class completely...
-     *
-     * @param parent Class parent.
-     */
-    void add_parent(class_parent &&parent);
-
-    /**
      * Get reference to class member list.
      *
      * @return Reference to class members.
@@ -123,14 +112,6 @@ public:
      * @return Reference to class methods.
      */
     const std::vector<class_method> &methods() const;
-
-    /**
-     * Get reference to class parent list.
-     *
-     * @return Reference to class parents.
-     */
-    const std::vector<class_parent> &parents() const;
-    std::vector<class_parent> &parents();
 
     /**
      * @brief Get class full name.
@@ -172,14 +153,13 @@ public:
     std::optional<std::string> doxygen_link() const override;
 
     void apply_filter(const common::model::diagram_filter &filter,
-        const std::set<eid_t> &removed) override;
+        const std::set<common::model::eid_t> &removed) override;
 
 private:
     bool is_struct_{false};
     bool is_union_{false};
     std::vector<class_member> members_;
     std::vector<class_method> methods_;
-    std::vector<class_parent> bases_;
     std::string base_template_full_name_;
     std::string full_name_;
 };

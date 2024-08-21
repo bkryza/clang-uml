@@ -133,8 +133,11 @@ void diagram::get_parents(
 {
     bool found_new{false};
     for (const auto &parent : parents) {
-        for (const auto &pp : parent.get().parents()) {
-            auto p = find<class_>(pp.id());
+        for (const auto &rel : parent.get().relationships()) {
+            if (rel.type() != common::model::relationship_t::kExtension)
+                continue;
+
+            auto p = find<class_>(rel.destination());
 
             if (p.has_value()) {
                 auto [it, found] = parents.emplace(std::ref(p.value()));
@@ -142,8 +145,8 @@ void diagram::get_parents(
                     found_new = true;
             }
             else {
-                LOG_WARN("Couldn't find class representing base class: {} [{}]",
-                    pp.name(), pp.id());
+                LOG_WARN("Couldn't find class representing base class: {}",
+                    rel.destination().value());
             }
         }
     }
@@ -234,10 +237,6 @@ void diagram::remove_redundant_dependencies()
         for (auto &r : c.get().relationships()) {
             if (r.type() != relationship_t::kDependency)
                 dependency_relationships_to_remove.emplace(r.destination());
-        }
-
-        for (const auto &base : c.get().parents()) {
-            dependency_relationships_to_remove.emplace(base.id());
         }
 
         util::erase_if(c.get().relationships(),

@@ -861,6 +861,8 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 void translation_unit_visitor::process_record_parent(
     clang::RecordDecl *cls, class_ &c, const namespace_ &ns)
 {
+    // NOTE: `parent` here means class or structure is nested in the parent,
+    //       not inheritance
     const auto *parent = cls->getParent();
 
     std::optional<eid_t> id_opt;
@@ -956,12 +958,7 @@ void translation_unit_visitor::process_class_bases(
     const clang::CXXRecordDecl *cls, class_ &c)
 {
     for (const auto &base : cls->bases()) {
-        class_parent cp;
-        auto name_and_ns = common::model::namespace_{
-            common::to_string(base.getType(), cls->getASTContext())};
-
-        cp.set_name(name_and_ns.to_string());
-
+        eid_t parent_id;
         if (const auto *tsp =
                 base.getType()->getAs<clang::TemplateSpecializationType>();
             tsp != nullptr) {
@@ -970,8 +967,7 @@ void translation_unit_visitor::process_class_bases(
             tbuilder().build_from_template_specialization_type(
                 *template_specialization_ptr, cls, *tsp, {});
 
-            cp.set_id(template_specialization_ptr->id());
-            cp.set_name(template_specialization_ptr->full_name(false));
+            parent_id = template_specialization_ptr->id();
 
             if (diagram().should_include(*template_specialization_ptr)) {
                 add_class(std::move(template_specialization_ptr));
@@ -980,22 +976,21 @@ void translation_unit_visitor::process_class_bases(
         else if (const auto *record_type =
                      base.getType()->getAs<clang::RecordType>();
                  record_type != nullptr) {
-            cp.set_name(record_type->getDecl()->getQualifiedNameAsString());
-            cp.set_id(common::to_id(*record_type->getDecl()));
+            parent_id = common::to_id(*record_type->getDecl());
         }
         else
             // This could be a template parameter - we don't want it here
             continue;
 
-        cp.is_virtual(base.isVirtual());
+        common::model::relationship cp{parent_id,
+            common::access_specifier_to_access_t(base.getAccessSpecifier()),
+            base.isVirtual()};
 
-        cp.set_access(
-            common::access_specifier_to_access_t(base.getAccessSpecifier()));
+        LOG_DBG("Found base class {} [{}] for class {}",
+            common::to_string(base.getType(), cls->getASTContext()),
+            parent_id.value(), c.name());
 
-        LOG_DBG("Found base class {} [{}] for class {}", cp.name(), cp.id(),
-            c.name());
-
-        c.add_parent(std::move(cp));
+        c.add_relationship(std::move(cp));
     }
 }
 
