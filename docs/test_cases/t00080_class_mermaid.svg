@@ -54,11 +54,13 @@
         <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-solid relation" id="id2" d="M984.3828125,252L984.3828125,285.1666666666667C984.3828125,318.3333333333333,984.3828125,384.6666666666667,953.55078125,427.5114611448085C922.71875,470.35625562295036,861.0546875,489.7125112459007,830.22265625,499.3906390573759L799.390625,509.068766868851"/>
       </g>
       <g class="edgeLabels">
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
@@ -131,9 +133,9 @@
                 <span class="nodeLabel">+operator=(thread &amp;&amp; __t) : thread &amp;</span>
               </div>
             </foreignObject>
-            <foreignObject transform="translate( -430.4921875, 25)" height="18" width="326.359375">
+            <foreignObject transform="translate( -430.4921875, 25)" height="18" width="318.359375">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="nodeLabel">-_M_start_thread(_State_ptr, void (*) : )) : void</span>
+                <span class="nodeLabel">-_M_start_thread(_State_ptr, void (*)()) : void</span>
               </div>
             </foreignObject>
             <foreignObject transform="translate( -430.4921875, 47)" height="18" width="110.734375">
@@ -173,7 +175,7 @@
             </foreignObject>
           </g>
         </g>
-        <a transform="translate(715.1875, 535.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00080/t00080.cc#L6">
+        <a transform="translate(715.1875, 535.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00080/t00080.cc#L6">
           <g title="Worker" id="classId-C_0009784607930441346007-1" class="node default clickable">
             <rect height="101" width="168.40625" y="-50.5" x="-84.203125" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="84.203125" x1="-84.203125" class="divider"/>
@@ -202,7 +204,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(984.3828125, 212.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00080/t00080.cc#L20">
+        <a transform="translate(984.3828125, 212.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00080/t00080.cc#L20">
           <g title="R" id="classId-C_0012172460947490041262-2" class="node default clickable">
             <rect height="79" width="100.796875" y="-39.5" x="-50.3984375" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="50.3984375" x1="-50.3984375" class="divider"/>

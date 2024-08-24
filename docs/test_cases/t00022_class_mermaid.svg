@@ -54,27 +54,31 @@
         <path marker-start="url(#classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id2" d="M242.9765625,153L247.02604166666666,157.16666666666666C251.07552083333334,161.33333333333334,259.1744791666667,169.66666666666666,263.2239583333333,178C267.2734375,186.33333333333334,267.2734375,194.66666666666666,267.2734375,198.83333333333334L267.2734375,203"/>
       </g>
       <g class="edgeLabels">
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(172.515625, 80.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00022/t00022.cc#L6">
+        <a transform="translate(172.515625, 80.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00022/t00022.cc#L6">
           <g title="A" id="classId-C_0016099487147056550046-0" class="node default clickable">
             <rect height="145" width="201.328125" y="-72.5" x="-100.6640625" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="100.6640625" x1="-100.6640625" class="divider"/>
@@ -108,7 +112,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(77.7578125, 253.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00022/t00022.cc#L19">
+        <a transform="translate(77.7578125, 253.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00022/t00022.cc#L19">
           <g title="A1" id="classId-C_0018256491411048619579-1" class="node default clickable">
             <rect height="101" width="139.515625" y="-50.5" x="-69.7578125" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="69.7578125" x1="-69.7578125" class="divider"/>
@@ -137,7 +141,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(267.2734375, 253.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00022/t00022.cc#L25">
+        <a transform="translate(267.2734375, 253.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00022/t00022.cc#L25">
           <g title="A2" id="classId-C_0001270558903333372307-2" class="node default clickable">
             <rect height="101" width="139.515625" y="-50.5" x="-69.7578125" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="69.7578125" x1="-69.7578125" class="divider"/>

@@ -54,27 +54,31 @@
         <path marker-start="url(#classDiagram-extensionStart)" style="fill:none" class="edge-pattern-solid relation" id="id2" d="M69.5390625,216L69.5390625,220.16666666666666C69.5390625,224.33333333333334,69.5390625,232.66666666666666,69.5390625,241C69.5390625,249.33333333333334,69.5390625,257.6666666666667,69.5390625,261.8333333333333L69.5390625,266"/>
       </g>
       <g class="edgeLabels">
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(69.5390625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00040/t00040.cc#L5">
+        <a transform="translate(69.5390625, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00040/t00040.cc#L5">
           <g title="A" id="classId-C_0002460640048669901416-0" class="node default clickable">
             <rect height="101" width="105.28125" y="-50.5" x="-52.640625" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="52.640625" x1="-52.640625" class="divider"/>
@@ -103,7 +107,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(69.5390625, 187.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00040/t00040.cc#L18">
+        <a transform="translate(69.5390625, 187.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00040/t00040.cc#L18">
           <g title="AA" id="classId-C_0004272926502238129020-1" class="node default clickable">
             <rect height="57" width="38.109375" y="-28.5" x="-19.0546875" class="outer title-state"/>
             <line y2="1.5" y1="1.5" x2="19.0546875" x1="-19.0546875" class="divider"/>
@@ -122,7 +126,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(69.5390625, 316.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00040/t00040.cc#L22">
+        <a transform="translate(69.5390625, 316.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00040/t00040.cc#L22">
           <g title="AAA" id="classId-C_0005962975267457266952-2" class="node default clickable">
             <rect height="101" width="123.078125" y="-50.5" x="-61.5390625" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="61.5390625" x1="-61.5390625" class="divider"/>
@@ -151,7 +155,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(239.046875, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00040/t00040.cc#L31">
+        <a transform="translate(239.046875, 58.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00040/t00040.cc#L31">
           <g title="R" id="classId-C_0012312280167800812318-3" class="node default clickable">
             <rect height="79" width="133.734375" y="-39.5" x="-66.8671875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="66.8671875" x1="-66.8671875" class="divider"/>

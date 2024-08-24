@@ -56,29 +56,35 @@
         <path marker-start="url(#classDiagram-aggregationStart)" style="fill:none" class="edge-pattern-solid relation" id="id4" d="M273.25,131L273.25,136.66666666666666C273.25,142.33333333333334,273.25,153.66666666666666,273.25,165C273.25,176.33333333333334,273.25,187.66666666666666,273.25,193.33333333333334L273.25,199"/>
       </g>
       <g class="edgeLabels">
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
@@ -96,7 +102,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(273.25, 260.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00023/t00023.cc#L6">
+        <a transform="translate(273.25, 260.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00023/t00023.cc#L6">
           <g title="Strategy" id="classId-C_0011758861571510735814-0" class="node default clickable">
             <rect height="123" width="281.8125" y="-61.5" x="-140.90625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="140.90625" x1="-140.90625" class="divider"/>
@@ -125,7 +131,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(79.75, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00023/t00023.cc#L12">
+        <a transform="translate(79.75, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00023/t00023.cc#L12">
           <g title="StrategyA" id="classId-C_0009964264606557083084-1" class="node default clickable">
             <rect height="79" width="143.5" y="-39.5" x="-71.75" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="71.75" x1="-71.75" class="divider"/>
@@ -149,7 +155,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(273.25, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00023/t00023.cc#L17">
+        <a transform="translate(273.25, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00023/t00023.cc#L17">
           <g title="StrategyB" id="classId-C_0000002119891255197167-2" class="node default clickable">
             <rect height="79" width="143.5" y="-39.5" x="-71.75" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="71.75" x1="-71.75" class="divider"/>
@@ -173,7 +179,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(466.75, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00023/t00023.cc#L22">
+        <a transform="translate(466.75, 411.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00023/t00023.cc#L22">
           <g title="StrategyC" id="classId-C_0001398361409547864717-3" class="node default clickable">
             <rect height="79" width="143.5" y="-39.5" x="-71.75" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="71.75" x1="-71.75" class="divider"/>
@@ -197,11 +203,11 @@
             </g>
           </g>
         </a>
-        <a transform="translate(273.25, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00023/t00023.cc#L27">
+        <a transform="translate(273.25, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00023/t00023.cc#L27">
           <g title="Context" id="classId-C_0016308752103835832406-4" class="node default clickable">
-            <rect height="123" width="300.046875" y="-61.5" x="-150.0234375" class="outer title-state"/>
-            <line y2="-31.5" y1="-31.5" x2="150.0234375" x1="-150.0234375" class="divider"/>
-            <line y2="6.5" y1="6.5" x2="150.0234375" x1="-150.0234375" class="divider"/>
+            <rect height="123" width="378.3125" y="-61.5" x="-189.15625" class="outer title-state"/>
+            <line y2="-31.5" y1="-31.5" x2="189.15625" x1="-189.15625" class="divider"/>
+            <line y2="6.5" y1="6.5" x2="189.15625" x1="-189.15625" class="divider"/>
             <g class="label">
               <foreignObject height="0" width="0">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
@@ -213,17 +219,17 @@
                   <span class="nodeLabel">Context</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -142.5234375, -20)" height="18" width="281.9375">
+              <foreignObject transform="translate( -181.65625, -20)" height="18" width="281.9375">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                   <span class="nodeLabel">-m_strategy : std::unique_ptr&lt;Strategy&gt;</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -142.5234375, 14)" height="18" width="285.046875">
+              <foreignObject transform="translate( -181.65625, 14)" height="18" width="363.3125">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                  <span class="nodeLabel">+Context(std::unique_ptr strategy) : void</span>
+                  <span class="nodeLabel">+Context(std::unique_ptr&lt;Strategy&gt; strategy) : void</span>
                 </div>
               </foreignObject>
-              <foreignObject transform="translate( -142.5234375, 36)" height="18" width="100.9375">
+              <foreignObject transform="translate( -181.65625, 36)" height="18" width="100.9375">
                 <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
                   <span class="nodeLabel">+apply() : void</span>
                 </div>

@@ -68,38 +68,46 @@
         <path marker-end="url(#classDiagram-dependencyEnd)" style="fill:none" class="edge-pattern-dashed relation" id="id16" d="M1078.1287251655629,282L1079.7843543046358,286.1666666666667C1081.4399834437086,290.3333333333333,1084.7512417218543,298.6666666666667,1086.4068708609273,317.25C1088.0625,335.8333333333333,1088.0625,364.6666666666667,1088.0625,393.5C1088.0625,422.3333333333333,1088.0625,451.1666666666667,1088.0625,469.75C1088.0625,488.3333333333333,1088.0625,496.6666666666667,1088.0625,500.8333333333333L1088.0625,505"/>
       </g>
       <g class="edgeLabels">
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
@@ -148,15 +156,6 @@
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
-          <g transform="translate(0, 0)" class="label">
-            <foreignObject height="0" width="0">
-              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
-              </div>
-            </foreignObject>
-          </g>
-        </g>
         <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
@@ -179,11 +178,24 @@
             </foreignObject>
           </g>
         </g>
-        <g class="edgeLabel">
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
           <g transform="translate(0, 0)" class="label">
             <foreignObject height="0" width="0">
               <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
-                <span class="edgeLabel"/>
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g transform="translate(undefined, undefined)" class="edgeLabel">
+          <g transform="translate(0, 0)" class="label">
+            <foreignObject height="0" width="0">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: inline-block; white-space: nowrap;">
+                <span class="edgeLabel">
+                  <span class="edgeLabel"/>
+                </span>
               </div>
             </foreignObject>
           </g>
@@ -226,7 +238,7 @@
         </g>
       </g>
       <g class="nodes">
-        <a transform="translate(152.015625, 393.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L6">
+        <a transform="translate(152.015625, 393.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L6">
           <g title="ProductA" id="classId-C_0003402137837275719558-0" class="node default clickable">
             <rect height="123" width="288.03125" y="-61.5" x="-144.015625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="144.015625" x1="-144.015625" class="divider"/>
@@ -255,7 +267,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(246.3125, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L12">
+        <a transform="translate(246.3125, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L12">
           <g title="ProductA1" id="classId-C_0014051968238382913662-1" class="node default clickable">
             <rect height="79" width="210.203125" y="-39.5" x="-105.1015625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="105.1015625" x1="-105.1015625" class="divider"/>
@@ -279,7 +291,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(506.515625, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L17">
+        <a transform="translate(506.515625, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L17">
           <g title="ProductA2" id="classId-C_0012253668743081735855-2" class="node default clickable">
             <rect height="79" width="210.203125" y="-39.5" x="-105.1015625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="105.1015625" x1="-105.1015625" class="divider"/>
@@ -303,7 +315,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(726.5703125, 393.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L22">
+        <a transform="translate(726.5703125, 393.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L22">
           <g title="ProductB" id="classId-C_0017886072050998926742-3" class="node default clickable">
             <rect height="123" width="288.03125" y="-61.5" x="-144.015625" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="144.015625" x1="-144.015625" class="divider"/>
@@ -332,7 +344,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(826.078125, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L28">
+        <a transform="translate(826.078125, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L28">
           <g title="ProductB1" id="classId-C_0011723944193865790765-4" class="node default clickable">
             <rect height="79" width="211.984375" y="-39.5" x="-105.9921875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="105.9921875" x1="-105.9921875" class="divider"/>
@@ -356,7 +368,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(1088.0625, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L33">
+        <a transform="translate(1088.0625, 544.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L33">
           <g title="ProductB2" id="classId-C_0017237324498960462969-5" class="node default clickable">
             <rect height="79" width="211.984375" y="-39.5" x="-105.9921875" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="105.9921875" x1="-105.9921875" class="divider"/>
@@ -380,7 +392,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(481.7265625, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L38">
+        <a transform="translate(481.7265625, 69.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L38">
           <g title="AbstractFactory" id="classId-C_0013644371753751691404-6" class="node default clickable">
             <rect height="123" width="347.1875" y="-61.5" x="-173.59375" class="outer title-state"/>
             <line y2="-9.5" y1="-9.5" x2="173.59375" x1="-173.59375" class="divider"/>
@@ -409,7 +421,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(350.609375, 231.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L44">
+        <a transform="translate(350.609375, 231.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L44">
           <g title="Factory1" id="classId-C_0005538774787878832856-7" class="node default clickable">
             <rect height="101" width="347.1875" y="-50.5" x="-173.59375" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="173.59375" x1="-173.59375" class="divider"/>
@@ -438,7 +450,7 @@
             </g>
           </g>
         </a>
-        <a transform="translate(1058.0625, 231.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/911ddf9675ab0adf8ef1b4b1f2874c9631d8a9c2/tests/t00020/t00020.cc#L57">
+        <a transform="translate(1058.0625, 231.5)" xlink:href="https://github.com/bkryza/clang-uml/blob/51f84b7259807d3943c13c59db32eaa669f31655/tests/t00020/t00020.cc#L57">
           <g title="Factory2" id="classId-C_0012530606966440104191-8" class="node default clickable">
             <rect height="101" width="347.1875" y="-50.5" x="-173.59375" class="outer title-state"/>
             <line y2="-20.5" y1="-20.5" x2="173.59375" x1="-173.59375" class="divider"/>
