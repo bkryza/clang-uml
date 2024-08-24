@@ -213,6 +213,8 @@ struct mermaid_t : public diagram_source_t<std::string> {
         util::replace_all(name, "]", "\\]");
         util::replace_all(name, "<", "&lt;");
         util::replace_all(name, ">", "&gt;");
+        util::replace_all(name, "{", "&lbrace;");
+        util::replace_all(name, "}", "&rbrace;");
 
         patterns.push_back(
             std::regex{"class\\s" + alias_regex + "\\[\"" + name + "\"\\]"});
@@ -1357,7 +1359,10 @@ bool IsMethod(const mermaid_t &d, std::string const &cls,
 
     pattern += name;
 
-    pattern += "(" + params + ")";
+    auto params_escaped =
+        clanguml::common::generators::mermaid::escape_name(params);
+
+    pattern += "(" + params_escaped + ")";
 
     std::vector<std::string> method_mods;
     if constexpr (has_type<Default, Ts...>())
@@ -1377,15 +1382,10 @@ bool IsMethod(const mermaid_t &d, std::string const &cls,
         pattern += fmt::format("[{}] ", fmt::join(method_mods, ","));
     }
 
-    util::replace_all(type, "<", "&lt;");
-    util::replace_all(type, ">", "&gt;");
-    util::replace_all(type, "(", "&lpar;");
-    util::replace_all(type, ")", "&rpar;");
-    util::replace_all(type, "##", "::");
-    util::replace_all(type, "{", "&lbrace;");
-    util::replace_all(type, "}", "&rbrace;");
+    auto type_escaped =
+        clanguml::common::generators::mermaid::escape_name(type);
 
-    pattern += type;
+    pattern += type_escaped;
 
     if constexpr (has_type<Abstract, Ts...>())
         pattern += "*";

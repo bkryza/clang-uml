@@ -42,6 +42,8 @@ TEST_CASE("t00003")
         REQUIRE(IsMethod<Public, Static>(src, "A", "static_method", "int"));
         REQUIRE(IsMethod<Public, Const>(src, "A", "const_method"));
         REQUIRE(IsMethod<Public>(src, "A", "default_int", "int", "int i = 12"));
+        REQUIRE(IsMethod<Public>(
+            src, "A", "default_int_braces", "int", "int i = {}"));
         REQUIRE(IsMethod<Public>(src, "A", "default_string", "std::string",
             "int i, std::string s = \"abc\""));
 

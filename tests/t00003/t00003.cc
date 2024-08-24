@@ -42,6 +42,8 @@ public:
     auto sum(const double a, const double b) { return a_ + b_ + c_; }
 
     auto default_int(int i = 12) { return i + 10; }
+    auto default_int_braces(int i = {}) { return i + 10; }
+
     std::string default_string(int i, std::string s = "abc")
     {
         return s + std::to_string(i);
