@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "class_element.h"
+#include "class_method_base.h"
 #include "common/model/template_parameter.h"
 #include "common/model/template_trait.h"
 #include "method_parameter.h"
@@ -32,7 +32,7 @@ using clanguml::common::model::template_trait;
 /**
  * @brief Class method model.
  */
-class class_method : public class_element, public template_trait {
+class class_method : public class_method_base, public template_trait {
 public:
     /**
      * @brief Constructor.
@@ -47,15 +47,6 @@ public:
     ~class_method() override = default;
 
     void update(const common::model::namespace_ &un);
-
-    /**
-     * @brief Method name including template parameters/arguments if any
-     *
-     * @return String representation of the methods display name
-     */
-    std::string display_name() const;
-
-    void set_display_name(const std::string &display_name);
 
     /**
      * @brief Whether the method is pure virtual.
@@ -120,20 +111,6 @@ public:
      * @param is_deleted True, if the method is deleted
      */
     void is_deleted(bool is_deleted);
-
-    /**
-     * @brief Whether the method is static.
-     *
-     * @return True, if the method is static
-     */
-    bool is_static() const;
-
-    /**
-     * @brief Set whether the method is static.
-     *
-     * @param is_static True, if the method is static
-     */
-    void is_static(bool is_static);
 
     /**
      * @brief Whether the method is constexpr.
@@ -261,29 +238,12 @@ public:
      */
     void is_operator(bool is_operator);
 
-    /**
-     * @brief Get the method parameters.
-     *
-     * @return List of methods parameters
-     */
-    const std::vector<method_parameter> &parameters() const;
-
-    /**
-     * @brief Add methods parameter.
-     *
-     * @param parameter Method parameter.
-     */
-    void add_parameter(method_parameter &&parameter);
-
 private:
-    std::vector<method_parameter> parameters_;
-
     bool is_pure_virtual_{false};
     bool is_virtual_{false};
     bool is_const_{false};
     bool is_defaulted_{false};
     bool is_deleted_{false};
-    bool is_static_{false};
     bool is_noexcept_{false};
     bool is_constexpr_{false};
     bool is_consteval_{false};
@@ -293,7 +253,5 @@ private:
     bool is_move_assignment_{false};
     bool is_copy_assignment_{false};
     bool is_operator_{false};
-
-    std::string display_name_;
 };
 } // namespace clanguml::class_diagram::model

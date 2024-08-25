@@ -1,5 +1,5 @@
 /**
- * @file src/class_diagram/model/class_member_base.cc
+ * @file src/class_diagram/model/objc_member.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -15,5 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
 
 #include "class_member_base.h"
+
+#include <string>
+
+namespace clanguml::class_diagram::model {
+
+/**
+ * @brief ObjC class member model.
+ */
+class objc_member : public class_member_base {
+public:
+    using class_member_base::class_member_base;
+};
+
+} // namespace clanguml::class_diagram::model

@@ -386,6 +386,87 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     return true;
 }
 
+bool translation_unit_visitor::VisitObjCProtocolDecl(
+    clang::ObjCProtocolDecl *decl)
+{
+    if (!should_include(decl))
+        return true;
+
+    LOG_ERROR("= Visiting ObjC protocol declaration {} at {}",
+        decl->getQualifiedNameAsString(),
+        decl->getLocation().printToString(source_manager()));
+
+    auto protocol_ptr = create_objc_protocol_declaration(decl);
+
+    if (!protocol_ptr)
+        return true;
+
+    const auto protocol_id = protocol_ptr->id();
+
+    id_mapper().add(decl->getID(), protocol_id);
+
+    auto &protocol_model =
+        diagram().find<objc_interface>(protocol_id).has_value()
+        ? *diagram().find<objc_interface>(protocol_id).get()
+        : *protocol_ptr;
+
+    process_objc_protocol_declaration(*decl, protocol_model);
+
+    if (diagram().should_include(protocol_model)) {
+        LOG_DBG("Adding ObjC protocol {} with id {}",
+            protocol_model.full_name(false), protocol_model.id());
+
+        add_objc_interface(std::move(protocol_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC protocol {} with id {}",
+            protocol_model.full_name(), protocol_model.id());
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCInterfaceDecl(
+    clang::ObjCInterfaceDecl *decl)
+{
+    if (!should_include(decl))
+        return true;
+
+    LOG_ERROR("= Visiting ObjC interface declaration {} at {}",
+        decl->getQualifiedNameAsString(),
+        decl->getLocation().printToString(source_manager()));
+
+    auto interface_ptr = create_objc_interface_declaration(decl);
+
+    if (!interface_ptr)
+        return true;
+
+    const auto protocol_id = interface_ptr->id();
+
+    id_mapper().add(decl->getID(), protocol_id);
+
+    auto &interface_model =
+        diagram().find<objc_interface>(protocol_id).has_value()
+        ? *diagram().find<objc_interface>(protocol_id).get()
+        : *interface_ptr;
+
+    if (!interface_model.complete())
+        process_objc_interface_declaration(*decl, interface_model);
+
+    if (diagram().should_include(interface_model)) {
+        LOG_DBG("Adding ObjC interface {} with id {}",
+            interface_model.full_name(false), interface_model.id());
+
+        add_objc_interface(std::move(interface_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC interface {} with id {}",
+            interface_model.full_name(), interface_model.id());
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::TraverseConceptDecl(clang::ConceptDecl *cpt)
 {
     if (!should_include(cpt))
@@ -858,6 +939,61 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
     return c_ptr;
 }
 
+std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+translation_unit_visitor::create_objc_protocol_declaration(
+    clang::ObjCProtocolDecl *decl)
+{
+    assert(decl != nullptr);
+
+    if (!should_include(decl))
+        return {};
+
+    auto c_ptr{std::make_unique<class_diagram::model::objc_interface>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    c.set_name(decl->getNameAsString());
+    c.set_id(common::to_id(*decl));
+    c.is_protocol(true);
+
+    process_comment(*decl, c);
+    set_source_location(*decl, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+translation_unit_visitor::create_objc_interface_declaration(
+    clang::ObjCInterfaceDecl *decl)
+{
+    assert(decl != nullptr);
+
+    if (!should_include(decl))
+        return {};
+
+    auto c_ptr{std::make_unique<class_diagram::model::objc_interface>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    c.set_name(decl->getNameAsString());
+    c.set_id(common::to_id(*decl));
+
+    process_comment(*decl, c);
+    set_source_location(*decl, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
 void translation_unit_visitor::process_record_parent(
     clang::RecordDecl *cls, class_ &c, const namespace_ &ns)
 {
@@ -952,6 +1088,201 @@ void translation_unit_visitor::process_class_declaration(
     process_class_bases(&cls, c);
 
     c.complete(true);
+}
+
+void translation_unit_visitor::process_objc_protocol_declaration(
+    const clang::ObjCProtocolDecl &cls, objc_interface &c)
+{
+    // Iterate over class methods (both regular and static)
+    for (const auto *method : cls.methods()) {
+        if (method != nullptr) {
+            process_objc_method(*method, c);
+        }
+    }
+
+    c.complete(true);
+}
+
+void translation_unit_visitor::process_objc_interface_declaration(
+    const clang::ObjCInterfaceDecl &cls, objc_interface &c)
+{
+    // Iterate over class methods (both regular and static)
+    for (const auto *method : cls.methods()) {
+        if (method != nullptr) {
+            process_objc_method(*method, c);
+        }
+    }
+
+    //    for (const auto *member : cls.properties()) {
+    //        if (member != nullptr) {
+    //            process_objc_property(*member, c);
+    //        }
+    //    }
+
+    for (const auto *ivar : cls.ivars()) {
+        if (ivar != nullptr) {
+            process_objc_ivar(*ivar, c);
+        }
+    }
+
+    process_objc_interface_base(cls, c);
+
+    c.complete(true);
+}
+void translation_unit_visitor::process_objc_interface_base(
+    const clang::ObjCInterfaceDecl &cls, objc_interface &c)
+{
+    if (const auto *base = cls.getSuperClass(); base != nullptr) {
+        eid_t parent_id = common::to_id(*base);
+        common::model::relationship cp{parent_id, access_t::kNone, false};
+
+        LOG_DBG("Found base class {} [{}] for ObjC interface {}",
+            base->getNameAsString(), parent_id.value(), c.name());
+
+        c.add_relationship(std::move(cp));
+    }
+
+    for (const auto *protocol : cls.protocols()) {
+        eid_t parent_id = common::to_id(*protocol);
+        common::model::relationship cp{
+            relationship_t::kInstantiation, parent_id, access_t::kNone};
+
+        LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
+            protocol->getNameAsString(), parent_id.value(), c.name());
+
+        c.add_relationship(std::move(cp));
+    }
+}
+
+void translation_unit_visitor::process_objc_ivar(
+    const clang::ObjCIvarDecl &ivar, objc_interface &c)
+{
+    LOG_DBG("== Visiting ObjC ivar {}", ivar.getNameAsString());
+
+    // Default hint for relationship is aggregation
+    auto relationship_hint = relationship_t::kAggregation;
+
+    auto field_type = ivar.getType();
+    auto field_type_str =
+        common::to_string(field_type, ivar.getASTContext(), false);
+
+    auto type_name = common::to_string(field_type, ivar.getASTContext());
+
+    const auto field_name = ivar.getNameAsString();
+
+    objc_member field{common::access_specifier_to_access_t(ivar.getAccess()),
+        field_name, field_type_str};
+
+    process_comment(ivar, field);
+    set_source_location(ivar, field);
+
+    if (field.skip())
+        return;
+
+    if (field_type->isObjCObjectPointerType()) {
+        relationship_hint = relationship_t::kAggregation;
+        field_type = field_type->getPointeeType();
+    }
+    else if (field_type->isPointerType()) {
+        relationship_hint = relationship_t::kAssociation;
+        field_type = field_type->getPointeeType();
+    }
+    else if (field_type->isLValueReferenceType()) {
+        relationship_hint = relationship_t::kAssociation;
+        field_type = field_type.getNonReferenceType();
+    }
+    else if (field_type->isArrayType()) {
+        relationship_hint = relationship_t::kAggregation;
+        while (field_type->isArrayType()) {
+            auto current_multiplicity = field.destination_multiplicity();
+            if (!current_multiplicity)
+                field.set_destination_multiplicity(common::get_array_size(
+                    *field_type->getAsArrayTypeUnsafe()));
+            else {
+                auto maybe_array_size =
+                    common::get_array_size(*field_type->getAsArrayTypeUnsafe());
+                if (maybe_array_size.has_value()) {
+                    field.set_destination_multiplicity(
+                        current_multiplicity.value() *
+                        maybe_array_size.value());
+                }
+            }
+
+            field_type = field_type->getAsArrayTypeUnsafe()->getElementType();
+        }
+    }
+    else if (field_type->isRValueReferenceType()) {
+        field_type = field_type.getNonReferenceType();
+    }
+
+    found_relationships_t relationships;
+
+    if (!field.skip_relationship()) {
+        // Find relationship for the type if the type has not been added
+        // as aggregation
+        if (field_type->getAsObjCInterfaceType() != nullptr &&
+            field_type->getAsObjCInterfaceType()->getInterface() != nullptr) {
+            const auto *objc_iface =
+                field_type->getAsObjCInterfaceType()->getInterface();
+
+            relationships.emplace_back(
+                common::to_id(*objc_iface), relationship_t::kAggregation);
+        }
+        else if ((field_type->getAsRecordDecl() != nullptr) &&
+            field_type->getAsRecordDecl()->getNameAsString().empty()) {
+            // Relationships to fields whose type is an anonymous nested
+            // struct have to be handled separately here
+            anonymous_struct_relationships_[field_type->getAsRecordDecl()
+                                                ->getID()] =
+                std::make_tuple(field.name(), relationship_hint, field.access(),
+                    field.destination_multiplicity());
+        }
+        else
+            find_relationships(field_type, relationships, relationship_hint);
+
+        add_relationships(c, field, relationships);
+    }
+
+    // If this is an anonymous struct - replace the anonymous_XYZ part with
+    // field name
+    if ((field_type->getAsRecordDecl() != nullptr) &&
+        field_type->getAsRecordDecl()->getNameAsString().empty()) {
+        if (util::contains(field.type(), "(anonymous_")) {
+            std::regex anonymous_re("anonymous_(\\d*)");
+            field.set_type(
+                std::regex_replace(field.type(), anonymous_re, field_name));
+        }
+    }
+
+    c.add_member(std::move(field));
+}
+
+void translation_unit_visitor::process_objc_property(
+    const clang::ObjCPropertyDecl &mf, objc_interface &c)
+{
+    LOG_DBG("== Visiting ObjC property {}", mf.getNameAsString());
+
+    // Default hint for relationship is aggregation
+    //    auto relationship_hint = relationship_t::kAggregation;
+
+    auto field_type = mf.getType();
+    auto field_type_str =
+        common::to_string(field_type, mf.getASTContext(), false);
+
+    auto type_name = common::to_string(field_type, mf.getASTContext());
+
+    const auto field_name = mf.getNameAsString();
+
+    objc_member field{common::access_specifier_to_access_t(mf.getAccess()),
+        field_name, field_type_str};
+
+    process_comment(mf, field);
+    set_source_location(mf, field);
+
+    if (field.skip())
+        return;
+
+    c.add_member(std::move(field));
 }
 
 void translation_unit_visitor::process_class_bases(
@@ -1205,6 +1536,59 @@ void translation_unit_visitor::process_method(
     }
 }
 
+void translation_unit_visitor::process_objc_method(
+    const clang::ObjCMethodDecl &mf, objc_interface &c)
+{
+    auto method_return_type =
+        common::to_string(mf.getReturnType(), mf.getASTContext());
+
+    objc_method method{common::access_specifier_to_access_t(mf.getAccess()),
+        util::trim(mf.getNameAsString()), method_return_type};
+
+    process_comment(mf, method);
+
+    // Register the source location of the field declaration
+    set_source_location(mf, method);
+
+    if (method.skip())
+        return;
+
+    method.is_static(mf.isClassMethod());
+    method.is_optional(mf.isOptional());
+
+    for (const auto *param : mf.parameters()) {
+        if (param != nullptr)
+            process_objc_method_parameter(*param, method, c);
+    }
+
+    // find relationship for return type
+    found_relationships_t relationships;
+
+    find_relationships(
+        mf.getReturnType(), relationships, relationship_t::kDependency);
+
+    for (const auto &[type_element_id, relationship_type] : relationships) {
+        if (type_element_id != c.id() &&
+            (relationship_type != relationship_t::kNone)) {
+            relationship r{relationship_t::kDependency, type_element_id};
+
+            LOG_DBG("Adding method return type relationship from {}::{} to "
+                    "{}: {}",
+                c.full_name(), mf.getNameAsString(),
+                clanguml::common::model::to_string(r.type()), r.label());
+
+            c.add_relationship(std::move(r));
+        }
+    }
+
+    // TODO
+    // if (diagram().should_include(method)) {
+    LOG_DBG("Adding ObjC method: {}", method.name());
+
+    c.add_method(std::move(method));
+    //}
+}
+
 void translation_unit_visitor::process_method_properties(
     const clang::CXXMethodDecl &mf, const class_ &c,
     const std::string &method_name, class_method &method) const
@@ -1366,6 +1750,7 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
                 enum_type->getDecl()->getID(), relationship_hint);
         }
     }
+    // TODO: Objc support
     else if (type->isRecordType()) {
         const auto *type_instantiation_decl =
             type->getAs<clang::TemplateSpecializationType>();
@@ -1494,6 +1879,49 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
     return result;
 }
 
+void translation_unit_visitor::process_objc_method_parameter(
+    const clang::ParmVarDecl &param, objc_method &method, objc_interface &c)
+{
+    method_parameter parameter;
+    parameter.set_name(param.getNameAsString());
+
+    process_comment(param, parameter);
+
+    if (parameter.skip())
+        return;
+
+    auto parameter_type =
+        common::to_string(param.getType(), param.getASTContext());
+    parameter.set_type(parameter_type);
+
+    if (!parameter.skip_relationship()) {
+        // find relationship for the type
+        found_relationships_t relationships;
+
+        LOG_DBG("Looking for relationships in type: {}",
+            common::to_string(param.getType(), param.getASTContext()));
+
+        find_relationships(
+            param.getType(), relationships, relationship_t::kDependency);
+
+        for (const auto &[type_element_id, relationship_type] : relationships) {
+            if (type_element_id != c.id() &&
+                (relationship_type != relationship_t::kNone)) {
+                relationship r{relationship_t::kDependency, type_element_id};
+
+                LOG_DBG("Adding ObjC method parameter relationship from {} to "
+                        "{}: {}",
+                    c.full_name(), clanguml::common::model::to_string(r.type()),
+                    r.label());
+
+                c.add_relationship(std::move(r));
+            }
+        }
+    }
+
+    method.add_parameter(std::move(parameter));
+}
+
 void translation_unit_visitor::process_function_parameter(
     const clang::ParmVarDecl &p, class_method &method, class_ &c,
     const std::set<std::string> & /*template_parameter_names*/)
@@ -1570,9 +1998,9 @@ void translation_unit_visitor::process_function_parameter(
     method.add_parameter(std::move(parameter));
 }
 
-void translation_unit_visitor::add_relationships(class_ &c,
-    const class_member &field, const found_relationships_t &relationships,
-    bool break_on_first_aggregation)
+void translation_unit_visitor::add_relationships(
+    common::model::diagram_element &c, const model::class_member_base &field,
+    const found_relationships_t &relationships, bool break_on_first_aggregation)
 {
     auto [decorator_rtype, decorator_rmult] = field.get_relationship();
 
@@ -1912,48 +2340,23 @@ void translation_unit_visitor::resolve_local_to_global_ids()
 {
     // TODO: Refactor to a map with relationships attached to references
     //       to elements
-    for (const auto &cls : diagram().classes()) {
-        for (auto &rel : cls.get().relationships()) {
-            if (!rel.destination().is_global()) {
-                const auto maybe_id =
-                    id_mapper().get_global_id(rel.destination());
-                if (maybe_id) {
-                    LOG_DBG("= Resolved instantiation destination from local "
+    diagram().for_all_elements([&](auto &elements) {
+        for (const auto &el : elements) {
+            for (auto &rel : el.get().relationships()) {
+                if (!rel.destination().is_global()) {
+                    const auto maybe_id =
+                        id_mapper().get_global_id(rel.destination());
+                    if (maybe_id) {
+                        LOG_TRACE(
+                            "= Resolved instantiation destination from local "
                             "id {} to global id {}",
-                        rel.destination(), *maybe_id);
-                    rel.set_destination(*maybe_id);
+                            rel.destination(), *maybe_id);
+                        rel.set_destination(*maybe_id);
+                    }
                 }
             }
         }
-    }
-    for (const auto &cpt : diagram().concepts()) {
-        for (auto &rel : cpt.get().relationships()) {
-            if (!rel.destination().is_global()) {
-                const auto maybe_id =
-                    id_mapper().get_global_id(rel.destination());
-                if (maybe_id) {
-                    LOG_DBG("= Resolved instantiation destination from local "
-                            "id {} to global id {}",
-                        rel.destination(), *maybe_id);
-                    rel.set_destination(*maybe_id);
-                }
-            }
-        }
-    }
-    for (const auto &enm : diagram().enums()) {
-        for (auto &rel : enm.get().relationships()) {
-            if (!rel.destination().is_global()) {
-                const auto maybe_id =
-                    id_mapper().get_global_id(rel.destination());
-                if (maybe_id) {
-                    LOG_DBG("= Resolved instantiation destination from local "
-                            "id {} to global id {}",
-                        rel.destination(), *maybe_id);
-                    rel.set_destination(*maybe_id);
-                }
-            }
-        }
-    }
+    });
 }
 
 void translation_unit_visitor::finalize()
@@ -2030,6 +2433,26 @@ void translation_unit_visitor::add_class(std::unique_ptr<class_> &&c)
         const auto module_path = config().make_module_relative(c->module());
 
         common::model::path p{module_path, common::model::path_type::kModule};
+
+        diagram().add(p, std::move(c));
+    }
+    else {
+        diagram().add(c->path(), std::move(c));
+    }
+}
+
+void translation_unit_visitor::add_objc_interface(
+    std::unique_ptr<objc_interface> &&c)
+{
+    if ((config().generate_packages() &&
+            config().package_type() == config::package_type_t::kDirectory)) {
+        assert(!c->file().empty());
+
+        const auto file = config().make_path_relative(c->file());
+
+        common::model::path p{
+            file.string(), common::model::path_type::kFilesystem};
+        p.pop_back();
 
         diagram().add(p, std::move(c));
     }

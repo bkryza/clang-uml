@@ -46,7 +46,8 @@ inja::json element::context() const
 
 bool operator==(const element &l, const element &r)
 {
-    return l.full_name(false) == r.full_name(false);
+    return (l.type_name() == l.type_name()) &&
+        (l.full_name(false) == r.full_name(false));
 }
 
 std::ostream &operator<<(std::ostream &out, const element &rhs)

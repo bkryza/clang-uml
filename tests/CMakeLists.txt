@@ -1,5 +1,6 @@
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c t*/*.cu)
+file(GLOB_RECURSE TEST_CASES_OBJC_SOURCES t*/*.m)
 file(GLOB_RECURSE TEST_CASE_MODULE_SOURCES t*/src/*.cppm)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
@@ -10,6 +11,11 @@ set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069 t00074 t00075)
 set(TEST_CASES_REQUIRING_CXX20_MODULES t00070 t00071 t00072
                                        t30012 t30013 t30014 t30015)
 set(TEST_CASES_REQUIRING_CUDA t20049 t20050 t20051)
+set(TEST_CASES_REQUIRING_OBJC t00084)
+
+if(ENABLE_OBJECTIVE_C_TEST_CASES)
+    message(STATUS "Enabling Objective-C test cases: ${TEST_CASES_OBJC_SOURCES}")
+endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 
 if(ENABLE_CXX_MODULES_TEST_CASES)
     message(STATUS "Enabling C++ modules test cases")
@@ -105,6 +111,13 @@ foreach(TEST_NAME ${TEST_NAMES})
             target_sources(${TEST_NAME} PUBLIC FILE_SET CXX_MODULES FILES
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
+        if(ENABLE_OBJECTIVE_C_TEST_CASES)
+            add_library(test_cases_objc)
+            target_compile_options(test_cases_objc PUBLIC -MMD -MP -DGNUSTEP -DGNUSTEP_BASE_LIBRARY=1 -DGNU_GUI_LIBRARY=1 -DGNU_RUNTIME=1 -DGNUSTEP_BASE_LIBRARY=1 -fno-strict-aliasing -fexceptions -fobjc-exceptions -D_NATIVE_OBJC_EXCEPTIONS -pthread -fPIC -Wall -DGSWARN -DGSDIAGNOSE -Wno-import -g -O2 -fconstant-string-class=NSConstantString -I. -I/home/bartek/GNUstep/Library/Headers -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/lib/gcc/x86_64-linux-gnu/12/include)
+            # Link the GNUstep libraries
+            target_link_libraries(test_cases_objc -shared-libgcc -pthread -fexceptions -rdynamic -L/home/bartek/GNUstep/Library/Libraries -L/usr/local/lib -L/usr/lib -lgnustep-base -lobjc -lm)
+            target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
+        endif(ENABLE_OBJECTIVE_C_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
                                            ${TEST_CASE_SOURCES})
     else()

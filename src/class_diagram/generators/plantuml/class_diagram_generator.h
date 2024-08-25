@@ -17,6 +17,7 @@
  */
 #pragma once
 
+#include "class_diagram/generators/text_diagram_strategy.h"
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
@@ -52,19 +53,22 @@ using clanguml::class_diagram::model::class_member;
 using clanguml::class_diagram::model::class_method;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
+using clanguml::class_diagram::model::objc_interface;
+using clanguml::class_diagram::model::objc_member;
+using clanguml::class_diagram::model::objc_method;
 using clanguml::common::eid_t;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
-
 using namespace clanguml::util;
 
 /**
  * @brief Class diagram PlantUML generator
  */
-class generator : public common_generator<diagram_config, diagram_model> {
-    using method_groups_t = std::map<std::string, std::vector<class_method>>;
+class generator
+    : public common_generator<diagram_config, diagram_model>,
+      public class_diagram::generators::text_diagram_strategy<generator> {
 
 public:
     generator(diagram_config &config, diagram_model &model);
@@ -80,17 +84,6 @@ public:
      * @param ostr Output stream.
      */
     void generate_diagram(std::ostream &ostr) const override;
-
-    /**
-     * @brief In a nested diagram, generate the top level elements.
-     *
-     * This method iterates over the top level elements. In case the diagram
-     * is nested (i.e. includes packages), for each package it recursively
-     * call generation of elements contained in each package.
-     *
-     * @param parent JSON node
-     */
-    void generate_top_level_elements(std::ostream &ostr) const;
 
     /**
      * @brief Generate a hyperlink for a class element.
@@ -132,6 +125,10 @@ public:
      */
     void generate(const class_ &c, std::ostream &ostr) const;
 
+    void generate(const objc_interface &c, std::ostream &ostr) const;
+
+    void generate_alias(const objc_interface &c, std::ostream &ostr) const;
+
     /**
      * @brief Render class methods to PlantUML
      *
@@ -141,14 +138,7 @@ public:
     void generate_methods(
         const std::vector<class_method> &methods, std::ostream &ostr) const;
 
-    /**
-     * @brief Render class methods to PlantUML in groups
-     *
-     * @param methods Methods grouped by method type
-     * @param ostr Output stream
-     */
-    void generate_methods(
-        const method_groups_t &methods, std::ostream &ostr) const;
+    void start_method_group(std::ostream &ostr) const;
 
     /**
      * @brief Render class method to PlantUML
@@ -165,13 +155,6 @@ public:
      * @param ostr Output stream
      */
     void generate_member(const class_member &m, std::ostream &ostr) const;
-
-    /**
-     * @brief Render all relationships in the diagram to PlantUML
-     *
-     * @param ostr Output stream
-     */
-    void generate_relationships(std::ostream &ostr) const;
 
     /**
      * @brief Render all relationships originating from class element.
@@ -232,13 +215,8 @@ public:
      */
     void generate(const package &p, std::ostream &ostr) const;
 
-    /**
-     * @brief Render all relationships originating from package element.
-     *
-     * @param p Package element
-     * @param ostr Output stream
-     */
-    void generate_relationships(const package &p, std::ostream &ostr) const;
+    using class_diagram::generators::text_diagram_strategy<
+        generator>::generate_relationships;
 
     /**
      * @brief Generate any notes attached specifically to some class element.
@@ -250,42 +228,28 @@ public:
     void generate_member_notes(std::ostream &ostream,
         const class_element &member, const std::string &alias) const;
 
-    /**
-     * @brief Generate elements grouped together in `together` groups.
-     *
-     * @param ostr Output stream
-     */
-    void generate_groups(std::ostream &ostr) const;
+    void generate_member(const objc_member &m, std::ostream &ostr) const;
 
-    /**
-     * @brief Group class methods based on method type.
-     *
-     * @param methods List of class methods.
-     *
-     * @return Map of method groups.
-     */
-    method_groups_t group_methods(
-        const std::vector<class_method> &methods) const;
+    void generate_method(const objc_method &m, std::ostream &ostr) const;
+
+    void generate_methods(
+        const std::vector<objc_method> &methods, std::ostream &ostr) const;
+
+    void generate_relationships(
+        const objc_interface &c, std::ostream &ostr) const;
+
+    void start_together_group(
+        const std::string &group_name, std::ostream &ostr) const;
+
+    void end_together_group(
+        const std::string &group_name, std::ostream &ostr) const;
+
+    void start_package(const package &p, std::ostream &ostr) const;
+
+    void end_package(const package &p, std::ostream &ostr) const;
 
 private:
-    const std::vector<std::string> method_groups_{
-        "constructors", "assignment", "operators", "other"};
-
     std::string render_name(std::string name) const;
-
-    template <typename T>
-    void sort_class_elements(std::vector<T> &elements) const
-    {
-        if (config().member_order() == config::member_order_t::lexical) {
-            std::sort(elements.begin(), elements.end(),
-                [](const auto &m1, const auto &m2) {
-                    return m1.name() < m2.name();
-                });
-        }
-    }
-
-    mutable common::generators::nested_element_stack<common::model::element>
-        together_group_stack_;
 };
 
 } // namespace plantuml

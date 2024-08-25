@@ -81,6 +81,7 @@ public:
      * @return Diagram model
      */
     const DiagramType &model() const { return model_; }
+    const DiagramType &get_model() const { return model_; }
 
     template <typename E> inja::json element_context(const E &e) const;
 

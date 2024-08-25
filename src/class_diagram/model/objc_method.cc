@@ -1,5 +1,5 @@
 /**
- * @file src/class_diagram/model/class_member_base.cc
+ * @file src/class_diagram/model/objc_method.cc
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,4 +16,19 @@
  * limitations under the License.
  */
 
-#include "class_member_base.h"
+#include "objc_method.h"
+
+namespace clanguml::class_diagram::model {
+
+objc_method::objc_method(common::model::access_t access,
+    const std::string &name, const std::string &type)
+    : class_method_base{access, name, type}
+{
+    set_display_name(name);
+}
+
+void objc_method::is_optional(bool io) { is_optional_ = io; }
+
+bool objc_method::is_optional() const { return is_optional_; }
+
+} // namespace clanguml::class_diagram::model

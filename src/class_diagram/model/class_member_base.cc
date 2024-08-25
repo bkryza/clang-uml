@@ -17,3 +17,27 @@
  */
 
 #include "class_member_base.h"
+
+namespace clanguml::class_diagram::model {
+
+class_member_base::class_member_base(common::model::access_t access,
+    const std::string &name, const std::string &type)
+    : class_element{access, name, type}
+{
+}
+
+bool class_member_base::is_static() const { return is_static_; }
+
+void class_member_base::is_static(bool is_static) { is_static_ = is_static; }
+
+void class_member_base::set_destination_multiplicity(std::optional<size_t> m)
+{
+    destination_multiplicity_ = m;
+}
+
+std::optional<size_t> class_member_base::destination_multiplicity() const
+{
+    return destination_multiplicity_;
+}
+
+} // namespace clanguml::class_diagram::model
