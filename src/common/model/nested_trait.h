@@ -60,8 +60,10 @@ public:
     template <typename V = T>
     [[nodiscard]] bool add_element(std::unique_ptr<V> p)
     {
-        auto it = std::find_if(elements_.begin(), elements_.end(),
-            [&p](const auto &e) { return *e == *p; });
+        auto it = std::find_if(
+            elements_.begin(), elements_.end(), [&p](const auto &e) {
+                return (e->type_name() == p->type_name()) && (*e == *p);
+            });
 
         if (it != elements_.end()) {
             // Element already in element tree
@@ -148,16 +150,27 @@ public:
     {
         assert(!util::contains(name, "::"));
 
-        auto it = std::find_if(elements_.cbegin(), elements_.cend(),
-            [&](const auto &p) { return name == p->name(); });
+        // Try to find an element by name and assuming it is a specific type
+        // For some reason it is legal to have a C/C++ struct with the same
+        // name as some ObjC protocol/interface, so the name is not necessarily
+        // unique
+        auto it = elements_.cbegin();
+        while (true) {
+            it = std::find_if(it, elements_.cend(),
+                [&](const auto &p) { return name == p->name(); });
 
-        if (it == elements_.end())
-            return optional_ref<V>{};
+            if (it == elements_.cend())
+                break;
 
-        assert(it->get() != nullptr);
+            assert(it->get() != nullptr);
 
-        if (dynamic_cast<V *>(it->get()))
-            return optional_ref<V>{std::ref<V>(dynamic_cast<V &>(*it->get()))};
+            // Return the element if it has the expected type
+            if (dynamic_cast<V *>(it->get()))
+                return optional_ref<V>{
+                    std::ref<V>(dynamic_cast<V &>(*it->get()))};
+
+            ++it;
+        }
 
         return optional_ref<V>{};
     }
@@ -180,7 +193,8 @@ public:
      * Return result of functor f applied to all_of elements.
      * @tparam F Functor type
      * @param f Functor value
-     * @return True, if functor return true for elements, including nested ones.
+     * @return True, if functor return true for elements, including nested
+     * ones.
      */
     template <typename F> bool all_of(F &&f) const
     {

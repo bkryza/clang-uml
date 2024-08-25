@@ -26,7 +26,8 @@ namespace clanguml::class_diagram::generators::plantuml {
 
 generator::generator(diagram_config &config, diagram_model &model)
     : common_generator<diagram_config, diagram_model>{config, model}
-    , together_group_stack_{!config.generate_packages()}
+    , class_diagram::generators::text_diagram_strategy<generator>{
+          *this, config.generate_packages()}
 {
 }
 
@@ -127,6 +128,24 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
     m_generated_aliases.emplace(c.alias());
 }
 
+void generator::generate_alias(
+    const objc_interface &e, std::ostream &ostr) const
+{
+    print_debug(e, ostr);
+
+    if (!e.is_protocol())
+        ostr << "class";
+    else
+        ostr << "protocol";
+
+    ostr << " \"" << render_name(e.full_name());
+
+    ostr << "\" as " << e.alias() << '\n';
+
+    // Register the added alias
+    m_generated_aliases.emplace(e.alias());
+}
+
 void generator::generate(const class_ &c, std::ostream &ostr) const
 {
     std::string class_type{"class"};
@@ -151,7 +170,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     // Process methods
     //
     if (config().group_methods()) {
-        generate_methods(group_methods(c.methods()), ostr);
+        generate_method_groups(group_methods(c.methods()), ostr);
     }
     else {
         generate_methods(c.methods(), ostr);
@@ -207,21 +226,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
         generate_member_notes(ostr, method, c.alias());
 }
 
-void generator::generate_methods(
-    const method_groups_t &methods, std::ostream &ostr) const
-{
-    bool is_first_non_empty_group{true};
-
-    for (const auto &group : method_groups_) {
-        const auto &group_methods = methods.at(group);
-        if (!group_methods.empty()) {
-            if (!is_first_non_empty_group)
-                ostr << "..\n";
-            is_first_non_empty_group = false;
-            generate_methods(group_methods, ostr);
-        }
-    }
-}
+void generator::start_method_group(std::ostream &ostr) const { ostr << "..\n"; }
 
 void generator::generate_methods(
     const std::vector<class_method> &methods, std::ostream &ostr) const
@@ -235,31 +240,16 @@ void generator::generate_methods(
     }
 }
 
-generator::method_groups_t generator::group_methods(
-    const std::vector<class_method> &methods) const
+void generator::generate_methods(
+    const std::vector<objc_method> &methods, std::ostream &ostr) const
 {
-    std::map<std::string, std::vector<class_method>> result;
+    auto sorted_methods = methods;
+    sort_class_elements(sorted_methods);
 
-    for (const auto &g : method_groups_) {
-        result[g] = {};
+    for (const auto &m : sorted_methods) {
+        generate_method(m, ostr);
+        ostr << '\n';
     }
-
-    for (const auto &m : methods) {
-        if (m.is_constructor() || m.is_destructor()) {
-            result["constructors"].push_back(m);
-        }
-        else if (m.is_copy_assignment() || m.is_move_assignment()) {
-            result["assignment"].push_back(m);
-        }
-        else if (m.is_operator()) {
-            result["operators"].push_back(m);
-        }
-        else {
-            result["other"].push_back(m);
-        }
-    }
-
-    return result;
 }
 
 void generator::generate_method(
@@ -388,6 +378,143 @@ void generator::generate(const concept_ &c, std::ostream &ostr) const
     ostr << "}" << '\n';
 }
 
+void generator::generate(const objc_interface &c, std::ostream &ostr) const
+{
+    std::string class_type{"class"};
+    if (c.is_protocol())
+        class_type = "protocol";
+
+    ostr << class_type << " " << c.alias();
+
+    ostr << " "
+         << "<<ObjC>>";
+
+    if (config().generate_links) {
+        common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
+    }
+
+    generate_style(ostr, c.type_name(), c);
+
+    ostr << " {" << '\n';
+
+    //
+    // Process methods
+    //
+    generate_methods(c.methods(), ostr);
+
+    //
+    // Process relationships - here only generate the set of
+    // rendered_relationships we'll generate them in a seperate method
+    //
+    std::set<std::string> rendered_relations;
+
+    std::stringstream all_relations_str;
+    for (const auto &r : c.relationships()) {
+        try {
+            generate_relationship(r, rendered_relations);
+        }
+        catch (error::uml_alias_missing &e) {
+            LOG_DBG("Skipping {} relation from {} to {} due "
+                    "to: {}",
+                to_string(r.type()), c.full_name(), r.destination(), e.what());
+        }
+    }
+
+    //
+    // Process members
+    //
+    std::vector<clanguml::class_diagram::model::objc_member> members{
+        c.members()};
+
+    sort_class_elements(members);
+
+    if (config().group_methods())
+        ostr << "__\n";
+
+    for (const auto &m : members) {
+        if (!config().include_relations_also_as_members() &&
+            rendered_relations.find(m.name()) != rendered_relations.end())
+            continue;
+
+        generate_member(m, ostr);
+
+        ostr << '\n';
+    }
+
+    ostr << "}" << '\n';
+
+    generate_notes(ostr, c);
+
+    for (const auto &member : c.members())
+        generate_member_notes(ostr, member, c.alias());
+
+    for (const auto &method : c.methods())
+        generate_member_notes(ostr, method, c.alias());
+}
+
+void generator::generate_method(
+    const class_diagram::model::objc_method &m, std::ostream &ostr) const
+{
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+    const auto &uns = config().using_namespace();
+
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
+    print_debug(m, ostr);
+
+    if (m.is_static())
+        ostr << "{static} ";
+
+    std::string type{uns.relative(config().simplify_template_type(m.type()))};
+
+    ostr << plantuml_common::to_plantuml(m.access()) << m.name();
+
+    ostr << "(";
+    if (config().generate_method_arguments() !=
+        config::method_arguments::none) {
+        std::vector<std::string> params;
+        std::transform(m.parameters().cbegin(), m.parameters().cend(),
+            std::back_inserter(params), [this](const auto &mp) {
+                return config().simplify_template_type(
+                    mp.to_string(config().using_namespace()));
+            });
+        auto args_string = fmt::format("{}", fmt::join(params, ", "));
+        if (config().generate_method_arguments() ==
+            config::method_arguments::abbreviated) {
+            args_string = clanguml::util::abbreviate(
+                args_string, kAbbreviatedMethodArgumentsLength);
+        }
+        ostr << args_string;
+    }
+    ostr << ")";
+
+    ostr << " : " << type;
+
+    if (config().generate_links) {
+        generate_link(ostr, m);
+    }
+}
+
+void generator::generate_member(
+    const class_diagram::model::objc_member &m, std::ostream &ostr) const
+{
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+    const auto &uns = config().using_namespace();
+
+    print_debug(m, ostr);
+
+    if (m.is_static())
+        ostr << "{static} ";
+
+    ostr << plantuml_common::to_plantuml(m.access()) << m.name() << " : "
+         << render_name(
+                uns.relative(config().simplify_template_type(m.type())));
+
+    if (config().generate_links) {
+        generate_link(ostr, m);
+    }
+}
+
 void generator::generate_member_notes(std::ostream &ostr,
     const class_element &member, const std::string &alias) const
 {
@@ -398,24 +525,6 @@ void generator::generate_member_notes(std::ostream &ostr,
                  << "::" << member.name() << '\n'
                  << note->text << '\n'
                  << "end note\n";
-        }
-    }
-}
-
-void generator::generate_relationships(std::ostream &ostr) const
-{
-    for (const auto &p : model()) {
-        if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            generate_relationships(*pkg, ostr);
-        }
-        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            generate_relationships(*cls, ostr);
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            generate_relationships(*enm, ostr);
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            generate_relationships(*cpt, ostr);
         }
     }
 }
@@ -660,7 +769,83 @@ void generator::generate_relationships(const enum_ &e, std::ostream &ostr) const
     }
 }
 
-void generator::generate(const package &p, std::ostream &ostr) const
+void generator::generate_relationships(
+    const objc_interface &c, std::ostream &ostr) const
+{
+    namespace plantuml_common = clanguml::common::generators::plantuml;
+
+    //
+    // Process relationships
+    //
+    std::set<std::string> rendered_relations;
+
+    std::stringstream all_relations_str;
+    std::set<std::string> unique_relations;
+
+    for (const auto &r : c.relationships()) {
+        LOG_DBG("== Processing relationship {}",
+            plantuml_common::to_plantuml(r, config()));
+
+        std::stringstream relstr;
+        eid_t destination{};
+        try {
+            destination = r.destination();
+
+            std::string puml_relation;
+            if (!r.multiplicity_source().empty())
+                puml_relation += "\"" + r.multiplicity_source() + "\" ";
+
+            puml_relation += plantuml_common::to_plantuml(r, config());
+
+            if (!r.multiplicity_destination().empty())
+                puml_relation += " \"" + r.multiplicity_destination() + "\"";
+
+            std::string target_alias;
+            try {
+                target_alias = model().to_alias(destination);
+            }
+            catch (...) {
+                LOG_DBG("Failed to find alias to {}", destination);
+                continue;
+            }
+
+            if (m_generated_aliases.find(target_alias) ==
+                m_generated_aliases.end())
+                continue;
+
+            if (r.type() != relationship_t::kExtension)
+                relstr << c.alias() << " " << puml_relation << " "
+                       << target_alias;
+            else
+                relstr << target_alias << " <|-- " << c.alias();
+
+            if (!r.label().empty()) {
+                relstr << " : " << plantuml_common::to_plantuml(r.access())
+                       << r.label();
+                rendered_relations.emplace(r.label());
+            }
+
+            if (unique_relations.count(relstr.str()) == 0) {
+                unique_relations.emplace(relstr.str());
+
+                relstr << '\n';
+
+                LOG_DBG("=== Adding relation {}", relstr.str());
+
+                all_relations_str << relstr.str();
+            }
+        }
+        catch (error::uml_alias_missing &e) {
+            LOG_DBG("=== Skipping {} relation from {} to {} due "
+                    "to: {}",
+                to_string(r.type()), c.full_name(), destination, e.what());
+        }
+    }
+
+    ostr << all_relations_str.str();
+}
+
+void generator::start_package(const package &p, std::ostream &ostr) const
 {
     const auto &uns = config().using_namespace();
 
@@ -682,87 +867,12 @@ void generator::generate(const package &p, std::ostream &ostr) const
             ostr << " {" << '\n';
         }
     }
+}
 
-    for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
-            // TODO: add option - generate_empty_packages
-            const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty()) {
-                together_group_stack_.enter();
-
-                generate(sp, ostr);
-
-                together_group_stack_.leave();
-            }
-        }
-        else if (auto *cls = dynamic_cast<class_ *>(subpackage.get()); cls) {
-            if (model().should_include(*subpackage)) {
-                auto together_group =
-                    config().get_together_group(cls->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), cls);
-                }
-                else {
-                    generate_alias(*cls, ostr);
-                    generate(*cls, ostr);
-                }
-            }
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(subpackage.get()); enm) {
-            if (model().should_include(*subpackage)) {
-                auto together_group =
-                    config().get_together_group(subpackage->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), enm);
-                }
-                else {
-                    generate_alias(*enm, ostr);
-                    generate(*enm, ostr);
-                }
-            }
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(subpackage.get()); cpt) {
-            if (model().should_include(*subpackage)) {
-                auto together_group =
-                    config().get_together_group(cpt->full_name(false));
-                if (together_group) {
-                    together_group_stack_.group_together(
-                        together_group.value(), cpt);
-                }
-                else {
-                    generate_alias(*cpt, ostr);
-                    generate(*cpt, ostr);
-                }
-            }
-        }
-    }
-
+void generator::end_package(const package &p, std::ostream &ostr) const
+{
     if (config().generate_packages()) {
-        // Now generate any diagram elements which are in together
-        // groups
-        for (const auto &[group_name, group_elements] :
-            together_group_stack_.get_current_groups()) {
-            ostr << "together {\n";
-
-            for (auto *e : group_elements) {
-                if (auto *cls = dynamic_cast<class_ *>(e); cls) {
-                    generate_alias(*cls, ostr);
-                    generate(*cls, ostr);
-                }
-                if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
-                    generate_alias(*enm, ostr);
-                    generate(*enm, ostr);
-                }
-                if (auto *cpt = dynamic_cast<concept_ *>(e); cpt) {
-                    generate_alias(*cpt, ostr);
-                    generate(*cpt, ostr);
-                }
-            }
-
-            ostr << "}\n";
-        }
+        const auto &uns = config().using_namespace();
 
         // Don't generate packages from namespaces filtered out by
         // using_namespace
@@ -773,37 +883,16 @@ void generator::generate(const package &p, std::ostream &ostr) const
     }
 }
 
-void generator::generate_relationships(
-    const package &p, std::ostream &ostr) const
+void generator::start_together_group(
+    const std::string &group_name, std::ostream &ostr) const
 {
-    for (const auto &subpackage : p) {
-        if (dynamic_cast<package *>(subpackage.get()) != nullptr) {
-            // TODO: add option - generate_empty_packages, currently
-            //       packages which do not contain anything but other
-            //       packages are skipped
-            const auto &sp = dynamic_cast<package &>(*subpackage);
-            if (!sp.is_empty())
-                generate_relationships(sp, ostr);
-        }
-        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<class_ &>(*subpackage), ostr);
-            }
-        }
-        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<enum_ &>(*subpackage), ostr);
-            }
-        }
-        else if (dynamic_cast<concept_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<concept_ &>(*subpackage), ostr);
-            }
-        }
-    }
+    ostr << "together {\n";
+}
+
+void generator::end_together_group(
+    const std::string &group_name, std::ostream &ostr) const
+{
+    ostr << "}\n";
 }
 
 void generator::generate_diagram(std::ostream &ostr) const
@@ -815,77 +904,6 @@ void generator::generate_diagram(std::ostream &ostr) const
     generate_relationships(ostr);
 
     generate_config_layout_hints(ostr);
-}
-
-void generator::generate_top_level_elements(std::ostream &ostr) const
-{
-    for (const auto &p : model()) {
-        if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
-            if (!pkg->is_empty())
-                generate(*pkg, ostr);
-        }
-        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            auto together_group =
-                config().get_together_group(cls->full_name(false));
-            if (together_group) {
-                together_group_stack_.group_together(
-                    together_group.value(), cls);
-            }
-            else {
-                generate_alias(*cls, ostr);
-                generate(*cls, ostr);
-            }
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            auto together_group =
-                config().get_together_group(enm->full_name(false));
-            if (together_group) {
-                together_group_stack_.group_together(
-                    together_group.value(), enm);
-            }
-            else {
-                generate_alias(*enm, ostr);
-                generate(*enm, ostr);
-            }
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            auto together_group =
-                config().get_together_group(cpt->full_name(false));
-            if (together_group) {
-                together_group_stack_.group_together(
-                    together_group.value(), cpt);
-            }
-            else {
-                generate_alias(*cpt, ostr);
-                generate(*cpt, ostr);
-            }
-        }
-    }
-}
-
-void generator::generate_groups(std::ostream &ostr) const
-{
-    for (const auto &[group_name, group_elements] :
-        together_group_stack_.get_current_groups()) {
-        ostr << "together {\n";
-
-        for (auto *e : group_elements) {
-            if (auto *cls = dynamic_cast<class_ *>(e); cls) {
-                generate_alias(*cls, ostr);
-                generate(*cls, ostr);
-            }
-            if (auto *enm = dynamic_cast<enum_ *>(e); enm) {
-                generate_alias(*enm, ostr);
-                generate(*enm, ostr);
-            }
-            if (auto *cpt = dynamic_cast<concept_ *>(e); cpt) {
-                generate_alias(*cpt, ostr);
-                generate(*cpt, ostr);
-            }
-        }
-
-        ostr << "}\n";
-    }
 }
 
 } // namespace clanguml::class_diagram::generators::plantuml

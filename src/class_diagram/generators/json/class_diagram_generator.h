@@ -50,6 +50,7 @@ using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_element;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::enum_;
+using clanguml::class_diagram::model::objc_interface;
 using clanguml::common::model::access_t;
 using clanguml::common::model::package;
 using clanguml::common::model::relationship_t;
@@ -82,6 +83,14 @@ public:
      * @param parent JSON node
      */
     void generate(const class_ &c, nlohmann::json &parent) const;
+
+    /**
+     * Render ObjC interface or protocol element into a JSON node.
+     *
+     * @param c enum diagram element
+     * @param parent JSON node
+     */
+    void generate(const objc_interface &c, nlohmann::json &parent) const;
 
     /**
      * Render enum element into a JSON node.
@@ -126,41 +135,40 @@ public:
     void generate_relationships(nlohmann::json &parent) const;
 
     /**
-     * @brief Generate all relationships originating at a class element.
+     * @brief Generate all relationships originating at a diagram element.
      *
-     * @param c Class diagram element
+     * @tparam T Type of diagram element
+     * @param c Diagram diagram element
      * @param parent JSON node
      */
-    void generate_relationships(const class_ &c, nlohmann::json &parent) const;
-
-    /**
-     * @brief Generate all relationships originating at an enum element.
-     *
-     * @param c Enum diagram element
-     * @param parent JSON node
-     */
-    void generate_relationships(const enum_ &c, nlohmann::json &parent) const;
-
-    /**
-     * @brief Generate all relationships originating at a concept element.
-     *
-     * @param c Concept diagram element
-     * @param parent JSON node
-     */
-    void generate_relationships(
-        const concept_ &c, nlohmann::json &parent) const;
-
-    /**
-     * @brief Generate all relationships in a package.
-     *
-     * If the diagram is nested, it recursively calls relationship generation
-     * for all subelements.
-     *
-     * @param p Package diagram element
-     * @param parent JSON node
-     */
-    void generate_relationships(const package &p, nlohmann::json &parent) const;
+    template <typename T>
+    void generate_relationships(const T &c, nlohmann::json &parent) const;
 };
+
+template <typename T>
+void generator::generate_relationships(const T &c, nlohmann::json &parent) const
+{
+    const auto &model =
+        common_generator<diagram_config, diagram_model>::model();
+
+    for (const auto &r : c.relationships()) {
+        auto target_element = model.get(r.destination());
+        if (!target_element.has_value()) {
+            LOG_DBG("Skipping {} relation from '{}' to '{}' due "
+                    "to unresolved destination id",
+                to_string(r.type()), c.full_name(), r.destination().value());
+            continue;
+        }
+
+        nlohmann::json rel = r;
+        rel["source"] = std::to_string(c.id().value());
+        parent["relationships"].push_back(rel);
+    }
+}
+
+template <>
+void generator::generate_relationships<package>(
+    const package &p, nlohmann::json &parent) const;
 
 } // namespace json
 } // namespace generators

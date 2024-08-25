@@ -1,5 +1,5 @@
 /**
- * @file src/class_diagram/model/class_member_base.cc
+ * @file src/class_diagram/model/objc_member.cc
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
