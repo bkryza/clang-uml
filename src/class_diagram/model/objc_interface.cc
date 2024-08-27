@@ -44,6 +44,10 @@ bool objc_interface::is_protocol() const { return is_protocol_; }
 
 void objc_interface::is_protocol(bool ip) { is_protocol_ = ip; }
 
+bool objc_interface::is_category() const { return is_category_; }
+
+void objc_interface::is_category(bool cat) { is_category_ = cat; }
+
 void objc_interface::add_member(objc_member &&member)
 {
     members_.emplace_back(std::move(member));

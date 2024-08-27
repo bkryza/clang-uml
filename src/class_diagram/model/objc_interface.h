@@ -44,6 +44,8 @@ public:
     {
         if (is_protocol())
             return "objc_protocol";
+        else if (is_category())
+            return "objc_category";
         else
             return "objc_interface";
     }
@@ -64,6 +66,10 @@ public:
 
     void is_protocol(bool ip);
 
+    bool is_category() const;
+
+    void is_category(bool cat);
+
     /**
      * @brief Get Doxygen link to documentation page for this element.
      *
@@ -75,6 +81,7 @@ private:
     std::vector<objc_member> members_;
     std::vector<objc_method> methods_;
     bool is_protocol_{false};
+    bool is_category_{false};
 };
 
 } // namespace clanguml::class_diagram::model

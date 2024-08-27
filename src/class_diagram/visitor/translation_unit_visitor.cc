@@ -386,13 +386,53 @@ bool translation_unit_visitor::VisitRecordDecl(clang::RecordDecl *rec)
     return true;
 }
 
+bool translation_unit_visitor::VisitObjCCategoryDecl(
+    clang::ObjCCategoryDecl *decl)
+{
+    if (!should_include(decl))
+        return true;
+
+    LOG_DBG("= Visiting ObjC category declaration {} at {}",
+        decl->getQualifiedNameAsString(),
+        decl->getLocation().printToString(source_manager()));
+
+    auto category_ptr = create_objc_category_declaration(decl);
+
+    if (!category_ptr)
+        return true;
+
+    const auto category_id = category_ptr->id();
+
+    id_mapper().add(decl->getID(), category_id);
+
+    auto &category_model =
+        diagram().find<objc_interface>(category_id).has_value()
+        ? *diagram().find<objc_interface>(category_id).get()
+        : *category_ptr;
+
+    process_objc_category_declaration(*decl, category_model);
+
+    if (diagram().should_include(category_model)) {
+        LOG_DBG("Adding ObjC category {} with id {}",
+            category_model.full_name(false), category_model.id());
+
+        add_objc_interface(std::move(category_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC category {} with id {}",
+            category_model.full_name(), category_model.id());
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitObjCProtocolDecl(
     clang::ObjCProtocolDecl *decl)
 {
     if (!should_include(decl))
         return true;
 
-    LOG_ERROR("= Visiting ObjC protocol declaration {} at {}",
+    LOG_DBG("= Visiting ObjC protocol declaration {} at {}",
         decl->getQualifiedNameAsString(),
         decl->getLocation().printToString(source_manager()));
 
@@ -432,7 +472,7 @@ bool translation_unit_visitor::VisitObjCInterfaceDecl(
     if (!should_include(decl))
         return true;
 
-    LOG_ERROR("= Visiting ObjC interface declaration {} at {}",
+    LOG_DBG("= Visiting ObjC interface declaration {} at {}",
         decl->getQualifiedNameAsString(),
         decl->getLocation().printToString(source_manager()));
 
@@ -940,6 +980,34 @@ std::unique_ptr<class_> translation_unit_visitor::create_class_declaration(
 }
 
 std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+translation_unit_visitor::create_objc_category_declaration(
+    clang::ObjCCategoryDecl *decl)
+{
+    assert(decl != nullptr);
+
+    if (!should_include(decl))
+        return {};
+
+    auto c_ptr{std::make_unique<class_diagram::model::objc_interface>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    c.set_name(decl->getNameAsString());
+    c.set_id(common::to_id(*decl));
+    c.is_category(true);
+
+    process_comment(*decl, c);
+    set_source_location(*decl, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+std::unique_ptr<clanguml::class_diagram::model::objc_interface>
 translation_unit_visitor::create_objc_protocol_declaration(
     clang::ObjCProtocolDecl *decl)
 {
@@ -1090,9 +1158,40 @@ void translation_unit_visitor::process_class_declaration(
     c.complete(true);
 }
 
+void translation_unit_visitor::process_objc_category_declaration(
+    const clang::ObjCCategoryDecl &cls, objc_interface &c)
+{
+    assert(c.is_category());
+
+    // Iterate over class methods (both regular and static)
+    for (const auto *method : cls.methods()) {
+        if (method != nullptr) {
+            process_objc_method(*method, c);
+        }
+    }
+
+    // Add relationship to the ObjC Interface being extended by this
+    // category
+    if (cls.getClassInterface() != nullptr) {
+        eid_t objc_interface_id = common::to_id(*cls.getClassInterface());
+        common::model::relationship r{
+            relationship_t::kInstantiation, objc_interface_id, access_t::kNone};
+
+        LOG_DBG("Found protocol {} [{}] for ObjC interface {}",
+            cls.getClassInterface()->getNameAsString(),
+            objc_interface_id.value(), c.name());
+
+        c.add_relationship(std::move(r));
+    }
+
+    c.complete(true);
+}
+
 void translation_unit_visitor::process_objc_protocol_declaration(
     const clang::ObjCProtocolDecl &cls, objc_interface &c)
 {
+    assert(c.is_protocol());
+
     // Iterate over class methods (both regular and static)
     for (const auto *method : cls.methods()) {
         if (method != nullptr) {
@@ -1106,18 +1205,14 @@ void translation_unit_visitor::process_objc_protocol_declaration(
 void translation_unit_visitor::process_objc_interface_declaration(
     const clang::ObjCInterfaceDecl &cls, objc_interface &c)
 {
+    assert(!c.is_protocol() && !c.is_category());
+
     // Iterate over class methods (both regular and static)
     for (const auto *method : cls.methods()) {
         if (method != nullptr) {
             process_objc_method(*method, c);
         }
     }
-
-    //    for (const auto *member : cls.properties()) {
-    //        if (member != nullptr) {
-    //            process_objc_property(*member, c);
-    //        }
-    //    }
 
     for (const auto *ivar : cls.ivars()) {
         if (ivar != nullptr) {
@@ -1253,34 +1348,6 @@ void translation_unit_visitor::process_objc_ivar(
                 std::regex_replace(field.type(), anonymous_re, field_name));
         }
     }
-
-    c.add_member(std::move(field));
-}
-
-void translation_unit_visitor::process_objc_property(
-    const clang::ObjCPropertyDecl &mf, objc_interface &c)
-{
-    LOG_DBG("== Visiting ObjC property {}", mf.getNameAsString());
-
-    // Default hint for relationship is aggregation
-    //    auto relationship_hint = relationship_t::kAggregation;
-
-    auto field_type = mf.getType();
-    auto field_type_str =
-        common::to_string(field_type, mf.getASTContext(), false);
-
-    auto type_name = common::to_string(field_type, mf.getASTContext());
-
-    const auto field_name = mf.getNameAsString();
-
-    objc_member field{common::access_specifier_to_access_t(mf.getAccess()),
-        field_name, field_type_str};
-
-    process_comment(mf, field);
-    set_source_location(mf, field);
-
-    if (field.skip())
-        return;
 
     c.add_member(std::move(field));
 }

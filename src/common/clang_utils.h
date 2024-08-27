@@ -190,6 +190,8 @@ template <> eid_t to_id(const clang::CXXRecordDecl &declaration);
 
 template <> eid_t to_id(const clang::RecordDecl &declaration);
 
+template <> eid_t to_id(const clang::ObjCCategoryDecl &type);
+
 template <> eid_t to_id(const clang::ObjCInterfaceDecl &type);
 
 template <> eid_t to_id(const clang::ObjCProtocolDecl &type);

@@ -726,6 +726,9 @@ template <typename DiagramType>
 bool IsObjCProtocol(const DiagramType &d, QualifiedName name);
 
 template <typename DiagramType>
+bool IsObjCCategory(const DiagramType &d, QualifiedName name);
+
+template <typename DiagramType>
 int64_t FindMessage(const DiagramType &d, const Message &msg,
     int64_t offset = 0, bool fail = true);
 
@@ -847,6 +850,12 @@ template <> bool IsObjCProtocol(const plantuml_t &d, QualifiedName cls)
 {
     return d.contains(
         fmt::format("protocol {}", d.get_alias(cls.str(d.generate_packages))));
+}
+
+template <> bool IsObjCCategory(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(
+        fmt::format("class {}", d.get_alias(cls.str(d.generate_packages))));
 }
 
 template <> bool IsClassTemplate(const plantuml_t &d, QualifiedName cls)
@@ -1361,6 +1370,11 @@ template <> bool IsObjCInterface(const mermaid_t &d, QualifiedName cls)
 }
 
 template <> bool IsObjCProtocol(const mermaid_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsObjCCategory(const mermaid_t &d, QualifiedName cls)
 {
     return d.contains(fmt::format("class {}", d.get_alias(cls)));
 }
@@ -1941,6 +1955,13 @@ template <> bool IsObjCProtocol(const json_t &d, QualifiedName cls)
     auto e = get_element(d.src,
         expand_name(d.src, cls.str(d.generate_packages)), "objc_protocol");
     return e && e->at("type") == "objc_protocol";
+}
+
+template <> bool IsObjCCategory(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src,
+        expand_name(d.src, cls.str(d.generate_packages)), "objc_category");
+    return e && e->at("type") == "objc_category";
 }
 
 template <> bool IsClassTemplate(const json_t &d, QualifiedName cls)

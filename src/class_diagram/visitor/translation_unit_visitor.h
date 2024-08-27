@@ -117,6 +117,8 @@ public:
 
     virtual bool TraverseConceptDecl(clang::ConceptDecl *cpt);
 
+    virtual bool VisitObjCCategoryDecl(clang::ObjCCategoryDecl *decl);
+
     virtual bool VisitObjCProtocolDecl(clang::ObjCProtocolDecl *decl);
 
     virtual bool VisitObjCInterfaceDecl(clang::ObjCInterfaceDecl *decl);
@@ -183,11 +185,32 @@ private:
     std::unique_ptr<clanguml::class_diagram::model::class_>
     create_record_declaration(clang::RecordDecl *rec);
 
+    /**
+     * @brief Create class element model from Objective-C protocol
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
     std::unique_ptr<clanguml::class_diagram::model::objc_interface>
     create_objc_protocol_declaration(clang::ObjCProtocolDecl *decl);
 
+    /**
+     * @brief Create class element model from Objective-C interface
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
     std::unique_ptr<clanguml::class_diagram::model::objc_interface>
     create_objc_interface_declaration(clang::ObjCInterfaceDecl *decl);
+
+    /**
+     * @brief Create class element model from Objective-C category
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
+    std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+    create_objc_category_declaration(clang::ObjCCategoryDecl *decl);
 
     /**
      * @brief Create concept element model from concept declaration
@@ -201,14 +224,38 @@ private:
      * @brief Process class declaration
      *
      * @param cls Class declaration
-     * @param c Class diagram element return from `create_class_declaration`
+     * @param c Class diagram element returned from `create_class_declaration`
      */
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
 
+    /**
+     * @brief Process Objective-C category declaration
+     *
+     * @param cls Objective-C category declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_category_declaration`
+     */
+    void process_objc_category_declaration(
+        const clang::ObjCCategoryDecl &cls, objc_interface &c);
+
+    /**
+     * @brief Process Objective-C protocol declaration
+     *
+     * @param cls Objective-C protocol declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_protocol_declaration`
+     */
     void process_objc_protocol_declaration(
         const clang::ObjCProtocolDecl &cls, objc_interface &c);
 
+    /**
+     * @brief Process Objective-C interface declaration
+     *
+     * @param cls Objective-C interface declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_interface_declaration`
+     */
     void process_objc_interface_declaration(
         const clang::ObjCInterfaceDecl &cls, objc_interface &c);
 
@@ -264,6 +311,12 @@ private:
     void process_method(const clang::CXXMethodDecl &mf,
         clanguml::class_diagram::model::class_ &c);
 
+    /**
+     * @brief Process Objective-C method
+     *
+     * @param mf Method declaration
+     * @param c Class diagram element model
+     */
     void process_objc_method(
         const clang::ObjCMethodDecl &mf, objc_interface &c);
 
@@ -305,11 +358,20 @@ private:
     void process_field(const clang::FieldDecl &field_declaration,
         clanguml::class_diagram::model::class_ &c);
 
-    void process_objc_property(
-        const clang::ObjCPropertyDecl &mf, objc_interface &c);
-
+    /**
+     * @brief Process Objective-C data member
+     *
+     * @param field_declaration Data member declaration
+     * @param c Class diagram element model
+     */
     void process_objc_ivar(const clang::ObjCIvarDecl &ivar, objc_interface &c);
 
+    /**
+     * @brief Process Objective-C class base
+     *
+     * @param cls Objective-C interface declaration
+     * @param c Class diagram element model
+     */
     void process_objc_interface_base(
         const clang::ObjCInterfaceDecl &cls, objc_interface &c);
 
@@ -325,6 +387,14 @@ private:
         class_method &method, class_ &c,
         const std::set<std::string> &template_parameter_names = {});
 
+    /**
+     * @brief Process Objective-C class method parameter
+     *
+     * @param param Parameter declaration
+     * @param method Class method model
+     * @param c Class diagram element model
+     * @param template_parameter_names Ignored
+     */
     void process_objc_method_parameter(const clang::ParmVarDecl &param,
         objc_method &method, objc_interface &c);
 

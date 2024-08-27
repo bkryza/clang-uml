@@ -435,6 +435,12 @@ template <> eid_t to_id(const clang::RecordDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
 }
+
+template <> eid_t to_id(const clang::ObjCCategoryDecl &type)
+{
+    return to_id(fmt::format("__objc__{}", type.getNameAsString()));
+}
+
 template <> eid_t to_id(const clang::ObjCInterfaceDecl &type)
 {
     return to_id(fmt::format("__objc__{}", type.getNameAsString()));
