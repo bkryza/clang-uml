@@ -127,6 +127,7 @@ void to_json(nlohmann::json &j, const objc_interface &c)
 {
     j = dynamic_cast<const common::model::element &>(c);
     j["is_protocol"] = c.is_protocol();
+    j["is_category"] = c.is_category();
 
     j["members"] = c.members();
     j["methods"] = c.methods();

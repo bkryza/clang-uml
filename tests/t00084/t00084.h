@@ -55,3 +55,8 @@ struct Value {
 @interface CULogger : NSObject {
 }
 @end
+
+@interface CUMatrixArithmetic (MatrixOps)
+- (void)transpose;
+- (NSInteger)trace;
+@end

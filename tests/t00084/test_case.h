@@ -25,13 +25,10 @@ TEST_CASE("t00084")
         CHECK_CLASS_MODEL("t00084", "t00084_class");
 
     CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        // REQUIRE(HasTitle(src, "Basic class diagram example"));
-
-        // REQUIRE(!IsClass(src, "NOSUCHCLASS"));
-
         REQUIRE(IsObjCProtocol(src, "PAdd"));
         REQUIRE(IsObjCProtocol(src, "PSub"));
         REQUIRE(IsObjCInterface(src, "CULogger"));
+        REQUIRE(IsObjCCategory(src, "MatrixOps"));
         REQUIRE(IsClass(src, "CULogger"));
 
         REQUIRE(IsObjCInterface(src, "CUArithmetic"));
@@ -44,14 +41,7 @@ TEST_CASE("t00084")
         REQUIRE(IsBaseClass(src, "CUArithmetic", "CUIntArithmetic"));
         REQUIRE(IsBaseClass(src, "CUArithmetic", "CUMatrixArithmetic"));
 
-        // REQUIRE(IsClass(src, "B"));
-        // REQUIRE(IsBaseClass(src, "A", "B"));
-
         REQUIRE(IsMethod<Public>(src, "PAdd", "add"));
         REQUIRE(IsMethod<Public>(src, "PSub", "subtract"));
-
-        // REQUIRE(IsAssociation<Private>(src, "D", "A", "as"));
-
-        // REQUIRE(HasNote(src, "A", "left", "This is class A"));
     });
 }

@@ -386,8 +386,13 @@ void generator::generate(const objc_interface &c, std::ostream &ostr) const
 
     ostr << class_type << " " << c.alias();
 
-    ostr << " "
-         << "<<ObjC>>";
+    ostr << " ";
+    if (c.is_protocol())
+        ostr << "<<ObjC Protocol>>";
+    else if (c.is_category())
+        ostr << "<<ObjC Category>>";
+    else
+        ostr << "<<ObjC Interface>>";
 
     if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);
