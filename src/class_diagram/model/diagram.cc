@@ -300,7 +300,8 @@ void diagram::apply_filter()
 bool diagram::is_empty() const
 {
     return element_view<class_>::is_empty() &&
-        element_view<enum_>::is_empty() && element_view<concept_>::is_empty();
+        element_view<enum_>::is_empty() && element_view<concept_>::is_empty() &&
+        element_view<objc_interface>::is_empty();
 }
 } // namespace clanguml::class_diagram::model
 

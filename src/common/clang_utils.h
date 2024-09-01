@@ -44,7 +44,8 @@ namespace clanguml::common {
  */
 model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
-
+model::access_t access_specifier_to_access_t(
+    clang::ObjCIvarDecl::AccessControl access_specifier);
 /**
  * @brief Generate full qualified name for
  * [clang::TagDecl](https://clang.llvm.org/doxygen/classclang_1_1TagDecl.html)
