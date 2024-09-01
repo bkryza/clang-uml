@@ -195,7 +195,7 @@ add_subdirectory(src)
 option(BUILD_TESTS "" ON)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 option(ENABLE_CUDA_TEST_CASES "" OFF)
-option(ENABLE_OBJECTIVE_C_TEST_CASES "" OFF)
+option(ENABLE_OBJECTIVE_C_TEST_CASES "" ON)
 
 #
 # Setup CUDA if available

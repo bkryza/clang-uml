@@ -1265,7 +1265,7 @@ void translation_unit_visitor::process_objc_ivar(
 
     const auto field_name = ivar.getNameAsString();
 
-    objc_member field{common::access_specifier_to_access_t(ivar.getAccess()),
+    objc_member field{common::access_specifier_to_access_t(ivar.getAccessControl()),
         field_name, field_type_str};
 
     process_comment(ivar, field);
