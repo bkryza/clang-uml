@@ -110,7 +110,9 @@ public:
         auto filter = std::make_unique<diagram_filter>(
             d, c, diagram_filter::private_constructor_tag_t{});
 
-        if (c.filter_mode() == config::filter_mode_t::basic) {
+        filter->set_mode(c.filter_mode());
+
+        if (filter->mode() == config::filter_mode_t::basic) {
             basic_diagram_filter_initializer init{c, *filter};
             init.initialize();
         }
