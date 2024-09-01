@@ -91,6 +91,40 @@ TEST_CASE("Test advanced diagram filter anyof")
     CHECK_FALSE(filter.should_include(namespace_{"ns1::ns2::detail"}));
 }
 
+TEST_CASE("Test advanced diagram filter anyof with paths")
+{
+    auto cfg =
+        clanguml::config::load("./test_config_data/filters_advanced.yml");
+
+    auto &config = *cfg.diagrams["anyof_paths_test"];
+    clanguml::include_diagram::model::diagram diagram;
+
+    diagram.set_complete(true);
+
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
+
+    CHECK(config.filter_mode() == filter_mode_t::advanced);
+
+    clanguml::common::model::element std_thread{{}};
+    std_thread.set_namespace(namespace_{"std"});
+    std_thread.set_name("thread");
+    std_thread.set_file("/usr/include/thread");
+    CHECK(filter.should_include(std_thread));
+
+    std_thread.set_name("jthread");
+    CHECK_FALSE(filter.should_include(std_thread));
+
+    clanguml::common::model::element myclass{{}};
+    myclass.set_namespace(namespace_{"myns"});
+    myclass.set_name("myclass");
+
+    auto myclass_path = config.root_directory() / "include/myclass.h";
+
+    myclass.set_file(weakly_canonical(myclass_path).string());
+    CHECK(filter.should_include(myclass));
+}
+
 TEST_CASE("Test advanced diagram filter modules")
 {
     auto cfg =

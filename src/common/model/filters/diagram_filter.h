@@ -692,6 +692,9 @@ struct paths_filter : public filter_visitor {
     tvl::value_t match(const diagram &d,
         const common::model::source_location &sl) const override;
 
+    tvl::value_t match(
+        const diagram &d, const common::model::element &e) const override;
+
 private:
     std::vector<std::filesystem::path> paths_;
     std::filesystem::path root_;
@@ -802,6 +805,10 @@ public:
         return static_cast<bool>(tvl::is_undefined(inc) || tvl::is_true(inc));
     }
 
+    filter_mode_t mode() const;
+
+    void set_mode(filter_mode_t mode);
+
     friend class diagram_filter_factory;
 
 private:
@@ -813,6 +820,8 @@ private:
 
     /*! Reference to the diagram model */
     const common::model::diagram &diagram_;
+
+    filter_mode_t mode_{filter_mode_t::basic};
 };
 
 template <typename Collection>

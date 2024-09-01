@@ -74,13 +74,20 @@ bool diagram::should_include(const element &e) const
     if (filter_.get() == nullptr)
         return true;
 
-    if (!complete()) {
+    // In the basic mode, apply the paths filter as soon as possible
+    // to limit processing unnecessary files
+    if (filter_->mode() == filter_mode_t::basic) {
         return filter_->should_include(
             dynamic_cast<const source_location &>(e));
     }
 
-    return filter_->should_include(e) &&
-        filter_->should_include(dynamic_cast<const source_location &>(e));
+    // In advanced mode, we have to wait until the diagram model is complete
+    // before we can filter anything out
+    if (filter_->mode() == filter_mode_t::advanced && !complete()) {
+        return true;
+    }
+
+    return filter_->should_include(e);
 }
 
 bool diagram::should_include(const namespace_ &ns) const

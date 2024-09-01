@@ -37,6 +37,18 @@ diagrams:
       anyof:
         namespaces:
           - ns1::ns2::detail
+  anyof_paths_test:
+    type: class
+    relative_to: ../../../src
+    glob:
+      - src/**/*.cc
+      - src/**/*.h
+    include:
+      anyof:
+        paths:
+          - .
+        elements:
+          - std::thread
   modules_test:
     type: class
     include:

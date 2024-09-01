@@ -983,6 +983,12 @@ tvl::value_t paths_filter::match(
     return false;
 }
 
+tvl::value_t paths_filter::match(
+    const diagram &d, const common::model::element &e) const
+{
+    return match(d, dynamic_cast<const common::model::source_location &>(e));
+}
+
 class_method_filter::class_method_filter(filter_t type,
     std::unique_ptr<access_filter> af, std::unique_ptr<method_type_filter> mtf)
     : filter_visitor{type}
@@ -1051,6 +1057,10 @@ bool diagram_filter::should_include(
 
     return false;
 }
+
+filter_mode_t diagram_filter::mode() const { return mode_; }
+
+void diagram_filter::set_mode(filter_mode_t mode) { mode_ = mode; }
 
 template <>
 bool diagram_filter::should_include<std::string>(const std::string &name) const
