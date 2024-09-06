@@ -147,6 +147,18 @@ tvl::value_t filter_visitor::match(
     return match(d, m.access());
 }
 
+tvl::value_t filter_visitor::match(
+    const diagram &d, const class_diagram::model::objc_method &m) const
+{
+    return match(d, m.access());
+}
+
+tvl::value_t filter_visitor::match(
+    const diagram &d, const class_diagram::model::objc_member &m) const
+{
+    return match(d, m.access());
+}
+
 tvl::value_t filter_visitor::match(const diagram & /*d*/,
     const sequence_diagram::model::participant & /*p*/) const
 {

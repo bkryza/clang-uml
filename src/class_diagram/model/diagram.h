@@ -81,6 +81,7 @@ public:
      * @return True, if class member should be included in the diagram.
      */
     bool should_include(const class_member &m) const;
+    bool should_include(const objc_member &m) const;
 
     /**
      * @brief Whether a class_method should be included in the diagram.
@@ -89,6 +90,7 @@ public:
      * @return True, if class method should be included in the diagram.
      */
     bool should_include(const class_method &m) const;
+    bool should_include(const objc_method &m) const;
 
     /**
      * @brief Search for element in the diagram by fully qualified name.

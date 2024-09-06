@@ -30,6 +30,7 @@ TEST_CASE("t00085")
 
         REQUIRE(IsObjCInterface(src, "It00085"));
         // REQUIRE(IsBaseClass(src, "A", "B"));
+
         REQUIRE(IsField<Protected>(src, "It00085", "_defaultMember", "int"));
         REQUIRE(IsField<Public>(src, "It00085", "_publicMember", "NSString *"));
         REQUIRE(IsField<Protected>(
@@ -37,13 +38,31 @@ TEST_CASE("t00085")
         REQUIRE(
             IsField<Private>(src, "It00085", "_privateMember", "NSString *"));
 
+        REQUIRE(IsMethod<Public>(
+            src, "It00085", "addValue:", "NSInteger", "NSInteger otherValue"));
         REQUIRE(IsMethod<Public, Static>(
             src, "It00085", "currentSharedCounter", "NSInteger"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "displayDetails", "void"));
+        REQUIRE(IsMethod<Public, Static>(
+            src, "It00085", "incrementSharedCounter", "void"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "initWithName:value:",
+            "instancetype", "NSString * name, NSInteger value"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "multiplyValueBy:andAdd:",
+            "NSInteger", "NSInteger multiplier, NSInteger addition"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "name", "NSString *"));
+        REQUIRE(IsMethod<Public>(src, "It00085",
+            "performOperationWithBlock:", "void", "void (^)(NSInteger) block"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "resetValue", "void"));
         REQUIRE(IsMethod<Public>(
-            src, "It00085", "addValue", "NSInteger", "NSInteger otherValue"));
-
-        // REQUIRE(IsAssociation<Private>(src, "D", "A", "as"));
-
-        // REQUIRE(HasNote(src, "A", "left", "This is class A"));
+            src, "It00085", "setName:", "void", "NSString * name"));
+        REQUIRE(IsMethod<Public, Static>(src, "It00085",
+            "setSharedCounter:", "void", "NSInteger sharedCounter"));
+        REQUIRE(IsMethod<Public>(
+            src, "It00085", "setValue:", "void", "NSInteger value"));
+        REQUIRE(IsMethod<Public, Static>(
+            src, "It00085", "sharedCounter", "NSInteger"));
+        REQUIRE(IsMethod<Public, Static>(
+            src, "It00085", "sharedInstance", "instancetype"));
+        REQUIRE(IsMethod<Public>(src, "It00085", "value", "NSInteger"));
     });
 }

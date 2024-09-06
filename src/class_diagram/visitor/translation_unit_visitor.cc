@@ -1265,7 +1265,8 @@ void translation_unit_visitor::process_objc_ivar(
 
     const auto field_name = ivar.getNameAsString();
 
-    objc_member field{common::access_specifier_to_access_t(ivar.getAccessControl()),
+    objc_member field{
+        common::access_specifier_to_access_t(ivar.getAccessControl()),
         field_name, field_type_str};
 
     process_comment(ivar, field);
@@ -1649,11 +1650,11 @@ void translation_unit_visitor::process_objc_method(
     }
 
     // TODO
-    // if (diagram().should_include(method)) {
-    LOG_DBG("Adding ObjC method: {}", method.name());
+    if (diagram().should_include(method)) {
+        LOG_DBG("Adding ObjC method: {}", method.name());
 
-    c.add_method(std::move(method));
-    //}
+        c.add_method(std::move(method));
+    }
 }
 
 void translation_unit_visitor::process_method_properties(
