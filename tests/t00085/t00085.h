@@ -3,13 +3,13 @@
 @interface It00085 : NSObject {
     int _defaultMember;
 
-    @public
+@public
     NSString *_publicMember;
 
-    @protected
+@protected
     NSString *_protectedMember;
 
-    @private
+@private
     NSString *_privateMember;
 }
 

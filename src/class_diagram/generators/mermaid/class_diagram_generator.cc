@@ -257,7 +257,7 @@ void generator::generate_method(
             args_string = clanguml::util::abbreviate(
                 args_string, kAbbreviatedMethodArgumentsLength);
         }
-        ostr << args_string;
+        ostr << escape_name(args_string);
     }
     ostr << ")";
 

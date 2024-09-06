@@ -34,6 +34,16 @@ bool diagram::should_include(const class_method &m) const
     return filter().should_include(m);
 }
 
+bool diagram::should_include(const objc_member &m) const
+{
+    return filter().should_include(m);
+}
+
+bool diagram::should_include(const objc_method &m) const
+{
+    return filter().should_include(m);
+}
+
 const common::reference_vector<class_> &diagram::classes() const
 {
     return element_view<class_>::view();

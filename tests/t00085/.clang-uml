@@ -4,6 +4,7 @@ diagrams:
     glob:
       - t00085.m
     filter_mode: advanced
+    include_system_headers: true
     include:
       anyof:
         paths:
