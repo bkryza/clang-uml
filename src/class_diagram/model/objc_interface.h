@@ -44,10 +44,11 @@ public:
     {
         if (is_protocol())
             return "objc_protocol";
-        else if (is_category())
+
+        if (is_category())
             return "objc_category";
-        else
-            return "objc_interface";
+
+        return "objc_interface";
     }
 
     friend bool operator==(const objc_interface &l, const objc_interface &r);

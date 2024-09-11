@@ -242,4 +242,4 @@ private:
         together_group_stack_;
 };
 
-} // namespace clanguml::common::generators
+} // namespace clanguml::class_diagram::generators

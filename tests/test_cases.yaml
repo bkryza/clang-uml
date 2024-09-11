@@ -467,6 +467,9 @@ test_cases:
     - name: t30015
       title: C++20 modules package diagram test with partition dependencies
       description:
+    - name: t30016
+      title: Objective-C directory package diagram test
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case
