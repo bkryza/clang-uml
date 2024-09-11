@@ -144,6 +144,7 @@
  * [t20053](./test_cases/t20053.md) - Test case for inlining nested lambda operator calls
  * [t20054](./test_cases/t20054.md) - Test case for sequence diagram with nested classes
  * [t20055](./test_cases/t20055.md) - Test case for advanced filter in sequence diagram
+ * [t20056](./test_cases/t20056.md) - Test case for option to fold repeated activities in sequence diagram
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

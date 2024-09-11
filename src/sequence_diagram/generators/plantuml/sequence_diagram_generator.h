@@ -107,13 +107,13 @@ public:
     /**
      * @brief Generate sequence diagram activity.
      *
-     * @param a Activity model
+     * @param activity_id Activity id
      * @param ostr Output stream
      * @param visited List of already visited participants, this is necessary
      *                for breaking infinite recursion on recursive calls
      */
-    void generate_activity(const clanguml::sequence_diagram::model::activity &a,
-        std::ostream &ostr, std::vector<eid_t> &visited) const;
+    void generate_activity(eid_t activity_id, std::ostream &ostr,
+        std::vector<eid_t> &visited) const;
 
 private:
     /**
@@ -160,6 +160,7 @@ private:
     mutable std::set<eid_t> generated_participants_;
     mutable std::set<unsigned int> generated_comment_ids_;
     mutable std::vector<model::message> already_generated_in_static_context_;
+    mutable std::set<eid_t> generated_activities_;
 };
 
 } // namespace plantuml

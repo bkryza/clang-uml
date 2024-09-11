@@ -412,6 +412,9 @@ test_cases:
     - name: t20055
       title: Test case for advanced filter in sequence diagram
       description:
+    - name: t20056
+      title: Test case for option to fold repeated activities in sequence diagram
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case

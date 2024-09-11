@@ -9,6 +9,7 @@
 * [Customizing participants order](#customizing-participants-order)
 * [Generating return types](#generating-return-types)
 * [Generating condition statements](#generating-condition-statements)
+* [Folding repeated activities](#folding-repeated-activities)
 * [Injecting call expressions manually through comments](#injecting-call-expressions-manually-through-comments)
 * [Including comments in sequence diagrams](#including-comments-in-sequence-diagrams)
 
@@ -324,6 +325,23 @@ generate_condition_statements: true
 
 An example of a diagram with this feature enabled is presented below:
 ![extension](test_cases/t20033_sequence.svg)
+
+## Folding repeated activities
+If in a given sequence diagram functions or methods are called multiple times
+from different branches, each of these activities will be rendered fully
+which can mean that the diagram be very large.
+
+In order to minimize the diagram size in such situations, an option can be set:
+
+```yaml
+fold_repeated_activities: true
+```
+
+which will render any activity only once, and any further calls to that activity
+will only render a call to the activity and an indicator - a single `*` character
+- in a note over the activity.
+
+For an example of this see the test case [t20056](test_cases/t20056.md).
 
 ## Injecting call expressions manually through comments
 In some cases, `clang-uml` is not yet able to discover a call expression target

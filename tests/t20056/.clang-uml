@@ -1,0 +1,12 @@
+diagrams:
+  t20056_sequence:
+    type: sequence
+    glob:
+      - t20056.cc
+    include:
+      namespaces:
+        - clanguml::t20056
+    using_namespace: clanguml::t20056
+    fold_repeated_activities: true
+    from:
+      - function: "clanguml::t20056::tmain()"
