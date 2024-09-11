@@ -248,6 +248,7 @@ void inheritable_diagram_options::inherit(
     puml.override(parent.puml);
     mermaid.override(parent.mermaid);
     generate_method_arguments.override(parent.generate_method_arguments);
+    fold_repeated_activities.override(parent.fold_repeated_activities);
     generate_concept_requirements.override(
         parent.generate_concept_requirements);
     generate_packages.override(parent.generate_packages);

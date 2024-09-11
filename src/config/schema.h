@@ -249,6 +249,7 @@ types:
         generate_return_types: !optional bool
         generate_condition_statements: !optional bool
         generate_message_comments: !optional bool
+        fold_repeated_activities: !optional bool
         message_comment_width: !optional int
         participants_order: !optional [string]
         start_from: !optional [source_location_t] # deprecated -> 'from'
@@ -377,6 +378,7 @@ root:
     generate_return_types: !optional bool
     generate_condition_statements: !optional bool
     generate_message_comments: !optional bool
+    fold_repeated_activities: !optional bool
     message_comment_width: !optional int
     generate_packages: !optional bool
     group_methods: !optional bool

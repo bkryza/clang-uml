@@ -606,6 +606,7 @@ struct inheritable_diagram_options {
         "generate_condition_statements", false};
     option<std::vector<std::string>> participants_order{"participants_order"};
     option<bool> generate_message_comments{"generate_message_comments", false};
+    option<bool> fold_repeated_activities{"fold_repeated_activities", false};
     option<unsigned> message_comment_width{
         "message_comment_width", clanguml::util::kDefaultMessageCommentWidth};
     option<bool> debug_mode{"debug_mode", false};

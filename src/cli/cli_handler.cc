@@ -569,6 +569,7 @@ cli_flow_t cli_handler::add_config_diagram(
             true;
         doc["diagrams"][name]["inline_lambda_messages"] = false;
         doc["diagrams"][name]["generate_message_comments"] = false;
+        doc["diagrams"][name]["fold_repeated_activities"] = false;
         doc["diagrams"][name]["generate_condition_statements"] = false;
         doc["diagrams"][name]["using_namespace"] =
             std::vector<std::string>{{"myproject"}};

@@ -15,6 +15,7 @@ mermaid:
 generate_links:
   link: "{% if existsIn(element, \"doxygen_link\") %}{{ element.doxygen_link }}{% endif %}"
   tooltip: "{% if existsIn(element, \"comment\") and existsIn(element.comment, \"brief\") %}{{ abbrv(trim(replace(element.comment.brief.0, \"\\n+\", \" \")), 256) }}{% else %}{{ element.name }}{% endif %}"
+fold_repeated_activities: true
 diagrams:
   # Class diagrams
   class_translation_unit_visitor:

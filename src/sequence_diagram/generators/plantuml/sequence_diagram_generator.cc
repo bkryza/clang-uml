@@ -23,7 +23,6 @@ namespace clanguml::sequence_diagram::generators::plantuml {
 using clanguml::common::eid_t;
 using clanguml::common::model::message_t;
 using clanguml::config::location_t;
-using clanguml::sequence_diagram::model::activity;
 using clanguml::sequence_diagram::model::message;
 using namespace clanguml::util;
 
@@ -152,8 +151,27 @@ void generator::generate_return(const message &m, std::ostream &ostr) const
 }
 
 void generator::generate_activity(
-    const activity &a, std::ostream &ostr, std::vector<eid_t> &visited) const
+    eid_t activity_id, std::ostream &ostr, std::vector<eid_t> &visited) const
 {
+    const auto &a = model().get_activity(activity_id);
+
+    const auto [it, inserted] = generated_activities_.emplace(activity_id);
+
+    if (config().fold_repeated_activities() && !inserted &&
+        !a.messages().empty()) {
+        const auto &p =
+            model().get_participant<model::participant>(activity_id);
+
+        if (p.has_value()) {
+            ostr << "hnote over " << generate_alias(p.value()) << " : *\n";
+            // This is necessary to keep the hnote over the activity life line
+            ostr << generate_alias(p.value()) << "-[hidden]->"
+                 << generate_alias(p.value()) << '\n';
+        }
+
+        return;
+    }
+
     for (const auto &m : a.messages()) {
         if (m.in_static_declaration_context()) {
             if (util::contains(already_generated_in_static_context_, m))
@@ -182,8 +200,7 @@ void generator::generate_activity(
                         .end()) { // break infinite recursion on recursive calls
                     LOG_DBG("Creating activity {} --> {} - missing sequence {}",
                         m.from(), m.to(), m.to());
-                    generate_activity(
-                        model().get_activity(m.to()), ostr, visited);
+                    generate_activity(m.to(), ostr, visited);
                 }
             }
             else
@@ -651,8 +668,7 @@ void generator::generate_diagram(std::ostream &ostr) const
 
             ostr << "activate " << from_alias << '\n';
 
-            generate_activity(
-                model().get_activity(start_from), ostr, visited_participants);
+            generate_activity(start_from, ostr, visited_participants);
 
             if (from.value().type_name() == "method" ||
                 config().combine_free_functions_into_file_participants()) {
