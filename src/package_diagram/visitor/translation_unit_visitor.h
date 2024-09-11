@@ -80,6 +80,12 @@ public:
     virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
 
     virtual bool VisitFunctionDecl(clang::FunctionDecl *function_declaration);
+
+    virtual bool VisitObjCCategoryDecl(clang::ObjCCategoryDecl *decl);
+
+    virtual bool VisitObjCProtocolDecl(clang::ObjCProtocolDecl *decl);
+
+    virtual bool VisitObjCInterfaceDecl(clang::ObjCInterfaceDecl *decl);
     /** @} */
 
     /**
@@ -130,6 +136,19 @@ private:
         const clang::RecordDecl &cls, found_relationships_t &relationships);
 
     /**
+     * @brief Process ObjC container children
+     *
+     * ObjC container in Clang is a base class for any object (e.g. interface,
+     * protocol or category) that can contain methods.
+     *
+     * @param cls ObjC container declaration
+     * @param relationships List of relationships discovered from this objc
+     *                      container
+     */
+    void process_objc_container_children(const clang::ObjCContainerDecl &cls,
+        found_relationships_t &relationships);
+
+    /**
      * @brief Process record bases
      *
      * @param cls Class declaration
@@ -148,6 +167,15 @@ private:
         found_relationships_t &relationships);
 
     /**
+     * @brief Process ObjC method declaration
+     *
+     * @param method Method declaration
+     * @param relationships List of relationships discovered from this method
+     */
+    void process_objc_method(
+        const clang::ObjCMethodDecl &mf, found_relationships_t &relationships);
+
+    /**
      * @brief Process template method declaration
      *
      * @param method Method declaration
@@ -163,6 +191,26 @@ private:
      * @param relationships List of relationships discovered from this field
      */
     void process_field(const clang::FieldDecl &field_declaration,
+        found_relationships_t &relationships);
+
+    /**
+     * @brief Process ObjC property
+     *
+     * @param property_declaration Property declaration
+     * @param relationships List of relationships discovered from this property
+     */
+    void process_objc_property(
+        const clang::ObjCPropertyDecl &property_declaration,
+        found_relationships_t &relationships);
+
+    /**
+     * @brief Process ObjC protocol implemented by certain interface
+     *
+     * @param protocol_declaration Protocol declaration
+     * @param relationships List of relationships discovered from this protocol
+     */
+    void process_interface_protocol(
+        const clang::ObjCProtocolDecl &protocol_declaration,
         found_relationships_t &relationships);
 
     /**

@@ -889,13 +889,13 @@ void generator::end_package(const package &p, std::ostream &ostr) const
 }
 
 void generator::start_together_group(
-    const std::string &group_name, std::ostream &ostr) const
+    const std::string & /*group_name*/, std::ostream &ostr) const
 {
     ostr << "together {\n";
 }
 
 void generator::end_together_group(
-    const std::string &group_name, std::ostream &ostr) const
+    const std::string & /*group_name*/, std::ostream &ostr) const
 {
     ostr << "}\n";
 }
