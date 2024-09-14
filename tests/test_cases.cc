@@ -664,10 +664,10 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 ///
 /// Include diagram tests
 ///
-
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
+#include "t40004/test_case.h"
 
 ///
 /// Other tests (e.g. configuration file)
@@ -686,8 +686,8 @@ int main(int argc, char *argv[])
 
     clanguml::cli::cli_handler clih;
 
-    std::vector<const char *> argvv = {
-        "clang-uml", "--config", "./test_config_data/simple.yml"};
+    std::vector<const char *> argvv = {"clang-uml", "--query-driver", ".",
+        "--config", "./test_config_data/simple.yml"};
 
     argvv.push_back("-q");
 
