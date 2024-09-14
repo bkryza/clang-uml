@@ -1,0 +1,11 @@
+diagrams:
+  t40004_include:
+    type: include
+    glob:
+      - src/lib1/lib1.m
+      - src/lib2/lib2.m
+      - src/t40004.m
+    include:
+      paths:
+        - include
+        - src
