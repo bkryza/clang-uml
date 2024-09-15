@@ -516,6 +516,31 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
     return true;
 }
 
+bool translation_unit_visitor::TraverseObjCMessageExpr(
+    clang::ObjCMessageExpr *expr)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering ObjC message expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseObjCMessageExpr(
+        expr);
+
+    LOG_TRACE("Leaving ObjC message expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
+
+    return true;
+}
+
 bool translation_unit_visitor::TraverseCallExpr(clang::CallExpr *expr)
 {
     if (!config().include_system_headers() &&
@@ -1060,6 +1085,99 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     return true;
 }
 
+bool translation_unit_visitor::VisitObjCMessageExpr(
+    clang::ObjCMessageExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting ObjC message expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    message m{message_t::kCall, context().caller_id()};
+
+    set_source_location(*expr, m);
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
+
+    auto generated_message_from_comment = generate_message_from_comment(m);
+
+    if (!generated_message_from_comment && !should_include(expr)) {
+        LOG_DBG("Skipping call expression due to filter at: {}",
+            expr->getBeginLoc().printToString(source_manager()));
+
+        processed_comments().erase(raw_expr_comment);
+        return true;
+    }
+
+    if (context().is_expr_in_current_control_statement_condition(expr)) {
+        m.set_message_scope(common::model::message_scope_t::kCondition);
+    }
+
+    if (generated_message_from_comment) {
+        LOG_DBG(
+            "Message for this call expression is taken from comment directive");
+        return true;
+    }
+
+    process_objc_message_expression(m, expr);
+
+    // Add message to diagram
+    if (m.from().value() > 0 && m.to().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        if (diagram().sequences().find(m.from()) ==
+            diagram().sequences().end()) {
+            activity a{m.from()};
+            diagram().sequences().insert({m.from(), std::move(a)});
+        }
+
+        diagram().add_active_participant(m.from());
+        diagram().add_active_participant(m.to());
+
+        LOG_DBG("Found ObjC message {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCPropertyRefExpr(
+    clang::ObjCPropertyRefExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting ObjC property ref expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_scope_t;
@@ -1391,6 +1509,38 @@ bool translation_unit_visitor::process_construct_expression(
             constructor_parent->getNameAsString()));
 
     diagram().add_active_participant(eid_t{constructor->getID()});
+
+    return true;
+}
+
+bool translation_unit_visitor::process_objc_message_expression(
+    model::message &m, const clang::ObjCMessageExpr *message_expr)
+{
+    const auto *method_decl = message_expr->getMethodDecl();
+
+    if (method_decl == nullptr)
+        return false;
+
+    std::string method_name = method_decl->getQualifiedNameAsString();
+
+    const auto *callee_decl = message_expr->getReceiverInterface();
+
+    if (callee_decl == nullptr)
+        return false;
+
+    if (!should_include(callee_decl) || !should_include(method_decl))
+        return false;
+
+    m.set_to(eid_t{method_decl->getID()});
+    m.set_message_name(method_decl->getNameAsString());
+    m.set_return_type(
+        message_expr->getCallReturnType(*context().get_ast_context())
+            .getAsString());
+
+    LOG_TRACE("Set callee ObjC method id {} for method name {}", m.to(),
+        method_decl->getQualifiedNameAsString());
+
+    diagram().add_active_participant(eid_t{method_decl->getID()});
 
     return true;
 }
@@ -1943,6 +2093,12 @@ void translation_unit_visitor::push_message(
     construct_expr_message_map_.emplace(expr, std::move(m));
 }
 
+void translation_unit_visitor::push_message(
+    clang::ObjCMessageExpr *expr, model::message &&m)
+{
+    objc_message_map_.emplace(expr, std::move(m));
+}
+
 void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
 {
     assert(expr != nullptr);
@@ -1982,6 +2138,24 @@ void translation_unit_visitor::pop_message_to_diagram(
     diagram().get_activity(caller_id).add_message(std::move(msg));
 
     construct_expr_message_map_.erase(expr);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(
+    clang::ObjCMessageExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (objc_message_map_.find(expr) == objc_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(objc_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    objc_message_map_.erase(expr);
 }
 
 void translation_unit_visitor::finalize()
@@ -2158,10 +2332,49 @@ bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 }
 
 bool translation_unit_visitor::should_include(
+    const clang::ObjCInterfaceDecl *decl) const
+{
+    return visitor_specialization_t::should_include(
+        dynamic_cast<const clang::NamedDecl *>(decl));
+}
+
+bool translation_unit_visitor::should_include(
     const clang::LambdaExpr *expr) const
 {
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
     return diagram().should_include(common::model::source_file{expr_file});
+}
+
+bool translation_unit_visitor::should_include(
+    const clang::ObjCMessageExpr *expr) const
+{
+    if (context().caller_id() == 0)
+        return false;
+
+    if (!context().valid())
+        return false;
+
+    const auto expr_file = expr->getBeginLoc().printToString(source_manager());
+
+    if (!diagram().should_include(common::model::source_file{expr_file}))
+        return false;
+
+    //    const auto *callee_decl = expr->getReceiverInterface();
+    //
+    //    if (callee_decl != nullptr) {
+    //        const auto *callee_function = callee_decl->getAsFunction();
+    //
+    //        if ((callee_function == nullptr) ||
+    //        !should_include(callee_function)) {
+    //            LOG_DBG("Skipping call expression at {}",
+    //                expr->getBeginLoc().printToString(source_manager()));
+    //            return false;
+    //        }
+    //
+    //        return should_include(callee_function);
+    //    }
+
+    return true;
 }
 
 bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
@@ -2215,6 +2428,21 @@ bool translation_unit_visitor::should_include(
         return false;
 
     LOG_DBG("Including method {}", decl->getQualifiedNameAsString());
+
+    return true;
+}
+
+bool translation_unit_visitor::should_include(
+    const clang::ObjCMethodDecl *decl) const
+{
+    //    if (!should_include(decl->getParent()))
+    //        return false;
+
+    if (!diagram().should_include(
+            common::access_specifier_to_access_t(decl->getAccess())))
+        return false;
+
+    LOG_DBG("Including ObjC method {}", decl->getQualifiedNameAsString());
 
     return true;
 }

@@ -77,9 +77,15 @@ public:
 
     bool VisitCallExpr(clang::CallExpr *expr);
 
+    bool VisitObjCMessageExpr(clang::ObjCMessageExpr *expr);
+
+    bool VisitObjCPropertyRefExpr(clang::ObjCPropertyRefExpr *expr);
+
     bool TraverseVarDecl(clang::VarDecl *VD);
 
     bool TraverseCallExpr(clang::CallExpr *expr);
+
+    bool TraverseObjCMessageExpr(clang::ObjCMessageExpr *expr);
 
     bool TraverseCUDAKernelCallExpr(clang::CUDAKernelCallExpr *expr);
 
@@ -262,6 +268,8 @@ private:
      */
     bool should_include(const clang::TagDecl *decl) const;
 
+    bool should_include(const clang::ObjCInterfaceDecl *decl) const;
+
     /**
      * @brief Check if the diagram should include a lambda expression.
      *
@@ -277,6 +285,7 @@ private:
      * @return True, if the expression should be included in the diagram.
      */
     bool should_include(const clang::CallExpr *expr) const;
+    bool should_include(const clang::ObjCMessageExpr *expr) const;
 
     /**
      * @brief Check if the diagram should include a declaration.
@@ -285,6 +294,8 @@ private:
      * @return True, if the entity should be included in the diagram.
      */
     bool should_include(const clang::CXXMethodDecl *decl) const;
+
+    bool should_include(const clang::ObjCMethodDecl *decl) const;
 
     /**
      * @brief Check if the diagram should include a declaration.
@@ -410,6 +421,9 @@ private:
     bool process_class_method_call_expression(
         model::message &m, const clang::CXXMemberCallExpr *method_call_expr);
 
+    bool process_objc_message_expression(
+        model::message &m, const clang::ObjCMessageExpr *message_expr);
+
     /**
      * @brief Handle a class template method call expresion
      *
@@ -458,6 +472,7 @@ private:
      */
     void push_message(clang::CallExpr *expr, model::message &&m);
     void push_message(clang::CXXConstructExpr *expr, model::message &&m);
+    void push_message(clang::ObjCMessageExpr *expr, model::message &&m);
 
     /**
      * @brief Move a message model to diagram.
@@ -466,6 +481,7 @@ private:
      */
     void pop_message_to_diagram(clang::CallExpr *expr);
     void pop_message_to_diagram(clang::CXXConstructExpr *expr);
+    void pop_message_to_diagram(clang::ObjCMessageExpr *expr);
 
     std::optional<std::pair<unsigned int, std::string>> get_expression_comment(
         const clang::SourceManager &sm, const clang::ASTContext &context,
@@ -501,6 +517,7 @@ private:
     std::map<clang::CallExpr *, model::message> call_expr_message_map_;
     std::map<clang::CXXConstructExpr *, model::message>
         construct_expr_message_map_;
+    std::map<clang::ObjCMessageExpr *, model::message> objc_message_map_;
 
     std::map<eid_t, std::unique_ptr<clanguml::sequence_diagram::model::class_>>
         forward_declarations_;
