@@ -105,6 +105,10 @@ public:
 
     bool TraverseCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
+    bool TraverseObjCMethodDecl(clang::ObjCMethodDecl *declaration);
+
+    bool VisitObjCMethodDecl(clang::ObjCMethodDecl *declaration);
+
     bool VisitCXXMethodDecl(clang::CXXMethodDecl *declaration);
 
     bool VisitCXXRecordDecl(clang::CXXRecordDecl *declaration);
@@ -120,6 +124,11 @@ public:
 
     bool VisitFunctionTemplateDecl(
         clang::FunctionTemplateDecl *function_declaration);
+
+    bool VisitObjCInterfaceDecl(
+        clang::ObjCInterfaceDecl *interface_declaration);
+
+    bool VisitObjCProtocolDecl(clang::ObjCProtocolDecl *protocol_declaration);
 
     bool TraverseCompoundStmt(clang::CompoundStmt *stmt);
 
@@ -269,6 +278,7 @@ private:
     bool should_include(const clang::TagDecl *decl) const;
 
     bool should_include(const clang::ObjCInterfaceDecl *decl) const;
+    bool should_include(const clang::ObjCProtocolDecl *decl) const;
 
     /**
      * @brief Check if the diagram should include a lambda expression.
@@ -322,10 +332,19 @@ private:
     bool should_include(const clang::ClassTemplateDecl *decl) const;
 
     std::unique_ptr<clanguml::sequence_diagram::model::class_>
+    create_objc_interface_model(clang::ObjCInterfaceDecl *cls);
+
+    std::unique_ptr<clanguml::sequence_diagram::model::class_>
+    create_objc_protocol_model(clang::ObjCProtocolDecl *cls);
+
+    std::unique_ptr<clanguml::sequence_diagram::model::class_>
     create_class_model(clang::CXXRecordDecl *cls);
 
     std::unique_ptr<clanguml::sequence_diagram::model::method>
     create_method_model(clang::CXXMethodDecl *cls);
+
+    std::unique_ptr<clanguml::sequence_diagram::model::objc_method>
+    create_objc_method_model(clang::ObjCMethodDecl *cls);
 
     std::unique_ptr<clanguml::sequence_diagram::model::method>
     create_lambda_method_model(clang::CXXMethodDecl *cls);

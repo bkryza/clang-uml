@@ -691,7 +691,7 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {"clang-uml", "--query-driver", ".",
         "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-q");
+    argvv.push_back("-vvv");
 
     clih.handle_options(argvv.size(), argvv.data());
 

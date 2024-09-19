@@ -632,11 +632,11 @@ void generator::generate(const objc_interface &c, std::ostream &ostr) const
     ostr << " {" << '\n';
 
     if (c.is_protocol())
-        ostr << indent(2) << "<<ObjC Protocol>>\n";
+        ostr << indent(2) << "<< ObjC Protocol >>\n";
     else if (c.is_protocol())
-        ostr << indent(2) << "<<ObjC Category>>\n";
+        ostr << indent(2) << "<< ObjC Category >>\n";
     else
-        ostr << indent(2) << "<<ObjC Interface>>\n";
+        ostr << indent(2) << "<< ObjC Interface >>\n";
 
     //
     // Process methods

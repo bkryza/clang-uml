@@ -55,6 +55,104 @@ const call_expression_context &translation_unit_visitor::context() const
     return call_expression_context_;
 }
 
+bool translation_unit_visitor::VisitObjCProtocolDecl(
+    clang::ObjCProtocolDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC interface declaration at {}",
+        declaration->getBeginLoc().printToString(source_manager()));
+
+    auto objc_protocol_model_ptr = create_objc_protocol_model(declaration);
+
+    if (!objc_protocol_model_ptr)
+        return true;
+
+    context().reset();
+
+    const auto class_id = objc_protocol_model_ptr->id();
+
+    set_unique_id(declaration->getID(), class_id);
+
+    auto &class_model =
+        diagram()
+            .get_participant<sequence_diagram::model::class_>(class_id)
+            .has_value()
+        ? *diagram()
+               .get_participant<sequence_diagram::model::class_>(class_id)
+               .get()
+        : *objc_protocol_model_ptr;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding ObjC protocol participant {} with id {}",
+            class_model.full_name(false), class_model.id());
+
+        assert(class_model.id() == class_id);
+
+        context().set_caller_id(class_id);
+        context().update(declaration);
+
+        diagram().add_participant(std::move(objc_protocol_model_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC protocol {} with id {}", class_model.full_name(),
+            class_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCInterfaceDecl(
+    clang::ObjCInterfaceDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC interface declaration at {}",
+        declaration->getBeginLoc().printToString(source_manager()));
+
+    // Build the class declaration and store it in the diagram, even
+    // if we don't need it for any of the participants of this diagram
+    auto objc_interface_model_ptr = create_objc_interface_model(declaration);
+
+    if (!objc_interface_model_ptr)
+        return true;
+
+    context().reset();
+
+    const auto class_id = objc_interface_model_ptr->id();
+
+    set_unique_id(declaration->getID(), class_id);
+
+    auto &class_model =
+        diagram()
+            .get_participant<sequence_diagram::model::class_>(class_id)
+            .has_value()
+        ? *diagram()
+               .get_participant<sequence_diagram::model::class_>(class_id)
+               .get()
+        : *objc_interface_model_ptr;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding ObjC interface participant {} with id {}",
+            class_model.full_name(false), class_model.id());
+
+        assert(class_model.id() == class_id);
+
+        context().set_caller_id(class_id);
+        context().update(declaration);
+
+        diagram().add_participant(std::move(objc_interface_model_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC interface {} with id {}",
+            class_model.full_name(), class_id);
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXRecordDecl(
     clang::CXXRecordDecl *declaration)
 {
@@ -213,6 +311,70 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
         diagram().add_participant(std::move(template_specialization_ptr));
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseObjCMethodDecl(
+    clang::ObjCMethodDecl *declaration)
+{
+    // We need to backup the context, since other methods or functions can
+    // be traversed during this traversal (e.g. template function/method
+    // specializations)
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseObjCMethodDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCMethodDecl(
+    clang::ObjCMethodDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC method {} in class",
+        declaration->getQualifiedNameAsString()/*,
+        declaration->getClassInterface()->getQualifiedNameAsString(),
+        (void *)declaration->getClassInterface()*/);
+
+    context().update(declaration);
+
+    auto method_model_ptr = create_objc_method_model(declaration);
+
+    if (!method_model_ptr)
+        return true;
+
+    process_comment(*declaration, *method_model_ptr);
+
+    set_source_location(*declaration, *method_model_ptr);
+
+    const auto method_full_name = method_model_ptr->full_name(false);
+
+    method_model_ptr->set_id(common::to_id(method_full_name));
+
+    // Callee methods in call expressions are referred to by first declaration
+    // id, so they should both be mapped to method_model
+    if (declaration->isThisDeclarationADefinition()) {
+        set_unique_id(
+            declaration->getClassInterface()->getID(), method_model_ptr->id());
+    }
+
+    set_unique_id(declaration->getID(), method_model_ptr->id());
+
+    LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
+        method_model_ptr->id(), method_full_name,
+        declaration->isThisDeclarationADefinition());
+
+    context().update(declaration);
+
+    context().set_caller_id(method_model_ptr->id());
+
+    diagram().add_participant(std::move(method_model_ptr));
 
     return true;
 }
@@ -1768,6 +1930,62 @@ bool translation_unit_visitor::is_smart_pointer(
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::class_>
+translation_unit_visitor::create_objc_protocol_model(
+    clang::ObjCProtocolDecl *cls)
+{
+    assert(cls != nullptr);
+
+    auto c_ptr{std::make_unique<clanguml::sequence_diagram::model::class_>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    auto qualified_name = cls->getQualifiedNameAsString();
+
+    c.is_objc_interface();
+
+    c.set_name(cls->getQualifiedNameAsString());
+    c.set_id(common::to_id(*cls));
+
+    process_comment(*cls, c);
+    set_source_location(*cls, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::class_>
+translation_unit_visitor::create_objc_interface_model(
+    clang::ObjCInterfaceDecl *cls)
+{
+    assert(cls != nullptr);
+
+    auto c_ptr{std::make_unique<clanguml::sequence_diagram::model::class_>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    auto qualified_name = cls->getQualifiedNameAsString();
+
+    c.is_objc_interface(true);
+
+    c.set_name(cls->getQualifiedNameAsString());
+    c.set_id(common::to_id(*cls));
+
+    process_comment(*cls, c);
+    set_source_location(*cls, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::class_>
 translation_unit_visitor::create_class_model(clang::CXXRecordDecl *cls)
 {
     assert(cls != nullptr);
@@ -2260,6 +2478,69 @@ translation_unit_visitor::create_lambda_method_model(
     return method_model_ptr;
 }
 
+std::unique_ptr<clanguml::sequence_diagram::model::objc_method>
+translation_unit_visitor::create_objc_method_model(
+    clang::ObjCMethodDecl *declaration)
+{
+    auto method_model_ptr =
+        std::make_unique<sequence_diagram::model::objc_method>(
+            config().using_namespace());
+
+    common::model::namespace_ ns{declaration->getQualifiedNameAsString()};
+    auto method_name = ns.name();
+    method_model_ptr->set_method_name(method_name);
+    ns.pop_back();
+    method_model_ptr->set_name(ns.name());
+    method_model_ptr->set_namespace({});
+
+    clang::Decl *parent_decl = declaration->getClassInterface();
+
+    if (parent_decl == nullptr) {
+        LOG_DBG("Cannot find ObjC interface for method, probably it is a "
+                "protocol {} [{}]",
+            method_name,
+            declaration->getLocation().printToString(source_manager()));
+        return {};
+    }
+
+    LOG_DBG("Getting ObjC method's interface with local id {}",
+        parent_decl->getID());
+
+    const auto maybe_method_class = get_participant<model::class_>(parent_decl);
+
+    if (!maybe_method_class) {
+        LOG_DBG("Cannot find parent class_ for method {} in class {}",
+            declaration->getQualifiedNameAsString(),
+            declaration->getClassInterface()->getQualifiedNameAsString());
+        return {};
+    }
+
+    const auto &method_class = maybe_method_class.value();
+
+    method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
+
+    method_model_ptr->set_class_id(method_class.id());
+    method_model_ptr->set_class_full_name(method_class.full_name(false));
+    method_model_ptr->set_name(get_participant(method_model_ptr->class_id())
+                                   .value()
+                                   .full_name_no_ns() +
+        "::" + declaration->getNameAsString());
+
+    method_model_ptr->return_type(common::to_string(
+        declaration->getReturnType(), declaration->getASTContext()));
+
+    for (const auto *param : declaration->parameters()) {
+        auto parameter_type =
+            common::to_string(param->getType(), param->getASTContext());
+        common::ensure_lambda_type_is_relative(config(), parameter_type);
+        parameter_type = simplify_system_template(parameter_type);
+        method_model_ptr->add_parameter(config().using_namespace().relative(
+            simplify_system_template(parameter_type)));
+    }
+
+    return method_model_ptr;
+}
+
 std::unique_ptr<clanguml::sequence_diagram::model::method>
 translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
 {
@@ -2333,6 +2614,13 @@ bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 
 bool translation_unit_visitor::should_include(
     const clang::ObjCInterfaceDecl *decl) const
+{
+    return visitor_specialization_t::should_include(
+        dynamic_cast<const clang::NamedDecl *>(decl));
+}
+
+bool translation_unit_visitor::should_include(
+    const clang::ObjCProtocolDecl *decl) const
 {
     return visitor_specialization_t::should_include(
         dynamic_cast<const clang::NamedDecl *>(decl));

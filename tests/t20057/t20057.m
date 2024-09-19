@@ -22,15 +22,6 @@
     t20057_A *a;
 }
 
-//- (instancetype)init
-//{
-//    self = [super init];
-//    if (self) {
-//        a = [[t20057_A alloc] init];
-//    }
-//    return self;
-//}
-
 - (void)b
 {
     [a a]; // Calling method a
@@ -46,15 +37,6 @@
 @implementation t20057_C {
     t20057_B *b;
 }
-//
-//- (instancetype)init
-//{
-//    self = [super init];
-//    if (self) {
-//        b = [[t20057_B alloc] init];
-//    }
-//    return self;
-//}
 
 - (void)c
 {

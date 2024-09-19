@@ -30,8 +30,9 @@ TEST_CASE("t20057")
         REQUIRE(MessageOrder(src,
             {
                 //
-                {"tmain()", "A", "A()"},                //
-                {"B", "A", "log_result(int)", Static{}} //
+                {"t20057_tmain()", "t20057_C", "c()"}, //
+                {"t20057_C", "t20057_B", "b()"},       //
+                {"t20057_B", "t20057_A", "a()"}        //
             }));
 
         // REQUIRE(!HasMessage(src, {"A", {"detail", "C"}, "add(int,int)"}));
