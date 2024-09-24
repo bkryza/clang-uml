@@ -260,6 +260,8 @@ struct mermaid_t : public diagram_source_t<std::string> {
             "\\sas\\s<< CUDA Kernel >><br>" + name + "\\n"});
         patterns.push_back(std::regex{"participant\\s" + alias_regex +
             "\\sas\\s<< CUDA Device >><br>" + name + "\\n"});
+        patterns.push_back(std::regex{"participant\\s" + alias_regex +
+            "\\sas\\s<< ObjC Interface >><br>" + name + "\\n"});
 
         std::smatch base_match;
 

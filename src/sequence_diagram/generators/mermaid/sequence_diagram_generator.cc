@@ -445,8 +445,9 @@ void generator::generate_participant(
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << indent(1) << "participant " << class_participant.alias()
-             << " as " << render_participant_name(participant_name)
-             << " << ObjC Interface >>";
+             << " as "
+             << "<< ObjC Interface >><br>"
+             << render_participant_name(participant_name);
 
         ostr << '\n';
 

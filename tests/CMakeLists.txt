@@ -14,7 +14,7 @@ set(TEST_CASES_REQUIRING_CUDA t20049 t20050 t20051)
 set(TEST_CASES_REQUIRING_OBJC t00084 t00085 t20057 t30016 t40004)
 
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
-    message(STATUS "Enabling Objective-C test cases: ${TEST_CASES_OBJC_SOURCES}")
+    message(STATUS "Enabling Objective-C test cases")
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 
 if(ENABLE_CXX_MODULES_TEST_CASES)
@@ -113,7 +113,7 @@ foreach(TEST_NAME ${TEST_NAMES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         if(ENABLE_OBJECTIVE_C_TEST_CASES)
             add_library(test_cases_objc)
-            target_compile_options(test_cases_objc PUBLIC -MMD -MP -DGNUSTEP -DGNUSTEP_BASE_LIBRARY=1 -DGNU_GUI_LIBRARY=1 -DGNU_RUNTIME=1 -fno-strict-aliasing -fexceptions -fblocks -fobjc-runtime=gnustep-2.0 -fobjc-exceptions -D_NATIVE_OBJC_EXCEPTIONS -pthread -fPIC -Wall -DGSWARN -DGSDIAGNOSE -Wno-import -g -fconstant-string-class=NSConstantString -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/lib/clang/18/include -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/local/include/)
+            target_compile_options(test_cases_objc PUBLIC -MP -DGNUSTEP -DGNUSTEP_BASE_LIBRARY=1 -DGNU_GUI_LIBRARY=1 -DGNU_RUNTIME=1 -fno-strict-aliasing -fexceptions -fblocks -fobjc-runtime=gnustep-2.0 -fobjc-exceptions -D_NATIVE_OBJC_EXCEPTIONS -pthread -fPIC -Wall -DGSWARN -DGSDIAGNOSE -Wno-import -g -fconstant-string-class=NSConstantString -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/lib/clang/18/include -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/local/include/)
 
             # Link the GNUstep libraries
             target_link_libraries(test_cases_objc -shared-libgcc -pthread -fexceptions -rdynamic -L/usr/local/lib -L/usr/lib -lgnustep-base -lobjc -lm)
