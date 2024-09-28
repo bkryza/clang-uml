@@ -67,7 +67,7 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         message =
             fmt::format("{}{}{}", style, f.message_name(render_mode), style);
     }
-    if (to.value().type_name() == "objc_method") {
+    else if (to.value().type_name() == "objc_method") {
         const auto &f = dynamic_cast<const model::objc_method &>(to.value());
         const std::string_view style = f.is_static() ? "__" : "";
         message =

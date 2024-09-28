@@ -338,9 +338,7 @@ bool translation_unit_visitor::VisitObjCMethodDecl(
         return true;
 
     LOG_TRACE("Visiting ObjC method {} in class",
-        declaration->getQualifiedNameAsString()/*,
-        declaration->getClassInterface()->getQualifiedNameAsString(),
-        (void *)declaration->getClassInterface()*/);
+        declaration->getQualifiedNameAsString());
 
     context().update(declaration);
 
@@ -356,13 +354,6 @@ bool translation_unit_visitor::VisitObjCMethodDecl(
     const auto method_full_name = method_model_ptr->full_name(false);
 
     method_model_ptr->set_id(common::to_id(method_full_name));
-
-    // Callee methods in call expressions are referred to by first declaration
-    // id, so they should both be mapped to method_model
-    if (declaration->isThisDeclarationADefinition()) {
-        set_unique_id(
-            declaration->getClassInterface()->getID(), method_model_ptr->id());
-    }
 
     set_unique_id(declaration->getID(), method_model_ptr->id());
 
@@ -2534,8 +2525,7 @@ translation_unit_visitor::create_objc_method_model(
             common::to_string(param->getType(), param->getASTContext());
         common::ensure_lambda_type_is_relative(config(), parameter_type);
         parameter_type = simplify_system_template(parameter_type);
-        method_model_ptr->add_parameter(config().using_namespace().relative(
-            simplify_system_template(parameter_type)));
+        method_model_ptr->add_parameter(parameter_type);
     }
 
     return method_model_ptr;

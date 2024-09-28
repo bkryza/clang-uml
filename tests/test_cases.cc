@@ -639,6 +639,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t20055/test_case.h"
 #include "t20056/test_case.h"
 #include "t20057/test_case.h"
+#include "t20058/test_case.h"
 
 ///
 /// Package diagram tests
@@ -691,7 +692,7 @@ int main(int argc, char *argv[])
     std::vector<const char *> argvv = {"clang-uml", "--query-driver", ".",
         "--config", "./test_config_data/simple.yml"};
 
-    argvv.push_back("-q");
+    argvv.push_back("-vvv");
 
     clih.handle_options(argvv.size(), argvv.data());
 

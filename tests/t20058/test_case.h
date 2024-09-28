@@ -1,5 +1,5 @@
 /**
- * tests/t20057/test_case.h
+ * tests/t20058/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20057")
+TEST_CASE("t20058")
 {
     using namespace clanguml::test;
     using namespace std::string_literals;
 
     auto [config, db, diagram, model] =
-        CHECK_SEQUENCE_MODEL("t20057", "t20057_sequence");
+        CHECK_SEQUENCE_MODEL("t20058", "t20058_sequence");
 
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
         // REQUIRE(HasTitle(src, "Basic sequence diagram example"));
@@ -30,9 +30,9 @@ TEST_CASE("t20057")
         REQUIRE(MessageOrder(src,
             {
                 //
-                {"t20057_tmain()", "t20057_C", "c()"}, //
-                {"t20057_C", "t20057_B", "b()"},       //
-                {"t20057_B", "t20057_A", "a()"}        //
+                {"t20058_tmain()", "t20058_B", "b:withInt:(NSString *,int)"}, //
+                {"t20058_B", "t20058_A", "a:(NSString *)"},                   //
+                {"t20058_tmain()", "t20058_A", "a:(NSString *)"}              //
             }));
     });
 }

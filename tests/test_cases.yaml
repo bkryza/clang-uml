@@ -424,6 +424,9 @@ test_cases:
     - name: t20057
       title: Basic Objective-C sequence diagram test case
       description:
+    - name: t20058
+      title: Objective-C sequence diagram with method params test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
