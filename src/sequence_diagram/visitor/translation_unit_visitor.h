@@ -277,8 +277,13 @@ private:
      */
     bool should_include(const clang::TagDecl *decl) const;
 
-    bool should_include(const clang::ObjCInterfaceDecl *decl) const;
-    bool should_include(const clang::ObjCProtocolDecl *decl) const;
+    /**
+     * @brief Check if the diagram should include an ObjC declaration.
+     *
+     * @param decl Clang declaration.
+     * @return True, if the entity should be included in the diagram.
+     */
+    bool should_include(const clang::ObjCContainerDecl *decl) const;
 
     /**
      * @brief Check if the diagram should include a lambda expression.
@@ -295,6 +300,13 @@ private:
      * @return True, if the expression should be included in the diagram.
      */
     bool should_include(const clang::CallExpr *expr) const;
+
+    /**
+     * @brief Check if the diagram should include an ObjC message expression.
+     *
+     * @param expr ObjC message expression.
+     * @return True, if the expression should be included in the diagram.
+     */
     bool should_include(const clang::ObjCMessageExpr *expr) const;
 
     /**

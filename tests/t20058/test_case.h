@@ -25,8 +25,6 @@ TEST_CASE("t20058")
         CHECK_SEQUENCE_MODEL("t20058", "t20058_sequence");
 
     CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        // REQUIRE(HasTitle(src, "Basic sequence diagram example"));
-
         REQUIRE(MessageOrder(src,
             {
                 //

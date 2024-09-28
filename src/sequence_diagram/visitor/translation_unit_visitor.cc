@@ -1676,6 +1676,9 @@ bool translation_unit_visitor::process_objc_message_expression(
 
     std::string method_name = method_decl->getQualifiedNameAsString();
 
+    if (message_expr->getReceiverInterface() == nullptr)
+        return false;
+
     const auto *callee_decl = message_expr->getReceiverInterface();
 
     if (callee_decl == nullptr)
@@ -1684,7 +1687,19 @@ bool translation_unit_visitor::process_objc_message_expression(
     if (!should_include(callee_decl) || !should_include(method_decl))
         return false;
 
-    m.set_to(eid_t{method_decl->getID()});
+    if (callee_decl->getImplementation() != nullptr &&
+        callee_decl->getImplementation()->getMethod(method_decl->getSelector(),
+            method_decl->isInstanceMethod(), true) != nullptr) {
+        const auto *impl_method_decl =
+            callee_decl->getImplementation()->getMethod(
+                method_decl->getSelector(), method_decl->isInstanceMethod(),
+                true);
+        m.set_to(eid_t{impl_method_decl->getID()});
+    }
+    else {
+        m.set_to(eid_t{method_decl->getID()});
+    }
+
     m.set_message_name(method_decl->getNameAsString());
     m.set_return_type(
         message_expr->getCallReturnType(*context().get_ast_context())
@@ -2603,14 +2618,7 @@ bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 }
 
 bool translation_unit_visitor::should_include(
-    const clang::ObjCInterfaceDecl *decl) const
-{
-    return visitor_specialization_t::should_include(
-        dynamic_cast<const clang::NamedDecl *>(decl));
-}
-
-bool translation_unit_visitor::should_include(
-    const clang::ObjCProtocolDecl *decl) const
+    const clang::ObjCContainerDecl *decl) const
 {
     return visitor_specialization_t::should_include(
         dynamic_cast<const clang::NamedDecl *>(decl));
@@ -2636,21 +2644,6 @@ bool translation_unit_visitor::should_include(
 
     if (!diagram().should_include(common::model::source_file{expr_file}))
         return false;
-
-    //    const auto *callee_decl = expr->getReceiverInterface();
-    //
-    //    if (callee_decl != nullptr) {
-    //        const auto *callee_function = callee_decl->getAsFunction();
-    //
-    //        if ((callee_function == nullptr) ||
-    //        !should_include(callee_function)) {
-    //            LOG_DBG("Skipping call expression at {}",
-    //                expr->getBeginLoc().printToString(source_manager()));
-    //            return false;
-    //        }
-    //
-    //        return should_include(callee_function);
-    //    }
 
     return true;
 }
@@ -2713,9 +2706,6 @@ bool translation_unit_visitor::should_include(
 bool translation_unit_visitor::should_include(
     const clang::ObjCMethodDecl *decl) const
 {
-    //    if (!should_include(decl->getParent()))
-    //        return false;
-
     if (!diagram().should_include(
             common::access_specifier_to_access_t(decl->getAccess())))
         return false;
