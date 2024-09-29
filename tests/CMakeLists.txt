@@ -15,7 +15,10 @@ set(TEST_CASES_REQUIRING_OBJC t00084 t00085 t20057 t20058 t30016 t40004)
 
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     message(STATUS "Enabling Objective-C test cases")
+else()
+    message(STATUS "Disabling Objective-C test cases")
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
+
 
 if(ENABLE_CXX_MODULES_TEST_CASES)
     message(STATUS "Enabling C++ modules test cases")
@@ -112,11 +115,12 @@ foreach(TEST_NAME ${TEST_NAMES})
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         if(ENABLE_OBJECTIVE_C_TEST_CASES)
+            # We need to link the objective test cases sources to a separate
+            # ObjC library than the rest of C++ test cases
             add_library(test_cases_objc)
-            target_compile_options(test_cases_objc PUBLIC -MP -DGNUSTEP -DGNUSTEP_BASE_LIBRARY=1 -DGNU_GUI_LIBRARY=1 -DGNU_RUNTIME=1 -fno-strict-aliasing -fexceptions -fblocks -fobjc-runtime=gnustep-2.0 -fobjc-exceptions -D_NATIVE_OBJC_EXCEPTIONS -pthread -fPIC -Wall -DGSWARN -DGSDIAGNOSE -Wno-import -g -fconstant-string-class=NSConstantString -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/lib/clang/18/include -I/usr/local/include/GNUstep -I/usr/include/GNUstep -I/usr/local/include/)
+            target_compile_options(test_cases_objc PRIVATE ${GNUSTEP_CFLAGS})
+            target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS})
 
-            # Link the GNUstep libraries
-            target_link_libraries(test_cases_objc -shared-libgcc -pthread -fexceptions -rdynamic -L/usr/local/lib -L/usr/lib -lgnustep-base -lobjc -lm)
             target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
         endif(ENABLE_OBJECTIVE_C_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc

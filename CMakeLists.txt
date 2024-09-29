@@ -195,7 +195,7 @@ add_subdirectory(src)
 option(BUILD_TESTS "" ON)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 option(ENABLE_CUDA_TEST_CASES "" OFF)
-option(ENABLE_OBJECTIVE_C_TEST_CASES "" ON)
+option(ENABLE_OBJECTIVE_C_TEST_CASES "" OFF)
 
 #
 # Setup CUDA if available
@@ -210,6 +210,7 @@ endif(ENABLE_CUDA_TEST_CASES)
 
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     enable_language(OBJC)
+    find_package(GNUstep REQUIRED)
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 
 if(BUILD_TESTS)
