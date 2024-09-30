@@ -210,7 +210,9 @@ endif(ENABLE_CUDA_TEST_CASES)
 
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     enable_language(OBJC)
-    find_package(GNUstep REQUIRED)
+    if(UNIX AND NOT APPLE)
+      find_package(GNUstep REQUIRED)
+    endif()
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 
 if(BUILD_TESTS)

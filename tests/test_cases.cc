@@ -699,7 +699,7 @@ int main(int argc, char *argv[])
 
     clanguml::cli::cli_handler clih;
 
-    std::vector<const char *> argvv = {"clang-uml", "--query-driver", ".",
+    std::vector<const char *> argvv = {"clang-uml",
         "--config", "./test_config_data/simple.yml"};
 
     argvv.push_back("-q");

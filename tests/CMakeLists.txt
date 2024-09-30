@@ -118,9 +118,13 @@ foreach(TEST_NAME ${TEST_NAMES})
             # We need to link the objective test cases sources to a separate
             # ObjC library than the rest of C++ test cases
             add_library(test_cases_objc)
-            target_compile_options(test_cases_objc PRIVATE ${GNUSTEP_CFLAGS})
-            target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS})
-
+            if(APPLE)
+                target_compile_options(test_cases_objc PRIVATE "SHELL:-isystem ${LLVM_INCLUDE_DIR}/c++/v1"
+                                                               "SHELL:-isystem ${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}/include")
+            else(APPLE)
+                target_compile_options(test_cases_objc PRIVATE ${GNUSTEP_CFLAGS})
+                target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS})
+            endif(APPLE)
             target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
         endif(ENABLE_OBJECTIVE_C_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
@@ -134,7 +138,8 @@ foreach(TEST_NAME ${TEST_NAMES})
     target_compile_definitions(${TEST_NAME} PRIVATE
             $<$<EQUAL:${ENABLE_CXX_STD_20_TEST_CASES},1>:ENABLE_CXX_STD_20_TEST_CASES>
             $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>
-            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>)
+            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>
+            $<$<BOOL:${ENABLE_OBJECTIVE_C_TEST_CASES}>:ENABLE_OBJECTIVE_C_TEST_CASES>)
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<COMPILE_LANGUAGE:CXX>:
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
