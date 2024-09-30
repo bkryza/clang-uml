@@ -28,7 +28,8 @@ TEST_CASE("t00084")
         REQUIRE(IsObjCProtocol(src, "PAdd"));
         REQUIRE(IsObjCProtocol(src, "PSub"));
         REQUIRE(IsObjCInterface(src, "CULogger"));
-        REQUIRE(IsObjCCategory(src, "MatrixOps"));
+        REQUIRE(IsObjCCategory(src, "CUMatrixArithmetic()"));
+        REQUIRE(IsObjCCategory(src, "CUMatrixArithmetic(MatrixOps)"));
         REQUIRE(IsClass(src, "CULogger"));
 
         REQUIRE(IsObjCInterface(src, "CUArithmetic"));

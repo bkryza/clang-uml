@@ -56,6 +56,10 @@ struct Value {
 }
 @end
 
+@interface CUMatrixArithmetic ()
+- (void)destroy;
+@end
+
 @interface CUMatrixArithmetic (MatrixOps)
 - (void)transpose;
 - (NSInteger)trace;

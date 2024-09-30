@@ -1015,8 +1015,10 @@ translation_unit_visitor::create_objc_category_declaration(
         config().using_namespace())};
     auto &c = *c_ptr;
 
-    c.set_name(decl->getNameAsString());
-    c.set_id(common::to_id(*decl));
+    decl->getClassInterface()->getNameAsString();
+    c.set_name(fmt::format("{}({})",
+        decl->getClassInterface()->getNameAsString(), decl->getNameAsString()));
+    c.set_id(common::to_id(fmt::format("__objc__category__{}", c.name())));
     c.is_category(true);
 
     process_comment(*decl, c);
