@@ -252,6 +252,9 @@ test_cases:
     - name: t00085
       title: Objective-C test case for various class members and methods
       description:
+    - name: t00086
+      title: Objective-C nested structs and enums test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

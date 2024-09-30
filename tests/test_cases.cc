@@ -571,6 +571,7 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
 #include "t00084/test_case.h"
 #include "t00085/test_case.h"
+#include "t00086/test_case.h"
 #endif
 
 ///
@@ -699,8 +700,8 @@ int main(int argc, char *argv[])
 
     clanguml::cli::cli_handler clih;
 
-    std::vector<const char *> argvv = {"clang-uml",
-        "--config", "./test_config_data/simple.yml"};
+    std::vector<const char *> argvv = {
+        "clang-uml", "--config", "./test_config_data/simple.yml"};
 
     argvv.push_back("-q");
 

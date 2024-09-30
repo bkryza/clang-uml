@@ -148,8 +148,31 @@ bool translation_unit_visitor::VisitEnumDecl(clang::EnumDecl *enm)
         }
     }
 
+    const auto *lexical_parent = enm->getLexicalParent();
+    if (!parent_id_opt && lexical_parent != nullptr) {
+        if (const auto *parent_interface_decl =
+                clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
+            parent_interface_decl != nullptr) {
+
+            eid_t ast_id{parent_interface_decl->getID()};
+
+            // First check if the parent has been added to the diagram as
+            // regular class
+            parent_id_opt = id_mapper().get_global_id(ast_id);
+        }
+    }
+
     if (parent_id_opt && diagram().find<class_>(*parent_id_opt)) {
         auto parent_class = diagram().find<class_>(*parent_id_opt);
+
+        e.set_namespace(ns);
+        e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
+        e.set_id(common::to_id(e.full_name(false)));
+        e.add_relationship({relationship_t::kContainment, *parent_id_opt});
+        e.nested(true);
+    }
+    else if (parent_id_opt && diagram().find<objc_interface>(*parent_id_opt)) {
+        auto parent_class = diagram().find<objc_interface>(*parent_id_opt);
 
         e.set_namespace(ns);
         e.set_name(parent_class.value().name() + "##" + enm->getNameAsString());
@@ -1065,22 +1088,22 @@ translation_unit_visitor::create_objc_interface_declaration(
 void translation_unit_visitor::process_record_parent(
     clang::RecordDecl *cls, class_ &c, const namespace_ &ns)
 {
-    // NOTE: `parent` here means class or structure is nested in the parent,
-    //       not inheritance
-    const auto *parent = cls->getParent();
 
     std::optional<eid_t> id_opt;
 
     auto parent_ns = ns;
-    if (parent != nullptr) {
-        const auto *parent_record_decl =
-            clang::dyn_cast<clang::RecordDecl>(parent);
 
-        if (parent_record_decl != nullptr) {
+    // NOTE: `parent` here means class or structure is nested in the parent,
+    //       not inheritance
+    const auto *parent = cls->getParent();
+
+    if (parent != nullptr) {
+        if (const auto *parent_record_decl =
+                clang::dyn_cast<clang::RecordDecl>(parent);
+            parent_record_decl != nullptr) {
             parent_ns = common::get_tag_namespace(*parent_record_decl);
 
             eid_t ast_id{parent_record_decl->getID()};
-
             // First check if the parent has been added to the diagram as
             // regular class
             id_opt = id_mapper().get_global_id(ast_id);
@@ -1097,52 +1120,27 @@ void translation_unit_visitor::process_record_parent(
         }
     }
 
+    const auto *lexical_parent = cls->getLexicalParent();
+    if (lexical_parent != nullptr) {
+        if (const auto *parent_interface_decl =
+                clang::dyn_cast<clang::ObjCInterfaceDecl>(lexical_parent);
+            parent_interface_decl != nullptr) {
+
+            eid_t ast_id{parent_interface_decl->getID()};
+
+            // First check if the parent has been added to the diagram as
+            // regular class
+            id_opt = id_mapper().get_global_id(ast_id);
+        }
+    }
+
     if (id_opt && diagram().find<class_>(*id_opt)) {
-        // Here we have 2 options, either:
-        //  - the parent is a regular C++ class/struct
-        //  - the parent is a class template declaration/specialization
-        auto parent_class = diagram().find<class_>(*id_opt);
+        process_record_parent_by_type<class_>(*id_opt, c, parent_ns, cls);
+    }
 
-        c.set_namespace(parent_ns);
-        const auto cls_name = cls->getNameAsString();
-        if (cls_name.empty()) {
-            // Nested structs can be anonymous
-            if (anonymous_struct_relationships_.count(cls->getID()) > 0) {
-                const auto &[label, hint, access, destination_multiplicity] =
-                    anonymous_struct_relationships_[cls->getID()];
-
-                c.set_name(parent_class.value().name() + "##" +
-                    fmt::format("({})", label));
-
-                std::string destination_multiplicity_str{};
-                if (destination_multiplicity.has_value()) {
-                    destination_multiplicity_str =
-                        std::to_string(*destination_multiplicity);
-                }
-
-                parent_class.value().add_relationship(
-                    {hint, common::to_id(c.full_name(false)), access, label, "",
-                        destination_multiplicity_str});
-            }
-            else
-                c.set_name(parent_class.value().name() + "##" +
-                    fmt::format(
-                        "(anonymous_{})", std::to_string(cls->getID())));
-        }
-        else {
-            c.set_name(
-                parent_class.value().name() + "##" + cls->getNameAsString());
-        }
-
-        c.set_id(common::to_id(c.full_name(false)));
-
-        if (!cls->getNameAsString().empty()) {
-            // Don't add anonymous structs as contained in the class
-            // as they are already added as aggregations
-            c.add_relationship({relationship_t::kContainment, *id_opt});
-        }
-
-        c.nested(true);
+    if (id_opt && diagram().find<objc_interface>(*id_opt)) {
+        process_record_parent_by_type<objc_interface>(
+            *id_opt, c, parent_ns, cls);
     }
 }
 

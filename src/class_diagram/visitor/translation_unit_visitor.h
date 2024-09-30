@@ -537,6 +537,10 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
+    template <typename T>
+    void process_record_parent_by_type(eid_t parent_id, class_ &c,
+        namespace_ parent_ns, const clang::RecordDecl *decl);
+
     template_builder_t template_builder_;
 
     std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
@@ -557,4 +561,54 @@ private:
      */
     std::set<std::string> processed_template_qualified_names_;
 };
+
+template <typename T>
+void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
+    class_ &c, namespace_ parent_ns, const clang::RecordDecl *decl)
+{
+    // Here we have 2 options, either:
+    //  - the parent is a regular C++ class/struct
+    //  - the parent is a class template declaration/specialization
+    auto parent_class = diagram().find<T>(parent_id);
+
+    c.set_namespace(parent_ns);
+    const auto cls_name = decl->getNameAsString();
+    if (cls_name.empty()) {
+        // Nested structs can be anonymous
+        if (anonymous_struct_relationships_.count(decl->getID()) > 0) {
+            const auto &[label, hint, access, destination_multiplicity] =
+                anonymous_struct_relationships_[decl->getID()];
+
+            c.set_name(parent_class.value().name() + "##" +
+                fmt::format("({})", label));
+
+            std::string destination_multiplicity_str{};
+            if (destination_multiplicity.has_value()) {
+                destination_multiplicity_str =
+                    std::to_string(*destination_multiplicity);
+            }
+
+            parent_class.value().add_relationship(
+                {hint, common::to_id(c.full_name(false)), access, label, "",
+                    destination_multiplicity_str});
+        }
+        else
+            c.set_name(parent_class.value().name() + "##" +
+                fmt::format("(anonymous_{})", std::to_string(decl->getID())));
+    }
+    else {
+        c.set_name(
+            parent_class.value().name() + "##" + decl->getNameAsString());
+    }
+
+    c.set_id(common::to_id(c.full_name(false)));
+
+    if (!(decl->getNameAsString().empty())) {
+        // Don't add anonymous structs as contained in the class
+        // as they are already added as aggregations
+        c.add_relationship({relationship_t::kContainment, parent_id});
+    }
+
+    c.nested(true);
+}
 } // namespace clanguml::class_diagram::visitor
