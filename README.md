@@ -17,7 +17,8 @@ types and contents of each generated diagram.
 The diagrams can be generated in [PlantUML](https://plantuml.com),
 [MermaidJS](https://mermaid.js.org/) and JSON formats.
 
-`clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
+`clang-uml` currently supports C++ up to version 17 with partial support for C++ 20,
+as well as C and Objective-C.
 
 Full documentation can be found at [clang-uml.github.io](https://clang-uml.github.io).
 
@@ -45,6 +46,7 @@ Main features supported so far include:
     * C++20 concept constraints - [_example_](docs/test_cases/t00059.md)
     * C++20 coroutines - [_example_](docs/test_cases/t00069.md)
     * Diagram content filtering based on C++20 modules - [_example_](docs/test_cases/t00070.md)
+    * Objective-C class diagrams - [_example_](docs/test_cases/t00084.md)
 * **Sequence diagram generation**
     * Generation of sequence diagram from specific method or function - [_example_](docs/test_cases/t20001.md)
     * Generation of loop and conditional statements - [_example_](docs/test_cases/t20021.md)
@@ -54,12 +56,14 @@ Main features supported so far include:
     * Handling of lambda expressions - [_example_](docs/test_cases/t20012.md)
     * Interactive links to online code to classes and call expressions - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t20021_sequence.svg)
     * Support for CUDA Kernel and CUDA Device function calls - [_example_](docs/test_cases/t20050.md)
+    * Objective-C sequence diagrams - [_example_](docs/test_cases/t20058.md)
 * **Package diagram generation**
     * Generation of package diagram based on C++ namespaces - [_example_](docs/test_cases/t30001.md)
     * Generation of package diagram based on subdirectories - [_example_](docs/test_cases/t30010.md)
     * Generation of package diagram based on C++20 modules - [_example_](docs/test_cases/t30014.md)
     * Dependencies between packages based on symbols used in the code - [_example_](docs/test_cases/t30002.md)
     * Interactive links to online code to packages - [_example_](https://raw.githubusercontent.com/bkryza/clang-uml/master/docs/test_cases/t30002_package.svg)
+    * Objective-C package diagrams based on subdirectories - [_example_](docs/test_cases/t30016.md)
 * **Include graph diagram generation**
     * Show include graph for selected files - [_example_](docs/test_cases/t40001.md)
 
@@ -88,6 +92,7 @@ Nowadays, this file can be generated rather easily using multiple methods:
 * For SCons, invoke `compilation_db` tool (requires SCons > 4.0.0)
 * For Bazel, try [bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor)
 * For Microsoft Visual Studio projects try [Clang Power Tools](https://www.clangpowertools.com)
+* For Objective-C based XCode projects see [xcpretty](https://github.com/xcpretty/xcpretty)
 
 ### Invocation
 

@@ -90,6 +90,7 @@
  * [t00083](./test_cases/t00083.md) - Test case for advanced diagram filter exclusion test with subclasses and namespaces
  * [t00084](./test_cases/t00084.md) - Objective-C overall use case
  * [t00085](./test_cases/t00085.md) - Objective-C test case for various class members and methods
+ * [t00086](./test_cases/t00086.md) - Objective-C nested structs and enums test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -148,6 +149,8 @@
  * [t20055](./test_cases/t20055.md) - Test case for advanced filter in sequence diagram
  * [t20056](./test_cases/t20056.md) - Test case for option to fold repeated activities in sequence diagram
  * [t20057](./test_cases/t20057.md) - Basic Objective-C sequence diagram test case
+ * [t20058](./test_cases/t20058.md) - Objective-C sequence diagram with method params test case
+ * [t20059](./test_cases/t20059.md) - Objective-C sequence diagram with polymorphism test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case

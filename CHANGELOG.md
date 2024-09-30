@@ -1,5 +1,9 @@
 # CHANGELOG
 
+ * Added support for Objective C (#296)
+ * Added option to fold repeated activities in sequence diagrams (#317)
+ * Fixed default arguments braces in mermaid diagrams (#312)
+
 ### 0.5.4
  * Updated thirdparty dependencies (#306)
  * Added regular expression support to remove_compile_flags (#303)
