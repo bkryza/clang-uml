@@ -112,6 +112,9 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CUSTOM_COMPILE_OPTIONS
             ${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-missing-template-arg-list-after-template-kw)
+    endif()
 endif()
 
 #

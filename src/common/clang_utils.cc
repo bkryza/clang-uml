@@ -157,6 +157,21 @@ std::string to_string(const clang::ArrayType &array_type,
         "{}{}", to_string(underlying_type, ctx, try_canonical), dimensions_str);
 }
 
+std::string to_string(
+    const clang::TemplateArgumentLoc &argLoc, const clang::ASTContext &context)
+{
+    std::string result;
+    llvm::raw_string_ostream stream(result);
+
+    clang::PrintingPolicy policy(context.getLangOpts());
+
+    const clang::TemplateArgument &arg = argLoc.getArgument();
+    arg.print(policy, stream, false);
+    stream.flush();
+
+    return result;
+}
+
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical)
 {

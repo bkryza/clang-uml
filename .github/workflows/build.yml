@@ -37,7 +37,7 @@ jobs:
       with:
         max-size: "2000M"
     - name: Install deps
-      run: sudo apt -y install git make grcov ninja-build pkg-config gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-format-18 lcov zlib1g-dev libunwind-dev libdw-dev gnustep-back-common libgnustep-base-dev gnustep-make
+      run: sudo apt -y install git make grcov ninja-build pkg-config gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-tools-18 clang-format-18 lcov zlib1g-dev libunwind-dev libdw-dev gnustep-back-common libgnustep-base-dev gnustep-make
     - name: Check code formatting
       run: |
         make check-formatting
