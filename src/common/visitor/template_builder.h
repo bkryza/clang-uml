@@ -215,7 +215,8 @@ public:
      * @return Return template argument model
      */
     template_parameter process_integral_argument(
-        const clang::TemplateArgument &arg);
+        const clang::TemplateArgument &arg,
+        const clang::ASTContext &ast_context);
 
 #if LLVM_VERSION_MAJOR > 17
     /**
@@ -229,7 +230,8 @@ public:
      * @return Return template argument model
      */
     template_parameter process_structural_argument(
-        const clang::TemplateArgument &arg);
+        const clang::TemplateArgument &arg,
+        const clang::ASTContext &ast_context);
 #endif
 
     /**
@@ -638,7 +640,13 @@ void template_builder<VisitorT>::build_from_template_declaration(
             std::optional<std::string> default_arg;
             if (template_type_parameter->hasDefaultArgument()) {
                 default_arg =
+#if LLVM_VERSION_MAJOR > 18
+                    common::to_string(
+                        template_type_parameter->getDefaultArgument(),
+                        template_declaration.getASTContext());
+#else
                     template_type_parameter->getDefaultArgument().getAsString();
+#endif
             }
 
             auto parameter_name = template_type_parameter->getNameAsString();
@@ -686,10 +694,17 @@ void template_builder<VisitorT>::build_from_template_declaration(
 
             std::optional<std::string> default_arg;
 
-            if (template_nontype_parameter->hasDefaultArgument())
-                default_arg = common::to_string(
-                    template_nontype_parameter->getDefaultArgument());
-
+            if (template_nontype_parameter->hasDefaultArgument()) {
+                default_arg =
+#if LLVM_VERSION_MAJOR > 18
+                    common::to_string(
+                        template_nontype_parameter->getDefaultArgument(),
+                        template_declaration.getASTContext());
+#else
+                    common::to_string(
+                        template_nontype_parameter->getDefaultArgument());
+#endif
+            }
             auto ct = template_parameter::make_non_type_template(
                 template_nontype_parameter->getType().getAsString(),
                 template_nontype_parameter->getNameAsString(), default_arg,
@@ -1046,7 +1061,8 @@ void template_builder<VisitorT>::argument_process_dispatch(
         argument.push_back(process_nullptr_argument(arg));
         break;
     case clang::TemplateArgument::Integral:
-        argument.push_back(process_integral_argument(arg));
+        argument.push_back(
+            process_integral_argument(arg, template_decl->getASTContext()));
         break;
     case clang::TemplateArgument::TemplateExpansion:
         argument.push_back(process_template_expansion(arg));
@@ -1226,13 +1242,19 @@ bool template_builder<VisitorT>::
 
 template <typename VisitorT>
 template_parameter template_builder<VisitorT>::process_integral_argument(
-    const clang::TemplateArgument &arg)
+    const clang::TemplateArgument &arg, const clang::ASTContext &ast_context)
 {
     assert(arg.getKind() == clang::TemplateArgument::Integral);
 
     std::string result;
     llvm::raw_string_ostream ostream(result);
+    clang::PrintingPolicy policy(ast_context.getLangOpts());
+
+#if LLVM_VERSION_MAJOR > 18
+    arg.print(policy, ostream, false);
+#else
     arg.dump(ostream);
+#endif
 
     return template_parameter::make_argument(result);
 }
@@ -1240,13 +1262,19 @@ template_parameter template_builder<VisitorT>::process_integral_argument(
 #if LLVM_VERSION_MAJOR > 17
 template <typename VisitorT>
 template_parameter template_builder<VisitorT>::process_structural_argument(
-    const clang::TemplateArgument &arg)
+    const clang::TemplateArgument &arg, const clang::ASTContext &ast_context)
 {
     assert(arg.getKind() == clang::TemplateArgument::StructuralValue);
 
     std::string result;
     llvm::raw_string_ostream ostream(result);
+    clang::PrintingPolicy policy(ast_context.getLangOpts());
+
+#if LLVM_VERSION_MAJOR > 18
+    arg.print(policy, ostream, false);
+#else
     arg.dump(ostream);
+#endif
 
     return template_parameter::make_argument(result);
 }

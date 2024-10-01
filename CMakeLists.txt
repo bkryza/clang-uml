@@ -112,6 +112,15 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CUSTOM_COMPILE_OPTIONS
             ${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-missing-template-arg-list-after-template-kw)
+    endif()
+    if(APPLE)
+        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+            # Use LLVM bundled unwind on Apple Silicon to fix segfaults on exception throw
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${HOMEBREW_PREFIX}/opt/llvm/lib/unwind -lunwind")
+        endif()
+    endif(APPLE)
 endif()
 
 #

@@ -58,12 +58,6 @@ bool operator==(const eid_t &lhs, const uint64_t &v) { return lhs.value_ == v; }
 
 bool operator!=(const eid_t &lhs, const uint64_t &v)
 {
-    // This is sadly necessary to catch accidental comparisons to empty
-    // std::optional<id_t>:
-    //
-    //     std::optional<id_t> id{};
-    //     if(id != 0) { /* id is nullopt, not 0 - so this executes... */ }
-    //
     assert(v != 0);
 
     return lhs.value_ != v;

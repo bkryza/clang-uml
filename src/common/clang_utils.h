@@ -102,6 +102,9 @@ model::namespace_ get_tag_namespace(const clang::TagDecl &declaration);
 model::namespace_ get_template_namespace(
     const clang::TemplateDecl &declaration);
 
+std::string to_string(
+    const clang::TemplateArgumentLoc &argLoc, const clang::ASTContext &context);
+
 std::string to_string(const clang::QualType &type, const clang::ASTContext &ctx,
     bool try_canonical = true);
 
