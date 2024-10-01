@@ -308,8 +308,7 @@ void generator::generate_member(
 
 void generator::generate(const concept_ &c, std::ostream &ostr) const
 {
-    ostr << indent(1) << "class"
-         << " " << c.alias();
+    ostr << indent(1) << "class" << " " << c.alias();
 
     ostr << " {" << '\n';
     ostr << indent(2) << "<<concept>>\n";

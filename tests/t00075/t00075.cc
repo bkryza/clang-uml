@@ -5,9 +5,9 @@ namespace ns2 {
 
 template <typename T>
 concept C = requires(T t) {
-                T{};
-                t.e();
-            };
+    T{};
+    t.e();
+};
 
 enum class E { k1, k2 };
 

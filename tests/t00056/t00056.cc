@@ -18,25 +18,20 @@ concept max_four_bytes = sizeof(T) <= 4;
 // Simple requirement
 template <typename T>
 concept iterable = requires(T container) {
-                       container.begin();
-                       container.end();
-                   };
+    container.begin();
+    container.end();
+};
 
 // Type requirement
 template <typename T>
 concept has_value_type = requires { typename T::value_type; };
 
 template <typename T>
-concept convertible_to_string =
-    max_four_bytes<T> && requires(T s) {
-                             std::string{s};
-                             {
-                                 std::to_string(s)
-                             } noexcept;
-                             {
-                                 std::to_string(s)
-                                 } -> std::same_as<std::string>;
-                         };
+concept convertible_to_string = max_four_bytes<T> && requires(T s) {
+    std::string{s};
+    { std::to_string(s) } noexcept;
+    { std::to_string(s) } -> std::same_as<std::string>;
+};
 
 // Compound requirement
 // ...
@@ -64,9 +59,9 @@ struct B {
 // Anonymous concept requirement (TODO)
 template <convertible_to_string T>
     requires requires(T t) {
-                 --t;
-                 t--;
-             }
+        --t;
+        t--;
+    }
 struct C {
     T c;
 };

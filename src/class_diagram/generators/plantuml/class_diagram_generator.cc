@@ -99,11 +99,9 @@ void generator::generate_alias(const enum_ &e, std::ostream &ostr) const
     print_debug(e, ostr);
 
     if (!config().generate_fully_qualified_name())
-        ostr << "enum"
-             << " \"" << e.name();
+        ostr << "enum" << " \"" << e.name();
     else
-        ostr << "enum"
-             << " \"" << render_name(e.full_name());
+        ostr << "enum" << " \"" << render_name(e.full_name());
 
     ostr << "\" as " << e.alias() << '\n';
 
@@ -116,11 +114,9 @@ void generator::generate_alias(const concept_ &c, std::ostream &ostr) const
     print_debug(c, ostr);
 
     if (!config().generate_fully_qualified_name())
-        ostr << "class"
-             << " \"" << c.full_name_no_ns();
+        ostr << "class" << " \"" << c.full_name_no_ns();
     else
-        ostr << "class"
-             << " \"" << render_name(c.full_name());
+        ostr << "class" << " \"" << render_name(c.full_name());
 
     ostr << "\" as " << c.alias() << '\n';
 
@@ -155,8 +151,7 @@ void generator::generate(const class_ &c, std::ostream &ostr) const
     ostr << class_type << " " << c.alias();
 
     if (c.is_union())
-        ostr << " "
-             << "<<union>>";
+        ostr << " " << "<<union>>";
 
     if (config().generate_links) {
         common_generator<diagram_config, diagram_model>::generate_link(ostr, c);

@@ -262,8 +262,7 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
                          "--------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
-                      << T::diagram_type_name << ": "
-                      << "\n\n";
+                      << T::diagram_type_name << ": " << "\n\n";
             std::cout << diagrams.get<T>().to_string() << "\n";
 
             throw e;

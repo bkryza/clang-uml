@@ -80,7 +80,9 @@ template <> struct A<char[1000]> {
     std::vector<char> n;
 };
 
-template <int K, int L, int M> struct A<char[K][L][M]> { char klm[K][L][M]; };
+template <int K, int L, int M> struct A<char[K][L][M]> {
+    char klm[K][L][M];
+};
 
 template <typename U> struct A<U(...)> {
     bool u;

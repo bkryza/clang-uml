@@ -445,8 +445,7 @@ void generator::generate_participant(
         common::ensure_lambda_type_is_relative(config(), participant_name);
 
         ostr << indent(1) << "participant " << class_participant.alias()
-             << " as "
-             << "<< ObjC Interface >><br>"
+             << " as " << "<< ObjC Interface >><br>"
              << render_participant_name(participant_name);
 
         ostr << '\n';
@@ -699,8 +698,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                     ostr << indent(1) << from_alias << " "
                          << common::generators::mermaid::to_mermaid(
                                 message_t::kReturn)
-                         << " *"
-                         << " : ";
+                         << " *" << " : ";
 
                     if (config().generate_return_types())
                         ostr << from.value().return_type();
