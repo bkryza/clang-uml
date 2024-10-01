@@ -196,6 +196,7 @@ option(BUILD_TESTS "" ON)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 option(ENABLE_CUDA_TEST_CASES "" OFF)
 option(ENABLE_OBJECTIVE_C_TEST_CASES "" OFF)
+option(FETCH_LIBOBJC2 "" OFF)
 
 #
 # Setup CUDA if available

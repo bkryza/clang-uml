@@ -15,6 +15,15 @@ set(TEST_CASES_REQUIRING_OBJC t00084 t00085 t00086 t20057 t20058 t30016 t40004)
 
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     message(STATUS "Enabling Objective-C test cases")
+    if(FETCH_LIBOBJC2)
+        include(CPM)
+        CPMAddPackage(
+            NAME libobjc2
+            GITHUB_REPOSITORY bkryza/libobjc2
+            GIT_TAG fix-cmake-variables
+        )
+        set(FETCHED_LIBOBJC2_NAME objc)
+    endif()
 else()
     message(STATUS "Disabling Objective-C test cases")
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
@@ -123,7 +132,7 @@ foreach(TEST_NAME ${TEST_NAMES})
                                                                "SHELL:-isystem ${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}/include")
             else(APPLE)
                 target_compile_options(test_cases_objc PRIVATE ${GNUSTEP_CFLAGS})
-                target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS})
+                target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS} ${FETCHED_LIBOBJC2_NAME})
             endif(APPLE)
             target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
         endif(ENABLE_OBJECTIVE_C_TEST_CASES)
