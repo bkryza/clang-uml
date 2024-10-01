@@ -61,7 +61,7 @@ with open(r'tests/test_cases.yaml') as f:
                 for root, dirs, files in os.walk(f'tests/{name}/'):
                     for source_file in files:
                         if source_file.endswith((
-                                ".h", ".cc", ".c", ".cppm", ".cu", ".cuh")):
+                                ".h", ".cc", ".c", ".cppm", ".cu", ".cuh", ".m")):
                             if source_file == "test_case.h":
                                 continue
                             file_path = os.path.join(root, source_file)
