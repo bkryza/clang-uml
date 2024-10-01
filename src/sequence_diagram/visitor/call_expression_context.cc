@@ -31,6 +31,8 @@ void call_expression_context::reset()
     current_method_decl_ = nullptr;
     current_function_decl_ = nullptr;
     current_function_template_decl_ = nullptr;
+    objc_interface_decl_ = nullptr;
+    objc_protocol_decl_ = nullptr;
 }
 
 void call_expression_context::dump()
@@ -45,6 +47,10 @@ void call_expression_context::dump()
     LOG_DBG("current_function_decl_ = {}", (void *)current_function_decl_);
     LOG_DBG("current_function_template_decl_ = {}",
         (void *)current_function_template_decl_);
+    LOG_DBG("objc_interface_decl_ = {}", (void *)objc_interface_decl_);
+    LOG_DBG(
+        "current_objc_method_decl_ = {}", (void *)current_objc_method_decl_);
+    LOG_DBG("objc_protocol_decl_ = {}", (void *)objc_protocol_decl_);
 }
 
 bool call_expression_context::valid() const
@@ -54,7 +60,10 @@ bool call_expression_context::valid() const
         (current_class_template_specialization_decl_ != nullptr) ||
         (current_method_decl_ != nullptr) ||
         (current_function_decl_ != nullptr) ||
-        (current_function_template_decl_ != nullptr);
+        (current_function_template_decl_ != nullptr) ||
+        (objc_interface_decl_ != nullptr) ||
+        (current_objc_method_decl_ != nullptr) ||
+        (objc_protocol_decl_ != nullptr);
 }
 
 clang::ASTContext *call_expression_context::get_ast_context() const
@@ -79,12 +88,34 @@ clang::ASTContext *call_expression_context::get_ast_context() const
         return &current_method_decl_->getASTContext();
     }
 
+    if (objc_interface_decl_ != nullptr) {
+        return &objc_interface_decl_->getASTContext();
+    }
+
+    if (objc_protocol_decl_ != nullptr) {
+        return &objc_protocol_decl_->getASTContext();
+    }
+
+    if (current_objc_method_decl_ != nullptr) {
+        return &current_objc_method_decl_->getASTContext();
+    }
+
     return nullptr;
 }
 
 void call_expression_context::update(clang::CXXRecordDecl *cls)
 {
     current_class_decl_ = cls;
+}
+
+void call_expression_context::update(clang::ObjCInterfaceDecl *cls)
+{
+    objc_interface_decl_ = cls;
+}
+
+void call_expression_context::update(clang::ObjCProtocolDecl *cls)
+{
+    objc_protocol_decl_ = cls;
 }
 
 void call_expression_context::update(
@@ -101,6 +132,11 @@ void call_expression_context::update(clang::ClassTemplateDecl *clst)
 void call_expression_context::update(clang::CXXMethodDecl *method)
 {
     current_method_decl_ = method;
+}
+
+void call_expression_context::update(clang::ObjCMethodDecl *method)
+{
+    current_objc_method_decl_ = method;
 }
 
 void call_expression_context::update(clang::FunctionDecl *function)
@@ -245,6 +281,11 @@ void call_expression_context::enter_callexpr(clang::CallExpr *expr)
 }
 
 void call_expression_context::enter_callexpr(clang::CXXConstructExpr *expr)
+{
+    call_expr_stack_.emplace(expr);
+}
+
+void call_expression_context::enter_callexpr(clang::ObjCMessageExpr *expr)
 {
     call_expr_stack_.emplace(expr);
 }

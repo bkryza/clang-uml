@@ -95,6 +95,9 @@ public:
         if (is_lambda())
             return "lambda";
 
+        if (is_objc_interface())
+            return "objc_interface";
+
         return "class";
     }
 
@@ -191,6 +194,14 @@ public:
      */
     void is_lambda(bool is_lambda);
 
+    bool is_objc_interface() const;
+
+    void is_objc_interface(bool is_objc_interface);
+
+    bool is_objc_protocol() const;
+
+    void is_objc_protocol(bool is_objc_protocol);
+
     void set_lambda_operator_id(eid_t id) { lambda_operator_id_ = id; }
 
     eid_t lambda_operator_id() const { return lambda_operator_id_; }
@@ -201,6 +212,8 @@ private:
     bool is_template_instantiation_{false};
     bool is_alias_{false};
     bool is_lambda_{false};
+    bool is_objc_interface_{false};
+    bool is_objc_protocol_{false};
     eid_t lambda_operator_id_{};
 
     std::string full_name_;
@@ -509,6 +522,95 @@ private:
     bool is_constructor_{false};
     bool is_defaulted_{false};
     bool is_assignment_{false};
+};
+
+struct objc_method : public function {
+    objc_method(const common::model::namespace_ &using_namespace);
+
+    objc_method(const objc_method &) = delete;
+    objc_method(objc_method &&) noexcept = delete;
+    objc_method &operator=(const objc_method &) = delete;
+    objc_method &operator=(objc_method &&) = delete;
+
+    /**
+     * Get the type name of the diagram element.
+     *
+     * @return Type name of the diagram element.
+     */
+    std::string type_name() const override { return "objc_method"; }
+
+    /**
+     * @brief Get method name
+     * @return Method name
+     */
+    std::string method_name() const;
+
+    /**
+     * @brief Set method name
+     *
+     * @param name Method name
+     */
+    void set_method_name(const std::string &name);
+
+    /**
+     * @brief Get the participant PlantUML alias
+     *
+     * @todo This method does not belong here - refactor to PlantUML specific
+     *       code.
+     *
+     * @return PlantUML alias for the participant to which this method belongs
+     *         to.
+     */
+    std::string alias() const override;
+
+    /**
+     * @brief Set the id of the participant to which this method belongs to.
+     *
+     * @param id Id of the class to which this method belongs to
+     */
+    void set_class_id(eid_t id);
+
+    /**
+     * @brief Set full qualified name of the class
+     *
+     * @param name Name of the class including namespace
+     */
+    void set_class_full_name(const std::string &name);
+
+    /**
+     * @brief Get the class full name.
+     *
+     * @return Class full name
+     */
+    const auto &class_full_name() const;
+
+    /**
+     * Return elements full name.
+     *
+     * @return Fully qualified elements name.
+     */
+    std::string full_name(bool relative) const override;
+
+    std::string message_name(message_render_mode mode) const override;
+
+    /**
+     * @brief Get the class id
+     *
+     * @return Class id
+     */
+    eid_t class_id() const;
+
+    /**
+     * @brief Create a string representation of the participant
+     *
+     * @return Participant representation as string
+     */
+    std::string to_string() const override;
+
+private:
+    eid_t class_id_{};
+    std::string method_name_;
+    std::string class_full_name_;
 };
 
 /**

@@ -26,7 +26,7 @@ on:
 
 jobs:
   build-ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -34,28 +34,24 @@ jobs:
       run: sudo apt -y update
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        max-size: "2000M"
     - name: Install deps
-      run: sudo apt -y install git make pkg-config gcc-11 g++-11 ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15 lcov zlib1g-dev libunwind-dev libdw-dev
-    - name: Select g++ version
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 11
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 11
+      run: sudo apt -y install git make grcov ninja-build pkg-config gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-format-18 lcov zlib1g-dev libunwind-dev libdw-dev gnustep-back-common libgnustep-base-dev gnustep-make
     - name: Check code formatting
       run: |
         make check-formatting
     - name: Build and unit test
       run: |
-        NUMPROC=2 CODE_COVERAGE=ON LLVM_VERSION=15 make test
+        CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 LLVM_VERSION=18 NUMPROC=2 CMAKE_GENERATOR=Ninja CODE_COVERAGE=ON LLVM_VERSION=18 ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=OFF ENABLE_OBJECTIVE_C_TEST_CASES=ON FETCH_LIBOBJC2=ON CLANG_UML_ENABLE_BACKTRACE=ON make test
     - name: Run coverage
       run: |
-        lcov -c -d debug -o coverage.info
-        lcov -r coverage.info -o coverage-src.info "$PWD/src/main.cc" "$PWD/src/common/generators/generators.cc"
-        lcov -e coverage-src.info -o coverage-src.info "$PWD/src/*"
-        lcov -l coverage-src.info
+        grcov --llvm --binary-path debug --output-path coverage.info -t lcov --keep-only 'src/*' --source-dir . --ignore src/main.cc --ignore src/common/generators/generators.cc  .
+        lcov --ignore-errors inconsistent -l coverage.info
     - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
-        files: coverage-src.info
+        files: coverage.info
         disable_search: true
         name: clang-uml
         token: ${{ secrets.CODECOV_TOKEN }}

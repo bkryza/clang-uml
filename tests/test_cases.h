@@ -90,6 +90,8 @@ struct Exitpoint { };
 struct CUDAKernel { };
 struct CUDADevice { };
 
+struct ObjCOptional { };
+
 struct InControlCondition { };
 struct Response { };
 struct NamespacePackage { };
@@ -176,6 +178,8 @@ struct plantuml_t : public diagram_source_t<std::string> {
             std::regex{"folder\\s\"" + name + "\"\\sas\\s" + alias_regex});
         patterns.push_back(
             std::regex{"participant\\s\"" + name + "\"\\sas\\s" + alias_regex});
+        patterns.push_back(
+            std::regex{"protocol\\s\"" + name + "\"\\sas\\s" + alias_regex});
 
         std::smatch base_match;
 
@@ -256,6 +260,8 @@ struct mermaid_t : public diagram_source_t<std::string> {
             "\\sas\\s<< CUDA Kernel >><br>" + name + "\\n"});
         patterns.push_back(std::regex{"participant\\s" + alias_regex +
             "\\sas\\s<< CUDA Device >><br>" + name + "\\n"});
+        patterns.push_back(std::regex{"participant\\s" + alias_regex +
+            "\\sas\\s<< ObjC Interface >><br>" + name + "\\n"});
 
         std::smatch base_match;
 
@@ -316,6 +322,27 @@ std::optional<nlohmann::json> get_element(
 
     for (const nlohmann::json &e : j["elements"]) {
         if (e["display_name"] == name)
+            return {e};
+
+        if (e["type"] == "namespace" || e["type"] == "folder" ||
+            e["type"] == "directory" || e["type"] == "module") {
+            auto maybe_e = get_element(e, name);
+            if (maybe_e)
+                return maybe_e;
+        }
+    }
+
+    return {};
+}
+
+std::optional<nlohmann::json> get_element(
+    const nlohmann::json &j, const std::string &name, const std::string &type)
+{
+    if (!j.contains("elements"))
+        return {};
+
+    for (const nlohmann::json &e : j["elements"]) {
+        if ((e["display_name"] == name) && (e["type"] == type))
             return {e};
 
         if (e["type"] == "namespace" || e["type"] == "folder" ||
@@ -695,6 +722,15 @@ template <typename DiagramType>
 bool IsDeprecated(const DiagramType &d, std::string const &str);
 
 template <typename DiagramType>
+bool IsObjCInterface(const DiagramType &d, QualifiedName name);
+
+template <typename DiagramType>
+bool IsObjCProtocol(const DiagramType &d, QualifiedName name);
+
+template <typename DiagramType>
+bool IsObjCCategory(const DiagramType &d, QualifiedName name);
+
+template <typename DiagramType>
 int64_t FindMessage(const DiagramType &d, const Message &msg,
     int64_t offset = 0, bool fail = true);
 
@@ -801,6 +837,24 @@ template <> bool IsUnion(const plantuml_t &d, QualifiedName cls)
 }
 
 template <> bool IsClass(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(
+        fmt::format("class {}", d.get_alias(cls.str(d.generate_packages))));
+}
+
+template <> bool IsObjCInterface(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(
+        fmt::format("class {}", d.get_alias(cls.str(d.generate_packages))));
+}
+
+template <> bool IsObjCProtocol(const plantuml_t &d, QualifiedName cls)
+{
+    return d.contains(
+        fmt::format("protocol {}", d.get_alias(cls.str(d.generate_packages))));
+}
+
+template <> bool IsObjCCategory(const plantuml_t &d, QualifiedName cls)
 {
     return d.contains(
         fmt::format("class {}", d.get_alias(cls.str(d.generate_packages))));
@@ -1308,6 +1362,21 @@ template <> bool IsUnion(const mermaid_t &d, QualifiedName cls)
 }
 
 template <> bool IsClass(const mermaid_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsObjCInterface(const mermaid_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsObjCProtocol(const mermaid_t &d, QualifiedName cls)
+{
+    return d.contains(fmt::format("class {}", d.get_alias(cls)));
+}
+
+template <> bool IsObjCCategory(const mermaid_t &d, QualifiedName cls)
 {
     return d.contains(fmt::format("class {}", d.get_alias(cls)));
 }
@@ -1871,9 +1940,30 @@ template <> bool IsUnion(const json_t &d, QualifiedName enm)
 
 template <> bool IsClass(const json_t &d, QualifiedName cls)
 {
-    auto e =
-        get_element(d.src, expand_name(d.src, cls.str(d.generate_packages)));
+    auto e = get_element(
+        d.src, expand_name(d.src, cls.str(d.generate_packages)), "class");
     return e && e->at("type") == "class" && !e->at("is_abstract");
+}
+
+template <> bool IsObjCInterface(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src,
+        expand_name(d.src, cls.str(d.generate_packages)), "objc_interface");
+    return e && e->at("type") == "objc_interface";
+}
+
+template <> bool IsObjCProtocol(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src,
+        expand_name(d.src, cls.str(d.generate_packages)), "objc_protocol");
+    return e && e->at("type") == "objc_protocol";
+}
+
+template <> bool IsObjCCategory(const json_t &d, QualifiedName cls)
+{
+    auto e = get_element(d.src,
+        expand_name(d.src, cls.str(d.generate_packages)), "objc_category");
+    return e && e->at("type") == "objc_category";
 }
 
 template <> bool IsClassTemplate(const json_t &d, QualifiedName cls)

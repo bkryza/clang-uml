@@ -89,6 +89,8 @@ public:
         return get_current_groups().at(group_name);
     }
 
+    bool is_flat() const { return is_flat_; }
+
 private:
     bool is_flat_;
 

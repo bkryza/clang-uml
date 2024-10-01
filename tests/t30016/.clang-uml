@@ -1,0 +1,9 @@
+diagrams:
+  t30016_package:
+    type: package
+    package_type: directory
+    glob:
+      - App/t30016.m
+    include:
+      paths:
+        - .

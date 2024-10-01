@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "class_element.h"
+#include "class_member_base.h"
 
 #include <string>
 
@@ -26,51 +26,9 @@ namespace clanguml::class_diagram::model {
 /**
  * @brief Class member model.
  */
-class class_member : public class_element {
+class class_member : public class_member_base {
 public:
-    /**
-     * @brief Constructor.
-     *
-     * @param access Members access scope (e.g. public)
-     * @param name Members name.
-     * @param type Members type as string.
-     */
-    class_member(common::model::access_t access, const std::string &name,
-        const std::string &type);
-
-    ~class_member() override = default;
-
-    /**
-     * @brief Whether the member is static.
-     *
-     * @return True, if the member is static.
-     */
-    bool is_static() const;
-
-    /**
-     * @brief Set members static status.
-     *
-     * @param is_static True, if the member is static.
-     */
-    void is_static(bool is_static);
-
-    /**
-     * @brief Set members destination multiplicity.
-     *
-     * @param m Optional multiplicity value
-     */
-    void set_destination_multiplicity(std::optional<size_t> m);
-
-    /**
-     * @brief Get members destination multiplicity.
-     *
-     * @return Optional multiplicity value
-     */
-    std::optional<size_t> destination_multiplicity() const;
-
-private:
-    bool is_static_{false};
-    std::optional<size_t> destination_multiplicity_{};
+    using class_member_base::class_member_base;
 };
 
 } // namespace clanguml::class_diagram::model

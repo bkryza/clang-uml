@@ -43,6 +43,27 @@ model::access_t access_specifier_to_access_t(
     return access;
 }
 
+model::access_t access_specifier_to_access_t(
+    clang::ObjCIvarDecl::AccessControl access_specifier)
+{
+    auto access = model::access_t::kPublic;
+    switch (access_specifier) {
+    case clang::ObjCIvarDecl::AccessControl::Public:
+        access = model::access_t::kPublic;
+        break;
+    case clang::ObjCIvarDecl::AccessControl::Private:
+        access = model::access_t::kPrivate;
+        break;
+    case clang::ObjCIvarDecl::AccessControl::Protected:
+        access = model::access_t::kProtected;
+        break;
+    default:
+        break;
+    }
+
+    return access;
+}
+
 model::namespace_ get_tag_namespace(const clang::TagDecl &declaration)
 {
     model::namespace_ ns;
@@ -434,6 +455,21 @@ template <> eid_t to_id(const clang::NamespaceDecl &declaration)
 template <> eid_t to_id(const clang::RecordDecl &declaration)
 {
     return to_id(get_qualified_name(declaration));
+}
+
+template <> eid_t to_id(const clang::ObjCCategoryDecl &type)
+{
+    return to_id(fmt::format("__objc__category__{}", type.getNameAsString()));
+}
+
+template <> eid_t to_id(const clang::ObjCInterfaceDecl &type)
+{
+    return to_id(fmt::format("__objc__interface__{}", type.getNameAsString()));
+}
+
+template <> eid_t to_id(const clang::ObjCProtocolDecl &type)
+{
+    return to_id(fmt::format("__objc__protocol__{}", type.getNameAsString()));
 }
 
 template <> eid_t to_id(const clang::EnumDecl &declaration)

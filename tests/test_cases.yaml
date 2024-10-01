@@ -246,6 +246,15 @@ test_cases:
     - name: t00083
       title: Test case for advanced diagram filter exclusion test with subclasses and namespaces
       description:
+    - name: t00084
+      title: Objective-C overall use case
+      description:
+    - name: t00085
+      title: Objective-C test case for various class members and methods
+      description:
+    - name: t00086
+      title: Objective-C nested structs and enums test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case
@@ -415,6 +424,15 @@ test_cases:
     - name: t20056
       title: Test case for option to fold repeated activities in sequence diagram
       description:
+    - name: t20057
+      title: Basic Objective-C sequence diagram test case
+      description:
+    - name: t20058
+      title: Objective-C sequence diagram with method params test case
+      description:
+    - name: t20059
+      title: Objective-C sequence diagram with polymorphism test case
+      description:
   Package diagrams:
     - name: t30001
       title: Basic package diagram test case
@@ -461,6 +479,9 @@ test_cases:
     - name: t30015
       title: C++20 modules package diagram test with partition dependencies
       description:
+    - name: t30016
+      title: Objective-C directory package diagram test
+      description:
   Include diagrams:
     - name: t40001
       title: Basic include graph diagram test case
@@ -470,6 +491,9 @@ test_cases:
       description:
     - name: t40003
       title: Dependants and dependencies include diagram filter test
+      description:
+    - name: t40004
+      title: Objective C include diagram test
       description:
   Configuration diagrams:
     - name: t90000

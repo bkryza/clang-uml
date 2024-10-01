@@ -22,7 +22,7 @@ namespace clanguml::class_diagram::model {
 
 class_method::class_method(common::model::access_t access,
     const std::string &name, const std::string &type)
-    : class_element{access, name, type}
+    : class_method_base{access, name, type}
 {
 }
 
@@ -37,13 +37,6 @@ void class_method::update(const common::model::namespace_ &un)
         set_display_name(
             fmt::format("{}{}", name(), template_params_str.str()));
     }
-}
-
-std::string class_method::display_name() const { return display_name_; }
-
-void class_method::set_display_name(const std::string &display_name)
-{
-    display_name_ = display_name;
 }
 
 bool class_method::is_pure_virtual() const { return is_pure_virtual_; }
@@ -71,10 +64,6 @@ void class_method::is_defaulted(bool is_defaulted)
 bool class_method::is_deleted() const { return is_deleted_; }
 
 void class_method::is_deleted(bool is_deleted) { is_deleted_ = is_deleted; }
-
-bool class_method::is_static() const { return is_static_; }
-
-void class_method::is_static(bool is_static) { is_static_ = is_static; }
 
 bool class_method::is_constexpr() const { return is_constexpr_; }
 
@@ -132,15 +121,5 @@ void class_method::is_copy_assignment(bool is_copy_assignment)
 bool class_method::is_operator() const { return is_operator_; }
 
 void class_method::is_operator(bool is_operator) { is_operator_ = is_operator; }
-
-const std::vector<method_parameter> &class_method::parameters() const
-{
-    return parameters_;
-}
-
-void class_method::add_parameter(method_parameter &&parameter)
-{
-    parameters_.emplace_back(std::move(parameter));
-}
 
 } // namespace clanguml::class_diagram::model

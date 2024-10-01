@@ -66,8 +66,9 @@ message(STATUS "clang-uml version: "
 #
 option(CODE_COVERAGE "" OFF)
 if(CODE_COVERAGE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fno-inline")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcov --coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g --coverage -fno-inline")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g --coverage -fno-inline")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcov")
 endif(CODE_COVERAGE)
 
 #
@@ -195,6 +196,8 @@ add_subdirectory(src)
 option(BUILD_TESTS "" ON)
 option(ENABLE_CXX_MODULES_TEST_CASES "" OFF)
 option(ENABLE_CUDA_TEST_CASES "" OFF)
+option(ENABLE_OBJECTIVE_C_TEST_CASES "" OFF)
+option(FETCH_LIBOBJC2 "" OFF)
 
 #
 # Setup CUDA if available
@@ -206,6 +209,13 @@ if(ENABLE_CUDA_TEST_CASES)
     set(CMAKE_CUDA_ARCHITECTURES 75)
     enable_language(CUDA)
 endif(ENABLE_CUDA_TEST_CASES)
+
+if(ENABLE_OBJECTIVE_C_TEST_CASES)
+    enable_language(OBJC)
+    if(UNIX AND NOT APPLE)
+      find_package(GNUstep REQUIRED)
+    endif()
+endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 
 if(BUILD_TESTS)
     enable_testing()

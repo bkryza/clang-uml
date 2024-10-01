@@ -67,6 +67,12 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         message =
             fmt::format("{}{}{}", style, f.message_name(render_mode), style);
     }
+    else if (to.value().type_name() == "objc_method") {
+        const auto &f = dynamic_cast<const model::objc_method &>(to.value());
+        const std::string_view style = f.is_static() ? "__" : "";
+        message =
+            fmt::format("{}{}{}", style, f.message_name(render_mode), style);
+    }
     else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
             const auto &f = dynamic_cast<const model::function &>(to.value());
@@ -429,6 +435,40 @@ void generator::generate_participant(
 
         generated_participants_.emplace(class_id);
     }
+    else if (participant.type_name() == "objc_method") {
+        const auto class_id =
+            model()
+                .get_participant<model::objc_method>(participant_id)
+                .value()
+                .class_id();
+
+        if (is_participant_generated(class_id))
+            return;
+
+        const auto &class_participant =
+            model().get_participant<model::participant>(class_id).value();
+
+        print_debug(class_participant, ostr);
+
+        auto participant_name =
+            config().simplify_template_type(class_participant.full_name(false));
+        participant_name =
+            config().using_namespace().relative(participant_name);
+
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
+        ostr << "participant \"" << render_name(participant_name) << "\" as "
+             << class_participant.alias() << " <<ObjC Interface>>";
+
+        if (config().generate_links) {
+            common_generator<diagram_config, diagram_model>::generate_link(
+                ostr, class_participant);
+        }
+
+        ostr << '\n';
+
+        generated_participants_.emplace(class_id);
+    }
     else if ((participant.type_name() == "function" ||
                  participant.type_name() == "function_template") &&
         config().combine_free_functions_into_file_participants()) {
@@ -554,10 +594,10 @@ void generator::generate_diagram(std::ostream &ostr) const
                 model().get_participant<model::function>(*from_activity_id);
 
             if (from.value().type_name() == "method" ||
+                from.value().type_name() == "objc_method" ||
                 config().combine_free_functions_into_file_participants()) {
                 generate_participant(ostr, *from_activity_id);
-                ostr << "[->"
-                     << " " << generate_alias(from.value()) << " : "
+                ostr << "[->" << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
                      << '\n';
@@ -594,10 +634,10 @@ void generator::generate_diagram(std::ostream &ostr) const
                 model().get_participant<model::function>(from_activity_id);
 
             if (from.value().type_name() == "method" ||
+                from.value().type_name() == "objc_method" ||
                 config().combine_free_functions_into_file_participants()) {
                 generate_participant(ostr, from_activity_id);
-                ostr << "[->"
-                     << " " << generate_alias(from.value()) << " : "
+                ostr << "[->" << " " << generate_alias(from.value()) << " : "
                      << from.value().message_name(
                             select_method_arguments_render_mode())
                      << '\n';
@@ -660,9 +700,9 @@ void generator::generate_diagram(std::ostream &ostr) const
             // 'entry' point call to know which method relates to the
             // first activity for this 'start_from' condition
             if (from.value().type_name() == "method" ||
+                from.value().type_name() == "objc_method" ||
                 config().combine_free_functions_into_file_participants()) {
-                ostr << "[->"
-                     << " " << from_alias << " : "
+                ostr << "[->" << " " << from_alias << " : "
                      << from.value().message_name(render_mode) << '\n';
             }
 
@@ -671,11 +711,11 @@ void generator::generate_diagram(std::ostream &ostr) const
             generate_activity(start_from, ostr, visited_participants);
 
             if (from.value().type_name() == "method" ||
+                from.value().type_name() == "objc_method" ||
                 config().combine_free_functions_into_file_participants()) {
 
                 if (!from.value().is_void()) {
-                    ostr << "[<--"
-                         << " " << from_alias;
+                    ostr << "[<--" << " " << from_alias;
 
                     if (config().generate_return_types())
                         ostr << " : //" << from.value().return_type() << "//";

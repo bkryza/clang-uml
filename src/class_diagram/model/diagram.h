@@ -26,6 +26,7 @@
 #include "concept.h"
 #include "config/config.h"
 #include "enum.h"
+#include "objc_interface.h"
 
 #include <regex>
 #include <string>
@@ -39,6 +40,7 @@ using common::model::diagram_element;
 using common::model::diagram_t;
 using common::model::eid_t;
 using common::model::element_view;
+using common::model::element_views;
 using common::model::path;
 using common::model::path_type;
 
@@ -50,9 +52,7 @@ using nested_trait_ns =
  * @brief Class representing a class diagram.
  */
 class diagram : public common::model::diagram,
-                public element_view<class_>,
-                public element_view<enum_>,
-                public element_view<concept_>,
+                public element_views<class_, enum_, concept_, objc_interface>,
                 public nested_trait_ns {
 public:
     diagram() = default;
@@ -81,6 +81,7 @@ public:
      * @return True, if class member should be included in the diagram.
      */
     bool should_include(const class_member &m) const;
+    bool should_include(const objc_member &m) const;
 
     /**
      * @brief Whether a class_method should be included in the diagram.
@@ -89,6 +90,7 @@ public:
      * @return True, if class method should be included in the diagram.
      */
     bool should_include(const class_method &m) const;
+    bool should_include(const objc_method &m) const;
 
     /**
      * @brief Search for element in the diagram by fully qualified name.
@@ -126,6 +128,8 @@ public:
      * @return List of references to concepts in the diagram model.
      */
     const common::reference_vector<concept_> &concepts() const;
+
+    const common::reference_vector<objc_interface> &objc_interfaces() const;
 
     /**
      * @brief Check, if diagram contains a specific element.

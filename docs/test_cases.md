@@ -88,6 +88,9 @@
  * [t00081](./test_cases/t00081.md) - Test case for class members relationships to std types
  * [t00082](./test_cases/t00082.md) - Test case for advanced diagram filter inclusion test with subclasses and namespaces
  * [t00083](./test_cases/t00083.md) - Test case for advanced diagram filter exclusion test with subclasses and namespaces
+ * [t00084](./test_cases/t00084.md) - Objective-C overall use case
+ * [t00085](./test_cases/t00085.md) - Objective-C test case for various class members and methods
+ * [t00086](./test_cases/t00086.md) - Objective-C nested structs and enums test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
@@ -145,6 +148,9 @@
  * [t20054](./test_cases/t20054.md) - Test case for sequence diagram with nested classes
  * [t20055](./test_cases/t20055.md) - Test case for advanced filter in sequence diagram
  * [t20056](./test_cases/t20056.md) - Test case for option to fold repeated activities in sequence diagram
+ * [t20057](./test_cases/t20057.md) - Basic Objective-C sequence diagram test case
+ * [t20058](./test_cases/t20058.md) - Objective-C sequence diagram with method params test case
+ * [t20059](./test_cases/t20059.md) - Objective-C sequence diagram with polymorphism test case
 ## Package diagrams
  * [t30001](./test_cases/t30001.md) - Basic package diagram test case
  * [t30002](./test_cases/t30002.md) - Package dependency test case
@@ -161,9 +167,11 @@
  * [t30013](./test_cases/t30013.md) - C++20 modules package dependencies diagram test
  * [t30014](./test_cases/t30014.md) - C++20 modules package diagram test with partitions
  * [t30015](./test_cases/t30015.md) - C++20 modules package diagram test with partition dependencies
+ * [t30016](./test_cases/t30016.md) - Objective-C directory package diagram test
 ## Include diagrams
  * [t40001](./test_cases/t40001.md) - Basic include graph diagram test case
  * [t40002](./test_cases/t40002.md) - Cyclic include graph diagram test case
  * [t40003](./test_cases/t40003.md) - Dependants and dependencies include diagram filter test
+ * [t40004](./test_cases/t40004.md) - Objective C include diagram test
 ## Configuration diagrams
  * [t90000](./test_cases/t90000.md) - Basic config test

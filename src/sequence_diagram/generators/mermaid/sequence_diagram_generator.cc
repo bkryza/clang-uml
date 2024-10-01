@@ -117,6 +117,10 @@ void generator::generate_call(const message &m, std::ostream &ostr) const
         const auto &f = dynamic_cast<const model::method &>(to.value());
         message = f.message_name(render_mode);
     }
+    else if (to.value().type_name() == "objc_method") {
+        const auto &f = dynamic_cast<const model::objc_method &>(to.value());
+        message = f.message_name(render_mode);
+    }
     else if (config().combine_free_functions_into_file_participants()) {
         if (to.value().type_name() == "function") {
             const auto &f = dynamic_cast<const model::function &>(to.value());
@@ -420,6 +424,34 @@ void generator::generate_participant(
 
         generated_participants_.emplace(class_id);
     }
+    else if (participant.type_name() == "objc_method") {
+        const auto class_id =
+            model()
+                .get_participant<model::objc_method>(participant_id)
+                .value()
+                .class_id();
+
+        if (is_participant_generated(class_id))
+            return;
+
+        const auto &class_participant =
+            model().get_participant<model::participant>(class_id).value();
+
+        print_debug(class_participant, ostr);
+
+        auto participant_name =
+            config().using_namespace().relative(config().simplify_template_type(
+                class_participant.full_name(false)));
+        common::ensure_lambda_type_is_relative(config(), participant_name);
+
+        ostr << indent(1) << "participant " << class_participant.alias()
+             << " as " << "<< ObjC Interface >><br>"
+             << render_participant_name(participant_name);
+
+        ostr << '\n';
+
+        generated_participants_.emplace(class_id);
+    }
     else if ((participant.type_name() == "function" ||
                  participant.type_name() == "function_template") &&
         config().combine_free_functions_into_file_participants()) {
@@ -666,8 +698,7 @@ void generator::generate_diagram(std::ostream &ostr) const
                     ostr << indent(1) << from_alias << " "
                          << common::generators::mermaid::to_mermaid(
                                 message_t::kReturn)
-                         << " *"
-                         << " : ";
+                         << " *" << " : ";
 
                     if (config().generate_return_types())
                         ostr << from.value().return_type();

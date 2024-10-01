@@ -262,8 +262,7 @@ void try_run_test_case(const diagram_source_storage &diagrams, TC &&tc)
                          "--------"
                          "--------------------------\n";
             std::cout << "Test case failed for diagram type "
-                      << T::diagram_type_name << ": "
-                      << "\n\n";
+                      << T::diagram_type_name << ": " << "\n\n";
             std::cout << diagrams.get<T>().to_string() << "\n";
 
             throw e;
@@ -568,6 +567,12 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00082/test_case.h"
 #include "t00083/test_case.h"
 
+#if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
+#include "t00084/test_case.h"
+#include "t00085/test_case.h"
+#include "t00086/test_case.h"
+#endif
+
 ///
 /// Sequence diagram tests
 ///
@@ -636,6 +641,12 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t20055/test_case.h"
 #include "t20056/test_case.h"
 
+#if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
+#include "t20057/test_case.h"
+#include "t20058/test_case.h"
+#include "t20059/test_case.h"
+#endif
+
 ///
 /// Package diagram tests
 ///
@@ -656,13 +667,20 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t30014/test_case.h"
 #include "t30015/test_case.h"
 #endif
+
+#if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
+#include "t30016/test_case.h"
+#endif
+
 ///
 /// Include diagram tests
 ///
-
 #include "t40001/test_case.h"
 #include "t40002/test_case.h"
 #include "t40003/test_case.h"
+#if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
+#include "t40004/test_case.h"
+#endif
 
 ///
 /// Other tests (e.g. configuration file)

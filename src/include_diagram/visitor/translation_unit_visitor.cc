@@ -220,8 +220,9 @@ translation_unit_visitor::include_visitor::process_source_file(
 
         const std::string implementation_suffix_prefix{".c"};
         if (file_path.has_extension() &&
-            util::starts_with(
-                file_path.extension().string(), implementation_suffix_prefix)) {
+            (util::starts_with(file_path.extension().string(),
+                 implementation_suffix_prefix) ||
+                file_path.extension() == ".m")) {
             source_file.set_type(source_file_t::kImplementation);
         }
         else

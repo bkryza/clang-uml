@@ -111,6 +111,12 @@ public:
         const diagram &d, const class_diagram::model::class_member &m) const;
 
     virtual tvl::value_t match(
+        const diagram &d, const class_diagram::model::objc_method &m) const;
+
+    virtual tvl::value_t match(
+        const diagram &d, const class_diagram::model::objc_member &m) const;
+
+    virtual tvl::value_t match(
         const diagram &d, const sequence_diagram::model::participant &p) const;
 
     bool is_inclusive() const;

@@ -91,4 +91,37 @@ private:
     reference_vector<T> elements_;
 };
 
+template <typename... Ts> struct element_views : public element_view<Ts>... {
+    template <typename F> void for_all_elements(F &&f)
+    {
+        (f(element_view<Ts>::view()), ...);
+    }
+
+    template <typename F> void for_all_elements(F &&f) const
+    {
+        (f(element_view<Ts>::view()), ...);
+    }
+
+    /**
+     * @brief Calls `f` function on `e` if it can be dynamically casted to
+     *        any type in the element_views
+     * @tparam T Element type
+     * @tparam F Function to call on e
+     * @param e Pointer to element
+     * @param f Function to call with `e` dynamically casted to one of types
+     */
+    template <typename T, typename F> void dynamic_apply(T *e, F &&f) const
+    {
+        if (e == nullptr)
+            return;
+
+        (
+            [&] {
+                if (auto *ptr = dynamic_cast<Ts *>(e); ptr) {
+                    f(ptr);
+                }
+            }(),
+            ...);
+    }
+};
 } // namespace clanguml::common::model

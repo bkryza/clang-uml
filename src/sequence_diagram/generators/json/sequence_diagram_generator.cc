@@ -39,6 +39,9 @@ void to_json(nlohmann::json &j, const participant &c)
     if (c.type_name() == "method") {
         j["name"] = dynamic_cast<const method &>(c).method_name();
     }
+    else if (c.type_name() == "objc_method") {
+        j["name"] = dynamic_cast<const objc_method &>(c).method_name();
+    }
 
     j["full_name"] = generators::json::render_name(c.full_name(false));
 
@@ -95,7 +98,11 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         model::function::message_render_mode::full;
 
     if (to.value().type_name() == "method") {
-        message = dynamic_cast<const model::function &>(to.value())
+        message = dynamic_cast<const model::method &>(to.value())
+                      .message_name(render_mode);
+    }
+    else if (to.value().type_name() == "objc_method") {
+        message = dynamic_cast<const model::objc_method &>(to.value())
                       .message_name(render_mode);
     }
     else if (config().combine_free_functions_into_file_participants()) {
@@ -127,6 +134,15 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
         msg["from"]["participant_id"] =
             std::to_string(class_participant.class_id().value());
     }
+    else if (from.value().type_name() == "objc_method") {
+        const auto &class_participant =
+            model()
+                .get_participant<model::objc_method>(from.value().id())
+                .value();
+
+        msg["from"]["participant_id"] =
+            std::to_string(class_participant.class_id().value());
+    }
     else if (from.value().type_name() == "function" ||
         from.value().type_name() == "function_template") {
         if (config().combine_free_functions_into_file_participants()) {
@@ -150,6 +166,15 @@ void generator::generate_call(const message &m, nlohmann::json &parent) const
     if (to.value().type_name() == "method") {
         const auto &class_participant =
             model().get_participant<model::method>(to.value().id()).value();
+
+        msg["to"]["participant_id"] =
+            std::to_string(class_participant.class_id().value());
+    }
+    else if (to.value().type_name() == "objc_method") {
+        const auto &class_participant =
+            model()
+                .get_participant<model::objc_method>(to.value().id())
+                .value();
 
         msg["to"]["participant_id"] =
             std::to_string(class_participant.class_id().value());
@@ -579,6 +604,52 @@ std::optional<eid_t> generator::generate_participant(
         LOG_DBG("Generating JSON method participant: {}",
             model()
                 .get_participant<model::method>(*participant_id)
+                .value()
+                .full_name(false));
+
+        if (!is_participant_generated(class_participant_id)) {
+            const auto &class_participant =
+                model()
+                    .get_participant<model::participant>(class_participant_id)
+                    .value();
+
+            generated_participants_.emplace(*participant_id);
+            generated_participants_.emplace(class_participant_id);
+
+            json_["participants"].push_back(class_participant);
+            json_["participants"].back()["activities"].push_back(participant);
+
+            // Perform config dependent postprocessing on generated class
+            const auto class_participant_full_name =
+                class_participant.full_name(false);
+
+            json_["participants"].back().at("display_name") =
+                make_display_name(class_participant_full_name);
+
+            return class_participant_id;
+        }
+
+        if (!is_participant_generated(*participant_id)) {
+            for (auto &p : json_["participants"]) {
+                if (p.at("id") ==
+                    std::to_string(class_participant_id.value())) {
+                    generated_participants_.emplace(*participant_id);
+                    p["activities"].push_back(participant);
+                    return class_participant_id;
+                }
+            }
+        }
+    }
+    if (participant_type == "objc_method") {
+        auto class_participant_id =
+            model()
+                .get_participant<model::objc_method>(*participant_id)
+                .value()
+                .class_id();
+
+        LOG_DBG("Generating JSON ObjC method participant: {}",
+            model()
+                .get_participant<model::objc_method>(*participant_id)
                 .value()
                 .full_name(false));
 

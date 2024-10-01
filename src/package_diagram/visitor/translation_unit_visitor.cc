@@ -207,6 +207,75 @@ bool translation_unit_visitor::VisitClassTemplateDecl(
     return true;
 }
 
+bool translation_unit_visitor::VisitObjCCategoryDecl(
+    clang::ObjCCategoryDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    const auto target_id = get_package_id(decl->getClassInterface());
+    relationships.emplace_back(target_id, relationship_t::kDependency);
+
+    process_objc_container_children(*decl, relationships);
+    add_relationships(decl, relationships);
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCProtocolDecl(
+    clang::ObjCProtocolDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    for (const auto *protocol : decl->protocols()) {
+        process_interface_protocol(*protocol, relationships);
+    }
+
+    process_objc_container_children(*decl, relationships);
+    add_relationships(decl, relationships);
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCInterfaceDecl(
+    clang::ObjCInterfaceDecl *decl)
+{
+    assert(decl != nullptr);
+
+    // Skip system headers
+    if (source_manager().isInSystemHeader(decl->getSourceRange().getBegin()))
+        return true;
+
+    found_relationships_t relationships;
+
+    for (const auto *protocol : decl->protocols()) {
+        process_interface_protocol(*protocol, relationships);
+    }
+
+    // Iterate over regular class fields
+    for (const auto *field : decl->ivars()) {
+        if (field != nullptr)
+            process_field(*field, relationships);
+    }
+
+    process_objc_container_children(*decl, relationships);
+
+    add_relationships(decl, relationships);
+
+    return true;
+}
+
 void translation_unit_visitor::add_relationships(
     clang::Decl *cls, found_relationships_t &relationships)
 {
@@ -435,6 +504,17 @@ void translation_unit_visitor::process_method(
     }
 }
 
+void translation_unit_visitor::process_objc_method(
+    const clang::ObjCMethodDecl &mf, found_relationships_t &relationships)
+{
+    find_relationships(mf.getReturnType(), relationships);
+
+    for (const auto *param : mf.parameters()) {
+        if (param != nullptr)
+            find_relationships(param->getType(), relationships);
+    }
+}
+
 void translation_unit_visitor::process_record_children(
     const clang::RecordDecl &cls, found_relationships_t &relationships)
 {
@@ -457,6 +537,44 @@ void translation_unit_visitor::process_record_children(
     for (const auto *field : cls.fields()) {
         if (field != nullptr)
             process_field(*field, relationships);
+    }
+
+    // Static fields have to be processed by iterating over variable
+    // declarations
+    for (const auto *decl : cls.decls()) {
+        if (decl->getKind() == clang::Decl::Var) {
+            const clang::VarDecl *variable_declaration{
+                clang::dyn_cast_or_null<clang::VarDecl>(decl)};
+            if ((variable_declaration != nullptr) &&
+                variable_declaration->isStaticDataMember()) {
+                process_static_field(*variable_declaration, relationships);
+            }
+        }
+    }
+}
+
+void translation_unit_visitor::process_objc_container_children(
+    const clang::ObjCContainerDecl &cls,
+    clanguml::package_diagram::visitor::found_relationships_t &relationships)
+{
+    for (const auto *property : cls.properties()) {
+        if (property != nullptr)
+            process_objc_property(*property, relationships);
+    }
+
+    for (const auto *property : cls.class_properties()) {
+        if (property != nullptr)
+            process_objc_property(*property, relationships);
+    }
+
+    for (const auto *method : cls.methods()) {
+        if (method != nullptr)
+            process_objc_method(*method, relationships);
+    }
+
+    for (const auto *method : cls.class_methods()) {
+        if (method != nullptr)
+            process_objc_method(*method, relationships);
     }
 
     // Static fields have to be processed by iterating over variable
@@ -501,6 +619,33 @@ void translation_unit_visitor::process_field(
         relationship_t::kDependency);
 }
 
+void translation_unit_visitor::process_interface_protocol(
+    const clang::ObjCProtocolDecl &protocol_declaration,
+    found_relationships_t &relationships)
+{
+    const auto target_id = get_package_id(&protocol_declaration);
+    relationships.emplace_back(target_id, relationship_t::kDependency);
+}
+
+void translation_unit_visitor::process_objc_property(
+    const clang::ObjCPropertyDecl &property_declaration,
+    found_relationships_t &relationships)
+{
+    const auto *property_objc_id_type =
+        property_declaration.getType()->getAsObjCQualifiedIdType();
+    if (property_objc_id_type != nullptr) {
+        const auto protocols_count = property_objc_id_type->getNumProtocols();
+        for (auto i = 0U; i < protocols_count; i++) {
+            const auto target_id =
+                get_package_id(property_objc_id_type->getProtocol(i));
+            relationships.emplace_back(target_id, relationship_t::kDependency);
+        }
+    }
+
+    find_relationships(property_declaration.getType(), relationships,
+        relationship_t::kDependency);
+}
+
 void translation_unit_visitor::process_static_field(
     const clang::VarDecl &field_declaration,
     found_relationships_t &relationships)
@@ -531,6 +676,14 @@ bool translation_unit_visitor::find_relationships(const clang::QualType &type,
 
     if (type->isVoidType() || type->isVoidPointerType()) {
         // pass
+    }
+    else if (type->isObjCObjectPointerType() &&
+        type->getPointeeType()->getAsObjCInterfaceType() != nullptr) {
+        const auto *objc_interface =
+            type->getPointeeType()->getAsObjCInterfaceType()->getInterface();
+        const auto target_id = get_package_id(objc_interface);
+        relationships.emplace_back(target_id, relationship_hint);
+        result = true;
     }
     else if (type->isPointerType()) {
         relationship_hint = relationship_t::kAssociation;

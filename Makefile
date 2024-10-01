@@ -42,6 +42,8 @@ ADDRESS_SANITIZER ?= OFF
 
 ENABLE_CXX_MODULES_TEST_CASES ?= OFF
 ENABLE_CUDA_TEST_CASES ?= OFF
+ENABLE_OBJECTIVE_C_TEST_CASES ?= OFF
+FETCH_LIBOBJC2 ?= OFF
 
 GIT_VERSION	?= $(shell git describe --tags --always --abbrev=7)
 PKG_VERSION	?= $(shell git describe --tags --always --abbrev=7 | tr - .)
@@ -59,6 +61,7 @@ debug/CMakeLists.txt:
 	cmake -S . -B debug \
 		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
+		-DCMAKE_C_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
@@ -69,6 +72,8 @@ debug/CMakeLists.txt:
 		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
 		-DENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
 		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+		-DENABLE_OBJECTIVE_C_TEST_CASES=$(ENABLE_OBJECTIVE_C_TEST_CASES) \
+		-DFETCH_LIBOBJC2=$(FETCH_LIBOBJC2) \
 		-DCODE_COVERAGE=$(CODE_COVERAGE) \
 		-DADDRESS_SANITIZER=$(ADDRESS_SANITIZER) \
 		-DCLANG_UML_ENABLE_BACKTRACE=$(CLANG_UML_ENABLE_BACKTRACE)
@@ -78,6 +83,7 @@ release/CMakeLists.txt:
 	cmake -S . -B release \
 		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
+		-DCMAKE_C_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_CXX_FLAGS="$(CMAKE_CXX_FLAGS)" \
@@ -89,12 +95,15 @@ release/CMakeLists.txt:
 		-DADDRESS_SANITIZER=$(ADDRESS_SANITIZER) \
 		-DENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
 		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+		-DENABLE_OBJECTIVE_C_TEST_CASES=$(ENABLE_OBJECTIVE_C_TEST_CASES) \
+		-DFETCH_LIBOBJC2=$(FETCH_LIBOBJC2) \
 		-DCLANG_UML_ENABLE_BACKTRACE=$(CLANG_UML_ENABLE_BACKTRACE)
 
 debug_tidy/CMakeLists.txt:
 	cmake -S . -B debug_tidy \
 		-G"$(CMAKE_GENERATOR)" \
 		-DGIT_VERSION=$(GIT_VERSION) \
+		-DCMAKE_C_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DBUILD_TESTS=OFF \
@@ -105,7 +114,9 @@ debug_tidy/CMakeLists.txt:
 		-DLINK_LLVM_SHARED=${LLVM_SHARED} \
 		-DCMAKE_PREFIX=${CMAKE_PREFIX} \
 		-DENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
-		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES)
+		-DENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+		-DENABLE_OBJECTIVE_C_TEST_CASES=$(ENABLE_OBJECTIVE_C_TEST_CASES) \
+		-DFETCH_LIBOBJC2=$(FETCH_LIBOBJC2)
 
 debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
@@ -125,7 +136,7 @@ test_release: release
 	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir release
 
 coverage_report: test
-	lcov -c -d debug -o coverage.info
+	lcov -c -d debug -o coverage.info --no-external --gcov-tool util/clang_gcov.sh
 	lcov -r coverage.info -o coverage-src.info "${PWD}/src/main.cc" "${PWD}/src/common/generators/generators.cc"
 	lcov -e coverage-src.info -o coverage-src.info "${PWD}/src/*"
 	lcov -l coverage-src.info
@@ -171,11 +182,11 @@ init_compile_commands: debug
 
 .PHONY: clang-format
 clang-format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.4
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
 
 .PHONY: format
 format:
-	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.4
+	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
 
 .PHONY: debug_tidy
 tidy: debug_tidy

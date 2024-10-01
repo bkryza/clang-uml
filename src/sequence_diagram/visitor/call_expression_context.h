@@ -46,7 +46,7 @@ struct call_expression_context {
      * to add to the call stack either type.
      */
     using callexpr_stack_t = std::variant<std::monostate, clang::CallExpr *,
-        clang::CXXConstructExpr *>;
+        clang::CXXConstructExpr *, clang::ObjCMessageExpr *>;
 
     call_expression_context();
 
@@ -77,6 +77,8 @@ struct call_expression_context {
      * @param cls Class declaration.
      */
     void update(clang::CXXRecordDecl *cls);
+    void update(clang::ObjCInterfaceDecl *cls);
+    void update(clang::ObjCProtocolDecl *cls);
 
     /**
      * @brief Set the current context to a class template specialization.
@@ -98,6 +100,7 @@ struct call_expression_context {
      * @param method Class method declaration.
      */
     void update(clang::CXXMethodDecl *method);
+    void update(clang::ObjCMethodDecl *method);
 
     /**
      * @brief Set the current context to a function.
@@ -278,6 +281,7 @@ struct call_expression_context {
      * @param expr Constructor call expression
      */
     void enter_callexpr(clang::CXXConstructExpr *expr);
+    void enter_callexpr(clang::ObjCMessageExpr *expr);
 
     /**
      * @brief Leave call expression
@@ -313,8 +317,11 @@ struct call_expression_context {
     clang::ClassTemplateSpecializationDecl
         *current_class_template_specialization_decl_{nullptr};
     clang::CXXMethodDecl *current_method_decl_{nullptr};
+    clang::ObjCMethodDecl *current_objc_method_decl_{nullptr};
     clang::FunctionDecl *current_function_decl_{nullptr};
     clang::FunctionTemplateDecl *current_function_template_decl_{nullptr};
+    clang::ObjCInterfaceDecl *objc_interface_decl_{nullptr};
+    clang::ObjCProtocolDecl *objc_protocol_decl_{nullptr};
 
 private:
     eid_t current_caller_id_{};

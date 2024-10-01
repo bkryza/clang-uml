@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="512px" preserveAspectRatio="none" style="width:1222px;height:512px;background:#FFFFFF;" version="1.1" viewBox="0 0 1222 512" width="1222px" zoomAndPan="magnify">
+  <defs>
+    <style type="text/css">a:hover { text-decoration: underline; }</style>
+  </defs>
+  <g>
+    <g id="elem_C_0013825978819641664869">
+      <rect codeLine="2" fill="#F1F1F1" height="72.5625" id="C_0013825978819641664869" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="129.127" x="550.5" y="7"/>
+      <ellipse cx="565.5" cy="27.1328" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M568.4688,32.7734 Q567.8906,33.0703 567.25,33.2109 Q566.6094,33.3672 565.9063,33.3672 Q563.4063,33.3672 562.0781,31.7266 Q560.7656,30.0703 560.7656,26.9453 Q560.7656,23.8203 562.0781,22.1641 Q563.4063,20.5078 565.9063,20.5078 Q566.6094,20.5078 567.25,20.6641 Q567.9063,20.8203 568.4688,21.1172 L568.4688,23.8359 Q567.8438,23.2578 567.25,22.9922 Q566.6563,22.7109 566.0313,22.7109 Q564.6875,22.7109 564,23.7891 Q563.3125,24.8516 563.3125,26.9453 Q563.3125,29.0391 564,30.1172 Q564.6875,31.1797 566.0313,31.1797 Q566.6563,31.1797 567.25,30.9141 Q567.8438,30.6328 568.4688,30.0547 L568.4688,32.7734 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="101.127" x="577.5" y="23.1387">«ObjC Interface»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="64.9551" x="595.5859" y="38.9639">NSObject</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="551.5" x2="678.627" y1="47.2656" y2="47.2656"/>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="551.5" x2="678.627" y1="55.2656" y2="55.2656"/>
+      <polygon fill="none" points="561.5,63.9141,565.5,67.9141,561.5,71.9141,557.5,67.9141" style="stroke:#B38D22;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70.2119" x="570.5" y="72.2607">isa : Class</text>
+    </g>
+    <g id="elem_C_0016988093069955139133">
+      <rect codeLine="7" fill="#F1F1F1" height="365.9063" id="C_0016988093069955139133" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="594.1416" x="7" y="140"/>
+      <ellipse cx="253.7036" cy="160.1328" fill="#F1F1F1" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+      <path d="M253.5005,155.8047 L253.5005,159.4297 L254.5005,159.4297 Q255.7036,159.4297 256.188,159.0234 Q256.6724,158.6172 256.6724,157.6172 Q256.6724,156.6172 256.188,156.2109 Q255.7036,155.8047 254.5005,155.8047 L253.5005,155.8047 Z M251.0474,153.7422 L254.4067,153.7422 Q256.9692,153.7422 258.0942,154.6641 Q259.2192,155.5703 259.2192,157.6172 Q259.2192,159.6641 258.0942,160.5859 Q256.9692,161.4922 254.4067,161.4922 L253.5005,161.4922 L253.5005,166.1328 L251.0474,166.1328 L251.0474,153.7422 Z " fill="#000000"/>
+      <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="96.2344" x="272.2036" y="156.1387">«ObjC Protocol»</text>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="64.9551" x="287.8433" y="171.9639">NSObject</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="600.1416" y1="180.2656" y2="180.2656"/>
+      <ellipse cx="18" cy="193.9141" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="120.1826" x="27" y="197.2607">autorelease() : id</text>
+      <ellipse cx="18" cy="210.2109" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="96.127" x="27" y="213.5576">class() : Class</text>
+      <ellipse cx="18" cy="226.5078" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="346.5273" x="27" y="229.8545">conformsToProtocol:(Protocol * aProtocol) : BOOL</text>
+      <ellipse cx="18" cy="242.8047" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="174.9727" x="27" y="246.1514">description() : NSString *</text>
+      <ellipse cx="18" cy="259.1016" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="138.127" x="27" y="262.4482">hash() : NSUInteger</text>
+      <ellipse cx="18" cy="275.3984" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="199.2334" x="27" y="278.7451">isEqual:(id anObject) : BOOL</text>
+      <ellipse cx="18" cy="291.6953" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="250.1885" x="27" y="295.042">isKindOfClass:(Class aClass) : BOOL</text>
+      <ellipse cx="18" cy="307.9922" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="276.9443" x="27" y="311.3389">isMemberOfClass:(Class aClass) : BOOL</text>
+      <ellipse cx="18" cy="324.2891" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="114.502" x="27" y="327.6357">isProxy() : BOOL</text>
+      <ellipse cx="18" cy="340.5859" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="251.7607" x="27" y="343.9326">performSelector:(SEL aSelector) : id</text>
+      <ellipse cx="18" cy="356.8828" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="420.9502" x="27" y="360.2295">performSelector:withObject:(SEL aSelector, id anObject) : id</text>
+      <ellipse cx="18" cy="373.1797" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="568.1416" x="27" y="376.5264">performSelector:withObject:withObject:(SEL aSelector, id object1, id object2) : id</text>
+      <ellipse cx="18" cy="389.4766" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105.5264" x="27" y="392.8232">release() : void</text>
+      <ellipse cx="18" cy="405.7734" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="303.5703" x="27" y="409.1201">respondsToSelector:(SEL aSelector) : BOOL</text>
+      <ellipse cx="18" cy="422.0703" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78.5176" x="27" y="425.417">retain() : id</text>
+      <ellipse cx="18" cy="438.3672" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="187.2842" x="27" y="441.7139">retainCount() : NSUInteger</text>
+      <ellipse cx="18" cy="454.6641" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="62.043" x="27" y="458.0107">self() : id</text>
+      <ellipse cx="18" cy="470.9609" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="135.5498" x="27" y="474.3076">superclass() : Class</text>
+      <ellipse cx="18" cy="487.2578" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+      <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124.3936" x="27" y="490.6045">zone() : NSZone *</text>
+      <line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="600.1416" y1="497.9063" y2="497.9063"/>
+    </g>
+    <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L3" target="_top" title="It00085" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L3" xlink:show="new" xlink:title="It00085" xlink:type="simple">
+      <g id="elem_C_0012380559137179420140">
+        <rect codeLine="30" fill="#F1F1F1" height="365.9063" id="C_0012380559137179420140" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="578.7607" x="636.5" y="140"/>
+        <ellipse cx="873.0669" cy="160.1328" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/>
+        <path d="M876.0356,165.7734 Q875.4575,166.0703 874.8169,166.2109 Q874.1763,166.3672 873.4731,166.3672 Q870.9731,166.3672 869.645,164.7266 Q868.3325,163.0703 868.3325,159.9453 Q868.3325,156.8203 869.645,155.1641 Q870.9731,153.5078 873.4731,153.5078 Q874.1763,153.5078 874.8169,153.6641 Q875.4731,153.8203 876.0356,154.1172 L876.0356,156.8359 Q875.4106,156.2578 874.8169,155.9922 Q874.2231,155.7109 873.5981,155.7109 Q872.2544,155.7109 871.5669,156.7891 Q870.8794,157.8516 870.8794,159.9453 Q870.8794,162.0391 871.5669,163.1172 Q872.2544,164.1797 873.5981,164.1797 Q874.2231,164.1797 874.8169,163.9141 Q875.4106,163.6328 876.0356,163.0547 L876.0356,165.7734 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="101.127" x="891.5669" y="156.1387">«ObjC Interface»</text>
+        <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="54.1543" x="915.0532" y="171.9639">It00085</text>
+        <line style="stroke:#181818;stroke-width:0.5;" x1="637.5" x2="1214.2607" y1="180.2656" y2="180.2656"/>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L27" target="_top" title="addValue:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L27" xlink:show="new" xlink:title="addValue:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="188.9141"/>
+          <ellipse cx="647.5" cy="193.9141" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L27" target="_top" title="addValue:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L27" xlink:show="new" xlink:title="addValue:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="315.8613" x="656.5" y="197.2607">addValue:(NSInteger otherValue) : NSInteger</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L22" target="_top" title="currentSharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L22" xlink:show="new" xlink:title="currentSharedCounter" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="205.2109"/>
+          <ellipse cx="647.5" cy="210.2109" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L22" target="_top" title="currentSharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L22" xlink:show="new" xlink:title="currentSharedCounter" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="250.8584" x="656.5" y="213.5576">currentSharedCounter() : NSInteger</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L26" target="_top" title="displayDetails" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L26" xlink:show="new" xlink:title="displayDetails" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="221.5078"/>
+          <ellipse cx="647.5" cy="226.5078" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L26" target="_top" title="displayDetails" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L26" xlink:show="new" xlink:title="displayDetails" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="152.4141" x="656.5" y="229.8545">displayDetails() : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L21" target="_top" title="incrementSharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L21" xlink:show="new" xlink:title="incrementSharedCounter" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="237.8047"/>
+          <ellipse cx="647.5" cy="242.8047" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L21" target="_top" title="incrementSharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L21" xlink:show="new" xlink:title="incrementSharedCounter" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="231.1504" x="656.5" y="246.1514">incrementSharedCounter() : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L25" target="_top" title="initWithName:value:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L25" xlink:show="new" xlink:title="initWithName:value:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="254.1016"/>
+          <ellipse cx="647.5" cy="259.1016" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L25" target="_top" title="initWithName:value:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L25" xlink:show="new" xlink:title="initWithName:value:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="496.3916" x="656.5" y="262.4482">initWithName:value:(NSString * name, NSInteger value) : instancetype</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L28" target="_top" title="multiplyValueBy:andAdd:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L28" xlink:show="new" xlink:title="multiplyValueBy:andAdd:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="270.3984"/>
+          <ellipse cx="647.5" cy="275.3984" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L28" target="_top" title="multiplyValueBy:andAdd:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L28" xlink:show="new" xlink:title="multiplyValueBy:andAdd:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="552.7607" x="656.5" y="278.7451">multiplyValueBy:andAdd:(NSInteger multiplier, NSInteger addition) : NSInteger</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" target="_top" title="name" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" xlink:show="new" xlink:title="name" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="286.6953"/>
+          <ellipse cx="647.5" cy="291.6953" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" target="_top" title="name" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" xlink:show="new" xlink:title="name" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.835" x="656.5" y="295.042">name() : NSString *</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L31" target="_top" title="performOperationWithBlock:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L31" xlink:show="new" xlink:title="performOperationWithBlock:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="302.9922"/>
+          <ellipse cx="647.5" cy="307.9922" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L31" target="_top" title="performOperationWithBlock:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L31" xlink:show="new" xlink:title="performOperationWithBlock:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="433.6309" x="656.5" y="311.3389">performOperationWithBlock:(void (^)(NSInteger) block) : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L29" target="_top" title="resetValue" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L29" xlink:show="new" xlink:title="resetValue" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="319.2891"/>
+          <ellipse cx="647.5" cy="324.2891" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L29" target="_top" title="resetValue" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L29" xlink:show="new" xlink:title="resetValue" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129.4658" x="656.5" y="327.6357">resetValue() : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" target="_top" title="setName:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" xlink:show="new" xlink:title="setName:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="335.5859"/>
+          <ellipse cx="647.5" cy="340.5859" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" target="_top" title="setName:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L18" xlink:show="new" xlink:title="setName:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="238.3281" x="656.5" y="343.9326">setName:(NSString * name) : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" target="_top" title="setSharedCounter:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" xlink:show="new" xlink:title="setSharedCounter:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="351.8828"/>
+          <ellipse cx="647.5" cy="356.8828" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" target="_top" title="setSharedCounter:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" xlink:show="new" xlink:title="setSharedCounter:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="363.9385" x="656.5" y="360.2295">setSharedCounter:(NSInteger sharedCounter) : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" target="_top" title="setValue:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" xlink:show="new" xlink:title="setValue:" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="368.1797"/>
+          <ellipse cx="647.5" cy="373.1797" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" target="_top" title="setValue:" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" xlink:show="new" xlink:title="setValue:" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="232.2236" x="656.5" y="376.5264">setValue:(NSInteger value) : void</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" target="_top" title="sharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" xlink:show="new" xlink:title="sharedCounter" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="384.4766"/>
+          <ellipse cx="647.5" cy="389.4766" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" target="_top" title="sharedCounter" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L16" xlink:show="new" xlink:title="sharedCounter" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="198.208" x="656.5" y="392.8232">sharedCounter() : NSInteger</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L23" target="_top" title="sharedInstance" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L23" xlink:show="new" xlink:title="sharedInstance" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="400.7734"/>
+          <ellipse cx="647.5" cy="405.7734" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L23" target="_top" title="sharedInstance" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L23" xlink:show="new" xlink:title="sharedInstance" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" text-decoration="underline" textLength="222.6738" x="656.5" y="409.1201">sharedInstance() : instancetype</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" target="_top" title="value" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" xlink:show="new" xlink:title="value" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="417.0703"/>
+          <ellipse cx="647.5" cy="422.0703" fill="#84BE84" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" target="_top" title="value" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L19" xlink:show="new" xlink:title="value" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="132.501" x="656.5" y="425.417">value() : NSInteger</text>
+        </a>
+        <line style="stroke:#181818;stroke-width:0.5;" x1="637.5" x2="1214.2607" y1="432.7188" y2="432.7188"/>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L4" target="_top" title="_defaultMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L4" xlink:show="new" xlink:title="_defaultMember" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="441.3672"/>
+          <polygon fill="none" points="647.5,441.3672,651.5,445.3672,647.5,449.3672,643.5,445.3672" style="stroke:#B38D22;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L4" target="_top" title="_defaultMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L4" xlink:show="new" xlink:title="_defaultMember" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="145.7148" x="656.5" y="449.7139">_defaultMember : int</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L13" target="_top" title="_privateMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L13" xlink:show="new" xlink:title="_privateMember" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="457.6641"/>
+          <rect fill="none" height="6" style="stroke:#C82930;stroke-width:1.0;" width="6" x="644.5" y="459.6641"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L13" target="_top" title="_privateMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L13" xlink:show="new" xlink:title="_privateMember" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="200.293" x="656.5" y="466.0107">_privateMember : NSString *</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L10" target="_top" title="_protectedMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L10" xlink:show="new" xlink:title="_protectedMember" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="473.9609"/>
+          <polygon fill="none" points="647.5,473.9609,651.5,477.9609,647.5,481.9609,643.5,477.9609" style="stroke:#B38D22;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L10" target="_top" title="_protectedMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L10" xlink:show="new" xlink:title="_protectedMember" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="218.791" x="656.5" y="482.3076">_protectedMember : NSString *</text>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L7" target="_top" title="_publicMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L7" xlink:show="new" xlink:title="_publicMember" xlink:type="simple">
+          <rect fill="#F1F1F1" height="10" style="stroke:none;stroke-width:1.0;" width="20" x="642.5" y="490.2578"/>
+          <ellipse cx="647.5" cy="495.2578" fill="none" rx="3" ry="3" style="stroke:#038048;stroke-width:1.0;"/>
+        </a>
+        <a href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L7" target="_top" title="_publicMember" xlink:actuate="onRequest" xlink:href="https://github.com/bkryza/clang-uml/blob/b7c3e1fbf8818b54468a285b5c76eeedb6e0ed10/tests/t00085/t00085.h#L7" xlink:show="new" xlink:title="_publicMember" xlink:type="simple">
+          <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="192.917" x="656.5" y="498.6045">_publicMember : NSString *</text>
+        </a>
+      </g>
+    </a>
+    <g id="link_C_0013825978819641664869_C_0016988093069955139133">
+      <path codeLine="52" d="M574.98,80.21 C556.6,96.61 546.7298,105.415 521.5398,127.895 " fill="none" id="C_0013825978819641664869-to-C_0016988093069955139133" style="stroke:#181818;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+      <polygon fill="none" points="508.11,139.88,525.5348,132.3716,517.5448,123.4184,508.11,139.88" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+    <g id="link_C_0013825978819641664869_C_0012380559137179420140">
+      <path codeLine="53" d="M668.4508,92.1939 C686.8308,108.5939 696.7,117.4 721.89,139.88 " fill="none" id="C_0013825978819641664869-backto-C_0012380559137179420140" style="stroke:#181818;stroke-width:1.0;"/>
+      <polygon fill="none" points="655.02,80.21,664.4561,96.6708,672.4454,87.717,655.02,80.21" style="stroke:#181818;stroke-width:1.0;"/>
+    </g>
+  </g>
+</svg>

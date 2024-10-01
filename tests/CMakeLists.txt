@@ -1,5 +1,6 @@
 
 file(GLOB_RECURSE TEST_CASE_SOURCES t*/*.cc t*/*.c t*/src/*.c t*/*.cu)
+file(GLOB_RECURSE TEST_CASES_OBJC_SOURCES t*/*.m t*/src/*.m)
 file(GLOB_RECURSE TEST_CASE_MODULE_SOURCES t*/src/*.cppm)
 file(GLOB_RECURSE TEST_CASE_CONFIGS t*/.clang-uml)
 file(GLOB_RECURSE TEST_CONFIG_YMLS test_config_data/*.yml
@@ -10,6 +11,23 @@ set(TEST_CASES_REQUIRING_CXX20 t00056 t00058 t00059 t00065 t00069 t00074 t00075)
 set(TEST_CASES_REQUIRING_CXX20_MODULES t00070 t00071 t00072
                                        t30012 t30013 t30014 t30015)
 set(TEST_CASES_REQUIRING_CUDA t20049 t20050 t20051)
+set(TEST_CASES_REQUIRING_OBJC t00084 t00085 t00086 t20057 t20058 t30016 t40004)
+
+if(ENABLE_OBJECTIVE_C_TEST_CASES)
+    message(STATUS "Enabling Objective-C test cases")
+    if(FETCH_LIBOBJC2)
+        include(CPM)
+        CPMAddPackage(
+            NAME libobjc2
+            GITHUB_REPOSITORY bkryza/libobjc2
+            GIT_TAG fix-cmake-variables
+        )
+        set(FETCHED_LIBOBJC2_NAME objc)
+    endif()
+else()
+    message(STATUS "Disabling Objective-C test cases")
+endif(ENABLE_OBJECTIVE_C_TEST_CASES)
+
 
 if(ENABLE_CXX_MODULES_TEST_CASES)
     message(STATUS "Enabling C++ modules test cases")
@@ -105,6 +123,19 @@ foreach(TEST_NAME ${TEST_NAMES})
             target_sources(${TEST_NAME} PUBLIC FILE_SET CXX_MODULES FILES
                            ${TEST_CASE_MODULE_SOURCES})
         endif(ENABLE_CXX_MODULES_TEST_CASES)
+        if(ENABLE_OBJECTIVE_C_TEST_CASES)
+            # We need to link the objective test cases sources to a separate
+            # ObjC library than the rest of C++ test cases
+            add_library(test_cases_objc)
+            if(APPLE)
+                target_compile_options(test_cases_objc PRIVATE "SHELL:-isystem ${LLVM_INCLUDE_DIR}/c++/v1"
+                                                               "SHELL:-isystem ${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}/include")
+            else(APPLE)
+                target_compile_options(test_cases_objc PRIVATE ${GNUSTEP_CFLAGS})
+                target_link_libraries(test_cases_objc PRIVATE ${GNUSTEP_LDFLAGS} ${FETCHED_LIBOBJC2_NAME})
+            endif(APPLE)
+            target_sources(test_cases_objc PUBLIC ${TEST_CASES_OBJC_SOURCES})
+        endif(ENABLE_OBJECTIVE_C_TEST_CASES)
         target_sources(${TEST_NAME} PUBLIC ${TEST_NAME}.cc
                                            ${TEST_CASE_SOURCES})
     else()
@@ -116,7 +147,8 @@ foreach(TEST_NAME ${TEST_NAMES})
     target_compile_definitions(${TEST_NAME} PRIVATE
             $<$<EQUAL:${ENABLE_CXX_STD_20_TEST_CASES},1>:ENABLE_CXX_STD_20_TEST_CASES>
             $<$<BOOL:${ENABLE_CXX_MODULES_TEST_CASES}>:ENABLE_CXX_MODULES_TEST_CASES>
-            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>)
+            $<$<BOOL:${ENABLE_CUDA_TEST_CASES}>:ENABLE_CUDA_TEST_CASES>
+            $<$<BOOL:${ENABLE_OBJECTIVE_C_TEST_CASES}>:ENABLE_OBJECTIVE_C_TEST_CASES>)
     target_compile_options(${TEST_NAME} PRIVATE
             $<$<COMPILE_LANGUAGE:CXX>:
             $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:

@@ -1,0 +1,10 @@
+diagrams:
+  t20058_sequence:
+    type: sequence
+    glob:
+      - t20058.m
+    include:
+      paths:
+        - .
+    from:
+      - function: "t20058_tmain()"

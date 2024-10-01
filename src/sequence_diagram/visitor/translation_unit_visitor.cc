@@ -55,6 +55,104 @@ const call_expression_context &translation_unit_visitor::context() const
     return call_expression_context_;
 }
 
+bool translation_unit_visitor::VisitObjCProtocolDecl(
+    clang::ObjCProtocolDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC interface declaration at {}",
+        declaration->getBeginLoc().printToString(source_manager()));
+
+    auto objc_protocol_model_ptr = create_objc_protocol_model(declaration);
+
+    if (!objc_protocol_model_ptr)
+        return true;
+
+    context().reset();
+
+    const auto class_id = objc_protocol_model_ptr->id();
+
+    set_unique_id(declaration->getID(), class_id);
+
+    auto &class_model =
+        diagram()
+            .get_participant<sequence_diagram::model::class_>(class_id)
+            .has_value()
+        ? *diagram()
+               .get_participant<sequence_diagram::model::class_>(class_id)
+               .get()
+        : *objc_protocol_model_ptr;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding ObjC protocol participant {} with id {}",
+            class_model.full_name(false), class_model.id());
+
+        assert(class_model.id() == class_id);
+
+        context().set_caller_id(class_id);
+        context().update(declaration);
+
+        diagram().add_participant(std::move(objc_protocol_model_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC protocol {} with id {}", class_model.full_name(),
+            class_id);
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCInterfaceDecl(
+    clang::ObjCInterfaceDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC interface declaration at {}",
+        declaration->getBeginLoc().printToString(source_manager()));
+
+    // Build the class declaration and store it in the diagram, even
+    // if we don't need it for any of the participants of this diagram
+    auto objc_interface_model_ptr = create_objc_interface_model(declaration);
+
+    if (!objc_interface_model_ptr)
+        return true;
+
+    context().reset();
+
+    const auto class_id = objc_interface_model_ptr->id();
+
+    set_unique_id(declaration->getID(), class_id);
+
+    auto &class_model =
+        diagram()
+            .get_participant<sequence_diagram::model::class_>(class_id)
+            .has_value()
+        ? *diagram()
+               .get_participant<sequence_diagram::model::class_>(class_id)
+               .get()
+        : *objc_interface_model_ptr;
+
+    if (diagram().should_include(class_model)) {
+        LOG_DBG("Adding ObjC interface participant {} with id {}",
+            class_model.full_name(false), class_model.id());
+
+        assert(class_model.id() == class_id);
+
+        context().set_caller_id(class_id);
+        context().update(declaration);
+
+        diagram().add_participant(std::move(objc_interface_model_ptr));
+    }
+    else {
+        LOG_DBG("Skipping ObjC interface {} with id {}",
+            class_model.full_name(), class_id);
+    }
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCXXRecordDecl(
     clang::CXXRecordDecl *declaration)
 {
@@ -213,6 +311,61 @@ bool translation_unit_visitor::VisitClassTemplateSpecializationDecl(
 
         diagram().add_participant(std::move(template_specialization_ptr));
     }
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseObjCMethodDecl(
+    clang::ObjCMethodDecl *declaration)
+{
+    // We need to backup the context, since other methods or functions can
+    // be traversed during this traversal (e.g. template function/method
+    // specializations)
+    auto context_backup = context();
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseObjCMethodDecl(
+        declaration);
+
+    call_expression_context_ = context_backup;
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCMethodDecl(
+    clang::ObjCMethodDecl *declaration)
+{
+    if (!should_include(declaration))
+        return true;
+
+    LOG_TRACE("Visiting ObjC method {} in class",
+        declaration->getQualifiedNameAsString());
+
+    context().update(declaration);
+
+    auto method_model_ptr = create_objc_method_model(declaration);
+
+    if (!method_model_ptr)
+        return true;
+
+    process_comment(*declaration, *method_model_ptr);
+
+    set_source_location(*declaration, *method_model_ptr);
+
+    const auto method_full_name = method_model_ptr->full_name(false);
+
+    method_model_ptr->set_id(common::to_id(method_full_name));
+
+    set_unique_id(declaration->getID(), method_model_ptr->id());
+
+    LOG_TRACE("Set id {} --> {} for method name {} [{}]", declaration->getID(),
+        method_model_ptr->id(), method_full_name,
+        declaration->isThisDeclarationADefinition());
+
+    context().update(declaration);
+
+    context().set_caller_id(method_model_ptr->id());
+
+    diagram().add_participant(std::move(method_model_ptr));
 
     return true;
 }
@@ -512,6 +665,31 @@ bool translation_unit_visitor::TraverseLambdaExpr(clang::LambdaExpr *expr)
 
     // lambda context is entered inside the visitor
     context().leave_lambda_expression();
+
+    return true;
+}
+
+bool translation_unit_visitor::TraverseObjCMessageExpr(
+    clang::ObjCMessageExpr *expr)
+{
+    if (!config().include_system_headers() &&
+        source_manager().isInSystemHeader(expr->getSourceRange().getBegin()))
+        return true;
+
+    LOG_TRACE("Entering ObjC message expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().enter_callexpr(expr);
+
+    RecursiveASTVisitor<translation_unit_visitor>::TraverseObjCMessageExpr(
+        expr);
+
+    LOG_TRACE("Leaving ObjC message expression at {}",
+        expr->getBeginLoc().printToString(source_manager()));
+
+    context().leave_callexpr();
+
+    pop_message_to_diagram(expr);
 
     return true;
 }
@@ -1060,6 +1238,99 @@ bool translation_unit_visitor::TraverseConditionalOperator(
     return true;
 }
 
+bool translation_unit_visitor::VisitObjCMessageExpr(
+    clang::ObjCMessageExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting ObjC message expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    message m{message_t::kCall, context().caller_id()};
+
+    set_source_location(*expr, m);
+
+    const auto *raw_expr_comment = clanguml::common::get_expression_raw_comment(
+        source_manager(), *context().get_ast_context(), expr);
+    const auto stripped_comment = process_comment(
+        raw_expr_comment, context().get_ast_context()->getDiagnostics(), m);
+
+    if (m.skip())
+        return true;
+
+    auto generated_message_from_comment = generate_message_from_comment(m);
+
+    if (!generated_message_from_comment && !should_include(expr)) {
+        LOG_DBG("Skipping call expression due to filter at: {}",
+            expr->getBeginLoc().printToString(source_manager()));
+
+        processed_comments().erase(raw_expr_comment);
+        return true;
+    }
+
+    if (context().is_expr_in_current_control_statement_condition(expr)) {
+        m.set_message_scope(common::model::message_scope_t::kCondition);
+    }
+
+    if (generated_message_from_comment) {
+        LOG_DBG(
+            "Message for this call expression is taken from comment directive");
+        return true;
+    }
+
+    process_objc_message_expression(m, expr);
+
+    // Add message to diagram
+    if (m.from().value() > 0 && m.to().value() > 0) {
+        if (raw_expr_comment != nullptr)
+            m.set_comment(raw_expr_comment->getBeginLoc().getHashValue(),
+                stripped_comment);
+
+        if (diagram().sequences().find(m.from()) ==
+            diagram().sequences().end()) {
+            activity a{m.from()};
+            diagram().sequences().insert({m.from(), std::move(a)});
+        }
+
+        diagram().add_active_participant(m.from());
+        diagram().add_active_participant(m.to());
+
+        LOG_DBG("Found ObjC message {} from {} [{}] to {} [{}] ",
+            m.message_name(), m.from(), m.from(), m.to(), m.to());
+
+        push_message(expr, std::move(m));
+    }
+
+    return true;
+}
+
+bool translation_unit_visitor::VisitObjCPropertyRefExpr(
+    clang::ObjCPropertyRefExpr *expr)
+{
+    using clanguml::common::model::message_scope_t;
+    using clanguml::common::model::message_t;
+    using clanguml::common::model::namespace_;
+    using clanguml::sequence_diagram::model::activity;
+    using clanguml::sequence_diagram::model::message;
+
+    if (!context().valid() || context().get_ast_context() == nullptr)
+        return true;
+
+    LOG_TRACE("Visiting ObjC property ref expression at {} [caller_id = {}]",
+        expr->getBeginLoc().printToString(source_manager()),
+        context().caller_id());
+
+    return true;
+}
+
 bool translation_unit_visitor::VisitCallExpr(clang::CallExpr *expr)
 {
     using clanguml::common::model::message_scope_t;
@@ -1395,6 +1666,53 @@ bool translation_unit_visitor::process_construct_expression(
     return true;
 }
 
+bool translation_unit_visitor::process_objc_message_expression(
+    model::message &m, const clang::ObjCMessageExpr *message_expr)
+{
+    const auto *method_decl = message_expr->getMethodDecl();
+
+    if (method_decl == nullptr)
+        return false;
+
+    std::string method_name = method_decl->getQualifiedNameAsString();
+
+    if (message_expr->getReceiverInterface() == nullptr)
+        return false;
+
+    const auto *callee_decl = message_expr->getReceiverInterface();
+
+    if (callee_decl == nullptr)
+        return false;
+
+    if (!should_include(callee_decl) || !should_include(method_decl))
+        return false;
+
+    if (callee_decl->getImplementation() != nullptr &&
+        callee_decl->getImplementation()->getMethod(method_decl->getSelector(),
+            method_decl->isInstanceMethod(), true) != nullptr) {
+        const auto *impl_method_decl =
+            callee_decl->getImplementation()->getMethod(
+                method_decl->getSelector(), method_decl->isInstanceMethod(),
+                true);
+        m.set_to(eid_t{impl_method_decl->getID()});
+    }
+    else {
+        m.set_to(eid_t{method_decl->getID()});
+    }
+
+    m.set_message_name(method_decl->getNameAsString());
+    m.set_return_type(
+        message_expr->getCallReturnType(*context().get_ast_context())
+            .getAsString());
+
+    LOG_TRACE("Set callee ObjC method id {} for method name {}", m.to(),
+        method_decl->getQualifiedNameAsString());
+
+    diagram().add_active_participant(eid_t{method_decl->getID()});
+
+    return true;
+}
+
 bool translation_unit_visitor::process_class_method_call_expression(
     model::message &m, const clang::CXXMemberCallExpr *method_call_expr)
 {
@@ -1615,6 +1933,62 @@ bool translation_unit_visitor::is_smart_pointer(
         primary_template->getQualifiedNameAsString().find("std::shared_ptr") ==
         0 ||
         primary_template->getQualifiedNameAsString().find("std::weak_ptr") == 0;
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::class_>
+translation_unit_visitor::create_objc_protocol_model(
+    clang::ObjCProtocolDecl *cls)
+{
+    assert(cls != nullptr);
+
+    auto c_ptr{std::make_unique<clanguml::sequence_diagram::model::class_>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    auto qualified_name = cls->getQualifiedNameAsString();
+
+    c.is_objc_interface();
+
+    c.set_name(cls->getQualifiedNameAsString());
+    c.set_id(common::to_id(*cls));
+
+    process_comment(*cls, c);
+    set_source_location(*cls, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
+}
+
+std::unique_ptr<clanguml::sequence_diagram::model::class_>
+translation_unit_visitor::create_objc_interface_model(
+    clang::ObjCInterfaceDecl *cls)
+{
+    assert(cls != nullptr);
+
+    auto c_ptr{std::make_unique<clanguml::sequence_diagram::model::class_>(
+        config().using_namespace())};
+    auto &c = *c_ptr;
+
+    auto qualified_name = cls->getQualifiedNameAsString();
+
+    c.is_objc_interface(true);
+
+    c.set_name(cls->getQualifiedNameAsString());
+    c.set_id(common::to_id(*cls));
+
+    process_comment(*cls, c);
+    set_source_location(*cls, c);
+
+    if (c.skip())
+        return {};
+
+    c.set_style(c.style_spec());
+
+    return c_ptr;
 }
 
 std::unique_ptr<clanguml::sequence_diagram::model::class_>
@@ -1943,6 +2317,12 @@ void translation_unit_visitor::push_message(
     construct_expr_message_map_.emplace(expr, std::move(m));
 }
 
+void translation_unit_visitor::push_message(
+    clang::ObjCMessageExpr *expr, model::message &&m)
+{
+    objc_message_map_.emplace(expr, std::move(m));
+}
+
 void translation_unit_visitor::pop_message_to_diagram(clang::CallExpr *expr)
 {
     assert(expr != nullptr);
@@ -1982,6 +2362,24 @@ void translation_unit_visitor::pop_message_to_diagram(
     diagram().get_activity(caller_id).add_message(std::move(msg));
 
     construct_expr_message_map_.erase(expr);
+}
+
+void translation_unit_visitor::pop_message_to_diagram(
+    clang::ObjCMessageExpr *expr)
+{
+    assert(expr != nullptr);
+
+    // Skip if no message was generated from this expr
+    if (objc_message_map_.find(expr) == objc_message_map_.end()) {
+        return;
+    }
+
+    auto msg = std::move(objc_message_map_.at(expr));
+
+    auto caller_id = msg.from();
+    diagram().get_activity(caller_id).add_message(std::move(msg));
+
+    objc_message_map_.erase(expr);
 }
 
 void translation_unit_visitor::finalize()
@@ -2086,6 +2484,68 @@ translation_unit_visitor::create_lambda_method_model(
     return method_model_ptr;
 }
 
+std::unique_ptr<clanguml::sequence_diagram::model::objc_method>
+translation_unit_visitor::create_objc_method_model(
+    clang::ObjCMethodDecl *declaration)
+{
+    auto method_model_ptr =
+        std::make_unique<sequence_diagram::model::objc_method>(
+            config().using_namespace());
+
+    common::model::namespace_ ns{declaration->getQualifiedNameAsString()};
+    auto method_name = ns.name();
+    method_model_ptr->set_method_name(method_name);
+    ns.pop_back();
+    method_model_ptr->set_name(ns.name());
+    method_model_ptr->set_namespace({});
+
+    clang::Decl *parent_decl = declaration->getClassInterface();
+
+    if (parent_decl == nullptr) {
+        LOG_DBG("Cannot find ObjC interface for method, probably it is a "
+                "protocol {} [{}]",
+            method_name,
+            declaration->getLocation().printToString(source_manager()));
+        return {};
+    }
+
+    LOG_DBG("Getting ObjC method's interface with local id {}",
+        parent_decl->getID());
+
+    const auto maybe_method_class = get_participant<model::class_>(parent_decl);
+
+    if (!maybe_method_class) {
+        LOG_DBG("Cannot find parent class_ for method {} in class {}",
+            declaration->getQualifiedNameAsString(),
+            declaration->getClassInterface()->getQualifiedNameAsString());
+        return {};
+    }
+
+    const auto &method_class = maybe_method_class.value();
+
+    method_model_ptr->is_void(declaration->getReturnType()->isVoidType());
+
+    method_model_ptr->set_class_id(method_class.id());
+    method_model_ptr->set_class_full_name(method_class.full_name(false));
+    method_model_ptr->set_name(get_participant(method_model_ptr->class_id())
+                                   .value()
+                                   .full_name_no_ns() +
+        "::" + declaration->getNameAsString());
+
+    method_model_ptr->return_type(common::to_string(
+        declaration->getReturnType(), declaration->getASTContext()));
+
+    for (const auto *param : declaration->parameters()) {
+        auto parameter_type =
+            common::to_string(param->getType(), param->getASTContext());
+        common::ensure_lambda_type_is_relative(config(), parameter_type);
+        parameter_type = simplify_system_template(parameter_type);
+        method_model_ptr->add_parameter(parameter_type);
+    }
+
+    return method_model_ptr;
+}
+
 std::unique_ptr<clanguml::sequence_diagram::model::method>
 translation_unit_visitor::create_method_model(clang::CXXMethodDecl *declaration)
 {
@@ -2158,10 +2618,34 @@ bool translation_unit_visitor::should_include(const clang::TagDecl *decl) const
 }
 
 bool translation_unit_visitor::should_include(
+    const clang::ObjCContainerDecl *decl) const
+{
+    return visitor_specialization_t::should_include(
+        dynamic_cast<const clang::NamedDecl *>(decl));
+}
+
+bool translation_unit_visitor::should_include(
     const clang::LambdaExpr *expr) const
 {
     const auto expr_file = expr->getBeginLoc().printToString(source_manager());
     return diagram().should_include(common::model::source_file{expr_file});
+}
+
+bool translation_unit_visitor::should_include(
+    const clang::ObjCMessageExpr *expr) const
+{
+    if (context().caller_id() == 0)
+        return false;
+
+    if (!context().valid())
+        return false;
+
+    const auto expr_file = expr->getBeginLoc().printToString(source_manager());
+
+    if (!diagram().should_include(common::model::source_file{expr_file}))
+        return false;
+
+    return true;
 }
 
 bool translation_unit_visitor::should_include(const clang::CallExpr *expr) const
@@ -2215,6 +2699,18 @@ bool translation_unit_visitor::should_include(
         return false;
 
     LOG_DBG("Including method {}", decl->getQualifiedNameAsString());
+
+    return true;
+}
+
+bool translation_unit_visitor::should_include(
+    const clang::ObjCMethodDecl *decl) const
+{
+    if (!diagram().should_include(
+            common::access_specifier_to_access_t(decl->getAccess())))
+        return false;
+
+    LOG_DBG("Including ObjC method {}", decl->getQualifiedNameAsString());
 
     return true;
 }

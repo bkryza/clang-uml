@@ -1,0 +1,13 @@
+diagrams:
+  t00085_class:
+    type: class
+    glob:
+      - t00085.m
+    filter_mode: advanced
+    include_system_headers: true
+    include:
+      anyof:
+        paths:
+          - .
+        elements:
+          - NSObject

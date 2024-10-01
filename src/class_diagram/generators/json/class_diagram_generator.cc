@@ -82,6 +82,16 @@ void to_json(nlohmann::json &j, const class_method &c)
     j["parameters"] = c.parameters();
 }
 
+void to_json(nlohmann::json &j, const objc_method &c)
+{
+    j = dynamic_cast<const class_element &>(c);
+
+    j["is_optional"] = c.is_optional();
+    j["display_name"] = c.display_name();
+
+    j["parameters"] = c.parameters();
+}
+
 void to_json(nlohmann::json &j, const class_ &c)
 {
     j = dynamic_cast<const common::model::element &>(c);
@@ -104,7 +114,6 @@ void to_json(nlohmann::json &j, const class_ &c)
         base["id"] = std::to_string(rel.destination().value());
         if (rel.access() != common::model::access_t::kNone)
             base["access"] = to_string(rel.access());
-        base["name"] = c.name();
         bases.push_back(std::move(base));
     }
     j["bases"] = std::move(bases);
@@ -112,6 +121,35 @@ void to_json(nlohmann::json &j, const class_ &c)
     set_module(j, c);
 
     j["template_parameters"] = c.template_params();
+}
+
+void to_json(nlohmann::json &j, const objc_interface &c)
+{
+    j = dynamic_cast<const common::model::element &>(c);
+    j["is_protocol"] = c.is_protocol();
+    j["is_category"] = c.is_category();
+
+    j["members"] = c.members();
+    j["methods"] = c.methods();
+    auto bases = nlohmann::json::array();
+    auto protocols = nlohmann::json::array();
+
+    for (const auto &rel : c.relationships()) {
+        if (rel.type() == common::model::relationship_t::kExtension) {
+            auto base = nlohmann::json::object();
+            base["id"] = std::to_string(rel.destination().value());
+            if (rel.access() != common::model::access_t::kNone)
+                base["access"] = to_string(rel.access());
+            bases.push_back(std::move(base));
+        }
+        else if (rel.type() == common::model::relationship_t::kInstantiation) {
+            auto protocol = nlohmann::json::object();
+            protocol["id"] = std::to_string(rel.destination().value());
+            protocols.push_back(std::move(protocol));
+        }
+    }
+    j["bases"] = std::move(bases);
+    j["protocols"] = std::move(protocols);
 }
 
 void to_json(nlohmann::json &j, const enum_ &c)
@@ -166,14 +204,9 @@ void generator::generate_top_level_elements(nlohmann::json &parent) const
             if (!pkg->is_empty())
                 generate(*pkg, parent);
         }
-        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            generate(*cls, parent);
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            generate(*enm, parent);
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            generate(*cpt, parent);
+        else {
+            model().dynamic_apply(
+                p.get(), [&](auto *el) { generate(*el, parent); });
         }
     }
 }
@@ -206,23 +239,13 @@ void generator::generate(const package &p, nlohmann::json &parent) const
                     generate(sp, parent);
             }
         }
-        else if (auto *cls = dynamic_cast<class_ *>(subpackage.get()); cls) {
-            if (config().generate_packages())
-                generate(*cls, package_object);
-            else
-                generate(*cls, parent);
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(subpackage.get()); enm) {
-            if (config().generate_packages())
-                generate(*enm, package_object);
-            else
-                generate(*enm, parent);
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(subpackage.get()); cpt) {
-            if (config().generate_packages())
-                generate(*cpt, package_object);
-            else
-                generate(*cpt, parent);
+        else {
+            model().dynamic_apply(subpackage.get(), [&](auto *el) {
+                if (config().generate_packages())
+                    generate(*el, package_object);
+                else
+                    generate(*el, parent);
+            });
         }
     }
 
@@ -254,8 +277,6 @@ void generator::generate(const class_ &c, nlohmann::json &parent) const
         }
     }
 
-    std::string object_str = object.dump(2);
-
     parent["elements"].push_back(std::move(object));
 }
 
@@ -281,79 +302,36 @@ void generator::generate(const concept_ &c, nlohmann::json &parent) const
     parent["elements"].push_back(std::move(object));
 }
 
+void generator::generate(const objc_interface &c, nlohmann::json &parent) const
+{
+    nlohmann::json object = c;
+
+    // Perform config dependent postprocessing on generated class
+    if (!config().generate_fully_qualified_name())
+        object["display_name"] =
+            common::generators::json::render_name(c.full_name_no_ns());
+
+    object["display_name"] =
+        config().simplify_template_type(object["display_name"]);
+
+    parent["elements"].push_back(std::move(object));
+}
+
 void generator::generate_relationships(nlohmann::json &parent) const
 {
     for (const auto &p : model()) {
         if (auto *pkg = dynamic_cast<package *>(p.get()); pkg) {
             generate_relationships(*pkg, parent);
         }
-        else if (auto *cls = dynamic_cast<class_ *>(p.get()); cls) {
-            generate_relationships(*cls, parent);
-        }
-        else if (auto *enm = dynamic_cast<enum_ *>(p.get()); enm) {
-            generate_relationships(*enm, parent);
-        }
-        else if (auto *cpt = dynamic_cast<concept_ *>(p.get()); cpt) {
-            generate_relationships(*cpt, parent);
+        else {
+            model().dynamic_apply(p.get(),
+                [&](auto *el) { generate_relationships(*el, parent); });
         }
     }
 }
 
-void generator::generate_relationships(
-    const class_ &c, nlohmann::json &parent) const
-{
-    for (const auto &r : c.relationships()) {
-        auto target_element = model().get(r.destination());
-        if (!target_element.has_value()) {
-            LOG_DBG("Skipping {} relation from {} to {} due "
-                    "to unresolved destination id",
-                to_string(r.type()), c.full_name(), r.destination());
-            continue;
-        }
-
-        nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id().value());
-        parent["relationships"].push_back(rel);
-    }
-}
-
-void generator::generate_relationships(
-    const enum_ &c, nlohmann::json &parent) const
-{
-    for (const auto &r : c.relationships()) {
-        auto target_element = model().get(r.destination());
-        if (!target_element.has_value()) {
-            LOG_DBG("Skipping {} relation from {} to {} due "
-                    "to unresolved destination id",
-                to_string(r.type()), c.full_name(), r.destination());
-            continue;
-        }
-
-        nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id().value());
-        parent["relationships"].push_back(rel);
-    }
-}
-
-void generator::generate_relationships(
-    const concept_ &c, nlohmann::json &parent) const
-{
-    for (const auto &r : c.relationships()) {
-        auto target_element = model().get(r.destination());
-        if (!target_element.has_value()) {
-            LOG_DBG("Skipping {} relation from {} to {} due "
-                    "to unresolved destination id",
-                to_string(r.type()), c.full_name(), r.destination());
-            continue;
-        }
-
-        nlohmann::json rel = r;
-        rel["source"] = std::to_string(c.id().value());
-        parent["relationships"].push_back(rel);
-    }
-}
-
-void generator::generate_relationships(
+template <>
+void generator::generate_relationships<package>(
     const package &p, nlohmann::json &parent) const
 {
     for (const auto &subpackage : p) {
@@ -362,23 +340,12 @@ void generator::generate_relationships(
             if (!sp.is_empty())
                 generate_relationships(sp, parent);
         }
-        else if (dynamic_cast<class_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<class_ &>(*subpackage), parent);
-            }
-        }
-        else if (dynamic_cast<enum_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<enum_ &>(*subpackage), parent);
-            }
-        }
-        else if (dynamic_cast<concept_ *>(subpackage.get()) != nullptr) {
-            if (model().should_include(*subpackage)) {
-                generate_relationships(
-                    dynamic_cast<concept_ &>(*subpackage), parent);
-            }
+        else {
+            model().dynamic_apply(subpackage.get(), [&](auto *el) {
+                if (model().should_include(*el)) {
+                    generate_relationships(*el, parent);
+                }
+            });
         }
     }
 }

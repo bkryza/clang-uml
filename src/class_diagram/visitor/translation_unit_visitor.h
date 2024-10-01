@@ -20,6 +20,7 @@
 #include "class_diagram/model/class.h"
 #include "class_diagram/model/concept.h"
 #include "class_diagram/model/diagram.h"
+#include "class_diagram/model/objc_interface.h"
 #include "common/model/enums.h"
 #include "common/model/template_trait.h"
 #include "common/visitor/template_builder.h"
@@ -39,13 +40,19 @@ namespace clanguml::class_diagram::visitor {
 
 using clanguml::class_diagram::model::class_;
 using clanguml::class_diagram::model::class_member;
+using clanguml::class_diagram::model::class_member_base;
 using clanguml::class_diagram::model::class_method;
+using clanguml::class_diagram::model::class_method_base;
 using clanguml::class_diagram::model::concept_;
 using clanguml::class_diagram::model::diagram;
 using clanguml::class_diagram::model::enum_;
 using clanguml::class_diagram::model::method_parameter;
+using clanguml::class_diagram::model::objc_interface;
+using clanguml::class_diagram::model::objc_member;
+using clanguml::class_diagram::model::objc_method;
 using clanguml::common::eid_t;
 using clanguml::common::model::access_t;
+using clanguml::common::model::diagram_element;
 using clanguml::common::model::namespace_;
 using clanguml::common::model::relationship;
 using clanguml::common::model::relationship_t;
@@ -109,6 +116,12 @@ public:
     virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *cls);
 
     virtual bool TraverseConceptDecl(clang::ConceptDecl *cpt);
+
+    virtual bool VisitObjCCategoryDecl(clang::ObjCCategoryDecl *decl);
+
+    virtual bool VisitObjCProtocolDecl(clang::ObjCProtocolDecl *decl);
+
+    virtual bool VisitObjCInterfaceDecl(clang::ObjCInterfaceDecl *decl);
     /** @} */
 
     /**
@@ -142,6 +155,8 @@ public:
      */
     void add_concept(std::unique_ptr<concept_> &&c);
 
+    void add_objc_interface(std::unique_ptr<objc_interface> &&c);
+
     void add_diagram_element(
         std::unique_ptr<common::model::template_element> element) override;
 
@@ -171,6 +186,33 @@ private:
     create_record_declaration(clang::RecordDecl *rec);
 
     /**
+     * @brief Create class element model from Objective-C protocol
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
+    std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+    create_objc_protocol_declaration(clang::ObjCProtocolDecl *decl);
+
+    /**
+     * @brief Create class element model from Objective-C interface
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
+    std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+    create_objc_interface_declaration(clang::ObjCInterfaceDecl *decl);
+
+    /**
+     * @brief Create class element model from Objective-C category
+     *
+     * @param decl Objective-C protocol declaration
+     * @return Class diagram element model
+     */
+    std::unique_ptr<clanguml::class_diagram::model::objc_interface>
+    create_objc_category_declaration(clang::ObjCCategoryDecl *decl);
+
+    /**
      * @brief Create concept element model from concept declaration
      * @param cpt Concept declaration
      * @return Concept diagram element model
@@ -182,10 +224,40 @@ private:
      * @brief Process class declaration
      *
      * @param cls Class declaration
-     * @param c Class diagram element return from `create_class_declaration`
+     * @param c Class diagram element returned from `create_class_declaration`
      */
     void process_class_declaration(const clang::CXXRecordDecl &cls,
         clanguml::class_diagram::model::class_ &c);
+
+    /**
+     * @brief Process Objective-C category declaration
+     *
+     * @param cls Objective-C category declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_category_declaration`
+     */
+    void process_objc_category_declaration(
+        const clang::ObjCCategoryDecl &cls, objc_interface &c);
+
+    /**
+     * @brief Process Objective-C protocol declaration
+     *
+     * @param cls Objective-C protocol declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_protocol_declaration`
+     */
+    void process_objc_protocol_declaration(
+        const clang::ObjCProtocolDecl &cls, objc_interface &c);
+
+    /**
+     * @brief Process Objective-C interface declaration
+     *
+     * @param cls Objective-C interface declaration
+     * @param c Class diagram element returned from
+     *          `create_objc_interface_declaration`
+     */
+    void process_objc_interface_declaration(
+        const clang::ObjCInterfaceDecl &cls, objc_interface &c);
 
     /**
      * @brief Process class declaration bases (parents), if any
@@ -240,6 +312,15 @@ private:
         clanguml::class_diagram::model::class_ &c);
 
     /**
+     * @brief Process Objective-C method
+     *
+     * @param mf Method declaration
+     * @param c Class diagram element model
+     */
+    void process_objc_method(
+        const clang::ObjCMethodDecl &mf, objc_interface &c);
+
+    /**
      * @brief Process class method properties
      * @param mf Method declaration
      * @param c Class diagram element model
@@ -278,6 +359,23 @@ private:
         clanguml::class_diagram::model::class_ &c);
 
     /**
+     * @brief Process Objective-C data member
+     *
+     * @param field_declaration Data member declaration
+     * @param c Class diagram element model
+     */
+    void process_objc_ivar(const clang::ObjCIvarDecl &ivar, objc_interface &c);
+
+    /**
+     * @brief Process Objective-C class base
+     *
+     * @param cls Objective-C interface declaration
+     * @param c Class diagram element model
+     */
+    void process_objc_interface_base(
+        const clang::ObjCInterfaceDecl &cls, objc_interface &c);
+
+    /**
      * @brief Process function/method parameter
      *
      * @param param Parameter declaration
@@ -286,9 +384,19 @@ private:
      * @param template_parameter_names Ignored
      */
     void process_function_parameter(const clang::ParmVarDecl &param,
-        clanguml::class_diagram::model::class_method &method,
-        clanguml::class_diagram::model::class_ &c,
+        class_method &method, class_ &c,
         const std::set<std::string> &template_parameter_names = {});
+
+    /**
+     * @brief Process Objective-C class method parameter
+     *
+     * @param param Parameter declaration
+     * @param method Class method model
+     * @param c Class diagram element model
+     * @param template_parameter_names Ignored
+     */
+    void process_objc_method_parameter(const clang::ParmVarDecl &param,
+        objc_method &method, objc_interface &c);
 
     /**
      * @brief Process class friend
@@ -296,8 +404,7 @@ private:
      * @param f Friend declaration
      * @param c Class diagram element model
      */
-    void process_friend(
-        const clang::FriendDecl &f, clanguml::class_diagram::model::class_ &c);
+    void process_friend(const clang::FriendDecl &f, class_ &c);
 
     /**
      * @brief Find relationships in a specific type
@@ -312,20 +419,20 @@ private:
         clanguml::common::model::relationship_t relationship_hint);
 
     /**
-     * @brief Add relationships from relationship list to a class model
+     * @brief Add relationships from relationship list to a diagram element
+     * model
      *
      * This method takes a list of relationships whose originating element
      * is class `c` and adds them to it, ignoring any duplicates and skipping
      * relationships that should be excluded from the diagram.
      *
-     * @param c Class diagram element model
+     * @param c Diagram element model
      * @param field Class member model
      * @param relationships List of found relationships
      * @param break_on_first_aggregation Stop adding relatinoships, after first
      *        aggregation is found
      */
-    void add_relationships(clanguml::class_diagram::model::class_ &c,
-        const clanguml::class_diagram::model::class_member &field,
+    void add_relationships(diagram_element &c, const class_member_base &field,
         const found_relationships_t &relationships,
         bool break_on_first_aggregation = false);
 
@@ -430,6 +537,10 @@ private:
      */
     template_builder_t &tbuilder() { return template_builder_; }
 
+    template <typename T>
+    void process_record_parent_by_type(eid_t parent_id, class_ &c,
+        namespace_ parent_ns, const clang::RecordDecl *decl);
+
     template_builder_t template_builder_;
 
     std::map<eid_t, std::unique_ptr<clanguml::class_diagram::model::class_>>
@@ -450,4 +561,54 @@ private:
      */
     std::set<std::string> processed_template_qualified_names_;
 };
+
+template <typename T>
+void translation_unit_visitor::process_record_parent_by_type(eid_t parent_id,
+    class_ &c, namespace_ parent_ns, const clang::RecordDecl *decl)
+{
+    // Here we have 2 options, either:
+    //  - the parent is a regular C++ class/struct
+    //  - the parent is a class template declaration/specialization
+    auto parent_class = diagram().find<T>(parent_id);
+
+    c.set_namespace(parent_ns);
+    const auto cls_name = decl->getNameAsString();
+    if (cls_name.empty()) {
+        // Nested structs can be anonymous
+        if (anonymous_struct_relationships_.count(decl->getID()) > 0) {
+            const auto &[label, hint, access, destination_multiplicity] =
+                anonymous_struct_relationships_[decl->getID()];
+
+            c.set_name(parent_class.value().name() + "##" +
+                fmt::format("({})", label));
+
+            std::string destination_multiplicity_str{};
+            if (destination_multiplicity.has_value()) {
+                destination_multiplicity_str =
+                    std::to_string(*destination_multiplicity);
+            }
+
+            parent_class.value().add_relationship(
+                {hint, common::to_id(c.full_name(false)), access, label, "",
+                    destination_multiplicity_str});
+        }
+        else
+            c.set_name(parent_class.value().name() + "##" +
+                fmt::format("(anonymous_{})", std::to_string(decl->getID())));
+    }
+    else {
+        c.set_name(
+            parent_class.value().name() + "##" + decl->getNameAsString());
+    }
+
+    c.set_id(common::to_id(c.full_name(false)));
+
+    if (!(decl->getNameAsString().empty())) {
+        // Don't add anonymous structs as contained in the class
+        // as they are already added as aggregations
+        c.add_relationship({relationship_t::kContainment, parent_id});
+    }
+
+    c.nested(true);
+}
 } // namespace clanguml::class_diagram::visitor

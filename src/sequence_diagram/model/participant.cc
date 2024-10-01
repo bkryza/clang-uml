@@ -96,6 +96,20 @@ bool class_::is_lambda() const { return is_lambda_; }
 
 void class_::is_lambda(bool is_lambda) { is_lambda_ = is_lambda; }
 
+bool class_::is_objc_interface() const { return is_objc_interface_; }
+
+void class_::is_objc_interface(bool is_objc_interface)
+{
+    is_objc_interface_ = is_objc_interface;
+}
+
+bool class_::is_objc_protocol() const { return is_objc_protocol_; }
+
+void class_::is_objc_protocol(bool is_objc_protocol)
+{
+    is_objc_protocol_ = is_objc_protocol;
+}
+
 bool operator==(const class_ &l, const class_ &r) { return l.id() == r.id(); }
 
 function::function(const common::model::namespace_ &using_namespace)
@@ -167,6 +181,74 @@ void function::add_parameter(const std::string &a) { parameters_.push_back(a); }
 const std::vector<std::string> &function::parameters() const
 {
     return parameters_;
+}
+
+objc_method::objc_method(const common::model::namespace_ &using_namespace)
+    : function{using_namespace}
+{
+}
+
+std::string objc_method::method_name() const { return method_name_; }
+
+std::string objc_method::alias() const
+{
+    assert(class_id_.is_global());
+
+    return fmt::format("C_{:022}", class_id_.value());
+}
+
+void objc_method::set_method_name(const std::string &name)
+{
+    method_name_ = name;
+}
+
+void objc_method::set_class_id(eid_t id) { class_id_ = id; }
+
+void objc_method::set_class_full_name(const std::string &name)
+{
+    class_full_name_ = name;
+}
+
+const auto &objc_method::class_full_name() const { return class_full_name_; }
+
+std::string objc_method::full_name(bool relative) const
+{
+    if (relative)
+        return fmt::format("{}({}){}", method_name(),
+            fmt::join(parameters(), ","), is_const() ? " const" : "");
+
+    return fmt::format("{}::{}({}){}", class_full_name(), method_name(),
+        fmt::join(parameters(), ","), is_const() ? " const" : "");
+}
+
+std::string objc_method::message_name(message_render_mode mode) const
+{
+    constexpr auto kAbbreviatedMethodArgumentsLength{15};
+
+    const std::string style{};
+
+    if (mode == message_render_mode::no_arguments) {
+        return fmt::format("{}{}(){}{}", style, method_name(),
+            is_const() ? " const" : "", style);
+    }
+    if (mode == message_render_mode::abbreviated) {
+        return fmt::format("{}({}){}", name(),
+            clanguml::util::abbreviate(
+                fmt::format("{}", fmt::join(parameters(), ",")),
+                kAbbreviatedMethodArgumentsLength),
+            is_const() ? " const" : "");
+    }
+
+    return fmt::format("{}{}({}){}{}", style, method_name(),
+        fmt::join(parameters(), ","), is_const() ? " const" : "", style);
+}
+
+eid_t objc_method::class_id() const { return class_id_; }
+
+std::string objc_method::to_string() const
+{
+    return fmt::format("Participant '{}': id={}, name={}, class_id={}",
+        type_name(), id(), full_name(false), class_id());
 }
 
 method::method(const common::model::namespace_ &using_namespace)

@@ -44,7 +44,8 @@ namespace clanguml::common {
  */
 model::access_t access_specifier_to_access_t(
     clang::AccessSpecifier access_specifier);
-
+model::access_t access_specifier_to_access_t(
+    clang::ObjCIvarDecl::AccessControl access_specifier);
 /**
  * @brief Generate full qualified name for
  * [clang::TagDecl](https://clang.llvm.org/doxygen/classclang_1_1TagDecl.html)
@@ -189,6 +190,12 @@ template <> eid_t to_id(const clang::NamespaceDecl &declaration);
 template <> eid_t to_id(const clang::CXXRecordDecl &declaration);
 
 template <> eid_t to_id(const clang::RecordDecl &declaration);
+
+template <> eid_t to_id(const clang::ObjCCategoryDecl &type);
+
+template <> eid_t to_id(const clang::ObjCInterfaceDecl &type);
+
+template <> eid_t to_id(const clang::ObjCProtocolDecl &type);
 
 template <> eid_t to_id(const clang::EnumDecl &declaration);
 
