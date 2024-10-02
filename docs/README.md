@@ -13,7 +13,7 @@ The diagrams can be generated in [PlantUML](https://plantuml.com),
 Example sequence diagram generated using `clang-uml` from [this code](https://github.com/bkryza/clang-uml/blob/master/tests/t20029/t20029.cc):
 ![Sample sequence diagram](test_cases/t20029_sequence.svg)
 
-`clang-uml` currently supports C++ up to version 17 with partial support for C++ 20.
+`clang-uml` currently supports C++ up 20, as well as C and Objective-C.
 
 To see what `clang-uml` can do, checkout the diagrams generated for unit
 test cases [here](./test_cases.md) or examples in

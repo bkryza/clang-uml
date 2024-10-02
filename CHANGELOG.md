@@ -1,5 +1,6 @@
 # CHANGELOG
 
+### 0.5.5
  * Updated code to work with LLVM 19 (#319)
  * Added support for Objective C (#296)
  * Added option to fold repeated activities in sequence diagrams (#317)

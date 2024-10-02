@@ -36,16 +36,16 @@ sudo apt install clang-uml
 
 ```bash
 # Fedora 38
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc38.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.4-1.fc38.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.5/clang-uml-0.5.4-1.fc38.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.5-1.fc38.x86_64.rpm
 
 # Fedora 39
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc39.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.4-1.fc39.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.5/clang-uml-0.5.5-1.fc39.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.5-1.fc39.x86_64.rpm
 
 # Fedora 40
-wget https://github.com/bkryza/clang-uml/releases/download/0.5.4/clang-uml-0.5.4-1.fc40.x86_64.rpm
-sudo dnf install ./clang-uml-0.5.4-1.fc40.x86_64.rpm
+wget https://github.com/bkryza/clang-uml/releases/download/0.5.5/clang-uml-0.5.5-1.fc40.x86_64.rpm
+sudo dnf install ./clang-uml-0.5.5-1.fc40.x86_64.rpm
 ```
 
 #### Arch Linux
@@ -116,8 +116,8 @@ brew install clang-uml
 First make sure that you have the following dependencies installed:
 
 ```bash
-# Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 22.04)
-apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-15 clang-15 libclang-15-dev libclang-cpp15-dev clang-format-15
+# Ubuntu (Clang version will vary depending on Ubuntu version - below example is for Ubuntu 24.04)
+apt install make gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev
 ```
 
 Then proceed with building the sources:
@@ -130,14 +130,14 @@ make release
 release/src/clang-uml --help
 
 # To build using a specific installed version of LLVM use:
-LLVM_VERSION=16 make release
+LLVM_VERSION=18 make release
 # or specify a path to a specific llvm-config binary, e.g.:
-LLVM_CONFIG_PATH=/usr/bin/llvm-config-16 make release
+LLVM_CONFIG_PATH=/usr/bin/llvm-config-18 make release
 # or directly specify the path where LLVMConfig.cmake can be found on your system, e.g.:
-CMAKE_PREFIX=/usr/lib/llvm-16/lib/cmake/llvm make release
+CMAKE_PREFIX=/usr/lib/llvm-18/lib/cmake/llvm make release
 
 # By default clang-uml is linked against shared LLVM libraries, this can be changed using:
-LLVM_SHARED=OFF LLVM_VERSION=16 make release
+LLVM_SHARED=OFF LLVM_VERSION=18 make release
 
 # Optionally, to install in default prefix
 make install
@@ -155,7 +155,7 @@ brew install ccache cmake llvm yaml-cpp
 
 export CC=/usr/local/opt/llvm/bin/clang
 export CXX=/usr/local/opt/llvm/bin/clang++
-LLVM_VERSION=16 make release
+LLVM_VERSION=18 make release
 # or, if this fails, try:
 CMAKE_PREFIX=/usr/local/opt/llvm/lib/cmake/llvm make release
 ```
@@ -237,7 +237,7 @@ bin\clang-uml.exe --version
 ```
 It should produce something like:
 ```bash
-clang-uml 0.5.4
+clang-uml 0.5.5
 Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>
 Linux x86_64 6.5.0-21-generic
 Built against LLVM/Clang libraries version: 18.1.8
