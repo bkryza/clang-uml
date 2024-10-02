@@ -49,5 +49,5 @@ to the [documentation](../docs/installation.md#visual-studio-native-build).
 ```bash
 cd packaging
 .\make_installer.ps1
-ls .\_BUILD\windows\clang-uml-0.5.4-win64.exe
+ls .\_BUILD\windows\clang-uml-0.5.5-win64.exe
 ```
