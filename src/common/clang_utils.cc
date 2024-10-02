@@ -166,7 +166,13 @@ std::string to_string(
     clang::PrintingPolicy policy(context.getLangOpts());
 
     const clang::TemplateArgument &arg = argLoc.getArgument();
+
+#if LLVM_VERSION_MAJOR > 18
     arg.print(policy, stream, false);
+#else
+    arg.dump(stream);
+#endif
+
     stream.flush();
 
     return result;
