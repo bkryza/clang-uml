@@ -220,3 +220,12 @@ fedora/%:
 	mkdir -p packaging/_BUILD/fedora/$*
 	git archive --format=tar.gz --prefix=clang-uml-$(PKG_VERSION)/ v$(GIT_VERSION) >packaging/_BUILD/fedora/$*/clang-uml-$(PKG_VERSION).tar.gz
 	docker run --cpuset-cpus=0-7 -v $(PWD):$(PWD) fedora:$* sh -c "dnf install -y make git && cd ${PWD} && make OS=fedora DIST=$* VERSION=${PKG_VERSION} COMMIT=${GIT_COMMIT} BRANCH=${GIT_BRANCH} -C packaging rpm"
+
+.PHONY: venv
+venv:
+	test -d venv || virtualenv -p /usr/bin/python3 venv;. venv/bin/activate; pip install -Ur dev-requirements.txt
+
+
+.PHONY: cmake-format
+cmake-format:
+	cmake-format -i CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt

@@ -35,8 +35,8 @@ set(CLANG_UML_INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 set(UML_HEADERS_DIR ${PROJECT_SOURCE_DIR}/src/uml)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 if(APPLE)
-    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm"
-            OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm" OR "${CMAKE_SYSTEM_PROCESSOR}"
+                                                     STREQUAL "arm64")
         set(HOMEBREW_PREFIX "/opt/homebrew")
     else()
         set(HOMEBREW_PREFIX "/usr/local")
@@ -77,15 +77,17 @@ endif(CODE_COVERAGE)
 option(ADDRESS_SANITIZER "" OFF)
 if(ADDRESS_SANITIZER)
     set(CMAKE_CXX_FLAGS
-            "${CMAKE_CXX_FLAGS} \
+        "${CMAKE_CXX_FLAGS} \
             -fno-omit-frame-pointer \
             -fsanitize=address \
-            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist")
+            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist"
+    )
     set(CMAKE_EXE_LINKER_FLAGS
-            "${CMAKE_EXE_LINKER_FLAGS} \
+        "${CMAKE_EXE_LINKER_FLAGS} \
             -fno-omit-frame-pointer \
             -fsanitize=address \
-            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist")
+            -fsanitize-blacklist=${CMAKE_CURRENT_SOURCE_DIR}/.sanitize-blacklist"
+    )
 endif(ADDRESS_SANITIZER)
 
 #
@@ -94,31 +96,39 @@ endif(ADDRESS_SANITIZER)
 include(LLVMSetup)
 
 #
-# Setup custom compile options depending on various compiler
-# and environment quirks
+# Setup custom compile options depending on various compiler and environment
+# quirks
 #
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13.0")
         # Workaround over Wdangling-reference false positives in libfmt
-        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-dangling-reference)
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+                                   -Wno-dangling-reference)
     endif()
 endif()
 
 if(LLVM_VERSION_MAJOR GREATER_EQUAL 17)
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-class-memaccess)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+                                   -Wno-class-memaccess)
     endif()
 endif()
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CUSTOM_COMPILE_OPTIONS
-            ${CUSTOM_COMPILE_OPTIONS} -Wno-unused-private-field)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS}
+                               -Wno-unused-private-field)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19)
-        set(CUSTOM_COMPILE_OPTIONS ${CUSTOM_COMPILE_OPTIONS} -Wno-missing-template-arg-list-after-template-kw)
+        set(CUSTOM_COMPILE_OPTIONS
+            ${CUSTOM_COMPILE_OPTIONS}
+            -Wno-missing-template-arg-list-after-template-kw)
     endif()
     if(APPLE)
-        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
-            # Use LLVM bundled unwind on Apple Silicon to fix segfaults on exception throw
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L${HOMEBREW_PREFIX}/opt/llvm/lib/unwind -lunwind")
+        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm"
+           OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+            # Use LLVM bundled unwind on Apple Silicon to fix segfaults on
+            # exception throw
+            set(CMAKE_EXE_LINKER_FLAGS
+                "${CMAKE_EXE_LINKER_FLAGS} -L${HOMEBREW_PREFIX}/opt/llvm/lib/unwind -lunwind"
+            )
         endif()
     endif(APPLE)
 endif()
@@ -154,7 +164,7 @@ else()
     set(CLANG_UML_ENABLE_BACKTRACE_DEFAULT OFF)
 endif()
 option(CLANG_UML_ENABLE_BACKTRACE "Enable backtrace on segfault"
-        ${CLANG_UML_ENABLE_BACKTRACE_DEFAULT})
+       ${CLANG_UML_ENABLE_BACKTRACE_DEFAULT})
 
 if(LINUX AND CLANG_UML_ENABLE_BACKTRACE)
     find_package(PkgConfig REQUIRED)
@@ -208,7 +218,7 @@ endif(ENABLE_CUDA_TEST_CASES)
 if(ENABLE_OBJECTIVE_C_TEST_CASES)
     enable_language(OBJC)
     if(UNIX AND NOT APPLE)
-      find_package(GNUstep REQUIRED)
+        find_package(GNUstep REQUIRED)
     endif()
 endif(ENABLE_OBJECTIVE_C_TEST_CASES)
 

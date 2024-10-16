@@ -3,7 +3,7 @@
 #
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/src/version)
 configure_file(${CMAKE_CURRENT_LIST_DIR}/version.h.in
-        ${PROJECT_BINARY_DIR}/src/version/version.h)
+               ${PROJECT_BINARY_DIR}/src/version/version.h)
 
 #
 # Generate source list dynamically
@@ -23,16 +23,26 @@ else(MSVC)
 endif(MSVC)
 
 target_compile_features(clang-umllib INTERFACE cxx_std_17)
-target_compile_options(clang-umllib PRIVATE
-        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-        -Werror -Wall -Wextra -Wno-unused-parameter
-        -Wno-deprecated-declarations ${CUSTOM_COMPILE_OPTIONS}>
-        $<$<CXX_COMPILER_ID:MSVC>:/MP /MD /W1 /bigobj /wd4291 /wd4624 /wd4244>)
-target_compile_definitions(clang-umllib PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>:
-        -DLLVM_FORCE_USE_OLD_TOOLCHAIN
-        -DTERMCOLOR_USE_WINDOWS_API=1
-        -DTERMCOLOR_TARGET_WINDOWS=1>)
+target_compile_options(
+    clang-umllib
+    PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
+            -Werror
+            -Wall
+            -Wextra
+            -Wno-unused-parameter
+            -Wno-deprecated-declarations
+            ${CUSTOM_COMPILE_OPTIONS}>
+            $<$<CXX_COMPILER_ID:MSVC>:/MP
+            /MD
+            /W1
+            /bigobj
+            /wd4291
+            /wd4624
+            /wd4244>)
+target_compile_definitions(
+    clang-umllib
+    PRIVATE $<$<CXX_COMPILER_ID:MSVC>: -DLLVM_FORCE_USE_OLD_TOOLCHAIN
+            -DTERMCOLOR_USE_WINDOWS_API=1 -DTERMCOLOR_TARGET_WINDOWS=1>)
 
 #
 # Define the target executable clang-uml
@@ -40,20 +50,31 @@ target_compile_definitions(clang-umllib PRIVATE
 add_executable(clang-uml ${MAIN_SOURCE_FILE})
 
 target_compile_features(clang-uml PUBLIC cxx_std_17)
-target_compile_options(clang-uml PRIVATE
-        $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-        -Werror -Wall -Wextra -Wno-unused-parameter
-        -Wno-deprecated-declarations ${CUSTOM_COMPILE_OPTIONS}>
-        $<$<CXX_COMPILER_ID:MSVC>:/MP /MD /W1 /bigobj /wd4291 /wd4624 /wd4244>)
-target_compile_definitions(clang-uml PRIVATE
-        ${ENABLE_BACKWARD_CPP})
-target_link_libraries(clang-uml
-        ${YAML_CPP_LIBRARIES}
-        ${LIBTOOLING_LIBS}
-        ${MSVC_LIBRARIES}
-        ${BACKWARD_CPP_LIBRARIES}
-        clang-umllib
-        Threads::Threads)
+target_compile_options(
+    clang-uml
+    PRIVATE $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
+            -Werror
+            -Wall
+            -Wextra
+            -Wno-unused-parameter
+            -Wno-deprecated-declarations
+            ${CUSTOM_COMPILE_OPTIONS}>
+            $<$<CXX_COMPILER_ID:MSVC>:/MP
+            /MD
+            /W1
+            /bigobj
+            /wd4291
+            /wd4624
+            /wd4244>)
+target_compile_definitions(clang-uml PRIVATE ${ENABLE_BACKWARD_CPP})
+target_link_libraries(
+    clang-uml
+    ${YAML_CPP_LIBRARIES}
+    ${LIBTOOLING_LIBS}
+    ${MSVC_LIBRARIES}
+    ${BACKWARD_CPP_LIBRARIES}
+    clang-umllib
+    Threads::Threads)
 
 #
 # Setup install options
@@ -77,7 +98,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/CHANGELOG.md
 set(CPACK_PACKAGE_NAME "clang-uml")
 set(CPACK_PACKAGE_VENDOR "Bartek Kryza <bkryza@gmail.com>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-        "clang-uml - C++ UML diagram generator based on Clang")
+    "clang-uml - C++ UML diagram generator based on Clang")
 set(CPACK_PACKAGE_VERSION "${GIT_VERSION}")
 set(CPACK_PACKAGE_VERSION_MAJOR "${GIT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${GIT_VERSION_MINOR}")
