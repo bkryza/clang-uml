@@ -132,30 +132,16 @@ find_package(Threads REQUIRED)
 # Setup yaml-cpp
 #
 message(STATUS "Checking for yaml-cpp...")
-if(APPLE)
-    find_package(PkgConfig)
-    if(PKG_CONFIG_FOUND)
-        pkg_check_modules(YAML_CPP yaml-cpp)
-        find_path(YAML_CPP_INCLUDE_DIR
-            NAMES yaml-cpp/yaml.h
-	        PATHS ${YAML_CPP_INCLUDE_DIR} ${HOMEBREW_PREFIX}/include)
-        find_library(YAML_CPP_LIBRARY
-            NAMES yaml-cpp
-            PATHS ${YAML_CPP_LIBRARIES} ${HOMEBREW_PREFIX}/lib)
-        set(YAML_CPP_LIBRARY_DIR ${HOMEBREW_PREFIX}/lib)
-    endif(PKG_CONFIG_FOUND)
-elseif(MSVC)
-    find_package(yaml-cpp REQUIRED)
-    set(YAML_CPP_LIBRARIES "yaml-cpp")
-else()
-    find_package(yaml-cpp REQUIRED)
-endif()
+find_package(yaml-cpp)
 
 if("${YAML_CPP_LIBRARIES}" STREQUAL "")
     message(FATAL_ERROR "Failed to find yaml-cpp library!")
 else()
     message(STATUS "Found yaml-cpp libraries: ${YAML_CPP_LIBRARIES}")
 endif()
+if(MSVC)
+    set(YAML_CPP_LIBRARIES "yaml-cpp")
+endif(MSVC)
 
 link_directories(${LLVM_LIBRARY_DIR} ${YAML_CPP_LIBRARY_DIR})
 
