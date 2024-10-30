@@ -46,6 +46,23 @@ struct runtime_config;
  */
 namespace config {
 
+struct element_filter_t {
+    enum class filtered_type {
+        any,
+        function,
+        class_,
+        method,
+        enum_,
+        concept_,
+        package
+    };
+
+    filtered_type type{filtered_type::any};
+    common::string_or_regex name;
+};
+
+std::string to_string(element_filter_t::filtered_type ft);
+
 /*! Select how the method arguments should be rendered */
 enum class method_arguments {
     full,        /*! Full */
@@ -250,7 +267,7 @@ struct filter {
      *       - r: ".*Enum.*"
      * ```
      */
-    std::vector<common::string_or_regex> elements;
+    std::vector<element_filter_t> elements;
 
     /*! @brief Element types filter
      *
@@ -850,6 +867,8 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const package_diagram &c);
 
 YAML::Emitter &operator<<(YAML::Emitter &out, const layout_hint &c);
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const element_filter_t &ef);
+
 #ifdef _MSC_VER
 YAML::Emitter &operator<<(YAML::Emitter &out, const std::filesystem::path &p);
 
@@ -886,5 +905,4 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const access_t &r);
 YAML::Emitter &operator<<(YAML::Emitter &out, const diagram_t &d);
 /** @} */ // end of yaml_emitters
 } // namespace common::model
-
 } // namespace clanguml

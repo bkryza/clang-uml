@@ -449,7 +449,7 @@ tvl::value_t modules_filter::match(
 }
 
 element_filter::element_filter(
-    filter_t type, std::vector<common::string_or_regex> elements)
+    filter_t type, std::vector<config::element_filter_t> elements)
     : filter_visitor{type}
     , elements_{std::move(elements)}
 {
@@ -463,8 +463,14 @@ tvl::value_t element_filter::match(const diagram &d, const element &e) const
 
     return tvl::any_of(
         elements_.begin(), elements_.end(), [&e](const auto &el) {
-            return ((el == e.full_name(false)) ||
-                (el == fmt::format("::{}", e.full_name(false))));
+            // First check if elements type matches the filter
+            if ((el.type != config::element_filter_t::filtered_type::any) &&
+                (config::to_string(el.type) != e.type_name())) {
+                return false;
+            }
+
+            return ((el.name == e.full_name(false)) ||
+                (el.name == fmt::format("::{}", e.full_name(false))));
         });
 }
 
@@ -481,19 +487,24 @@ tvl::value_t element_filter::match(
         dynamic_cast<const sequence_diagram::model::diagram &>(d);
     return tvl::any_of(elements_.begin(), elements_.end(),
         [&sequence_model, &p](const auto &el) {
-            if (p.type_name() == "method") {
+            // First check if elements type matches the filter
+            if (el.type != config::element_filter_t::filtered_type::any &&
+                config::to_string(el.type) != p.type_name()) {
+                return false;
+            }
 
+            if (p.type_name() == "method") {
                 const auto &m = dynamic_cast<const method &>(p);
                 const auto class_id = m.class_id();
                 const auto &class_participant =
                     sequence_model.get_participant<participant>(class_id)
                         .value();
 
-                return el == p.full_name(false) ||
-                    el == class_participant.full_name(false);
+                return el.name == p.full_name(false) ||
+                    el.name == class_participant.full_name(false);
             }
 
-            return el == p.full_name(false);
+            return el.name == p.full_name(false);
         });
 }
 

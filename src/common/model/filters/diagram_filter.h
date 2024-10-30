@@ -265,7 +265,7 @@ private:
  */
 struct element_filter : public filter_visitor {
     element_filter(
-        filter_t type, std::vector<common::string_or_regex> elements);
+        filter_t type, std::vector<config::element_filter_t> elements);
 
     ~element_filter() override = default;
 
@@ -275,7 +275,7 @@ struct element_filter : public filter_visitor {
         const sequence_diagram::model::participant &p) const override;
 
 private:
-    std::vector<common::string_or_regex> elements_;
+    std::vector<config::element_filter_t> elements_;
 };
 
 /**

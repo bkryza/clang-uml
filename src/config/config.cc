@@ -47,6 +47,29 @@ std::string to_string(const hint_t t)
     }
 }
 
+std::string to_string(element_filter_t::filtered_type ft)
+{
+    switch (ft) {
+    case element_filter_t::filtered_type::any:
+        return "any";
+    case element_filter_t::filtered_type::class_:
+        return "class";
+    case element_filter_t::filtered_type::function:
+        return "function";
+    case element_filter_t::filtered_type::method:
+        return "method";
+    case element_filter_t::filtered_type::enum_:
+        return "enum";
+    case element_filter_t::filtered_type::concept_:
+        return "concept_";
+    case element_filter_t::filtered_type::package:
+        return "package";
+    default:
+        assert(false);
+        return "";
+    }
+}
+
 std::string to_string(const method_arguments ma)
 {
     switch (ma) {

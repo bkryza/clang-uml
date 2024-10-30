@@ -37,6 +37,7 @@ using clanguml::config::config;
 using clanguml::config::context_config;
 using clanguml::config::context_direction_t;
 using clanguml::config::diagram_template;
+using clanguml::config::element_filter_t;
 using clanguml::config::filter;
 using clanguml::config::generate_links_config;
 using clanguml::config::git_config;
@@ -524,6 +525,52 @@ template <> struct convert<namespace_or_regex> {
         }
         else {
             rhs = namespace_or_regex{node.as<std::string>()};
+        }
+
+        return true;
+    }
+};
+
+template <> struct convert<element_filter_t> {
+    static bool decode(const Node &node, element_filter_t &rhs)
+    {
+        using namespace std::string_literals;
+        if (node.IsMap()) {
+            if (has_key(node, "r")) {
+                rhs.type = element_filter_t::filtered_type::any;
+                auto pattern = node["r"].as<std::string>();
+                auto rx = std::regex(pattern);
+                rhs.name = string_or_regex(std::move(rx), std::move(pattern));
+            }
+            else if (has_key(node, "type")) {
+                rhs.type = element_filter_t::filtered_type::any;
+                if (node["type"].as<std::string>() == "class")
+                    rhs.type = element_filter_t::filtered_type::class_;
+                else if (node["type"].as<std::string>() == "enum")
+                    rhs.type = element_filter_t::filtered_type::enum_;
+                else if (node["type"].as<std::string>() == "function")
+                    rhs.type = element_filter_t::filtered_type::function;
+                else if (node["type"].as<std::string>() == "method")
+                    rhs.type = element_filter_t::filtered_type::method;
+                else if (node["type"].as<std::string>() == "concept")
+                    rhs.type = element_filter_t::filtered_type::concept_;
+                else if (node["type"].as<std::string>() == "concept")
+                    rhs.type = element_filter_t::filtered_type::concept_;
+
+                auto name = node["name"];
+                if (name.IsMap() && has_key(name, "r")) {
+                    auto pattern = name["r"].as<std::string>();
+                    auto rx = std::regex(pattern);
+                    rhs.name =
+                        string_or_regex(std::move(rx), std::move(pattern));
+                }
+                else
+                    rhs.name = name.as<std::string>();
+            }
+        }
+        else {
+            rhs.type = element_filter_t::filtered_type::any;
+            rhs.name = string_or_regex{node.as<std::string>()};
         }
 
         return true;
