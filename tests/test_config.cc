@@ -454,6 +454,22 @@ TEST_CASE("Test config type aliases")
         "std::vector<std::string>");
 }
 
+TEST_CASE("Test config element_filter_t::filtered_type to_string")
+{
+    using clanguml::config::element_filter_t;
+    CHECK(to_string(element_filter_t::filtered_type::any) == "any");
+    CHECK(to_string(element_filter_t::filtered_type::class_) == "class");
+    CHECK(to_string(element_filter_t::filtered_type::function) == "function");
+    CHECK(to_string(element_filter_t::filtered_type::method) == "method");
+    CHECK(to_string(element_filter_t::filtered_type::enum_) == "enum");
+    CHECK(to_string(element_filter_t::filtered_type::concept_) == "concept");
+    CHECK(to_string(element_filter_t::filtered_type::package) == "package");
+    CHECK(to_string(element_filter_t::filtered_type::function_template) ==
+        "function_template");
+    CHECK(to_string(element_filter_t::filtered_type::objc_method) ==
+        "objc_method");
+}
+
 ///
 /// Main test function
 ///

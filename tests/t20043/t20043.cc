@@ -1,7 +1,9 @@
 namespace clanguml {
 namespace t20043 {
 struct A {
-    int a() { return 1; }
+    int a() { return a_impl(); }
+
+    int a_impl() { return 1; }
 };
 
 struct B {
@@ -11,7 +13,13 @@ struct B {
 
 struct C {
     B b;
-    int c() { return b.b(); }
+    int c()
+    {
+        log_c();
+        return b.b();
+    }
+
+    void log_c() { }
 };
 
 namespace detail {

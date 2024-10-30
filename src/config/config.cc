@@ -58,12 +58,26 @@ std::string to_string(element_filter_t::filtered_type ft)
         return "function";
     case element_filter_t::filtered_type::method:
         return "method";
+    case element_filter_t::filtered_type::member:
+        return "member";
     case element_filter_t::filtered_type::enum_:
         return "enum";
     case element_filter_t::filtered_type::concept_:
-        return "concept_";
+        return "concept";
     case element_filter_t::filtered_type::package:
         return "package";
+    case element_filter_t::filtered_type::function_template:
+        return "function_template";
+    case element_filter_t::filtered_type::objc_method:
+        return "objc_method";
+    case element_filter_t::filtered_type::objc_member:
+        return "objc_member";
+    case element_filter_t::filtered_type::objc_protocol:
+        return "objc_protocol";
+    case element_filter_t::filtered_type::objc_category:
+        return "objc_category";
+    case element_filter_t::filtered_type::objc_interface:
+        return "objc_interface";
     default:
         assert(false);
         return "";

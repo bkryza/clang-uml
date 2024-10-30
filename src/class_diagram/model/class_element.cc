@@ -48,4 +48,12 @@ inja::json class_element::context() const
     ctx["access"] = to_string(access());
     return ctx;
 }
+
+void class_element::set_qualified_name(const std::string &qn)
+{
+    qualified_name_ = qn;
+}
+
+std::string class_element::qualified_name() const { return qualified_name_; }
+
 } // namespace clanguml::class_diagram::model

@@ -79,9 +79,14 @@ public:
      */
     virtual inja::json context() const;
 
+    void set_qualified_name(const std::string &qn);
+
+    std::string qualified_name() const;
+
 private:
     common::model::access_t access_;
     std::string name_;
+    std::string qualified_name_;
     std::string type_;
 };
 

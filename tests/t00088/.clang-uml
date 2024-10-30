@@ -1,0 +1,22 @@
+diagrams:
+  t00088_class:
+    type: class
+    glob:
+      - t00088.m
+    include:
+      paths:
+        - .
+      elements:
+        - type: objc_interface
+          name: It00088_Foo
+    exclude:
+      elements:
+        - type: objc_method
+          name:
+            r: 'It00088_Foo::bar.*'
+        - type: objc_method
+          name: 'It00088_Foo::baz:with:'
+        - type: objc_member
+          name: 'It00088_Foo::_barMember'
+        - type: objc_protocol
+          name: Pr00088

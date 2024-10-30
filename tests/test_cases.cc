@@ -573,6 +573,12 @@ void CHECK_INCLUDE_DIAGRAM(const clanguml::config::config &config,
 #include "t00086/test_case.h"
 #endif
 
+#include "t00087/test_case.h"
+
+#if defined(ENABLE_OBJECTIVE_C_TEST_CASES)
+#include "t00088/test_case.h"
+#endif
+
 ///
 /// Sequence diagram tests
 ///

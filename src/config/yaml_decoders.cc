@@ -552,11 +552,25 @@ template <> struct convert<element_filter_t> {
                     rhs.type = element_filter_t::filtered_type::function;
                 else if (node["type"].as<std::string>() == "method")
                     rhs.type = element_filter_t::filtered_type::method;
+                else if (node["type"].as<std::string>() == "member")
+                    rhs.type = element_filter_t::filtered_type::member;
                 else if (node["type"].as<std::string>() == "concept")
                     rhs.type = element_filter_t::filtered_type::concept_;
-                else if (node["type"].as<std::string>() == "concept")
-                    rhs.type = element_filter_t::filtered_type::concept_;
-
+                else if (node["type"].as<std::string>() == "package")
+                    rhs.type = element_filter_t::filtered_type::package;
+                else if (node["type"].as<std::string>() == "function_template")
+                    rhs.type =
+                        element_filter_t::filtered_type::function_template;
+                else if (node["type"].as<std::string>() == "objc_method")
+                    rhs.type = element_filter_t::filtered_type::objc_method;
+                else if (node["type"].as<std::string>() == "objc_member")
+                    rhs.type = element_filter_t::filtered_type::objc_member;
+                else if (node["type"].as<std::string>() == "objc_protocol")
+                    rhs.type = element_filter_t::filtered_type::objc_protocol;
+                else if (node["type"].as<std::string>() == "objc_category")
+                    rhs.type = element_filter_t::filtered_type::objc_category;
+                else if (node["type"].as<std::string>() == "objc_interface")
+                    rhs.type = element_filter_t::filtered_type::objc_interface;
                 auto name = node["name"];
                 if (name.IsMap() && has_key(name, "r")) {
                     auto pattern = name["r"].as<std::string>();

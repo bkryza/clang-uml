@@ -272,6 +272,18 @@ struct element_filter : public filter_visitor {
     tvl::value_t match(const diagram &d, const element &e) const override;
 
     tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::objc_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::objc_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
         const sequence_diagram::model::participant &p) const override;
 
 private:

@@ -50,11 +50,18 @@ struct element_filter_t {
     enum class filtered_type {
         any,
         function,
+        function_template,
         class_,
-        method,
         enum_,
+        method,
+        member,
         concept_,
-        package
+        package,
+        objc_method,
+        objc_member,
+        objc_protocol,
+        objc_category,
+        objc_interface
     };
 
     filtered_type type{filtered_type::any};
