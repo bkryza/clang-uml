@@ -6,5 +6,9 @@ diagrams:
     include:
       paths:
         - .
+    exclude:
+      elements:
+        - type: objc_method
+          name: t20059_A::logA
     from:
       - function: "t20059_tmain()"

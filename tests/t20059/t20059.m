@@ -14,8 +14,12 @@
     NSLog(@"t20059_A: Called print_impl method");
 }
 
+- (void)logA {
+}
+
 - (void)print
 {
+    [self logA];
     [self printImpl];
 }
 

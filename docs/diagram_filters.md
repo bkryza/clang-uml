@@ -113,7 +113,7 @@ Allows to include or exclude entities from specific C++20 module.
 ## elements
 
 Allows to directly include or exclude specific entities from the diagrams, for instance to exclude a specific class
-from an included namespace:
+from an included namespace simply add the following exclude block:
 
 ```yaml
   include:
@@ -123,6 +123,43 @@ from an included namespace:
     elements:
       - ns1::ns2::MyClass
 ```
+
+`elements` filter allows also for more fine-grained control over the diagram
+contents. Instead of a literal value in the filter like above, the
+filter can also specify to what type of element the filter applies.
+For instance the following filter:
+
+```yaml
+  include:
+    namespaces:
+      - ns1::ns2
+  exclude:
+    elements:
+      - ns1::ns2::MyClass
+      - type: method
+        name: ns1::ns2::OtherClass::log
+```
+
+will, in addition to excluding `ns1::ns2::MyClass`, also exclude `ns1::ns2::OtherClass::log` method.
+
+Another useful example, for instance to ignore all setters and getters in the
+code base, the method elements filter can be specified with a regex e.g.:
+
+```yaml
+  include:
+    namespaces:
+      - ns1::ns2
+  exclude:
+    elements:
+      - type: method
+        name:
+          r: '.*::(get|set).*'
+```
+
+The `type` in this filter can be one of the following:
+`any`, `function`, `function_template`, `class`, `enum`, `method`, `member`,
+`concept`, `package`, `objc_method`, `objc_member`, `objc_protocol`,
+`objc_category`, `objc_interface`.
 
 ## element_types
 

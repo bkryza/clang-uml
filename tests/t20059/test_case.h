@@ -34,5 +34,9 @@ TEST_CASE("t20059")
                 {"t20059_tmain()", "t20059_C", "print()"},       //
                 {"t20059_tmain()", "t20059_D", "print()"},       //
             }));
+
+        REQUIRE(HasMessage(src, {"t20059_tmain()", "t20059_A", "print()"}));
+
+        REQUIRE(!HasMessage(src, {"t20059_A", "t20059_A", "logA()"}));
     });
 }

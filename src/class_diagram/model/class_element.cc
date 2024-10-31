@@ -23,7 +23,7 @@
 namespace clanguml::class_diagram::model {
 
 class_element::class_element(
-    common::model::access_t access, std::string name, std::string type)
+    const common::model::access_t access, std::string name, std::string type)
     : access_{access}
     , name_{std::move(name)}
     , type_{std::move(type)}

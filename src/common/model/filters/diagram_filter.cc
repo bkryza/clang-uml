@@ -561,6 +561,20 @@ tvl::value_t element_filter::match(
                     (el.name == class_participant.full_name(false));
             }
 
+            if (p.type_name() == "objc_method") {
+                const auto &m =
+                    dynamic_cast<const sequence_diagram::model::objc_method &>(
+                        p);
+                const auto class_id = m.class_id();
+                const auto &class_participant =
+                    sequence_model.get_participant<participant>(class_id)
+                        .value();
+
+                return (el.name == p.name_and_ns()) ||
+                    (el.name == p.full_name(false)) ||
+                    (el.name == class_participant.full_name(false));
+            }
+
             return el.name == p.full_name(false);
         });
 }

@@ -33,7 +33,7 @@ class class_element : public common::model::decorated_element,
                       public common::model::source_location {
 public:
     class_element(
-        common::model::access_t scope, std::string name, std::string type);
+        common::model::access_t access, std::string name, std::string type);
 
     ~class_element() override = default;
 
@@ -79,8 +79,17 @@ public:
      */
     virtual inja::json context() const;
 
+    /**
+     * @brief Set class elements qualified name.
+     *
+     * This method sets the fully qualified path of the class element,
+     * including namespace and parent class name.
+     */
     void set_qualified_name(const std::string &qn);
 
+    /**
+     * @brief get fully qualified name of the class element.
+     */
     std::string qualified_name() const;
 
 private:
