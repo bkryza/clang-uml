@@ -1269,6 +1269,8 @@ void translation_unit_visitor::process_objc_ivar(
         common::access_specifier_to_access_t(ivar.getAccessControl()),
         field_name, field_type_str};
 
+    field.set_qualified_name(ivar.getQualifiedNameAsString());
+
     process_comment(ivar, field);
     set_source_location(ivar, field);
 
@@ -1518,6 +1520,8 @@ void translation_unit_visitor::process_method(
         util::trim(method_name),
         config().simplify_template_type(method_return_type)};
 
+    method.set_qualified_name(mf.getQualifiedNameAsString());
+
     process_method_properties(mf, c, method_name, method);
 
     process_comment(mf, method);
@@ -1612,6 +1616,8 @@ void translation_unit_visitor::process_objc_method(
 
     objc_method method{common::access_specifier_to_access_t(mf.getAccess()),
         util::trim(mf.getNameAsString()), method_return_type};
+
+    method.set_qualified_name(mf.getQualifiedNameAsString());
 
     process_comment(mf, method);
 
@@ -2214,6 +2220,8 @@ void translation_unit_visitor::process_field(
         common::access_specifier_to_access_t(field_declaration.getAccess()),
         field_name, config().simplify_template_type(field_type_str)};
 
+    field.set_qualified_name(field_declaration.getQualifiedNameAsString());
+
     // Parse the field comment
     process_comment(field_declaration, field);
     // Register the source location of the field declaration
@@ -2391,7 +2399,9 @@ void translation_unit_visitor::process_field(
         }
     }
 
-    c.add_member(std::move(field));
+    if (diagram().should_include(field)) {
+        c.add_member(std::move(field));
+    }
 }
 
 void translation_unit_visitor::add_incomplete_forward_declarations()

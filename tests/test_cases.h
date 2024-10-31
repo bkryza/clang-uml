@@ -2565,8 +2565,8 @@ int64_t FindMessage(
     const json_t &d, const Message &msg, int64_t offset, bool fail)
 {
     if (msg.is_response) {
-        // TODO: Currently response are not generated as separate messages in
-        //       JSON format
+        // TODO: Currently response are not generated as separate messages
+        //       in JSON format
         return offset;
     }
 
@@ -2591,8 +2591,8 @@ int64_t find_message_in_chain(const json_t &d, const Message &msg,
     int64_t offset, bool fail, uint32_t chain_index)
 {
     if (msg.is_response) {
-        // TODO: Currently response are not generated as separate messages in
-        //       JSON format
+        // TODO: Currently response are not generated as separate messages
+        //       in JSON format
         return offset;
     }
 

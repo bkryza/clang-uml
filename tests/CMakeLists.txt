@@ -26,6 +26,7 @@ set(TEST_CASES_REQUIRING_OBJC
     t00084
     t00085
     t00086
+    t00088
     t20057
     t20058
     t30016

@@ -23,7 +23,7 @@
 namespace clanguml::class_diagram::model {
 
 class_element::class_element(
-    common::model::access_t access, std::string name, std::string type)
+    const common::model::access_t access, std::string name, std::string type)
     : access_{access}
     , name_{std::move(name)}
     , type_{std::move(type)}
@@ -48,4 +48,12 @@ inja::json class_element::context() const
     ctx["access"] = to_string(access());
     return ctx;
 }
+
+void class_element::set_qualified_name(const std::string &qn)
+{
+    qualified_name_ = qn;
+}
+
+std::string class_element::qualified_name() const { return qualified_name_; }
+
 } // namespace clanguml::class_diagram::model

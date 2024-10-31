@@ -76,6 +76,7 @@ endif(CODE_COVERAGE)
 #
 option(ADDRESS_SANITIZER "" OFF)
 if(ADDRESS_SANITIZER)
+    message(STATUS "Enabling address sanitizer")
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} \
             -fno-omit-frame-pointer \

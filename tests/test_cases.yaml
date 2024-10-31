@@ -255,6 +255,12 @@ test_cases:
     - name: t00086
       title: Objective-C nested structs and enums test case
       description:
+    - name: t00087
+      title: Typed element class diagram filter test case
+      description:
+    - name: t00088
+      title: Typed element Objective-C class diagram filter test case
+      description:
   Sequence diagrams:
     - name: t20001
       title: Basic sequence diagram test case

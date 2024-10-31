@@ -413,4 +413,13 @@ YAML::Emitter &operator<<(YAML::Emitter &out, const package_diagram &c)
     return out;
 }
 
+YAML::Emitter &operator<<(YAML::Emitter &out, const element_filter_t &ef)
+{
+    out << YAML::BeginMap;
+    out << YAML::Key << "type" << YAML::Value << to_string(ef.type);
+    out << YAML::Key << "name" << YAML::Value << ef.name;
+    out << YAML::EndMap;
+
+    return out;
+}
 } // namespace clanguml::config

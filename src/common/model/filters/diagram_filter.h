@@ -265,17 +265,29 @@ private:
  */
 struct element_filter : public filter_visitor {
     element_filter(
-        filter_t type, std::vector<common::string_or_regex> elements);
+        filter_t type, std::vector<config::element_filter_t> elements);
 
     ~element_filter() override = default;
 
     tvl::value_t match(const diagram &d, const element &e) const override;
 
     tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::class_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::objc_method &m) const override;
+
+    tvl::value_t match(const diagram &d,
+        const class_diagram::model::objc_member &m) const override;
+
+    tvl::value_t match(const diagram &d,
         const sequence_diagram::model::participant &p) const override;
 
 private:
-    std::vector<common::string_or_regex> elements_;
+    std::vector<config::element_filter_t> elements_;
 };
 
 /**

@@ -139,10 +139,16 @@ types:
     context_filter_t:
         - regex_or_string_t
         - context_filter_match_t
+    element_typed_filter_t:
+        type: string
+        name: regex_or_string_t
+    element_filter_t:
+        - regex_or_string_t
+        - element_typed_filter_t
     filter_t:
         namespaces: !optional [regex_or_string_t]
         modules: !optional [regex_or_string_t]
-        elements: !optional [regex_or_string_t]
+        elements: !optional [element_filter_t]
         element_types: !optional [element_types_filter_t]
         relationships: !optional [relationship_filter_t]
         access: !optional [access_filter_t]

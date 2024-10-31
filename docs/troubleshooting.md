@@ -13,6 +13,7 @@
   * [Schema validation error is thrown, but the configuration file is correct](#schema-validation-error-is-thrown-but-the-configuration-file-is-correct)
   * ["fatal error: 'stddef.h' file not found"](#fatal-error-stddefh-file-not-found)
   * ["error: unknown pragma ignored"](#error-unknown-pragma-ignored)
+  * ["bus error" on Apple Silicon macos](#bus-error-on-apple-silicon-macos)
 * [Class diagrams](#class-diagrams)
   * [How can I generate class diagram of my entire project](#how-can-i-generate-class-diagram-of-my-entire-project)
   * [Cannot generate classes for 'std' namespace](#cannot-generate-classes-for-std-namespace)
@@ -304,6 +305,17 @@ config:
 ```yaml
 add_compile_flags:
   - -Wno-unknown-pragmas
+```
+
+### "bus error" on Apple Silicon macos
+On Apple Silicon macos, `clang-uml` must be linked with LLVM libunwind libraries
+for proper exception handling, otherwise whenever an exception is thrown
+somewhere within `clang-uml` the application is terminated with `bus error`.
+
+In order to mitigate this error when building `clang-uml` from sources, the
+following CMake option should be enabled during build:
+```bash
+-DCMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/llvm/lib/c++ -Wl,-rpath,/opt/homebrew/opt/llvm/lib/c++"
 ```
 
 ## Class diagrams

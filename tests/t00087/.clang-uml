@@ -1,0 +1,22 @@
+diagrams:
+  t00087_class:
+    type: class
+    glob:
+      - t00087.cc
+    using_namespace: clanguml::t00087
+    include:
+      namespaces:
+        - clanguml::t00087
+      elements:
+        - type: class
+          name:
+            r: '.*Foo.*'
+        - "clanguml::t00087::Bar<T>"
+    exclude:
+      elements:
+        - type: method
+          name:
+            r: '.*FooClass::(get|set).*'
+        - type: member
+          name: 'clanguml::t00087::FooClass::pImpl_'
+        - bar

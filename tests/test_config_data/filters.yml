@@ -48,6 +48,18 @@ diagrams:
     exclude:
       elements:
         - ns1::ns2::ClassZ
+  regex_typed_elements_test:
+    type: class
+    include:
+      elements:
+        - type: class
+          name: 'MyTypeClass'
+        - type: class
+          name:
+            r: 'MyType.+'
+    exclude:
+      elements:
+        - ns1::ns2::ClassZ
   regex_namespace_test:
     type: class
     include:

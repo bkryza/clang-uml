@@ -449,7 +449,7 @@ tvl::value_t modules_filter::match(
 }
 
 element_filter::element_filter(
-    filter_t type, std::vector<common::string_or_regex> elements)
+    filter_t type, std::vector<config::element_filter_t> elements)
     : filter_visitor{type}
     , elements_{std::move(elements)}
 {
@@ -463,8 +463,70 @@ tvl::value_t element_filter::match(const diagram &d, const element &e) const
 
     return tvl::any_of(
         elements_.begin(), elements_.end(), [&e](const auto &el) {
-            return ((el == e.full_name(false)) ||
-                (el == fmt::format("::{}", e.full_name(false))));
+            // First check if elements type matches the filter
+            if ((el.type != config::element_filter_t::filtered_type::any) &&
+                (config::to_string(el.type) != e.type_name())) {
+                return false;
+            }
+
+            return ((el.name == e.full_name(false)) ||
+                (el.name == fmt::format("::{}", e.full_name(false))));
+        });
+}
+
+tvl::value_t element_filter::match(
+    const diagram & /*d*/, const class_diagram::model::class_method &m) const
+{
+    return tvl::any_of(elements_.begin(), elements_.end(),
+        [&m](const auto &ef) -> tvl::value_t {
+            // Apply this filter only if it had `method` type, do not apply
+            // `any` filters to methods for backward compatibility
+            if (ef.type != config::element_filter_t::filtered_type::method)
+                return {};
+
+            return ef.name == m.qualified_name();
+        });
+}
+
+tvl::value_t element_filter::match(
+    const diagram & /*d*/, const class_diagram::model::class_member &m) const
+{
+    return tvl::any_of(elements_.begin(), elements_.end(),
+        [&m](const auto &ef) -> tvl::value_t {
+            // Apply this filter only if it had `member` type, do not apply
+            // `any` filters to methods for backward compatibility
+            if (ef.type != config::element_filter_t::filtered_type::member)
+                return {};
+
+            return ef.name == m.qualified_name();
+        });
+}
+
+tvl::value_t element_filter::match(
+    const diagram & /*d*/, const class_diagram::model::objc_method &m) const
+{
+    return tvl::any_of(elements_.begin(), elements_.end(),
+        [&m](const auto &ef) -> tvl::value_t {
+            // Apply this filter only if it had `objc_method` type, do not apply
+            // `any` filters to methods for backward compatibility
+            if (ef.type != config::element_filter_t::filtered_type::objc_method)
+                return {};
+
+            return ef.name == m.qualified_name();
+        });
+}
+
+tvl::value_t element_filter::match(
+    const diagram & /*d*/, const class_diagram::model::objc_member &m) const
+{
+    return tvl::any_of(elements_.begin(), elements_.end(),
+        [&m](const auto &ef) -> tvl::value_t {
+            // Apply this filter only if it had `method` type, do not apply
+            // `any` filters to methods for backward compatibility
+            if (ef.type != config::element_filter_t::filtered_type::objc_member)
+                return {};
+
+            return ef.name == m.qualified_name();
         });
 }
 
@@ -481,19 +543,39 @@ tvl::value_t element_filter::match(
         dynamic_cast<const sequence_diagram::model::diagram &>(d);
     return tvl::any_of(elements_.begin(), elements_.end(),
         [&sequence_model, &p](const auto &el) {
-            if (p.type_name() == "method") {
+            // First check if elements type matches the filter
+            if (el.type != config::element_filter_t::filtered_type::any &&
+                config::to_string(el.type) != p.type_name()) {
+                return false;
+            }
 
+            if (p.type_name() == "method") {
                 const auto &m = dynamic_cast<const method &>(p);
                 const auto class_id = m.class_id();
                 const auto &class_participant =
                     sequence_model.get_participant<participant>(class_id)
                         .value();
 
-                return el == p.full_name(false) ||
-                    el == class_participant.full_name(false);
+                return (el.name == p.name_and_ns()) ||
+                    (el.name == p.full_name(false)) ||
+                    (el.name == class_participant.full_name(false));
             }
 
-            return el == p.full_name(false);
+            if (p.type_name() == "objc_method") {
+                const auto &m =
+                    dynamic_cast<const sequence_diagram::model::objc_method &>(
+                        p);
+                const auto class_id = m.class_id();
+                const auto &class_participant =
+                    sequence_model.get_participant<participant>(class_id)
+                        .value();
+
+                return (el.name == p.name_and_ns()) ||
+                    (el.name == p.full_name(false)) ||
+                    (el.name == class_participant.full_name(false));
+            }
+
+            return el.name == p.full_name(false);
         });
 }
 
@@ -504,8 +586,9 @@ element_type_filter::element_type_filter(
 {
 }
 
-tvl::value_t element_type_filter::match(
-    const diagram & /*d*/, const element &e) const
+tvl::value_t element_type_filter::match(const diagram & /*d*/
+    ,
+    const element &e) const
 {
     return tvl::any_of(element_types_.begin(), element_types_.end(),
         [&e](const auto &element_type) {
@@ -780,7 +863,8 @@ void context_filter::initialize_effective_context(
 
     auto &effective_context = effective_contexts_[idx];
 
-    // First add to effective context all elements matching context_ patterns
+    // First add to effective context all elements matching context_
+    // patterns
     const auto &context_cfg = context_.at(idx);
     const auto &context_matches =
         dynamic_cast<const class_diagram::model::diagram &>(d)

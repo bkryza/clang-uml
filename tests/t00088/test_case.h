@@ -1,5 +1,5 @@
 /**
- * tests/t20043/test_case.h
+ * tests/t00088/test_case.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -16,26 +16,21 @@
  * limitations under the License.
  */
 
-TEST_CASE("t20043")
+TEST_CASE("t00088")
 {
     using namespace clanguml::test;
+    using namespace std::string_literals;
 
     auto [config, db, diagram, model] =
-        CHECK_SEQUENCE_MODEL("t20043", "t20043_sequence");
+        CHECK_CLASS_MODEL("t00088", "t00088_class");
 
-    CHECK_SEQUENCE_DIAGRAM(*config, diagram, *model, [](const auto &src) {
-        REQUIRE(MessageOrder(src,
-            {
-                //
-                {"tmain()", "D", "d()"}, //
-                {"D", "C", "c()"}        //
-            }));
+    CHECK_CLASS_DIAGRAM(*config, diagram, *model, [](const auto &src) {
+        REQUIRE(IsObjCInterface(src, "It00088_Foo"));
+        REQUIRE(!IsObjCInterface(src, "It00088_Bar"));
+        REQUIRE(!IsObjCProtocol(src, "Pr00088"));
 
-        REQUIRE(!HasMessage(src, {"tmain()", "F", "f()"}));
-
-        REQUIRE(!HasMessage(src, {"D", {"detail", "E"}, "e()"}));
-        REQUIRE(!HasMessage(src, {"C", "B", "b()"}));
-        REQUIRE(!HasMessage(src, {"C", "C", "log_c()"}));
-        REQUIRE(!HasMessage(src, {"B", "A", "a()"}));
+        REQUIRE(IsMethod<Public>(src, "It00088_Foo", "foo"));
+        REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "bar"));
+        REQUIRE(!IsMethod<Public>(src, "It00088_Foo", "baz:with:"));
     });
 }

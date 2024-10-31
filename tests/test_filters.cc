@@ -20,6 +20,7 @@
 #include "doctest/doctest.h"
 
 #include "class_diagram/model/class.h"
+#include "class_diagram/model/enum.h"
 #include "cli/cli_handler.h"
 #include "common/model/filters/diagram_filter_factory.h"
 #include "common/model/source_file.h"
@@ -216,6 +217,38 @@ TEST_CASE("Test elements regexp filter")
     c.set_name("ClassA");
 
     CHECK(filter.should_include(c));
+}
+
+TEST_CASE("Test typed elements filter")
+{
+    using clanguml::class_diagram::model::class_;
+    using clanguml::class_diagram::model::class_method;
+    using clanguml::class_diagram::model::enum_;
+    using clanguml::common::model::access_t;
+    using clanguml::common::model::diagram_filter;
+    using clanguml::common::model::diagram_filter_factory;
+    using clanguml::common::model::namespace_;
+    using clanguml::common::model::package;
+    using clanguml::common::model::source_file;
+
+    auto cfg = clanguml::config::load("./test_config_data/filters.yml");
+
+    auto &config = *cfg.diagrams["regex_typed_elements_test"];
+    clanguml::class_diagram::model::diagram diagram;
+
+    auto filter_ptr = diagram_filter_factory::create(diagram, config);
+    diagram_filter &filter = *filter_ptr;
+
+    class_ c{{}};
+
+    c.set_name("MyTypeClass");
+
+    CHECK(filter.should_include(c));
+
+    enum_ e{{}};
+    e.set_name("MyTypeClass");
+
+    CHECK(!filter.should_include(e));
 }
 
 TEST_CASE("Test namespaces regexp filter")

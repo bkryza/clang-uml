@@ -10,6 +10,8 @@ diagrams:
       elements:
         - clanguml::t20043::B
         - clanguml::t20043::F
+        - type: method
+          name: clanguml::t20043::C::log_c
       namespaces:
         - clanguml::t20043::detail
     using_namespace: clanguml::t20043
