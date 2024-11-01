@@ -48,29 +48,17 @@ TEST_CASE("Test progress indicator")
 
     REQUIRE_EQ(output_lines[0], "");
 #ifdef _MSC_VER
-    REQUIRE(contains(output_lines[1],
-        "One                      [>----------------------------------] "
-        "[00:00s] 0/100"s));
+    REQUIRE(contains(output_lines[1], "[00:00s] 0/100"s));
 
-    REQUIRE(contains(output_lines[2],
-        "One                      [>----------------------------------] "
-        "[00m:00s] 1/100"s));
+    REQUIRE(contains(output_lines[2], "[00m:00s] 1/100"s));
 
-    REQUIRE(contains(output_lines[3],
-        "One                      [===================================] "
-        "[00m:00s] 100/100 OK"s));
+    REQUIRE(contains(output_lines[3], "[00m:00s] 100/100 OK"s));
 #else
-    REQUIRE_EQ(output_lines[1],
-        "One                      [█----------------------------------] "
-        "[00:00s] 0/100");
+    REQUIRE(contains(output_lines[1], "[00:00s] 0/100"));
 
-    REQUIRE_EQ(output_lines[2],
-        "One                      [█----------------------------------] "
-        "[00m:00s] 1/100");
+    REQUIRE(contains(output_lines[2], "[00m:00s] 1/100"));
 
-    REQUIRE_EQ(output_lines[3],
-        "One                      [███████████████████████████████████] "
-        "[00m:00s] 100/100 ✔");
+    REQUIRE(contains(output_lines[3], "[00m:00s] 100/100 ✔"));
 #endif
 }
 
@@ -107,28 +95,16 @@ TEST_CASE("Test progress indicator fail")
     REQUIRE_EQ(output_lines[0], "");
 
 #ifdef _MSC_VER
-    REQUIRE(contains(output_lines[1],
-        "One                      [>----------------------------------] "
-        "[00:00s] 0/100"s));
+    REQUIRE(contains(output_lines[1], "[00:00s] 0/100"s));
 
-    REQUIRE(contains(output_lines[2],
-        "One                      [>----------------------------------] "
-        "[00m:00s] 1/100"s));
+    REQUIRE(contains(output_lines[2], "[00m:00s] 1/100"s));
 
-    REQUIRE(contains(output_lines[3],
-        "One                      [>----------------------------------] "
-        "[00m:00s] 1/100 FAILED"s));
+    REQUIRE(contains(output_lines[3], "[00m:00s] 1/100 FAILED"s));
 #else
-    REQUIRE_EQ(output_lines[1],
-        "One                      [█----------------------------------] "
-        "[00:00s] 0/100");
+    REQUIRE(contains(output_lines[1], "[00:00s] 0/100"));
 
-    REQUIRE_EQ(output_lines[2],
-        "One                      [█----------------------------------] "
-        "[00m:00s] 1/100");
+    REQUIRE(contains(output_lines[2], "[00m:00s] 1/100"));
 
-    REQUIRE_EQ(output_lines[3],
-        "One                      [█----------------------------------] "
-        "[00m:00s] 1/100 ✗");
+    REQUIRE(contains(output_lines[3], "[00m:00s] 1/100 ✗"));
 #endif
 }

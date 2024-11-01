@@ -229,3 +229,11 @@ venv:
 .PHONY: cmake-format
 cmake-format:
 	cmake-format -i CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt
+
+.PHONY: docker/%
+docker/%:
+	docker build -f docker/Dockerfile.$* -t bkryza/clang-uml-builder:$* docker
+
+.PHONY: docker_test_diagrams
+in_docker/%:
+	docker run -v /var/cache/ccache:/var/cache/ccache -v ${PWD}:${PWD} -w ${PWD} -u 1000:1000 -i bkryza/clang-uml-builder:ubuntu-2404 make CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 LLVM_VERSION=18 NUMPROC=8 ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_OBJECTIVE_C_TEST_CASES=ON CMAKE_GENERATOR=Ninja ENABLE_CUDA_TEST_CASES=ON $*

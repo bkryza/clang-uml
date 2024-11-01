@@ -1,0 +1,45 @@
+FROM ubuntu:24.04
+LABEL org.opencontainers.image.authors="bkryza@gmail.com"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt update && \
+    apt -y install wget software-properties-common git make grcov ninja-build pkg-config gcc g++ ccache cmake libyaml-cpp-dev llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-tools-18 clang-format-18 lcov zlib1g-dev libunwind-dev libdw-dev gnustep-back-common libgnustep-base-dev gnustep-make
+
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb && \
+    dpkg -i cuda-keyring_1.1-1_all.deb && \
+    apt-get update && \
+    apt-get -y install cuda-toolkit
+
+RUN apt -y install plantuml
+
+RUN apt -y install g++
+
+RUN git clone https://github.com/gnustep/libobjc2 && \
+    cd libobjc2 && \
+    CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 cmake -B_build -S. && \
+    cd _build && \
+    make -j12 && \
+    make install && \
+    cd ../.. && \
+    rm -rf libobjc2
+
+RUN apt -y install nvidia-cuda-toolkit
+
+RUN apt -y install nodejs npm && \
+    npm install -g @mermaid-js/mermaid-cli@11.3.0
+
+RUN wget https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml.jar -O /usr/share/plantuml/plantuml.jar
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+ADD puppeteer-config.json  /etc/puppeteer-config.json
+
+# Install Google Chrome Stable and fonts
+# Note: this installs the necessary libs to make the browser work with Puppeteer.
+RUN apt-get update && apt-get install gnupg wget -y && \
+  wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+  apt-get update && \
+  apt-get install google-chrome-stable -y --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
