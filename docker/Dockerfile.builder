@@ -55,7 +55,7 @@ RUN wget https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantu
 # Install mermaidjs-cli
 #
 RUN apt -y install  && \
-    npm install -g @mermaid-js/mermaid-cli@11.3.0
+    npm install -g @mermaid-js/mermaid-cli@10.6.1
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
