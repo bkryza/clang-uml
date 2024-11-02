@@ -22,7 +22,7 @@
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
-#include "version.h"
+#include "version/version.h"
 
 #include <clang/Basic/Version.h>
 #include <clang/Frontend/CompilerInstance.h>
@@ -357,7 +357,7 @@ void generator<C, D>::generate_metadata(std::ostream &ostr) const
     if (config.generate_metadata()) {
         ostr << '\n'
              << "%% Generated with clang-uml, version "
-             << clanguml::version::CLANG_UML_VERSION << '\n'
+             << clanguml::version::version() << '\n'
              << "%% LLVM version " << clang::getClangFullVersion() << '\n';
     }
 }

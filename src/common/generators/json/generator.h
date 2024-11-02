@@ -22,7 +22,7 @@
 #include "config/config.h"
 #include "util/error.h"
 #include "util/util.h"
-#include "version.h"
+#include "version/version.h"
 
 #include <clang/Basic/Version.h>
 #include <clang/Frontend/CompilerInstance.h>
@@ -135,10 +135,9 @@ template <typename C, typename D>
 void generator<C, D>::generate_metadata(nlohmann::json &parent) const
 {
     if (generators::generator<C, D>::config().generate_metadata()) {
-        parent["metadata"]["clang_uml_version"] =
-            clanguml::version::CLANG_UML_VERSION;
+        parent["metadata"]["clang_uml_version"] = clanguml::version::version();
         parent["metadata"]["schema_version"] =
-            clanguml::version::CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION;
+            clanguml::version::json_generator_schema_version();
         parent["metadata"]["llvm_version"] = clang::getClangFullVersion();
     }
 }

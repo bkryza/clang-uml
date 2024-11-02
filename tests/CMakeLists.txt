@@ -50,7 +50,12 @@ if(ENABLE_CXX_MODULES_TEST_CASES)
     foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
         list(APPEND TEST_CASES_REQUIRING_CXX20 ${CXX20_MOD_TC})
     endforeach()
-    set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+    # Remove the module test cases *.cc sources as they will be added
+    # to test_cases_mod target
+    set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+        foreach(CXX20_MOD_TC ${TEST_CASES_REQUIRING_CXX20_MODULES})
+        list(FILTER TEST_CASE_SOURCES EXCLUDE REGEX ".*${CXX20_MOD_TC}.*")
+    endforeach()
 else()
     message(STATUS "Disabling C++ modules test cases")
 
@@ -112,12 +117,24 @@ set(TEST_NAMES
     test_query_driver_output_extractor
     test_progress_indicator)
 
+macro(generate_test_cases_with_paths input_list output_list)
+    set(${output_list})  # Initialize the output list
+    foreach(test_case ${${input_list}})
+        list(APPEND ${output_list} "${CMAKE_CURRENT_SOURCE_DIR}/${test_case}/${test_case}.cc")
+    endforeach()
+endmacro()
+
+generate_test_cases_with_paths(TEST_CASES_REQUIRING_CXX20_MODULES TEST_CASES_REQUIRING_CXX20_MODULES_PATHS)
 foreach(TEST_NAME ${TEST_NAMES})
     add_executable(${TEST_NAME})
     if(TEST_NAME STREQUAL "test_cases")
         if(ENABLE_CXX_MODULES_TEST_CASES)
-            target_sources(${TEST_NAME} PUBLIC FILE_SET CXX_MODULES FILES
-                                               ${TEST_CASE_MODULE_SOURCES})
+            add_library(test_cases_mod)
+            set_target_properties(test_cases_mod PROPERTIES CXX_SCAN_FOR_MODULES ON)
+            target_sources(test_cases_mod
+                    PUBLIC ${TEST_CASES_REQUIRING_CXX20_MODULES_PATHS}
+                    PUBLIC FILE_SET CXX_MODULES FILES  ${TEST_CASE_MODULE_SOURCES})
+            target_compile_features(test_cases_mod PRIVATE cxx_std_20)
         endif(ENABLE_CXX_MODULES_TEST_CASES)
         if(ENABLE_OBJECTIVE_C_TEST_CASES)
             # We need to link the objective test cases sources to a separate

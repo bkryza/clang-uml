@@ -18,7 +18,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "cli/cli_handler.h"
-#include "version.h"
+#include "version/version.h"
 
 #include "doctest/doctest.h"
 
@@ -80,7 +80,7 @@ TEST_CASE("Test cli handler print_version")
     auto output = ostr.str();
 
     REQUIRE(output.find(fmt::format(
-                "clang-uml {}", clanguml::version::CLANG_UML_VERSION)) == 0);
+                "clang-uml {}", clanguml::version::version())) == 0);
 }
 
 TEST_CASE("Test cli handler print_config")

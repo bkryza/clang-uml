@@ -30,6 +30,7 @@ else
 	NUMPROC ?= 1
 endif
 
+BUILDER_IMAGE ?= bkryza/clang-uml-builder:v1
 LLVM_VERSION ?=
 LLVM_CONFIG_PATH ?=
 LLVM_SHARED ?= ON
@@ -122,10 +123,6 @@ debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
 	cmake --build debug -j$(NUMPROC)
 
-debug_tidy: debug_tidy/CMakeLists.txt
-	echo "Using ${NUMPROC} cores"
-	cmake --build debug_tidy -j$(NUMPROC)
-
 release: release/CMakeLists.txt
 	cmake --build release -j$(NUMPROC)
 
@@ -189,8 +186,8 @@ format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
 
 .PHONY: debug_tidy
-tidy: debug_tidy
-	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug_tidy ./src
+tidy: debug
+	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "./clang-uml/src"
 
 .PHONY: check-formatting
 check-formatting:
@@ -225,7 +222,32 @@ fedora/%:
 venv:
 	test -d venv || virtualenv -p /usr/bin/python3 venv;. venv/bin/activate; pip install -Ur dev-requirements.txt
 
-
 .PHONY: cmake-format
 cmake-format:
 	cmake-format -i CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt
+
+#
+# This target allows to run other targets (e.g. make test_diagrams) in a dedicated
+# preconfigured Docker image, e.g.:
+#
+#   NUMPROC=8 ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON ENABLE_CXX_MODULES_TEST_CASES=ON docker/test
+#
+# It requires a Docker volume called clanguml_ccache for ccache cache directory.
+# The current user running this Docker image should have default Ubuntu UID=1000 and GID=1000,
+# or permission issues may occur.
+#
+.PHONY: docker/%
+docker/%:
+	docker run --rm -v /var/cache/ccache:/var/cache/ccache \
+               -v clanguml_ccache:/ccache \
+               -v ${PWD}:${PWD} -w ${PWD} -u 1000:1000 \
+               --entrypoint /usr/bin/make \
+               -it $(BUILDER_IMAGE) \
+               CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 \
+               LLVM_VERSION=18 \
+               NUMPROC=$(NUMPROC) \
+               ENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+               ENABLE_OBJECTIVE_C_TEST_CASES=$(ENABLE_OBJECTIVE_C_TEST_CASES) \
+               ENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
+               CMAKE_GENERATOR=$(CMAKE_GENERATOR) \
+               $*

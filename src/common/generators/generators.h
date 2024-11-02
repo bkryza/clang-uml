@@ -35,7 +35,6 @@
 #include "sequence_diagram/generators/mermaid/sequence_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "util/util.h"
-#include "version.h"
 
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Tooling/Tooling.h>

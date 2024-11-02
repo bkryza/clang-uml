@@ -2,8 +2,8 @@
 # Configure clang-uml executable version
 #
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/src/version)
-configure_file(${CMAKE_CURRENT_LIST_DIR}/version.h.in
-               ${PROJECT_BINARY_DIR}/src/version/version.h)
+configure_file(${CMAKE_CURRENT_LIST_DIR}/version/version-const.h.in
+               ${PROJECT_BINARY_DIR}/src/version/version-const.h)
 
 #
 # Generate source list dynamically

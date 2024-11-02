@@ -34,7 +34,7 @@ def generate_mermaid_diagram(f):
         target = Path(f).parent.absolute()
         target = target.joinpath('mermaid')
         target = target.joinpath(f_svg)
-        subprocess.check_call(['mmdc',  '-i', f, '-o', target])
+        subprocess.check_call(['mmdc',  '-p', 'docker/puppeteer-config.json', '-i', f, '-o', target])
     except subprocess.CalledProcessError:
         print(f'ERROR: Generating Mermaid diagram from {f} failed')
         return False
