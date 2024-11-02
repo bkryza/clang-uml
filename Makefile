@@ -30,6 +30,7 @@ else
 	NUMPROC ?= 1
 endif
 
+BUILDER_IMAGE ?= bkryza/clang-uml-builder:llvm18
 LLVM_VERSION ?=
 LLVM_CONFIG_PATH ?=
 LLVM_SHARED ?= ON
@@ -225,15 +226,31 @@ fedora/%:
 venv:
 	test -d venv || virtualenv -p /usr/bin/python3 venv;. venv/bin/activate; pip install -Ur dev-requirements.txt
 
-
 .PHONY: cmake-format
 cmake-format:
 	cmake-format -i CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt
 
+#
+# This target allows to run other targets (e.g. make test_diagrams) in a dedicated
+# preconfigured Docker image, e.g.:
+#
+#   NUMPROC=8 ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_CUDA_TEST_CASES=ON ENABLE_CXX_MODULES_TEST_CASES=ON docker/test
+#
+# It requires a Docker volume called clanguml_ccache for ccache cache directory.
+# The current user running this Docker image should have default Ubuntu UID=1000 and GID=1000,
+# or permission issues may occur.
+#
 .PHONY: docker/%
 docker/%:
-	docker build -f docker/Dockerfile.$* -t bkryza/clang-uml-builder:$* docker
-
-.PHONY: docker_test_diagrams
-in_docker/%:
-	docker run -v /var/cache/ccache:/var/cache/ccache -v ${PWD}:${PWD} -w ${PWD} -u 1000:1000 -i bkryza/clang-uml-builder:ubuntu-2404 make CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 LLVM_VERSION=18 NUMPROC=8 ENABLE_CXX_MODULES_TEST_CASES=ON ENABLE_OBJECTIVE_C_TEST_CASES=ON CMAKE_GENERATOR=Ninja ENABLE_CUDA_TEST_CASES=ON $*
+	docker run --rm -v /var/cache/ccache:/var/cache/ccache \
+               -v clanguml_ccache:/ccache \
+               -v ${PWD}:${PWD} -w ${PWD} -u 1000:1000 \
+               -i $(BUILDER_IMAGE) \
+               make CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 \
+               LLVM_VERSION=18 \
+               NUMPROC=$(NUMPROC) \
+               ENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \
+               ENABLE_OBJECTIVE_C_TEST_CASES=$(ENABLE_OBJECTIVE_C_TEST_CASES) \
+               ENABLE_CUDA_TEST_CASES=$(ENABLE_CUDA_TEST_CASES) \
+               CMAKE_GENERATOR=$(CMAKE_GENERATOR) \
+               $*
