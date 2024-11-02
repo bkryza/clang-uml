@@ -1,5 +1,5 @@
 /**
- * src/version/version-const.h
+ * src/version/version.h
  *
  * Copyright (c) 2021-2024 Bartek Kryza <bkryza@gmail.com>
  *
@@ -18,6 +18,6 @@
 #pragma once
 
 namespace clanguml::version {
-static constexpr auto CLANG_UML_JSON_GENERATOR_SCHEMA_VERSION = 2U;
-static constexpr auto CLANG_UML_VERSION = "@GIT_VERSION@";
+const char *version();
+unsigned json_generator_schema_version();
 } // namespace clanguml::version

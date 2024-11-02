@@ -22,7 +22,7 @@
 #include "package_diagram/generators/plantuml/package_diagram_generator.h"
 #include "sequence_diagram/generators/plantuml/sequence_diagram_generator.h"
 #include "util/util.h"
-#include "version.h"
+#include "version/version.h"
 
 #include <clang/Basic/Version.h>
 #include <clang/Config/config.h>
@@ -396,7 +396,7 @@ void cli_handler::set_config_path(const std::string &path)
 
 cli_flow_t cli_handler::print_version()
 {
-    ostr_ << "clang-uml " << clanguml::version::CLANG_UML_VERSION << '\n';
+    ostr_ << "clang-uml " << clanguml::version::version() << '\n';
     ostr_ << "Copyright (C) 2021-2024 Bartek Kryza <bkryza@gmail.com>" << '\n';
     ostr_ << util::get_os_name() << '\n';
     ostr_ << "Built against LLVM/Clang libraries version: "
