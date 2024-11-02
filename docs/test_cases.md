@@ -91,6 +91,8 @@
  * [t00084](./test_cases/t00084.md) - Objective-C overall use case
  * [t00085](./test_cases/t00085.md) - Objective-C test case for various class members and methods
  * [t00086](./test_cases/t00086.md) - Objective-C nested structs and enums test case
+ * [t00087](./test_cases/t00087.md) - Typed element class diagram filter test case
+ * [t00088](./test_cases/t00088.md) - Typed element Objective-C class diagram filter test case
 ## Sequence diagrams
  * [t20001](./test_cases/t20001.md) - Basic sequence diagram test case
  * [t20002](./test_cases/t20002.md) - Free function sequence diagram test case
