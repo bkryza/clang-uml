@@ -30,7 +30,7 @@ else
 	NUMPROC ?= 1
 endif
 
-BUILDER_IMAGE ?= bkryza/clang-uml-builder:llvm18
+BUILDER_IMAGE ?= bkryza/clang-uml-builder:v1
 LLVM_VERSION ?=
 LLVM_CONFIG_PATH ?=
 LLVM_SHARED ?= ON
@@ -123,10 +123,6 @@ debug: debug/CMakeLists.txt
 	echo "Using ${NUMPROC} cores"
 	cmake --build debug -j$(NUMPROC)
 
-debug_tidy: debug_tidy/CMakeLists.txt
-	echo "Using ${NUMPROC} cores"
-	cmake --build debug_tidy -j$(NUMPROC)
-
 release: release/CMakeLists.txt
 	cmake --build release -j$(NUMPROC)
 
@@ -190,8 +186,8 @@ format:
 	docker run --rm -v $(CURDIR):/root/sources bkryza/clang-format-check:1.5
 
 .PHONY: debug_tidy
-tidy: debug_tidy
-	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug_tidy ./src
+tidy: debug
+	run-clang-tidy-17 -extra-arg=-Wno-unknown-warning-option -j $(NUMPROC) -p debug "./clang-uml/src"
 
 .PHONY: check-formatting
 check-formatting:
@@ -245,8 +241,9 @@ docker/%:
 	docker run --rm -v /var/cache/ccache:/var/cache/ccache \
                -v clanguml_ccache:/ccache \
                -v ${PWD}:${PWD} -w ${PWD} -u 1000:1000 \
-               -i $(BUILDER_IMAGE) \
-               make CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 \
+               --entrypoint /usr/bin/make \
+               -it $(BUILDER_IMAGE) \
+               CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 \
                LLVM_VERSION=18 \
                NUMPROC=$(NUMPROC) \
                ENABLE_CXX_MODULES_TEST_CASES=$(ENABLE_CXX_MODULES_TEST_CASES) \

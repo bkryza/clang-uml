@@ -15,11 +15,13 @@ RUN apt update && \
 # Install LLVM 18 & 19
 #
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+    add-apt-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-17 main" && \
     add-apt-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-18 main" && \
     add-apt-repository "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-19 main" && \
     apt update && \
-    apt -y install llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-tools-18 clang-format-18 \
-                   llvm-19 clang-19 libclang-19-dev libclang-cpp19-dev clang-tools-19 clang-format-19 \
+    apt -y install llvm-17 clang-17 libclang-17-dev libclang-cpp17-dev clang-tools-17 clang-format-17 clang-tidy-17 \
+                   llvm-18 clang-18 libclang-18-dev libclang-cpp18-dev clang-tools-18 clang-format-18 clang-tidy-18 \
+                   llvm-19 clang-19 libclang-19-dev libclang-cpp19-dev clang-tools-19 clang-format-19 clang-tidy-19 \
                    lcov zlib1g-dev libunwind-dev libdw-dev
 #
 # Install libobjc2

@@ -16,7 +16,7 @@
 
 .PHONY: builder_docker
 builder_docker:
-	docker build -f Dockerfile.builder -t bkryza/clang-uml-builder:llvm18 .
+	docker build -f Dockerfile.builder -t bkryza/clang-uml-builder:v1 .
 
 .PHONY: builder_cacche_volume
 builder_cacche_volume:
