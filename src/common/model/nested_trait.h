@@ -60,16 +60,14 @@ public:
     template <typename V = T>
     [[nodiscard]] bool add_element(std::unique_ptr<V> p)
     {
-        auto it = std::find_if(
-            elements_.begin(), elements_.end(), [&p](const auto &e) {
-                return (e->type_name() == p->type_name()) && (*e == *p);
-            });
-
-        if (it != elements_.end()) {
+        if (auto id = p->id();
+            added_elements_.count(std::make_pair<eid_t, std::string>(
+                std::move(id), p->type_name()))) {
             // Element already in element tree
             return false;
         }
 
+        added_elements_.emplace(p->id(), p->type_name());
         elements_.emplace_back(std::move(p));
 
         return true;
@@ -269,6 +267,15 @@ public:
                             }),
             elements_.end());
 
+        decltype(added_elements_) to_keep_;
+
+        for (const auto &e : added_elements_) {
+            if (element_ids.count(e.first) == 0)
+                to_keep_.emplace(e);
+        }
+
+        std::swap(to_keep_, added_elements_);
+
         // Now recurse to any packages on this level
         for (auto &p : elements_) {
             if (dynamic_cast<nested_trait<T, Path> *>(p.get()))
@@ -278,6 +285,7 @@ public:
     }
 
 private:
+    std::set<std::pair<eid_t, std::string>> added_elements_;
     std::vector<std::unique_ptr<T>> elements_;
 };
 
